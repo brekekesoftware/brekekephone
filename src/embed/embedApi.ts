@@ -1,7 +1,9 @@
 import EventEmitter from 'eventemitter3'
+import { toJS } from 'mobx'
 import { unmountComponentAtNode } from 'react-dom'
 
 import { MakeCallFn } from '../api/brekekejs'
+import { parsePalParams } from '../api/parseParamsWithPrefix'
 import {
   Account,
   accountStore,
@@ -9,28 +11,33 @@ import {
 } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { arrToMap } from '../utils/toMap'
+import { arrToMap } from '../utils/arrToMap'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 
 export type EmbedSignInOptions = {
-  auto_login?: boolean
-  clear_existing_account?: boolean
+  autoLogin?: boolean
+  clearExistingAccount?: boolean
+  palEvents?: string[]
   accounts: EmbedAccount[]
 } & { [k: string]: string }
 
 export class EmbedApi extends EventEmitter {
+  /**==========================================================================
+   * public properties/methods
+   */
+
   promptBrowserPermission = webPromptPermission
 
-  getCurrentAccount = () => getAuthStore().getCurrentAccount()
+  getCurrentAccount = () => toJS(getAuthStore().getCurrentAccount())
 
   call: MakeCallFn = (...args) => getCallStore().startCall(...args)
-  getRunningCalls = () => getCallStore().calls
+  getRunningCalls = () => toJS(getCallStore().calls)
 
-  restart = async (o: EmbedSignInOptions) => {
+  restart = async (options: EmbedSignInOptions) => {
     getAuthStore().signOutWithoutSaving()
     await waitTimeout()
-    await this._signIn(o)
+    await this._signIn(options)
   }
 
   cleanup = () => {
@@ -40,20 +47,32 @@ export class EmbedApi extends EventEmitter {
     }
   }
 
+  /**==========================================================================
+   * private properties/methods
+   */
+
   _rootTag?: HTMLElement
+
+  _palEvents?: string[]
   _palParams?: { [k: string]: string }
 
   _signIn = async (o: EmbedSignInOptions) => {
     await accountStore.waitStorageLoaded()
-    if (o.clear_existing_account) {
+    // reassign options on each sign in
+    embedApi._palEvents = o.palEvents
+    embedApi._palParams = parsePalParams(o)
+    // check if cleanup existing account
+    if (o.clearExistingAccount) {
       accountStore.accounts = []
       accountStore.accountData = []
     }
+    // create map based on unique (host, port, tenant, user)
     const accountsMap = arrToMap(
       accountStore.accounts,
       getAccountUniqueId,
       (p: Account) => p,
     ) as { [k: string]: Account }
+    // convert accounts from options to storage
     let firstAccountInOptions: Account | undefined
     o.accounts.forEach(a => {
       const fr = convertToStorage(a)
@@ -67,7 +86,8 @@ export class EmbedApi extends EventEmitter {
       }
     })
     await accountStore.saveAccountsToLocalStorageDebounced()
-    if (!o.auto_login) {
+    // check if auto login
+    if (!o.autoLogin) {
       return
     }
     const as = getAuthStore()

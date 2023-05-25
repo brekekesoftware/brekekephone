@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, observable, runInAction } from 'mobx'
+import { action, observable, runInAction, toJS } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -10,11 +10,11 @@ import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { embedApi } from '../embed/embedApi'
+import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { arrToMap } from '../utils/toMap'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
@@ -284,9 +284,9 @@ export class CallStore {
       ) {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
-      // Emit to embed api
+      // emit to embed api
       if (!window._BrekekePhoneWebRoot) {
-        embedApi.emit('call_update', e)
+        embedApi.emit('call_update', toJS(e))
       }
       return
     }
@@ -298,9 +298,9 @@ export class CallStore {
     this.displayingCallId = c.id // do not set ongoing call
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
-    // Emit to embed api
+    // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call', c)
+      embedApi.emit('call', toJS(c))
     }
     // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
@@ -370,9 +370,9 @@ export class CallStore {
       this.incallManagerStarted = false
       IncallManager.stop()
     }
-    // Emit to embed api
+    // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call_end', c)
+      embedApi.emit('call_end', toJS(c))
     }
   }
 

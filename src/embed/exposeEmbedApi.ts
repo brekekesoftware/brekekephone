@@ -1,15 +1,13 @@
-import { parsePalParams } from '../api/parseParamsWithPrefix'
 import { embedApi, EmbedSignInOptions } from './embedApi'
 
 export const exposeEmbedApi = (renderApp: (rootTag: HTMLElement) => void) => {
   window.Brekeke.Phone.render = (
     rootTag: HTMLElement,
-    o: EmbedSignInOptions,
+    options: EmbedSignInOptions,
   ) => {
-    embedApi._rootTag = rootTag
-    embedApi._palParams = parsePalParams(o)
     renderApp(rootTag)
-    embedApi._signIn(o)
+    embedApi._rootTag = rootTag
+    embedApi._signIn(options)
     return embedApi
   }
 }

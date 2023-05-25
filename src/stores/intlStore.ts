@@ -5,8 +5,8 @@ import { NativeModules, Platform } from 'react-native'
 
 import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
+import { arrToMap } from '../utils/arrToMap'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { arrToMap } from '../utils/toMap'
 import { waitTimeout } from '../utils/waitTimeout'
 import { RnPicker } from './RnPicker'
 
