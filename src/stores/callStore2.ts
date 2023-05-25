@@ -380,6 +380,9 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
+    this.calls
+      .filter(i => i.id !== c.id && i.answered && !i.holding)
+      .forEach(i => i.toggleHoldWithCheck())
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }
