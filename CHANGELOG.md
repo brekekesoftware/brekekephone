@@ -3,7 +3,7 @@
 - Fix android PN screen should work correctly if answer the call on app screen
 - Embed:
   - Rename params: auto_login -> autoLogin, clear_existing_accounts -> clearExistingAccounts
-  - Change the way to listen on pal events using a new params: palEvents
+  - Change the way to listen on pal events using a new param: palEvents
 
 #### 2.11.19
 

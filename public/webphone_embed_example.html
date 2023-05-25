@@ -121,6 +121,7 @@
     })
 
     // listen pal events like: notify_serverstatus...
+    // IMPORTANT NOTE: these events must be registered in the above palEvents param
     var notify_serverstatus = e => {
       // your logic here...
       console.log('pal.notify_serverstatus', e)
