@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 
-import { mapToMap } from './toMap'
+import { arrToMap } from './arrToMap'
 
 export const animationOption = {
   duration: 150,
@@ -31,11 +31,14 @@ export function useAnimation<T extends AnimationProps>(
     t.start()
     return () => t.stop()
   }, [enabled, options, v])
-  return mapToMap(props, undefined, (k: string) =>
-    v.interpolate({
-      inputRange: [0, 1],
-      outputRange: props[k],
-    }),
+  return arrToMap(
+    Object.keys(props),
+    k => k,
+    k =>
+      v.interpolate({
+        inputRange: [0, 1],
+        outputRange: props[k],
+      }),
   ) as {
     [k in keyof T]: T[k][0]
   }

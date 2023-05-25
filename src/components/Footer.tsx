@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
-import { arrToMap } from '../utils/toMap'
+import { arrToMap } from '../utils/arrToMap'
 import { FooterActions } from './FooterActions'
 import { Navigation } from './FooterNavigation'
 import { ToggleKeyboard } from './FooterToggleKeyboard'

@@ -25,12 +25,12 @@ import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { formatFileType } from '../utils/formatFileType'
 import { pickFile } from '../utils/pickFile'
 import { saveBlob } from '../utils/saveBlob'
 import { saveBlobFile } from '../utils/saveBlob.web'
-import { arrToMap } from '../utils/toMap'
 
 const css = StyleSheet.create({
   LoadMore: {

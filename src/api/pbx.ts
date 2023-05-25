@@ -67,20 +67,27 @@ export class PBX extends EventEmitter {
       })
     }
 
-    const newTimeoutPromise = () => {
-      this.clearConnectTimeoutId()
-      return new Promise<boolean>(resolve => {
-        this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
-          resolve(false)
-          console.warn('Pbx login connection timed out')
-          // Fix case already reconnected
-          if (client === this.client) {
-            this.disconnect()
-          } else {
-            client.close()
-          }
-        }, 10000)
+    // emit to embed api
+    if (!window._BrekekePhoneWebRoot) {
+      embedApi.emit('pal', client)
+    }
+    const embedListeners: { [k in keyof Pbx]?: Function } = {}
+    if (!window._BrekekePhoneWebRoot && embedApi._palEvents?.length) {
+      embedApi._palEvents.forEach(k => {
+        const listener = (...args: unknown[]) => {
+          console.log(`Embed api emitting pal event ${k}`)
+          embedApi.emit(`pal.${k}`, ...args)
+        }
+        embedListeners[k] = listener
+        client[k] = listener
       })
+    }
+    const setListenerWithEmbed = <T extends keyof Pbx>(k: T, f: Pbx[T]) => {
+      const listener = (...args: unknown[]) => {
+        embedListeners[k]?.(...args)
+        return (f as Function)(...args)
+      }
+      client[k] = listener as any
     }
 
     let resolveFn: Function | undefined = undefined
@@ -88,7 +95,7 @@ export class PBX extends EventEmitter {
       resolveFn = r
     })
     const pendingServerStatus: PbxEvent['serverStatus'][] = []
-    client.notify_serverstatus = e => {
+    setListenerWithEmbed('notify_serverstatus', e => {
       pendingServerStatus.push(e)
       if (!e?.status) {
         return
@@ -100,25 +107,35 @@ export class PBX extends EventEmitter {
         resolveFn?.(false)
         resolveFn = undefined
       }
-    }
+    })
     const pendingClose: unknown[] = []
-    client.onClose = () => {
+    setListenerWithEmbed('onClose', () => {
       pendingClose.push()
       resolveFn?.(false)
       resolveFn = undefined
-    }
+    })
     const pendingError: Error[] = []
-    client.onError = err => {
+    setListenerWithEmbed('onError', err => {
       pendingError.push(err)
       resolveFn?.(false)
       resolveFn = undefined
-    }
+    })
 
-    // Emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('pal', client)
+    const newTimeoutPromise = () => {
+      this.clearConnectTimeoutId()
+      return new Promise<boolean>(resolve => {
+        this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
+          resolve(false)
+          console.warn('Pbx login connection timed out')
+          // fix case already reconnected
+          if (client === this.client) {
+            this.disconnect()
+          } else {
+            client.close()
+          }
+        }, 10000)
+      })
     }
-
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
@@ -137,10 +154,11 @@ export class PBX extends EventEmitter {
       return isConnected()
     }
 
-    // Check again webphone.pal.param.user
+    // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
       const as = getAuthStore()
-      // TODO any function get pbxConfig on this time may get undefined
+      // TODO
+      // any function get pbxConfig on this time may get undefined
       as.pbxConfig = undefined
       await isConnected()
       await this.getConfig(true)
@@ -155,16 +173,17 @@ export class PBX extends EventEmitter {
     }
 
     // register client direct event handlers
-    client.onClose = this.onClose
-    pendingClose.forEach(client.onClose)
-    client.onError = this.onError
-    pendingError.forEach(client.onError)
-    client.notify_serverstatus = this.onServerStatus
-    pendingServerStatus.forEach(client.notify_serverstatus)
-    client.notify_park = this.onPark
-    client.notify_callrecording = this.onCallRecording
-    client.notify_voicemail = this.onVoicemail
-    client.notify_status = this.onUserStatus
+    setListenerWithEmbed('onClose', this.onClose)
+    setListenerWithEmbed('onError', this.onError)
+    setListenerWithEmbed('notify_serverstatus', this.onServerStatus)
+    setListenerWithEmbed('notify_park', this.onPark)
+    setListenerWithEmbed('notify_callrecording', this.onCallRecording)
+    setListenerWithEmbed('notify_voicemail', this.onVoicemail)
+    setListenerWithEmbed('notify_status', this.onUserStatus)
+    // fire pending events
+    pendingClose.forEach(this.onClose)
+    pendingError.forEach(this.onError)
+    pendingServerStatus.forEach(this.onServerStatus)
 
     return connected
   }
@@ -335,10 +354,10 @@ export class PBX extends EventEmitter {
       extension: ids,
       property_names: ['name'],
     })
-    // server return "No permission." if id not exist on Pbx.
     return res.map((r, i) => ({
       id: ids[i],
-      name: (r as any as string) === 'No permission.' ? '' : r[0],
+      // server return "No permission." if id not exist
+      name: Array.isArray(r) && typeof r[0] === 'string' ? r[0] : '',
     }))
   }
 

@@ -3,7 +3,7 @@ import { action, computed, observable } from 'mobx'
 
 import * as brekekejs from '../api/brekekejs'
 import { pbx } from '../api/pbx'
-import { arrToMap } from '../utils/toMap'
+import { arrToMap } from '../utils/arrToMap'
 import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
 import { intlStore } from './intlStore'
