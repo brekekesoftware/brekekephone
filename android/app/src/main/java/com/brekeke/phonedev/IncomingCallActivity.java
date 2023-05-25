@@ -241,9 +241,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   @Override
-  protected void onNewIntent(Intent i) {
+  protected void onNewIntent(Intent intent) {
     debug("onNewIntent");
-    super.onNewIntent(i);
+    super.onNewIntent(intent);
   }
 
   @Override
@@ -441,8 +441,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
-  public void updateDisplayVideo(boolean video) {
-    if (video) {
+  public void updateDisplayVideo(boolean isVideoCall) {
+    if (isVideoCall) {
       videoLoading.setVisibility(View.VISIBLE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
@@ -881,18 +881,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     handleShowAvatarTalking();
   }
 
-  public void updateUILayoutManagerCall(boolean video) {
-    if (video || talkingAvatar == null || talkingAvatar.isEmpty()) {
+  public void updateUILayoutManagerCall(boolean isVideoCall) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
     } else {
       enableAvatarTalking();
     }
   }
 
-  public void setBtnVideoSelected(boolean video) {
-    if (isVideoCall != video) {
-      isVideoCall = video;
-      btnVideo.setSelected(video);
+  public void setBtnVideoSelected(boolean _isVideoCall) {
+    if (isVideoCall != _isVideoCall) {
+      isVideoCall = _isVideoCall;
+      btnVideo.setSelected(_isVideoCall);
     }
   }
 
@@ -903,13 +903,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
 
-  public void setBtnSwitchCamera(boolean front) {
-    btnSwitchCamera.setSelected(front);
+  public void setBtnSwitchCamera(boolean isFrontCamera) {
+    btnSwitchCamera.setSelected(isFrontCamera);
   }
 
-  public void setImageTalkingUrl(String url, boolean large) {
+  public void setImageTalkingUrl(String url, boolean _isLarge) {
     talkingAvatar = url;
-    isLarge = large;
+    isLarge = _isLarge;
   }
 
   public void setRecordingStatus(boolean isRecording) {
