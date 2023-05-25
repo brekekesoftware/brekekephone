@@ -909,7 +909,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void setImageTalkingUrl(String url, boolean large) {
     talkingAvatar = url;
-    isLarge = isLarge;
+    isLarge = large;
   }
 
   public void setRecordingStatus(boolean isRecording) {
