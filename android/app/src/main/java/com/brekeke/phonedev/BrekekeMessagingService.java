@@ -11,7 +11,7 @@ import org.json.JSONArray;
 
 public class BrekekeMessagingService extends MessagingService {
   private static String TAG = "BrekekeMessagingService";
-  private static Boolean alreadyGetInitialNotifications = false;
+  private static boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
 
   public static void getInitialNotifications(Promise promise) {
