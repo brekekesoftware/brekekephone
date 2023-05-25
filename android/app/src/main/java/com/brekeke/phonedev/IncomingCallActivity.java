@@ -660,7 +660,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vCallManage
   public void onViewCallManageClick(View v) {
-    if (isVideoCall == false) {
+    if (isVideoCall) {
       return;
     }
     hasManuallyToggledCallManageControls = true;
@@ -835,7 +835,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onCallConnected() {
-    if (answered == false) {
+    if (!answered) {
       setCallAnswered();
     }
     long answeredAt = System.currentTimeMillis();
