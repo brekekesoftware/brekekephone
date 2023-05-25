@@ -457,7 +457,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRemoteVideoStreamURL(String url) {
-    if (url == null || "".equals(url)) {
+    if (url == null || url.isEmpty()) {
       if (vWebrtcVideo == null) {
         return;
       }

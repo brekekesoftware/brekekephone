@@ -193,10 +193,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     String displayName = data.get("x_displayname");
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
-    if (displayName == null || "".equals(displayName)) {
+    if (displayName == null || displayName.isEmpty()) {
       displayName = data.get("x_from");
     }
-    if (displayName == null || "".equals(displayName)) {
+    if (displayName == null || displayName.isEmpty()) {
       displayName = "Loading...";
     }
     String callerName = displayName;
@@ -265,7 +265,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   private static boolean checkAccountExist(Context appCtx, Map<String, String> data) {
     try {
       String pbxUsername = data.get("x_to");
-      if (pbxUsername == null || "".equals(pbxUsername)) {
+      if (pbxUsername == null || pbxUsername.isEmpty()) {
         return false;
       }
       String pbxHostname = data.get("x_host");
