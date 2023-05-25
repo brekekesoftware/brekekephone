@@ -629,7 +629,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setTalkingAvatar(String uuid, String url, Boolean isLarge) {
+  public void setTalkingAvatar(String uuid, String url, boolean isLarge) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -660,7 +660,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setRecordingStatus(String uuid, Boolean isRecording) {
+  public void setRecordingStatus(String uuid, boolean isRecording) {
     emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
     UiThreadUtil.runOnUiThread(
         new Runnable() {

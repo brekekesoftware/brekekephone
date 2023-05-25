@@ -207,7 +207,7 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   }
   //
   // Update isLocal
-  isLocal = Boolean(
+  isLocal = boolean(
     isLocal ||
       raw.my_custom_data ||
       raw.is_local_notification ||

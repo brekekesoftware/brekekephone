@@ -241,9 +241,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   @Override
-  protected void onNewIntent(Intent intent) {
+  protected void onNewIntent(Intent i) {
     debug("onNewIntent");
-    super.onNewIntent(intent);
+    super.onNewIntent(i);
   }
 
   @Override
@@ -441,8 +441,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
-  public void updateDisplayVideo(Boolean isVideoCall) {
-    if (isVideoCall) {
+  public void updateDisplayVideo(boolean video) {
+    if (video) {
       videoLoading.setVisibility(View.VISIBLE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
@@ -462,7 +462,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         return;
       }
       btnSwitchCamera.setVisibility(View.GONE);
-      updateDisplayVideo(this.isVideoCall);
+      updateDisplayVideo(isVideoCall);
     } else {
       initWebrtcVideo();
       btnSwitchCamera.setVisibility(View.VISIBLE);
@@ -599,8 +599,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         20);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
-    if (this.talkingAvatar != null && !talkingAvatar.isEmpty()) {
-      if (!this.isLarge) {
+    if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+      if (!isLarge) {
         updateLayoutManagerCall();
       }
       handleShowAvatarTalking();
@@ -645,16 +645,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
-    BrekekeUtils.putUserActionAnswerCall(uuid);
-    BrekekeUtils.emit("answerCall", uuid);
-    answered = true;
-    BrekekeUtils.staticStopRingtone();
-    vIncomingCall.setVisibility(View.GONE);
-    vHeaderIncomingCall.setVisibility(View.GONE);
+    setCallAnswered();
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
-    vCallManage.setVisibility(View.VISIBLE);
-    vNavHeader.setVisibility(View.VISIBLE);
     updateLayoutManagerCallLoading();
   }
 
@@ -667,7 +660,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vCallManage
   public void onViewCallManageClick(View v) {
-    if (this.isVideoCall == false) {
+    if (isVideoCall == false) {
       return;
     }
     hasManuallyToggledCallManageControls = true;
@@ -703,8 +696,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeUtils.emit("video", uuid);
-    updateDisplayVideo(!this.isVideoCall);
-    updateUILayoutManagerCall(!this.isVideoCall);
+    updateDisplayVideo(!isVideoCall);
+    updateUILayoutManagerCall(!isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -830,16 +823,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  private void setCallAnswered() {
+    answered = true;
+    BrekekeUtils.putUserActionAnswerCall(uuid);
+    BrekekeUtils.emit("answerCall", uuid);
+    BrekekeUtils.staticStopRingtone();
+    vIncomingCall.setVisibility(View.GONE);
+    vHeaderIncomingCall.setVisibility(View.GONE);
+    vCallManage.setVisibility(View.VISIBLE);
+    vNavHeader.setVisibility(View.VISIBLE);
+  }
+
   public void onCallConnected() {
     if (answered == false) {
-      BrekekeUtils.putUserActionAnswerCall(uuid);
-      BrekekeUtils.emit("answerCall", uuid);
-      BrekekeUtils.staticStopRingtone();
-      answered = true;
-      vIncomingCall.setVisibility(View.GONE);
-      vHeaderIncomingCall.setVisibility(View.GONE);
-      vCallManage.setVisibility(View.VISIBLE);
-      vNavHeader.setVisibility(View.VISIBLE);
+      setCallAnswered();
     }
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
@@ -855,7 +852,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void disableAvatarTalking() {
     vCardAvatarTalking.setVisibility(View.GONE);
-    // update position Top for btn Unlock
+    // update position to top for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -866,7 +863,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void enableAvatarTalking() {
-    // update position bottom for btn Unlock
+    // update position to bottom for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -884,18 +881,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     handleShowAvatarTalking();
   }
 
-  public void updateUILayoutManagerCall(Boolean isVideoCall) {
-    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
+  public void updateUILayoutManagerCall(boolean video) {
+    if (video || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
     } else {
       enableAvatarTalking();
     }
   }
 
-  public void setBtnVideoSelected(boolean isVideoCall) {
-    if (this.isVideoCall != isVideoCall) {
-      this.isVideoCall = isVideoCall;
-      btnVideo.setSelected(isVideoCall);
+  public void setBtnVideoSelected(boolean video) {
+    if (isVideoCall != video) {
+      isVideoCall = video;
+      btnVideo.setSelected(video);
     }
   }
 
@@ -906,16 +903,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
 
-  public void setBtnSwitchCamera(boolean isFrontCamera) {
-    btnSwitchCamera.setSelected(isFrontCamera);
+  public void setBtnSwitchCamera(boolean front) {
+    btnSwitchCamera.setSelected(front);
   }
 
-  public void setImageTalkingUrl(String url, Boolean isLarge) {
-    this.talkingAvatar = url;
-    this.isLarge = isLarge;
+  public void setImageTalkingUrl(String url, boolean large) {
+    talkingAvatar = url;
+    isLarge = isLarge;
   }
 
-  public void setRecordingStatus(Boolean isRecording) {
+  public void setRecordingStatus(boolean isRecording) {
     debug("setRecordingStatus: " + isRecording);
     btnRecord.setSelected(isRecording);
   }
