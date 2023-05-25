@@ -660,7 +660,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vCallManage
   public void onViewCallManageClick(View v) {
-    if (isVideoCall) {
+    if (!isVideoCall) {
       return;
     }
     hasManuallyToggledCallManageControls = true;
