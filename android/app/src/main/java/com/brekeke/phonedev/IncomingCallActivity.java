@@ -234,7 +234,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     txtCallerNameHeader.setText(callerName);
-
     updateLabels();
     updateHeader();
     updateCallConfig();
@@ -297,7 +296,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void updateCallConfig() {
     updateBtnDisabled("hangup", btnReject);
-    updateBtnDisabled("hangup", btnEndCall);
+    // with case btnHold selected, btnEndCall should be disable and show text on call hold
+    if (!btnHold.isSelected()) {
+      updateBtnDisabled("hangup", btnEndCall);
+    }
     updateBtnDisabled("transfer", vBtnTransfer);
     updateBtnDisabled("park", vBtnPark);
     updateBtnDisabled("video", vBtnVideo);
