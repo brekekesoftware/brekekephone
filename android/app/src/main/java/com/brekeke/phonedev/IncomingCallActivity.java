@@ -1,12 +1,17 @@
 package com.brekeke.phonedev;
 
+import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,7 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
@@ -55,6 +62,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public ImageView imgAvatar, imgAvatarTalking;
   public CircularProgressDrawable imgAvatarLoadingProgress;
   public WebView webViewAvatar, webViewAvatarTalking;
+  private final int MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA = 1112;
   public Button btnAnswer,
       btnReject,
       btnUnlock,
@@ -644,11 +652,82 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void onBtnAnswerClick(View v) {
+  private void showRequestPermission() {
+    String title = L.titlePermissionMicroCamera();
+    String message = L.messagePermissionMicroCamera();
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle(title);
+    builder.setMessage(message);
+    builder.setPositiveButton(
+        L.close(),
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            // User clicked OK button
+          }
+        });
+    builder.setNegativeButton(
+        L.goToSetting(),
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            Intent callSettingIntent =
+                new Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
+            callSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(callSettingIntent);
+          }
+        });
+    AlertDialog dialog = builder.create();
+    dialog.show();
+  }
+
+  private boolean checkAndRequestPermission() {
+    if (checkSelfPermission(permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+        || checkSelfPermission(permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+      if (shouldShowRequestPermissionRationale(permission.RECORD_AUDIO)
+          || shouldShowRequestPermissionRationale(permission.CAMERA)) {
+        showRequestPermission();
+      } else {
+        requestPermissions(
+            new String[] {permission.RECORD_AUDIO, permission.CAMERA},
+            MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA);
+      }
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    switch (requestCode) {
+      case MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA:
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+          handleClickAnswerCall();
+        } else {
+          debug("MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA fail");
+        }
+        break;
+    }
+  }
+
+  private void handleClickAnswerCall() {
     setCallAnswered();
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
     updateLayoutManagerCallLoading();
+  }
+
+  public void onBtnAnswerClick(View v) {
+    if (checkAndRequestPermission()) {
+      handleClickAnswerCall();
+    }
   }
 
   public void onBtnRejectClick(View v) {
@@ -695,6 +774,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnVideoClick(View v) {
+
     BrekekeUtils.emit("video", uuid);
     updateDisplayVideo(!isVideoCall);
     updateUILayoutManagerCall(!isVideoCall);
