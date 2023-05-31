@@ -153,7 +153,6 @@ class ContactStore {
       ?.item
   }
 
-  getManagerItemLang = () => {}
   getManageItems = (lang?: string) => {
     const items = window.Brekeke.Phonebook.getManager(
       lang ? lang : intlStore.locale,
