@@ -255,31 +255,54 @@ class ChatStore {
   }
 
   handleMoveToChatGroupDetail = async (groupId: string) => {
-    await waitUc()
-    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
-    const groupStatus = groupInfo.conf_status
-    if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
-      RnAlert.error({
-        message: intlDebug`You have rejected this group or this group has been deleted`,
-      })
-      const d = await getAuthStore().getCurrentDataAsync()
-      const newList = d.recentChats.filter(c => c.id !== groupId)
-      d.recentChats = [...newList]
-    } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
+    const as = getAuthStore()
+    const ca = as.getCurrentAccount()
+    if (!ca?.ucEnabled) {
+      // this should not happen
+      const msg = !ca ? 'not signed in' : 'UC is disabled'
+      throw new Error(`Failed to handle UC group chat: ${msg}`)
+    }
+    if (as.ucState !== 'success') {
       RnAlert.prompt({
-        title: '',
+        title: intl`...`,
+        message: intl`Signing into UC...`,
+        confirmText: 'OK',
+        dismissText: false,
+      })
+      await waitUc()
+      RnAlert.dismiss()
+    }
+    const nav = Nav()
+    const i: Conference = uc.getChatGroupInfo(groupId)
+    const status = i.conf_status
+    const name = i.subject || groupId
+    if (status === Constants.CONF_STATUS_INACTIVE) {
+      RnAlert.prompt({
+        title: name,
+        message: intl`You have rejected this group or it has been deleted`,
+        confirmText: 'OK',
+        dismissText: false,
+      })
+      const d = await as.getCurrentDataAsync()
+      d.recentChats = d.recentChats.filter(c => c.id !== groupId)
+      accountStore.saveAccountsToLocalStorageDebounced()
+    } else if (status === Constants.CONF_STATUS_INVITED) {
+      RnAlert.prompt({
+        title: name,
         message: intl`Do you want to join this group?`,
         confirmText: intl`Join`,
         onConfirm: async () => {
           await uc.joinChatGroup(groupId)
-          Nav().customPageIndex = Nav().goToPageChatGroupDetail
-          Nav().goToPageChatGroupDetail({ groupId })
+          nav.customPageIndex = nav.goToPageChatGroupDetail
+          nav.goToPageChatGroupDetail({ groupId })
         },
-        onDismiss: () => {},
+        onDismiss: () => {
+          uc.leaveChatGroup(groupId).catch(() => {})
+        },
       })
     } else {
-      Nav().customPageIndex = Nav().goToPageChatGroupDetail
-      Nav().goToPageChatGroupDetail({ groupId })
+      nav.customPageIndex = nav.goToPageChatGroupDetail
+      nav.goToPageChatGroupDetail({ groupId })
     }
   }
   @observable chatNotificationSoundRunning: boolean = false

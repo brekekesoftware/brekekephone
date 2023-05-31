@@ -18,11 +18,11 @@ const wait = (
   name: 'pbxState' | 'sipState' | 'ucState',
   time = 10000,
 ) => {
-  const at = Date.now()
   if (authStore[name] === 'success') {
     fn(true)
     return
   }
+  const at = Date.now()
   const id = BackgroundTimer.setInterval(() => {
     if (authStore[name] === 'success') {
       BackgroundTimer.clearInterval(id)

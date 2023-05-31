@@ -225,23 +225,22 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   } else if (rawId?.startsWith('missedcall')) {
     // Missed call local notification
     nav.customPageIndex = nav.goToPageCallRecents
+    // do not await timeout here since we will block the login
     waitTimeout().then(Nav().goToPageCallRecents)
   } else if (isLocal) {
     // Chat local notification
     await signInByLocalNotification(n)
-
-    if (n.threadId && n.threadId.length > 0) {
-      if (n?.isGroupChat) {
-        waitTimeout().then(() =>
-          chatStore.handleMoveToChatGroupDetail(n.threadId),
-        )
-      } else {
-        nav.customPageIndex = nav.goToPageChatDetail
-        waitTimeout().then(() => nav.goToPageChatDetail({ buddy: n.threadId }))
-      }
-    } else {
+    if (!n.threadId) {
       nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(nav.goToPageChatRecents)
+      await waitTimeout()
+      nav.goToPageChatRecents()
+    } else if (n.isGroupChat) {
+      await waitTimeout()
+      chatStore.handleMoveToChatGroupDetail(n.threadId)
+    } else {
+      nav.customPageIndex = nav.goToPageChatDetail
+      await waitTimeout()
+      nav.goToPageChatDetail({ buddy: n.threadId })
     }
     console.log('SIP PN debug: PushNotification-parse: local notification')
     return
