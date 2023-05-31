@@ -314,6 +314,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           callConfig != null && callConfig.has(k)
               ? callConfig.getString(k).equals("false")
               : (pbxConfig != null && pbxConfig.has(k) && pbxConfig.getString(k).equals("false"));
+      if ("hangup".equals(k) && btnHold.isSelected()) {
+        disabled = true;
+      }
       v.setVisibility(disabled ? View.GONE : View.VISIBLE);
     } catch (Exception e) {
     }
@@ -441,7 +444,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
-  public void updateDisplayVideo(Boolean isVideoCall) {
+  public void updateDisplayVideo(boolean isVideoCall) {
     if (isVideoCall) {
       videoLoading.setVisibility(View.VISIBLE);
       vWebrtc.removeView(vWebrtcVideo);
@@ -457,12 +460,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRemoteVideoStreamURL(String url) {
-    if (url == null || "".equals(url)) {
+    if (url == null || url.isEmpty()) {
       if (vWebrtcVideo == null) {
         return;
       }
       btnSwitchCamera.setVisibility(View.GONE);
-      updateDisplayVideo(this.isVideoCall);
+      updateDisplayVideo(isVideoCall);
     } else {
       initWebrtcVideo();
       btnSwitchCamera.setVisibility(View.VISIBLE);
@@ -599,8 +602,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         20);
     constraintSet.clear(R.id.view_call_manage_loading, ConstraintSet.TOP);
     constraintSet.applyTo(constraintLayout);
-    if (this.talkingAvatar != null && !talkingAvatar.isEmpty()) {
-      if (!this.isLarge) {
+    if (talkingAvatar != null && !talkingAvatar.isEmpty()) {
+      if (!isLarge) {
         updateLayoutManagerCall();
       }
       handleShowAvatarTalking();
@@ -645,16 +648,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
-    BrekekeUtils.putUserActionAnswerCall(uuid);
-    BrekekeUtils.emit("answerCall", uuid);
-    answered = true;
-    BrekekeUtils.staticStopRingtone();
-    vIncomingCall.setVisibility(View.GONE);
-    vHeaderIncomingCall.setVisibility(View.GONE);
+    setCallAnswered();
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
-    vCallManage.setVisibility(View.VISIBLE);
-    vNavHeader.setVisibility(View.VISIBLE);
     updateLayoutManagerCallLoading();
   }
 
@@ -667,7 +663,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // vCallManage
   public void onViewCallManageClick(View v) {
-    if (this.isVideoCall == false) {
+    if (!isVideoCall) {
       return;
     }
     hasManuallyToggledCallManageControls = true;
@@ -703,8 +699,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeUtils.emit("video", uuid);
-    updateDisplayVideo(!this.isVideoCall);
-    updateUILayoutManagerCall(!this.isVideoCall);
+    updateDisplayVideo(!isVideoCall);
+    updateUILayoutManagerCall(!isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -830,7 +826,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  private void setCallAnswered() {
+    answered = true;
+    BrekekeUtils.putUserActionAnswerCall(uuid);
+    BrekekeUtils.emit("answerCall", uuid);
+    BrekekeUtils.staticStopRingtone();
+    vIncomingCall.setVisibility(View.GONE);
+    vHeaderIncomingCall.setVisibility(View.GONE);
+    vCallManage.setVisibility(View.VISIBLE);
+    vNavHeader.setVisibility(View.VISIBLE);
+  }
+
   public void onCallConnected() {
+    if (!answered) {
+      setCallAnswered();
+    }
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
@@ -845,7 +855,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void disableAvatarTalking() {
     vCardAvatarTalking.setVisibility(View.GONE);
-    // update position Top for btn Unlock
+    // update position to top for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -856,7 +866,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void enableAvatarTalking() {
-    // update position bottom for btn Unlock
+    // update position to bottom for btn Unlock
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
@@ -874,7 +884,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     handleShowAvatarTalking();
   }
 
-  public void updateUILayoutManagerCall(Boolean isVideoCall) {
+  public void updateUILayoutManagerCall(boolean isVideoCall) {
     if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
     } else {
@@ -882,10 +892,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void setBtnVideoSelected(boolean isVideoCall) {
-    if (this.isVideoCall != isVideoCall) {
-      this.isVideoCall = isVideoCall;
-      btnVideo.setSelected(isVideoCall);
+  public void setBtnVideoSelected(boolean _isVideoCall) {
+    if (isVideoCall != _isVideoCall) {
+      isVideoCall = _isVideoCall;
+      btnVideo.setSelected(_isVideoCall);
     }
   }
 
@@ -900,12 +910,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSwitchCamera.setSelected(isFrontCamera);
   }
 
-  public void setImageTalkingUrl(String url, Boolean isLarge) {
-    this.talkingAvatar = url;
-    this.isLarge = isLarge;
+  public void setImageTalkingUrl(String url, boolean _isLarge) {
+    talkingAvatar = url;
+    isLarge = _isLarge;
   }
 
-  public void setRecordingStatus(Boolean isRecording) {
+  public void setRecordingStatus(boolean isRecording) {
     debug("setRecordingStatus: " + isRecording);
     btnRecord.setSelected(isRecording);
   }

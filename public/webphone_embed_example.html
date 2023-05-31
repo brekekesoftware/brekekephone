@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brekeke Phone Component Example</title>
+    <title>Embed Example</title>
 
     <style>
       #web_phone_embed_div {
@@ -28,7 +27,7 @@
     <div id="web_phone_embed_div"></div>
   </body>
 
-  <!-- here we can globally configure some property
+  <!-- here you can globally configure some property
       need to inject this snippet BEFORE webphone.js -->
   <script type="text/javascript">
     window._BrekekePhoneCaptureConsole = true
@@ -37,18 +36,29 @@
 
   <!-- here the actual code to use the embed webphone.js -->
   <script type="text/javascript">
-    // we need to create div in our html code and get it
+    // you need to create div in your html code like this example and get it
     var div = document.getElementById('web_phone_embed_div')
 
     // init a new Brekeke Phone instance to use
     var phone = window.Brekeke.Phone.render(div, {
-      // login automatically with the account, the first one in the account you specify below
-      // or when accounts are not specified here and you have existing accounts, login to the last recently used
-      auto_login: true,
+      // login automatically, default false
+      // using the first one in the accounts list you specified
+      // when accounts are not specified and it has existing accounts
+      //    it will login to the last recently used
+      autoLogin: true,
       // clear all the existing accounts, default false
-      // the accounts are stored in the localStorage
-      // if false, the accounts will overwrite the duplicated entries (host, port, tenant, user)
-      clear_existing_accounts: false,
+      // if false, the new specified accounts will overwrite the duplicated entries
+      //    based on unique (host, port, tenant, user)
+      clearExistingAccounts: false,
+      // specify which pal events you want to listen
+      // see further below for detailed handler implementation
+      palEvents: [
+        'notify_serverstatus',
+        'onClose',
+        'onError',
+        'notify_status',
+        // ...
+      ],
       // hostname:              string
       // port:                  string
       // tenant:                string - optional
@@ -72,69 +82,62 @@
       // pal params
       'webphone.pal.param.user': 'user1,user2,user3',
       'webphone.pal.param.line': 'line1,line2,line3',
-      'webphone.pal.param.xxxx': 'yyyy',
+      'webphone.pal.param.foo': 'bar',
     })
 
     // MULTIPLE INSTANCES WILL NOT WORK
     // THIS IS NOT SUPPORTED YET
-    var phone1 = window.Brekeke.Phone.render(div1, opt1)
-    var phone2 = window.Brekeke.Phone.render(div2, opt2)
+    // var phone1 = window.Brekeke.Phone.render(div1, options1)
+    // var phone2 = window.Brekeke.Phone.render(div2, options2)
 
     // prompt for permission if needed
     phone.promptBrowserPermission()
 
-    // show/hide the instance via the div, using above css in <style> tag
-    div.classList.remove('brekeke_phone_component_hidden')
+    // hide/show the instance via the div, using the above example css in <style> tag
     div.classList.add('brekeke_phone_component_hidden')
-
-    phone.on('call', c => {
-      console.log('phone.on.call', c.id, c.incoming)
-      console.log(c) // console log to see all details
-      // here you manually can show the UI
-      div.classList.remove('brekeke_phone_component_hidden')
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
-    phone.on('call_update', c => {
-      console.log('phone.on.call_update', c.id) // identify by the same above id
-      console.log(c) // all fields same with above
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
-    phone.on('call_end', c => {
-      console.log('phone.on.call_end', c.id) // identify by the same above id
-      // here you can manually hide the UI if no running call
-      if (!phone.getRunningCalls().length) {
-        div.classList.add('brekeke_phone_component_hidden')
-      }
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
+    div.classList.remove('brekeke_phone_component_hidden')
 
     // get the raw pal instance from pbx
-    // when account login, it will construct the pal and you can access via this event
-    // IMPORTANT NOTE: this event can fire multiple times if retry on login failed or pal params change
+    // when login, it will construct the pal and you can access via this event
+    // IMPORTANT NOTE: this event can fire multiple times if retry on login failed
+    //    or pal params changed
     phone.on('pal', async pal => {
-      // account fields can be found github Brekeke Phone src/stores/accountStore.ts
-      var currentAccount = phone.getCurrentAccount()
-      console.log('phone.on.pal currentAccount:', currentAccount.pbxUsername)
       // pal is from window.Brekeke.pbx.getPal
       // console log to see all details
       console.log('phone.on.pal', pal)
-      // here you can listen on events like: notify_serverstatus...
-      // IMPORTANT NOTE: you need to keep the current listener so it wont be overridden
-      var old_notify_serverstatus = pal.notify_serverstatus
-      pal.notify_serverstatus = e => {
-        // call old listener if it exists
-        if (old_notify_serverstatus) {
-          old_notify_serverstatus(e)
-        }
-        // your logic here...
-        console.log(e.status, e.user, e.talker_id)
+      // get the current account to see which account has been logged in
+      // account fields can be found github Brekeke Phone src/stores/accountStore.ts
+      var currentAccount = phone.getCurrentAccount()
+      console.log('phone.on.pal currentAccount:', currentAccount.pbxUsername)
+      // you can call pal method from this instance using promise:
+      var exampleCallPalMethodCondition = false
+      if (exampleCallPalMethodCondition) {
+        var res = await pal.call_pal('name', {
+          foo: 'bar',
+        })
+        console.log('pal.call_pal res:', res)
       }
-      // you can call pal method here using promise:
-      var res = await pal.call_pal('name', options)
     })
+
+    // listen to pal events like: notify_serverstatus...
+    // IMPORTANT NOTE: these events must be registered in the above palEvents param
+    var notify_serverstatus = e => {
+      // your logic here...
+      console.log('pal.notify_serverstatus', e)
+    }
+    phone.on('pal.notify_serverstatus', notify_serverstatus)
+
+    // later you can cleanup those listeners
+    var exampleCleanupListenersCondition = false
+    if (exampleCleanupListenersCondition) {
+      // remove listener individually
+      phone.removeListener('pal.notify_serverstatus', notify_serverstatus)
+      // remove all listeners for this event
+      phone.removeAllListeners('pal.notify_serverstatus')
+      // remove all listeners for all possible events:
+      // pal, webrtcclient, call, call_update, call_end, pal.notify_serverstatus, ...
+      phone.removeAllListeners()
+    }
 
     // get the raw instance from webrtcclient.js
     // when account login, it will construct the client and you can access via this event
@@ -143,25 +146,61 @@
       // console log to see all details
       console.log('phone.on.webrtcclient', client)
       // here you can access to inner sip object:
-      console.log(client._ua)
+      console.log('client._ua', client._ua)
+    })
+
+    phone.on('call', c => {
+      // console log to see all details
+      console.log('phone.on.call', c)
+      // here you manually can show the UI
+      div.classList.remove('brekeke_phone_component_hidden')
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
+    })
+    phone.on('call_update', c => {
+      // all fields same with the above, identified by c.id
+      console.log('phone.on.call_update', c)
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
+    })
+    phone.on('call_end', c => {
+      // all fields same with the above, identified by c.id
+      console.log('phone.on.call_end', c)
+      // here you can manually hide the UI if no running call
+      if (!phone.getRunningCalls().length) {
+        div.classList.add('brekeke_phone_component_hidden')
+      }
+      // access to the raw session to get more data
+      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
     })
 
     // make outgoing call
     // the new call will be notified via above event phone.on('call', ...)
-    var options = {
-      extraHeaders: ['X-Foo: foo', 'X-Bar: bar'],
+    var exampleMakeCallCondition = false
+    if (exampleMakeCallCondition) {
+      var options = {
+        extraHeaders: ['X-Foo: foo', 'X-Bar: bar'],
+      }
+      var withVideo = true
+      phone.call('number', options, withVideo)
     }
-    var withVideo = true
-    phone.call('number', options, withVideo)
 
-    // restart the instance, it will logout the current account if any, and relogin with the new option
-    // same opt shape from window.Brekeke.Phone.render(div, opt)
-    phone.restart(opt)
+    // restart the instance
+    // it will logout the current account if any, and relogin with the new options
+    // same options shape from window.Brekeke.Phone.render(div, options)
+    var exampleRestartCondition = false
+    if (exampleRestartCondition) {
+      phone.restart(options)
+    }
 
-    // cleanup the instance, it will logout the current account if any, and unmount all the dom nodes from the div
-    phone.cleanup()
+    // cleanup the instance
+    // it will logout the current account if any, and unmount all the dom nodes from the div
+    var exampleCleanupCondition = false
+    if (exampleCleanupCondition) {
+      phone.cleanup()
+    }
 
-    // attach to window so we can test in devtool
+    // attach to window so you can test and debug in devtool
     window._brekeke_phone = phone
   </script>
 </html>

@@ -15,8 +15,8 @@ import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, UcUser } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
+import { arrToMap } from '../utils/arrToMap'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
-import { arrToMap } from '../utils/toMap'
 
 @observer
 export class PageChatRecents extends Component {

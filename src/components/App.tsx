@@ -3,7 +3,7 @@ import '../api'
 
 import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
-import { observe, runInAction } from 'mobx'
+import { reaction, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import {
@@ -148,7 +148,8 @@ const initApp = async () => {
       authUC.dispose()
     }
   }, 17)
-  observe(s, 'signedInId', onAuthUpdate)
+  const clearReaction = reaction(() => s.signedInId, onAuthUpdate)
+  void clearReaction
 
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
@@ -230,7 +231,7 @@ export const App = observer(() => {
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
     signedInId,
-    resetFailureState,
+    resetFailureStateIncludeUcLoginFromAnotherPlace,
   } = getAuthStore()
 
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
@@ -264,7 +265,11 @@ export const App = observer(() => {
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={isFailure ? resetFailureState : undefined}
+            onPress={
+              isFailure
+                ? resetFailureStateIncludeUcLoginFromAnotherPlace
+                : undefined
+            }
           >
             <RnText small white>
               {connMessage}
@@ -290,7 +295,7 @@ export const App = observer(() => {
         {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={resetFailureState}
+            onPress={resetFailureStateIncludeUcLoginFromAnotherPlace}
           />
         )}
       </View>

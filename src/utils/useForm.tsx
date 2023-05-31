@@ -7,8 +7,8 @@ import Validator, { Rules } from 'validatorjs'
 import { PbxBook } from '../api/brekekejs'
 import { Field } from '../components/Field'
 import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
+import { arrToMap } from './arrToMap'
 import { CreatedStore } from './createStore'
-import { arrToMap, mapToMap } from './toMap'
 import { useStore } from './useStore'
 
 const noop = () => {}
@@ -62,7 +62,11 @@ export const useForm = () => {
       if (validator.fails()) {
         $.set(
           'errorMap',
-          mapToMap(rules, undefined, (_: string) => validator.errors.first(_)),
+          arrToMap(
+            Object.keys(rules),
+            _ => _,
+            _ => validator.errors.first(_),
+          ),
         )
         // TODO show toast
       } else {

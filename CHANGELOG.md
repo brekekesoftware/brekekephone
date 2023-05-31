@@ -1,3 +1,10 @@
+#### 2.11.20
+
+- Fix android PN screen should work correctly if answer the call on app screen
+- Embed:
+  - Rename params: auto_login -> autoLogin, clear_existing_accounts -> clearExistingAccounts
+  - Change the way to listen on pal events using a new param: palEvents
+
 #### 2.11.19
 
 - Fix it should display correctly PN screen new incoming call on top of the current call
@@ -157,7 +164,7 @@
 #### 2.10.9
 
 - Fix RBT low volume after a call
-- Embed: fix auto_login logic
+- Embed: fix autoLogin logic
 
 #### 2.10.8
 
