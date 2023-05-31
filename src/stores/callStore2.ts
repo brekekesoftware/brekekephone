@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, observable, runInAction, toJS } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -286,7 +286,7 @@ export class CallStore {
       }
       // emit to embed api
       if (!window._BrekekePhoneWebRoot) {
-        embedApi.emit('call_update', toJS(e))
+        embedApi.emit('call_update', e)
       }
       return
     }
@@ -300,7 +300,7 @@ export class CallStore {
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call', toJS(c))
+      embedApi.emit('call', c)
     }
     // Desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
@@ -372,7 +372,7 @@ export class CallStore {
     }
     // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call_end', toJS(c))
+      embedApi.emit('call_end', c)
     }
   }
 
