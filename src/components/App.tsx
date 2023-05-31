@@ -3,7 +3,7 @@ import '../api'
 
 import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
-import { observe, runInAction } from 'mobx'
+import { reaction, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import {
@@ -148,7 +148,8 @@ const initApp = async () => {
       authUC.dispose()
     }
   }, 17)
-  observe(s, 'signedInId', onAuthUpdate)
+  const clearReaction = reaction(() => s.signedInId, onAuthUpdate)
+  void clearReaction
 
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
