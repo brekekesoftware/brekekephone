@@ -197,23 +197,25 @@ export class AuthStore {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
-    // Mobx observe not call automatically?
-    authPBX.authWithCheck()
-    authSIP.authWithCheck()
-    authUC.authWithCheck()
   }
   @action reconnectPbx = () => {
     this.pbxState = 'stopped'
     this.resetFailureState()
+    // Mobx observe not call automatically?
+    authPBX.authWithCheck()
   }
   @action reconnectSip = () => {
     console.log('SIP PN debug: set sipState stopped reconnect')
     this.sipState = 'stopped'
     this.resetFailureState()
+    // Mobx observe not call automatically?
+    authSIP.authWithCheck()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.ucLoginFromAnotherPlace = false
     this.resetFailureState()
+    // Mobx observe not call automatically?
+    authUC.authWithCheck()
   }
 
   pushRecentCall = async (call: {
