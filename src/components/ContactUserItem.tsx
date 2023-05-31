@@ -161,7 +161,7 @@ export const UserItem: FC<
       groupStatus === Constants.CONF_STATUS_INVITED
     ) {
       RnAlert.error({
-        message: intlDebug`You have rejected this group or this group has been deleted`,
+        message: intlDebug`You have rejected this group or it has been deleted`,
       })
       return false
     } else {

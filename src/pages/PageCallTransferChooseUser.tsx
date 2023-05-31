@@ -117,8 +117,8 @@ export class PageCallTransferChooseUser extends Component {
       <Layout
         description={intl`Select target to start transfer`}
         onBack={Nav().backToPageCallManage}
-        menu={'call_transfer'}
-        subMenu={'list_user'}
+        menu='call_transfer'
+        subMenu='list_user'
         isTab
         title={intl`Transfer`}
       >

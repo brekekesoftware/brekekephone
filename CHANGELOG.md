@@ -1,3 +1,14 @@
+#### 2.11.21
+
+- Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen
+- Fix it should handle group chat or invitation well when press on the notification
+- Fix it should also re-login UC if press on the error message in case signed in from another location
+- Fix android it should show missed call notification in case display name contain % character
+- Fix android it should hide hangup button if the call is on hold
+- Fix android it should display page call manage screen after cancel transfer
+- Embed:
+  - Fix revert mobx toJS change
+
 #### 2.11.20
 
 - Fix android PN screen should work correctly if answer the call on app screen

@@ -65,8 +65,8 @@ export class PageCallTransferDial extends Component {
       <Layout
         description={intl`Select target to start transfer`}
         onBack={Nav().backToPageCallManage}
-        menu={'call_transfer'}
-        subMenu={'external_number'}
+        menu='call_transfer'
+        subMenu='external_number'
         isTab
         title={intl`Transfer`}
       >

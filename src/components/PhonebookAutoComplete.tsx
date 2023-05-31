@@ -121,7 +121,7 @@ export const PhonebookAutoComplete: FC<
     return null
   }
   return (
-    <View style={[css.viewFlatList]}>
+    <View style={css.viewFlatList}>
       <ScrollView>
         {result.map((item, index) => (
           <RnTouchableOpacity

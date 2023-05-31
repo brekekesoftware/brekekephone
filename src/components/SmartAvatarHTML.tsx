@@ -89,14 +89,14 @@ export const SmartImage = (p: { uri: string; style: object }) => {
           style={[css.image, css.full]}
           onError={onImageLoadError}
           onLoad={onImageLoad}
-          resizeMode={'cover'}
+          resizeMode='cover'
         />
       )}
       {statusImageLoading === 2 && isImageUrl && (
         <Image
           source={noPhotoImg}
           style={[css.imageError, css.full]}
-          resizeMode={'cover'}
+          resizeMode='cover'
         />
       )}
     </View>

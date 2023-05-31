@@ -106,7 +106,7 @@ export const VideoRBT = (p: { withSDP: boolean; isLoudSpeaker: boolean }) => {
       style={css.video}
       paused={paused}
       repeat={true}
-      ignoreSilentSwitch={'ignore'}
+      ignoreSilentSwitch='ignore'
       playInBackground={true}
       audioOnly
     />

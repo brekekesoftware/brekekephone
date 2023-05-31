@@ -265,7 +265,7 @@ class ChatStore {
     if (as.ucState !== 'success') {
       RnAlert.prompt({
         title: '...',
-        message: intl`Signing into UC...`,
+        message: intl`Connecting to ${'UC'}...`,
         confirmText: 'OK',
         dismissText: false,
       })

@@ -51,7 +51,7 @@ const setupCallKeepWithCheck = async () => {
       alertTitle: intl`Permissions required`,
       alertDescription: intl`Brekeke Phone needs to your permission to display calls`,
       cancelButton: intl`Cancel`,
-      okButton: intl`OK`,
+      okButton: 'OK',
       imageName: 'phone_account_icon',
       additionalPermissions: [],
       foregroundService: {

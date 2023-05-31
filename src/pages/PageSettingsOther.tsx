@@ -93,7 +93,7 @@ export class PageSettingsOther extends Component {
         />
         {cp?.ucEnabled && (
           <>
-            <Field isGroup label={intl`UC`} />
+            <Field isGroup label='UC' />
             <Field
               disabled={!cp.ucEnabled}
               label={intl`STATUS`}
