@@ -152,7 +152,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           />
           <View style={css.vlayerVideo}>
             <RnTouchableOpacity onPress={onShowImage}>
-              <RnIcon path={mdiPlayCircleOutline} color={'white'} size={40} />
+              <RnIcon path={mdiPlayCircleOutline} color='white' size={40} />
             </RnTouchableOpacity>
           </View>
         </View>
@@ -202,11 +202,11 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       <Modal
         visible={visible}
         style={css.modal}
-        animationType={'slide'}
+        animationType='slide'
         onRequestClose={onRequestClose}
       >
         <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
-          <RnIcon path={mdiCloseCircleOutline} color={'black'} size={30} />
+          <RnIcon path={mdiCloseCircleOutline} color='black' size={30} />
         </RnTouchableOpacity>
         {isLoadSuccess &&
           (fileType === 'image' ? (

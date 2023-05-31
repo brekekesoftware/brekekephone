@@ -32,7 +32,7 @@ export const RnCheckBox: FC<
       style={[css.CheckBoxBtn, isSelected && css.CheckBox__selected, style]}
       disabled={disabled}
     >
-      {isSelected && <RnIcon path={mdiCheck} color={'white'} />}
+      {isSelected && <RnIcon path={mdiCheck} color='white' />}
     </RnTouchableOpacity>
   )
 }

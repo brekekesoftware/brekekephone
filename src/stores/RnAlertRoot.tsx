@@ -115,7 +115,7 @@ const RnAlertR = ({
           {!!errMessage && <RnText small>{errMessage}</RnText>}
         </>
       ),
-      confirmText: intl`OK`,
+      confirmText: 'OK',
       onConfirm: RnAlert.dismiss,
       onDismiss: RnAlert.dismiss,
       ...rest,

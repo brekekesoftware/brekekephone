@@ -71,7 +71,7 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
           </RnText>
           {!isDisableCancel && (
             <RnTouchableOpacity onPress={onCancelFile}>
-              <RnIcon path={mdiCloseCircle} color={'black'} size={13} />
+              <RnIcon path={mdiCloseCircle} color='black' size={13} />
             </RnTouchableOpacity>
           )}
         </View>

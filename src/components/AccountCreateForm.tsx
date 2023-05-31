@@ -174,7 +174,7 @@ export const AccountCreateForm: FC<{
         fields={[
           {
             isGroup: true,
-            label: intl`PBX`,
+            label: 'PBX',
           },
           {
             // autoFocus: true, // TODO Animation issue
@@ -223,7 +223,7 @@ export const AccountCreateForm: FC<{
             disabled: props.footerLogout,
             type: 'Switch',
             name: 'pbxTurnEnabled',
-            label: intl`TURN`,
+            label: 'TURN',
           },
           {
             disabled: props.footerLogout,
@@ -234,14 +234,14 @@ export const AccountCreateForm: FC<{
           },
           {
             isGroup: true,
-            label: intl`UC`,
+            label: 'UC',
             hasMargin: true,
           },
           {
             disabled: props.footerLogout,
             type: 'Switch',
             name: 'ucEnabled',
-            label: intl`UC`,
+            label: 'UC',
             onValueChange: (v: boolean) => {
               $.set('account', (p: Account) => {
                 p.ucEnabled = v

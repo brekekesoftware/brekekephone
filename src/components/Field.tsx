@@ -355,7 +355,7 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
-          placeholderTextColor={'grey'}
+          placeholderTextColor='grey'
           onBlur={() => {
             if (Platform.OS === 'web') {
               $.set('isFocusing', false)
@@ -388,7 +388,7 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`label`}
-          placeholderTextColor={'grey'}
+          placeholderTextColor='grey'
           onBlur={() => {
             if (Platform.OS === 'web') {
               $.set('isParkNameFocusing', false)

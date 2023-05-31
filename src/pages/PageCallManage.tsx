@@ -429,7 +429,7 @@ class PageCallManage extends Component<{
       <>
         <View style={css.cameraStyle}>
           <ButtonIcon
-            color={'white'}
+            color='white'
             noborder
             onPress={c.toggleSwitchCamera}
             path={

@@ -235,11 +235,11 @@ export const App = observer(() => {
   } = getAuthStore()
 
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
-    ? intl`PBX`
+    ? 'PBX'
     : sipConnectingOrFailure()
-    ? intl`SIP`
+    ? 'SIP'
     : ucConnectingOrFailure()
-    ? intl`UC`
+    ? 'UC'
     : ''
   const isFailure = isConnFailure()
 

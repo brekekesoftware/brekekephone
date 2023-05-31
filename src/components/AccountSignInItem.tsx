@@ -109,7 +109,7 @@ export const AccountSignInItem: FC<{
         loading={isLoading}
       />
       <Field
-        label={intl`UC`}
+        label='UC'
         onValueChange={(e: boolean) =>
           accountStore.upsertAccount({ id: a.id, ucEnabled: e })
         }
