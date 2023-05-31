@@ -19,8 +19,10 @@ import {
   getLastSignedInId,
   saveLastSignedInId,
 } from './accountStore'
+import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { setAuthStore } from './authStore'
+import { authUC } from './AuthUC'
 import { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
@@ -199,6 +201,8 @@ export class AuthStore {
   @action reconnectPbx = () => {
     this.resetFailureState()
     this.pbxState = 'stopped'
+    // Mobx observe not call automatically?
+    authPBX.authWithCheck()
   }
   @action reconnectSip = () => {
     console.log('SIP PN debug: set sipState stopped reconnect')
@@ -210,6 +214,8 @@ export class AuthStore {
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
+    // Mobx observe not call automatically?
+    authUC.authWithCheck()
   }
 
   pushRecentCall = async (call: {

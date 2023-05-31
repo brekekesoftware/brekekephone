@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import { toJS } from 'mobx'
 import { unmountComponentAtNode } from 'react-dom'
 
 import { MakeCallFn } from '../api/brekekejs'
@@ -29,10 +28,10 @@ export class EmbedApi extends EventEmitter {
 
   promptBrowserPermission = webPromptPermission
 
-  getCurrentAccount = () => toJS(getAuthStore().getCurrentAccount())
+  getCurrentAccount = () => getAuthStore().getCurrentAccount()
 
   call: MakeCallFn = (...args) => getCallStore().startCall(...args)
-  getRunningCalls = () => toJS(getCallStore().calls)
+  getRunningCalls = () => getCallStore().calls
 
   restart = async (options: EmbedSignInOptions) => {
     getAuthStore().signOutWithoutSaving()
