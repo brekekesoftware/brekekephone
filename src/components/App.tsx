@@ -97,12 +97,6 @@ const initApp = async () => {
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
-    if (s.ucLoginFromAnotherPlace && s.ucState !== 'success') {
-      s.pbxState !== 'success' && authPBX.auth()
-      s.sipState !== 'success' && authSIP.auth()
-      s.ucLoginFromAnotherPlace = false
-      authUC.auth()
-    }
     // With ios when wakekup app, currentState will be 'unknown' first then 'active'
     // https://github.com/facebook/react-native-website/issues/273
     if (Platform.OS !== 'ios') {
@@ -236,7 +230,7 @@ export const App = observer(() => {
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
     signedInId,
-    resetFailureState,
+    resetFailureStateIncludeUcLoginFromAnotherPlace,
   } = getAuthStore()
 
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
@@ -270,7 +264,11 @@ export const App = observer(() => {
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={isFailure ? resetFailureState : undefined}
+            onPress={
+              isFailure
+                ? resetFailureStateIncludeUcLoginFromAnotherPlace
+                : undefined
+            }
           >
             <RnText small white>
               {connMessage}
@@ -296,7 +294,7 @@ export const App = observer(() => {
         {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={resetFailureState}
+            onPress={resetFailureStateIncludeUcLoginFromAnotherPlace}
           />
         )}
       </View>
