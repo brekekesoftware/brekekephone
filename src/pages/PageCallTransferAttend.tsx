@@ -126,7 +126,10 @@ export class PageCallTransferAttend extends Component {
         <View style={css.Inner}>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={oc.stopTransferring}
+              onPress={() => {
+                oc.stopTransferring()
+                Nav().backToPageCallManage()
+              }}
               style={[css.Btn, css.Btn__stop]}
             >
               <RnIcon path={mdiPhoneOff} />
@@ -148,7 +151,10 @@ export class PageCallTransferAttend extends Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={oc.conferenceTransferring}
+              onPress={() => {
+                oc.conferenceTransferring()
+                Nav().backToPageCallManage()
+              }}
               style={[css.Btn, css.Btn__conference]}
             >
               <RnIcon path={mdiPhoneForward} />
