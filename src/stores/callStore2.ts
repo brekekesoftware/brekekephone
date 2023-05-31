@@ -10,11 +10,11 @@ import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { embedApi } from '../embed/embedApi'
+import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { arrToMap } from '../utils/toMap'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
@@ -284,7 +284,7 @@ export class CallStore {
       ) {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
-      // Emit to embed api
+      // emit to embed api
       if (!window._BrekekePhoneWebRoot) {
         embedApi.emit('call_update', e)
       }
@@ -298,7 +298,7 @@ export class CallStore {
     this.displayingCallId = c.id // do not set ongoing call
     // Update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
-    // Emit to embed api
+    // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
       embedApi.emit('call', c)
     }
@@ -370,7 +370,7 @@ export class CallStore {
       this.incallManagerStarted = false
       IncallManager.stop()
     }
-    // Emit to embed api
+    // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
       embedApi.emit('call_end', c)
     }
@@ -380,6 +380,9 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
+    this.calls
+      .filter(i => i.id !== c.id && i.answered && !i.holding)
+      .forEach(i => i.toggleHoldWithCheck())
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }
