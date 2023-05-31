@@ -3,8 +3,8 @@ import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { Conference, UcMessageLog } from '../api/brekekejs'
-import { Constants, uc } from '../api/uc'
+import { UcMessageLog } from '../api/brekekejs'
+import { Constants } from '../api/uc'
 import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -13,11 +13,10 @@ import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, UcUser } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
+import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { arrToMap } from '../utils/arrToMap'
 import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
-import { arrToMap } from '../utils/toMap'
 
 @observer
 export class PageChatRecents extends Component {
@@ -48,29 +47,7 @@ export class PageChatRecents extends Component {
     }
   }
   handleGroupSelect = async (groupId: string) => {
-    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
-    const groupStatus = groupInfo.conf_status
-    if (groupStatus === Constants.CONF_STATUS_INACTIVE) {
-      RnAlert.error({
-        message: intlDebug`You have rejected this group or this group has been deleted`,
-      })
-      const d = await getAuthStore().getCurrentDataAsync()
-      const newList = d.recentChats.filter(c => c.id !== groupId)
-      d.recentChats = [...newList]
-    } else if (groupStatus === Constants.CONF_STATUS_INVITED) {
-      RnAlert.prompt({
-        title: '',
-        message: intl`Do you want to join this group?`,
-        confirmText: intl`Join`,
-        onConfirm: async () => {
-          await uc.joinChatGroup(groupId)
-          Nav().goToPageChatGroupDetail({ groupId })
-        },
-        onDismiss: () => {},
-      })
-    } else {
-      Nav().goToPageChatGroupDetail({ groupId })
-    }
+    chatStore.handleMoveToChatGroupDetail(groupId)
   }
 
   render() {
