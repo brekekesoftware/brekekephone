@@ -243,14 +243,12 @@ class PageCallManage extends Component<{
 }> {
   componentDidMount() {
     this.checkJavaPn()
-    this.hideButtonsIfVideo()
-    this.openJavaPnOnVisible()
+    this.componentDidUpdate()
     this.appStateSubscription = AppState.addEventListener(
       'change',
       this.onAppStateChange,
     )
   }
-
   componentDidUpdate() {
     if (RnKeyboard.isKeyboardShowing) {
       Keyboard.dismiss()
@@ -705,6 +703,7 @@ class PageCallManage extends Component<{
   }
 
   render() {
+    void RnKeyboard.isKeyboardShowing // to trigger did update
     return (
       <BrekekeGradient
         white={this.props.call.localVideoEnabled}
