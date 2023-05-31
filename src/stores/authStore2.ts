@@ -199,21 +199,21 @@ export class AuthStore {
     this.ucTotalFailure = 0
   }
   @action reconnectPbx = () => {
-    this.pbxState = 'stopped'
     this.resetFailureState()
+    this.pbxState = 'stopped'
     // Mobx observe not call automatically?
     authPBX.authWithCheck()
   }
   @action reconnectSip = () => {
     console.log('SIP PN debug: set sipState stopped reconnect')
-    this.sipState = 'stopped'
     this.resetFailureState()
+    this.sipState = 'stopped'
     // Mobx observe not call automatically?
     authSIP.authWithCheck()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
-    this.ucLoginFromAnotherPlace = false
     this.resetFailureState()
+    this.ucLoginFromAnotherPlace = false
     // Mobx observe not call automatically?
     authUC.authWithCheck()
   }
