@@ -9,7 +9,7 @@ import { currentVersion } from '../components/variables'
 import { embedApi } from '../embed/embedApi'
 import { accountStore, AccountUnique } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { CallConfig } from '../stores/Call'
+import { Call, CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
@@ -125,6 +125,13 @@ export class SIP extends EventEmitter {
     }
 
     const computeCallPatch = async (ev: Session) => {
+      const m = ev.incomingMessage
+      //
+      const withSDP =
+        ev.rtcSession.direction === 'outgoing' &&
+        ev.sessionStatus === 'progress' &&
+        !!m?.body
+      //
       const partyNumber = ev.rtcSession.remote_identity.uri.user
       let partyName = ev.rtcSession.remote_identity.display_name
       if (
@@ -141,21 +148,40 @@ export class SIP extends EventEmitter {
         partyName ||
         d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
-      const callConfig = getCallConfigFromHeader(
-        ev.incomingMessage?.getHeader('X-WEBPHONE-CALL'),
-      )
-      return {
+      //
+      const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
+      const patch: Partial<Call> = {
         rawSession: ev,
         id: ev.sessionId,
-        pnId: ev.incomingMessage?.getHeader('X-PN-ID'),
+        pnId: m?.getHeader('X-PN-ID'),
         incoming: ev.rtcSession.direction === 'incoming',
         partyNumber,
         partyName,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
         sessionStatus: ev.sessionStatus,
-        callConfig,
+        callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
+        answered: ev.sessionStatus === 'connected',
+        voiceStreamObject: ev.remoteStreamObject,
+        withSDP,
+        earlyMedia: withSDP ? ev.remoteStreamObject : null,
+        partyImageUrl: m?.getHeader('X-PBX-IMAGE-RINGING'),
+        talkingImageUrl: m?.getHeader('X-PBX-IMAGE-TALKING'),
+        partyImageSize: m?.getHeader('X-PBX-IMAGE-SIZE'),
+        pbxTenant: arr?.[0],
+        pbxRoomId: arr?.[1],
+        pbxTalkerId: arr?.[2],
+        pbxUsername: arr?.[3],
       }
+      if (!patch.pbxTalkerId) {
+        delete patch.pbxTalkerId
+      }
+      for (const k in patch) {
+        if (patch[k] === undefined) {
+          delete patch[k]
+        }
+      }
+      return patch
     }
 
     // sessionId: "1"
@@ -188,53 +214,11 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
-        return this.emit('session-stopped', ev)
+        this.emit('session-stopped', ev)
+        return
       }
-      const withSDP =
-        ev.rtcSession.direction === 'outgoing' &&
-        ev.sessionStatus === 'progress' &&
-        !!ev.incomingMessage?.body
-      console.log(`sessionStatusChanged withSDP=${withSDP}`)
       const p = await computeCallPatch(ev)
-      const patch = {
-        ...p,
-        answered: ev.sessionStatus === 'connected',
-        voiceStreamObject: ev.remoteStreamObject,
-        localVideoEnabled: ev.withVideo,
-        remoteVideoEnabled: ev.remoteWithVideo,
-        pbxTenant: '',
-        pbxRoomId: '',
-        pbxTalkerId: '',
-        pbxUsername: '',
-        partyImageUrl: '',
-        partyImageSize: '',
-        talkingImageUrl: '',
-        sessionStatus: ev.sessionStatus,
-        withSDP,
-        earlyMedia: withSDP ? ev.remoteStreamObject : null,
-      }
-      if (ev.incomingMessage) {
-        const pbxSessionInfo =
-          ev.incomingMessage.getHeader('X-PBX-Session-Info')
-        const imageUrl = ev.incomingMessage?.getHeader('X-PBX-IMAGE-RINGING')
-        const talkingImageUrl = ev.incomingMessage?.getHeader(
-          'X-PBX-IMAGE-TALKING',
-        )
-        const imageSize = ev.incomingMessage?.getHeader('X-PBX-IMAGE-SIZE')
-
-        if (typeof pbxSessionInfo === 'string') {
-          const infos = pbxSessionInfo.split(';')
-          patch.pbxTenant = infos[0]
-          patch.pbxRoomId = infos[1]
-          patch.pbxTalkerId = infos[2]
-          patch.pbxUsername = infos[3]
-          patch.partyImageUrl = imageUrl
-          patch.partyImageSize = imageSize
-          patch.talkingImageUrl = talkingImageUrl
-        }
-      }
-      this.emit('session-updated', patch)
-      return
+      this.emit('session-updated', p)
     })
 
     phone.addEventListener('videoClientSessionCreated', ev => {

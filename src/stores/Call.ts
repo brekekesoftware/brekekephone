@@ -35,8 +35,10 @@ export class Call {
   @observable talkingImageUrl = ''
   /** @deprecated use below getDisplayName instead */
   @observable partyName = ''
-  @observable pbxTalkerId = ''
   @observable pbxTenant = ''
+  @observable pbxRoomId = ''
+  @observable pbxTalkerId = ''
+  @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
 

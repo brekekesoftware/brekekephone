@@ -1,3 +1,8 @@
+#### 2.11.22
+
+- Embed:
+  - Try to fix call object field pbx talker id empty in some cases
+
 #### 2.11.21
 
 - Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen
