@@ -458,7 +458,7 @@ export type Session = {
   remoteStreamObject: MediaStream
   localStreamObject: MediaStream
   incomingMessage?: {
-    getHeader(h: string): string
+    getHeader(h: string): string | undefined
     body?: object
   }
   videoClientSessionTable: {
