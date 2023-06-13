@@ -7,7 +7,7 @@ export const checkImageUrl = (url: string) => {
   return (
     /\.(jpeg|jpg|gif|png)$/.test(u.pathname) ||
     // default image url from uc
-    // https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
+    // https://dev01.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
     url.includes('/uc/image?action=download&tenant')
   )
 }

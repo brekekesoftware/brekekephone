@@ -1,5 +1,5 @@
 {
-  "name": "brekekephone-dev-server",
+  "name": "@brekekephone/dev-api",
   "version": "0.0.0-locked",
   "private": true,
   "dependencies": {

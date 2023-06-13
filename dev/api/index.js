@@ -5,13 +5,13 @@ const cors = require('cors')
 const app = express()
 app.use(cors())
 
-const root = '/var/www/apps-static/0/'
+const root = '/var/www/upload/'
 
-app.get('/api/builds', (req, res) => {
+app.get('/dev-api/builds', (req, res) => {
   res.json(fs.readdirSync(root))
 })
 
-app.get('/api/plist/:version', (req, res, next) => {
+app.get('/dev-api/plist/:version', (req, res, next) => {
   const { version } = req.params
   if (!version || !fs.existsSync(root + 'brekeke_phone' + version + '.ipa')) {
     next()
@@ -38,19 +38,19 @@ const plist = (d, v) => `
           <key>kind</key>
           <string>software-package</string>
           <key>url</key>
-          <string>https://apps.brekeke.com/0/brekeke_phone${d}${v}.ipa</string>
+          <string>https://dev01.brekeke.com/upload/brekeke_phone${d}${v}.ipa</string>
         </dict>
         <dict>
           <key>kind</key>
           <string>display-image</string>
           <key>url</key>
-          <string>https://apps.brekeke.com/0/image.57x57.png</string>
+          <string>https://dev01.brekeke.com/upload/image.57x57.png</string>
         </dict>
         <dict>
           <key>kind</key>
           <string>full-size-image</string>
           <key>url</key>
-          <string>https://apps.brekeke.com/0/image.512x512.png</string>
+          <string>https://dev01.brekeke.com/upload/image.512x512.png</string>
         </dict>
       </array>
       <key>metadata</key>

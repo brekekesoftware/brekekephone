@@ -13,7 +13,7 @@ export const webShowNotification = async (body: string, tag: string) => {
     renotify: true,
     body,
     tag,
-    icon: 'https://apps.brekeke.com/favicon.ico',
+    icon: 'https://dev01.brekeke.com/favicon.ico',
     noisiness: 1,
     onclick: (e: unknown) => {
       window.focus()

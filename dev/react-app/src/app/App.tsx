@@ -20,7 +20,7 @@ export const App = () => {
   const prodW = prod.filter(b => b.zip)
   useEffect(() => {
     window
-      .fetch('https://apps.brekeke.com/api/builds')
+      .fetch('https://dev01.brekeke.com/dev-api/builds')
       .then(r => r.json())
       .then((arr: string[]) => {
         if (!Array.isArray(arr)) {
@@ -61,8 +61,8 @@ export const App = () => {
             <h3>Brekeke Phone{i ? '' : ' Dev'}</h3>
             {arr.map(b => {
               const v = `${i ? '' : 'dev'}${b.version}`
-              const ipa = b.ipa && `/0/brekeke_phone${v}.ipa`
-              const apk = b.apk && `/0/brekeke_phone${v}.apk`
+              const ipa = b.ipa && `/upload/brekeke_phone${v}.ipa`
+              const apk = b.apk && `/upload/brekeke_phone${v}.apk`
               return (
                 <>
                   <div className='version'>
@@ -77,7 +77,7 @@ export const App = () => {
                   {ipa && (
                     <div>
                       <a
-                        href={`itms-services://?action=download-manifest&url=https://apps.brekeke.com/api/plist/${v}`}
+                        href={`itms-services://?action=download-manifest&url=https://dev01.brekeke.com/dev-api/plist/${v}`}
                       >
                         Install on iOS
                       </a>
@@ -93,7 +93,7 @@ export const App = () => {
         <>
           <h3>Web Phone</h3>
           {prodW.map(b => {
-            const url = `/0/brekeke_phone${b.version}.zip`
+            const url = `/upload/brekeke_phone${b.version}.zip`
             return (
               <>
                 <div className='version'>

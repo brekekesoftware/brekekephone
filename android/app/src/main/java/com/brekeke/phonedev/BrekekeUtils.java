@@ -126,7 +126,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static boolean isImageUrl(String url) {
     // fix for exception get image from UC:
-    // https://apps.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
+    // https://dev01.brekeke.com:8443/uc/image?ACTION=DOWNLOAD&tenant=nam&user=1003&dlk=ltt3&SIZE=40
     if (url.toLowerCase().contains("/uc/image?action=download&tenant")) {
       return true;
     }
