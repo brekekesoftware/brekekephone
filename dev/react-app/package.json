@@ -1,5 +1,5 @@
 {
-  "name": "brekekephone-dev-apps",
+  "name": "@brekekephone/dev-react-app",
   "version": "0.0.0-locked",
   "private": true,
   "scripts": {
@@ -18,6 +18,6 @@
     "@types/semver-compare": "1.0.1",
     "react-scripts": "4.0.3"
   },
-  "proxy": "https://apps.brekeke.com",
+  "proxy": "https://dev01.brekeke.com",
   "browserslist": "ie 10-11"
 }

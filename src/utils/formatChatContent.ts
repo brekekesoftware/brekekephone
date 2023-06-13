@@ -43,7 +43,7 @@ export const formatChatContent = (c: {
     }
   }
 
-  // Fix migrate error from apps backend?
+  // Fix migrate error from dev01 backend?
   let isTextOnly = text.endsWith(' .txt')
   if (isTextOnly) {
     text = text.replace(/ \.txt$/, '')

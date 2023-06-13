@@ -44,7 +44,7 @@ class BaseChannel {
     Never>(
     NewConnection(
       port: 3000,
-      host: "apps.brekeke.com",
+      host: "dev01.brekeke.com",
       tlsKeyHash: ""
     )
   )
