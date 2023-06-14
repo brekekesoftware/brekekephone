@@ -1,15 +1,15 @@
-#### 2.11.22
-
-- Embed:
-  - Try to fix call object field pbx talker id empty in some cases
-
-#### 2.11.21
+#### 2.12.0
 
 - Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen
 - Fix it should handle group chat or invitation well when press on the notification
 - Fix it should also re-login UC if press on the error message in case signed in from another location
 - Fix android it should show missed call notification in case display name contain % character
 - Fix android it should hide hangup button if the call is on hold
+- Embed:
+  - Try to fix call object field pbx talker id empty in some cases
+
+#### 2.11.21
+
 - Fix android it should display page call manage screen after cancel transfer
 - Embed:
   - Fix revert mobx toJS change
