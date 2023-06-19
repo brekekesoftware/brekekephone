@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
@@ -65,6 +66,14 @@ const initApp = async () => {
   const cs = getCallStore()
   const nav = Nav()
   const pnToken = SyncPnToken()
+
+  if (Platform.OS === 'android') {
+    await PermissionsAndroid.requestMultiple([
+      'android.permission.READ_PHONE_NUMBERS',
+      'android.permission.BLUETOOTH_CONNECT',
+      'android.permission.BLUETOOTH_SCAN',
+    ])
+  }
 
   const checkHasCallOrWakeFromPN = () =>
     Object.keys(cs.callkeepMap).length ||

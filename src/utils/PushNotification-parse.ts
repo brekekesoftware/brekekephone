@@ -85,13 +85,13 @@ export const parseNotificationData = (raw: object) => {
   if (Platform.OS === 'android') {
     n = parseNotificationDataMultiple(
       raw,
-      get(raw, 'fcm'),
-      get(raw, 'alert'),
-      get(raw, 'alert.custom_notification'),
-      get(raw, 'data'),
-      get(raw, 'data.alert'),
-      get(raw, 'data.custom_notification'),
-      get(raw, 'custom_notification'),
+      // get(raw, 'fcm'),
+      // get(raw, 'alert'),
+      // get(raw, 'alert.custom_notification'),
+      // get(raw, 'data'),
+      // get(raw, 'data.alert'),
+      // get(raw, 'data.custom_notification'),
+      // get(raw, 'custom_notification'),
     )
   }
   if (Platform.OS === 'ios') {
@@ -197,7 +197,8 @@ export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
   const accountExist = await checkAndRemovePnTokenViaSip(n)
   //
   // Handle duplicated pn on android
-  if (Platform.OS === 'android') {
+  // Sometime getInitialNotifications not update callkeepUuid yet
+  if (Platform.OS === 'android' && n.callkeepUuid) {
     const k = n.id || jsonStableStringify(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(

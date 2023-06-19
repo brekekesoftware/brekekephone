@@ -19,7 +19,6 @@
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.REORDER_TASKS" />
@@ -27,7 +26,14 @@
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission
+    android:name="android.permission.READ_PHONE_STATE"
+    android:maxSdkVersion="29"
+  />
+  <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
   <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -45,11 +51,14 @@
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
       android:autoRemoveFromRecents="true"
-    />
+      android:exported="true"
+    >
+    </activity>
     <activity
       android:name=".ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
+      android:exported="false"
     />
     <!-- fcm -->
     <meta-data
@@ -61,7 +70,7 @@
       android:value="default"
     />
     <service
-      android:name="BrekekeMessagingService"
+      android:name=".BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
     >
@@ -69,33 +78,22 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <service
-      android:name="com.evollu.react.fcm.InstanceIdService"
-      android:exported="false"
-    >
-      <intent-filter>
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-      </intent-filter>
-    </service>
-    <receiver android:name="com.evollu.react.fcm.FIRLocalMessagingPublisher" />
-    <receiver
-      android:name="com.evollu.react.fcm.FIRSystemBootEventReceiver"
-      android:enabled="true"
-      android:exported="true"
-    >
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </receiver>
+<!--    <service-->
+<!--      android:name="com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService"-->
+<!--      android:enabled="true"-->
+<!--      android:exported="true"-->
+<!--      >-->
+<!--      <intent-filter>-->
+<!--        <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+<!--      </intent-filter>-->
+<!--    </service>-->
     <!-- call keep -->
     <service
       android:name="io.wazo.callkeep.VoiceConnectionService"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
       android:foregroundServiceType="camera|microphone"
+      android:exported="false"
     >
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />

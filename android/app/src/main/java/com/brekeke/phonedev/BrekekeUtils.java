@@ -14,12 +14,16 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.RemoteMessage.Notification;
 import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -31,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +44,36 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
+
+  public static WritableMap parseParams(RemoteMessage message) {
+    WritableMap params = Arguments.createMap();
+    WritableMap fcmData = Arguments.createMap();
+
+    if (message.getNotification() != null) {
+      Notification notification = message.getNotification();
+      fcmData.putString("title", notification.getTitle());
+      fcmData.putString("body", notification.getBody());
+      fcmData.putString("color", notification.getColor());
+      fcmData.putString("icon", notification.getIcon());
+      fcmData.putString("tag", notification.getTag());
+      fcmData.putString("action", notification.getClickAction());
+    }
+    //    params.putMap("fcm", fcmData);
+    //    params.putString("collapse_key", message.getCollapseKey());
+    params.putString("from", message.getFrom());
+    params.putString("google.message_id", message.getMessageId());
+    params.putDouble("google.sent_time", message.getSentTime());
+
+    if (message.getData() != null) {
+      Map<String, String> data = message.getData();
+      Set<String> keysIterator = data.keySet();
+      for (String key : keysIterator) {
+        params.putString(key, data.get(key));
+      }
+    }
+
+    return params;
+  }
 
   public static void emit(String name, String data) {
     try {
@@ -159,6 +194,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             elapsed += 1000;
             h.postDelayed(this, 1000);
           }
+
           // Check in 60s
           private int elapsed = 0;
         },
@@ -167,6 +203,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void onFcmMessageReceived(Context c, Map<String, String> data) {
     //
+
     // Check if it is a PN for incoming call
     if (data.get("x_pn-id") == null) {
       return;
@@ -181,7 +218,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    //
+
     // Check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
     if (!checkAccountExist(appCtx, data)) {

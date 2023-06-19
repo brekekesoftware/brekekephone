@@ -78,3 +78,6 @@ turnConfig.*
 
 # Intl output
 .intlNewEn.json
+
+# Vendor
+vendor/

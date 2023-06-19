@@ -1,21 +1,18 @@
 package com.brekeke.phonedev;
 
 import android.util.Log;
-import com.evollu.react.fcm.FIRMessagingModule;
-import com.evollu.react.fcm.MessagingService;
-import com.evollu.react.fcm.ReactNativeJson;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
+import com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService;
 import java.util.ArrayList;
 import org.json.JSONArray;
 
-public class BrekekeMessagingService extends MessagingService {
+public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static String TAG = "BrekekeMessagingService";
-  private static boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
 
   public static void getInitialNotifications(Promise promise) {
-    alreadyGetInitialNotifications = true;
+
     if (initialNotifications == null) {
       promise.resolve(null);
       return;
@@ -35,21 +32,16 @@ public class BrekekeMessagingService extends MessagingService {
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
-
-    if (!alreadyGetInitialNotifications) {
-      if (initialNotifications == null) {
-        initialNotifications = new ArrayList<String>();
-      }
-      try {
-        initialNotifications.add(
-            ReactNativeJson.convertMapToJson(FIRMessagingModule.parseParams(remoteMessage))
-                .toString());
-      } catch (Exception e) {
-        Log.d(TAG, "initialNotifications.add: " + e.getMessage());
-        e.printStackTrace();
-      }
+    if (initialNotifications == null) {
+      initialNotifications = new ArrayList<String>();
     }
-
+    try {
+      initialNotifications.add(
+          ReactNativeJson.convertMapToJson(BrekekeUtils.parseParams(remoteMessage)).toString());
+    } catch (Exception e) {
+      Log.d(TAG, "initialNotifications.add: " + e.getMessage());
+      e.printStackTrace();
+    }
     super.onMessageReceived(remoteMessage);
   }
 }

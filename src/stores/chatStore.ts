@@ -2,7 +2,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { sortBy, uniqBy } from 'lodash'
 import { computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
-import FCM from 'react-native-fcm'
+import { Notifications } from 'react-native-notifications'
 
 import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
@@ -140,25 +140,34 @@ class ChatStore {
       return
     }
     if (Platform.OS === 'android') {
-      FCM.presentLocalNotification({
-        title,
+      Notifications.postLocalNotification({
+        payload: {
+          title,
+          body,
+          threadId,
+          isGroupChat,
+          number: 0,
+          sound: 'ding.mp3',
+          priority: 'high',
+          show_in_foreground: true,
+          local_notification: true,
+          wake_screen: false,
+          ongoing: false,
+          lights: true,
+          channel: `channel-${Date.now()}`,
+          icon: 'ic_launcher',
+          id: `message-${Date.now()}`,
+          pre_app_state: AppState.currentState,
+          my_custom_data: 'local_notification',
+          is_local_notification: 'local_notification',
+        },
+        identifier: new Date().toISOString(),
         body,
-        threadId,
-        isGroupChat,
-        number: 0,
-        sound: 'ding.mp3',
-        priority: 'high',
-        show_in_foreground: true,
-        local_notification: true,
-        wake_screen: false,
-        ongoing: false,
-        lights: true,
-        channel: `channel-${Date.now()}`,
-        icon: 'ic_launcher',
-        id: `message-${Date.now()}`,
-        pre_app_state: AppState.currentState,
-        my_custom_data: 'local_notification',
-        is_local_notification: 'local_notification',
+        title,
+        sound: '',
+        badge: 0,
+        type: '',
+        thread: '',
       })
     } else {
       PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
