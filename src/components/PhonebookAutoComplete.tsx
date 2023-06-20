@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native'
 
-import { PbxBook } from '../api/brekekejs'
+import { PbxBook } from '../brekekejs'
 import { contactStore } from '../stores/contactStore'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'

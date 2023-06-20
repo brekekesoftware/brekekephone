@@ -1,37 +1,27 @@
-import 'brekekejs/lib/jsonrpc'
+import '../brekekejs/jsonrpc'
 
-import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import { Account } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { ChatFile } from '../stores/chatStore'
-import { UcUser } from '../stores/contactStore'
-import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
   UcBuddyGroup,
   UcChatClient,
   UcConference,
-  UcConstants,
   UcListeners,
-  UcLogger,
   UcReceieveUnreadText,
   UcResponseLeaveConf,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
   UcWebchatConferenceText,
-} from './brekekejs'
-
-const { ChatClient, Logger, Constants } = UCClient0 as {
-  ChatClient: UcChatClient
-  Logger: UcLogger
-  Constants: UcConstants
-}
-
-export { ChatClient, Constants, Logger }
+} from '../brekekejs'
+import UCClient from '../brekekejs/ucclient'
+import { Account } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
+import { ChatFile } from '../stores/chatStore'
+import { UcUser } from '../stores/contactStore'
+import { formatFileType } from '../utils/formatFileType'
 
 export const isUcBuddy = (u: object): u is UcBuddy => {
   return 'user_id' in u && 'group' in u
@@ -64,8 +54,8 @@ export class UC extends EventEmitter {
   client: UcChatClient
   constructor() {
     super()
-    const logger = new Logger('all')
-    this.client = new ChatClient(logger)
+    const logger = new UCClient.Logger('all')
+    this.client = new UCClient.ChatClient(logger)
 
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
@@ -461,7 +451,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: Constants.CTYPE_TEXT,
+            ctype: UCClient.Constants.CTYPE_TEXT,
           }),
         reject,
       ),
@@ -480,7 +470,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: Constants.CTYPE_CALL_RESULT,
+            ctype: UCClient.Constants.CTYPE_CALL_RESULT,
           }),
         reject,
       ),

@@ -10,7 +10,6 @@ import {
   ViewProps,
 } from 'react-native'
 
-import { UcBuddy } from '../api/brekekejs'
 import {
   mdiMenuDown,
   mdiMenuRight,
@@ -19,6 +18,7 @@ import {
   mdiPhoneForward,
   mdiVideo,
 } from '../assets/icons'
+import { UcBuddy } from '../brekekejs'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatMessage, chatStore } from '../stores/chatStore'

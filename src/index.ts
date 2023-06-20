@@ -7,8 +7,8 @@ import './stores/Nav2' // Fix circular dependencies
 import './stores/callStore2' // Fix circular dependencies
 import './stores/authStore2' // Fix circular dependencies
 import './api/syncPnToken2' // Fix circular dependencies
-import 'brekekejs/lib/phonebook'
-import 'brekekejs/lib/webnotification'
+import './brekekejs/phonebook'
+import './brekekejs/webnotification'
 
 import { AppRegistry } from 'react-native'
 

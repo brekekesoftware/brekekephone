@@ -2,13 +2,13 @@ import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
+import { sip } from '../api/sip'
 import {
   PbxGetProductInfoRes,
   UcBuddy,
   UcBuddyGroup,
   UcConfig,
-} from '../api/brekekejs'
-import { sip } from '../api/sip'
+} from '../brekekejs'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'

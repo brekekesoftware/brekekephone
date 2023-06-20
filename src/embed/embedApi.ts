@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3'
 import { unmountComponentAtNode } from 'react-dom'
 
-import { MakeCallFn } from '../api/brekekejs'
 import { parsePalParams } from '../api/parseParamsWithPrefix'
+import { MakeCallFn } from '../brekekejs'
 import {
   Account,
   accountStore,
