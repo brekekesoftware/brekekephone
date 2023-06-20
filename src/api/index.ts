@@ -69,7 +69,11 @@ class Api {
       cp.pbxLocalAllUsers = true
     }
     if (s.isBigMode() || !cp.pbxLocalAllUsers) {
-      cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+      if (cp.ucEnabled) {
+        userStore.loadUcBuddyList()
+      } else {
+        userStore.loadPbxBuddyList()
+      }
     } else {
       contactStore.getPbxUsers()
     }

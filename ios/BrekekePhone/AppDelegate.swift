@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) -> Bool {
     let jsCodeLocation: URL
     jsCodeLocation = RCTBundleURLProvider.sharedSettings()
-      .jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+      .jsBundleURL(forBundleRoot: "index")
     let rootView = RCTRootView(
       bundleURL: jsCodeLocation,
       moduleName: "BrekekePhone",
@@ -51,6 +51,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
         .main
         .url(forResource: "main", withExtension: "jsbundle") as NSURL?
     #endif
+  }
+
+  func concurrentRootEnabled() -> Bool {
+    return false
   }
 
   // Deep links

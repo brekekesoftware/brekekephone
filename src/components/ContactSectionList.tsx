@@ -93,7 +93,6 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         RnDropdown.setShouldUpdatePosition(false)
         calculateSectionHeaderPosition()
       }
-      // eslint-disable-next-line react-app/react-hooks/exhaustive-deps
     }, [p.isEditMode, RnDropdown.shouldUpdatePosition])
 
     const clearConnectTimeoutId = () => {

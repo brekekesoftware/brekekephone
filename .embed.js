@@ -7,16 +7,16 @@ const contents = []
 fs.readFileSync(path.join(b, './index.html'), 'utf-8')
   .split(/<\/script>/g)
   .forEach(v => {
-    const content = v.match(/<script>(.+)$/)?.[1]
+    const src = v.match(/<script.+src="(.+)">$/)?.[1]
+    if (src) {
+      contents.push(fs.readFileSync(path.join(b, src), 'utf-8'))
+      return
+    }
+    const content = v.match(/<script.*>(.+)$/)?.[1]
     if (content) {
       contents.push(content)
       return
     }
-    const src = v.match(/<script src="(.+)">$/)?.[1]
-    if (!src) {
-      return
-    }
-    contents.push(fs.readFileSync(path.join(b, src), 'utf-8'))
   })
 
 if (!contents.length) {

@@ -163,9 +163,11 @@ export class Call {
     if (this.holding || callerStatus === 'holding') {
       return
     }
-    this.localVideoEnabled
-      ? sip.disableVideo(this.id)
-      : sip.enableVideo(this.id)
+    if (this.localVideoEnabled) {
+      sip.disableVideo(this.id)
+    } else {
+      sip.enableVideo(this.id)
+    }
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera

@@ -102,27 +102,30 @@ export class UC extends EventEmitter {
     if (!ev || !ev.sender) {
       return
     }
+
     // handle update message on list webchat
     // this.emit('received-webchat-text', {
     //   conf_id: ev.conf_id,
     //   text: ev.text,
     // })
 
-    ev.conf_id
-      ? this.emit('group-chat-created', {
-          id: ev.received_text_id,
-          group: ev.conf_id,
-          text: ev.text,
-          creator: ev.sender.user_id,
-          created: ev.sent_ltime,
-          conf_id: ev.conf_id,
-        })
-      : this.emit('buddy-chat-created', {
-          id: ev.received_text_id,
-          text: ev.text,
-          creator: ev.sender.user_id,
-          created: ev.sent_ltime,
-        })
+    if (ev.conf_id) {
+      this.emit('group-chat-created', {
+        id: ev.received_text_id,
+        group: ev.conf_id,
+        text: ev.text,
+        creator: ev.sender.user_id,
+        created: ev.sent_ltime,
+        conf_id: ev.conf_id,
+      })
+    } else {
+      this.emit('buddy-chat-created', {
+        id: ev.received_text_id,
+        text: ev.text,
+        creator: ev.sender.user_id,
+        created: ev.sent_ltime,
+      })
+    }
   }
 
   onFileReceived: UcListeners['fileReceived'] = ev => {
@@ -143,22 +146,24 @@ export class UC extends EventEmitter {
 
     this.emit('file-received', file)
 
-    ev.conf_id
-      ? this.emit('group-chat-created', {
-          id: ev.text_id,
-          creator: ev.fileInfo.target.user_id,
-          group: ev.conf_id,
-          file: file.id,
-          text: file.name,
-          created: ev.sent_ltime,
-        })
-      : this.emit('buddy-chat-created', {
-          id: ev.text_id,
-          creator: ev.fileInfo.target.user_id,
-          file: file.id,
-          text: file.name,
-          created: ev.sent_ltime,
-        })
+    if (ev.conf_id) {
+      this.emit('group-chat-created', {
+        id: ev.text_id,
+        creator: ev.fileInfo.target.user_id,
+        group: ev.conf_id,
+        file: file.id,
+        text: file.name,
+        created: ev.sent_ltime,
+      })
+    } else {
+      this.emit('buddy-chat-created', {
+        id: ev.text_id,
+        creator: ev.fileInfo.target.user_id,
+        file: file.id,
+        text: file.name,
+        created: ev.sent_ltime,
+      })
+    }
   }
 
   onFileProgress: UcListeners['fileInfoChanged'] = ev => {

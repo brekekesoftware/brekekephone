@@ -79,7 +79,7 @@ export class PageChatRecents extends Component {
     type WithThreadId = {
       threadId: string
     }
-    type ChatFromStorage = typeof recentFromStorage[0] & WithThreadId
+    type ChatFromStorage = (typeof recentFromStorage)[0] & WithThreadId
     type ChatWithThreadId = ChatMessage & WithThreadId
 
     const recentGroups = recentFromStorage.filter(

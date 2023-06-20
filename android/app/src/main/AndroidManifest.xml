@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:versionCode="1"
-  android:versionName="1.0"
-  package="com.brekeke.phonedev"
->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-feature android:name="android.hardware.camera" />
   <uses-feature android:name="android.hardware.camera.autofocus" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -111,7 +106,7 @@
     <!-- main -->
     <activity
       android:name=".MainActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:theme="@style/SplashTheme"

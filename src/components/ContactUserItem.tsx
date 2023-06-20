@@ -174,8 +174,9 @@ export const UserItem: FC<
     }
     if (partyNumber.startsWith('uc')) {
       const groupId = partyNumber.replace('uc', '')
-      isGroupAvailable(partyNumber.replace('uc', '')) &&
+      if (isGroupAvailable(partyNumber.replace('uc', ''))) {
         Nav().goToPageChatGroupDetail({ groupId })
+      }
     } else {
       Nav().goToPageChatDetail({ buddy: partyNumber })
     }
@@ -183,7 +184,9 @@ export const UserItem: FC<
 
   const onPressIcons = (i: number) => {
     if (partyNumber?.startsWith('uc')) {
-      isGroupAvailable(partyNumber.replace('uc', '')) && iconFuncs?.[i]?.()
+      if (isGroupAvailable(partyNumber.replace('uc', ''))) {
+        iconFuncs?.[i]?.()
+      }
     } else {
       iconFuncs?.[i]?.()
     }

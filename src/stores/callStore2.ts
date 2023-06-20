@@ -749,10 +749,11 @@ export class CallStore {
     const uuid = this.getUuidFromPnId(n.pnId)
     console.log(`SIP PN debug: cancel PN uuid=${uuid}`)
     this.setCallKeepAction({ pnId: n.pnId }, 'rejectCall')
-    uuid &&
+    if (uuid) {
       this.endCallKeep(uuid, {
         completedElseWhere: n.completedElseWhere,
       })
+    }
   }
 
   constructor() {

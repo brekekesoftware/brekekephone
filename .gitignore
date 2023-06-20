@@ -16,7 +16,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-
+ios/.xcode.env.local
 # Android/IntelliJ
 #
 build/
@@ -26,10 +26,7 @@ android/app/src/debug/
 local.properties
 *.iml
 *.hprof
-
-# BUCK
-buck-out/
-\.buckd/
+.cxx/
 *.keystore
 
 # fastlane
@@ -39,9 +36,20 @@ buck-out/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/
 
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifact
+*.jsbundle
+
+# Ruby / CocoaPods
+/ios/Pods/
+/vendor/bundle/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
 
 # node.js
 #
@@ -62,12 +70,6 @@ package-lock.json
 coverage
 .husky/_
 .husky/.gitignore
-
-# Bundle artifact
-*.jsbundle
-
-# CocoaPods
-*/Pods
 
 # Google service keys for firebase
 GoogleService-Info.plist

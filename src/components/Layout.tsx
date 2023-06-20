@@ -83,7 +83,7 @@ export const Layout: FC<
       delete props[k as K]
       k = k.replace('container', '')
       k = lowerFirst(k)
-      m[k] = vk as typeof props[K]
+      m[k] = vk as (typeof props)[K]
     }
     return m
   }, {} as { [k: string]: unknown })
@@ -97,9 +97,9 @@ export const Layout: FC<
       contentContainerStyle: [css.Scroller],
       keyboardShouldPersistTaps: 'always',
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        // eslint-disable-next-line no-mixed-operators
-        if (e.nativeEvent.contentOffset.y > 60 !== headerOverflow) {
-          setHeaderOverflow(!headerOverflow)
+        const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
+        if (newHeaderOverflow !== headerOverflow) {
+          setHeaderOverflow(newHeaderOverflow)
         }
         originalProps.containerOnScroll?.(e)
       },
