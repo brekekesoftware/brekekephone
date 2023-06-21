@@ -242,7 +242,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+    RNCallKeepModule.displayIncomingCall(uuid, "number", "caller", false);
   }
 
   private static void prepareLocale(Context appCtx) {
