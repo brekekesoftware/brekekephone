@@ -36,6 +36,9 @@ bitcode:
 	[ -d node_modules/react-native-webrtc/ios/WebRTC.dSYM ] || \
 	bash node_modules/react-native-webrtc/tools/downloadBitcode.sh;
 
+patch:
+	npx patch-package --exclude="none" react-native-
+
 ###
 # format
 
