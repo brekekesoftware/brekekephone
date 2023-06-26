@@ -314,7 +314,7 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index f53c052..a74d45e 100644
+index f53c052..b8a0e24 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 @@ -51,6 +51,8 @@ import android.util.Log;
@@ -349,11 +349,10 @@ index f53c052..a74d45e 100644
         return settings;
      }
  
-@@ -312,18 +330,18 @@ public class VoiceConnectionService extends ConnectionService {
-             .setContentTitle(foregroundSettings.getString("notificationTitle"))
+@@ -313,17 +331,15 @@ public class VoiceConnectionService extends ConnectionService {
              .setPriority(NotificationManager.IMPORTANCE_MIN)
              .setCategory(Notification.CATEGORY_SERVICE);
--
+ 
 -        Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
 -        if (currentActivity != null) {
 -            Intent notificationIntent = new Intent(this, currentActivity.getClass());
@@ -365,18 +364,15 @@ index f53c052..a74d45e 100644
 -
 -            notificationBuilder.setContentIntent(pendingIntent);
 -        }
-+        // ----- New logic need check later ---
-+//        Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
-+//        if (currentActivity != null) {
-+//            Intent notificationIntent = new Intent(this, currentActivity.getClass());
-+//            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-+//
-+//            final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-+//
-+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
-+//
-+//            notificationBuilder.setContentIntent(pendingIntent);
-+//        }
++        // TODO check new logic after upgrade version
++        // Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
++        // if (currentActivity != null) {
++        //     Intent notificationIntent = new Intent(this, currentActivity.getClass());
++        //     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
++        //     final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
++        //     PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
++        //     notificationBuilder.setContentIntent(pendingIntent);
++        // }
  
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
