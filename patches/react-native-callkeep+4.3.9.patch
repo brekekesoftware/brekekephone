@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
-index 17ffe48..ec9b064 100644
+index 17ffe48..7d583b3 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 @@ -49,6 +49,7 @@ import android.telecom.PhoneAccountHandle;
@@ -137,50 +137,20 @@ index 17ffe48..ec9b064 100644
          Log.d(TAG, "[RNCallKeepModule] endAllCalls executed");
      }
  
-@@ -457,13 +490,14 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -457,7 +490,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
                      public void resolve(@Nullable Object value) {
                          WritableMap grantedPermission = (WritableMap) value;
                          int[] grantedResult = new int[allPermissions.length];
 -                        for (int i=0; i<allPermissions.length; ++i) {
-+                        for (int i = 0; i < allPermissions.length; ++i) {
++                        for (int i = 0; i<allPermissions.length; ++i) {
                              String perm = allPermissions[i];
                              grantedResult[i] = grantedPermission.getString(perm).equals("granted")
--                                ? PackageManager.PERMISSION_GRANTED
--                                : PackageManager.PERMISSION_DENIED;
-+                              ? PackageManager.PERMISSION_GRANTED
-+                              : PackageManager.PERMISSION_DENIED;
-                         }
--                        RNCallKeepModule.onRequestPermissionsResult(REQUEST_READ_PHONE_STATE, allPermissions, grantedResult);
-+                        RNCallKeepModule.onRequestPermissionsResult(REQUEST_READ_PHONE_STATE,
-+                          allPermissions, grantedResult);
-                     }
- 
-                     @Override
-@@ -507,7 +541,8 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
-                     }
- 
-                     @Override
--                    public void reject(String code, String message, Throwable throwable, WritableMap userInfo) {
-+                    public void reject(String code, String message, Throwable throwable,
-+                      WritableMap userInfo) {
-                         hasPhoneAccountPromise.resolve(false);
-                     }
- 
-@@ -515,7 +550,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
-                     public void reject(String message) {
-                         hasPhoneAccountPromise.resolve(false);
-                     }
--            });
-+             });
-             return;
-         }
- 
-@@ -535,6 +570,17 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+                                 ? PackageManager.PERMISSION_GRANTED
+@@ -535,6 +568,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
          }
  
          boolean hasSim = telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
-+        if (ActivityCompat.checkSelfPermission(this.getAppContext(), Manifest.permission.READ_PHONE_STATE)
-+         != PackageManager.PERMISSION_GRANTED) {
++        if (ActivityCompat.checkSelfPermission(this.getAppContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 +            // TODO: Consider calling
 +            //    ActivityCompat#requestPermissions
 +            // here to request the missing permissions, and then overriding
@@ -193,7 +163,7 @@ index 17ffe48..ec9b064 100644
          boolean hasDefaultAccount = telecomManager.getDefaultOutgoingPhoneAccount("tel") != null;
  
          promise.resolve(!hasSim || hasDefaultAccount);
-@@ -936,22 +982,22 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -936,22 +979,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
          return this.reactContext.getCurrentActivity();
      }
  
@@ -202,9 +172,8 @@ index 17ffe48..ec9b064 100644
 -            Log.w(TAG, "[RNCallKeepModule] registerPhoneAccount ignored due to no ConnectionService");
 -            return;
 +    @ReactMethod
-+    public static void registerPhoneAccount(Context appContext) {
-+
-+      if (telephonyManager != null) {
++    public static void registerPhoneAccount(Context context) {
++        if (telephonyManager != null) {
 +          return;
          }
  
@@ -218,34 +187,38 @@ index 17ffe48..ec9b064 100644
          }
 -        String appName = this.getApplicationName(context);
 -
-+        initializeTelecomManager(appContext);
-+        String appName = getApplicationName(appContext);
-+        Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount]::"+ appContext.getApplicationContext().toString());
++        initializeTelecomManager(context);
++        String appName = getApplicationName(context);
++        Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount]::"+ context.getApplicationContext().toString());
          PhoneAccount.Builder builder = new PhoneAccount.Builder(handle, appName);
 -        if (isSelfManaged()) {
 +        if (_settings == null || isSelfManaged()) {
              builder.setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED);
          }
          else {
-@@ -966,7 +1012,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -959,8 +1001,8 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         }
  
-         PhoneAccount account = builder.build();
+         if (_settings != null && _settings.hasKey("imageName")) {
+-            int identifier = appContext.getResources().getIdentifier(_settings.getString("imageName"), "drawable", appContext.getPackageName());
+-            Icon icon = Icon.createWithResource(appContext, identifier);
++            int identifier = context.getResources().getIdentifier(_settings.getString("imageName"), "drawable", context.getPackageName());
++            Icon icon = Icon.createWithResource(context, identifier);
+             builder.setIcon(icon);
+         }
  
--        telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-+        telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
- 
-         telecomManager.registerPhoneAccount(account);
-     }
-@@ -989,7 +1035,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -989,15 +1031,15 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
          }
      }
  
 -    private String getApplicationName(Context appContext) {
-+    private static String getApplicationName(Context appContext) {
-         ApplicationInfo applicationInfo = appContext.getApplicationInfo();
+-        ApplicationInfo applicationInfo = appContext.getApplicationInfo();
++    private static String getApplicationName(Context context) {
++        ApplicationInfo applicationInfo = context.getApplicationInfo();
          int stringId = applicationInfo.labelRes;
  
-@@ -997,7 +1043,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+-        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : appContext.getString(stringId);
++        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
      }
  
      private Boolean hasPermissions() {
@@ -254,7 +227,7 @@ index 17ffe48..ec9b064 100644
  
          boolean hasPermissions = true;
          for (String permission : permissions) {
-@@ -1010,9 +1056,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -1010,9 +1052,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
          return hasPermissions;
      }
  
