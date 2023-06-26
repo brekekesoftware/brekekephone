@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
-index 17ffe48..0193e94 100644
+index 17ffe48..6f33bfa 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 @@ -49,6 +49,7 @@ import android.telecom.PhoneAccountHandle;
@@ -170,11 +170,10 @@ index 17ffe48..0193e94 100644
 -    private void registerPhoneAccount(Context appContext) {
 -        if (!isConnectionServiceAvailable()) {
 -            Log.w(TAG, "[RNCallKeepModule] registerPhoneAccount ignored due to no ConnectionService");
--            return;
 +    @ReactMethod
-+    public static void registerPhoneAccount(Context appContext) {
++    public static void registerPhoneAccount(Context context) {
 +        if (telephonyManager != null) {
-+          return;
+             return;
          }
  
 -        this.initializeTelecomManager();
@@ -187,24 +186,26 @@ index 17ffe48..0193e94 100644
          }
 -        String appName = this.getApplicationName(context);
 -
-+        initializeTelecomManager(appContext);
-+        String appName = getApplicationName(appContext);
-+        Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount]::"+ appContext.getApplicationContext().toString());
++        initializeTelecomManager(context);
++        String appName = getApplicationName(context);
++        Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount]::"+ context.getApplicationContext().toString());
          PhoneAccount.Builder builder = new PhoneAccount.Builder(handle, appName);
 -        if (isSelfManaged()) {
 +        if (_settings == null || isSelfManaged()) {
              builder.setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED);
          }
          else {
-@@ -966,7 +1008,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+@@ -959,8 +1001,8 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         }
  
-         PhoneAccount account = builder.build();
+         if (_settings != null && _settings.hasKey("imageName")) {
+-            int identifier = appContext.getResources().getIdentifier(_settings.getString("imageName"), "drawable", appContext.getPackageName());
+-            Icon icon = Icon.createWithResource(appContext, identifier);
++            int identifier = context.getResources().getIdentifier(_settings.getString("imageName"), "drawable", context.getPackageName());
++            Icon icon = Icon.createWithResource(context, identifier);
+             builder.setIcon(icon);
+         }
  
--        telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-+        telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
- 
-         telecomManager.registerPhoneAccount(account);
-     }
 @@ -989,7 +1031,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
          }
      }
