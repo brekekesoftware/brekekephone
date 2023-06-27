@@ -2,7 +2,7 @@ import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
-import { ItemPhonebook } from '../brekekejs'
+import { ItemPhonebook, PbxBook } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
@@ -135,7 +135,7 @@ class ContactStore {
     this.phoneBooks = Object.values(this.phoneBooksMap)
   }
 
-  // Create/update contact
+  // create/update contact
   @observable showPickerItem: PickerItemOption | null = null
 
   @action openPicker = (picker: PickerItemOption) => {
@@ -281,7 +281,7 @@ class ContactStore {
   }
 
   @observable phoneBooks: Phonebook[] = []
-  @observable pbxBooks: brekekejs.PbxBook[] = []
+  @observable pbxBooks: PbxBook[] = []
 
   @action loadPbxBoook = () => {
     this.pbxBooks = []

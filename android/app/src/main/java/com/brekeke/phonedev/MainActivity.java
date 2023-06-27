@@ -9,11 +9,10 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import io.wazo.callkeep.RNCallKeepModule;
-import org.json.JSONObject;
 
 public class MainActivity extends ReactActivity {
   // ==========================================================================
-  // Set/unset BrekekeUtils.main
+  // set/unset BrekekeUtils.main
   @Override
   protected void onStart() {
     BrekekeUtils.main = this;
@@ -28,34 +27,22 @@ public class MainActivity extends ReactActivity {
   }
 
   // ==========================================================================
-  // Check if notification pressed
+  // check if notification pressed
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Bundle extras = getIntent().getExtras();
-    if (extras != null) {
-      JSONObject data = new JSONObject();
-      for (String key : extras.keySet()) {
-        try {
-          data.put(key, extras.get(key));
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-      BrekekeUtils.emit("onNotificationPress", data.toString());
-    }
   }
 
   // ==========================================================================
-  // Stop ringtone on any press and custom back btn handler
+  // stop ringtone on any press and custom back btn handler
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
     int a = e.getAction();
     BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=" + k + " a=" + a);
-    // Stop ringtone if any of the hardware key press
+    // stop ringtone if any of the hardware key press
     BrekekeUtils.staticStopRingtone();
-    // Handle back btn press, remember that this event fire twice, down/up
+    // handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
         BrekekeUtils.emit("onBackPressed", "");
@@ -66,7 +53,7 @@ public class MainActivity extends ReactActivity {
   }
 
   // ==========================================================================
-  // React Native config
+  // react-native config
   @Override
   protected String getMainComponentName() {
     return "BrekekePhone";

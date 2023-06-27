@@ -141,7 +141,7 @@ export const AccountSignInItem: FC<{
           onMoreIcon={mdiDotsHorizontal}
           onNext={() => {
             getAuthStore().signIn(a)
-            // Try to end callkeep if it's stuck
+            // try to end callkeep if it's stuck
             if (Platform.OS !== 'web') {
               getCallStore().endCallKeepAllCalls()
             }

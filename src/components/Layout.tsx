@@ -1,6 +1,6 @@
 import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC, useState } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -67,14 +67,15 @@ export const Layout: FC<
     subMenu: string
     title: string
     transparent: boolean
-    isTab?: boolean
-    isShowToastMessage?: boolean
+    isTab: boolean
+    isShowToastMessage: boolean
     incomingMessage: string
+    children: ReactNode
   }>
 > = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
-  const props = { ...originalProps } // Clone so it can be mutated
+  const props = { ...originalProps } // clone so it can be mutated
 
   const Container = props.noScroll ? View : ScrollView
   const containerProps = Object.entries(props).reduce((m, [k, vk]) => {
@@ -109,7 +110,7 @@ export const Layout: FC<
   }
 
   if (props.compact) {
-    // Fix android header transparent box shadow
+    // fix android header transparent box shadow
     props.transparent = false
   }
 

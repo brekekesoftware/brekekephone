@@ -102,7 +102,7 @@ export class ChatGroupInvite extends Component {
       inviter: inviterName || inviter,
     }
   }
-  // TODO: rejected but existed in chat home => error when click.
+  // TODO: rejected but existed in chat home => error when click
   reject = (group: string) => {
     uc.leaveChatGroup(group)
       .then(this.onRejectSuccess)

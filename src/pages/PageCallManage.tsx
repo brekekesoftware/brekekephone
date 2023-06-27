@@ -56,7 +56,7 @@ const height = Dimensions.get('window').height
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
-    top: 10, // Header compact height
+    top: 10, // header compact height
     right: 10,
     zIndex: 100,
   },
@@ -68,7 +68,7 @@ const css = StyleSheet.create({
   },
   Video: {
     position: 'absolute',
-    top: 40, // Header compact height
+    top: 40, // header compact height
     bottom: 0,
     left: 0,
     right: 0,
@@ -203,8 +203,8 @@ const css = StyleSheet.create({
   },
 })
 
-// Render all the calls in App.tsx
-// The avatars will be kept even if we navigate between views
+// render all the calls in App.tsx
+// the avatars will be kept even if we navigate between views
 @observer
 export class RenderAllCalls extends Component {
   prevCallsLength = getCallStore().calls.length
@@ -289,9 +289,9 @@ class PageCallManage extends Component<{
       })
       return
     }
-    // The PN may come slower than SIP web socket
-    // We check if PN screen exists here in 5 seconds
-    // Must get callkeepUuid from object since it may be assigned lately
+    // the PN may come slower than SIP web socket
+    // we check if PN screen exists here in 5 seconds
+    // must get callkeepUuid from object since it may be assigned lately
     for (let i = 0; i < 5; i++) {
       const uuid = this.props.call.callkeepUuid
       if (!uuid) {
@@ -395,8 +395,8 @@ class PageCallManage extends Component<{
   }
   private renderCall = () => {
     const { call: c } = this.props
-    // Render PageCallTransferAttend as a layer instead
-    // So switching will not cause the avatar to reload
+    // render PageCallTransferAttend as a layer instead
+    // so switching will not cause the avatar to reload
     const renderTransferring = () => (
       <View style={css.LoadingFullScreen}>
         <PageCallTransferAttend />

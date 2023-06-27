@@ -1,4 +1,3 @@
-import '../brekekejs/jsonrpc'
 import '../brekekejs/webrtcclient'
 
 import EventEmitter from 'eventemitter3'

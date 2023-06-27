@@ -95,7 +95,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public JSONObject callConfig;
 
   // ==========================================================================
-  // Activity lifecycles
+  // activity lifecycles
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -121,7 +121,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       RNCallKeepModule.staticEndCall(uuid, this);
       return;
     }
-    // Just to make sure we'll use interval here
+    // just to make sure we'll use interval here
     BrekekeUtils.intervalCheckRejectCall(uuid);
 
     getWindow()
@@ -345,21 +345,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       DisplayMetrics displayMetrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
       int height = (int) (displayMetrics.heightPixels * 4 / 10);
-      // CardAvatar Layout
+      // layout for vCardAvatar
       vCardAvatar.getLayoutParams().height = height;
       vCardAvatar.getLayoutParams().width = height;
       GradientDrawable shape = new GradientDrawable();
       shape.setCornerRadius(0);
       vCardAvatar.setBackground(shape);
       vCardAvatar.setBackgroundColor(Color.WHITE);
-      // TextIncomingCall margin
+      // margin for txtIncomingCall
       RelativeLayout.LayoutParams params =
           new RelativeLayout.LayoutParams(
               RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
       params.setMargins(0, (int) (height * 1.5), 0, 0);
       txtIncomingCall.setLayoutParams(params);
     }
-    // Handle avatar for incomming call
+    // handle avatar for incomming call
     if (avatar == null || avatar.isEmpty()) {
       vCardAvatar.getLayoutParams().height = 0;
     } else if (!BrekekeUtils.isImageUrl(avatar)) {
@@ -481,7 +481,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.emit("switchCamera", uuid);
   }
 
-  // Show/hide call manage controls in video call
+  // show/hide call manage controls in video call
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
   public boolean isAvatarTalkingLoaded = false;
@@ -671,7 +671,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnUnlockClick(View v) {
-    // Already invoked in onKeyguardDismissSucceeded
+    // already invoked in onKeyguardDismissSucceeded
     updateBtnUnlockLabel();
     int n =
         BrekekeUtils.jsCallsSize > BrekekeUtils.activitiesSize
@@ -946,15 +946,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // Stop ringtone on any press and custom back btn handler
+  // stop ringtone on any press and custom back btn handler
   @Override
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
     int a = e.getAction();
     BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
-    // Stop ringtone if any of the hardware key press
+    // stop ringtone if any of the hardware key press
     BrekekeUtils.staticStopRingtone();
-    // Handle back btn press, remember that this event fire twice, down/up
+    // handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
         if (BrekekeUtils.isLocked()) {
@@ -969,7 +969,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // Timer to count talking time
+  // timer to count talking time
   public Timer timer;
   public TimerTask timerTask;
 
@@ -1007,7 +1007,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   // ==========================================================================
-  // Private utils
+  // private utils
   public void debug(String message) {
     BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
   }

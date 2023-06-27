@@ -2,7 +2,6 @@ const path = require('path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const babel = require('./.babelrc')
-
 const nullAlias = path.join(__dirname, './src/polyfill/null.ts')
 
 module.exports = {
@@ -34,11 +33,13 @@ module.exports = {
         '.ts',
         '.tsx',
       ]
-      c.resolve.mainFields = [
-        // disable esm
-        'browser',
-        'main',
-      ]
+      // allow import outside of src
+      c.resolve.plugins = c.resolve.plugins.filter(
+        p => p.constructor.name !== 'ModuleScopePlugin',
+      )
+      // disable esm mjs
+      disableEsm(c)
+      // extra plugins
       c.plugins.push(
         new CircularDependencyPlugin({
           exclude: /node_modules/,
@@ -50,4 +51,35 @@ module.exports = {
   typescript: {
     enableTypeChecking: false,
   },
+}
+
+const disableEsm = c => {
+  c.resolve.mainFields = [
+    // do not use esm "exports"
+    'browser',
+    'main',
+  ]
+  // get rules from webpack with .test regex
+  const rules = []
+  const pushRule = r => {
+    if (r.test instanceof RegExp) {
+      rules.push(r)
+    }
+    if (Array.isArray(r.oneOf)) {
+      r.oneOf.forEach(pushRule)
+    }
+    if (Array.isArray(r.rules)) {
+      r.rules.forEach(pushRule)
+    }
+  }
+  c.module.rules.forEach(pushRule)
+  // modify the .test regex of those rules to remove esm extensions
+  rules.forEach(r => {
+    const [_, source, flags] = /\/(.*)\/(.*)/.exec(r.test.toString())
+    const newSource = ['mjs'].reduce(
+      (s, e) => s.replace(`|${e}`, '').replace(`${e}|`, '').replace(e, ''),
+      source,
+    )
+    r.test = newSource ? new RegExp(newSource, flags) : /.^/
+  })
 }

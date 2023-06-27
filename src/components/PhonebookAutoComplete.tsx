@@ -27,7 +27,7 @@ const css = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   autocompleteContainer: {
-    // Hack required to make the autocomplete
+    // hack required to make the autocomplete
     // work on Andrdoid
     flex: 1,
     left: 0,

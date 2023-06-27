@@ -1,4 +1,4 @@
-// Main entry for the create-react-app web bundle
+// main entry for the create-react-app web bundle
 
 import qs from 'qs'
 import { ReactElement, useState } from 'react'

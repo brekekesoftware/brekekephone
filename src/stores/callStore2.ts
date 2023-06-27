@@ -75,19 +75,19 @@ export class CallStore {
     }
     this.setAutoEndCallKeepTimer(uuid, n)
     checkAndRemovePnTokenViaSip(n)
-    // Find the current incoming call which is not callkeep
-    // Assign the data and config
+    // find the current incoming call which is not callkeep
+    // assign the data and config
     const c = this.getCallKeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
     }
-    // Check if call is rejected already
+    // check if call is rejected already
     const rejected = this.isCallRejected({
       callkeepUuid: uuid,
       pnId: n.id,
     })
-    // Check if call is expired already
+    // check if call is expired already
     let expired = false
     const d = await accountStore.findDataByPn(n)
     const pnExpires = Number(d?.pnExpires) || 50000 // default to 50s
@@ -102,11 +102,11 @@ export class CallStore {
       this.endCallKeep(uuid)
       return
     }
-    // Auto reconnect if no activity
-    // This logic is about the case connection has dropped silently
-    // So even if sipState is `success` but the connection has dropped
-    // We just drop the connection no matter if it is alive or not
-    // Then construct a new connection to receive the call as quickly as possible
+    // auto reconnect if no activity
+    // this logic is about the case connection has dropped silently
+    // so even if sipState is `success` but the connection has dropped
+    // we just drop the connection no matter if it is alive or not
+    // then construct a new connection to receive the call as quickly as possible
     if (now - this.recentCallActivityAt > 3000) {
       const as = getAuthStore()
       if (as.sipState === 'connecting') {
@@ -161,10 +161,10 @@ export class CallStore {
     this.updateCurrentCallDebounce()
     const oc = this.calls.find(c => c.id === this.ongoingCallId)
     // TODO:
-    // Should not modify state in getter
-    // This will throw an error in mobx-react
-    // Currently we forked mobx-react to temporary get over this error
-    // In the future we need to rewrite and refactor the whole stores/actions
+    // should not modify state in getter
+    // this will throw an error in mobx-react
+    // currently we forked mobx-react to temporary get over this error
+    // in the future we need to rewrite and refactor the whole stores/actions
     if (oc) {
       const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
       if (!oc.answered && (!oc.partyImageUrl || !oc.partyImageUrl?.length)) {
@@ -218,7 +218,7 @@ export class CallStore {
     ) {
       this.incallManagerStarted = true
       IncallManager.start()
-      // Reset loud speaker on each call
+      // reset loud speaker on each call
       IncallManager.setForceSpeakerphoneOn(false)
     }
   }
@@ -234,7 +234,7 @@ export class CallStore {
     const e = this.calls.find(c => c.id === p.id)
     if (e) {
       if (p.callConfig) {
-        // Merge new config with current config instead of replacing
+        // merge new config with current config instead of replacing
         Object.assign(e.callConfig, p.callConfig)
       }
       delete p.callConfig
@@ -291,25 +291,25 @@ export class CallStore {
       return
     }
     //
-    // Construct a new call
+    // construct a new call
     const c = new Call(this)
     Object.assign(c, p)
     this.calls = [c, ...this.calls]
     this.displayingCallId = c.id // do not set ongoing call
-    // Update java and embed api
+    // update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
       embedApi.emit('call', c)
     }
-    // Desktop notification
+    // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
         c.getDisplayName() + ' ' + intl`Incoming call`,
         c.getDisplayName(),
       )
     }
-    // Get and check callkeep if pending incoming call
+    // get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
       return
     }
@@ -350,18 +350,18 @@ export class CallStore {
     c.callkeepAlreadyRejected = true
 
     this.calls = this.calls.filter(c0 => c0 !== c)
-    // Set number of total calls in our custom java incoming call module
+    // set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
-    // When if this is a outgoing call, try to insert a call history to uc chat
+    // when if this is a outgoing call, try to insert a call history to uc chat
     if (getAuthStore().ucState === 'success' && c.answeredAt && !c.incoming) {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
     }
-    // Reset loud speaker if there's no call left
+    // reset loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       IncallManager.setForceSpeakerphoneOn(false)
     }
-    // Stop android incall manager if there's no call left
+    // stop android incall manager if there's no call left
     if (
       Platform.OS === 'android' &&
       this.incallManagerStarted &&
@@ -424,7 +424,7 @@ export class CallStore {
 
     let reconnectCalled = false
     try {
-      // Try to call pbx first to see if there's any error with the network
+      // try to call pbx first to see if there's any error with the network
       // TODO
       void pbx
       sipCreateSession()
@@ -433,8 +433,8 @@ export class CallStore {
       reconnectAndWaitSip().then(sipCreateSession)
     }
     Nav().goToPageCallManage({ isOutgoingCall: true })
-    // Start call logic in RNCallKeep
-    // Adding this will help the outgoing call automatically hold on GSM call
+    // start call logic in RNCallKeep
+    // adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
@@ -443,13 +443,13 @@ export class CallStore {
       }
       this.setAutoEndCallKeepTimer(uuid)
     }
-    // Check for each 0.5s: auto update currentCallId
-    // The call will be emitted from sip, we'll use interval here to set it
+    // check for each 0.5s: auto update currentCallId
+    // the call will be emitted from sip, we'll use interval here to set it
     runInAction(() => {
       this.setCurrentCallId('')
     })
     const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
-    // Also if after 3s there's no call in store, reconnect
+    // also if after 3s there's no call in store, reconnect
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
     this.startCallIntervalId = BackgroundTimer.setInterval(
@@ -464,7 +464,7 @@ export class CallStore {
           return
         }
         const diff = Date.now() - this.startCallIntervalAt
-        // Add a guard of 10s to clear the interval
+        // add a guard of 10s to clear the interval
         if (diff > 10000) {
           if (uuid) {
             this.endCallKeep(uuid)
@@ -472,8 +472,8 @@ export class CallStore {
           this.clearStartCallIntervalTimer()
           return
         }
-        // And if after 3s there's no call in store, reconnect
-        // It's likely a connection issue occurred
+        // and if after 3s there's no call in store, reconnect
+        // it's likely a connection issue occurred
         if (!curr && !reconnectCalled && diff > 3000) {
           reconnectCalled = true
           reconnectAndWaitSip().then(sipCreateSession)
@@ -486,7 +486,7 @@ export class CallStore {
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
   private updateBackgroundCalls = () => {
-    // Auto hold background calls
+    // auto hold background calls
     if (!this.ongoingCallId) {
       return
     }
@@ -524,7 +524,7 @@ export class CallStore {
     maxWait: 1000,
   })
 
-  // CallKeep + PN data
+  // callkeep + pn data
   @observable callkeepMap: {
     [uuid: string]: {
       uuid: string
@@ -548,7 +548,7 @@ export class CallStore {
     }
   }
 
-  // Logic to end call if timeout of 20s
+  // logic to end call if timeout of 20s
   private autoEndCallKeepTimerId = 0
   private clearAutoEndCallKeepTimer = () => {
     if (Platform.OS === 'web' || !this.autoEndCallKeepTimerId) {
@@ -641,8 +641,8 @@ export class CallStore {
       })
   }
 
-  // Move from callkeep.ts to avoid circular dependencies
-  // Logic to show incoming call ui in case of already have a running call in RNCallKeep android
+  // move from callkeep.ts to avoid circular dependencies
+  // logic to show incoming call ui in case of already have a running call in RNCallKeep android
   private alreadyShowIncomingCallUi: { [k: string]: boolean } = {}
   showIncomingCallUi = (e: TEvent & { pnData: ParsedPn }) => {
     const uuid = e.callUUID.toUpperCase()
@@ -661,8 +661,8 @@ export class CallStore {
     this.onCallKeepDidDisplayIncomingCall(uuid, e.pnData)
   }
 
-  // Actions map in case of call is not available at the time receive the action
-  // This map wont be deleted if the callkeep end
+  // actions map in case of call is not available at the time receive the action
+  // this map wont be deleted if the callkeep end
   @observable callkeepActionMap: {
     [uuidOrPnId: string]: TCallKeepAction
   } = {}
@@ -697,7 +697,7 @@ export class CallStore {
   }
 
   getCallInNotify = () => {
-    // Do not display our callbar if already show callkeep
+    // do not display our callbar if already show callkeep
     return this.calls.find(_ => {
       const k = this.callkeepMap[_.callkeepUuid]
       return (
@@ -705,13 +705,13 @@ export class CallStore {
         !_.answered &&
         (!k ||
           k.hasAction ||
-          // Trigger timerStore.now observer at last
+          // trigger timerStore.now observer at last
           timerStore.now - _.createdAt > 1000)
       )
     })
   }
   shouldRingInNotify = (uuid?: string) => {
-    // Disable ringtone when enable PN
+    // disable ringtone when enable PN
     if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return false
     }
@@ -720,11 +720,11 @@ export class CallStore {
       return true
     }
 
-    // Do not ring on background
+    // do not ring on background
     if (RnAppState.currentState !== 'active') {
       return false
     }
-    // Do not ring if has an ongoing answered call
+    // do not ring if has an ongoing answered call
     if (this.calls.some(_ => _.answered)) {
       return false
     }
@@ -741,7 +741,7 @@ export class CallStore {
     return true
   }
 
-  // To be used in sip.phone._ua.on('newNotify')
+  // to be used in sip.phone._ua.on('newNotify')
   onSipUaCancel = (n?: CancelRecentPn) => {
     if (!n?.pnId) {
       return
@@ -761,9 +761,9 @@ export class CallStore {
       return
     }
     BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
-    // If it is locked right after blur 300ms
+    // if it is locked right after blur 300ms
     //    we assume it was put in background because of lock
-    // No need to remove listener since this is singleton without cleanup for now
+    // no need to remove listener since this is singleton without cleanup for now
     AppState.addEventListener('change', currentState => {
       BrekekeUtils.setIsAppActive(currentState === 'active', false)
       if (currentState === 'active') {
@@ -785,7 +785,7 @@ export class CallStore {
     delete this.parkNumbers[parkNumber]
   }
 
-  // Some other fields
+  // some other fields
   // TODO move them somewhere else
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
@@ -798,7 +798,7 @@ export class CallStore {
   @action setNewVoicemailCount = (n: number) => {
     this.newVoicemailCount = n
   }
-  // Style in CallVideosUI to save the previous video position
+  // style in CallVideosUI to save the previous video position
   @observable videoPositionT = 25
   @observable videoPositionL = 5
 }

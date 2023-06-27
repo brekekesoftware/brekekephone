@@ -7,9 +7,9 @@ import * as Rn from 'react-native'
 // @ts-ignore
 const R = Rn as { [k: string]: { [k: string]: unknown } }
 
-// Fix error in react-native-keyboard-spacer
+// fix error in react-native-keyboard-spacer
 R.ViewPropTypes = R.ViewPropTypes || {}
-// Fix error in react-native-hyperlink
+// fix error in react-native-hyperlink
 R.Text.propTypes = R.Text.propTypes || { style: PropTypes.any }
 
 // window.navigator.getUserMedia is not a function

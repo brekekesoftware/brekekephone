@@ -44,7 +44,7 @@
     // "paths": {},
     // "rootDirs": [],
     // "typeRoots": [],
-    "types": ["./**/*.d.ts"],
+    // "types": [],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     // "preserveSymlinks": true,

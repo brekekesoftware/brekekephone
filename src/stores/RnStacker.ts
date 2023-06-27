@@ -49,7 +49,7 @@ export class RnStackerStore {
     const f = RnKeyboard.waitKeyboard(
       action((stack: SyntheticEvent) => {
         getCallStore().inPageCallManage = undefined
-        // Prevent multiple stacks from opening at the same time
+        // prevent multiple stacks from opening at the same time
         if (this.stackAnimating) {
           return
         }
@@ -61,7 +61,7 @@ export class RnStackerStore {
         }
         //
         const stack0 = {} as RnStack
-        // It fails if the param is an event
+        // it fails if the param is an event
         //    or something not enumerable
         if (stack && !stack.nativeEvent) {
           try {

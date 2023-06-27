@@ -6,7 +6,7 @@ import { format } from 'util'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 
 const formatErrors = (...errs: Error[]) => {
-  // Normalize and fix circular json
+  // normalize and fix circular json
   let msgs = errs.map(e =>
     !e
       ? `${e}`
@@ -17,7 +17,7 @@ const formatErrors = (...errs: Error[]) => {
       : `${e}`,
   )
   let tpl = msgs.shift() || ''
-  // Remove %c on web from the debug lib
+  // remove %c on web from the debug lib
   if (Platform.OS === 'web') {
     const m: { [k: number]: boolean } = {}
     const regex = /%\w/g
@@ -32,19 +32,19 @@ const formatErrors = (...errs: Error[]) => {
     tpl = tpl.replace(/%c/g, '')
     msgs = msgs.filter((m0, i) => !m[i])
   }
-  // Apply format and remove whitespaces
+  // apply format and remove whitespaces
   let msg = format(tpl, ...msgs)
     .replace(/\s+/g, ' ')
     .trim()
-  // Remove stack trace and cleanup output from lib `debug` in jssip
+  // remove stack trace and cleanup output from lib `debug` in jssip
   msg = msg.replace(/((\s+@\s+)|( : \w+@index)|(\W\w*@http)).+/, '')
   msg = msg.replace(/ : Error at \w+\.log \(http.+/, '')
   msg = msg.replace(/^.+\[(trial|debug|log|info|warn|error)\]\s*/, '')
-  // SIP error emitter
+  // sip error emitter
   if (msg.indexOf('JsSIP:Transport reconnection attempt') >= 0) {
     sipErrorEmitter.emit('error', null)
   }
-  // RN 0.65 warning
+  // rn 0.65 warning
   if (msg.indexOf('`new NativeEventEmitter()` was called') >= 0) {
     return
   }
@@ -86,11 +86,11 @@ const captureConsoleOutput = () => {
         return v
       },
       set() {
-        // Prevent set to keep using our functions
+        // prevent set to keep using our functions
       },
     })
   })
-  // Write a log to console to note about this
+  // write a log to console to note about this
   console.info('captureConsoleOutput: console output is being captured!')
 }
 

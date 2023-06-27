@@ -108,7 +108,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
       if (reCalculatedLayoutDropdownTimeoutId.current) {
         clearConnectTimeoutId()
       }
-      // Must wrap in setTimeout to make sure the header view has completed render
+      // must wrap in setTimeout to make sure the header view has completed render
       reCalculatedLayoutDropdownTimeoutId.current = BackgroundTimer.setTimeout(
         () => {
           reCalculatedLayoutDropdownTimeoutId.current = 0
@@ -120,7 +120,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                   top: Platform.OS === 'ios' ? py : py + h,
                   right: 20,
                 })
-                // After get all section list dropdown position
+                // after get all section list dropdown position
                 if (index === sectionHeaderRefs.current.length - 1) {
                   RnDropdown.setPositions(listDropdownPosition)
                   RnDropdown.setHeaderHeight(h)

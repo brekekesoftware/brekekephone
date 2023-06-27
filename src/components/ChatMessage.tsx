@@ -30,10 +30,11 @@ const css = StyleSheet.create({
     overflow: 'hidden',
     ...Platform.select({
       web: {
-        maxWidth: 'calc(100vw - 60px)',
+        maxWidth: 'calc(100vw - 60px)' as any,
       },
       default: {
-        maxWidth: Dimensions.get('screen').width - 60, // 50px of avatar and 10px of padding
+        // 50px of avatar and 10px of padding
+        maxWidth: Dimensions.get('screen').width - 60,
       },
     }),
   },
@@ -82,7 +83,7 @@ const css = StyleSheet.create({
     marginLeft: 5,
     ...Platform.select({
       web: {
-        width: 'calc(100vw - 119px)',
+        width: 'calc(100vw - 119px)' as any,
       },
       default: {
         width: Dimensions.get('screen').width - 119,

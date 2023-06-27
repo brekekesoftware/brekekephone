@@ -37,11 +37,11 @@ public class HeartbeatMonitor {
 
       self.logger.log("Starting heartbeat monitor")
 
-      // Set the lastCheckinTime to now to ensure a clean slate.
+      // set the lastCheckinTime to now to ensure a clean slate
       self.lastCheckinTime = .now()
 
-      // Observe Heartbeat messages from the session's messagePublisher and update the
-      // lastCheckinTime.
+      // observe Heartbeat messages from the session's messagePublisher
+      // and update the lastCheckinTime
       session.messagePublisher
         .compactMap { [weak self] message -> DispatchTime? in
           guard let heartbeat = message as? Heartbeat
@@ -63,9 +63,8 @@ public class HeartbeatMonitor {
     }
   }
 
-  // Compare the current time to the lastCheckinTime and disconnect the session if the
-  // difference between now
-  // and lastCheckinTime exceeds the interval.
+  // compare the current time to the lastCheckinTime and disconnect the session
+  // if the difference between now and lastCheckinTime exceeds the interval
   public func evaluate() {
     dispatchQueue.async { [weak self] in
       guard let self = self, self.isRunning

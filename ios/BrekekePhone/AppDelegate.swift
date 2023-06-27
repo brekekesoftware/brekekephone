@@ -53,7 +53,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     #endif
   }
 
-  // Deep links
+  // deep links
   private func application(
     application: UIApplication!,
     openURL url: NSURL!,
@@ -65,7 +65,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                    options: options as! [UIApplication.OpenURLOptionsKey: Any])
   }
 
-  // Universal links
+  // universal links
   private func application(
     application: UIApplication!,
     continueUserActivity userActivity: NSUserActivity!,
@@ -112,7 +112,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       .didReceiveIncomingPush(with: payload,
                               forType: (type as NSString) as String,
                               callkeepUuid: uuid)
-    // RNCallKeep
+    // config RNCallKeep
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload.dictionaryPayload,
@@ -154,7 +154,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNCPushNotificationIOS.didReceiveRemoteNotification(
       userInfo as! [AnyHashable: Any],
       fetchCompletionHandler: { (_: UIBackgroundFetchResult) in
-        // Empty handler to fix error:
+        // empty handler to fix error:
         // "There is no completion handler with notification id"
       }
     )
@@ -187,7 +187,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler()
   }
 
-  // Manage notifications while app is in the foreground
+  // manage notifications while app is in the foreground
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
     willPresent notification: UNNotification,
@@ -199,12 +199,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNCPushNotificationIOS.didReceiveRemoteNotification(
       userInfo as? [AnyHashable: Any],
       fetchCompletionHandler: { _ in UIBackgroundFetchResult.self
-        // Empty handler to fix error:
+        // empty handler to fix error:
         // "There is no completion handler with notification id"
       }
     )
-    // rolback with old config: completionHandler(UNAuthorizationOptionSound |
-    // UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
     // 'alert' was deprecated in iOS 14.0 instead by banner
     completionHandler([.sound, .badge, .banner])
   }

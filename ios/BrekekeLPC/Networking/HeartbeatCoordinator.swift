@@ -122,7 +122,7 @@ public class HeartbeatCoordinator {
 
         self.heartbeat(after: self.interval)
       }, receiveValue: { _ in
-        // Do nothing with values; this sink only listens for completion.
+        // do nothing with values; this sink only listens for completion
       })
 
     isRunning = true

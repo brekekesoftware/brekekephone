@@ -146,7 +146,7 @@
   - Fix bug: should assign pal params before sign in
   - Fix bug: should parse pal params correctly stripe out 'webphone.pal.param.'
   - Fix bug: should move the `emit('pal')` to the bottom
-  - Add more fields to the account option for login: phoneIndex, ucDisplayOfflineUsers, pushNotification. See the example for more detail on typing and default value. The other 2 options: uc, parks are already included in the previous version.
+  - Add more fields to the account option for login: phoneIndex, ucDisplayOfflineUsers, pushNotification. See the example for more detail on typing and default value. The other 2 options: uc, parks are already included in the previous version
 
 #### 2.11.3
 

@@ -104,7 +104,7 @@ const RnAlertR = ({
     }
   } else if (error) {
     const { err, message, unexpectedErr, ...rest } = error
-    const errMessage = unexpectedErr?.message || err?.message || err
+    const errMessage = `${unexpectedErr?.message || err?.message || err}`
     props = {
       title: intl`Error`,
       message: (

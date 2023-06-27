@@ -57,8 +57,8 @@ export class AuthStore {
     return (
       this.getCurrentAccount() &&
       this.pbxState !== 'waiting' &&
-      // Do not auth pbx if sip token is provided in case of PN
-      // Wait until sip login success or failure
+      // do not auth pbx if sip token is provided in case of PN
+      // wait until sip login success or failure
       (!this.sipPn.sipAuth ||
         this.sipState === 'success' ||
         this.sipState === 'failure') &&
@@ -166,7 +166,7 @@ export class AuthStore {
     try {
       getCallStore().calls.forEach(c => c.hangupWithUnhold())
       if (Platform.OS !== 'web') {
-        // Try to end callkeep if it's stuck
+        // try to end callkeep if it's stuck
         getCallStore().endCallKeepAllCalls()
       }
       this.resetState()
@@ -201,20 +201,20 @@ export class AuthStore {
   @action reconnectPbx = () => {
     this.resetFailureState()
     this.pbxState = 'stopped'
-    // Mobx observe not call automatically?
+    // mobx observe not call automatically?
     authPBX.authWithCheck()
   }
   @action reconnectSip = () => {
     console.log('SIP PN debug: set sipState stopped reconnect')
     this.resetFailureState()
     this.sipState = 'stopped'
-    // Mobx observe not call automatically?
+    // mobx observe not call automatically?
     authSIP.authWithCheck()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
-    // Mobx observe not call automatically?
+    // mobx observe not call automatically?
     authUC.authWithCheck()
   }
 
@@ -332,7 +332,7 @@ export class AuthStore {
   clearSignInByNotification = debounce(
     () => {
       // clearSignInByNotification will activate UC login
-      // We will only allow UC login when the app is active
+      // we will only allow UC login when the app is active
       if (AppState.currentState !== 'active') {
         BackgroundTimer.setTimeout(this.clearSignInByNotification, 17)
       } else {
@@ -351,13 +351,13 @@ export class AuthStore {
     )
     this.sipPn = n.sipPn
     this.resetFailureState()
-    // Find account for the notification target
+    // find account for the notification target
     const a = await accountStore.findByPn(n)
     if (!a?.id) {
       console.log('SIP PN debug: can not find account from notification')
       return false
     }
-    // Use isSignInByNotification to disable UC auto sign in for a while
+    // use isSignInByNotification to disable UC auto sign in for a while
     if (n.isCall) {
       this.isSignInByNotification = true
       this.clearSignInByNotification()

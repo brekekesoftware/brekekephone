@@ -50,7 +50,7 @@ export const useForm = () => {
       const validator = rule ? new Validator({ [k]: v }, { [k]: rule }) : null
       $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k))
     },
-    // Submit function to use outside of the hook
+    // submit function to use outside of the hook
     submit: () => {
       const { $: $parent, fields, k, onValidSubmit } = $.props
       const rules = arrToMap(
@@ -80,7 +80,7 @@ export const useForm = () => {
         arrToMap(fields, (f: FormField) => f.name),
       )
     },
-    // Form component
+    // form component
     render: observer((props: object) => {
       $.props = Object.assign($.props, props)
       const { $: $parent, fields, k } = $.props
@@ -102,16 +102,16 @@ export const useForm = () => {
                       : undefined
                   }
                   onBlur={() => $.onFieldBlur(f.name)}
-                  // Mark this field dirty
+                  // mark this field dirty
                   onValueChange={flow(
                     [
-                      // Add change handler to trigger validate
+                      // add change handler to trigger validate
                       // TODO update all flows to regular funcs
                       (v: string) => {
                         $.onFieldChange(f.name, v)
                         return v
                       },
-                      // Default change handler from store
+                      // default change handler from store
                       f.onValueChange === undefined
                         ? !f.disabled
                           ? (v: string) => $parent.set(k + '.' + f.name, v)
@@ -120,9 +120,9 @@ export const useForm = () => {
                     ].filter(_ => _),
                   )}
                   onFocus={() => $.onFocus(f.name)}
-                  // Error
+                  // error
                   value={
-                    // Default value from store
+                    // default value from store
                     f.value === undefined
                       ? get($parent, k + '.' + f.name)
                       : f.value

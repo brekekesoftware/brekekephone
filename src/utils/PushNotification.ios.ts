@@ -27,7 +27,7 @@ const onNotification = async (
   isLocal = false,
 ) => {
   const withGetData: unknown = n0?.getData ? n0.getData() : n0
-  // Custom fork of react-native-voip-push-notification to get callkeepUuid
+  // custom fork of react-native-voip-push-notification to get callkeepUuid
   const withDictionaryPayload = withGetData as {
     dictionaryPayload: {
       [k: string]: unknown
@@ -47,7 +47,7 @@ const onNotification = async (
     return
   }
   // TODO ios present local PN?
-  // Modify server to set background mode "content only"?
+  // modify server to set background mode "content only"?
   // toXPN
 }
 
@@ -64,11 +64,11 @@ export const PushNotification = {
           return
         }
         e.forEach(({ name, data }) => {
-          if (name === Voip.RNVoipPushRemoteNotificationsRegisteredEvent) {
+          if (name === 'RNVoipPushRemoteNotificationsRegisteredEvent') {
             if (typeof data === 'string') {
               onVoipToken(data)
             }
-          } else if (name === Voip.RNVoipPushRemoteNotificationReceivedEvent) {
+          } else if (name === 'RNVoipPushRemoteNotificationReceivedEvent') {
             onNotification(data, initApp)
           }
         })

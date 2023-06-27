@@ -72,7 +72,7 @@ export class Call {
     }
     this.answered = true
     this.store.setCurrentCallId(this.id)
-    // Hold other calls
+    // hold other calls
     this.store.calls
       .filter(c => c.id !== this.id && c.answered && !c.holding)
       .forEach(c => c.toggleHoldWithCheck())
@@ -111,7 +111,7 @@ export class Call {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
       updateCallKeep()
     }
-    // If it has callkeepUuid, which means: outgoing call / incoming PN call
+    // if it has callkeepUuid, which means: outgoing call / incoming PN call
     if (this.callkeepUuid) {
       if (this.incoming) {
         updateIncoming()
@@ -124,9 +124,9 @@ export class Call {
       updateOutgoing()
       return
     }
-    // If it doesnt have callkeepUuid, which means: incoming call without PN
-    // We'll treat them all as outgoing call in CallKeep
-    // We dont want to display incoming call here again
+    // if it doesnt have callkeepUuid, which means: incoming call without PN
+    // we'll treat them all as outgoing call in CallKeep
+    // we dont want to display incoming call here again
     if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
       return
     }
@@ -259,7 +259,7 @@ export class Call {
         ? intlDebug`Failed to unhold the call`
         : intlDebug`Failed to hold the call`
       RnAlert.error({ message, err })
-      // Already show error, considered it's handled
+      // already show error, considered it's handled
       return true
     }
     return false
@@ -296,7 +296,7 @@ export class Call {
   @action stopTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
-    // User cancel transfer and resume call -> unhold automatically from server side
+    // user cancel transfer and resume call -> unhold automatically from server side
     this.prevHoling = this.holding
     this.holding = false
     return pbx
@@ -343,10 +343,10 @@ export class Call {
   }
 }
 
-// Hack to fix no voice after unhold using toggle loud speaker
-// This issue happens on ios only, toggle loud speaker reset the audio route
-// The actual issue could be related to ios audio route
-// Related packages: callkeep, webrtc, incall-manager...
+// hack to fix no voice after unhold using toggle loud speaker
+// this issue happens on ios only, toggle loud speaker reset the audio route
+// the actual issue could be related to ios audio route
+// related packages: callkeep, webrtc, incall-manager...
 export const hackyToggleSpeaker = async () => {
   const c = getCallStore()
   IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)

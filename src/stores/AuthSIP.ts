@@ -166,6 +166,6 @@ class AuthSIP {
 
 export const authSIP = new AuthSIP()
 
-// Empty or expire after 90 seconds
+// empty or expire after 90 seconds
 const isSipPnExpired = (pn: Partial<SipPn>) =>
   !pn.sipAuthAt || Date.now() - pn.sipAuthAt > 90000

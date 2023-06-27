@@ -5,6 +5,9 @@
  * require jssip-0.4.2.js (optional)
  * require webrtc.js (optional)
  */
+
+import './jsonrpc'
+
 if (typeof Brekeke === 'undefined' || typeof Brekeke.net === 'undefined') {
   console.error('jsonrpc has not been loaded.')
 }

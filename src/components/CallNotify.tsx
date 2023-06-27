@@ -36,7 +36,7 @@ const css = StyleSheet.create({
 })
 
 @observer
-export class DidMountTimer extends Component {
+export class DidMountTimer extends Component<any> {
   private didMountTimer = 0
   @observable didMount = false
   componentDidMount() {
@@ -59,11 +59,11 @@ export class DidMountTimer extends Component {
 }
 
 export const CallNotify = observer(() => {
-  // Try trigger observer?
+  // try trigger observer?
   void Object.keys(getCallStore().callkeepMap)
   void getCallStore().calls.map(_ => _.callkeepUuid)
   const c = getCallStore().getCallInNotify()
-  // Do not show notify if in page call manage
+  // do not show notify if in page call manage
   if (getCallStore().inPageCallManage || !c) {
     return null
   }

@@ -73,7 +73,7 @@ export class PageCallKeypad extends Component {
                   min = min - 1
                 }
               }
-              // Update text to trigger render
+              // update text to trigger render
               const t = this.txt
               this.txt = t.substring(0, min) + v + t.substring(max)
               //

@@ -1,4 +1,3 @@
-import filesize from 'filesize'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
@@ -68,7 +67,7 @@ export class PageSettingsDebug extends Component {
               label={intl`OPEN DEBUG LOG`}
               onCreateBtnPress={debugStore.openLogFile}
               onTouchPress={debugStore.openLogFile}
-              value={filesize(debugStore.getLogSize(), { round: 0 })}
+              value={debugStore.getLogSizeStr()}
             />
 
             <Field hasMargin isGroup label={intl`UPDATE`} />

@@ -107,7 +107,8 @@ public class RequestResponseSession: NetworkSession {
     Bool,
     Swift.Error
   > {
-    Future { [weak self] (promise: @escaping Future<Bool, Swift.Error>.Promise) in
+    Future {
+      [weak self] (promise: @escaping Future<Bool, Swift.Error>.Promise) in
       guard let self = self
       else {
         promise(.failure(Error.unknown))

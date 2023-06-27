@@ -98,7 +98,7 @@ if (__DEV__ && Platform.OS !== 'web') {
   )
 }
 
-// Add polyfill
+// add polyfill
 Object.keys(Polyfill)
   .filter(k => typeof get(BrekekeUtils, k) !== 'function')
   .forEach(k => {

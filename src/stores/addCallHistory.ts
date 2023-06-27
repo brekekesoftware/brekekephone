@@ -1,7 +1,7 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import moment from 'moment'
 import { AppState, Platform } from 'react-native'
-import FCM from 'react-native-fcm'
+import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
@@ -104,22 +104,31 @@ const presentNotification = (c: {
   const title = intl`Missed call`
   const body = c.partyName || c.partyNumber
   if (Platform.OS === 'android') {
-    FCM.presentLocalNotification({
-      title,
+    Notifications.postLocalNotification({
+      payload: {
+        title,
+        body,
+        number: 0,
+        priority: 'high',
+        show_in_foreground: true,
+        local_notification: true,
+        wake_screen: false,
+        ongoing: false,
+        lights: true,
+        channel: 'default',
+        icon: 'ic_launcher',
+        id: `missedcall-${Date.now()}`,
+        pre_app_state: AppState.currentState,
+        my_custom_data: 'local_notification',
+        is_local_notification: 'local_notification',
+      },
+      identifier: new Date().toISOString(),
       body,
-      number: 0,
-      priority: 'high',
-      show_in_foreground: true,
-      local_notification: true,
-      wake_screen: false,
-      ongoing: false,
-      lights: true,
-      channel: 'default',
-      icon: 'ic_launcher',
-      id: `missedcall-${Date.now()}`,
-      pre_app_state: AppState.currentState,
-      my_custom_data: 'local_notification',
-      is_local_notification: 'local_notification',
+      title,
+      sound: '',
+      badge: 0,
+      type: '',
+      thread: '',
     })
   } else {
     PushNotificationIOS.getApplicationIconBadgeNumber(badge => {

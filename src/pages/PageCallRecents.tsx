@@ -24,7 +24,7 @@ export class PageCallRecents extends Component {
           PushNotification.resetBadgeNumber()
         }
       }
-      // Reset notification badge whenever go to this page
+      // reset notification badge whenever go to this page
       h()
       this.appStateSubscription = AppState.addEventListener('change', h)
     }
@@ -53,11 +53,11 @@ export class PageCallRecents extends Component {
       accountStore.findDataAsync(as.getCurrentAccount())
     }
     const calls = d?.recentCalls.filter(this.isMatchUser) || []
-    // Backward compatibility to remove invalid items from the previous versions
+    // backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>
         typeof c.created === 'string' &&
-        // HH:mm - MMM D
+        // format: HH:mm - MMM D
         ((c.created + '').length === 13 || (c.created + '').length === 14),
     )
     const today = moment().format('MMM D')
