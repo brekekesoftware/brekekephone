@@ -379,43 +379,6 @@ index f53c052..b8a0e24 100644
  
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
-diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
-index ee1a7fb..bf4841b 100644
---- a/node_modules/react-native-callkeep/index.d.ts
-+++ b/node_modules/react-native-callkeep/index.d.ts
-@@ -151,7 +151,7 @@ declare module 'react-native-callkeep' {
-       uuid: string,
-       displayName: string,
-       handle: string,
--      options?: object,
-+      iosOptions?: object,
-     ): void
- 
-     static checkPhoneAccountEnabled(): Promise<boolean>;
-diff --git a/node_modules/react-native-callkeep/index.js b/node_modules/react-native-callkeep/index.js
-index 9f1312b..bbfb4c4 100644
---- a/node_modules/react-native-callkeep/index.js
-+++ b/node_modules/react-native-callkeep/index.js
-@@ -269,18 +269,12 @@ class RNCallKeep {
-     RNCallKeepModule.setCurrentCallActive(callUUID);
-   };
- 
--  updateDisplay = (uuid, displayName, handle, options = null) => {
-+  updateDisplay = (uuid, displayName, handle, iosOptions = {}) => {
-     if (!isIOS) {
-       RNCallKeepModule.updateDisplay(uuid, displayName, handle);
-       return;
-     }
- 
--    let iosOptions = {};
--    if (options && options.ios) {
--      iosOptions = {
--        ...options.ios,
--      };
--    }
-     RNCallKeepModule.updateDisplay(uuid, displayName, handle, iosOptions);
-   };
- 
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 index e67c3cd..3a96810 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
