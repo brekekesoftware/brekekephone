@@ -3,7 +3,6 @@ import './callkeep'
 import { AppRegistry } from 'react-native'
 import {
   Notification,
-  NotificationCompletion,
   Notifications,
   Registered,
   RegistrationError,
@@ -56,17 +55,16 @@ export const PushNotification = {
         throw new Error("Don't have Permissions")
       }
 
-      await Notifications.registerRemoteNotifications()
+      Notifications.registerRemoteNotifications()
 
-      await Notifications.events().registerRemoteNotificationsRegistered(
-        (event: Registered) => {
-          onToken(event.deviceToken)
-        },
-      )
+      const events = Notifications.events()
+      events.registerRemoteNotificationsRegistered((e: Registered) => {
+        onToken(e.deviceToken)
+      })
 
-      Notifications.events().registerRemoteNotificationsRegistrationFailed(
-        (event: RegistrationError) => {
-          console.error('Failed to register  remote notification', event)
+      events.registerRemoteNotificationsRegistrationFailed(
+        (e: RegistrationError) => {
+          console.error('Failed to register  remote notification', e)
         },
       )
 
@@ -106,31 +104,29 @@ export const PushNotification = {
       })
 
       // handle received PN
-      Notifications.events().registerNotificationReceivedForeground(
-        (
-          notification: Notification,
-          completion: (response: NotificationCompletion) => void,
-        ) => {
-          onNotification(notification.payload, initApp)
-        },
-      )
-
-      Notifications.events().registerNotificationOpened(
-        (notification: Notification, completion: () => void, action: any) => {
-          const payload = notification.payload?.payload || notification?.payload
+      events.registerNotificationReceivedForeground(
+        (n: Notification, completion: Function) => {
+          const payload = n.payload?.payload || n.payload
           onNotification(payload, initApp)
         },
       )
 
-      Notifications.events().registerNotificationReceivedBackground(
-        (notification: Notification) => {
-          onNotification(notification.payload, initApp)
+      events.registerNotificationOpened(
+        (n: Notification, completion: Function, action: any) => {
+          const payload = n.payload?.payload || n.payload
+          onNotification(payload, initApp)
         },
       )
+
+      events.registerNotificationReceivedBackground((n: Notification) => {
+        const payload = n.payload?.payload || n.payload
+        onNotification(payload, initApp)
+      })
       // if the app was launched by a push notification
       // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
-        onNotification(n?.payload, initApp)
+        const payload = n?.payload?.payload || n?.payload
+        onNotification(payload, initApp)
       })
     } catch (err) {
       RnAlert.error({
