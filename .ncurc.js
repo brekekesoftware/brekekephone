@@ -3,8 +3,6 @@ module.exports = {
     // compatible with brekekejs
     'jssip',
     'react-native-webrtc',
-    // @typescript-eslint/parser
-    'typescript',
     // TODO
     'mobx',
     'mobx-react',

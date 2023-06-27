@@ -1,16 +1,14 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 
-import com.android.build.OutputFile
-
 react {
   /* Folders */
   //   The root of your project, i.e. where "package.json" lives. Default is '..'
   // root = file("../")
   //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
   // reactNativeDir = file("../node_modules/react-native")
-  //   The folder where the react-native Codegen package is. Default is ../node_modules/react-native-codegen
-  // codegenDir = file("../node_modules/react-native-codegen")
+  //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+  // codegenDir = file("../node_modules/@react-native/codegen")
   //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
   // cliFile = file("../node_modules/react-native/cli.js")
 
@@ -48,14 +46,8 @@ react {
   // hermesFlags = ["-O", "-output-source-map"]
 }
 
-def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 def jscFlavor = "org.webkit:android-jsc:+"
-
-def reactNativeArchitectures() {
-  def value = project.getProperties().get("reactNativeArchitectures")
-  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-}
 
 android {
   ndkVersion rootProject.ext.ndkVersion
@@ -69,15 +61,6 @@ android {
     multiDexEnabled true
     versionCode 212000
     versionName "2.12.0"
-  }
-
-  splits {
-    abi {
-      reset()
-      enable enableSeparateBuildPerCPUArchitecture
-      universalApk false // If true, also generate a universal APK
-      include (*reactNativeArchitectures())
-    }
   }
 
   signingConfigs {
@@ -98,17 +81,6 @@ android {
     }
   }
 
-  applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-      def versionCodes = ["x86":1,"x86_64":2,"armeabi-v7a":3,"arm64-v8a":4]
-      def abi = output.getFilter(OutputFile.ABI)
-      if (abi != null) {
-        output.versionCodeOverride =
-          defaultConfig.versionCode * 1000 + versionCodes.get(abi)
-      }
-    }
-  }
-
   lintOptions {
     checkReleaseBuilds false
     abortOnError false
@@ -117,7 +89,6 @@ android {
 
 dependencies {
   implementation("com.facebook.react:react-android")
-  implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
   implementation(jscFlavor)
 
   // react-native-fcm

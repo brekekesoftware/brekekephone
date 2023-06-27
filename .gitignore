@@ -51,6 +51,9 @@ local.properties
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
+# testing
+/coverage
+
 # node.js
 #
 node_modules/
@@ -67,7 +70,6 @@ package-lock.json
 .env.test.local
 .env.production.local
 .env
-coverage
 .husky/_
 .husky/.gitignore
 

@@ -2,6 +2,8 @@ clean:
 	yarn --check-files && \
 	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
 	cd ios && \
+	rm -rf Pods ~/Library/Caches/CocoaPods && \
+	pod deintegrate && pod setup && \
 	pod install --repo-update && \
 	cd .. && \
 	yarn jetify && \

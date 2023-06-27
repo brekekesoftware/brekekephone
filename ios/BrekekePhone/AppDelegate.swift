@@ -53,10 +53,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     #endif
   }
 
-  func concurrentRootEnabled() -> Bool {
-    return false
-  }
-
   // Deep links
   private func application(
     application: UIApplication!,
