@@ -37,13 +37,14 @@ module.exports = {
       c.resolve.plugins = c.resolve.plugins.filter(
         p => p.constructor.name !== 'ModuleScopePlugin',
       )
+      // disable esm mjs
+      disableEsm(c)
+      // extra plugins
       c.plugins.push(
         new CircularDependencyPlugin({
           exclude: /node_modules/,
         }),
       )
-      // disable esm mjs
-      disableEsm(c)
       return c
     },
   },
