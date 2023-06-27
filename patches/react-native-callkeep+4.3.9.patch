@@ -380,7 +380,7 @@ index f53c052..b8a0e24 100644
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..2477f8d 100644
+index e67c3cd..a3718bf 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -160,6 +160,7 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
@@ -391,18 +391,17 @@ index e67c3cd..2477f8d 100644
          [_delayedEvents addObject:dictionary];
      }
  }
-@@ -169,6 +170,10 @@ + (NSDictionary *) getSettings {
+@@ -169,6 +170,9 @@ + (NSDictionary *) getSettings {
  }
  
  + (void)initCallKitProvider {
 +#ifdef DEBUG
 +    NSLog(@"[RNCallKeep][initCallKitProvider]");
 +#endif
-+
      if (sharedProvider == nil) {
          NSDictionary *settings = [self getSettings];
          if (settings != nil) {
-@@ -201,14 +206,23 @@ + (void)setup:(NSDictionary *)options {
+@@ -201,14 +205,20 @@ + (void)setup:(NSDictionary *)options {
      NSLog(@"[RNCallKeep][setup] options = %@", options);
  #endif
      _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
@@ -411,20 +410,18 @@ index e67c3cd..2477f8d 100644
 -    [self setSettings: options];
 -
 -    [RNCallKeep initCallKitProvider];
+-
+-    self.callKeepProvider = sharedProvider;
+-    [self.callKeepProvider setDelegate:self queue:nil];
 +    if (self.callKeepCallController == nil) {
 +        self.callKeepCallController = [[CXCallController alloc] init];
 +    }
-+    // NSDictionary *previousSettingsStored = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"RNCallKeepSettings"];
-+//    [self setSettings: options];
 +    NSDictionary *previousSettingsStored = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"RNCallKeepSettings"];
 +    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
- 
--    self.callKeepProvider = sharedProvider;
--    [self.callKeepProvider setDelegate:self queue:nil];
 +    // Store settings in NSUserDefault
 +    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
 +    [[NSUserDefaults standardUserDefaults] synchronize];
-+    // compare config and re init callkit provider if there is delta
++    // Compare config and re init callkit provider if there is delta
 +    if (![previousSettingsStored isEqualToDictionary:settings]) {
 +        [RNCallKeep initCallKitProvider];
 +        self.callKeepProvider = sharedProvider;
@@ -433,22 +430,15 @@ index e67c3cd..2477f8d 100644
  }
  
  RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
-@@ -216,11 +230,13 @@ + (void)setup:(NSDictionary *)options {
- #ifdef DEBUG
+@@ -217,7 +227,6 @@ + (void)setup:(NSDictionary *)options {
      NSLog(@"[RNCallKeep][setSettings] options = %@", options);
  #endif
--    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
- 
-+    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
+     NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
+-
      // Store settings in NSUserDefault
      [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
      [[NSUserDefaults standardUserDefaults] synchronize];
-+    // compare config and re init callkit provider if there is delta
-+
- }
- 
- RCT_EXPORT_METHOD(setReachable)
-@@ -320,6 +336,9 @@ + (void)setup:(NSDictionary *)options {
+@@ -320,6 +329,9 @@ + (void)setup:(NSDictionary *)options {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
  #endif
@@ -458,7 +448,7 @@ index e67c3cd..2477f8d 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -861,6 +880,11 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -861,6 +873,11 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][getProviderConfiguration]");
  #endif
@@ -470,7 +460,7 @@ index e67c3cd..2477f8d 100644
      CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
      providerConfiguration.supportsVideo = YES;
      providerConfiguration.maximumCallGroups = 3;
-@@ -876,8 +900,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -876,8 +893,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
      if (settings[@"maximumCallsPerCallGroup"]) {
          providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
      }
