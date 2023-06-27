@@ -10,6 +10,7 @@ module.exports = {
   webpack: {
     configure: c => {
       c.resolve.alias = {
+        tslib: nullAlias,
         'react-native': 'react-native-web',
         'react-native-fast-image': 'react-native-web/dist/exports/Image',
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
@@ -34,16 +35,26 @@ module.exports = {
         '.ts',
         '.tsx',
       ]
-      c.resolve.mainFields = [
-        // disable esm
-        'browser',
-        'main',
-      ]
+      // allow import outside of src
+      c.resolve.plugins = c.resolve.plugins.filter(
+        p => p.constructor.name !== 'ModuleScopePlugin',
+      )
       c.plugins.push(
         new CircularDependencyPlugin({
           exclude: /node_modules/,
         }),
       )
+      //
+      // disable esm
+      c.resolve.mainFields = ['browser', 'main']
+      const rules = [c.module.rules[0], ...c.module.rules[1].oneOf]
+      rules.forEach(c => {
+        if (!c.test) {
+          return
+        }
+        const p = /\/(.*)\/(.*)/.exec(c.test.toString())
+        c.test = new RegExp(p[1].replace('|mjs', ''), p[2])
+      })
       return c
     },
   },
