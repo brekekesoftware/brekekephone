@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { FlatList, View } from 'react-native'
 
-import { UcBuddy } from '../api/brekekejs'
+import { UcBuddy } from '../brekekejs'
 import { userStore } from '../stores/userStore'
 import { UserItem } from './ContactUserItem'
 import { RnTouchableOpacity } from './RnTouchableOpacity'

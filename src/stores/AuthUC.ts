@@ -1,20 +1,15 @@
-import UCClient0 from 'brekekejs/lib/ucclient'
 import { debounce } from 'lodash'
 import { action, Lambda, reaction } from 'mobx'
 
-import { UcErrors } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { uc } from '../api/uc'
+import UCClient from '../brekekejs/ucclient'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { ChatMessage, chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
-
-const UCClient = UCClient0 as {
-  Errors: UcErrors
-}
 
 class AuthUC {
   private clearShouldAuthReaction?: Lambda

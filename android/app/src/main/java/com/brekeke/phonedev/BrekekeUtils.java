@@ -208,7 +208,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             String a = userActions.get(uuid);
             if (a != null) {
               if ("rejectCall".equals(a)) {
-                RNCallKeepModule.staticEndCall(uuid);
+                RNCallKeepModule.staticEndCall(uuid, appCtx);
               }
               return;
             }
@@ -242,7 +242,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller");
+    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller", false);
   }
 
   private static void prepareLocale(Context appCtx) {

@@ -1,34 +1,31 @@
-// eslint-disable-next-line simple-import-sort/imports
+import { observer } from 'mobx-react'
 import { Component } from 'react'
 import {
-  View,
+  ActivityIndicator,
+  ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
-  ScrollView,
-  ActivityIndicator,
+  View,
 } from 'react-native'
 
+import { uc } from '../api/uc'
+import { mdiFolderPlus } from '../assets/icons'
+import { ContactList } from '../components/ContactList'
+import { ContactSectionList } from '../components/ContactSectionList'
+import { DropdownItemProps } from '../components/DropdownItem'
 import { Layout } from '../components/Layout'
+import { RnIcon } from '../components/RnIcon'
+import { RnText } from '../components/RnText'
+import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { SelectionItem } from '../components/SelectionItem'
+import { accountStore } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
-
-import { DropdownItemProps } from '../components/DropdownItem'
-
-import { userStore } from '../stores/userStore'
-import { RnDropdown } from '../stores/RnDropdown'
-import { observer } from 'mobx-react'
-import { uc } from '../api/uc'
 import { RnAlert } from '../stores/RnAlert'
-import { ContactSectionList } from '../components/ContactSectionList'
-import { ContactList } from '../components/ContactList'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { RnIcon } from '../components/RnIcon'
-import { mdiFolderPlus } from '../assets/icons'
-import { RnText } from '../components/RnText'
+import { RnDropdown } from '../stores/RnDropdown'
+import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { getAuthStore } from '../stores/authStore'
-import { accountStore } from '../stores/accountStore'
 
 export const css = StyleSheet.create({
   listHeaderSection: {
@@ -264,8 +261,13 @@ export class PageContactEdit extends Component {
   }
   save = () => {
     const { isCapacityInvalid, type } = userStore
-    if (!isCapacityInvalid) {
-      type === 'UcBuddy' ? this.saveUC() : this.savePBX()
+    if (isCapacityInvalid) {
+      return
+    }
+    if (type === 'UcBuddy') {
+      this.saveUC()
+    } else {
+      this.savePBX()
     }
   }
   onSaveSuccess = () => {

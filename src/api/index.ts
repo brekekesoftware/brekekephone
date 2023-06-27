@@ -1,5 +1,6 @@
 import { action } from 'mobx'
 
+import { Conference, PbxEvent, Session } from '../brekekejs'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
@@ -12,7 +13,6 @@ import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
 import { toBoolean } from '../utils/string'
-import { Conference, PbxEvent, Session } from './brekekejs'
 import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
@@ -69,7 +69,11 @@ class Api {
       cp.pbxLocalAllUsers = true
     }
     if (s.isBigMode() || !cp.pbxLocalAllUsers) {
-      cp.ucEnabled ? userStore.loadUcBuddyList() : userStore.loadPbxBuddyList()
+      if (cp.ucEnabled) {
+        userStore.loadUcBuddyList()
+      } else {
+        userStore.loadPbxBuddyList()
+      }
     } else {
       contactStore.getPbxUsers()
     }

@@ -1,3 +1,4 @@
+import { transparentize } from 'polished'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
@@ -13,7 +14,7 @@ const css = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: v.fn.transparentize(0.8, 'black'),
+    backgroundColor: transparentize(0.8, 'black'),
     ...v.backdropZindex,
   },
   //

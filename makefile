@@ -1,9 +1,55 @@
+clean:
+	yarn --check-files && \
+	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
+	cd ios && \
+	rm -rf Pods ~/Library/Caches/CocoaPods && \
+	pod deintegrate && pod setup && \
+	pod install --repo-update && \
+	cd .. && \
+	yarn jetify && \
+	cd android && ./gradlew clean;
+
+start:
+	make -s rm-babel-cache && \
+	yarn craco start;
+
+build:
+	make -s rm-babel-cache && \
+	yarn craco build && \
+	node .embed;
+
+intl:
+	make -s rm-babel-cache && \
+	export EXTRACT_INTL=1 && \
+	yarn babel src -x .js,.ts,.tsx -d build && \
+	rm -rf build && \
+	node .intlBuild;
+
+rm-babel-cache:
+	rm -rf node_modules/.cache/babel* .intlNewEn.json;
+
+###
+# rn utils
+
+ashake:
+	adb shell input keyevent 82;
+
+bitcode:
+	[ -d node_modules/react-native-webrtc/ios/WebRTC.dSYM ] || \
+	bash node_modules/react-native-webrtc/tools/downloadBitcode.sh;
+
+patch:
+	npx patch-package --exclude="none" react-native-
+
+###
+# format
+
 format:
-	yarn format
-	make format-objc
-	make format-swift
-	make format-java
-	make format-xml
+	yarn format && \
+	make -s format-objc && \
+	make -s format-swift && \
+	make -s format-java && \
+	make -s format-xml;
 
 format-objc:
 	export EXT="h|m" && \

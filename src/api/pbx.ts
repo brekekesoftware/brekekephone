@@ -1,9 +1,10 @@
-import 'brekekejs/lib/jsonrpc'
-import 'brekekejs/lib/pal'
+import '../brekekejs/jsonrpc'
+import '../brekekejs/pal'
 
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
+import { Pbx, PbxEvent } from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { Account, accountStore } from '../stores/accountStore'
@@ -12,7 +13,6 @@ import { PbxUser, Phonebook } from '../stores/contactStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
-import { Pbx, PbxEvent } from './brekekejs'
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 

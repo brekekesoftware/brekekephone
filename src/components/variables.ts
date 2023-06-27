@@ -1,11 +1,9 @@
-import * as fn from 'polished'
+import { darken, lighten, transparentize } from 'polished'
 import { Platform } from 'react-native'
 
 import json from '../../package.json'
 
 export const v = {
-  fn,
-  //
   fontSize: 14,
   lineHeight: 20,
   get fontSizeTitle() {
@@ -37,13 +35,13 @@ export const v = {
   maxModalWidth: 380,
   //
   bg: 'white',
-  revBg: fn.darken(0.9, 'white'),
+  revBg: darken(0.9, 'white'),
   color: 'black',
   revColor: 'white',
-  hoverBg: fn.darken(0.05, 'white'),
-  subColor: fn.darken(0.75, 'white'),
-  borderBg: fn.darken(0.15, 'white'),
-  layerBg: fn.transparentize(0.2, 'black'),
+  hoverBg: darken(0.05, 'white'),
+  subColor: darken(0.75, 'white'),
+  borderBg: darken(0.15, 'white'),
+  layerBg: transparentize(0.2, 'black'),
   layerBgVideo: '#00000080',
   //
   boxShadow: {
@@ -68,17 +66,11 @@ export const v = {
     warning: '#F1AF20',
     danger: '#DC0F39',
     primaryFn: (lv: number) =>
-      lv > 0
-        ? fn.lighten(lv, v.colors.primary)
-        : fn.darken(-lv, v.colors.primary),
+      lv > 0 ? lighten(lv, v.colors.primary) : darken(-lv, v.colors.primary),
     warningFn: (lv: number) =>
-      lv > 0
-        ? fn.lighten(lv, v.colors.warning)
-        : fn.darken(-lv, v.colors.warning),
+      lv > 0 ? lighten(lv, v.colors.warning) : darken(-lv, v.colors.warning),
     dangerFn: (lv: number) =>
-      lv > 0
-        ? fn.lighten(lv, v.colors.danger)
-        : fn.darken(-lv, v.colors.danger),
+      lv > 0 ? lighten(lv, v.colors.danger) : darken(-lv, v.colors.danger),
   },
 }
 

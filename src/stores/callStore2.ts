@@ -5,10 +5,10 @@ import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
-import { MakeCallFn, Session } from '../api/brekekejs'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
+import { MakeCallFn, Session } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -749,10 +749,11 @@ export class CallStore {
     const uuid = this.getUuidFromPnId(n.pnId)
     console.log(`SIP PN debug: cancel PN uuid=${uuid}`)
     this.setCallKeepAction({ pnId: n.pnId }, 'rejectCall')
-    uuid &&
+    if (uuid) {
       this.endCallKeep(uuid, {
         completedElseWhere: n.completedElseWhere,
       })
+    }
   }
 
   constructor() {

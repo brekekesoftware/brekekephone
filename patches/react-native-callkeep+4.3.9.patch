@@ -1,0 +1,551 @@
+diff --git a/node_modules/react-native-callkeep/.gitignore b/node_modules/react-native-callkeep/.gitignore
+new file mode 100644
+index 0000000..539c60d
+--- /dev/null
++++ b/node_modules/react-native-callkeep/.gitignore
+@@ -0,0 +1,72 @@
++# Xcode
++#
++build/
++*.pbxuser
++!default.pbxuser
++*.mode1v3
++!default.mode1v3
++*.mode2v3
++!default.mode2v3
++*.perspectivev3
++!default.perspectivev3
++xcuserdata
++*.xccheckout
++*.moved-aside
++DerivedData
++*.hmap
++*.ipa
++*.xcuserstate
++ios/.xcode.env.local
++# Android/IntelliJ
++#
++build/
++android/app/src/debug/
++.idea
++.gradle
++local.properties
++*.iml
++*.hprof
++.cxx/
++*.keystore
++
++# fastlane
++#
++# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
++# screenshots whenever they are needed.
++# For more information about the recommended setup visit:
++# https://docs.fastlane.tools/best-practices/source-control/
++
++**/fastlane/report.xml
++**/fastlane/Preview.html
++**/fastlane/screenshots
++**/fastlane/test_output
++
++# Bundle artifact
++*.jsbundle
++
++# Ruby / CocoaPods
++/ios/Pods/
++/vendor/bundle/
++
++# Temporary files created by Metro to check the health of the file watcher
++.metro-health-check*
++
++# node.js
++#
++node_modules/
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++package-lock.json
++
++# misc
++.vscode/
++.DS_Store
++.env.local
++.env.development.local
++.env.test.local
++.env.production.local
++.env
++coverage
++.husky/_
++.husky/.gitignore
+diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
+index 17ffe48..abbc4a1 100644
+--- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
++++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
+@@ -49,6 +49,7 @@ import android.telecom.PhoneAccountHandle;
+ import android.telecom.TelecomManager;
+ import android.telephony.TelephonyManager;
+ import android.util.Log;
++import android.view.WindowManager;
+ 
+ import com.facebook.react.bridge.Arguments;
+ import com.facebook.react.bridge.Dynamic;
+@@ -126,6 +127,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+     private WritableNativeArray delayedEvents;
+     private boolean hasListeners = false;
+ 
++    public static HashMap<String, Runnable> onShowIncomingCallUiCallbacks = new HashMap<String, Runnable>();
++    public static HashMap<String, Runnable> onRejectCallbacks = new HashMap<String, Runnable>();
++
+     public static RNCallKeepModule getInstance(ReactApplicationContext reactContext, boolean realContext) {
+         if (instance == null) {
+             Log.d(TAG, "[RNCallKeepModule] getInstance : " + (reactContext == null ? "null" : "ok"));
+@@ -155,10 +159,11 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         delayedEvents = new WritableNativeArray();
+     }
+ 
+-    private boolean isSelfManaged() {
++    private static boolean isSelfManaged() {
+         try {
+             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && _settings.hasKey("selfManaged") && _settings.getBoolean("selfManaged");
+         } catch (Exception e) {
++            Log.w(TAG, "[RNCallKeepModule][isSelfManaged] exception: " + e);
+             return false;
+         }
+     }
+@@ -173,10 +178,6 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         this.reactContext = reactContext;
+     }
+ 
+-    public ReactApplicationContext getContext() {
+-        return this.reactContext;
+-    }
+-
+     public void reportNewIncomingCall(String uuid, String number, String callerName, boolean hasVideo, String payload) {
+         Log.d(TAG, "[RNCallKeepModule] reportNewIncomingCall, uuid: " + uuid + ", number: " + number + ", callerName: " + callerName);
+ 
+@@ -209,8 +210,15 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+             Log.w(TAG, "[RNCallKeepModule][initializeTelecomManager] no react context found.");
+             return;
+         }
++        initializeTelecomManager(context);
++    }
++
++    public static void initializeTelecomManager(Context context) {
++        if (telecomManager != null) {
++            return;
++        }
+         ComponentName cName = new ComponentName(context, VoiceConnectionService.class);
+-        String appName = this.getApplicationName(context);
++        String appName = RNCallKeepModule.getApplicationName(context);
+ 
+         handle = new PhoneAccountHandle(cName, appName);
+         telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
+@@ -270,6 +278,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+     public void registerPhoneAccount(ReadableMap options) {
+         setSettings(options);
+ 
++        if (telephonyManager != null) {
++            return;
++        }
+         if (!isConnectionServiceAvailable()) {
+             Log.w(TAG, "[RNCallKeepModule] registerPhoneAccount ignored due to no ConnectionService");
+             return;
+@@ -306,18 +317,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         this.hasListeners = false;
+     }
+ 
+-    @ReactMethod
+-    public void displayIncomingCall(String uuid, String number, String callerName) {
+-        this.displayIncomingCall(uuid, number, callerName, false);
+-    }
+-
+     @ReactMethod
+     public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo) {
+         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
+             Log.w(TAG, "[RNCallKeepModule] displayIncomingCall ignored due to no ConnectionService or no phone account");
+             return;
+         }
++        this.staticDisplayIncomingCall(uuid, number, callerName, hasVideo);
++    }
+ 
++    public static void staticDisplayIncomingCall(String uuid, String number, String callerName, boolean hasVideo) {
+         Log.d(TAG, "[RNCallKeepModule] displayIncomingCall, uuid: " + uuid + ", number: " + number + ", callerName: " + callerName + ", hasVideo: " + hasVideo);
+ 
+         Bundle extras = new Bundle();
+@@ -376,6 +385,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+ 
+         Log.d(TAG, "[RNCallKeepModule] startCall, uuid: " + uuid);
+ 
++        if (ActivityCompat.checkSelfPermission(this.getAppContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
++            // TODO: Consider calling
++            //    ActivityCompat#requestPermissions
++            // here to request the missing permissions, and then overriding
++            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
++            //                                          int[] grantResults)
++            // to handle the case where the user grants the permission. See the documentation
++            // for ActivityCompat#requestPermissions for more details.
++            return;
++        }
+         telecomManager.placeCall(uri, extras);
+     }
+ 
+@@ -386,16 +405,22 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+            Log.w(TAG, "[RNCallKeepModule] endCall ignored due to no ConnectionService or no phone account");
+             return;
+         }
++        staticEndCall(uuid, this.getAppContext());
++    }
+ 
++    public static void staticEndCall(String uuid, Context context) {
++        try {
+         Connection conn = VoiceConnectionService.getConnection(uuid);
+         if (conn == null) {
+             Log.w(TAG, "[RNCallKeepModule] endCall ignored because no connection found, uuid: " + uuid);
+             return;
+         }
+-        Context context = this.getAppContext();
+         AudioManager audioManager = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
+         audioManager.setMode(0);
+         conn.onDisconnect();
++        } catch (Exception e) {
++            Log.w(TAG, "[RNCallKeepModule][staticEndCall] exception: " + e);
++        }
+ 
+         Log.d(TAG, "[RNCallKeepModule] endCall executed, uuid: " + uuid);
+     }
+@@ -408,11 +433,19 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+             return;
+         }
+ 
++        try {
+         ArrayList<Map.Entry<String, VoiceConnection>> connections =
+             new ArrayList<Map.Entry<String, VoiceConnection>>(VoiceConnectionService.currentConnections.entrySet());
+         for (Map.Entry<String, VoiceConnection> connectionEntry : connections) {
++            try {
+             Connection connectionToEnd = connectionEntry.getValue();
+             connectionToEnd.onDisconnect();
++            } catch (Exception e) {
++                Log.w(TAG, "[RNCallKeepModule][connectionToEnd.onDisconnect] exception: " + e);
++            }
++        }
++        } catch (Exception e) {
++            Log.w(TAG, "[RNCallKeepModule] [currentConnections.entrySet] exception: " + e);
+         }
+ 
+         Log.d(TAG, "[RNCallKeepModule] endAllCalls executed");
+@@ -535,6 +568,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         }
+ 
+         boolean hasSim = telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
++        if (ActivityCompat.checkSelfPermission(this.getAppContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
++            // TODO: Consider calling
++            //    ActivityCompat#requestPermissions
++            // here to request the missing permissions, and then overriding
++            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
++            //                                          int[] grantResults)
++            // to handle the case where the user grants the permission. See the documentation
++            // for ActivityCompat#requestPermissions for more details.
++            return;
++        }
+         boolean hasDefaultAccount = telecomManager.getDefaultOutgoingPhoneAccount("tel") != null;
+ 
+         promise.resolve(!hasSim || hasDefaultAccount);
+@@ -679,6 +722,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+             conn.setAudioRoute(CallAudioState.ROUTE_WIRED_OR_EARPIECE);
+             promise.resolve(true);
+         } catch (Exception e) {
++            Log.w(TAG, "[RNCallKeepModule][setAudioRoute] exception: " + e);
+             promise.reject("SetAudioRoute", e.getMessage());
+         }
+     }
+@@ -712,6 +756,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+             }
+             promise.resolve(devices);
+         } catch(Exception e) {
++            Log.w(TAG, "[RNCallKeepModule][getAudioRoutes] exception: " + e);
+             promise.reject("GetAudioRoutes Error", e.getMessage());
+         }
+     }
+@@ -936,22 +981,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         return this.reactContext.getCurrentActivity();
+     }
+ 
+-    private void registerPhoneAccount(Context appContext) {
++    public static void registerPhoneAccount(Context appContext) {
+         if (!isConnectionServiceAvailable()) {
+             Log.w(TAG, "[RNCallKeepModule] registerPhoneAccount ignored due to no ConnectionService");
+             return;
+         }
+ 
+-        this.initializeTelecomManager();
+-        Context context = this.getAppContext();
+-        if (context == null) {
+-            Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount] no react context found.");
++        if (telephonyManager != null) {
+             return;
+         }
+-        String appName = this.getApplicationName(context);
+ 
++        RNCallKeepModule.initializeTelecomManager(appContext);
++        String appName = RNCallKeepModule.getApplicationName(appContext);
++        Log.w(TAG, "[RNCallKeepModule][registerPhoneAccount]::"+ appContext.getApplicationContext().toString());
+         PhoneAccount.Builder builder = new PhoneAccount.Builder(handle, appName);
+-        if (isSelfManaged()) {
++        if (_settings == null || isSelfManaged()) {
+             builder.setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED);
+         }
+         else {
+@@ -966,7 +1010,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+ 
+         PhoneAccount account = builder.build();
+ 
+-        telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
++        telephonyManager = (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
+ 
+         telecomManager.registerPhoneAccount(account);
+     }
+@@ -989,7 +1033,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+         }
+     }
+ 
+-    private String getApplicationName(Context appContext) {
++    private static String getApplicationName(Context appContext) {
+         ApplicationInfo applicationInfo = appContext.getApplicationInfo();
+         int stringId = applicationInfo.labelRes;
+ 
+@@ -997,7 +1041,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+     }
+ 
+     private Boolean hasPermissions() {
+-        ReactApplicationContext context = getContext();
++        ReactApplicationContext context = this.reactContext;
+ 
+         boolean hasPermissions = true;
+         for (String permission : permissions) {
+@@ -1099,6 +1143,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
+                 _settings = MapUtils.convertJsonToMap(jsonObject);
+             }
+         } catch(JSONException e) {
++            Log.w(TAG, "[RNCallKeepModule][fetchStoredSettings] exception: " + e);
+         }
+     }
+ 
+diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnection.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnection.java
+index 1ea76fb..675b7ae 100644
+--- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnection.java
++++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnection.java
+@@ -320,11 +320,35 @@ public class VoiceConnection extends Connection {
+         }
+         rejected = true;
+ 
++        String uuid = handle.get(EXTRA_CALL_UUID);
++        if (RNCallKeepModule.onRejectCallbacks.containsKey(uuid)) {
++            try {
++                RNCallKeepModule.onRejectCallbacks.get(uuid).run();
++            } catch (Exception e) {
++                Log.e(TAG, "onRejectCallbacks.get(uuid).run(): " + e);
++                e.printStackTrace();
++            }
++            try {
++                RNCallKeepModule.onRejectCallbacks.remove(uuid);
++            } catch (Exception e) {
++                Log.e(TAG, "onRejectCallbacks.remove: " + e);
++                e.printStackTrace();
++            }
++            try {
++                RNCallKeepModule.onShowIncomingCallUiCallbacks.remove(uuid);
++            } catch (Exception e) {
++                Log.e(TAG, "onShowIncomingCallUiCallbacks.remove: " + e);
++                e.printStackTrace();
++            }
++        } else {
++            Log.e(TAG, "onRejectCallbacks.get(uuid).run(): runnable not found for " + uuid);
++        }
++
+         setDisconnected(new DisconnectCause(DisconnectCause.REJECTED));
+         sendCallRequestToActivity(ACTION_END_CALL, handle);
+         Log.d(TAG, "[VoiceConnection] onReject executed");
+         try {
+-            ((VoiceConnectionService) context).deinitConnection(handle.get(EXTRA_CALL_UUID));
++            ((VoiceConnectionService) context).deinitConnection(uuid);
+         } catch(Throwable exception) {
+             Log.e(TAG, "[VoiceConnection] onReject, handle map error", exception);
+         }
+@@ -333,6 +357,23 @@ public class VoiceConnection extends Connection {
+ 
+     @Override
+     public void onShowIncomingCallUi() {
++      String uuid = handle.get(EXTRA_CALL_UUID);
++        if (RNCallKeepModule.onShowIncomingCallUiCallbacks.containsKey(uuid)) {
++            try {
++                RNCallKeepModule.onShowIncomingCallUiCallbacks.get(uuid).run();
++            } catch (Exception e) {
++                Log.e(TAG, "onShowIncomingCallUiCallbacks.get(uuid).run(): " + e);
++                e.printStackTrace();
++            }
++            try {
++                RNCallKeepModule.onShowIncomingCallUiCallbacks.remove(uuid);
++            } catch (Exception e) {
++                Log.e(TAG, "onShowIncomingCallUiCallbacks.remove: " + e);
++                e.printStackTrace();
++            }
++        } else {
++            Log.e(TAG, "onShowIncomingCallUiCallbacks.get(uuid).run(): runnable not found for " + uuid);
++        }
+         Log.d(TAG, "[VoiceConnection] onShowIncomingCallUi");
+         sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
+     }
+diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
+index f53c052..b8a0e24 100644
+--- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
++++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
+@@ -51,6 +51,8 @@ import android.util.Log;
+ import com.facebook.react.HeadlessJsTaskService;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.bridge.WritableMap;
++import com.facebook.react.bridge.WritableNativeArray;
++import com.facebook.react.bridge.WritableNativeMap;
+ 
+ import java.util.ArrayList;
+ import java.util.HashMap;
+@@ -122,6 +124,22 @@ public class VoiceConnectionService extends ConnectionService {
+ 
+     public static WritableMap getSettings(@Nullable Context context) {
+        WritableMap settings = RNCallKeepModule.getSettings(context);
++        if (settings == null) {
++            settings = new WritableNativeMap();
++        }
++        settings.putString("alertTitle", "Permissions required");
++        settings.putString("alertDescription", "Brekeke Phone needs to your permission to display calls");
++        settings.putString("cancelButton", "Cancel");
++        settings.putString("okButton", "OK");
++        settings.putString("imageName", "phone_account_icon");
++        settings.putArray("additionalPermissions", new WritableNativeArray());
++        settings.putBoolean("selfManaged", true);
++        WritableMap foregroundService = new WritableNativeMap();
++        foregroundService.putString("channelId", "com.brekeke.phone");
++        foregroundService.putString("channelName", "Foreground service for Brekeke Phone");
++        foregroundService.putString("notificationTitle", "Brekeke Phone is running on background");
++        foregroundService.putString("notificationIcon", "ic_launcher");
++        settings.putMap("foregroundService", foregroundService);
+        return settings;
+     }
+ 
+@@ -313,17 +331,15 @@ public class VoiceConnectionService extends ConnectionService {
+             .setPriority(NotificationManager.IMPORTANCE_MIN)
+             .setCategory(Notification.CATEGORY_SERVICE);
+ 
+-        Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
+-        if (currentActivity != null) {
+-            Intent notificationIntent = new Intent(this, currentActivity.getClass());
+-            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+-
+-            final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+-
+-            PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
+-
+-            notificationBuilder.setContentIntent(pendingIntent);
+-        }
++        // TODO check new logic after upgrade version
++        // Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
++        // if (currentActivity != null) {
++        //     Intent notificationIntent = new Intent(this, currentActivity.getClass());
++        //     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
++        //     final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
++        //     PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
++        //     notificationBuilder.setContentIntent(pendingIntent);
++        // }
+ 
+         if (foregroundSettings.hasKey("notificationIcon")) {
+             Context context = this.getApplicationContext();
+diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
+index e67c3cd..543f225 100644
+--- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
++++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
+@@ -160,6 +160,7 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+             body, @"data",
+             nil
+         ];
++        if (_delayedEvents == nil) _delayedEvents = [NSMutableArray array];
+         [_delayedEvents addObject:dictionary];
+     }
+ }
+@@ -169,6 +170,9 @@ + (NSDictionary *) getSettings {
+ }
+ 
+ + (void)initCallKitProvider {
++#ifdef DEBUG
++    NSLog(@"[RNCallKeep][initCallKitProvider]");
++#endif
+     if (sharedProvider == nil) {
+         NSDictionary *settings = [self getSettings];
+         if (settings != nil) {
+@@ -201,14 +205,20 @@ + (void)setup:(NSDictionary *)options {
+     NSLog(@"[RNCallKeep][setup] options = %@", options);
+ #endif
+     _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
+-    self.callKeepCallController = [[CXCallController alloc] init];
+-
+-    [self setSettings: options];
+-
+-    [RNCallKeep initCallKitProvider];
+-
+-    self.callKeepProvider = sharedProvider;
+-    [self.callKeepProvider setDelegate:self queue:nil];
++    if (self.callKeepCallController == nil) {
++        self.callKeepCallController = [[CXCallController alloc] init];
++    }
++    NSDictionary *previousSettingsStored = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"RNCallKeepSettings"];
++    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
++    // Store settings in NSUserDefault
++    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
++    [[NSUserDefaults standardUserDefaults] synchronize];
++    // Compare config and re init callkit provider if there is delta
++    if (![previousSettingsStored isEqualToDictionary:settings]) {
++        [RNCallKeep initCallKitProvider];
++        self.callKeepProvider = sharedProvider;
++        [self.callKeepProvider setDelegate:self queue:nil];
++    }
+ }
+ 
+ RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
+@@ -217,7 +227,6 @@ + (void)setup:(NSDictionary *)options {
+     NSLog(@"[RNCallKeep][setSettings] options = %@", options);
+ #endif
+     NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
+-
+     // Store settings in NSUserDefault
+     [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
+     [[NSUserDefaults standardUserDefaults] synchronize];
+@@ -320,6 +329,9 @@ + (void)setup:(NSDictionary *)options {
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
+ #endif
++    if (self.callKeepProvider == nil) {
++      [RNCallKeep initCallKitProvider];
++    }
+     int _handleType = [RNCallKeep getHandleType:handleType];
+     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+     CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
+@@ -861,6 +873,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][getProviderConfiguration]");
+ #endif
++    NSString *localizedName = @"Brekeke Phone";
++    if (settings[@"appName"]) {
++        localizedName = settings[@"appName"];
++    }
+     CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
+     providerConfiguration.supportsVideo = YES;
+     providerConfiguration.maximumCallGroups = 3;
+@@ -876,8 +892,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+     if (settings[@"maximumCallsPerCallGroup"]) {
+         providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
+     }
++    NSString *img = @"callkit.png";
+     if (settings[@"imageName"]) {
+-        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:settings[@"imageName"]]);
++        img = settings[@"imageName"];
++        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:img]);
+     }
+     if (settings[@"ringtoneSound"]) {
+         providerConfiguration.ringtoneSound = settings[@"ringtoneSound"];

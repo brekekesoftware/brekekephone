@@ -29,7 +29,7 @@ const setupCallKeepWithCheck = async () => {
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
   if (
     Platform.OS === 'ios' &&
-    (Object.keys(await RNCallKeep.getCalls()).length ||
+    (Object.keys((await RNCallKeep.getCalls()) || {}).length ||
       Object.keys(getCallStore().callkeepMap).length ||
       AppState.currentState !== 'active')
   ) {
@@ -37,8 +37,7 @@ const setupCallKeepWithCheck = async () => {
   }
 
   alreadySetupCallKeep = true
-
-  await RNCallKeep.setup({
+  const option = {
     ios: {
       appName: 'Brekeke Phone',
       // Already put this on our fork to display our logo before js load
@@ -62,10 +61,11 @@ const setupCallKeepWithCheck = async () => {
       },
       selfManaged: true,
     },
-  })
+  }
+  await RNCallKeep.setup(option)
     .then(() => {
       if (Platform.OS === 'android') {
-        RNCallKeep.registerPhoneAccount()
+        RNCallKeep.registerPhoneAccount(option)
         RNCallKeep.registerAndroidEvents()
         RNCallKeep.setAvailable(true)
         RNCallKeep.canMakeMultipleCalls(true)

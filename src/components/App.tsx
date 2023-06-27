@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
@@ -60,6 +61,13 @@ import { v } from './variables'
 
 const initApp = async () => {
   await intlStore.wait()
+
+  if (Platform.OS === 'android') {
+    //https://github.com/facebook/react-native/issues/32584#issuecomment-968950165 for android 12
+    await PermissionsAndroid.requestMultiple([
+      'android.permission.READ_PHONE_NUMBERS',
+    ])
+  }
 
   const s = getAuthStore()
   const cs = getCallStore()
