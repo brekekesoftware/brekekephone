@@ -9,8 +9,12 @@ module.exports = {
   ],
   plugins: [
     intlBabelPlugin,
-    ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
     '@babel/plugin-proposal-optional-chaining',
+    ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
+    ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
+    ['@babel/plugin-transform-class-properties', { loose: true }],
+    // fix warnings
+    ['@babel/plugin-transform-private-methods', { loose: true }],
+    ['@babel/plugin-transform-private-property-in-object', { loose: true }],
   ],
 }
