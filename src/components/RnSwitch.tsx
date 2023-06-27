@@ -1,3 +1,4 @@
+import { darken } from 'polished'
 import { FC } from 'react'
 import { StyleSheet, View, ViewProps } from 'react-native'
 
@@ -7,7 +8,7 @@ const css = StyleSheet.create({
   RnSwitch: {
     height: 12,
     width: 32,
-    backgroundColor: v.fn.darken(0.05, v.hoverBg),
+    backgroundColor: darken(0.05, v.hoverBg),
     borderRadius: 12,
   },
   RnSwitch__enabled: {
@@ -20,7 +21,7 @@ const css = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 18,
-    backgroundColor: v.fn.darken(0.05, v.borderBg),
+    backgroundColor: darken(0.05, v.borderBg),
     ...v.boxShadow,
   },
   Circle__enabled: {

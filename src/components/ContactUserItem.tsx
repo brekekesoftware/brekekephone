@@ -2,7 +2,6 @@ import { observer } from 'mobx-react'
 import { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { Conference } from '../api/brekekejs'
 import { Constants, uc } from '../api/uc'
 import {
   mdiAccountGroup,
@@ -10,6 +9,7 @@ import {
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '../assets/icons'
+import { Conference } from '../brekekejs'
 import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -174,8 +174,9 @@ export const UserItem: FC<
     }
     if (partyNumber.startsWith('uc')) {
       const groupId = partyNumber.replace('uc', '')
-      isGroupAvailable(partyNumber.replace('uc', '')) &&
+      if (isGroupAvailable(partyNumber.replace('uc', ''))) {
         Nav().goToPageChatGroupDetail({ groupId })
+      }
     } else {
       Nav().goToPageChatDetail({ buddy: partyNumber })
     }
@@ -183,7 +184,9 @@ export const UserItem: FC<
 
   const onPressIcons = (i: number) => {
     if (partyNumber?.startsWith('uc')) {
-      isGroupAvailable(partyNumber.replace('uc', '')) && iconFuncs?.[i]?.()
+      if (isGroupAvailable(partyNumber.replace('uc', ''))) {
+        iconFuncs?.[i]?.()
+      }
     } else {
       iconFuncs?.[i]?.()
     }

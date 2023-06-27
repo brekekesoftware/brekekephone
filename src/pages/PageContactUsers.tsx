@@ -132,7 +132,7 @@ export class PageContactUsers extends Component {
     }
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
-    type User = typeof allUsers[0]
+    type User = (typeof allUsers)[0]
     const displayUsers =
       !this.displayOfflineUsers.enabled && cp.ucEnabled ? onlineUsers : allUsers
     const map = {} as { [k: string]: User[] }

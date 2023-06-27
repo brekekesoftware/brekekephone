@@ -1,8 +1,8 @@
 import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
-import * as brekekejs from '../api/brekekejs'
 import { pbx } from '../api/pbx'
+import { ItemPhonebook } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
@@ -45,7 +45,7 @@ export type Phonebook = {
   user?: string
   info: ContactInfo
 }
-export type ItemPBForm = brekekejs.ItemPhonebook & {
+export type ItemPBForm = ItemPhonebook & {
   name: string
   disabled?: boolean
   value?: string

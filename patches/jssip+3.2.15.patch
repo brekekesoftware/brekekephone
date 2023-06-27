@@ -1,0 +1,381 @@
+diff --git a/node_modules/jssip/lib/RTCSession.js b/node_modules/jssip/lib/RTCSession.js
+index 750c7fa..e91e5cd 100644
+--- a/node_modules/jssip/lib/RTCSession.js
++++ b/node_modules/jssip/lib/RTCSession.js
+@@ -8,7 +8,6 @@ const Transactions = require('./Transactions');
+ const Utils = require('./Utils');
+ const Timers = require('./Timers');
+ const SIPMessage = require('./SIPMessage');
+-const Dialog = require('./Dialog');
+ const RequestSender = require('./RequestSender');
+ const RTCSession_DTMF = require('./RTCSession/DTMF');
+ const RTCSession_Info = require('./RTCSession/Info');
+@@ -657,7 +656,8 @@ module.exports = class RTCSession extends EventEmitter
+               request.reply(480);
+               this._failed('local', null, JsSIP_C.causes.USER_DENIED_MEDIA_ACCESS);
+ 
+-              debugerror('emit "getusermediafailed" [error:%o]', error);
++              debugerror('emit "getusermediafailed" error:');
++              console.error(error);
+ 
+               this.emit('getusermediafailed', error);
+ 
+@@ -702,7 +702,8 @@ module.exports = class RTCSession extends EventEmitter
+ 
+             this._failed('system', null, JsSIP_C.causes.WEBRTC_ERROR);
+ 
+-            debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++            debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++            console.error(error);
+ 
+             this.emit('peerconnection:setremotedescriptionfailed', error);
+ 
+@@ -776,7 +777,7 @@ module.exports = class RTCSession extends EventEmitter
+           return;
+         }
+ 
+-        debugerror(error);
++        console.error(error);
+       });
+   }
+ 
+@@ -1444,7 +1445,8 @@ module.exports = class RTCSession extends EventEmitter
+                   status_code : 488
+                 });
+ 
+-                debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++                debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++                console.error(error);
+                 this.emit('peerconnection:setremotedescriptionfailed', error);
+               });
+           }
+@@ -1666,7 +1668,8 @@ module.exports = class RTCSession extends EventEmitter
+       }
+       catch (error)
+       {
+-        debugerror('close() | error closing the RTCPeerConnection: %o', error);
++        debugerror('close() | error closing the RTCPeerConnection:');
++        console.error(error);
+       }
+     }
+ 
+@@ -1828,7 +1831,8 @@ module.exports = class RTCSession extends EventEmitter
+           return connection.createOffer(constraints)
+             .catch((error) =>
+             {
+-              debugerror('emit "peerconnection:createofferfailed" [error:%o]', error);
++              debugerror('emit "peerconnection:createofferfailed" error:');
++              console.error(error);
+ 
+               this.emit('peerconnection:createofferfailed', error);
+ 
+@@ -1840,7 +1844,8 @@ module.exports = class RTCSession extends EventEmitter
+           return connection.createAnswer(constraints)
+             .catch((error) =>
+             {
+-              debugerror('emit "peerconnection:createanswerfailed" [error:%o]', error);
++              debugerror('emit "peerconnection:createanswerfailed" error:');
++              console.error(error);
+ 
+               this.emit('peerconnection:createanswerfailed', error);
+ 
+@@ -1856,7 +1861,8 @@ module.exports = class RTCSession extends EventEmitter
+           {
+             this._rtcReady = true;
+ 
+-            debugerror('emit "peerconnection:setlocaldescriptionfailed" [error:%o]', error);
++            debugerror('emit "peerconnection:setlocaldescriptionfailed" error:');
++            console.error(error);
+ 
+             this.emit('peerconnection:setlocaldescriptionfailed', error);
+ 
+@@ -1927,6 +1933,9 @@ module.exports = class RTCSession extends EventEmitter
+    */
+   _createDialog(message, type, early)
+   {
++    // fix circular dependency
++    const Dialog = require('./Dialog');
++
+     const local_tag = (type === 'UAS') ? message.to_tag : message.from_tag;
+     const remote_tag = (type === 'UAS') ? message.from_tag : message.to_tag;
+     const id = message.call_id + local_tag + remote_tag;
+@@ -1947,7 +1956,7 @@ module.exports = class RTCSession extends EventEmitter
+         // Dialog has been successfully created.
+         if (early_dialog.error)
+         {
+-          debug(early_dialog.error);
++          console.error(early_dialog.error);
+           this._failed('remote', message, JsSIP_C.causes.INTERNAL_ERROR);
+ 
+           return false;
+@@ -1982,7 +1991,7 @@ module.exports = class RTCSession extends EventEmitter
+ 
+       if (dialog.error)
+       {
+-        debug(dialog.error);
++        console.error(dialog.error);
+         this._failed('remote', message, JsSIP_C.causes.INTERNAL_ERROR);
+ 
+         return false;
+@@ -2085,7 +2094,7 @@ module.exports = class RTCSession extends EventEmitter
+       })
+       .catch((error) =>
+       {
+-        debugerror(error);
++        console.error(error);
+       });
+ 
+     function sendAnswer(desc)
+@@ -2190,7 +2199,7 @@ module.exports = class RTCSession extends EventEmitter
+       })
+       .catch((error) =>
+       {
+-        debugerror(error);
++        console.error(error);
+       });
+ 
+     function sendAnswer(desc)
+@@ -2258,7 +2267,8 @@ module.exports = class RTCSession extends EventEmitter
+           .catch((error) =>
+           {
+             request.reply(488);
+-            debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++            debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++            console.error(error);
+ 
+             this.emit('peerconnection:setremotedescriptionfailed', error);
+ 
+@@ -2543,7 +2553,8 @@ module.exports = class RTCSession extends EventEmitter
+ 
+               this._failed('local', null, JsSIP_C.causes.USER_DENIED_MEDIA_ACCESS);
+ 
+-              debugerror('emit "getusermediafailed" [error:%o]', error);
++              debugerror('emit "getusermediafailed" error:');
++              console.error(error);
+ 
+               this.emit('getusermediafailed', error);
+ 
+@@ -2573,6 +2584,7 @@ module.exports = class RTCSession extends EventEmitter
+           {
+             this._failed('local', null, JsSIP_C.causes.WEBRTC_ERROR);
+ 
++            console.error(error);
+             throw error;
+           });
+       })
+@@ -2586,7 +2598,7 @@ module.exports = class RTCSession extends EventEmitter
+         this._request.body = desc;
+         this._status = C.STATUS_INVITE_SENT;
+ 
+-        debug('emit "sending" [request:%o]', this._request);
++        debug('emit "sending"');
+ 
+         // Emit 'sending' so the app can mangle the body before the request is sent.
+         this.emit('sending', {
+@@ -2602,7 +2614,7 @@ module.exports = class RTCSession extends EventEmitter
+           return;
+         }
+ 
+-        debugerror(error);
++        console.error(error);
+       });
+   }
+ 
+@@ -2613,6 +2625,9 @@ module.exports = class RTCSession extends EventEmitter
+   {
+     debug('receiveInviteResponse()');
+ 
++    // fix circular dependency
++    const Dialog = require('./Dialog');
++
+     // Handle 2XX retransmissions and responses from forked requests.
+     if (this._dialog && (response.status_code >=200 && response.status_code <=299))
+     {
+@@ -2637,7 +2652,7 @@ module.exports = class RTCSession extends EventEmitter
+ 
+         if (dialog.error !== undefined)
+         {
+-          debug(dialog.error);
++          console.error(dialog.error);
+ 
+           return;
+         }
+@@ -2714,7 +2729,8 @@ module.exports = class RTCSession extends EventEmitter
+           .then(() => this._connection.setRemoteDescription(answer))
+           .catch((error) =>
+           {
+-            debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++            debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++            console.error(error);
+ 
+             this.emit('peerconnection:setremotedescriptionfailed', error);
+           });
+@@ -2756,6 +2772,7 @@ module.exports = class RTCSession extends EventEmitter
+                 .then((offer) => this._connection.setLocalDescription(offer))
+                 .catch((error) =>
+                 {
++                  console.error(error);
+                   this._acceptAndTerminate(response, 500, error.toString());
+                   this._failed('local', response, JsSIP_C.causes.WEBRTC_ERROR);
+                 });
+@@ -2778,7 +2795,8 @@ module.exports = class RTCSession extends EventEmitter
+                 this._acceptAndTerminate(response, 488, 'Not Acceptable Here');
+                 this._failed('remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
+ 
+-                debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++                debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++                console.error(error);
+ 
+                 this.emit('peerconnection:setremotedescriptionfailed', error);
+               });
+@@ -2906,7 +2924,8 @@ module.exports = class RTCSession extends EventEmitter
+         {
+           onFailed.call(this);
+ 
+-          debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++          debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++          console.error(error);
+ 
+           this.emit('peerconnection:setremotedescriptionfailed', error);
+         });
+@@ -3067,7 +3086,8 @@ module.exports = class RTCSession extends EventEmitter
+           {
+             onFailed.call(this);
+ 
+-            debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
++            debugerror('emit "peerconnection:setremotedescriptionfailed" error:');
++            console.error(error);
+ 
+             this.emit('peerconnection:setremotedescriptionfailed', error);
+           });
+diff --git a/node_modules/jssip/lib/Socket.js b/node_modules/jssip/lib/Socket.js
+index c293939..2425c35 100644
+--- a/node_modules/jssip/lib/Socket.js
++++ b/node_modules/jssip/lib/Socket.js
+@@ -61,6 +61,7 @@ exports.isSocket = (socket) =>
+   }
+   catch (e)
+   {
++    console.error(e);
+     return false;
+   }
+ 
+@@ -78,6 +79,7 @@ exports.isSocket = (socket) =>
+   }
+   catch (e)
+   {
++    console.error(e);
+     return false;
+   }
+ 
+diff --git a/node_modules/jssip/lib/UA.js b/node_modules/jssip/lib/UA.js
+index 8c5fbeb..bd985b2 100644
+--- a/node_modules/jssip/lib/UA.js
++++ b/node_modules/jssip/lib/UA.js
+@@ -305,7 +305,9 @@ module.exports = class UA extends EventEmitter
+       {
+         debug(`closing session ${session}`);
+         try { this._sessions[session].terminate(); }
+-        catch (error) {}
++        catch (error) {
++          console.error(error);
++        }
+       }
+     }
+ 
+@@ -314,7 +316,9 @@ module.exports = class UA extends EventEmitter
+     {
+       if (Object.prototype.hasOwnProperty.call(this._applicants, applicant))
+         try { this._applicants[applicant].close(); }
+-        catch (error) {}
++        catch (error) {
++          console.error(error);
++        }
+     }
+ 
+     this._status = C.STATUS_USER_CLOSED;
+@@ -813,7 +817,7 @@ module.exports = class UA extends EventEmitter
+     }
+     catch (e)
+     {
+-      debugerror(e);
++      console.error(e);
+       throw new Exceptions.ConfigurationError('sockets', this._configuration.sockets);
+     }
+ 
+diff --git a/node_modules/jssip/lib/Utils.js b/node_modules/jssip/lib/Utils.js
+index ed7abe5..d261258 100644
+--- a/node_modules/jssip/lib/Utils.js
++++ b/node_modules/jssip/lib/Utils.js
+@@ -1,5 +1,4 @@
+ const JsSIP_C = require('./Constants');
+-const URI = require('./URI');
+ const Grammar = require('./Grammar');
+ 
+ exports.str_utf8_length = (string) => unescape(encodeURIComponent(string)).length;
+@@ -121,6 +120,9 @@ const escapeUser = exports.escapeUser = (user) =>
+ */
+ exports.normalizeTarget = (target, domain) =>
+ {
++  // fix circular dependency
++  const URI = require('./URI');
++
+   // If no target is given then raise an error.
+   if (!target)
+   {
+@@ -532,6 +534,7 @@ exports.closeMediaStream = (stream) =>
+   }
+   catch (error)
+   {
++    console.error(error);
+     // Deprecated by the spec, but still in use.
+     // NOTE: In Temasys IE plugin stream.stop is a callable 'object'.
+     if (typeof stream.stop === 'function' || typeof stream.stop === 'object')
+diff --git a/node_modules/jssip/lib/WebSocketInterface.js b/node_modules/jssip/lib/WebSocketInterface.js
+index dd2998e..cd590d3 100644
+--- a/node_modules/jssip/lib/WebSocketInterface.js
++++ b/node_modules/jssip/lib/WebSocketInterface.js
+@@ -115,19 +115,21 @@ module.exports = class WebSocketInterface
+   send(message)
+   {
+     debug('send()');
+-
+-    if (this.isConnected())
+-    {
+-      this._ws.send(message);
+-
++    if (this.__brekekephone_stopped) {
++      debug('__brekekephone_stopped');
+       return true;
+     }
+-    else
+-    {
+-      debugerror('unable to send message, WebSocket is not open');
+-
++    if (!this.isConnected()) {
++      debugerror('send(): ws is not connected, but try to send the message anyway');
++    }
++    try {
++      this._ws.send(message);
++    } catch(err) {
++      console.error('send(): error on catch:');
++      console.error(err);
+       return false;
+     }
++    return true;
+   }
+ 
+   isConnected()
+diff --git a/node_modules/jssip/package.json b/node_modules/jssip/package.json
+index c526fad..cfa0013 100644
+--- a/node_modules/jssip/package.json
++++ b/node_modules/jssip/package.json
+@@ -9,7 +9,7 @@
+     "Iñaki Baz Castillo <ibc@aliax.net> (https://github.com/ibc)",
+     "Saúl Ibarra Corretgé <saghul@gmail.com> (https://github.com/saghul)"
+   ],
+-  "main": "lib-es5/JsSIP.js",
++  "main": "lib/JsSIP.js",
+   "keywords": [
+     "sip",
+     "websocket",

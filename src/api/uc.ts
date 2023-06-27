@@ -1,37 +1,27 @@
-import 'brekekejs/lib/jsonrpc'
+import '../brekekejs/jsonrpc'
 
-import UCClient0 from 'brekekejs/lib/ucclient'
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
-import { Account } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { ChatFile } from '../stores/chatStore'
-import { UcUser } from '../stores/contactStore'
-import { formatFileType } from '../utils/formatFileType'
 import {
   UcBuddy,
   UcBuddyGroup,
   UcChatClient,
   UcConference,
-  UcConstants,
   UcListeners,
-  UcLogger,
   UcReceieveUnreadText,
   UcResponseLeaveConf,
   UcSearchTexts,
   UcSendFile,
   UcSendFiles,
   UcWebchatConferenceText,
-} from './brekekejs'
-
-const { ChatClient, Logger, Constants } = UCClient0 as {
-  ChatClient: UcChatClient
-  Logger: UcLogger
-  Constants: UcConstants
-}
-
-export { ChatClient, Constants, Logger }
+} from '../brekekejs'
+import UCClient from '../brekekejs/ucclient'
+import { Account } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
+import { ChatFile } from '../stores/chatStore'
+import { UcUser } from '../stores/contactStore'
+import { formatFileType } from '../utils/formatFileType'
 
 export const isUcBuddy = (u: object): u is UcBuddy => {
   return 'user_id' in u && 'group' in u
@@ -64,8 +54,8 @@ export class UC extends EventEmitter {
   client: UcChatClient
   constructor() {
     super()
-    const logger = new Logger('all')
-    this.client = new ChatClient(logger)
+    const logger = new UCClient.Logger('all')
+    this.client = new UCClient.ChatClient(logger)
 
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
@@ -102,27 +92,30 @@ export class UC extends EventEmitter {
     if (!ev || !ev.sender) {
       return
     }
+
     // handle update message on list webchat
     // this.emit('received-webchat-text', {
     //   conf_id: ev.conf_id,
     //   text: ev.text,
     // })
 
-    ev.conf_id
-      ? this.emit('group-chat-created', {
-          id: ev.received_text_id,
-          group: ev.conf_id,
-          text: ev.text,
-          creator: ev.sender.user_id,
-          created: ev.sent_ltime,
-          conf_id: ev.conf_id,
-        })
-      : this.emit('buddy-chat-created', {
-          id: ev.received_text_id,
-          text: ev.text,
-          creator: ev.sender.user_id,
-          created: ev.sent_ltime,
-        })
+    if (ev.conf_id) {
+      this.emit('group-chat-created', {
+        id: ev.received_text_id,
+        group: ev.conf_id,
+        text: ev.text,
+        creator: ev.sender.user_id,
+        created: ev.sent_ltime,
+        conf_id: ev.conf_id,
+      })
+    } else {
+      this.emit('buddy-chat-created', {
+        id: ev.received_text_id,
+        text: ev.text,
+        creator: ev.sender.user_id,
+        created: ev.sent_ltime,
+      })
+    }
   }
 
   onFileReceived: UcListeners['fileReceived'] = ev => {
@@ -143,22 +136,24 @@ export class UC extends EventEmitter {
 
     this.emit('file-received', file)
 
-    ev.conf_id
-      ? this.emit('group-chat-created', {
-          id: ev.text_id,
-          creator: ev.fileInfo.target.user_id,
-          group: ev.conf_id,
-          file: file.id,
-          text: file.name,
-          created: ev.sent_ltime,
-        })
-      : this.emit('buddy-chat-created', {
-          id: ev.text_id,
-          creator: ev.fileInfo.target.user_id,
-          file: file.id,
-          text: file.name,
-          created: ev.sent_ltime,
-        })
+    if (ev.conf_id) {
+      this.emit('group-chat-created', {
+        id: ev.text_id,
+        creator: ev.fileInfo.target.user_id,
+        group: ev.conf_id,
+        file: file.id,
+        text: file.name,
+        created: ev.sent_ltime,
+      })
+    } else {
+      this.emit('buddy-chat-created', {
+        id: ev.text_id,
+        creator: ev.fileInfo.target.user_id,
+        file: file.id,
+        text: file.name,
+        created: ev.sent_ltime,
+      })
+    }
   }
 
   onFileProgress: UcListeners['fileInfoChanged'] = ev => {
@@ -456,7 +451,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: Constants.CTYPE_TEXT,
+            ctype: UCClient.Constants.CTYPE_TEXT,
           }),
         reject,
       ),
@@ -475,7 +470,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: Constants.CTYPE_CALL_RESULT,
+            ctype: UCClient.Constants.CTYPE_CALL_RESULT,
           }),
         reject,
       ),

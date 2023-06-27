@@ -3,8 +3,8 @@ import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { UcMessageLog } from '../api/brekekejs'
-import { Constants } from '../api/uc'
+import { UcMessageLog } from '../brekekejs'
+import UCClient from '../brekekejs/ucclient'
 import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -53,7 +53,8 @@ export class PageChatRecents extends Component {
   render() {
     const webchatInactive = chatStore.groups.filter(
       gr =>
-        gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
+        gr.webchat &&
+        gr.webchat.conf_status !== UCClient.Constants.CONF_STATUS_JOINED,
     )
 
     const groupIds = chatStore.groups.filter(gr => gr.jointed).map(gr => gr.id)
@@ -79,7 +80,7 @@ export class PageChatRecents extends Component {
     type WithThreadId = {
       threadId: string
     }
-    type ChatFromStorage = typeof recentFromStorage[0] & WithThreadId
+    type ChatFromStorage = (typeof recentFromStorage)[0] & WithThreadId
     type ChatWithThreadId = ChatMessage & WithThreadId
 
     const recentGroups = recentFromStorage.filter(

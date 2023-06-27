@@ -20,7 +20,7 @@ export const groupByTimestamp = (arr: ChatMessage[]) => {
     return groupByDate
   }
   let lastDate: string
-  let groupByTime: typeof groupByDate[0]['groupByTime']
+  let groupByTime: (typeof groupByDate)[0]['groupByTime']
   let lastMessage: ChatMessage
   let messages: ChatMessage[]
   arr.forEach(m => {

@@ -118,7 +118,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
       forceFinish();
-      RNCallKeepModule.staticEndCall(uuid);
+      RNCallKeepModule.staticEndCall(uuid, this);
       return;
     }
     // Just to make sure we'll use interval here

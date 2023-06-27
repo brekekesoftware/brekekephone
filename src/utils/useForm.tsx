@@ -4,7 +4,7 @@ import { Fragment } from 'react'
 import { Platform } from 'react-native'
 import Validator, { Rules } from 'validatorjs'
 
-import { PbxBook } from '../api/brekekejs'
+import { PbxBook } from '../brekekejs'
 import { Field } from '../components/Field'
 import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
 import { arrToMap } from './arrToMap'

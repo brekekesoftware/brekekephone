@@ -65,7 +65,7 @@ export class PageCallTransferChooseUser extends Component {
       const number = i.number.toLowerCase()
       return name.includes(txtSearch) || number.includes(txtSearch)
     })
-    type User = typeof users[0]
+    type User = (typeof users)[0]
 
     const map = {} as { [k: string]: User[] }
     users.forEach(u => {
