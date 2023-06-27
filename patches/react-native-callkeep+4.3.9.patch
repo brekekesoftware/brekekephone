@@ -380,44 +380,29 @@ index f53c052..b8a0e24 100644
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..3a96810 100644
+index e67c3cd..2477f8d 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-@@ -160,6 +160,11 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+@@ -160,6 +160,7 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
              body, @"data",
              nil
          ];
-+
-+        if (_delayedEvents == nil){
-+          _delayedEvents = [NSMutableArray array];
-+        }
-+
++        if (_delayedEvents == nil) _delayedEvents = [NSMutableArray array];
          [_delayedEvents addObject:dictionary];
      }
  }
-@@ -169,11 +174,16 @@ + (NSDictionary *) getSettings {
+@@ -169,6 +170,10 @@ + (NSDictionary *) getSettings {
  }
  
  + (void)initCallKitProvider {
--    if (sharedProvider == nil) {
--        NSDictionary *settings = [self getSettings];
--        if (settings != nil) {
--            sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfiguration:settings]];
--        }
-+   #ifdef DEBUG
++#ifdef DEBUG
 +    NSLog(@"[RNCallKeep][initCallKitProvider]");
-+   #endif
++#endif
 +
-+    if (sharedProvider == nil)
-+    {
-+           NSDictionary *settings = [self getSettings];
-+           if (settings != nil) {
-+               sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfiguration:settings]];
-+           }
-     }
- }
- 
-@@ -201,14 +211,23 @@ + (void)setup:(NSDictionary *)options {
+     if (sharedProvider == nil) {
+         NSDictionary *settings = [self getSettings];
+         if (settings != nil) {
+@@ -201,14 +206,23 @@ + (void)setup:(NSDictionary *)options {
      NSLog(@"[RNCallKeep][setup] options = %@", options);
  #endif
      _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
@@ -448,7 +433,7 @@ index e67c3cd..3a96810 100644
  }
  
  RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
-@@ -216,11 +235,13 @@ + (void)setup:(NSDictionary *)options {
+@@ -216,11 +230,13 @@ + (void)setup:(NSDictionary *)options {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][setSettings] options = %@", options);
  #endif
@@ -459,11 +444,11 @@ index e67c3cd..3a96810 100644
      [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
      [[NSUserDefaults standardUserDefaults] synchronize];
 +    // compare config and re init callkit provider if there is delta
-+  
++
  }
  
  RCT_EXPORT_METHOD(setReachable)
-@@ -320,6 +341,9 @@ + (void)setup:(NSDictionary *)options {
+@@ -320,6 +336,9 @@ + (void)setup:(NSDictionary *)options {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
  #endif
@@ -473,7 +458,7 @@ index e67c3cd..3a96810 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -861,6 +885,11 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -861,6 +880,11 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][getProviderConfiguration]");
  #endif
@@ -485,7 +470,7 @@ index e67c3cd..3a96810 100644
      CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
      providerConfiguration.supportsVideo = YES;
      providerConfiguration.maximumCallGroups = 3;
-@@ -876,8 +905,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -876,8 +900,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
      if (settings[@"maximumCallsPerCallGroup"]) {
          providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
      }
