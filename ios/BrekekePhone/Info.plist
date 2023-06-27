@@ -8,8 +8,7 @@
     <key>NSLocalNetworkUsageDescription</key>
     <string>
       Brekeke Phone Dev requires access to your local network in order to
-      activate the
-      Local Push Connectivity extension
+      activate the Local Push Connectivity extension
     </string>
     <key>CFBundleDisplayName</key>
     <string>Brekeke Phone Dev</string>
