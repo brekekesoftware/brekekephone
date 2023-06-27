@@ -2,10 +2,11 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { sortBy, uniqBy } from 'lodash'
 import { computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
-import FCM from 'react-native-fcm'
+import { Notifications } from 'react-native-notifications'
 
-import { Constants, uc } from '../api/uc'
+import { uc } from '../api/uc'
 import { Conference } from '../brekekejs'
+import { Constants } from '../brekekejs/ucclient'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
@@ -139,38 +140,48 @@ class ChatStore {
     if (Platform.OS === 'web') {
       return
     }
+    const id = `message-${Date.now()}`
     if (Platform.OS === 'android') {
-      FCM.presentLocalNotification({
-        title,
+      Notifications.postLocalNotification({
+        payload: {
+          id,
+          title,
+          body,
+          threadId,
+          isGroupChat,
+          number: 0,
+          sound: '',
+          priority: 'high',
+          show_in_foreground: true,
+          local_notification: true,
+          wake_screen: false,
+          ongoing: false,
+          lights: true,
+          channel: 'brekeke_chat',
+          icon: 'ic_launcher',
+          pre_app_state: AppState.currentState,
+          my_custom_data: 'local_notification',
+          is_local_notification: 'local_notification',
+        },
+        identifier: id,
         body,
-        threadId,
-        isGroupChat,
-        number: 0,
+        title,
         sound: 'ding.mp3',
-        priority: 'high',
-        show_in_foreground: true,
-        local_notification: true,
-        wake_screen: false,
-        ongoing: false,
-        lights: true,
-        channel: `channel-${Date.now()}`,
-        icon: 'ic_launcher',
-        id: `message-${Date.now()}`,
-        pre_app_state: AppState.currentState,
-        my_custom_data: 'local_notification',
-        is_local_notification: 'local_notification',
+        badge: 0,
+        type: '',
+        thread: '',
       })
     } else {
       PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
         badge = Number(badge) || 0
         PushNotificationIOS.addNotificationRequest({
-          id: `message-${Date.now()}`,
+          id,
           title,
           body,
           badge,
           sound: 'ding.mp3',
           userInfo: {
-            id: `message-${Date.now()}`,
+            id,
             aps: {
               title,
               threadId,

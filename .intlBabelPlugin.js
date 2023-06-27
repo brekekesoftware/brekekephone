@@ -3,7 +3,7 @@ const fs = require('fs-extra')
 
 const jsonOutputPath = path.join(__dirname, './.intlNewEn.json')
 
-// Only add brackets if there's no existing brackets
+// only add brackets if there's no existing brackets
 const withBrackets = (exprName, rawTemplate, i) =>
   !findBrackets(rawTemplate, i, '{') ||
   !findBrackets(rawTemplate, i + exprName.length, '}')
@@ -37,13 +37,13 @@ const intlBabelPlugin = () => ({
       if (!tl || (tl.indexOf('intl') < 0 && tl.indexOf('debug') < 0)) {
         return
       }
-      // Get raw expressions from source code
+      // get raw expressions from source code
       const exprs = p.node.quasi.expressions.map(e =>
         s.file.code.substring(e.start, e.end),
       )
-      // Build data keys from expressions with their name as camelCase
+      // build data keys from expressions with their name as camelCase
       const exprNames = exprs.map((e, i) => '$' + i)
-      // Build the locations to automatically add brackets for fields
+      // build the locations to automatically add brackets for fields
       const quasis = p.node.quasi.quasis.map(q => q.value.raw)
       const [rawTemplate, fieldLocations] = quasis.reduce(
         ([r, a], q, i) => {
@@ -56,7 +56,7 @@ const intlBabelPlugin = () => ({
         },
         ['', []],
       )
-      // Get the template
+      // get the template
       const normalizedTemplate = quasis
         .reduce((a, q, i) => {
           a.push(q)
@@ -67,7 +67,7 @@ const intlBabelPlugin = () => ({
         }, [])
         .join('')
         .replace('\\`', '`')
-      // Extract the normalized template
+      // extract the normalized template
       if (process.env.EXTRACT_INTL) {
         let arr = fs.existsSync(jsonOutputPath)
           ? JSON.parse(fs.readFileSync(jsonOutputPath))
@@ -78,7 +78,7 @@ const intlBabelPlugin = () => ({
         }
         fs.outputFileSync(jsonOutputPath, `${JSON.stringify(arr, null, 2)}\n`)
       }
-      // Replace the tagged template with a function call
+      // replace the tagged template with a function call
       const p1 = JSON.stringify(normalizedTemplate)
       const p2 = `{${exprNames.map((v, i) => `${v}:${exprs[i]}`).join(',')}}`
       p.replaceWithSourceString(`${tagName}(${p1}, ${p2})`)

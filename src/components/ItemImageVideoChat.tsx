@@ -18,7 +18,7 @@ const css = StyleSheet.create({
     marginLeft: 10,
     ...Platform.select({
       web: {
-        width: 'calc(100vw - 119px)',
+        width: 'calc(100vw - 119px)' as any,
       },
       default: {
         width: Dimensions.get('screen').width - 119,

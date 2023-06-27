@@ -24,7 +24,7 @@ const css = StyleSheet.create({
     ...v.boxShadow,
   },
   //
-  // Fix bug margin auto can not be used
+  // fix bug margin auto can not be used
   ActionsOuter: {
     alignItems: 'center',
     flexDirection: 'row',

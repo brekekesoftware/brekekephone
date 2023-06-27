@@ -2,8 +2,6 @@ clean:
 	yarn --check-files && \
 	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
 	cd ios && \
-	rm -rf Pods ~/Library/Caches/CocoaPods && \
-	pod deintegrate && pod setup && \
 	pod install --repo-update && \
 	cd .. && \
 	yarn jetify && \
@@ -30,6 +28,12 @@ rm-babel-cache:
 
 ###
 # rn utils
+
+pods:
+	cd ios && \
+	rm -rf Pods ~/Library/Caches/CocoaPods && \
+	pod deintegrate && pod setup && \
+	pod install --repo-update;
 
 ashake:
 	adb shell input keyevent 82;

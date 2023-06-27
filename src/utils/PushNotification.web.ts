@@ -27,6 +27,6 @@ export const PushNotification = {
     }
   },
   resetBadgeNumber: () => {
-    // Polyfill
+    // polyfill
   },
 }

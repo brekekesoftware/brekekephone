@@ -85,8 +85,7 @@
       'webphone.pal.param.foo': 'bar',
     })
 
-    // MULTIPLE INSTANCES WILL NOT WORK
-    // THIS IS NOT SUPPORTED YET
+    // note: MULTIPLE INSTANCES WILL NOT WORK. NOT SUPPORTED YET:
     // var phone1 = window.Brekeke.Phone.render(div1, options1)
     // var phone2 = window.Brekeke.Phone.render(div2, options2)
 
@@ -99,7 +98,7 @@
 
     // get the raw pal instance from pbx
     // when login, it will construct the pal and you can access via this event
-    // IMPORTANT NOTE: this event can fire multiple times if retry on login failed
+    // note: THIS EVENT CAN FIRE MULTIPLE TIMES: if retry on login failed
     //    or pal params changed
     phone.on('pal', async pal => {
       // pal is from window.Brekeke.pbx.getPal
@@ -120,7 +119,7 @@
     })
 
     // listen to pal events like: notify_serverstatus...
-    // IMPORTANT NOTE: these events must be registered in the above palEvents param
+    // note: THESE EVENTS MUST BE REGISTERED in the above palEvents param
     var notify_serverstatus = e => {
       // your logic here...
       console.log('pal.notify_serverstatus', e)

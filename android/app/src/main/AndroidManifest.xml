@@ -50,7 +50,7 @@
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
     />
-    <!-- fcm -->
+    <!-- react-native-notifications -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@mipmap/ic_launcher"
@@ -68,27 +68,6 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <service
-      android:name="com.evollu.react.fcm.InstanceIdService"
-      android:exported="false"
-    >
-      <intent-filter>
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-      </intent-filter>
-    </service>
-    <receiver android:name="com.evollu.react.fcm.FIRLocalMessagingPublisher" />
-    <receiver
-      android:name="com.evollu.react.fcm.FIRSystemBootEventReceiver"
-      android:enabled="true"
-      android:exported="true"
-    >
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </receiver>
     <!-- call keep -->
     <service
       android:name="io.wazo.callkeep.VoiceConnectionService"

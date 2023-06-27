@@ -10,7 +10,7 @@ import {
 } from './CallVoicesUI'
 
 export const CallVoices = observer(() => {
-  // Try trigger observer?
+  // try trigger observer?
   void Object.keys(getCallStore().callkeepMap)
   void getCallStore().calls.map(_ => _.callkeepUuid)
   const oc = getCallStore().getOngoingCall()

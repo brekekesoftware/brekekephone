@@ -70,7 +70,7 @@ const css = StyleSheet.create({
         top: 6,
       },
       web: {
-        // Fix form auto fill style on web
+        // fix form auto fill style on web
         position: 'absolute',
         top: 0,
         left: 0,
@@ -106,12 +106,12 @@ const css = StyleSheet.create({
         paddingTop: 0,
         paddingBottom: 0,
         lineHeight: v.lineHeight,
-        // Should not set height and overflow here
+        // should not set height and overflow here
         //    it will cause scroll issue with the input
         // height: g.lineHeight,
       },
       web: {
-        // Fix form auto fill style on web
+        // fix form auto fill style on web
         paddingTop: 28,
         width: '100%',
       },
@@ -132,12 +132,12 @@ const css = StyleSheet.create({
         paddingTop: 0,
         paddingBottom: 0,
         lineHeight: v.lineHeight,
-        // Should not set height and overflow here
+        // should not set height and overflow here
         //    it will cause scroll issue with the input
         // height: g.lineHeight,
       },
       web: {
-        // Fix form auto fill style on web
+        // fix form auto fill style on web
         paddingTop: 28,
       },
       default: {

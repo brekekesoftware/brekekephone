@@ -14,15 +14,13 @@ const actionSheetHandlers = [
         {
           mediaType: 'photo',
           cameraType: 'back',
-          storageOptions: {
-            privateDirectory: true,
-          },
+          saveToPhotos: false,
         },
         res =>
           res.didCancel
             ? resolve(null)
-            : res.error
-            ? reject(res.error)
+            : res.errorMessage
+            ? reject(res.errorMessage)
             : resolve(res),
       )
     }),
@@ -36,8 +34,8 @@ const actionSheetHandlers = [
         res =>
           res.didCancel
             ? resolve(null)
-            : res.error
-            ? reject(res.error)
+            : res.errorMessage
+            ? reject(res.errorMessage)
             : resolve(res),
       )
     }),
@@ -46,14 +44,14 @@ const actionSheetHandlers = [
       ImagePicker.launchImageLibrary(
         {
           mediaType: 'mixed',
-          noData: true, // ref: https://github.com/react-native-image-picker/react-native-image-picker/issues/870
+          assetRepresentationMode: 'auto',
           quality: 1,
         },
         res =>
           res.didCancel
             ? resolve(null)
-            : res.error
-            ? reject(res.error)
+            : res.errorMessage
+            ? reject(res.errorMessage)
             : resolve(res),
       )
     }),

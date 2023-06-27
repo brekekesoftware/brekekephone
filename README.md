@@ -33,7 +33,7 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
 
 ### Keystores and other credentials keys
 
-- Those private files are ignored from git history, you need to download or generate your own files to build your custom app. See [Custom branding build](./.doc/custom-branding.md) for more detail.
+- Those private files are ignored from git history, you need to download or generate your own files to build your custom app. See [Custom branding build](./.doc/custom-branding.md) for more detail
   - `android/app/google-services.json`
   - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
@@ -49,7 +49,7 @@ export const turnConfig = {
         username: 'USERNAME',
         credential: 'PASSWORD',
       },
-      // Other ice servers...
+      // other ice servers
     ],
   },
 }

@@ -112,11 +112,11 @@ class AccountStore {
     if (d) {
       let { profileData: accountData, profiles: accounts } = d
       if (Array.isArray(d)) {
-        // Lower version compatible
+        // lower version compatible
         accounts = d
         accountData = []
       }
-      // Set tenant to '-' if empty
+      // set tenant to '-' if empty
       accounts.forEach(a => {
         a.pbxTenant = a.pbxTenant || '-'
       })
@@ -161,7 +161,7 @@ class AccountStore {
     { maxWait: 1000 },
   )
   saveAccountsToLocalStorageDebounced = () => {
-    // Set tenant to '-' if empty
+    // set tenant to '-' if empty
     this.accounts.forEach(a => {
       a.pbxTenant = a.pbxTenant || '-'
     })
@@ -173,7 +173,7 @@ class AccountStore {
     if (!a) {
       this.accounts.push(p as Account)
     } else {
-      const clonedA = { ...a } // Clone before assign
+      const clonedA = { ...a } // clone before assign
       Object.assign(a, p)
       // TODO handle case change phone index
       if (getAccountUniqueId(clonedA) !== getAccountUniqueId(a)) {
@@ -216,9 +216,9 @@ class AccountStore {
 
   find = async (a: Partial<Account>) => {
     await storagePromise
-    // This accept partial compare: only pbxUsername is required to find
-    // This behavior is needed because returned data may be incompleted
-    // For eg: PN data doesnt have all the fields to compare
+    // this accept partial compare: only pbxUsername is required to find
+    // this behavior is needed because returned data may be incompleted
+    // for eg: pn data doesnt have all the fields to compare
     return accountStore.accounts.find(_ => compareAccount(_, a))
   }
   findByPn = (n: ParsedPn) =>
@@ -249,8 +249,8 @@ class AccountStore {
   }
 
   findDataAsync = async (a: AccountUnique): Promise<AccountData> => {
-    // Async to use in mobx to not trigger data change in render
-    // This method will update the data if not found in storage
+    // async to use in mobx to not trigger data change in render
+    // this method will update the data if not found in storage
     const d = await this.findData(a)
     if (d) {
       return d
@@ -299,7 +299,7 @@ const compareField = (p1: object, p2: object, field: keyof AccountUnique) => {
 }
 export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
   return (
-    p1.pbxUsername && // Must have pbxUsername
+    p1.pbxUsername && // must have pbxUsername
     compareField(p1, p2, 'pbxUsername') &&
     compareField(p1, p2, 'pbxTenant') &&
     compareField(p1, p2, 'pbxHostname') &&

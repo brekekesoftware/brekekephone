@@ -57,7 +57,7 @@ class BaseChannel {
       logger: Logger(prependString: "Heartbeat Monitor",
                      subsystem: .heartbeat)
     )
-    // Observe the network session's state changes and react.
+    // observe the network session's state changes and react
     networkSession.statePublisher
       .combineLatest(registrationSubject)
       .sink { [weak self] state, registration in
@@ -85,14 +85,15 @@ class BaseChannel {
       }
       .store(in: &cancellables)
 
-    // Observe messages from the network session and send them out on messagesSubject.
+    // observe messages from the network session and
+    // send them out on messagesSubject
     networkSession.messagePublisher
       .compactMap { $0 }
       .subscribe(internalMessageSubject)
       .store(in: &cancellables)
 
-    // Observe changes to the `connectActionPublisher` and connect or disconnect the
-    // session accordingly.
+    // observe changes to the `connectActionPublisher` and connect
+    // or disconnect the session accordingly
     connectActionPublisher
       .sink { [weak self] connectAction in
         guard let self = self else {
@@ -144,9 +145,9 @@ class BaseChannel {
       guard isBetterPathAvailable else {
         return
       }
-      // Disconnect the network session if a better path is available. In this case, the
-      // retry logic in connectActionPublisher
-      // takes care of reestablishing the connection over a viable interface.
+      // disconnect the network session if a better path is available
+      // in this case, the retry logic in connectActionPublisher
+      // takes care of reestablishing the connection over a viable interface
       self.networkSession.disconnect()
     }
     return connection
@@ -154,11 +155,12 @@ class BaseChannel {
 
   // MARK: - Publishers
 
-  // A publisher that signals whether the subscriber connects to the server or
-  // disconnects an existing connection. This publisher takes
-  // multiple variables into account, such as the network session's current state,
-  // whether this class's connect/disconnect method resulted
-  // from an external call, and whether the host changed.
+  // a publisher that signals whether the subscriber connects
+  // to the server or disconnects an existing connection
+  // this publisher takes multiple variables into account, such as
+  // the network session's current state, whether this class's
+  // connect/disconnect method resulted from an external call,
+  // and whether the host changed
   private lazy var connectActionPublisher: AnyPublisher<
     ConnectAction,
     Never
@@ -178,13 +180,13 @@ class BaseChannel {
             guard last?.conn != conn else {
               break
             }
-            // Disconnect if the host changed and the network session is in the connecting
-            // or connected state. When network session's
-            // state transitions to .disconnected, the next case causes the channel
-            // to try to reconnect.
+            // disconnect if the host changed and the network session is in the
+            // connecting or connected state
+            // when network session's state transitions to .disconnected,
+            // the next case causes the channel to try to reconnect
             connect = false
           case .disconnected:
-            // Connect if the server is currently disconnected (retry).
+            // connect if the server is currently disconnected (retry)
             connect = true
           default:
             break
@@ -192,8 +194,8 @@ class BaseChannel {
         } else {
           switch networkSessionState {
           case .connected, .connecting:
-            // Disconnect if the user wants to be disconnected and the session's state is
-            // connected or connecting.
+            // disconnect if the user wants to be disconnected and the session's
+            // state is connected or connecting
             connect = false
           default:
             break
@@ -205,8 +207,8 @@ class BaseChannel {
       .compactMap { value -> ConnectAction? in
         guard let value = value,
               let shouldConnect = value.connect else {
-          // It's an indication from the upstream publisher to not proceed if
-          // `value` or `value.connect` are nil.
+          // it's an indication from the upstream publisher to not proceed if
+          // `value` or `value.connect` are nil
           return nil
         }
 
@@ -218,9 +220,9 @@ class BaseChannel {
       }
       .eraseToAnyPublisher()
 
-  // A publisher that upon subscription drops all states from the control channel
-  // until receiving a `connected` state, waits for a
-  // `disconnecting` state, then finishes.
+  // a publisher that upon subscription drops all states from the
+  // control channel until receiving a `connected` state, waits for a
+  // `disconnecting` state, then finishes
   public func isDisconnectingPublisher()
     -> AnyPublisher<NetworkSession.State, Never> {
     statePublisher

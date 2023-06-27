@@ -12,7 +12,8 @@ import {
 } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
-import { Constants, uc } from '../api/uc'
+import { uc } from '../api/uc'
+import { Constants } from '../brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '../components/chatConfig'
 import { MessageList } from '../components/ChatMessageList'
 import { ChatInput } from '../components/FooterChatInput'
