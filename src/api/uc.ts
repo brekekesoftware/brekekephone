@@ -1,5 +1,3 @@
-import '../brekekejs/jsonrpc'
-
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 
@@ -16,7 +14,7 @@ import {
   UcSendFiles,
   UcWebchatConferenceText,
 } from '../brekekejs'
-import UCClient from '../brekekejs/ucclient'
+import { ChatClient, Constants, Logger } from '../brekekejs/ucclient'
 import { Account } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { ChatFile } from '../stores/chatStore'
@@ -54,8 +52,8 @@ export class UC extends EventEmitter {
   client: UcChatClient
   constructor() {
     super()
-    const logger = new UCClient.Logger('all')
-    this.client = new UCClient.ChatClient(logger)
+    const logger = new Logger('all')
+    this.client = new ChatClient(logger)
 
     this.client.setEventListeners({
       forcedSignOut: this.onConnectionStopped,
@@ -451,7 +449,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: UCClient.Constants.CTYPE_TEXT,
+            ctype: Constants.CTYPE_TEXT,
           }),
         reject,
       ),
@@ -470,7 +468,7 @@ export class UC extends EventEmitter {
             text,
             creator: this.client.getProfile().user_id,
             created: res.ltime,
-            ctype: UCClient.Constants.CTYPE_CALL_RESULT,
+            ctype: Constants.CTYPE_CALL_RESULT,
           }),
         reject,
       ),
@@ -617,6 +615,7 @@ export class UC extends EventEmitter {
         })
       })
     }
+    return
   }
 
   sendFile = async (user_id: string, file: Blob) => {
@@ -650,7 +649,7 @@ export class UC extends EventEmitter {
       fd.append('file', {
         ...file,
         type: 'multipart/form-data',
-      })
+      } as any)
       inputrn = {
         form: 'This is not a form element, see src/api/uc.ts for detail',
         files: [file],
@@ -721,7 +720,7 @@ export class UC extends EventEmitter {
       fd.append('file', {
         ...file,
         type: 'multipart/form-data',
-      })
+      } as any)
 
       inputrn = {
         form: 'This is not a form element, see src/api/uc.ts for detail',

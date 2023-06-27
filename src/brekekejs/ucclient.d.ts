@@ -1,10 +1,6 @@
 import { UcChatClient, UcConstants, UcErrors, UcLogger } from '.'
 
-const m: {
-  ChatClient: UcChatClient
-  Logger: UcLogger
-  Constants: UcConstants
-  Errors: UcErrors
-}
-
-export default m
+export const ChatClient: UcChatClient
+export const Logger: UcLogger
+export const Constants: UcConstants
+export const Errors: UcErrors

@@ -14,12 +14,15 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+import com.google.firebase.messaging.RemoteMessage;
 import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
 import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
@@ -31,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +43,21 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
+
+  public static WritableMap parseParams(RemoteMessage message) {
+    WritableMap params = Arguments.createMap();
+    params.putString("from", message.getFrom());
+    params.putString("google.message_id", message.getMessageId());
+    params.putDouble("google.sent_time", message.getSentTime());
+    if (message.getData() != null) {
+      Map<String, String> data = message.getData();
+      Set<String> keysIterator = data.keySet();
+      for (String key : keysIterator) {
+        params.putString(key, data.get(key));
+      }
+    }
+    return params;
+  }
 
   public static void emit(String name, String data) {
     try {
@@ -141,7 +160,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  // Interval for the case js set rejectCall even before activity start/starting
+  // interval for the case js set rejectCall even before activity start/starting
   public static Map<String, String> destroyedUuids = new HashMap<String, String>();
 
   public static void intervalCheckRejectCall(String uuid) {
@@ -159,7 +178,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             elapsed += 1000;
             h.postDelayed(this, 1000);
           }
-          // Check in 60s
+
+          // check in 60s
           private int elapsed = 0;
         },
         1000);
@@ -167,29 +187,29 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void onFcmMessageReceived(Context c, Map<String, String> data) {
     //
-    // Check if it is a PN for incoming call
+    // check if it is a PN for incoming call
     if (data.get("x_pn-id") == null) {
       return;
     }
     //
-    // Init services if not
+    // init services if not
     initStaticServices(c);
     acquireWakeLock();
     //
-    // Generate new uuid and store it to the PN bundle
+    // generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
     //
-    // Check if the account exist and load the locale
+    // check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
     if (!checkAccountExist(appCtx, data)) {
       return;
     }
     prepareLocale(appCtx);
     //
-    // Show call
+    // show call
     String displayName = data.get("x_displayname");
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
@@ -234,7 +254,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           }
         };
     //
-    // Try to run onShowIncomingCallUi if there is already an ongoing call
+    // try to run onShowIncomingCallUi if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
         || activitiesSize > 0) {
@@ -276,7 +296,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       JSONArray accounts = (new JSONObject(jsonStr)).getJSONArray("profiles");
       for (int i = 0; i < accounts.length(); i++) {
         JSONObject a = accounts.getJSONObject(i);
-        // Same logic compareAccount in js code authStore
+        // same logic compareAccount in js code authStore
         if (pbxUsername.equals(a.getString("pbxUsername"))
             && (pbxHostname == null || pbxHostname.equals(a.getString("pbxHostname")))
             && (pbxTenant == null || pbxTenant.equals(a.getString("pbxTenant")))) {
@@ -288,11 +308,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return false;
   }
 
-  // When an incoming GSM call is ringing
+  // when an incoming GSM call is ringing
   //    if another incoming Brekeke Phone call comes
   //    it will be automatically rejected by the system
-  // We will manually fire the rejectCall event here
-  // There may be duplicated events in some cases, need to test more
+  // we will manually fire the rejectCall event here
+  // there may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
     emit("debug", "onPassiveReject uuid=" + uuid);
     emit("rejectCall", uuid);
@@ -336,13 +356,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   //
-  // IncomingCallActivityManager
-  //
+  // manage all IncomingCallActivity
   public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
-  // Manually manage activities size:
-  // Try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
+  // manually manage activities size:
+  // try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
   public static int activitiesSize = 0;
-  // Calls size from js, this may be different with activitiesSize in some cases: out going call...
+  // calls size from js, this may be different with
+  // activitiesSize in some cases: out going call...
   public static int jsCallsSize = 0;
 
   public static void remove(String uuid) {
@@ -474,7 +494,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   //
-  // Move start/stop ringtone here
+  // move start/stop ringtone here
   //
   public static MediaPlayer mp;
 
@@ -532,7 +552,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   // ==========================================================================
-  // React methods
+  // react methods
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {

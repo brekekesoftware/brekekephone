@@ -37,7 +37,7 @@ public class LengthPrefixedFramer: NWProtocolFramerImplementation {
 
         header = buffer.bindMemory(to: Header.self)[0]
 
-        // Advance the cursor the size of the header.
+        // advance the cursor the size of the header
         return headerSize
       }
 

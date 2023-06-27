@@ -1,4 +1,4 @@
-// API was a component but had been rewritten to a listener
+// api was a component but had been rewritten to a listener
 import '../api'
 
 import NetInfo from '@react-native-community/netinfo'
@@ -93,7 +93,7 @@ const initApp = async () => {
   }
 
   registerOnUnhandledError(unexpectedErr => {
-    // Must wrap in setTimeout avoid mobx error state change when rendering
+    // must wrap in setTimeout avoid mobx error state change when rendering
     BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
     return false
   })
@@ -105,7 +105,7 @@ const initApp = async () => {
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
-    // With ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // with ios when wakekup app, currentState will be 'unknown' first then 'active'
     // https://github.com/facebook/react-native-website/issues/273
     if (Platform.OS !== 'ios') {
       return
@@ -219,7 +219,7 @@ const css = StyleSheet.create({
   },
   LoadingFullscreen: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#74bf53', // Old color from design, not g.colors.primary
+    backgroundColor: '#74bf53', // old color from design, not g.colors.primary
     alignItems: 'center',
     justifyContent: 'center',
   },

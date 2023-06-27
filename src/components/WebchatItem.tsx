@@ -2,9 +2,10 @@ import { observer } from 'mobx-react'
 import { FC, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { Constants, uc } from '../api/uc'
+import { uc } from '../api/uc'
 import { mdiClose } from '../assets/icons'
 import { Conference } from '../brekekejs'
+import { Constants } from '../brekekejs/ucclient'
 import { chatStore } from '../stores/chatStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -55,11 +56,6 @@ const css = StyleSheet.create({
 export const WebchatItem: FC<{
   data: Conference
 }> = observer(({ data }) => {
-  // const data = p.webchat
-  // CONF_STATUS_INACTIVE: 0 => disable all , show close
-  // CONF_STATUS_INVITED: 1 => enabled join
-  // CONF_STATUS_JOINED: 2 => enable show
-  // CONF_STATUS_INVITED_WEBCHAT: 5 => enabled answer
   const messages = chatStore.getMessagesByThreadId(data.conf_id)
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT

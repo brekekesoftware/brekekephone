@@ -22,15 +22,15 @@ class BrekekeLPCExtension: NEAppPushProvider {
 
     logger.log("Initialized")
 
-    // Observe notification channel connection state changes for logging purposes.
+    // observe notification channel connection state for logging purposes
     channel.statePublisher
       .sink { [weak self] state in
         self?.logger.log("Notification channel state changed to: \(state)")
       }
       .store(in: &cancellables)
 
-    // Observe notification channel messages and alert the user when receiving a new
-    // text message or call invite.
+    // observe notification channel messages and alert the user when receiving
+    // a new text message or call invite
     channel.messagePublisher
       .receive(on: DispatchQueue.main)
       .sink { [weak self] message in
@@ -41,9 +41,9 @@ class BrekekeLPCExtension: NEAppPushProvider {
         self.logger.log("message:\(message)")
         switch message {
         case let message as TextMessage:
-          // Brekeke server will send everything as TextMessage
-          // We will check if it is a call or chat PN in BrekekeLPCManager
-          // If it requires CallKit interaction, we must check here instead
+          // brekeke server will send everything as TextMessage
+          // we will check if it is a call or chat PN in BrekekeLPCManager
+          // if it requires CallKit interaction, we must check here instead
           self.reportIncomingCall(userInfo: [
             "payload": message.custom,
           ])
@@ -56,8 +56,8 @@ class BrekekeLPCExtension: NEAppPushProvider {
       }
       .store(in: &cancellables)
 
-    // Observe changes to Settings to send new user registrations on the notification
-    // channel when receiving a Settings change.
+    // observe changes to Settings to send new user registrations on the
+    // notification channel when receiving a Settings change
     SettingsManager.shared.settingsPublisher
       .sink { [weak self] settings in
         print("settingsPublisher::start::user1 ")

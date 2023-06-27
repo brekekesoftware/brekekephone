@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import './jsonrpc'
+
 if (typeof Brekeke === 'undefined' || typeof Brekeke.net === 'undefined') {
   console.error('jsonrpc has not been loaded.')
 }

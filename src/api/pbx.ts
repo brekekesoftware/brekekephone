@@ -1,4 +1,3 @@
-import '../brekekejs/jsonrpc'
 import '../brekekejs/pal'
 
 import EventEmitter from 'eventemitter3'

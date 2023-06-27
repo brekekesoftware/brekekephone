@@ -15,7 +15,7 @@ export const getUrlParams = async () => {
   Linking.addEventListener('url', e => {
     urlParams = parse(e.url)
     const ca = getAuthStore().getCurrentAccount()
-    // Check against the current user
+    // check against the current user
     if (
       !urlParams ||
       !ca ||

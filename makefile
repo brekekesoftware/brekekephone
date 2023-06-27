@@ -2,24 +2,22 @@ clean:
 	yarn --check-files && \
 	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
 	cd ios && \
-	rm -rf Pods ~/Library/Caches/CocoaPods && \
-	pod deintegrate && pod setup && \
 	pod install --repo-update && \
 	cd .. && \
 	yarn jetify && \
 	cd android && ./gradlew clean;
 
 start:
-	make -s rm-babel-cache && \
+	make -Bs rm-babel-cache && \
 	yarn craco start;
 
 build:
-	make -s rm-babel-cache && \
+	make -Bs rm-babel-cache && \
 	yarn craco build && \
 	node .embed;
 
 intl:
-	make -s rm-babel-cache && \
+	make -Bs rm-babel-cache && \
 	export EXTRACT_INTL=1 && \
 	yarn babel src -x .js,.ts,.tsx -d build && \
 	rm -rf build && \
@@ -30,6 +28,12 @@ rm-babel-cache:
 
 ###
 # rn utils
+
+pods:
+	cd ios && \
+	rm -rf Pods ~/Library/Caches/CocoaPods && \
+	pod deintegrate && pod setup && \
+	pod install --repo-update;
 
 ashake:
 	adb shell input keyevent 82;
@@ -46,28 +50,28 @@ patch:
 
 format:
 	yarn format && \
-	make -s format-objc && \
-	make -s format-swift && \
-	make -s format-java && \
-	make -s format-xml;
+	make -Bs format-objc && \
+	make -Bs format-swift && \
+	make -Bs format-java && \
+	make -Bs format-xml;
 
 format-objc:
 	export EXT="h|m" && \
-	make -s ls | \
+	make -Bs ls | \
 	xargs clang-format -i -style=file;
 format-swift:
 	swiftformat ios;
 format-java:
 	export EXT="java" && \
-	make -s ls | \
+	make -Bs ls | \
 	xargs google-java-format -i;
 format-xml:
 	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" && \
-	make -s ls | \
+	make -Bs ls | \
 	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --loglevel=error --write;
 imagemin:
 	export EXT="png|jpg|gif|ico" && \
-	make -s ls | \
+	make -Bs ls | \
 	xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)';
 ls:
 	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' | \
@@ -77,7 +81,7 @@ ls:
 # dev server
 
 d:
-	make -s chmod && \
+	make -Bs chmod && \
 	cd dev/react-app && yarn && yarn build && \
 	mv build dev-react-app && zip -vr dev-react-app.zip dev-react-app && \
 	scp dev-react-app.zip bre:/var/www && \
@@ -88,34 +92,34 @@ d:
 	ssh bre "cd /var/www/dev-api && yarn && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" && \
 	scp nginx.conf bre:/etc/nginx/conf.d/dev01.conf && \
 	ssh bre "sudo nginx -t && sudo service nginx restart" && \
-	cd ../.. && make -s chmod;
+	cd ../.. && make -Bs chmod;
 
 w:
-	make -s chmod && \
+	make -Bs chmod && \
 	yarn && yarn build && \
 	mv build brekeke_phone && zip -vr brekeke_phone.zip brekeke_phone && \
 	scp brekeke_phone.zip bre:/var/www/upload && \
 	rm -rf brekeke_phone* && \
 	ssh bre "cd /var/www && sudo rm -rf phone && unzip /var/www/upload/brekeke_phone.zip && sudo mv brekeke_phone phone" && \
-	make -s chmod;
+	make -Bs chmod;
 
 bd:
-	make -s chmod && \
+	make -Bs chmod && \
 	scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa bre:/var/www/upload/brekeke_phonedev.ipa && \
 	rm -rf ../0/build/BrekekePhone && \
-	make -s chmod && \
+	make -Bs chmod && \
 	cd android && ./gradlew clean && ./gradlew assembleRelease && \
 	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phonedev.apk && \
-	cd .. && make -s chmod;
+	cd .. && make -Bs chmod;
 
 bp:
-	make -s chmod && \
+	make -Bs chmod && \
 	scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/upload/brekeke_phone.ipa && \
 	rm -rf ../0/build/BrekekePhone && \
-	make -s chmod && \
+	make -Bs chmod && \
 	cd android && ./gradlew clean && ./gradlew assembleRelease && \
 	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phone.apk && \
-	cd .. && make -s chmod;
+	cd .. && make -Bs chmod;
 
 chmod:
 	ssh bre "sudo chmod -R a+rwX /var/www";

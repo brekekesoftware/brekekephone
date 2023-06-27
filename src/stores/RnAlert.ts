@@ -33,7 +33,7 @@ export type TRnAlert =
     }
 
 export class RnAlertStore {
-  // Need to put `alerts` out of the observable
+  // need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
   @observable alertsCount = 0
   alerts: TRnAlert[] = []
@@ -43,8 +43,8 @@ export class RnAlertStore {
     this.alertsCount = this.alerts.length
   }
   @action error = (a: ErrorRnAlert) => {
-    // Log error to save it to the debug log
-    // Convert error message to string if it was constructed using intlDebug
+    // log error to save it to the debug log
+    // convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err
     const en = a.message?.en
     if (err) {

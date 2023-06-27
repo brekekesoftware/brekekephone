@@ -3,10 +3,10 @@ import './utils/captureConsoleOutput'
 import './polyfill'
 import './polyfill/mobx'
 import './utils/validator'
-import './stores/Nav2' // Fix circular dependencies
-import './stores/callStore2' // Fix circular dependencies
-import './stores/authStore2' // Fix circular dependencies
-import './api/syncPnToken2' // Fix circular dependencies
+import './stores/Nav2' // fix circular dependencies
+import './stores/callStore2' // fix circular dependencies
+import './stores/authStore2' // fix circular dependencies
+import './api/syncPnToken2' // fix circular dependencies
 import './brekekejs/phonebook'
 import './brekekejs/webnotification'
 

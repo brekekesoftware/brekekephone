@@ -41,7 +41,7 @@ export const updatePhoneIndex = async (
       tenant: pbxTenant,
       extension: pbxUsername,
       properties: {
-        // See ./pbx getExtensionProperties for the detail of parameters
+        // see ./pbx getExtensionProperties for the detail of parameters
         pnumber: extProps.phones.map(({ id }) => id).join(','),
         [`p${phoneIndex}_ptype`]: phone.type,
       },
@@ -52,7 +52,7 @@ export const updatePhoneIndex = async (
   }
   //
   if (phoneTypeCorrect && phoneIdCorrect) {
-    // Do nothing
+    // do nothing
   } else if (phoneTypeCorrect && !phoneIdCorrect) {
     phone.id = expectedPhoneId
     await setExtensionProperties()

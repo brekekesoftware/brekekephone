@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import { filesize } from 'filesize'
 import { debounce } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
@@ -18,9 +19,9 @@ declare global {
 }
 
 let store = null as any as DebugStore
-// The location of 2 log file, log2 will be deleted and replaced by log1
+// the location of 2 log file, log2 will be deleted and replaced by log1
 //    when log1 reach the limit, then log1 will be reset
-// The `log` will be used for combining the two above files in ios
+// the `log` will be used for combining the two above files in ios
 //    because in ios Share only works with `file://...` url
 const [log, log1, log2] = ['log', 'log1', 'log2'].map(n =>
   Platform.OS === 'web'
@@ -31,9 +32,9 @@ const maximumBytes = 100000 // 100KB
 
 class DebugStore {
   loading = true
-  // By default only error logs will be captured
-  // If this flag is turned on, all logs will be captured
-  // This flag will be saved to storage and we will read it again
+  // by default only error logs will be captured
+  // if this flag is turned on, all logs will be captured
+  // this flag will be saved to storage and we will read it again
   //    as soon as possible when app starts up
   @observable captureDebugLog = false
   toggleCaptureDebugLog = () => {
@@ -44,14 +45,15 @@ class DebugStore {
     )
   }
 
-  // Cache the size of log files
+  // cache the size of log files
   @observable logSizes = [0, 0]
   getLogSize = () => this.logSizes.reduce((sum, s) => sum + s, 0)
+  getLogSizeStr = () => `${filesize(this.getLogSize())}`
 
-  // Use a queue to write logs to file in batch
+  // use a queue to write logs to file in batch
   logQueue: string[] = []
 
-  // The function to be called in src/utils/captureConsoleOutput.ts
+  // the function to be called in src/utils/captureConsoleOutput.ts
   captureConsoleOutput = (lv: string, msg: string) => {
     if (lv !== 'error' && lv !== 'warn' && !this.captureDebugLog) {
       return
@@ -83,11 +85,11 @@ class DebugStore {
     }
     const msg = this.logQueue.join('\n')
     this.logQueue = []
-    // Append to log1
+    // append to log1
     await RNFS.appendFile(log1, msg + '\n', 'utf8')
     const { size } = await RNFS.stat(log1)
     this.logSizes[0] = Number(size)
-    // If the size of log1 passes the limit
+    // if the size of log1 passes the limit
     //    we will copy it to log2 and clear the log1
     if (this.logSizes[0] > maximumBytes) {
       this.logSizes[1] = this.logSizes[0]
@@ -115,7 +117,7 @@ class DebugStore {
     const [f0, f1] = await Promise.all(promises)
     const title = `brekeke_phone_log_${moment().format('YYMMDDHHmmss')}.txt`
     let url: string | null = null
-    // Share works inconsistency between android and ios
+    // share works inconsistency between android and ios
     if (Platform.OS === 'ios') {
       await RNFS.writeFile(log, f1 + f0, 'utf8')
       url = log // only works with `file://...`
@@ -215,7 +217,7 @@ class DebugStore {
     )
   }
   autoCheckForUpdate = () => {
-    // Check for update in every day
+    // check for update in every day
     if (Date.now() - this.remoteVersionLastCheck > 24 * 60 * 60 * 1000) {
       this.checkForUpdate()
     }
@@ -223,7 +225,7 @@ class DebugStore {
 
   init = async () => {
     this.loading = true
-    // Read size of log files using stat for the initial state
+    // read size of log files using stat for the initial state
     const promises = [log1, log2].map((l, i) =>
       RNFS.exists(l)
         .then(e => (e ? RNFS.stat(l) : undefined))
@@ -235,8 +237,8 @@ class DebugStore {
           })
         }),
     )
-    // Delete the combined unused log file
-    // This file will be created every time user request opening the log file
+    // delete the combined unused log file
+    // this file will be created every time user request opening the log file
     //    (ios only because in ios Share only works with `file://...` url)
     promises.push(
       RNFS.exists(log)
@@ -248,7 +250,7 @@ class DebugStore {
           })
         }),
     )
-    // Read debug log settings from storage
+    // read debug log settings from storage
     promises.push(
       RnAsyncStorage.getItem('captureDebugLog')
         .then(v => v && (this.captureDebugLog = JSON.parse(v)))
@@ -259,7 +261,7 @@ class DebugStore {
           })
         }),
     )
-    // Read remote app version from storage
+    // read remote app version from storage
     promises.push(
       RnAsyncStorage.getItem('remoteVersion')
         .then(v => v && JSON.parse(v))
@@ -281,11 +283,11 @@ class DebugStore {
 }
 
 if (Platform.OS !== 'web') {
-  // Assign to window to use in src/utils/captureConsoleOutput.ts
+  // assign to window to use in src/utils/captureConsoleOutput.ts
   store = window.debugStore = new DebugStore()
 
   // TODO call init together with other store
-  // Need to determine the order of init functions and call them using await
+  // need to determine the order of init functions and call them using await
   store.init()
 }
 export const debugStore = store

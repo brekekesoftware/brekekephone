@@ -20,8 +20,8 @@ class BrekekeLPCManager: NSObject {
 
   override init() {
     super.init()
-    // Create, update, or delete the push manager when
-    // SettingsManager.hostSSIDPublisher produces a new value.
+    // create, update, or delete the push manager when
+    // receiving new value from SettingsManager.hostSSIDPublisher
     SettingsManager.shared.settingsDidWritePublisher
       .compactMap { settings in
         settings.pushManagerSettings
@@ -40,8 +40,8 @@ class BrekekeLPCManager: NSObject {
           var pm = pushManager ?? NEAppPushManager()
           pm.delegate = BrekekeLPCManager.shared
           self.logger.log("pm.delegate = nil? \(pm.delegate == nil)")
-          // Create a new push manager or update the existing instance with the new
-          // values from settings.
+          // create a new push manager or update the existing instance with the
+          // new values from settings
           logger.log("Saving new push manager configuration.")
           publisher = save(
             pushManager: pm,
@@ -51,7 +51,7 @@ class BrekekeLPCManager: NSObject {
             NEAppPushManager,
             Error
           > in
-            // Reload the push manager.
+            // reload the push manager
             pushManager.delegate = BrekekeLPCManager.shared
             self.logger
               .log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
@@ -63,8 +63,8 @@ class BrekekeLPCManager: NSObject {
           .eraseToAnyPublisher()
           logger.log("Saving new push \(String(describing: publisher))")
         } else if let pushManager = pushManager {
-          // Remove the push manager and map its value to nil to indicate removal of
-          // the push manager to the downstream subscribers.
+          // remove the push manager and map its value to nil to indicate
+          // removal of the push manager to the downstream subscribers
           logger.log("Removing push manager configuration.")
           pushManager.delegate = BrekekeLPCManager.shared
           self.logger
@@ -104,9 +104,10 @@ class BrekekeLPCManager: NSObject {
 
     logger.log("Loading existing push manager.")
 
-    // It is important to call loadAllFromPreferences as early as possible during
-    // app initialization in order to set the delegate on your
-    // NEAppPushManagers. This allows your NEAppPushManagers to receive an incoming call.
+    // it is important to call loadAllFromPreferences as early as possible
+    // during app initialization in order to set the delegate on
+    // your NEAppPushManagers
+    // this allows your NEAppPushManagers to receive an incoming call
     NEAppPushManager.loadAllFromPreferences { managers, error in
       if let error = error {
         self.logger
@@ -125,9 +126,9 @@ class BrekekeLPCManager: NSObject {
         return
       }
       self.logger.log("to load all managers from preferences:")
-      // The manager's delegate must be set synchronously in this closure in order
-      // to avoid race conditions when the app launches in response
-      // to an incoming call.
+      // the manager's delegate must be set synchronously in this closure in
+      // order to avoid race conditions when the app launches in response
+      // to an incoming call
       manager.delegate = BrekekeLPCManager.shared
       self.logger.log("manager.delegate = nil? \(manager.delegate == nil)")
 
@@ -157,17 +158,17 @@ class BrekekeLPCManager: NSObject {
     pushManager.isEnabled = true
     logger
       .log("pushProviderBundleIdentifier:\(pushManagerSettings)")
-    // Store configuration so it can be retrieved later in Extension
+    // store configuration so it can be retrieved later in Extension
     pushManager.providerConfiguration = [
       "host": pushManagerSettings.host,
       "port": pushManagerSettings.port,
       "tlsKeyHash": pushManagerSettings.tlsKeyHash,
     ]
-    // Set wifi matches
+    // set wifi matches
     pushManager.matchSSIDs = !pushManagerSettings.remoteSsids
       .isEmpty ? pushManagerSettings.remoteSsids : pushManagerSettings
       .localSsids
-    // Set LTE matches (currently not using)
+    // set LTE matches (currently not using)
     if !pushManagerSettings.mobileCountryCode.isEmpty,
        !pushManagerSettings.mobileNetworkCode.isEmpty {
       let privateLTENetwork = NEPrivateLTENetwork()
@@ -217,7 +218,7 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       logger.log("userInfo dictionary is missing a required field")
       return
     }
-    // Handle chat message
+    // handle chat message
     guard payload["x_pn-id"] is String else {
       let content = UNMutableNotificationContent()
       let body = payload["body"] as! String
@@ -245,7 +246,7 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       }
       return
     }
-    // Handle PN call
+    // handle PN call
     guard let uuid = payload["callkeepUuid"] as? String else {
       logger
         .log("userInfo dictionary is missing a required callkeepUuid field ")

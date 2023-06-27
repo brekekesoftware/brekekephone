@@ -464,7 +464,7 @@ export type Session = {
   videoClientSessionTable: {
     [id: string]: Session
   }
-  // Unused properties
+  // unused properties
   answering: boolean
   audio: boolean
   video: boolean

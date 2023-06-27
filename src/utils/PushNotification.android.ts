@@ -1,11 +1,16 @@
 import './callkeep'
 
 import { AppRegistry } from 'react-native'
-import FCM, { FCMEvent, Notification } from 'react-native-fcm'
+import {
+  Notification,
+  Notifications,
+  Registered,
+  RegistrationError,
+} from 'react-native-notifications'
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
-import { parse, toXPN } from './PushNotification-parse'
+import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
 let fcmPnToken = ''
@@ -15,35 +20,22 @@ const onToken = (t: string) => {
   }
 }
 
-const onNotification = async (n0: Notification, initApp: Function) => {
+const onNotification = async (
+  n0: { [k: string]: unknown },
+  initApp: Function,
+) => {
   try {
     await initApp()
     // flush initial notification
-    getInitialNotifications().then(ns =>
-      ns.forEach(n => onNotification(n, initApp)),
-    )
+    if (!n0?.callkeepUuid) {
+      getInitialNotifications().then(ns =>
+        ns.forEach(n => onNotification(n, initApp)),
+      )
+    }
     const n = await parse(n0)
     if (!n) {
       return
     }
-    //
-    FCM.presentLocalNotification({
-      ...n,
-      ...toXPN(n),
-      body: 'Click to view',
-      title: n.body,
-      number: 0,
-      priority: 'high',
-      show_in_foreground: true,
-      local_notification: true,
-      wake_screen: true,
-      ongoing: false,
-      lights: true,
-      channel: 'default',
-      icon: 'ic_launcher',
-      my_custom_data: 'local_notification',
-      is_local_notification: 'local_notification',
-    })
   } catch (err) {
     console.error('PushNotification.android.ts onNotification error:', err)
   }
@@ -56,23 +48,86 @@ export const PushNotification = {
   register: async (initApp: Function) => {
     try {
       initApp()
-      await FCM.requestPermissions()
-      await FCM.createNotificationChannel({
-        id: 'default',
-        name: 'Brekeke Phone',
-        description: 'Brekeke Phone notification channel',
-        priority: 'high',
+      const hasPermissions: boolean =
+        await Notifications.isRegisteredForRemoteNotifications()
+
+      if (!hasPermissions) {
+        throw new Error("Don't have Permissions")
+      }
+
+      Notifications.registerRemoteNotifications()
+
+      const events = Notifications.events()
+      events.registerRemoteNotificationsRegistered((e: Registered) => {
+        onToken(e.deviceToken)
       })
-      FCM.on(FCMEvent.RefreshToken, onToken)
-      FCM.on(FCMEvent.Notification, (n: Notification) =>
-        onNotification(n, initApp),
+
+      events.registerRemoteNotificationsRegistrationFailed(
+        (e: RegistrationError) => {
+          console.error('Failed to register  remote notification', e)
+        },
       )
-      await FCM.getFCMToken().then(onToken)
-      await getInitialNotifications().then(ns =>
-        ns.forEach(n => onNotification(n, initApp)),
+
+      // set notification channel for normal case
+      Notifications.setNotificationChannel({
+        // have to set channel default
+        // https://github.com/wix/react-native-notifications/issues/869#issuecomment-1157869452
+        channelId: 'default',
+        name: 'Brekeke Phone',
+        importance: 5,
+        description: 'Brekeke Phone notification channel',
+        // enableLights: true,
+        enableVibration: true,
+        // optional
+        // groupId: 'my-group',
+        // optional, will be presented in Android OS notification permission
+        // groupName: 'My Group',
+        // showBadge: true,
+        // place this in android/app/src/main/res/raw/ding.mp3
+        // soundFile: 'ding.mp3',
+        vibrationPattern: [200, 1000, 500, 1000, 500],
+      })
+
+      // set notification channel for chat
+      Notifications.setNotificationChannel({
+        channelId: 'brekeke_chat',
+        name: 'Brekeke Phone',
+        importance: 5,
+        description: 'Brekeke Phone notification chat channel ',
+        // enableLights: true,
+        enableVibration: true,
+        // groupId: 'my-group',
+        // groupName: 'My Group',
+        // showBadge: true,
+        soundFile: 'ding.mp3',
+        vibrationPattern: [200, 1000, 500, 1000, 500],
+      })
+
+      // handle received PN
+      events.registerNotificationReceivedForeground(
+        (n: Notification, completion: Function) => {
+          const payload = n.payload?.payload || n.payload
+          onNotification(payload, initApp)
+        },
       )
-      // killed state local PN interaction?
-      await FCM.getInitialNotification().then(n => onNotification(n, initApp))
+
+      events.registerNotificationOpened(
+        (n: Notification, completion: Function, action: any) => {
+          const payload = n.payload?.payload || n.payload
+          onNotification(payload, initApp)
+        },
+      )
+
+      events.registerNotificationReceivedBackground((n: Notification) => {
+        const payload = n.payload?.payload || n.payload
+        onNotification(payload, initApp)
+      })
+      // if the app was launched by a push notification
+      // this promise resolves to an object of type Notification
+      await Notifications.getInitialNotification().then(n => {
+        const payload = n?.payload?.payload || n?.payload
+        onNotification(payload, initApp)
+      })
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to initialize push notification`,
@@ -98,7 +153,9 @@ const getInitialNotifications = async () => {
     return []
   }
   try {
-    return (JSON.parse(n) as string[]).map(s => JSON.parse(s) as Notification)
+    return (JSON.parse(n) as string[]).map(
+      s => JSON.parse(s) as { [k: string]: unknown },
+    )
   } catch (err) {
     console.error(`getInitialNotifications n=${n} error:`, err)
     return []

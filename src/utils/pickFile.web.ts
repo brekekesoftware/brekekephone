@@ -2,8 +2,8 @@ import { mdiDotsHorizontal } from '../assets/icons'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 
-// Need to declare native intl here
-// So it will get bundled when build intl via web
+// need to declare native intl here
+// so it will get bundled when build intl via web
 export const pickFileNativeOptions = () => [
   {
     key: 0,

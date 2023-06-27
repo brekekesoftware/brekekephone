@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import { FC, ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { Constants, uc } from '../api/uc'
+import { uc } from '../api/uc'
 import {
   mdiAccountGroup,
   mdiPhoneIncoming,
@@ -10,6 +10,7 @@ import {
   mdiPhoneOutgoing,
 } from '../assets/icons'
 import { Conference } from '../brekekejs'
+import { Constants } from '../brekekejs/ucclient'
 import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'

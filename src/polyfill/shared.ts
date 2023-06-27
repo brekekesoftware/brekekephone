@@ -13,6 +13,6 @@ declare global {
   }
 }
 
-// Dependency for brekekejs
+// dependency for brekekejs
 window.JsSIP = window.JsSIP || JsSIP
 window.CryptoJS = window.CryptoJS || { MD5 }

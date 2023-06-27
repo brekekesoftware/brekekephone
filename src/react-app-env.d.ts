@@ -6,18 +6,6 @@ declare module 'jssip' {
   export default m
 }
 
-declare module 'react-native-voip-push-notification' {
-  const m: {
-    presentLocalNotification: Function
-    addEventListener: Function
-    registerVoipToken: Function
-    requestPermissions: Function
-    RNVoipPushRemoteNotificationsRegisteredEvent: string
-    RNVoipPushRemoteNotificationReceivedEvent: string
-  }
-  export default m
-}
-
 declare module 'validatorjs/src/lang/en' {
   const en: { [k: string]: string }
   export default en

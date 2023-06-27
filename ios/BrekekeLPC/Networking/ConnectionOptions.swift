@@ -74,7 +74,7 @@ public enum ConnectionOptions {
         self.publicKeyHash = publicKeyHash
       }
 
-      // Attempt to verify the pinned certificate.
+      // attempt to verify the pinned certificate
       public var options: NWProtocolTLS.Options {
         let options = NWProtocolTLS.Options()
 
@@ -93,12 +93,12 @@ public enum ConnectionOptions {
 
             guard keyHash == publicKeyHash
             else {
-              // Presented certificate doesn't match.
+              // presented certificate doesn't match
               secProtocolVerifyComplete(false)
               return
             }
 
-            // Presented certificate matches the pinned cert.
+            // presented certificate matches the pinned cert
             secProtocolVerifyComplete(true)
           },
           dispatchQueue
