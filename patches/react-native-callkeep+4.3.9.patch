@@ -380,7 +380,7 @@ index f53c052..b8a0e24 100644
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..a3718bf 100644
+index e67c3cd..543f225 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -160,6 +160,7 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
@@ -448,27 +448,26 @@ index e67c3cd..a3718bf 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -861,6 +873,11 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -861,6 +873,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][getProviderConfiguration]");
  #endif
-+    NSString *localizedName = @"unknown";
-+    if (settings && settings[@"appName"]) {
++    NSString *localizedName = @"Brekeke Phone";
++    if (settings[@"appName"]) {
 +        localizedName = settings[@"appName"];
 +    }
-+
      CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
      providerConfiguration.supportsVideo = YES;
      providerConfiguration.maximumCallGroups = 3;
-@@ -876,8 +893,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -876,8 +892,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
      if (settings[@"maximumCallsPerCallGroup"]) {
          providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
      }
 +    NSString *img = @"callkit.png";
      if (settings[@"imageName"]) {
 -        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:settings[@"imageName"]]);
-+       img = settings[@"imageName"];
-+      providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:img]);
++        img = settings[@"imageName"];
++        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:img]);
      }
      if (settings[@"ringtoneSound"]) {
          providerConfiguration.ringtoneSound = settings[@"ringtoneSound"];
