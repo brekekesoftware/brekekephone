@@ -1,3 +1,81 @@
+diff --git a/node_modules/react-native-callkeep/.gitignore b/node_modules/react-native-callkeep/.gitignore
+new file mode 100644
+index 0000000..539c60d
+--- /dev/null
++++ b/node_modules/react-native-callkeep/.gitignore
+@@ -0,0 +1,72 @@
++# Xcode
++#
++build/
++*.pbxuser
++!default.pbxuser
++*.mode1v3
++!default.mode1v3
++*.mode2v3
++!default.mode2v3
++*.perspectivev3
++!default.perspectivev3
++xcuserdata
++*.xccheckout
++*.moved-aside
++DerivedData
++*.hmap
++*.ipa
++*.xcuserstate
++ios/.xcode.env.local
++# Android/IntelliJ
++#
++build/
++android/app/src/debug/
++.idea
++.gradle
++local.properties
++*.iml
++*.hprof
++.cxx/
++*.keystore
++
++# fastlane
++#
++# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
++# screenshots whenever they are needed.
++# For more information about the recommended setup visit:
++# https://docs.fastlane.tools/best-practices/source-control/
++
++**/fastlane/report.xml
++**/fastlane/Preview.html
++**/fastlane/screenshots
++**/fastlane/test_output
++
++# Bundle artifact
++*.jsbundle
++
++# Ruby / CocoaPods
++/ios/Pods/
++/vendor/bundle/
++
++# Temporary files created by Metro to check the health of the file watcher
++.metro-health-check*
++
++# node.js
++#
++node_modules/
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++package-lock.json
++
++# misc
++.vscode/
++.DS_Store
++.env.local
++.env.development.local
++.env.test.local
++.env.production.local
++.env
++coverage
++.husky/_
++.husky/.gitignore
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 index 17ffe48..abbc4a1 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
