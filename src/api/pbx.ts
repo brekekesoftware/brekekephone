@@ -1,5 +1,3 @@
-import '../brekekejs/pal'
-
 import EventEmitter from 'eventemitter3'
 import { Platform } from 'react-native'
 

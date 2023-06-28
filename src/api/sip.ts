@@ -1,5 +1,3 @@
-import '../brekekejs/webrtcclient'
-
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
