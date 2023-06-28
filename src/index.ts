@@ -7,6 +7,8 @@ import './stores/Nav2' // fix circular dependencies
 import './stores/callStore2' // fix circular dependencies
 import './stores/authStore2' // fix circular dependencies
 import './api/syncPnToken2' // fix circular dependencies
+import './brekekejs/pal'
+import './brekekejs/webrtcclient'
 import './brekekejs/phonebook'
 import './brekekejs/webnotification'
 

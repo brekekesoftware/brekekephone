@@ -3,7 +3,7 @@ import { action, Lambda, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { uc } from '../api/uc'
-import UCClient from '../brekekejs/ucclient'
+import { Errors } from '../brekekejs/ucclient'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
 import { ChatMessage, chatStore } from './chatStore'
@@ -84,7 +84,7 @@ class AuthUC {
     const s = getAuthStore()
     s.ucState = 'failure'
     s.ucTotalFailure += 1
-    s.ucLoginFromAnotherPlace = e.code === UCClient.Errors.PLEONASTIC_LOGIN
+    s.ucLoginFromAnotherPlace = e.code === Errors.PLEONASTIC_LOGIN
     this.authWithCheck()
   }
   @action private loadUsers = () => {
