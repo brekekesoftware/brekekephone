@@ -791,7 +791,8 @@ export class CallStore {
   @action toggleLoudSpeaker = () => {
     if (Platform.OS !== 'web') {
       this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
-      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+      BrekekeUtils.setForceSpeakerOnForSDK31(this.isLoudSpeakerEnabled)
+      // IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
     }
   }
   @observable newVoicemailCount = 0

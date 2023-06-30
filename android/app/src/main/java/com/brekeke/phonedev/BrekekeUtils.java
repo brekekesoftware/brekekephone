@@ -5,15 +5,22 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceCallback;
+import android.media.AudioDeviceInfo;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.AudioManager.OnModeChangedListener;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
+import androidx.annotation.RequiresApi;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,8 +37,10 @@ import io.wazo.callkeep.VoiceConnectionService;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -41,9 +50,8 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class BrekekeUtils extends ReactContextBaseJavaModule {
+public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioManager.OnAudioFocusChangeListener{
   public static RCTDeviceEventEmitter eventEmitter;
-
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -60,9 +68,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void emit(String name, String data) {
+    Log.e("dev::", "BrekekeUtils::emit:name: "+name+ ":data:"+ data );
     try {
       eventEmitter.emit(name, data);
     } catch (Exception e) {
+      Log.e("dev::", "BrekekeUtils::emit: "+ e.getMessage() );
     }
   }
 
@@ -92,16 +102,129 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
 
+
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
+    Log.e("dev::", "dev::BrekekeUtils: ");
+//    audioManager = ctx.getSystemService(AudioManager.class);
+    am.registerAudioDeviceCallback(audioDeviceCallback, null);
+    this.listenerDeviceAudio();
+    this.listenerAudioMode();
+//    requestFocusAudio();
   }
 
+  public void requestFocusAudio(){
+    AudioAttributes mAudioAttributes = new AudioAttributes.Builder()
+     .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+     .build();
+
+
+    AudioFocusRequest mAudioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+     .setAudioAttributes(mAudioAttributes)
+     .setAcceptsDelayedFocusGain(false)
+     .setWillPauseWhenDucked(false)
+     .setOnAudioFocusChangeListener(this)
+     .build();
+
+    int requestAudioFocusRes = am.requestAudioFocus(mAudioFocusRequest);
+    String requestAudioFocusResStr;
+    switch (requestAudioFocusRes) {
+      case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+        requestAudioFocusResStr = "AUDIOFOCUS_REQUEST_FAILED";
+        break;
+      case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
+        requestAudioFocusResStr = "AUDIOFOCUS_REQUEST_GRANTED";
+        break;
+      case AudioManager.AUDIOFOCUS_REQUEST_DELAYED:
+        requestAudioFocusResStr = "AUDIOFOCUS_REQUEST_DELAYED";
+        break;
+      default:
+        requestAudioFocusResStr = "AUDIOFOCUS_REQUEST_UNKNOWN";
+        break;
+    }
+    Log.e("dev::", "dev::requestAudioFocusRes: "+ requestAudioFocusResStr );
+  }
+  private void listenerAudioMode(){
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+      AudioManager.OnModeChangedListener listener = new OnModeChangedListener() {
+        @Override
+        public void onModeChanged(int mode) {
+          switch (mode){
+            case AudioManager.MODE_NORMAL:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_NORMAL " );
+              break;
+            case AudioManager.MODE_INVALID:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_INVALID " );
+              break;
+            case AudioManager.MODE_CURRENT:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_CURRENT " );
+              break;
+            case AudioManager.MODE_RINGTONE:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_RINGTONE " );
+              break;
+            case AudioManager.MODE_IN_CALL:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_IN_CALL " );
+              break;
+            case AudioManager.MODE_IN_COMMUNICATION:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION " );
+              break;
+            case AudioManager.MODE_CALL_SCREENING:
+              Log.w("dev::", "dev::onModeChanged:mode::AudioManager.MODE_CALL_SCREENING " );
+              break;
+            default:
+              Log.w("dev::", "dev::onModeChanged:mode:: "+ mode );
+              break;
+          }
+
+        }
+      };
+      am.addOnModeChangedListener(ctx
+       .getMainExecutor(), listener);
+    }
+  }
+  private void listenerDeviceAudio(){
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+    AudioManager.OnCommunicationDeviceChangedListener listener = new AudioManager.OnCommunicationDeviceChangedListener() {
+        @Override
+        public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
+          // Handle changes
+          Log.e("dev::", "dev::onCommunicationDeviceChanged:AudioDeviceInfo:: "+ device.getType() + "::" + device.getProductName());
+        }
+      };
+
+    am.addOnCommunicationDeviceChangedListener(ctx
+     .getMainExecutor(), listener);
+    }
+  }
+  public AudioDeviceCallback audioDeviceCallback = new AudioDeviceCallback() {
+    @Override
+    public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
+      for (AudioDeviceInfo de:addedDevices
+      ) {
+        Log.e("dev::", "dev::onAudioDevicesAdded:AudioDeviceInfo:: "+ de.getType() +"::"+ de.getProductName() );
+      }
+
+    }
+
+    @Override
+    public void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
+      // Handle device removal
+      Log.e("dev::", "dev::onAudioDevicesRemoved:AudioDeviceInfo:: "+ Arrays.toString(removedDevices) );
+    }
+  };
   @Override
   public void initialize() {
     super.initialize();
-    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
+    Log.e("dev::", "dev::initialize: ");
+
+    try {
+      eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
+    }catch (Exception ex){
+      Log.e("dev::", "dev::initialize:ex:: "+ ex.getMessage());
+    }
   }
 
   @Override
@@ -550,10 +673,51 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       mp = null;
     }
   }
+  public void speakerOn(Boolean isSpeakerOn){
+    //  UiThreadUtil.runOnUiThread(() -> {
+    am = ctx.getSystemService(AudioManager.class);
+    this.requestFocusAudio();
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+      Log.e("dev::", "dev::setForceSpeakerOnForSDK31::isSpeakerOn::"+ isSpeakerOn);
+      // Get an AudioManager instance
+      Integer targetTypes = isSpeakerOn?AudioDeviceInfo.TYPE_BUILTIN_SPEAKER:AudioDeviceInfo.TYPE_BUILTIN_EARPIECE;
+      AudioDeviceInfo speakerDevice = null;
+      List<AudioDeviceInfo>  devices = am.getAvailableCommunicationDevices();
 
+      for (AudioDeviceInfo device : devices) {
+        Log.d("dev::", "getAvailableCommunicationDevices:: "+ device.getType());
+      }
+      for (AudioDeviceInfo device : devices) {
+        if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) {
+          speakerDevice = device;
+          break;
+        }
+      }
+      if (speakerDevice != null) {
+        am.setMode(AudioManager.MODE_NORMAL);
+        Log.e("dev::", "setForceSpeakerOnForSDK31:getMode::"+ am.getMode());
+        // Turn speakerphone ON.
+        Log.e("dev::", "dev::setForceSpeakerOnForSDK31::speakerDevice::"+ speakerDevice.getType()+"::"+ speakerDevice.getProductName());
+        boolean result = am.setCommunicationDevice(speakerDevice);
+        Log.e("dev::", "setForceSpeakerOnForSDK31:result::"+ result);
+        if (!result) {
+          // Handle error.
+          Log.e("dev::", "setForceSpeakerOnForSDK31:Error");
+        }
+        // Turn speakerphone OFF.
+//        audioManager.clearCommunicationDevice();
+      }
+    }
+//  });
+  }
   // ==========================================================================
   // react methods
 
+
+  @ReactMethod
+  public void setForceSpeakerOnForSDK31(Boolean isSpeakerOn){
+    speakerOn(isSpeakerOn);
+  }
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
@@ -835,5 +999,41 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
       p.resolve(-1d);
     }
+  }
+
+  @Override
+  public void onAudioFocusChange(int focusChange) {
+    String focusChangeStr;
+    switch (focusChange) {
+      case AudioManager.AUDIOFOCUS_GAIN:
+        focusChangeStr = "AUDIOFOCUS_GAIN";
+        break;
+      case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+        focusChangeStr = "AUDIOFOCUS_GAIN_TRANSIENT";
+        break;
+      case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
+        focusChangeStr = "AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE";
+        break;
+      case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+        focusChangeStr = "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK";
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS:
+        focusChangeStr = "AUDIOFOCUS_LOSS";
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+        focusChangeStr = "AUDIOFOCUS_LOSS_TRANSIENT";
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+        focusChangeStr = "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK";
+        break;
+      case AudioManager.AUDIOFOCUS_NONE:
+        focusChangeStr = "AUDIOFOCUS_NONE";
+        break;
+      default:
+        focusChangeStr = "AUDIOFOCUS_UNKNOW";
+        break;
+    }
+
+    Log.d("dev::", "dev::onAudioFocusChange(): " + focusChange + " - " + focusChangeStr);
   }
 }
