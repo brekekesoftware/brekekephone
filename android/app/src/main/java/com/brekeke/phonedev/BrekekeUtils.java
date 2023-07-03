@@ -122,7 +122,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
      .build();
 
 
-    AudioFocusRequest mAudioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+    AudioFocusRequest mAudioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
      .setAudioAttributes(mAudioAttributes)
      .setAcceptsDelayedFocusGain(false)
      .setWillPauseWhenDucked(false)
@@ -145,7 +145,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
         requestAudioFocusResStr = "AUDIOFOCUS_REQUEST_UNKNOWN";
         break;
     }
-    Log.e("dev::", "dev::requestAudioFocusRes: "+ requestAudioFocusResStr );
+    Log.e("dev::", "dev::AudioManager::requestAudioFocusRes: "+ requestAudioFocusResStr );
   }
   private void listenerAudioMode(){
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -642,7 +642,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
     if (mode == AudioManager.RINGER_MODE_VIBRATE) {
       return;
     }
-    am.setMode(AudioManager.MODE_RINGTONE);
+    Log.w("dev::", "dev::staticStartRingtone: ");
+//    am.setMode(AudioManager.MODE_RINGTONE);
     mp =
         MediaPlayer.create(
             c,
@@ -678,14 +679,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
     am = ctx.getSystemService(AudioManager.class);
     this.requestFocusAudio();
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      Log.e("dev::", "dev::setForceSpeakerOnForSDK31::isSpeakerOn::"+ isSpeakerOn);
+      Log.e("dev::", "dev::AudioManager::setForceSpeakerOnForSDK31::isSpeakerOn::"+ isSpeakerOn);
       // Get an AudioManager instance
       Integer targetTypes = isSpeakerOn?AudioDeviceInfo.TYPE_BUILTIN_SPEAKER:AudioDeviceInfo.TYPE_BUILTIN_EARPIECE;
       AudioDeviceInfo speakerDevice = null;
       List<AudioDeviceInfo>  devices = am.getAvailableCommunicationDevices();
 
       for (AudioDeviceInfo device : devices) {
-        Log.d("dev::", "getAvailableCommunicationDevices:: "+ device.getType());
+        Log.d("dev::", "AudioManager::getAvailableCommunicationDevices:: "+ device.getType());
       }
       for (AudioDeviceInfo device : devices) {
         if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) {
@@ -694,15 +695,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
         }
       }
       if (speakerDevice != null) {
-        am.setMode(AudioManager.MODE_NORMAL);
-        Log.e("dev::", "setForceSpeakerOnForSDK31:getMode::"+ am.getMode());
+//        am.setMode(AudioManager.MODE_NORMAL);
+        Log.e("dev::", "dev::AudioManager::setForceSpeakerOnForSDK31:getMode::"+ am.getMode());
         // Turn speakerphone ON.
-        Log.e("dev::", "dev::setForceSpeakerOnForSDK31::speakerDevice::"+ speakerDevice.getType()+"::"+ speakerDevice.getProductName());
+        Log.e("dev::", "dev::AudioManager::setForceSpeakerOnForSDK31::speakerDevice::"+ speakerDevice.getType()+"::"+ speakerDevice.getProductName());
         boolean result = am.setCommunicationDevice(speakerDevice);
-        Log.e("dev::", "setForceSpeakerOnForSDK31:result::"+ result);
+        Log.e("dev::", "dev::AudioManager::setForceSpeakerOnForSDK31:result::"+ result);
         if (!result) {
           // Handle error.
-          Log.e("dev::", "setForceSpeakerOnForSDK31:Error");
+          Log.e("dev::", "AudioManager::setForceSpeakerOnForSDK31:Error");
         }
         // Turn speakerphone OFF.
 //        audioManager.clearCommunicationDevice();
