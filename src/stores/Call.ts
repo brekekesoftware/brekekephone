@@ -94,9 +94,8 @@ export class Call {
     }
     const updateCallKeep = () => {
       RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-      if (Platform.OS === 'android') {
-        RNCallKeep.setOnHold(this.callkeepUuid, false)
-      }
+      RNCallKeep.setOnHold(this.callkeepUuid, false)
+      BrekekeUtils.setOnHold(this.callkeepUuid, false)
       this.callkeepAlreadyAnswered = true
     }
     const startCallKeepCall = async () => {
@@ -231,14 +230,7 @@ export class Call {
       this.store.setCurrentCallId(this.id)
     }
     if (!this.isAboutToHangup) {
-      if (this.callkeepUuid && !this.holding) {
-        if (Platform.OS === 'ios') {
-          void hackyToggleSpeaker
-        }
-        if (Platform.OS === 'android') {
-          RNCallKeep.setOnHold(this.callkeepUuid, false)
-        }
-      }
+      RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
       BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     }
     return fn(this.pbxTenant, this.pbxTalkerId)
@@ -250,9 +242,7 @@ export class Call {
       return true
     }
     this.holding = !this.holding
-    if (this.callkeepUuid && !this.holding && Platform.OS === 'android') {
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
-    }
+    RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     if (typeof err !== 'boolean') {
       const message = this.holding
@@ -341,20 +331,6 @@ export class Call {
       err,
     })
   }
-}
-
-// hack to fix no voice after unhold using toggle loud speaker
-// this issue happens on ios only, toggle loud speaker reset the audio route
-// the actual issue could be related to ios audio route
-// related packages: callkeep, webrtc, incall-manager...
-export const hackyToggleSpeaker = async () => {
-  const c = getCallStore()
-  IncallManager.setForceSpeakerphoneOn(!c.isLoudSpeakerEnabled)
-  const conf = await pbx.getConfig()
-  const ms = Number(conf?.['webphone.hacky.speaker']) || 500
-  console.log(`webphone.hacky.speaker ${ms}ms`)
-  await waitTimeout(ms)
-  IncallManager.setForceSpeakerphoneOn(c.isLoudSpeakerEnabled)
 }
 
 export type CallConfig = {
