@@ -233,7 +233,7 @@ export class Call {
     if (!this.isAboutToHangup) {
       if (this.callkeepUuid && !this.holding) {
         if (Platform.OS === 'ios') {
-          hackyToggleSpeaker()
+          void hackyToggleSpeaker
         }
         if (Platform.OS === 'android') {
           RNCallKeep.setOnHold(this.callkeepUuid, false)
