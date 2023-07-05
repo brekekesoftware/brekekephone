@@ -1,3 +1,8 @@
+#### 2.12.1
+
+- Upgrade all packages and dependencies
+- Fix ios no audio in case of multiple call, previously using hacky toggle speaker, now has been fixed properly
+
 #### 2.12.0
 
 - Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen
