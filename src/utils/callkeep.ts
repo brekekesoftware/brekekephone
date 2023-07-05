@@ -3,7 +3,6 @@ import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
-import { hackyToggleSpeaker } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -175,16 +174,14 @@ export const setupCallKeep = async () => {
   ) => {
     // only in ios
     console.log('CallKeep debug: didActivateAudioSession')
-    // TODO:
-    // hackyToggleSpeaker is only to fix some cases in multi calls
-    // here if we call it, it may affect other cases such as single call?
-    hackyToggleSpeaker()
+    BrekekeUtils.webrtcSetAudioEnabled(true)
   }
   const didDeactivateAudioSession = (
     e: EventsPayload['didDeactivateAudioSession'],
   ) => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
+    BrekekeUtils.webrtcSetAudioEnabled(false)
     const cs = getCallStore()
     cs.calls
       .filter(c => c.answered && !c.holding && c.id !== cs.ongoingCallId)
