@@ -3,7 +3,7 @@
 #import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE (BrekekeUtils, NSObject)
-RCT_EXTERN_METHOD(webrtcSetAudioEnabled : (nonnull Boolean *)enabled)
+RCT_EXTERN_METHOD(webrtcSetAudioEnabled : (BOOL)enabled)
 RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)token tokenVoip
                   : (NSString *)tokenVoip username

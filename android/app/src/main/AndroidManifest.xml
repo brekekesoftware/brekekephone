@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-feature android:name="android.hardware.camera" />
   <uses-feature android:name="android.hardware.camera.autofocus" />
+  <uses-feature android:name="android.hardware.audio.output" />
+  <uses-feature android:name="android.hardware.microphone" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
   />
-  <uses-permission android:name="android.permission.BLUETOOTH" />
+  <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
   <uses-permission android:name="android.permission.CALL_PHONE" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -14,6 +16,16 @@
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <!-- react-native-webrtc bluetooth -->
+  <uses-permission
+    android:name="android.permission.BLUETOOTH"
+    android:maxSdkVersion="30"
+  />
+  <uses-permission
+    android:name="android.permission.BLUETOOTH_ADMIN"
+    android:maxSdkVersion="30"
+  />
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
   <uses-permission
     android:name="android.permission.READ_PHONE_STATE"
     android:maxSdkVersion="29"
