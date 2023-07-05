@@ -30,6 +30,7 @@ type TBrekekeUtils = {
   hasIncomingCallActivity(uuid: string): Promise<boolean>
 
   // these methods only available on ios
+  webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
   stopRBT(): void
   enableLPC(
@@ -78,6 +79,7 @@ const Polyfill: TBrekekeUtils = {
   hasIncomingCallActivity: () => Promise.resolve(false),
 
   // these methods only available on ios
+  webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
   enableLPC: () => undefined,

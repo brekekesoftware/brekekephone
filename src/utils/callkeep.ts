@@ -175,16 +175,18 @@ export const setupCallKeep = async () => {
   ) => {
     // only in ios
     console.log('CallKeep debug: didActivateAudioSession')
+    BrekekeUtils.webrtcSetAudioEnabled(true)
     // TODO:
     // hackyToggleSpeaker is only to fix some cases in multi calls
     // here if we call it, it may affect other cases such as single call?
-    hackyToggleSpeaker()
+    void hackyToggleSpeaker
   }
   const didDeactivateAudioSession = (
     e: EventsPayload['didDeactivateAudioSession'],
   ) => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
+    BrekekeUtils.webrtcSetAudioEnabled(false)
     const cs = getCallStore()
     cs.calls
       .filter(c => c.answered && !c.holding && c.id !== cs.ongoingCallId)
