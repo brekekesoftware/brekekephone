@@ -4,17 +4,31 @@ import AVKit
 import Combine
 import Foundation
 import UIKit
+import WebRTC
 
 @available(iOS 13.0, *)
 @objc(BrekekeUtils)
 public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
   var audioSession: AVAudioSession!
+  var rtcAudioSession: RTCAudioSession!
 
   override init() {
     audio = nil
     audioSession = AVAudioSession.sharedInstance()
+    rtcAudioSession = RTCAudioSession.sharedInstance()
+    rtcAudioSession.useManualAudio = true
     print("BrekekeUtils.init(): initialized")
+  }
+
+  @objc
+  func webrtcSetAudioEnabled(_ enabled: Bool) {
+    if enabled {
+      rtcAudioSession.audioSessionDidActivate(audioSession)
+    } else {
+      rtcAudioSession.audioSessionDidDeactivate(audioSession)
+    }
+    rtcAudioSession.isAudioEnabled = enabled
   }
 
   @objc
