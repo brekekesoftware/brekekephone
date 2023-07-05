@@ -21,7 +21,7 @@ const setupCallKeepWithCheck = async () => {
     return
   }
 
-  // do not re-setup ios calls
+  // do not re-setup ios when having an ongoing call
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
   if (
     Platform.OS === 'ios' &&
@@ -60,12 +60,10 @@ const setupCallKeepWithCheck = async () => {
   }
   await RNCallKeep.setup(option)
     .then(() => {
-      if (Platform.OS === 'android') {
-        RNCallKeep.registerPhoneAccount(option)
-        RNCallKeep.registerAndroidEvents()
-        RNCallKeep.setAvailable(true)
-        RNCallKeep.canMakeMultipleCalls(true)
-      }
+      RNCallKeep.registerPhoneAccount(option)
+      RNCallKeep.registerAndroidEvents()
+      RNCallKeep.setAvailable(true)
+      RNCallKeep.canMakeMultipleCalls(true)
     })
     .catch((err: Error) => {
       if (AppState.currentState !== 'active') {
