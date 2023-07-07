@@ -67,11 +67,7 @@ export class Call {
       delete options.ignoreNav
     }
     this.answered = true
-    this.store.setCurrentCallId(this.id)
     // hold other calls
-    this.store.calls
-      .filter(c => c.id !== this.id && c.answered && !c.holding)
-      .forEach(c => c.toggleHoldWithCheck())
     sip.phone?.answer(
       this.id,
       options,
@@ -85,9 +81,12 @@ export class Call {
     this.answerCallKeep()
   }
   answerCallKeep = async () => {
+    this.store.setCurrentCallId(this.id)
     if (Platform.OS === 'web') {
       return
     }
+    this.callkeepAlreadyAnswered = true
+    await waitTimeout()
     if (this.incoming) {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
     } else {
@@ -96,7 +95,6 @@ export class Call {
     RNCallKeep.setCurrentCallActive(this.callkeepUuid)
     RNCallKeep.setOnHold(this.callkeepUuid, false)
     BrekekeUtils.setOnHold(this.callkeepUuid, false)
-    this.callkeepAlreadyAnswered = true
   }
 
   isAboutToHangup = false
@@ -189,12 +187,12 @@ export class Call {
   private prevHolding = false
 
   @action private toggleHold = () => {
-    const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
-    this.setHolding(!this.holding)
-    if (!this.isAboutToHangup && !this.holding) {
+    const action = this.holding ? 'unhold' : 'hold'
+    this.setHolding(action === 'hold')
+    if (!this.isAboutToHangup && action === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
-    return fn(this.pbxTenant, this.pbxTalkerId)
+    return pbx[`${action}Talker`](this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
   }
@@ -202,11 +200,13 @@ export class Call {
     if (err === true) {
       return true
     }
-    this.setHolding(!this.holding)
+    const prevAction = this.holding ? 'hold' : 'unhold'
+    this.setHolding(prevAction === 'unhold')
     if (typeof err !== 'boolean') {
-      const message = this.holding
-        ? intlDebug`Failed to unhold the call`
-        : intlDebug`Failed to hold the call`
+      const message =
+        prevAction === 'unhold'
+          ? intlDebug`Failed to unhold the call`
+          : intlDebug`Failed to hold the call`
       RnAlert.error({ message, err })
       // already show error, considered it's handled
       return true

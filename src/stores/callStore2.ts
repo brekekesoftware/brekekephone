@@ -152,6 +152,7 @@ export class CallStore {
   setCurrentCallId = (id: string) => {
     this.displayingCallId = id
     this.ongoingCallId = id
+    this.updateBackgroundCalls()
   }
   @observable ongoingCallId: string = ''
   @observable displayingCallId = ''
@@ -256,7 +257,6 @@ export class CallStore {
         delete p.remoteVideoStreamObject
       }
       if (!e.answered && p.answered) {
-        this.setCurrentCallId(e.id)
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
@@ -308,6 +308,10 @@ export class CallStore {
         c.getDisplayName() + ' ' + intl`Incoming call`,
         c.getDisplayName(),
       )
+    }
+    if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
+      c.callkeepUuid = this.callkeepUuidPending
+      this.callkeepUuidPending = ''
     }
     // get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
@@ -380,9 +384,6 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
-    this.calls
-      .filter(i => i.id !== c.id && i.answered && !i.holding)
-      .forEach(i => i.toggleHoldWithCheck())
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }
@@ -395,6 +396,7 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
+  private callkeepUuidPending = ''
   startCall: MakeCallFn = (number: string, ...args) => {
     const as = getAuthStore()
     as.sipTotalFailure = 0
@@ -438,8 +440,9 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
+      this.callkeepUuidPending = uuid
       this.setAutoEndCallKeepTimer(uuid)
+      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
     }
     // check for each 0.5s: auto update currentCallId
     // the call will be emitted from sip, we'll use interval here to set it
@@ -483,7 +486,7 @@ export class CallStore {
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
-  private updateBackgroundCalls = () => {
+  updateBackgroundCalls = () => {
     // auto hold background calls
     if (!this.ongoingCallId) {
       return

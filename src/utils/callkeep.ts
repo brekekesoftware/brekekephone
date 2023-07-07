@@ -180,10 +180,7 @@ export const setupCallKeep = async () => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
-    const cs = getCallStore()
-    cs.calls
-      .filter(c => c.answered && !c.holding && c.id !== cs.ongoingCallId)
-      .forEach(c => c.toggleHoldWithCheck())
+    getCallStore().updateBackgroundCalls()
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
