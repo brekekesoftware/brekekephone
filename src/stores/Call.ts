@@ -1,7 +1,6 @@
 import { action, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
-import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
@@ -9,7 +8,6 @@ import { Session, SessionStatus } from '../brekekejs'
 import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
-import { getAuthStore } from './authStore'
 import { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -90,46 +88,15 @@ export class Call {
     if (Platform.OS === 'web') {
       return
     }
-    const updateCallKeep = () => {
-      RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
-      BrekekeUtils.setOnHold(this.callkeepUuid, false)
-      this.callkeepAlreadyAnswered = true
-    }
-    const startCallKeepCall = async () => {
-      RNCallKeep.startCall(this.callkeepUuid, this.partyNumber, 'Brekeke Phone')
-      await waitTimeout()
-    }
-    const updateIncoming = () => {
+    if (this.incoming) {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
-      updateCallKeep()
-    }
-    const updateOutgoing = () => {
+    } else {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
-      updateCallKeep()
     }
-    // if it has callkeepUuid, which means: outgoing call / incoming PN call
-    if (this.callkeepUuid) {
-      if (this.incoming) {
-        updateIncoming()
-        return
-      }
-      if (Platform.OS === 'android') {
-        // android fix issue mix voice with gsm call
-        await startCallKeepCall()
-      }
-      updateOutgoing()
-      return
-    }
-    // if it doesnt have callkeepUuid, which means: incoming call without PN
-    // we'll treat them all as outgoing call in CallKeep
-    // we dont want to display incoming call here again
-    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
-      return
-    }
-    this.callkeepUuid = newUuid().toUpperCase()
-    await startCallKeepCall()
-    updateOutgoing()
+    RNCallKeep.setCurrentCallActive(this.callkeepUuid)
+    RNCallKeep.setOnHold(this.callkeepUuid, false)
+    BrekekeUtils.setOnHold(this.callkeepUuid, false)
+    this.callkeepAlreadyAnswered = true
   }
 
   isAboutToHangup = false
@@ -219,17 +186,13 @@ export class Call {
   }
 
   @observable holding = false
-  private prevHoling = false
+  private prevHolding = false
 
   @action private toggleHold = () => {
     const fn = this.holding ? pbx.unholdTalker : pbx.holdTalker
-    this.holding = !this.holding
+    this.setHolding(!this.holding)
     if (!this.isAboutToHangup && !this.holding) {
       this.store.setCurrentCallId(this.id)
-    }
-    if (!this.isAboutToHangup) {
-      RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
-      BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     }
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
@@ -239,9 +202,7 @@ export class Call {
     if (err === true) {
       return true
     }
-    this.holding = !this.holding
-    RNCallKeep.setOnHold(this.callkeepUuid, this.holding)
-    BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+    this.setHolding(!this.holding)
     if (typeof err !== 'boolean') {
       const message = this.holding
         ? intlDebug`Failed to unhold the call`
@@ -251,6 +212,15 @@ export class Call {
       return true
     }
     return false
+  }
+
+  private setHolding = (holding: boolean) => {
+    this.holding = holding
+    if (!this.callkeepUuid || this.isAboutToHangup) {
+      return
+    }
+    RNCallKeep.setOnHold(this.callkeepUuid, holding)
+    BrekekeUtils.setOnHold(this.callkeepUuid, holding)
   }
 
   @observable transferring = ''
@@ -263,18 +233,16 @@ export class Call {
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
-    this.prevHoling = this.holding
-    this.holding = true
+    this.prevHolding = this.holding
+    this.setHolding(true)
     Nav().backToPageCallManage()
-    this.prevHoling = this.holding
-    this.holding = true
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    this.holding = this.prevHoling
+    this.setHolding(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
@@ -285,15 +253,14 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
-    this.prevHoling = this.holding
-    this.holding = false
+    this.setHolding(false)
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.holding = this.prevHoling
+    this.setHolding(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
@@ -303,15 +270,15 @@ export class Call {
   @action conferenceTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
-    this.prevHoling = this.holding
-    this.holding = false
+    this.prevHolding = this.holding
+    this.setHolding(false)
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.holding = this.prevHoling
+    this.setHolding(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,

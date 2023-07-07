@@ -438,9 +438,7 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      if (Platform.OS === 'ios') {
-        RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      }
+      RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
       this.setAutoEndCallKeepTimer(uuid)
     }
     // check for each 0.5s: auto update currentCallId

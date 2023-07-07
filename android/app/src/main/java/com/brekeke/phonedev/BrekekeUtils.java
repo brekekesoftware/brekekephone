@@ -210,16 +210,19 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     prepareLocale(appCtx);
     //
     // show call
-    String displayName = data.get("x_displayname");
+    String from = data.get("x_from");
+    if (from == null || from.isEmpty()) {
+      from = "loading...";
+    }
+    String callerName = data.get("x_displayname");
+    if (callerName == null || callerName.isEmpty()) {
+      callerName = data.get("x_from");
+    }
+    if (callerName == null || callerName.isEmpty()) {
+      callerName = "Loading...";
+    }
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
-    if (displayName == null || displayName.isEmpty()) {
-      displayName = data.get("x_from");
-    }
-    if (displayName == null || displayName.isEmpty()) {
-      displayName = "Loading...";
-    }
-    String callerName = displayName;
     RNCallKeepModule.registerPhoneAccount(appCtx);
     Runnable onShowIncomingCallUi =
         new Runnable() {
@@ -262,7 +265,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "number", "caller", false);
+    RNCallKeepModule.staticDisplayIncomingCall(uuid, from, callerName, false);
   }
 
   private static void prepareLocale(Context appCtx) {
