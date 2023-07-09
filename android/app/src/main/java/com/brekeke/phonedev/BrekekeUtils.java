@@ -224,6 +224,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
     RNCallKeepModule.registerPhoneAccount(appCtx);
+    String finalCallerName = callerName;
     Runnable onShowIncomingCallUi =
         new Runnable() {
           @Override
@@ -243,7 +244,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             Intent i = new Intent(c, IncomingCallActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
-            i.putExtra("callerName", callerName);
+            i.putExtra("callerName", finalCallerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
             c.startActivity(i);
