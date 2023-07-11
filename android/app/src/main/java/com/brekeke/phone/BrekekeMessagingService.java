@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 import android.util.Log;
 import com.evollu.react.fcm.FIRMessagingModule;

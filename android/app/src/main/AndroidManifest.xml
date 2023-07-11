@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:versionCode="1"
   android:versionName="1.0"
-  package="com.brekeke.phonedev"
+  package="com.brekeke.phone"
 >
   <uses-feature android:name="android.hardware.camera" />
   <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -45,11 +45,13 @@
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
       android:autoRemoveFromRecents="true"
+      android:exported="true"
     />
     <activity
       android:name=".ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
+      android:exported="true"
     />
     <!-- fcm -->
     <meta-data
@@ -71,7 +73,7 @@
     </service>
     <service
       android:name="com.evollu.react.fcm.InstanceIdService"
-      android:exported="false"
+      android:exported="true"
     >
       <intent-filter>
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -96,6 +98,7 @@
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
       android:foregroundServiceType="camera|microphone"
+      android:exported="true"
     >
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />
@@ -103,10 +106,12 @@
     </service>
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
+      android:exported="true"
     />
     <!-- react dev -->
     <activity
       android:name="com.facebook.react.devsupport.DevSettingsActivity"
+      android:exported="true"
     />
     <!-- main -->
     <activity

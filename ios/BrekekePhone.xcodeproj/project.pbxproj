@@ -109,7 +109,7 @@
 		9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringtone.mp3; path = ../src/assets/incallmanager_ringtone.mp3; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Brekeke Phone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
 		164381613BE1C60CB8E3DF44 /* Pods-BrekekePhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.debug.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.debug.xcconfig"; sourceTree = "<group>"; };
 		1EF4B6F27DC95E67795C03E1 /* Pods-BrekekePhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.release.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.release.xcconfig"; sourceTree = "<group>"; };
@@ -240,7 +240,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */,
+				13B07F961A680F5B00A75B9A /* Brekeke Phone.app */,
 				9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */,
 			);
 			name = Products;
@@ -349,8 +349,8 @@
 				CB8766E328E87C5A002261CB /* PBXTargetDependency */,
 			);
 			name = BrekekePhone;
-			productName = "Brekeke Phone Dev";
-			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */;
+			productName = "Brekeke Phone";
+			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone.app */;
 			productType = "com.apple.product-type.application";
 		};
 		9C972B8B28E1B34C00DD89B4 /* BrekekeLPCExtension */ = {
@@ -616,8 +616,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
-				PRODUCT_NAME = "Brekeke Phone Dev";
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
+				PRODUCT_NAME = "Brekeke Phone";
 				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -650,8 +650,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
-				PRODUCT_NAME = "Brekeke Phone Dev";
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
+				PRODUCT_NAME = "Brekeke Phone";
 				PROVISIONING_PROFILE_SPECIFIER = "phonedev-provisioning-profile";
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -797,7 +797,7 @@
 				MARKETING_VERSION = 2.11.21;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
@@ -838,7 +838,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 2.11.21;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "BrekekeLPCExtension-provisioning-profile";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = BrekekeLPCExtension;
