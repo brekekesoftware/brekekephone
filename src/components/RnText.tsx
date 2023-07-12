@@ -60,7 +60,7 @@ const css = StyleSheet.create({
   },
 })
 
-const wrap = (Component: Function) =>
+const wrap = (Component: any) =>
   forwardRef(
     (
       {

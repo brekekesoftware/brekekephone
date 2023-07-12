@@ -42,7 +42,7 @@ const intlBabelPlugin = () => ({
         s.file.code.substring(e.start, e.end),
       )
       // build data keys from expressions with their name as camelCase
-      const exprNames = exprs.map((e, i) => '$' + i)
+      const exprNames = exprs.map((e, i) => `$${i}`)
       // build the locations to automatically add brackets for fields
       const quasis = p.node.quasi.quasis.map(q => q.value.raw)
       const [rawTemplate, fieldLocations] = quasis.reduce(

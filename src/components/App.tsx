@@ -317,3 +317,5 @@ export const App = observer(() => {
     </View>
   )
 })
+
+export default App

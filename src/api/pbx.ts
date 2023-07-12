@@ -380,7 +380,7 @@ export class PBX extends EventEmitter {
       ],
     })
 
-    const pnumber = ('' + res[5]).split(',')
+    const pnumber = `${res[5]}`.split(',')
 
     const phones = [
       {

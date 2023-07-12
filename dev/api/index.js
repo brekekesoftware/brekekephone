@@ -13,7 +13,7 @@ app.get('/dev-api/builds', (req, res) => {
 
 app.get('/dev-api/plist/:version', (req, res, next) => {
   const { version } = req.params
-  if (!version || !fs.existsSync(root + 'brekeke_phone' + version + '.ipa')) {
+  if (!version || !fs.existsSync(`${root}brekeke_phone${version}.ipa`)) {
     next()
     return
   }

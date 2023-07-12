@@ -148,7 +148,7 @@ export const useForm = () => {
 }
 
 export type FormContext = {
-  render: Function
+  render: any
   submit(): void
   onFieldChange(f: string, v: string): void
 }

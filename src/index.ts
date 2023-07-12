@@ -14,7 +14,7 @@ import './brekekejs/webnotification'
 
 import { AppRegistry } from 'react-native'
 
-import { App } from './components/App'
+import App from './components/App'
 import { exposeEmbedApi } from './embed/exposeEmbedApi'
 
 AppRegistry.registerComponent('BrekekePhone', () => App)

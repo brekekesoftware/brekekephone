@@ -72,8 +72,7 @@ export const AccountCreateForm: FC<{
         message: (
           <>
             <RnText small>
-              Park {i + 1}:{' '}
-              {$.account.parks?.[i] + ' - ' + $.account.parkNames?.[i]}
+              Park {i + 1}: {$.account.parks?.[i]} - {$.account.parkNames?.[i]}
             </RnText>
             <View />
             <RnText>{intl`Do you want to remove this park?`}</RnText>
