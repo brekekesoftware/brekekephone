@@ -221,7 +221,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (displayName == null || displayName.isEmpty()) {
       displayName = "Loading...";
     }
-    String callerName = displayName;
+    String callerName = displayName; // redeclare as final to put in nested class
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
     RNCallKeepModule.registerPhoneAccount(appCtx);
