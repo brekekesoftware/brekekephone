@@ -269,10 +269,20 @@ index c293939..2425c35 100644
    }
  
 diff --git a/node_modules/jssip/lib/UA.js b/node_modules/jssip/lib/UA.js
-index 8c5fbeb..bd985b2 100644
+index 8c5fbeb..63b996d 100644
 --- a/node_modules/jssip/lib/UA.js
 +++ b/node_modules/jssip/lib/UA.js
-@@ -305,7 +305,9 @@ module.exports = class UA extends EventEmitter
+@@ -47,7 +47,8 @@ module.exports = class UA extends EventEmitter
+ 
+   constructor(configuration)
+   {
+-    debug('new() [configuration:%o]', configuration);
++    debug('new() configuration:');
++    console.log(configuration);
+ 
+     super();
+ 
+@@ -305,7 +306,9 @@ module.exports = class UA extends EventEmitter
        {
          debug(`closing session ${session}`);
          try { this._sessions[session].terminate(); }
@@ -283,7 +293,7 @@ index 8c5fbeb..bd985b2 100644
        }
      }
  
-@@ -314,7 +316,9 @@ module.exports = class UA extends EventEmitter
+@@ -314,7 +317,9 @@ module.exports = class UA extends EventEmitter
      {
        if (Object.prototype.hasOwnProperty.call(this._applicants, applicant))
          try { this._applicants[applicant].close(); }
@@ -294,7 +304,7 @@ index 8c5fbeb..bd985b2 100644
      }
  
      this._status = C.STATUS_USER_CLOSED;
-@@ -813,7 +817,7 @@ module.exports = class UA extends EventEmitter
+@@ -813,7 +818,7 @@ module.exports = class UA extends EventEmitter
      }
      catch (e)
      {
@@ -332,7 +342,7 @@ index ed7abe5..d261258 100644
      // NOTE: In Temasys IE plugin stream.stop is a callable 'object'.
      if (typeof stream.stop === 'function' || typeof stream.stop === 'object')
 diff --git a/node_modules/jssip/lib/WebSocketInterface.js b/node_modules/jssip/lib/WebSocketInterface.js
-index dd2998e..cd590d3 100644
+index dd2998e..27a4d96 100644
 --- a/node_modules/jssip/lib/WebSocketInterface.js
 +++ b/node_modules/jssip/lib/WebSocketInterface.js
 @@ -115,19 +115,21 @@ module.exports = class WebSocketInterface
@@ -366,6 +376,15 @@ index dd2998e..cd590d3 100644
    }
  
    isConnected()
+@@ -180,6 +182,7 @@ module.exports = class WebSocketInterface
+ 
+   _onError(e)
+   {
+-    debugerror(`WebSocket ${this._url} error: ${e}`);
++    debugerror(`WebSocket ${this._url} error:`);
++    console.error(e);
+   }
+ };
 diff --git a/node_modules/jssip/package.json b/node_modules/jssip/package.json
 index c526fad..cfa0013 100644
 --- a/node_modules/jssip/package.json

@@ -102,7 +102,7 @@ class UserStore {
               name: user.user_name,
               group: configProperties.buddy_mode === 1 ? user.user_group : '',
               tenant: p.tenant,
-            } as UcBuddy),
+            }) as UcBuddy,
         )
     }
 

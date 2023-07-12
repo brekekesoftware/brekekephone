@@ -78,16 +78,19 @@ export const Layout: FC<
   const props = { ...originalProps } // clone so it can be mutated
 
   const Container = props.noScroll ? View : ScrollView
-  const containerProps = Object.entries(props).reduce((m, [k, vk]) => {
-    type K = keyof typeof props
-    if (k.startsWith('container')) {
-      delete props[k as K]
-      k = k.replace('container', '')
-      k = lowerFirst(k)
-      m[k] = vk as (typeof props)[K]
-    }
-    return m
-  }, {} as { [k: string]: unknown })
+  const containerProps = Object.entries(props).reduce(
+    (m, [k, vk]) => {
+      type K = keyof typeof props
+      if (k.startsWith('container')) {
+        delete props[k as K]
+        k = k.replace('container', '')
+        k = lowerFirst(k)
+        m[k] = vk as (typeof props)[K]
+      }
+      return m
+    },
+    {} as { [k: string]: unknown },
+  )
 
   Object.assign(containerProps, {
     style: [css.Layout, props.transparent && css.Layout__transparent],

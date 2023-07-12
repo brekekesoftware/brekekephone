@@ -1,5 +1,5 @@
 clean:
-	yarn --check-files && \
+	yarn --ignore-engines --check-files && \
 	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
 	cd ios && \
 	pod install --repo-update && \
@@ -43,7 +43,7 @@ bitcode:
 	bash node_modules/react-native-webrtc/tools/downloadBitcode.sh;
 
 patch:
-	npx patch-package --exclude="none" react-native-
+	npx patch-package --exclude="none" PACKAGE
 
 ###
 # format
@@ -68,7 +68,7 @@ format-java:
 format-xml:
 	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" && \
 	make -Bs ls | \
-	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --loglevel=error --write;
+	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --log-level=error --write;
 imagemin:
 	export EXT="png|jpg|gif|ico" && \
 	make -Bs ls | \
@@ -82,21 +82,21 @@ ls:
 
 d:
 	make -Bs chmod && \
-	cd dev/react-app && yarn && yarn build && \
+	cd dev/react-app && yarn --ignore-engines && yarn build && \
 	mv build dev-react-app && zip -vr dev-react-app.zip dev-react-app && \
 	scp dev-react-app.zip bre:/var/www && \
 	rm -rf dev-react-app* && \
 	ssh bre "cd /var/www && sudo rm -rf dev-react-app && unzip dev-react-app.zip && sudo rm -f dev-react-app.zip" && \
-	cd ../api && yarn && \
+	cd ../api && yarn --ignore-engines && \
 	scp index.js package.json yarn.lock bre:/var/www/dev-api && \
-	ssh bre "cd /var/www/dev-api && yarn && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" && \
+	ssh bre "cd /var/www/dev-api && yarn --ignore-engines && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" && \
 	scp nginx.conf bre:/etc/nginx/conf.d/dev01.conf && \
 	ssh bre "sudo nginx -t && sudo service nginx restart" && \
 	cd ../.. && make -Bs chmod;
 
 w:
 	make -Bs chmod && \
-	yarn && yarn build && \
+	yarn --ignore-engines && yarn build && \
 	mv build brekeke_phone && zip -vr brekeke_phone.zip brekeke_phone && \
 	scp brekeke_phone.zip bre:/var/www/upload && \
 	rm -rf brekeke_phone* && \
