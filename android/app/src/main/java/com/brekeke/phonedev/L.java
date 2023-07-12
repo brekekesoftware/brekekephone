@@ -65,4 +65,25 @@ public class L {
   public static String callIsOnHold() {
     return "ja".equals(l) ? "保留中" : "CALL IS ON HOLD";
   }
+
+  public static String titlePermissionMicroCamera() {
+    return "ja".equals(l)
+        ? "Brekeke にマイク、Bluetooth、カメラへのアクセスを許可しますか?"
+        : "Allow Brekeke to access the microphone, bluetooth and camera?";
+  }
+
+  public static String messagePermissionMicroCamera() {
+    return "ja".equals(l)
+        ? "通話を続行するには、アプリの権限でマイク、Bluetooth、カメラへのアクセスを許可してください。"
+        : "To continue the call, please grant microphone, bluetooth and camera  access in the app"
+            + " permissions settings.";
+  }
+
+  public static String close() {
+    return "ja".equals(l) ? "閉じる" : "Close";
+  }
+
+  public static String goToSetting() {
+    return "ja".equals(l) ? "設定に移動" : "Go to settings";
+  }
 }

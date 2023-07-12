@@ -179,6 +179,7 @@
   "Permissions required",
   "Phone {{$0}}",
   "Phonebook",
+  "Please provide the required permission from settings",
   "RECENT CALLS ({{$0}})",
   "RECENT CHAT THREADS",
   "RECENTS",
