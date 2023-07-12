@@ -3,6 +3,7 @@ import {
   openSettings,
   PERMISSIONS,
   request,
+  requestMultiple,
   requestNotifications,
 } from 'react-native-permissions'
 
@@ -24,6 +25,39 @@ export const permissionReadPhoneNumber = async () => {
           dismissText: intl`Cancel`,
         })
       }
+      return false
+    }
+    return true
+  }
+  return true
+}
+export const permissionForCall = async () => {
+  if (Platform.OS === 'android' && Platform.Version >= 31) {
+    const result = await requestMultiple([
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.RECORD_AUDIO,
+      PERMISSIONS.ANDROID.CAMERA,
+    ])
+    const statusBluetooth = result[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]
+    const statusRecord = result[PERMISSIONS.ANDROID.RECORD_AUDIO]
+    const statusCamera = result[PERMISSIONS.ANDROID.CAMERA]
+    if (
+      statusBluetooth !== 'granted' ||
+      statusRecord !== 'granted' ||
+      statusCamera !== 'granted'
+    ) {
+      ;(statusBluetooth === 'blocked' ||
+        statusRecord === 'blocked' ||
+        statusCamera === 'blocked') &&
+        RnAlert.prompt({
+          title: 'RECORD_AUDIO, BLUETOOTH_CONNECT, CAMERA',
+          message: intl`Please provide the required permission from settings`,
+          onConfirm: () => {
+            openSettings()
+          },
+          confirmText: intl`OK`,
+          dismissText: intl`Cancel`,
+        })
       return false
     }
     return true
