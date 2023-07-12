@@ -167,7 +167,8 @@ export class CallStore {
     // currently we forked mobx-react to temporary get over this error
     // in the future we need to rewrite and refactor the whole stores/actions
     if (oc) {
-      const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
+      const ca = getAuthStore().getCurrentAccount()
+      const ucEnabled = ca?.ucEnabled
       if (!oc.answered && (!oc.partyImageUrl || !oc.partyImageUrl?.length)) {
         oc.partyImageUrl = ucEnabled
           ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
@@ -195,11 +196,11 @@ export class CallStore {
     if (!tenant || !name) {
       return ''
     }
-    const a = getAuthStore().getCurrentAccount()
-    if (!a) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return ''
     }
-    const { pbxHostname, pbxPort } = a
+    const { pbxHostname, pbxPort } = ca
     let ucHost = `${pbxHostname}:${pbxPort}`
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
@@ -312,6 +313,17 @@ export class CallStore {
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
+    }
+    const ca = getAuthStore().getCurrentAccount()
+    if (
+      Platform.OS !== 'web' &&
+      c.incoming &&
+      !c.callkeepUuid &&
+      !ca?.pushNotificationEnabled
+    ) {
+      const uuid = newUuid().toUpperCase()
+      c.callkeepUuid = uuid
+      RNCallKeep.displayIncomingCall(uuid, c.partyNumber, c.getDisplayName())
     }
     // get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
@@ -713,14 +725,13 @@ export class CallStore {
   }
   shouldRingInNotify = (uuid?: string) => {
     // disable ringtone when enable PN
-    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (ca?.pushNotificationEnabled) {
       return false
     }
-
     if (Platform.OS === 'web' || !uuid) {
       return true
     }
-
     // do not ring on background
     if (RnAppState.currentState !== 'active') {
       return false
@@ -738,7 +749,6 @@ export class CallStore {
     ) {
       return false
     }
-
     return true
   }
 

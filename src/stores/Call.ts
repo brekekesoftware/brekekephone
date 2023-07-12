@@ -187,12 +187,12 @@ export class Call {
   private prevHolding = false
 
   @action private toggleHold = () => {
-    const action = this.holding ? 'unhold' : 'hold'
-    this.setHolding(action === 'hold')
-    if (!this.isAboutToHangup && action === 'unhold') {
+    const fn = this.holding ? 'unhold' : 'hold'
+    this.setHolding(fn === 'hold')
+    if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
-    return pbx[`${action}Talker`](this.pbxTenant, this.pbxTalkerId)
+    return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
   }
@@ -200,11 +200,11 @@ export class Call {
     if (err === true) {
       return true
     }
-    const prevAction = this.holding ? 'hold' : 'unhold'
-    this.setHolding(prevAction === 'unhold')
+    const prevFn = this.holding ? 'hold' : 'unhold'
+    this.setHolding(prevFn === 'unhold')
     if (typeof err !== 'boolean') {
       const message =
-        prevAction === 'unhold'
+        prevFn === 'unhold'
           ? intlDebug`Failed to unhold the call`
           : intlDebug`Failed to hold the call`
       RnAlert.error({ message, err })
