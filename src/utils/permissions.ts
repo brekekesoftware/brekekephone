@@ -13,16 +13,17 @@ export const permissionReadPhoneNumber = async () => {
   if (Platform.OS === 'android' && Platform.Version >= 30) {
     const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS)
     if (result !== 'granted') {
-      result === 'blocked' &&
+      if (result === 'blocked') {
         RnAlert.prompt({
-          title: intl`READ_PHONE_NUMBERS`,
-          message: intl`Please provide the require permission from settings. Press Ok to continue`,
+          title: 'READ_PHONE_NUMBERS',
+          message: intl`Please provide the required permission from settings`,
           onConfirm: () => {
             openSettings()
           },
-          confirmText: intl`Ok`,
+          confirmText: intl`OK`,
           dismissText: intl`Cancel`,
         })
+      }
       return false
     }
     return true
@@ -35,12 +36,12 @@ export const permissionBluetoothConnect = async () => {
     if (result !== 'granted') {
       result === 'blocked' &&
         RnAlert.prompt({
-          title: intl`BLUETOOTH_CONNECT`,
-          message: intl`Please provide the require permission from settings. Press Ok to continue`,
+          title: 'BLUETOOTH_CONNECT',
+          message: intl`Please provide the required permission from settings`,
           onConfirm: () => {
             openSettings()
           },
-          confirmText: intl`Ok`,
+          confirmText: intl`OK`,
           dismissText: intl`Cancel`,
         })
       return false
@@ -55,12 +56,12 @@ export const permissionNotification = async () => {
     if (status !== 'granted') {
       status === 'blocked' &&
         RnAlert.prompt({
-          title: intl`POST_NOTIFICATIONS`,
-          message: intl`Please provide the require permission from settings. Press Ok to continue`,
+          title: 'POST_NOTIFICATIONS',
+          message: intl`Please provide the required permission from settings`,
           onConfirm: () => {
             openSettings()
           },
-          confirmText: intl`Ok`,
+          confirmText: intl`OK`,
           dismissText: intl`Cancel`,
         })
       return false

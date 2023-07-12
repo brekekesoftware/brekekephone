@@ -76,7 +76,7 @@ public class L {
     return "ja".equals(l)
         ? "通話を続行するには、アプリの権限でマイク、Bluetooth、カメラへのアクセスを許可してください。"
         : "To continue the call, please grant microphone, bluetooth and camera  access in the app"
-              + " permissions settings.";
+            + " permissions settings.";
   }
 
   public static String close() {

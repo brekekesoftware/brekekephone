@@ -4,14 +4,14 @@ export const formatFileType = (name: string) => {
   const typeImage = ['PNG', 'JPG', 'JPEG', 'GIF']
   let typeVideo: string[] = []
   if (Platform.OS === 'web') {
+    // https://www.w3schools.com/tags/tag_video.asp
     typeVideo = ['MP4', 'WEBM', 'OGG', 'MOV']
-    // ref: https://www.w3schools.com/tags/tag_video.asp
   } else if (Platform.OS === 'ios') {
+    // https://stackoverflow.com/questions/1535836
     typeVideo = ['MP4', 'M4A', 'MOV', '3GP']
-    // ref: https://stackoverflow.com/questions/1535836/video-file-formats-supported-in-iphone
   } else {
+    // https://github.com/react-native-video/react-native-video/blob/master/android-exoplayer/README.md
     typeVideo = ['MP4', 'M4A', 'FMP4', 'WEBM', 'MKV', 'MPEG', 'FLV', 'MOV']
-    // ref: https://github.com/react-native-video/react-native-video/blob/master/android-exoplayer/README.md
   }
 
   const fileName = name.split('.').pop()?.toUpperCase() || ''

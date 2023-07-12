@@ -46,7 +46,8 @@ const actionSheetHandlers = [
       ImagePicker.launchImageLibrary(
         {
           mediaType: 'mixed',
-          noData: true, // ref: https://github.com/react-native-image-picker/react-native-image-picker/issues/870
+          // https://github.com/react-native-image-picker/react-native-image-picker/issues/870
+          noData: true,
           quality: 1,
         },
         res =>

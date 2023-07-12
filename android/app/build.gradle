@@ -75,9 +75,11 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
   implementation "androidx.constraintlayout:constraintlayout:2.1.3"
-  // fix issue: https://stackoverflow.com/questions/72919110/how-to-solve-this-targeting-s-version-31-and-above-requires-that-one-of-flag
+
+  // https://stackoverflow.com/questions/72919110
   implementation 'androidx.work:work-runtime:2.8.1'
   implementation 'androidx.work:work-runtime-ktx:2.8.1'
+
   // react-native-fcm
   implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
   implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
