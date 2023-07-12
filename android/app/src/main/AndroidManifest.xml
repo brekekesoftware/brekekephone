@@ -12,14 +12,27 @@
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
   />
   <uses-permission android:name="android.permission.BLUETOOTH" />
+  <!-- for incall-manager -->
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<!--  For notification permission android 13 -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
   <uses-permission android:name="android.permission.CALL_PHONE" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+  
   <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  
+  <uses-permission
+    android:name="android.permission.READ_PHONE_STATE"
+    android:maxSdkVersion="29"
+  />
+  <!-- for android api >= 30 -->
+  <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.REORDER_TASKS" />

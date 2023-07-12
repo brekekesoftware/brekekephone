@@ -42,6 +42,10 @@ import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
+import {
+  permissionNotification,
+  permissionReadPhoneNumber,
+} from '../utils/permissions'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
@@ -60,7 +64,7 @@ import { v } from './variables'
 
 const initApp = async () => {
   await intlStore.wait()
-
+  permissionNotification()
   const s = getAuthStore()
   const cs = getCallStore()
   const nav = Nav()
@@ -74,11 +78,16 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
-    const d = await getLastSignedInId(true)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
-      console.log('App navigated by auto signin')
-      // already navigated
+    const result = await permissionReadPhoneNumber()
+    if (result) {
+      const d = await getLastSignedInId(true)
+      const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+      if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+        console.log('App navigated by auto signin')
+        // already navigated
+      } else {
+        nav.goToPageIndex()
+      }
     } else {
       nav.goToPageIndex()
     }

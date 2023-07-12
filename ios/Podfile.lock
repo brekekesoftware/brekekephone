@@ -385,6 +385,8 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.19.0):
     - React-Core
+  - RNPermissions (3.8.4):
+    - React-Core
   - RNShare (5.3.0):
     - React-Core
   - RNSVG (12.3.0):
@@ -473,6 +475,7 @@ DEPENDENCIES:
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVoipPushNotification (from `../node_modules/react-native-voip-push-notification`)
@@ -592,6 +595,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNShare:
     :path: "../node_modules/react-native-share"
   RNSVG:
@@ -664,6 +669,7 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFS: fc610f78fdf8bfc89a9e5cc2f898519f4dba1002
+  RNPermissions: f1b49dd05fa9b83993cd05a9ee115247944d8f1a
   RNShare: 4df87d1791f50a2c7b1d89432fb9bbb7c02a9c9a
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   RNVoipPushNotification: 1d35daef2173a4be409d9c10ed09fe6880aef86f
