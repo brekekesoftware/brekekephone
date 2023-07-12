@@ -1,9 +1,6 @@
-#### 2.11.22
-
-- Upgrade android sdk to 33 to match with store upload requirement
-
 #### 2.11.21
 
+- Upgrade android sdk to 33 in order to upload to store
 - Fix android it should display page call manage screen after cancel transfer
 - Embed:
   - Fix revert mobx toJS change
