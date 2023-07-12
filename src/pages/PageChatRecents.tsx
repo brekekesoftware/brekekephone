@@ -130,10 +130,13 @@ export class PageChatRecents extends Component {
 
     arr = filterTextOnly(arr)
     arr = uniqBy(arr, 'id')
-    const arrMap = arr.reduce((m, c) => {
-      m[c.id] = true
-      return m
-    }, {} as { [k: string]: boolean })
+    const arrMap = arr.reduce(
+      (m, c) => {
+        m[c.id] = true
+        return m
+      },
+      {} as { [k: string]: boolean },
+    )
 
     filterTextOnly(d?.recentChats).forEach(c => {
       if (!arrMap[c.id]) {

@@ -135,3 +135,5 @@ export const App = () => {
   const Container = isBrowser ? View : BrekekeGradient
   return <Container style={css.WebApp}>{child}</Container>
 }
+
+export default App

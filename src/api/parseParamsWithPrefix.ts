@@ -6,7 +6,10 @@ export const parseCallParams = (config?: object) =>
 const parseParamsWithPrefix = (prefix: string, o: object = {}) =>
   Object.entries(o)
     .filter(([k]) => k.startsWith(prefix))
-    .reduce((res, [k, v]: string[]) => {
-      res[k.replace(prefix, '')] = v
-      return res
-    }, {} as { [k: string]: string })
+    .reduce(
+      (res, [k, v]: string[]) => {
+        res[k.replace(prefix, '')] = v
+        return res
+      },
+      {} as { [k: string]: string },
+    )

@@ -47,7 +47,7 @@ const keysInCustomNotification = [
 ]
 // new logic to parse x_ keys
 keysInCustomNotification.forEach(k => {
-  keysInCustomNotification.push('x_' + k)
+  keysInCustomNotification.push(`x_${k}`)
 })
 
 const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
@@ -352,7 +352,10 @@ export type SipPn = {
 }
 
 export const toXPN = (n: object) =>
-  Object.entries(n).reduce((m, [k, v]: [string, unknown]) => {
-    m['x_' + k] = v
-    return m
-  }, {} as { [k: string]: unknown })
+  Object.entries(n).reduce(
+    (m, [k, v]: [string, unknown]) => {
+      m[`x_${k}`] = v
+      return m
+    },
+    {} as { [k: string]: unknown },
+  )
