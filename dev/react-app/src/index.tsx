@@ -1,9 +1,10 @@
 import './index.css'
 
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import { App } from './app/App'
 
-if (window.location.pathname === '/dev') {
-  render(<App />, document.getElementById('root'))
+const d = document.getElementById('root')
+if (d && window.location.pathname === '/dev') {
+  createRoot(d).render(<App />)
 }
