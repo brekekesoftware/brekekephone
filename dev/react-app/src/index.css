@@ -17,3 +17,13 @@ a {
 .version {
   margin-top: 10px;
 }
+.hidden {
+  display: none;
+}
+.extra {
+  margin-top: 5px;
+}
+.extra span {
+  color: green;
+  cursor: pointer;
+}

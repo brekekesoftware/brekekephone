@@ -15,7 +15,10 @@ type Builds = {
 
 export const App = () => {
   const [dev, setDev] = useState<Build[]>([])
+  const [showExtraDev, setShowExtraDev] = useState(false)
   const [prod, setProd] = useState<Build[]>([])
+  const [showExtraProd, setShowExtraProd] = useState(false)
+  const [showExtraWeb, setShowExtraWeb] = useState(false)
   const prodM = prod.filter(b => b.ipa || b.apk)
   const prodW = prod.filter(b => b.zip)
   useEffect(() => {
@@ -59,12 +62,19 @@ export const App = () => {
         return (
           <Fragment key={i}>
             <h3>Brekeke Phone{i ? '' : ' Dev'}</h3>
-            {arr.map(b => {
+            {arr.map((b, j) => {
               const v = `${i ? '' : 'dev'}${b.version}`
               const ipa = b.ipa && `/upload/brekeke_phone${v}.ipa`
               const apk = b.apk && `/upload/brekeke_phone${v}.apk`
               return (
-                <>
+                <div
+                  key={b.version}
+                  className={
+                    j > 2 && !(i ? showExtraProd : showExtraDev)
+                      ? 'hidden'
+                      : undefined
+                  }
+                >
                   <div className='version'>
                     <strong>{b.version}</strong>{' '}
                     <LastModified url={ipa || apk || ''} />
@@ -83,30 +93,56 @@ export const App = () => {
                       </a>
                     </div>
                   )}
-                </>
+                </div>
               )
             })}
+            <Extra
+              length={arr.length}
+              show={i ? showExtraProd : showExtraDev}
+              setShow={i ? setShowExtraProd : setShowExtraDev}
+            />
           </Fragment>
         )
       })}
       {!!prodW.length && (
         <>
           <h3>Web Phone</h3>
-          {prodW.map(b => {
+          {prodW.map((b, i) => {
             const url = `/upload/brekeke_phone${b.version}.zip`
             return (
-              <>
+              <div
+                key={b.version}
+                className={i > 2 && !showExtraWeb ? 'hidden' : undefined}
+              >
                 <div className='version'>
                   <strong>{b.version}</strong> <LastModified url={url} />
                 </div>
                 <div>
                   <a href={url}>Download zip</a>
                 </div>
-              </>
+              </div>
             )
           })}
+          <Extra
+            length={prodW.length}
+            show={showExtraWeb}
+            setShow={setShowExtraWeb}
+          />
         </>
       )}
     </>
+  )
+}
+
+const Extra = (p: { length: number; show: boolean; setShow: Function }) => {
+  if (p.length <= 3 || p.show) {
+    return null
+  }
+  return (
+    <div className='extra'>
+      <span onClick={() => p.setShow(true)}>
+        {'>'} Show {p.length - 3} older builds
+      </span>
+    </div>
   )
 }

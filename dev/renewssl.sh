@@ -35,4 +35,5 @@ scp bre:/etc/letsencrypt/live/dev01.brekeke.com/tomcat7.p12 ~/ws/0/brekeke
 # upload new downloaded .p12 file and restart
 
 # if there's still error, might need to check /tomcat/conf/server.xml
+# download the server.xml to ~/ws/0/brekeke
 scp bre:/tomcat/conf/server.xml ~/ws/0/brekeke
