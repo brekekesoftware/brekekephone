@@ -13,10 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
-import {
-  permissionBluetoothConnect,
-  permissionForCall,
-} from '../utils/permissions'
+import { permissionForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { webShowNotification } from '../utils/webShowNotification'

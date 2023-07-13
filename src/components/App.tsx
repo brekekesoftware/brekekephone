@@ -41,8 +41,8 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
-import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import {
+  permissionForCall,
   permissionNotification,
   permissionReadPhoneNumber,
 } from '../utils/permissions'
@@ -135,7 +135,7 @@ const initApp = async () => {
       webPromptPermission()
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    getAudioVideoPermission()
+    permissionForCall()
   }
 
   setupCallKeep()

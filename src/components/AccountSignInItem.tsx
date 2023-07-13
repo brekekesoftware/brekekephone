@@ -17,6 +17,7 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import {
+  permissionForCall,
   permissionNotification,
   permissionReadPhoneNumber,
 } from '../utils/permissions'
@@ -93,6 +94,10 @@ export const AccountSignInItem: FC<{
         if (!status) {
           return
         }
+      }
+      const statusCall = await permissionForCall()
+      if (!statusCall) {
+        return
       }
       getAuthStore().signIn(a)
       // Try to end callkeep if it's stuck
