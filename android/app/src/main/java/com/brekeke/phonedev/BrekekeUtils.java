@@ -714,10 +714,22 @@ public class BrekekeUtils extends ReactContextBaseJavaModule implements  AudioMa
   // ==========================================================================
   // react methods
 
-
   @ReactMethod
-  public void setForceSpeakerOnForSDK31(Boolean isSpeakerOn){
-    speakerOn(isSpeakerOn);
+  public void updateSpeakerStatus(Boolean isSpeakerOn){
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          for (IncomingCallActivity a : activities) {
+            try {
+              a.updateSpeakerStatus(isSpeakerOn);
+            } catch (Exception e) {
+            }
+          }
+        } catch (Exception e) {
+        }
+      }
+    });
   }
   @ReactMethod
   public void getInitialNotifications(Promise promise) {

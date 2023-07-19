@@ -28,7 +28,7 @@ type TBrekekeUtils = {
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
-  setForceSpeakerOnForSDK31(isSpeakerOn: boolean): void
+  updateSpeakerStatus(isSpeakerOn: boolean): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -77,7 +77,7 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
-  setForceSpeakerOnForSDK31: () => undefined,
+  updateSpeakerStatus: () => undefined,
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

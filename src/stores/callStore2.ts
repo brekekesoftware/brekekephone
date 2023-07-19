@@ -21,7 +21,7 @@ import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
-import { setCallStore } from './callStore'
+import { getCallStore, setCallStore } from './callStore'
 import { CancelRecentPn } from './cancelRecentPn'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -211,16 +211,16 @@ export class CallStore {
   private incallManagerStarted = false
   onCallUpsert: CallStore['upsertCall'] = c => {
     this.upsertCall(c)
-    if (
-      Platform.OS === 'android' &&
-      !this.incallManagerStarted &&
-      this.calls.find(_ => _.answered || !_.incoming)
-    ) {
-      this.incallManagerStarted = true
-      IncallManager.start()
-      // reset loud speaker on each call
-      IncallManager.setForceSpeakerphoneOn(false)
-    }
+    // if (
+    //   Platform.OS === 'android' &&
+    //   !this.incallManagerStarted &&
+    //   this.calls.find(_ => _.answered || !_.incoming)
+    // ) {
+    //   this.incallManagerStarted = true
+    //   IncallManager.start()
+    //   // reset loud speaker on each call
+    //   IncallManager.setForceSpeakerphoneOn(false)
+    // }
   }
   @action private upsertCall = (
     // partial
@@ -260,6 +260,7 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
+        BrekekeUtils.updateSpeakerStatus(getCallStore().isLoudSpeakerEnabled)
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
@@ -789,10 +790,19 @@ export class CallStore {
   // TODO move them somewhere else
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
+    const callkeepUuid = this.getOngoingCall()?.callkeepUuid
+    console.log('dev::toggleLoudSpeaker::', callkeepUuid)
     if (Platform.OS !== 'web') {
       this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
-      BrekekeUtils.setForceSpeakerOnForSDK31(this.isLoudSpeakerEnabled)
-      // IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+      if (Platform.OS === 'android' && callkeepUuid) {
+        RNCallKeep.toggleAudioRouteSpeaker(
+          callkeepUuid,
+          this.isLoudSpeakerEnabled,
+        )
+        BrekekeUtils.updateSpeakerStatus(this.isLoudSpeakerEnabled)
+      } else {
+        IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+      }
     }
   }
   @observable newVoicemailCount = 0

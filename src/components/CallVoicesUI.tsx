@@ -72,14 +72,14 @@ export class AnsweredItem extends Component<{
   componentDidMount = () => {
     // update status speaker, again
     // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
-    if (Platform.OS === 'android') {
-      IncallManager.start()
-      BackgroundTimer.setTimeout(() => {
-        IncallManager.setForceSpeakerphoneOn(
-          getCallStore().isLoudSpeakerEnabled,
-        )
-      }, 2000)
-    }
+    // if (Platform.OS === 'android') {
+    //   IncallManager.start()
+    //   BackgroundTimer.setTimeout(() => {
+    //     IncallManager.setForceSpeakerphoneOn(
+    //       getCallStore().isLoudSpeakerEnabled,
+    //     )
+    //   }, 2000)
+    // }
     const oc = getCallStore().getOngoingCall()
     if (oc) {
       sip.enableMedia(oc.id)
