@@ -666,7 +666,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         L.close(),
         new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            // User clicked OK button
+            // user clicked OK button
           }
         });
     builder.setNegativeButton(
@@ -710,7 +710,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     switch (requestCode) {
       case MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA:
-        // If request is cancelled, the result arrays are empty.
+        // if request is cancelled, the result arrays are empty
         if (grantResults.length > 0
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
             && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
