@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState, Linking, PermissionsAndroid, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
@@ -211,16 +211,14 @@ export class CallStore {
   private incallManagerStarted = false
   onCallUpsert: CallStore['upsertCall'] = c => {
     this.upsertCall(c)
-    // if (
-    //   Platform.OS === 'android' &&
-    //   !this.incallManagerStarted &&
-    //   this.calls.find(_ => _.answered || !_.incoming)
-    // ) {
-    //   this.incallManagerStarted = true
-    //   IncallManager.start()
-    //   // reset loud speaker on each call
-    //   IncallManager.setForceSpeakerphoneOn(false)
-    // }
+    if (
+      Platform.OS === 'android' &&
+      !this.incallManagerStarted &&
+      this.calls.find(_ => _.answered || !_.incoming)
+    ) {
+      this.incallManagerStarted = true
+      IncallManager.start()
+    }
   }
   @action private upsertCall = (
     // partial
@@ -360,7 +358,9 @@ export class CallStore {
     // reset loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
-      IncallManager.setForceSpeakerphoneOn(false)
+      if (Platform.OS === 'ios') {
+        IncallManager.setForceSpeakerphoneOn(false)
+      }
     }
     // stop android incall manager if there's no call left
     if (
@@ -396,10 +396,39 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-  startCall: MakeCallFn = (number: string, ...args) => {
+  permissionReadPhoneNumber = async () => {
+    if (Platform.OS === 'android' && Platform.Version >= 23) {
+      const result = await PermissionsAndroid.request(
+        'android.permission.CALL_PHONE',
+      )
+      if (result !== 'granted') {
+        if (result === 'never_ask_again') {
+          RnAlert.prompt({
+            title: 'CALL_PHONE',
+            message: intl`Please provide the required permission from settings`,
+            onConfirm: () => {
+              Linking.openSettings()
+            },
+            confirmText: intl`OK`,
+            dismissText: intl`Cancel`,
+          })
+        }
+        return false
+      }
+      return true
+    }
+    return true
+  }
+
+  startCall: MakeCallFn = async (number: string, ...args) => {
     const as = getAuthStore()
     as.sipTotalFailure = 0
-
+    const result = await PermissionsAndroid.request(
+      'android.permission.CALL_PHONE',
+    )
+    if (!result) {
+      return
+    }
     const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
     if (
       as.sipState === 'waiting' ||
@@ -439,9 +468,7 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      if (Platform.OS === 'ios') {
-        RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      }
+      RNCallKeep.startCall(uuid, number, 'Brekeke phone')
       this.setAutoEndCallKeepTimer(uuid)
     }
     // check for each 0.5s: auto update currentCallId
@@ -791,7 +818,6 @@ export class CallStore {
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
     const callkeepUuid = this.getOngoingCall()?.callkeepUuid
-    console.log('dev::toggleLoudSpeaker::', callkeepUuid)
     if (Platform.OS !== 'web') {
       this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
       if (Platform.OS === 'android' && callkeepUuid) {

@@ -4,6 +4,8 @@
   <uses-feature android:name="android.hardware.camera.autofocus" />
   <uses-feature android:name="android.hardware.audio.output" />
   <uses-feature android:name="android.hardware.microphone" />
+  <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"

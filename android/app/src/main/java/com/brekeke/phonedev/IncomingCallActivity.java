@@ -321,7 +321,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } catch (Exception e) {
     }
   }
-  public void updateSpeakerStatus(boolean isSpeakerOn){
+
+  public void updateSpeakerStatus(boolean isSpeakerOn) {
     btnSpeaker.setSelected(isSpeakerOn);
   }
 
