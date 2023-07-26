@@ -5,7 +5,6 @@ import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
 import { getCallStore } from '../stores/callStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
 const css = StyleSheet.create({
@@ -70,16 +69,6 @@ export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   componentDidMount = () => {
-    // update status speaker, again
-    // https://stackoverflow.com/questions/41762392
-    if (Platform.OS === 'android') {
-      IncallManager.start()
-      BackgroundTimer.setTimeout(() => {
-        IncallManager.setForceSpeakerphoneOn(
-          getCallStore().isLoudSpeakerEnabled,
-        )
-      }, 2000)
-    }
     const oc = getCallStore().getOngoingCall()
     if (oc) {
       sip.enableMedia(oc.id)

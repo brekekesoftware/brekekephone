@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { PermissionsAndroid, Platform } from 'react-native'
 import {
   openSettings,
   PERMISSIONS,
@@ -53,7 +53,24 @@ export const permReadPhoneNumber = async () => {
 }
 
 export const permForCall = async () => {
-  if (Platform.OS !== 'android' || Platform.Version < 31) {
+  if (Platform.OS !== 'android' || Platform.Version < 23) {
+    return true
+  }
+  const call = await PermissionsAndroid.request('android.permission.CALL_PHONE')
+  if (call !== 'granted') {
+    if (call !== 'never_ask_again') {
+      return false
+    }
+    RnAlert.prompt({
+      title: 'CALL_PHONE',
+      message: intl`Please provide the required permissions from settings`,
+      onConfirm: openSettings,
+      confirmText: intl`OK`,
+      dismissText: intl`Cancel`,
+    })
+    return false
+  }
+  if (Platform.Version < 31) {
     return true
   }
   const r = await requestMultiple([
