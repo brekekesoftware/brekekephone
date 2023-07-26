@@ -67,16 +67,14 @@ public class L {
   }
 
   public static String titlePermissionMicroCamera() {
-    return "ja".equals(l)
-        ? "Brekeke にマイク、Bluetooth、カメラへのアクセスを許可しますか?"
-        : "Allow Brekeke to access the microphone, bluetooth and camera?";
+    return "ja".equals(l) ? "必要な権限" : "Permissions Required";
   }
 
   public static String messagePermissionMicroCamera() {
     return "ja".equals(l)
-        ? "通話を続行するには、アプリの権限でマイク、Bluetooth、カメラへのアクセスを許可してください。"
-        : "To continue the call, please grant microphone, bluetooth and camera  access in the app"
-            + " permissions settings.";
+        ? "Brekeke Phone がマイク、カメラ、および通話を続行するためのその他の権限にアクセスできるようにします。"
+        : "Allow Brekeke Phone to access the microphone, camera, and other permissions to continue"
+            + " to the call.";
   }
 
   public static String close() {

@@ -10,7 +10,7 @@ import {
 import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 
-export const permissionNotification = async () => {
+export const permNotifications = async () => {
   if (Platform.OS !== 'android' || Platform.Version < 33) {
     return true
   }
@@ -23,7 +23,7 @@ export const permissionNotification = async () => {
   }
   RnAlert.prompt({
     title: 'POST_NOTIFICATIONS',
-    message: intl`Please provide the required permission from settings`,
+    message: intl`Please provide the required permissions from settings`,
     onConfirm: openSettings,
     confirmText: intl`OK`,
     dismissText: intl`Cancel`,
@@ -31,7 +31,7 @@ export const permissionNotification = async () => {
   return true
 }
 
-export const permissionReadPhoneNumber = async () => {
+export const permReadPhoneNumber = async () => {
   if (Platform.OS !== 'android' || Platform.Version < 30) {
     return true
   }
@@ -44,7 +44,7 @@ export const permissionReadPhoneNumber = async () => {
   }
   RnAlert.prompt({
     title: 'READ_PHONE_NUMBERS',
-    message: intl`Please provide the required permission from settings`,
+    message: intl`Please provide the required permissions from settings`,
     onConfirm: openSettings,
     confirmText: intl`OK`,
     dismissText: intl`Cancel`,
@@ -52,28 +52,7 @@ export const permissionReadPhoneNumber = async () => {
   return false
 }
 
-export const permissionBluetoothConnect = async () => {
-  if (Platform.OS !== 'android' || Platform.Version < 31) {
-    return true
-  }
-  const r = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
-  if (r === 'granted') {
-    return true
-  }
-  if (r !== 'blocked') {
-    return false
-  }
-  RnAlert.prompt({
-    title: 'BLUETOOTH_CONNECT',
-    message: intl`Please provide the required permission from settings`,
-    onConfirm: openSettings,
-    confirmText: intl`OK`,
-    dismissText: intl`Cancel`,
-  })
-  return false
-}
-
-export const permissionForCall = async () => {
+export const permForCall = async () => {
   if (Platform.OS !== 'android' || Platform.Version < 31) {
     return true
   }
@@ -93,7 +72,7 @@ export const permissionForCall = async () => {
   }
   RnAlert.prompt({
     title: 'RECORD_AUDIO, BLUETOOTH_CONNECT, CAMERA',
-    message: intl`Please provide the required permission from settings`,
+    message: intl`Please provide the required permissions from settings`,
     onConfirm: openSettings,
     confirmText: intl`OK`,
     dismissText: intl`Cancel`,

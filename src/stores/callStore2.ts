@@ -13,7 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
-import { permissionForCall } from '../utils/permissions'
+import { permForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -397,8 +397,7 @@ export class CallStore {
     }
   }
   startCall: MakeCallFn = async (number: string, ...args) => {
-    const permission = await permissionForCall()
-    if (!permission) {
+    if (!(await permForCall())) {
       return
     }
     const as = getAuthStore()

@@ -655,53 +655,51 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  private void showRequestPermission() {
-    String title = L.titlePermissionMicroCamera();
-    String message = L.messagePermissionMicroCamera();
-
+  private void showRequestPermissions() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle(title);
-    builder.setMessage(message);
+    builder.setTitle(L.titlePermissionMicroCamera());
+    builder.setMessage(L.messagePermissionMicroCamera());
+
     builder.setPositiveButton(
         L.close(),
         new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            // user clicked OK button
+            // user clicked close button
           }
         });
+
     builder.setNegativeButton(
         L.goToSetting(),
         new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            Intent callSettingIntent =
+            Intent i =
                 new Intent(
                     Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                     Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
-            callSettingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(callSettingIntent);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
           }
         });
-    AlertDialog dialog = builder.create();
-    dialog.show();
+
+    builder.create().show();
   }
 
-  private boolean checkAndRequestPermission() {
-    if (checkSelfPermission(permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-        || checkSelfPermission(permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-        || checkSelfPermission(permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-      if (shouldShowRequestPermissionRationale(permission.RECORD_AUDIO)
-          || shouldShowRequestPermissionRationale(permission.CAMERA)
-          || shouldShowRequestPermissionRationale(permission.BLUETOOTH_CONNECT)) {
-        showRequestPermission();
-      } else {
-        requestPermissions(
-            new String[] {permission.RECORD_AUDIO, permission.CAMERA, permission.BLUETOOTH_CONNECT},
-            MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA);
-      }
-      return false;
-    } else {
+  private boolean checkAndRequestPermissions() {
+    if (checkSelfPermission(permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        && checkSelfPermission(permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        && checkSelfPermission(permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
       return true;
     }
+    if (shouldShowRequestPermissionRationale(permission.RECORD_AUDIO)
+        || shouldShowRequestPermissionRationale(permission.CAMERA)
+        || shouldShowRequestPermissionRationale(permission.BLUETOOTH_CONNECT)) {
+      showRequestPermissions();
+      return false;
+    }
+    requestPermissions(
+        new String[] {permission.RECORD_AUDIO, permission.CAMERA, permission.BLUETOOTH_CONNECT},
+        MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA);
+    return false;
   }
 
   @Override
@@ -710,13 +708,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     switch (requestCode) {
       case MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA:
-        // if request is cancelled, the result arrays are empty
-        if (grantResults.length > 0
+        if (grantResults.length == 3
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            && grantResults[1] == PackageManager.PERMISSION_GRANTED
+            && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
           handleClickAnswerCall();
         } else {
-          debug("MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA fail");
+          debug("MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA failed");
         }
         break;
     }
@@ -730,7 +728,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
-    if (checkAndRequestPermission()) {
+    if (checkAndRequestPermissions()) {
       handleClickAnswerCall();
     }
   }

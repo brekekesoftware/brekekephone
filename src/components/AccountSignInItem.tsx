@@ -17,9 +17,9 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import {
-  permissionForCall,
-  permissionNotification,
-  permissionReadPhoneNumber,
+  permForCall,
+  permNotifications,
+  permReadPhoneNumber,
 } from '../utils/permissions'
 import { Field } from './Field'
 import { FooterActions } from './FooterActions'
@@ -59,10 +59,10 @@ export const AccountSignInItem: FC<{
 }> = observer(props => {
   if (props.empty) {
     const onPressCreateAccount = async () => {
-      const result = await permissionReadPhoneNumber()
-      if (result) {
-        Nav().goToPageAccountCreate()
+      if (!(await permReadPhoneNumber())) {
+        return
       }
+      Nav().goToPageAccountCreate()
     }
     return (
       <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
@@ -87,33 +87,25 @@ export const AccountSignInItem: FC<{
   }
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
   const onPressSignIn = async () => {
-    const result = await permissionReadPhoneNumber()
-    if (result) {
-      if (a.pushNotificationEnabled) {
-        const status = await permissionNotification()
-        if (!status) {
-          return
-        }
-      }
-      const statusCall = await permissionForCall()
-      if (!statusCall) {
-        return
-      }
-      getAuthStore().signIn(a)
+    if (!(await permReadPhoneNumber())) {
+      return
+    }
+    if (a.pushNotificationEnabled && !(await permNotifications())) {
+      return
+    }
+    if (!(await permForCall())) {
+      return
+    }
+    getAuthStore().signIn(a)
+    if (Platform.OS !== 'web') {
       // try to end callkeep if it's stuck
-      if (Platform.OS !== 'web') {
-        getCallStore().endCallKeepAllCalls()
-      }
+      getCallStore().endCallKeepAllCalls()
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
-    if (e) {
-      const status = await permissionNotification()
-      if (!status) {
-        return
-      }
+    if (e && !(await permNotifications())) {
+      return
     }
-
     accountStore.upsertAccount({
       id: a.id,
       pushNotificationEnabled: e,

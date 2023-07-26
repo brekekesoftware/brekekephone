@@ -41,10 +41,11 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
+import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import {
-  permissionForCall,
-  permissionNotification,
-  permissionReadPhoneNumber,
+  permForCall,
+  permNotifications,
+  permReadPhoneNumber,
 } from '../utils/permissions'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
@@ -63,8 +64,9 @@ import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const initApp = async () => {
+  permNotifications()
+
   await intlStore.wait()
-  permissionNotification()
   const s = getAuthStore()
   const cs = getCallStore()
   const nav = Nav()
@@ -78,16 +80,15 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
-    const result = await permissionReadPhoneNumber()
-    if (result) {
-      const d = await getLastSignedInId(true)
-      const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-      if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
-        console.log('App navigated by auto signin')
-        // already navigated
-      } else {
-        nav.goToPageIndex()
-      }
+    if (!(await permReadPhoneNumber())) {
+      nav.goToPageAccountSignIn()
+      return
+    }
+    const d = await getLastSignedInId(true)
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+      console.log('App navigated by auto signin')
+      // already navigated
     } else {
       nav.goToPageIndex()
     }
@@ -135,7 +136,11 @@ const initApp = async () => {
       webPromptPermission()
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    permissionForCall()
+    if (Platform.OS === 'android') {
+      permForCall()
+    } else {
+      getAudioVideoPermission()
+    }
   }
 
   setupCallKeep()
