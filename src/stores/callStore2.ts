@@ -397,7 +397,6 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (!(await permForCall())) {
       return
@@ -794,16 +793,16 @@ export class CallStore {
     if (Platform.OS === 'web') {
       return
     }
-    const callkeepUuid = this.getOngoingCall()?.callkeepUuid
     this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
     if (Platform.OS === 'ios') {
       IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
       return
     }
-    if (!callkeepUuid) {
+    const uuid = this.getOngoingCall()?.callkeepUuid
+    if (!uuid) {
       return
     }
-    RNCallKeep.toggleAudioRouteSpeaker(callkeepUuid, this.isLoudSpeakerEnabled)
+    RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
     BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
   @observable newVoicemailCount = 0
