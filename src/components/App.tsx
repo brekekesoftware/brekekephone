@@ -324,4 +324,5 @@ export const App = observer(() => {
   )
 })
 
+// eslint-disable-next-line import/no-default-export
 export default App
