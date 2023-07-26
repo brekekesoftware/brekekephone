@@ -13,6 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
+import { permForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -218,8 +219,6 @@ export class CallStore {
     ) {
       this.incallManagerStarted = true
       IncallManager.start()
-      // reset loud speaker on each call
-      IncallManager.setForceSpeakerphoneOn(false)
     }
   }
   @action private upsertCall = (
@@ -260,6 +259,7 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
+        BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
@@ -359,7 +359,9 @@ export class CallStore {
     // reset loud speaker if there's no call left
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
-      IncallManager.setForceSpeakerphoneOn(false)
+      if (Platform.OS === 'ios') {
+        IncallManager.setForceSpeakerphoneOn(false)
+      }
     }
     // stop android incall manager if there's no call left
     if (
@@ -395,10 +397,12 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-  startCall: MakeCallFn = (number: string, ...args) => {
+  startCall: MakeCallFn = async (number: string, ...args) => {
+    if (!(await permForCall())) {
+      return
+    }
     const as = getAuthStore()
     as.sipTotalFailure = 0
-
     const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
     if (
       as.sipState === 'waiting' ||
@@ -438,9 +442,7 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      if (Platform.OS === 'ios') {
-        RNCallKeep.startCall(uuid, number, 'Brekeke Phone')
-      }
+      RNCallKeep.startCall(uuid, number, 'Brekeke phone')
       this.setAutoEndCallKeepTimer(uuid)
     }
     // check for each 0.5s: auto update currentCallId
@@ -786,13 +788,22 @@ export class CallStore {
   }
 
   // some other fields
-  // TODO move them somewhere else
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
-    if (Platform.OS !== 'web') {
-      this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
-      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+    if (Platform.OS === 'web') {
+      return
     }
+    this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
+    if (Platform.OS === 'ios') {
+      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+      return
+    }
+    const uuid = this.getOngoingCall()?.callkeepUuid
+    if (!uuid) {
+      return
+    }
+    RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
+    BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
   @observable newVoicemailCount = 0
   @action setNewVoicemailCount = (n: number) => {

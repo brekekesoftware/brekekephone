@@ -5,7 +5,10 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
+import android.media.AudioManager.OnCommunicationDeviceChangedListener;
+import android.media.AudioManager.OnModeChangedListener;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
@@ -96,6 +99,59 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     super(c);
     ctx = c;
     initStaticServices(c);
+    this.debugAudioListener();
+  }
+
+  private void debugAudioListener() {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+      return;
+    }
+    OnModeChangedListener l1 =
+        new OnModeChangedListener() {
+          @Override
+          public void onModeChanged(int mode) {
+            switch (mode) {
+              case AudioManager.MODE_NORMAL:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_NORMAL");
+                break;
+              case AudioManager.MODE_INVALID:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_INVALID");
+                break;
+              case AudioManager.MODE_CURRENT:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_CURRENT");
+                break;
+              case AudioManager.MODE_RINGTONE:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_RINGTONE");
+                break;
+              case AudioManager.MODE_IN_CALL:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_CALL");
+                break;
+              case AudioManager.MODE_IN_COMMUNICATION:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
+                break;
+              case AudioManager.MODE_CALL_SCREENING:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
+                break;
+              default:
+                emit("debug", "onModeChanged:mode::" + mode);
+                break;
+            }
+          }
+        };
+    OnCommunicationDeviceChangedListener l2 =
+        new OnCommunicationDeviceChangedListener() {
+          @Override
+          public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
+            emit(
+                "debug",
+                "onCommunicationDeviceChanged:AudioDeviceInfo::"
+                    + device.getType()
+                    + "::"
+                    + device.getProductName());
+          }
+        };
+    am.addOnModeChangedListener(ctx.getMainExecutor(), l1);
+    am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), l2);
   }
 
   @Override
@@ -744,6 +800,25 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           public void run() {
             try {
               at(uuid).setBtnHoldSelected(holding);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setSpeakerStatus(Boolean isSpeakerOn) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.setBtnSpeakerSelected(isSpeakerOn);
+                } catch (Exception e) {
+                }
+              }
             } catch (Exception e) {
             }
           }
