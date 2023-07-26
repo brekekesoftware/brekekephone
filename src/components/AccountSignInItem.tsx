@@ -16,6 +16,11 @@ import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import {
+  permForCall,
+  permNotifications,
+  permReadPhoneNumber,
+} from '../utils/permissions'
 import { Field } from './Field'
 import { FooterActions } from './FooterActions'
 import { RnText, RnTouchableOpacity } from './Rn'
@@ -53,6 +58,12 @@ export const AccountSignInItem: FC<{
   last?: boolean
 }> = observer(props => {
   if (props.empty) {
+    const onPressCreateAccount = async () => {
+      if (!(await permReadPhoneNumber())) {
+        return
+      }
+      Nav().goToPageAccountCreate()
+    }
     return (
       <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
         <RnText subTitle>{intl`No account`}</RnText>
@@ -60,7 +71,7 @@ export const AccountSignInItem: FC<{
         <RnText>{intl`Tap the below button to create one`}</RnText>
         <View style={css.AccountSignInItem_Btns}>
           <FooterActions
-            onNext={Nav().goToPageAccountCreate}
+            onNext={onPressCreateAccount}
             onNextText={intl`CREATE NEW ACCOUNT`}
           />
         </View>
@@ -75,7 +86,31 @@ export const AccountSignInItem: FC<{
     return null
   }
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
-
+  const onPressSignIn = async () => {
+    if (!(await permReadPhoneNumber())) {
+      return
+    }
+    if (a.pushNotificationEnabled && !(await permNotifications())) {
+      return
+    }
+    if (!(await permForCall())) {
+      return
+    }
+    getAuthStore().signIn(a)
+    if (Platform.OS !== 'web') {
+      // try to end callkeep if it's stuck
+      getCallStore().endCallKeepAllCalls()
+    }
+  }
+  const onSwitchEnableNotification = async (e: boolean) => {
+    if (e && !(await permNotifications())) {
+      return
+    }
+    accountStore.upsertAccount({
+      id: a.id,
+      pushNotificationEnabled: e,
+    })
+  }
   return (
     <View
       style={[css.AccountSignInItem, props.last && css.AccountSignInItem__last]}
@@ -98,12 +133,7 @@ export const AccountSignInItem: FC<{
       </RnTouchableOpacity>
       <Field
         label={intl`PUSH NOTIFICATION`}
-        onValueChange={(e: boolean) =>
-          accountStore.upsertAccount({
-            id: a.id,
-            pushNotificationEnabled: e,
-          })
-        }
+        onValueChange={(e: boolean) => onSwitchEnableNotification(e)}
         type='Switch'
         value={a.pushNotificationEnabled}
         loading={isLoading}
@@ -139,13 +169,7 @@ export const AccountSignInItem: FC<{
           onBackIcon={mdiClose}
           onMore={() => Nav().goToPageAccountUpdate({ id: a.id })}
           onMoreIcon={mdiDotsHorizontal}
-          onNext={() => {
-            getAuthStore().signIn(a)
-            // try to end callkeep if it's stuck
-            if (Platform.OS !== 'web') {
-              getCallStore().endCallKeepAllCalls()
-            }
-          }}
+          onNext={onPressSignIn}
           onNextText={intl`SIGN IN`}
         />
       </View>

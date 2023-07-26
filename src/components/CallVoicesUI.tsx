@@ -71,7 +71,7 @@ export class AnsweredItem extends Component<{
 }> {
   componentDidMount = () => {
     // update status speaker, again
-    // ref: https://stackoverflow.com/questions/41762392/what-happens-with-onaudiofocuschange-when-a-phone-call-ends
+    // https://stackoverflow.com/questions/41762392
     if (Platform.OS === 'android') {
       IncallManager.start()
       BackgroundTimer.setTimeout(() => {

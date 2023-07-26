@@ -136,4 +136,5 @@ export const App = () => {
   return <Container style={css.WebApp}>{child}</Container>
 }
 
+// eslint-disable-next-line import/no-default-export
 export default App

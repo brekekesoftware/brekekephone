@@ -13,6 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
+import { permForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -395,7 +396,10 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-  startCall: MakeCallFn = (number: string, ...args) => {
+  startCall: MakeCallFn = async (number: string, ...args) => {
+    if (!(await permForCall())) {
+      return
+    }
     const as = getAuthStore()
     as.sipTotalFailure = 0
 

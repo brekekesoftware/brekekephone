@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { FC, ReactNode } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
 import {
@@ -58,6 +58,13 @@ const css = StyleSheet.create({
   },
   CallIcon: {
     flex: null as any,
+    ...Platform.select({
+      web: {
+        flex: 0,
+        paddingLeft: 6,
+        paddingRight: 10,
+      },
+    }),
   },
   CallCreatedAt: {
     left: 3,
@@ -72,7 +79,6 @@ const css = StyleSheet.create({
     marginRight: 15,
     paddingTop: 7,
   },
-  IconGroup: {},
   VGroup: {
     overflow: 'hidden',
     backgroundColor: v.borderBg,
@@ -205,7 +211,6 @@ export const UserItem: FC<
               path={mdiAccountGroup}
               size={40}
               color={v.colors.greyTextChat}
-              style={css.IconGroup}
             />
           </View>
         ) : !parkNumber ? (
