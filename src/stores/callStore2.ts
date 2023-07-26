@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
-import { AppState, PermissionsAndroid, Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
@@ -404,12 +404,6 @@ export class CallStore {
     }
     const as = getAuthStore()
     as.sipTotalFailure = 0
-    const result = await PermissionsAndroid.request(
-      'android.permission.CALL_PHONE',
-    )
-    if (!result) {
-      return
-    }
     const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
     if (
       as.sipState === 'waiting' ||
@@ -795,22 +789,22 @@ export class CallStore {
   }
 
   // some other fields
-  // TODO move them somewhere else
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
-    const callkeepUuid = this.getOngoingCall()?.callkeepUuid
-    if (Platform.OS !== 'web') {
-      this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
-      if (Platform.OS === 'android' && callkeepUuid) {
-        RNCallKeep.toggleAudioRouteSpeaker(
-          callkeepUuid,
-          this.isLoudSpeakerEnabled,
-        )
-        BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
-      } else {
-        IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
-      }
+    if (Platform.OS === 'web') {
+      return
     }
+    const callkeepUuid = this.getOngoingCall()?.callkeepUuid
+    this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
+    if (Platform.OS === 'ios') {
+      IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
+      return
+    }
+    if (!callkeepUuid) {
+      return
+    }
+    RNCallKeep.toggleAudioRouteSpeaker(callkeepUuid, this.isLoudSpeakerEnabled)
+    BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
   @observable newVoicemailCount = 0
   @action setNewVoicemailCount = (n: number) => {

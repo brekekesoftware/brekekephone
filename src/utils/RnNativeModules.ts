@@ -23,12 +23,13 @@ type TBrekekeUtils = {
   setRemoteVideoStreamURL(uuid: string, url: string): void
   setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
+  setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
-  setSpeakerStatus(isSpeakerOn: boolean): void
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -72,12 +73,13 @@ const Polyfill: TBrekekeUtils = {
   setRemoteVideoStreamURL: () => undefined,
   setIsFrontCamera: () => undefined,
   setOnHold: () => undefined,
+  setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
-  setSpeakerStatus: () => undefined,
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

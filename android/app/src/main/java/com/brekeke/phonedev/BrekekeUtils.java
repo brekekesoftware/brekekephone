@@ -99,15 +99,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     super(c);
     ctx = c;
     initStaticServices(c);
-    this.addDeviceAudioListener();
-    this.addAudioModeListener();
+    this.debugAudioListener();
   }
 
-  private void addAudioModeListener() {
+  private void debugAudioListener() {
     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
       return;
     }
-    OnModeChangedListener l =
+    OnModeChangedListener l1 =
         new OnModeChangedListener() {
           @Override
           public void onModeChanged(int mode) {
@@ -139,14 +138,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
           }
         };
-    am.addOnModeChangedListener(ctx.getMainExecutor(), l);
-  }
-
-  private void addDeviceAudioListener() {
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
-      return;
-    }
-    OnCommunicationDeviceChangedListener l =
+    OnCommunicationDeviceChangedListener l2 =
         new OnCommunicationDeviceChangedListener() {
           @Override
           public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
@@ -158,8 +150,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                     + device.getProductName());
           }
         };
-
-    am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), l);
+    am.addOnModeChangedListener(ctx.getMainExecutor(), l1);
+    am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), l2);
   }
 
   @Override
