@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
-import { AppState, Linking, PermissionsAndroid, Platform } from 'react-native'
+import { AppState, PermissionsAndroid, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
@@ -13,6 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { TEvent } from '../utils/callkeep'
+import { permForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -396,31 +397,11 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
-  permissionReadPhoneNumber = async () => {
-    if (Platform.OS === 'android' && Platform.Version >= 23) {
-      const result = await PermissionsAndroid.request(
-        'android.permission.CALL_PHONE',
-      )
-      if (result !== 'granted') {
-        if (result === 'never_ask_again') {
-          RnAlert.prompt({
-            title: 'CALL_PHONE',
-            message: intl`Please provide the required permission from settings`,
-            onConfirm: () => {
-              Linking.openSettings()
-            },
-            confirmText: intl`OK`,
-            dismissText: intl`Cancel`,
-          })
-        }
-        return false
-      }
-      return true
-    }
-    return true
-  }
 
   startCall: MakeCallFn = async (number: string, ...args) => {
+    if (!(await permForCall())) {
+      return
+    }
     const as = getAuthStore()
     as.sipTotalFailure = 0
     const result = await PermissionsAndroid.request(
