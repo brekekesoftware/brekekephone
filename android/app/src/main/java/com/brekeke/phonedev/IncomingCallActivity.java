@@ -985,6 +985,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
 
+  public void setBtnSpeakerSelected(boolean isSpeakerOn) {
+    btnSpeaker.setSelected(isSpeakerOn);
+  }
+
   public void setBtnSwitchCamera(boolean isFrontCamera) {
     btnSwitchCamera.setSelected(isFrontCamera);
   }
