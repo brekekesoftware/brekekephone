@@ -9,7 +9,6 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
-  PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
@@ -43,6 +42,11 @@ import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
+import {
+  permForCall,
+  permNotifications,
+  permReadPhoneNumber,
+} from '../utils/permissions'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
@@ -60,15 +64,9 @@ import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const initApp = async () => {
+  permNotifications()
+
   await intlStore.wait()
-
-  if (Platform.OS === 'android') {
-    //https://github.com/facebook/react-native/issues/32584#issuecomment-968950165 for android 12
-    await PermissionsAndroid.requestMultiple([
-      'android.permission.READ_PHONE_NUMBERS',
-    ])
-  }
-
   const s = getAuthStore()
   const cs = getCallStore()
   const nav = Nav()
@@ -82,6 +80,10 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
+    if (!(await permReadPhoneNumber())) {
+      nav.goToPageAccountSignIn()
+      return
+    }
     const d = await getLastSignedInId(true)
     const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
     if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
@@ -134,7 +136,11 @@ const initApp = async () => {
       webPromptPermission()
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    getAudioVideoPermission()
+    if (Platform.OS === 'android') {
+      permForCall()
+    } else {
+      getAudioVideoPermission()
+    }
   }
 
   setupCallKeep()
@@ -318,4 +324,5 @@ export const App = observer(() => {
   )
 })
 
+// eslint-disable-next-line import/no-default-export
 export default App
