@@ -4,8 +4,10 @@
   <uses-feature android:name="android.hardware.camera.autofocus" />
   <uses-feature android:name="android.hardware.audio.output" />
   <uses-feature android:name="android.hardware.microphone" />
-  <uses-feature android:name="android.hardware.telephony" android:required="false" />
-
+  <uses-feature
+    android:name="android.hardware.telephony"
+    android:required="false"
+  />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
@@ -16,7 +18,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-<!--  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />-->
+  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <!-- react-native-webrtc bluetooth -->
   <uses-permission

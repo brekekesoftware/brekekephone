@@ -322,10 +322,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void updateSpeakerStatus(boolean isSpeakerOn) {
-    btnSpeaker.setSelected(isSpeakerOn);
-  }
-
   public void destroyAvatarWebView() {
     try {
       webViewAvatar.getSettings().setJavaScriptEnabled(false);
@@ -908,6 +904,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+  }
+
+  public void setBtnSpeakerSelected(boolean isSpeakerOn) {
+    btnSpeaker.setSelected(isSpeakerOn);
   }
 
   public void setBtnSwitchCamera(boolean isFrontCamera) {

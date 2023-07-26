@@ -21,7 +21,7 @@ import { addCallHistory } from './addCallHistory'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
-import { getCallStore, setCallStore } from './callStore'
+import { setCallStore } from './callStore'
 import { CancelRecentPn } from './cancelRecentPn'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -258,7 +258,7 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
-        BrekekeUtils.updateSpeakerStatus(getCallStore().isLoudSpeakerEnabled)
+        BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
@@ -825,7 +825,7 @@ export class CallStore {
           callkeepUuid,
           this.isLoudSpeakerEnabled,
         )
-        BrekekeUtils.updateSpeakerStatus(this.isLoudSpeakerEnabled)
+        BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       } else {
         IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
       }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
+import android.media.AudioManager.OnCommunicationDeviceChangedListener;
 import android.media.AudioManager.OnModeChangedListener;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -16,7 +17,6 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -66,7 +66,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       eventEmitter.emit(name, data);
     } catch (Exception e) {
-      Log.e("BrekekeUtils", "BrekekeUtils::emit: " + e.getMessage());
     }
   }
 
@@ -100,76 +99,73 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     super(c);
     ctx = c;
     initStaticServices(c);
-    this.listenerDeviceAudio();
-    this.listenerAudioMode();
+    this.addDeviceAudioListener();
+    this.addAudioModeListener();
   }
 
-  private void listenerAudioMode() {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      AudioManager.OnModeChangedListener listener =
-          new OnModeChangedListener() {
-            @Override
-            public void onModeChanged(int mode) {
-              switch (mode) {
-                case AudioManager.MODE_NORMAL:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_NORMAL ");
-                  break;
-                case AudioManager.MODE_INVALID:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_INVALID ");
-                  break;
-                case AudioManager.MODE_CURRENT:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_CURRENT ");
-                  break;
-                case AudioManager.MODE_RINGTONE:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_RINGTONE ");
-                  break;
-                case AudioManager.MODE_IN_CALL:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_CALL ");
-                  break;
-                case AudioManager.MODE_IN_COMMUNICATION:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION ");
-                  break;
-                case AudioManager.MODE_CALL_SCREENING:
-                  emit("debug", "onModeChanged:mode::AudioManager.MODE_CALL_SCREENING ");
-                  break;
-                default:
-                  emit("debug", "onModeChanged:mode:: " + mode);
-                  break;
-              }
-            }
-          };
-      am.addOnModeChangedListener(ctx.getMainExecutor(), listener);
+  private void addAudioModeListener() {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+      return;
     }
+    OnModeChangedListener l =
+        new OnModeChangedListener() {
+          @Override
+          public void onModeChanged(int mode) {
+            switch (mode) {
+              case AudioManager.MODE_NORMAL:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_NORMAL");
+                break;
+              case AudioManager.MODE_INVALID:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_INVALID");
+                break;
+              case AudioManager.MODE_CURRENT:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_CURRENT");
+                break;
+              case AudioManager.MODE_RINGTONE:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_RINGTONE");
+                break;
+              case AudioManager.MODE_IN_CALL:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_CALL");
+                break;
+              case AudioManager.MODE_IN_COMMUNICATION:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
+                break;
+              case AudioManager.MODE_CALL_SCREENING:
+                emit("debug", "onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
+                break;
+              default:
+                emit("debug", "onModeChanged:mode::" + mode);
+                break;
+            }
+          }
+        };
+    am.addOnModeChangedListener(ctx.getMainExecutor(), l);
   }
 
-  private void listenerDeviceAudio() {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      AudioManager.OnCommunicationDeviceChangedListener listener =
-          new AudioManager.OnCommunicationDeviceChangedListener() {
-            @Override
-            public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
-              // Handle changes
-              emit(
-                  "debug",
-                  "onCommunicationDeviceChanged:AudioDeviceInfo:: "
-                      + device.getType()
-                      + "::"
-                      + device.getProductName());
-            }
-          };
-
-      am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), listener);
+  private void addDeviceAudioListener() {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+      return;
     }
+    OnCommunicationDeviceChangedListener l =
+        new OnCommunicationDeviceChangedListener() {
+          @Override
+          public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
+            emit(
+                "debug",
+                "onCommunicationDeviceChanged:AudioDeviceInfo::"
+                    + device.getType()
+                    + "::"
+                    + device.getProductName());
+          }
+        };
+
+    am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), l);
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    try {
-      eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
-    } catch (Exception ex) {
-      Log.e("BrekekeUtils", "initialize:ex:: " + ex.getMessage());
-    }
+    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
   }
 
   @Override
@@ -623,25 +619,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
 
   @ReactMethod
-  public void updateSpeakerStatus(Boolean isSpeakerOn) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (IncomingCallActivity a : activities) {
-                try {
-                  a.updateSpeakerStatus(isSpeakerOn);
-                } catch (Exception e) {
-                }
-              }
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
   }
@@ -831,6 +808,25 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           public void run() {
             try {
               at(uuid).setBtnHoldSelected(holding);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setSpeakerStatus(Boolean isSpeakerOn) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.setBtnSpeakerSelected(isSpeakerOn);
+                } catch (Exception e) {
+                }
+              }
             } catch (Exception e) {
             }
           }
