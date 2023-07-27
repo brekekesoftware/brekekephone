@@ -181,8 +181,6 @@ const initApp = async () => {
 
 let alreadyInitApp = false
 PushNotification.register(async () => {
-  console.log('dev::', 'PushNotification.register')
-
   if (alreadyInitApp) {
     return
   }
