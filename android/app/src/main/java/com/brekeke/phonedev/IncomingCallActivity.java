@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -708,12 +710,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    int isPermBluetoothConnect = PackageManager.PERMISSION_GRANTED;
+    // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+    if (VERSION.SDK_INT >= VERSION_CODES.S) {
+      isPermBluetoothConnect = grantResults[2];
+    }
     switch (requestCode) {
       case MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA:
         if (grantResults.length == 3
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
             && grantResults[1] == PackageManager.PERMISSION_GRANTED
-            && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+            && isPermBluetoothConnect == PackageManager.PERMISSION_GRANTED) {
           handleClickAnswerCall();
         } else {
           debug("MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA failed");

@@ -10,6 +10,7 @@ import {
 
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
+import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
@@ -47,6 +48,7 @@ export const PushNotification = {
   },
   register: async (initApp: Function) => {
     try {
+      await permNotifications()
       initApp()
       const hasPermissions: boolean =
         await Notifications.isRegisteredForRemoteNotifications()
@@ -70,9 +72,9 @@ export const PushNotification = {
 
       // set notification channel for normal case
       Notifications.setNotificationChannel({
-        // have to set channel default
+        // have to set channel: channel_01. It is default
         // https://github.com/wix/react-native-notifications/issues/869#issuecomment-1157869452
-        channelId: 'default',
+        channelId: 'channel_01',
         name: 'Brekeke Phone',
         importance: 5,
         description: 'Brekeke Phone notification channel',

@@ -42,11 +42,7 @@ import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
-import {
-  permForCall,
-  permNotifications,
-  permReadPhoneNumber,
-} from '../utils/permissions'
+import { permForCall, permReadPhoneNumber } from '../utils/permissions'
 // @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
@@ -64,8 +60,6 @@ import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const initApp = async () => {
-  permNotifications()
-
   await intlStore.wait()
   const s = getAuthStore()
   const cs = getCallStore()
@@ -187,6 +181,8 @@ const initApp = async () => {
 
 let alreadyInitApp = false
 PushNotification.register(async () => {
+  console.log('dev::', 'PushNotification.register')
+
   if (alreadyInitApp) {
     return
   }
