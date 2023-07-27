@@ -129,13 +129,13 @@ export const setupCallKeep = async () => {
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
-    if (n) {
-      getAuthStore().signInByNotification(n)
-      getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
-    } else {
-      console.log('SIP PN debug: call RNCallKeep.endCall: pnData not found')
-      RNCallKeep.endCall(uuid)
+    if (!n) {
+      // when PN is off we will manually call RNCallKeep.displayIncomingCall
+      // pnData will be empty here
+      return
     }
+    getAuthStore().signInByNotification(n)
+    getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
   }
   const didPerformSetMutedCallAction = (
     e: EventsPayload['didPerformSetMutedCallAction'],
@@ -180,10 +180,7 @@ export const setupCallKeep = async () => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
-    const cs = getCallStore()
-    cs.calls
-      .filter(c => c.answered && !c.holding && c.id !== cs.ongoingCallId)
-      .forEach(c => c.toggleHoldWithCheck())
+    getCallStore().updateBackgroundCalls()
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents

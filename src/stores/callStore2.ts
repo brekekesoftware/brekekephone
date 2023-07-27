@@ -153,6 +153,7 @@ export class CallStore {
   setCurrentCallId = (id: string) => {
     this.displayingCallId = id
     this.ongoingCallId = id
+    this.updateBackgroundCalls()
   }
   @observable ongoingCallId: string = ''
   @observable displayingCallId = ''
@@ -167,15 +168,15 @@ export class CallStore {
     // currently we forked mobx-react to temporary get over this error
     // in the future we need to rewrite and refactor the whole stores/actions
     if (oc) {
-      const ucEnabled = getAuthStore()?.getCurrentAccount()?.ucEnabled
+      const ca = getAuthStore().getCurrentAccount()
       if (!oc.answered && (!oc.partyImageUrl || !oc.partyImageUrl?.length)) {
-        oc.partyImageUrl = ucEnabled
+        oc.partyImageUrl = ca?.ucEnabled
           ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
-        oc.partyImageSize = ucEnabled ? 'large' : ''
+        oc.partyImageSize = ca?.ucEnabled ? 'large' : ''
       }
       if (oc.answered && (!oc.talkingImageUrl || !oc.talkingImageUrl.length)) {
-        oc.talkingImageUrl = ucEnabled
+        oc.talkingImageUrl = ca?.ucEnabled
           ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
       }
@@ -195,11 +196,11 @@ export class CallStore {
     if (!tenant || !name) {
       return ''
     }
-    const a = getAuthStore().getCurrentAccount()
-    if (!a) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return ''
     }
-    const { pbxHostname, pbxPort } = a
+    const { pbxHostname, pbxPort } = ca
     let ucHost = `${pbxHostname}:${pbxPort}`
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
@@ -255,7 +256,6 @@ export class CallStore {
         delete p.remoteVideoStreamObject
       }
       if (!e.answered && p.answered) {
-        this.setCurrentCallId(e.id)
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
@@ -308,6 +308,21 @@ export class CallStore {
         c.getDisplayName() + ' ' + intl`Incoming call`,
         c.getDisplayName(),
       )
+    }
+    if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
+      c.callkeepUuid = this.callkeepUuidPending
+      this.callkeepUuidPending = ''
+    }
+    const ca = getAuthStore().getCurrentAccount()
+    if (
+      Platform.OS !== 'web' &&
+      c.incoming &&
+      !c.callkeepUuid &&
+      !ca?.pushNotificationEnabled
+    ) {
+      const uuid = newUuid().toUpperCase()
+      c.callkeepUuid = uuid
+      RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', c.getDisplayName())
     }
     // get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
@@ -382,9 +397,6 @@ export class CallStore {
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
-    this.calls
-      .filter(i => i.id !== c.id && i.answered && !i.holding)
-      .forEach(i => i.toggleHoldWithCheck())
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
   }
@@ -397,8 +409,18 @@ export class CallStore {
       this.startCallIntervalId = 0
     }
   }
+  private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (!(await permForCall())) {
+      return
+    }
+    if (
+      this.callkeepUuidPending ||
+      this.calls.filter(c => !c.incoming && !c.answered).length
+    ) {
+      RnAlert.error({
+        message: intlDebug`There is already an outgoing call`,
+      })
       return
     }
     const as = getAuthStore()
@@ -419,13 +441,6 @@ export class CallStore {
       return
     }
 
-    if (this.calls.filter(c => !c.incoming && !c.answered).length) {
-      RnAlert.error({
-        message: intlDebug`Only make one outgoing call`,
-      })
-      return
-    }
-
     let reconnectCalled = false
     try {
       // try to call pbx first to see if there's any error with the network
@@ -442,7 +457,8 @@ export class CallStore {
     let uuid = ''
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
-      RNCallKeep.startCall(uuid, number, 'Brekeke phone')
+      this.callkeepUuidPending = uuid
+      RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       this.setAutoEndCallKeepTimer(uuid)
     }
     // check for each 0.5s: auto update currentCallId
@@ -469,6 +485,7 @@ export class CallStore {
         // add a guard of 10s to clear the interval
         if (diff > 10000) {
           if (uuid) {
+            this.callkeepUuidPending = ''
             this.endCallKeep(uuid)
           }
           this.clearStartCallIntervalTimer()
@@ -487,7 +504,7 @@ export class CallStore {
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
-  private updateBackgroundCalls = () => {
+  updateBackgroundCalls = () => {
     // auto hold background calls
     if (!this.ongoingCallId) {
       return
@@ -713,15 +730,14 @@ export class CallStore {
     })
   }
   shouldRingInNotify = (uuid?: string) => {
+    const ca = getAuthStore().getCurrentAccount()
     // disable ringtone when enable PN
-    if (getAuthStore().getCurrentAccount()?.pushNotificationEnabled) {
+    if (ca?.pushNotificationEnabled) {
       return false
     }
-
     if (Platform.OS === 'web' || !uuid) {
       return true
     }
-
     // do not ring on background
     if (RnAppState.currentState !== 'active') {
       return false
@@ -734,12 +750,11 @@ export class CallStore {
     if (
       Platform.OS === 'ios' &&
       Object.keys(this.callkeepMap).some(
-        _ => _ !== uuid && !this.callkeepActionMap[_],
+        u => u !== uuid && !this.callkeepActionMap[u],
       )
     ) {
       return false
     }
-
     return true
   }
 
