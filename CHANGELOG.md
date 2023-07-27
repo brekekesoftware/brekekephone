@@ -1,21 +1,27 @@
+#### 2.12.2
+
+- Fix android incoming call auto disconnect when app killed (issue 710)
+- Fix android 12 permissions
+- Fix android 12 loud speaker
+
 #### 2.12.1
 
 - Upgrade all packages and dependencies
-- Fix ios no audio in case of multiple call, previously using hacky toggle speaker, now has been fixed properly
+- Fix ios no audio in case of multiple call, previously using hacky toggle speaker, now has been fixed properly (issue 416 452 554 591 644 662 673 681 682)
 
 #### 2.12.0
 
-- Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen
-- Fix it should handle group chat or invitation well when press on the notification
-- Fix it should also re-login UC if press on the error message in case signed in from another location
-- Fix android it should show missed call notification in case display name contain % character
-- Fix android it should hide hangup button if the call is on hold
+- Fix it should hide keyboard to prevent layout break whenever navigate to page call manage screen (issue 680)
+- Fix it should handle group chat or invitation well when press on the notification (issue 679)
+- Fix it should also re-login UC if press on the error message in case signed in from another location (issue 688)
+- Fix android it should show missed call notification in case display name contain % character (issue 690)
+- Fix android it should hide hangup button if the call is on hold (issue 692)
 - Embed:
   - Try to fix call object field pbx talker id empty in some cases
 
 #### 2.11.21
 
-- Fix android it should display page call manage screen after cancel transfer
+- Fix android it should display page call manage screen after cancel transfer (issue 689)
 - Embed:
   - Fix revert mobx toJS change
 

@@ -293,6 +293,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     Intent i = new Intent(this, MainActivity.class);
     if (BrekekeUtils.main != null) {
       i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    } else {
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
     }
     startActivity(i);
   }
