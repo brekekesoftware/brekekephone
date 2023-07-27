@@ -127,6 +127,12 @@
     }
     phone.on('pal.notify_serverstatus', notify_serverstatus)
 
+    var notify_status = e => {
+      // your logic here...
+      console.log('pal.notify_status', e)
+    }
+    phone.on('pal.notify_status', notify_status)
+
     // later you can cleanup those listeners
     var exampleCleanupListenersCondition = false
     if (exampleCleanupListenersCondition) {
