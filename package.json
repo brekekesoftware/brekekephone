@@ -27,7 +27,7 @@
   "scripts": {
     "start": "make -Bs start",
     "build": "make -Bs build",
-    "clean": "make -Bs clean",
+    "clean": "react-native clean-project-auto && make -Bs clean",
     "intl": "make -Bs intl",
     "rn": "react-native start",
     "android": "react-native run-android",
@@ -137,6 +137,7 @@
     "metro-react-native-babel-preset": "0.77.0",
     "patch-package": "7.0.2",
     "prettier": "3.0.0",
+    "react-native-clean-project": "4.0.1",
     "react-scripts": "5.0.1",
     "type-coverage": "2.26.0",
     "typescript": "5.1.6"
