@@ -129,13 +129,13 @@ export const setupCallKeep = async () => {
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
+    getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
     if (!n) {
       // when PN is off we will manually call RNCallKeep.displayIncomingCall
       // pnData will be empty here
       return
     }
     getAuthStore().signInByNotification(n)
-    getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
   }
   const didPerformSetMutedCallAction = (
     e: EventsPayload['didPerformSetMutedCallAction'],

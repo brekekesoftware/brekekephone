@@ -67,15 +67,18 @@ export class CallStore {
   }
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
-    n: ParsedPn,
+    n?: ParsedPn,
   ) => {
+    this.setAutoEndCallKeepTimer(uuid, n)
+    if (!n) {
+      return
+    }
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
       BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 2000)
     }
-    this.setAutoEndCallKeepTimer(uuid, n)
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
     // assign the data and config
@@ -633,9 +636,6 @@ export class CallStore {
       !completedElseWhere
     ) {
       addCallHistory(pnData)
-    }
-    if (!this.callkeepMap[uuid] && Platform.OS === 'ios') {
-      return
     }
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
