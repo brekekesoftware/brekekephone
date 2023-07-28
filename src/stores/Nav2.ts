@@ -1,4 +1,5 @@
 import { ComponentProps } from 'react'
+import { Keyboard } from 'react-native'
 
 import { menus, normalizeSavedNavigation } from '../components/navigationConfig'
 import { PageAccountCreate } from '../pages/PageAccountCreate'
@@ -33,6 +34,7 @@ import { getAuthStore } from './authStore'
 import { getCallStore } from './callStore'
 import { CallStore } from './callStore2'
 import { setNav } from './Nav'
+import { RnKeyboard } from './RnKeyboard'
 import { RnStacker } from './RnStacker'
 
 export class Nav2 {
@@ -135,6 +137,10 @@ export class Nav2 {
   goToPageCallManage = (
     props?: CallStore['inPageCallManage'] & { isOutgoingCall?: boolean },
   ) => {
+    // dismiss keyboard automatically to avoid breaking the layout in this screen
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+    }
     const s = getCallStore()
     const oc = s.getOngoingCall()
     const uuid = oc?.callkeepUuid
@@ -146,6 +152,10 @@ export class Nav2 {
     }
   }
   backToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    // dismiss keyboard automatically to avoid breaking the layout in this screen
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+    }
     const s = getCallStore()
     const oc = s.getOngoingCall()
     const uuid = oc?.callkeepUuid
