@@ -610,7 +610,7 @@
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BrekekePhone/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke phone";
+				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke Phone";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift$(inherited)";
@@ -644,7 +644,7 @@
 				DEVELOPMENT_TEAM = 4XR752Y62T;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BrekekePhone/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke phone";
+				INFOPLIST_KEY_CFBundleDisplayName = "Brekeke Phone";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift$(inherited)";

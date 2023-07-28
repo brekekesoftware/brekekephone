@@ -238,7 +238,7 @@
 - Early media SDP handling
 - Show controls & keypad in outgoing call before answered/connected
 - Fix 456 533: Incorrect hold current call
-- Fix 481: Should not play both ring tone of Brekeke phone and device
+- Fix 481: Should not play both ring tone of Brekeke Phone and device
 - Fix 529: Clear notification badge number when open screen recent calls
 - Fix 494: Message alert should not play sound or vibrate when talking
 - Show avatar in incoming/outbound/manage call using x-image
