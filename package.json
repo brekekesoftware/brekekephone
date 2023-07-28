@@ -3,6 +3,27 @@
   "version": "2.12.2",
   "private": true,
   "homepage": "./",
+  "reactNativePermissionsIOS": [
+    "AppTrackingTransparency",
+    "BluetoothPeripheral",
+    "Calendars",
+    "Camera",
+    "Contacts",
+    "FaceID",
+    "LocationAccuracy",
+    "LocationAlways",
+    "LocationWhenInUse",
+    "MediaLibrary",
+    "Microphone",
+    "Motion",
+    "Notifications",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly",
+    "Reminders",
+    "Siri",
+    "SpeechRecognition",
+    "StoreKit"
+  ],
   "scripts": {
     "start": "make -Bs start",
     "build": "make -Bs build",
@@ -12,7 +33,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "format": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
-    "postinstall": "husky install && patch-package"
+    "postinstall": "husky install && react-native setup-ios-permissions && patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.0",
