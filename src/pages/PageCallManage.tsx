@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   AppState,
   Dimensions,
-  Keyboard,
   NativeEventSubscription,
   Platform,
   StyleSheet,
@@ -250,9 +249,6 @@ class PageCallManage extends Component<{
     )
   }
   componentDidUpdate() {
-    if (RnKeyboard.isKeyboardShowing) {
-      Keyboard.dismiss()
-    }
     this.hideButtonsIfVideo()
     this.openJavaPnOnVisible()
   }
