@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -100,7 +102,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public JSONObject pbxConfig;
   public JSONObject callConfig;
-  final int MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA = 1222;
+  final int PERMISSIONS_REQUEST_CODE = 1222;
 
   // ==========================================================================
   // activity lifecycles
@@ -700,23 +702,28 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
     requestPermissions(
         new String[] {permission.RECORD_AUDIO, permission.CAMERA, permission.BLUETOOTH_CONNECT},
-        MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA);
+        PERMISSIONS_REQUEST_CODE);
     return false;
   }
 
   @Override
   public void onRequestPermissionsResult(
-      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    switch (requestCode) {
-      case MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA:
-        if (grantResults.length == 3
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && grantResults[1] == PackageManager.PERMISSION_GRANTED
-            && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+      int code, @NonNull String[] permissions, @NonNull int[] r) {
+    super.onRequestPermissionsResult(code, permissions, r);
+    int bluetooth = PackageManager.PERMISSION_GRANTED;
+    // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+    if (VERSION.SDK_INT >= VERSION_CODES.S) {
+      bluetooth = r[2];
+    }
+    switch (code) {
+      case PERMISSIONS_REQUEST_CODE:
+        if (r[0] == PackageManager.PERMISSION_GRANTED
+            && r[1] == PackageManager.PERMISSION_GRANTED
+            && bluetooth == PackageManager.PERMISSION_GRANTED) {
           handleClickAnswerCall();
         } else {
-          debug("MY_PERMISSIONS_REQUEST_MICROPHONE_CAMERA failed");
+          String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
+          debug("PERMISSIONS_REQUEST_CODE " + detail);
         }
         break;
     }
