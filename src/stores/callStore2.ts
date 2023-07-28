@@ -16,6 +16,7 @@ import { TEvent } from '../utils/callkeep'
 import { permForCall } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
@@ -393,12 +394,13 @@ export class CallStore {
     }
   }
 
-  @action onSelectBackgroundCall = (c: Immutable<Call>) => {
+  @action onSelectBackgroundCall = async (c: Immutable<Call>) => {
+    this.setCurrentCallId(c.id)
+    Nav().backToPageCallManage()
+    await waitTimeout()
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
-    this.setCurrentCallId(c.id)
-    Nav().backToPageCallManage()
   }
 
   private startCallIntervalAt = 0
