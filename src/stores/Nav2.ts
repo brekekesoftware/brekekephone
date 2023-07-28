@@ -137,7 +137,7 @@ export class Nav2 {
   goToPageCallManage = (
     props?: CallStore['inPageCallManage'] & { isOutgoingCall?: boolean },
   ) => {
-    // auto disable keyboard to avoid break layout
+    // dismiss keyboard automatically to avoid breaking the layout in this screen
     if (RnKeyboard.isKeyboardShowing) {
       Keyboard.dismiss()
     }
@@ -152,6 +152,7 @@ export class Nav2 {
     }
   }
   backToPageCallManage = (props?: CallStore['inPageCallManage']) => {
+    // dismiss keyboard automatically to avoid breaking the layout in this screen
     if (RnKeyboard.isKeyboardShowing) {
       Keyboard.dismiss()
     }
