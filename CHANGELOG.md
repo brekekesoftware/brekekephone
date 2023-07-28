@@ -1,13 +1,18 @@
+#### 2.12.3
+
+- Fix android some issues related to permission (issue 725, 727, 728, 731)
+- Fix it should display keyboard correctly (issue 732)
+
 #### 2.12.2
 
+- Fix ios it should not disconnect the other call after select a background call (issue 535)
 - Fix android incoming call auto disconnect when app killed (issue 710)
-- Fix android 12 permissions
-- Fix android 12 loud speaker
+- Fix android 12 loud speaker and permission after upgrading packages
 
 #### 2.12.1
 
 - Upgrade all packages and dependencies
-- Fix ios no audio in case of multiple call, previously using hacky toggle speaker, now has been fixed properly (issue 416 452 554 591 644 662 673 681 682)
+- Verify ios after upgrading packages: issues no audio in case of multiple calls, previously using hacky toggle speaker, now has been fixed properly (issue 416 452 554 591 644 662 673 681 682)
 
 #### 2.12.0
 
