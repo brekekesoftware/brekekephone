@@ -185,7 +185,10 @@ export const signInByLocalNotification = async (n: ParsedPn) => {
     as.signIn(a)
   }
 }
-export const parse = async (raw: { [k: string]: unknown }, isLocal = false) => {
+export const parse = async (
+  raw?: { [k: string]: unknown },
+  isLocal = false,
+) => {
   if (!raw) {
     return
   }

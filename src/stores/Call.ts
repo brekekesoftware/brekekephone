@@ -1,5 +1,4 @@
 import { action, observable } from 'mobx'
-import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
@@ -81,7 +80,7 @@ export class Call {
   }
   answerCallKeep = async () => {
     this.store.setCurrentCallId(this.id)
-    if (Platform.OS === 'web') {
+    if (!this.callkeepUuid) {
       return
     }
     this.callkeepAlreadyAnswered = true

@@ -457,11 +457,83 @@ index f53c052..b8a0e24 100644
  
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
+diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
+index ee1a7fb..4031efa 100644
+--- a/node_modules/react-native-callkeep/index.d.ts
++++ b/node_modules/react-native-callkeep/index.d.ts
+@@ -65,15 +65,6 @@ declare module 'react-native-callkeep' {
+   }
+ 
+   interface IOptions {
+-    ios: {
+-      appName: string,
+-      imageName?: string,
+-      supportsVideo?: boolean,
+-      maximumCallGroups?: string,
+-      maximumCallsPerCallGroup?: string,
+-      ringtoneSound?: string,
+-      includesCallsInRecents?: boolean
+-    },
+     android: {
+       alertTitle: string,
+       alertDescription: string,
+diff --git a/node_modules/react-native-callkeep/index.js b/node_modules/react-native-callkeep/index.js
+index 9f1312b..46b429b 100644
+--- a/node_modules/react-native-callkeep/index.js
++++ b/node_modules/react-native-callkeep/index.js
+@@ -71,12 +71,8 @@ class RNCallKeep {
+     if (!isIOS) {
+       return this._setupAndroid(options.android);
+     }
+-
+-    return this._setupIOS(options.ios);
+   };
+ 
+-  setSettings = (settings) => RNCallKeepModule.setSettings(settings[isIOS ? 'ios' : 'android']);
+-
+   registerPhoneAccount = (options) => {
+     if (isIOS) {
+       return;
+@@ -299,18 +295,6 @@ class RNCallKeep {
+       : Promise.reject('RNCallKeep.reportUpdatedCall was called from unsupported OS');
+   };
+ 
+-  _setupIOS = async (options) =>
+-    new Promise((resolve, reject) => {
+-      if (!options.appName) {
+-        reject('RNCallKeep.setup: option "appName" is required');
+-      }
+-      if (typeof options.appName !== 'string') {
+-        reject('RNCallKeep.setup: option "appName" should be of type "string"');
+-      }
+-
+-      resolve(RNCallKeepModule.setup(options));
+-    });
+-
+   _setupAndroid = async (options) => {
+     RNCallKeepModule.setup(options);
+ 
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..543f225 100644
+index e67c3cd..0b75942 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-@@ -160,6 +160,7 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+@@ -47,7 +47,6 @@ @implementation RNCallKeep
+     NSMutableArray *_delayedEvents;
+ }
+ 
+-static bool isSetupNatively;
+ static CXProvider* sharedProvider;
+ 
+ // should initialise in AppDelegate.m
+@@ -67,7 +66,6 @@ - (instancetype)init
+                                                  selector:@selector(onAudioRouteChange:)
+                                                      name:AVAudioSessionRouteChangeNotification
+                                                    object:nil];
+-        // Init provider directly, in case of an app killed and when we've already stored our settings
+         [RNCallKeep initCallKitProvider];
+ 
+         self.callKeepProvider = sharedProvider;
+@@ -160,20 +158,17 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
              body, @"data",
              nil
          ];
@@ -469,20 +541,48 @@ index e67c3cd..543f225 100644
          [_delayedEvents addObject:dictionary];
      }
  }
-@@ -169,6 +170,9 @@ + (NSDictionary *) getSettings {
- }
  
+-+ (NSDictionary *) getSettings {
+-    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"RNCallKeepSettings"];
+-}
+-
  + (void)initCallKitProvider {
 +#ifdef DEBUG
 +    NSLog(@"[RNCallKeep][initCallKitProvider]");
 +#endif
      if (sharedProvider == nil) {
-         NSDictionary *settings = [self getSettings];
-         if (settings != nil) {
-@@ -201,14 +205,20 @@ + (void)setup:(NSDictionary *)options {
-     NSLog(@"[RNCallKeep][setup] options = %@", options);
- #endif
-     _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
+-        NSDictionary *settings = [self getSettings];
+-        if (settings != nil) {
+-            sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfiguration:settings]];
+-        }
++        sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfiguration]];
+     }
+ }
+ 
+@@ -181,48 +176,6 @@ + (NSString *) getAudioOutput {
+     return [AVAudioSession sharedInstance].currentRoute.outputs.count > 0 ? [AVAudioSession sharedInstance].currentRoute.outputs[0].portType : nil;
+ }
+ 
+-+ (void)setup:(NSDictionary *)options {
+-    RNCallKeep *callKeep = [RNCallKeep allocWithZone: nil];
+-    [callKeep setup:options];
+-    isSetupNatively = YES;
+-}
+-
+-RCT_EXPORT_METHOD(setup:(NSDictionary *)options)
+-{
+-    if (isSetupNatively) {
+-#ifdef DEBUG
+-        NSLog(@"[RNCallKeep][setup] already setup");
+-        RCTLog(@"[RNCallKeep][setup] already setup in native code");
+-#endif
+-        return;
+-    }
+-
+-#ifdef DEBUG
+-    NSLog(@"[RNCallKeep][setup] options = %@", options);
+-#endif
+-    _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
 -    self.callKeepCallController = [[CXCallController alloc] init];
 -
 -    [self setSettings: options];
@@ -491,32 +591,46 @@ index e67c3cd..543f225 100644
 -
 -    self.callKeepProvider = sharedProvider;
 -    [self.callKeepProvider setDelegate:self queue:nil];
-+    if (self.callKeepCallController == nil) {
-+        self.callKeepCallController = [[CXCallController alloc] init];
-+    }
-+    NSDictionary *previousSettingsStored = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"RNCallKeepSettings"];
-+    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
-+    // Store settings in NSUserDefault
-+    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
-+    [[NSUserDefaults standardUserDefaults] synchronize];
-+    // Compare config and re init callkit provider if there is delta
-+    if (![previousSettingsStored isEqualToDictionary:settings]) {
-+        [RNCallKeep initCallKitProvider];
-+        self.callKeepProvider = sharedProvider;
-+        [self.callKeepProvider setDelegate:self queue:nil];
-+    }
+-}
+-
+-RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
+-{
+-#ifdef DEBUG
+-    NSLog(@"[RNCallKeep][setSettings] options = %@", options);
+-#endif
+-    NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
+-
+-    // Store settings in NSUserDefault
+-    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
+-    [[NSUserDefaults standardUserDefaults] synchronize];
+-}
+-
+ RCT_EXPORT_METHOD(setReachable)
+ {
+ #ifdef DEBUG
+@@ -277,21 +230,6 @@ + (void)setup:(NSDictionary *)options {
+                           fromPushKit: NO
+                               payload: nil
+                 withCompletionHandler: nil];
+-
+-    NSDictionary *settings = [RNCallKeep getSettings];
+-    NSNumber *timeout = settings[@"displayCallReachabilityTimeout"];
+-
+-    if (timeout) {
+-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)([timeout intValue] * NSEC_PER_MSEC));
+-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+-            if (!self->_isReachable) {
+-#ifdef DEBUG
+-                NSLog(@"[RNCallKeep]Displayed a call without a reachable app, ending the call: %@", uuidString);
+-#endif
+-                [RNCallKeep endCallWithUUID: uuidString reason: 1];
+-            }
+-        });
+-    }
  }
  
- RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
-@@ -217,7 +227,6 @@ + (void)setup:(NSDictionary *)options {
-     NSLog(@"[RNCallKeep][setSettings] options = %@", options);
- #endif
-     NSDictionary *settings = [[NSMutableDictionary alloc] initWithDictionary:options];
--
-     // Store settings in NSUserDefault
-     [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
-     [[NSUserDefaults standardUserDefaults] synchronize];
-@@ -320,6 +329,9 @@ + (void)setup:(NSDictionary *)options {
+ RCT_EXPORT_METHOD(getInitialEvents:(RCTPromiseResolveBlock)resolve
+@@ -320,6 +258,9 @@ + (void)setup:(NSDictionary *)options {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
  #endif
@@ -526,26 +640,51 @@ index e67c3cd..543f225 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -861,6 +873,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+@@ -856,37 +797,20 @@ + (int)getHandleType:(NSString *)handleType
+     }
+ }
+ 
+-+ (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
+++ (CXProviderConfiguration *)getProviderConfiguration
+ {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][getProviderConfiguration]");
  #endif
-+    NSString *localizedName = @"Brekeke Phone";
-+    if (settings[@"appName"]) {
-+        localizedName = settings[@"appName"];
-+    }
-     CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
-     providerConfiguration.supportsVideo = YES;
-     providerConfiguration.maximumCallGroups = 3;
-@@ -876,8 +892,10 @@ + (CXProviderConfiguration *)getProviderConfiguration:(NSDictionary*)settings
-     if (settings[@"maximumCallsPerCallGroup"]) {
-         providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
-     }
-+    NSString *img = @"callkit.png";
-     if (settings[@"imageName"]) {
+-    CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:settings[@"appName"]];
+-    providerConfiguration.supportsVideo = YES;
+-    providerConfiguration.maximumCallGroups = 3;
+-    providerConfiguration.maximumCallsPerCallGroup = 1;
+-    providerConfiguration.supportedHandleTypes = [RNCallKeep getSupportedHandleTypes:settings[@"handleType"]];
+-
+-    if (settings[@"supportsVideo"]) {
+-        providerConfiguration.supportsVideo = [settings[@"supportsVideo"] boolValue];
+-    }
+-    if (settings[@"maximumCallGroups"]) {
+-        providerConfiguration.maximumCallGroups = [settings[@"maximumCallGroups"] integerValue];
+-    }
+-    if (settings[@"maximumCallsPerCallGroup"]) {
+-        providerConfiguration.maximumCallsPerCallGroup = [settings[@"maximumCallsPerCallGroup"] integerValue];
+-    }
+-    if (settings[@"imageName"]) {
 -        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:settings[@"imageName"]]);
-+        img = settings[@"imageName"];
-+        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:img]);
-     }
-     if (settings[@"ringtoneSound"]) {
-         providerConfiguration.ringtoneSound = settings[@"ringtoneSound"];
+-    }
+-    if (settings[@"ringtoneSound"]) {
+-        providerConfiguration.ringtoneSound = settings[@"ringtoneSound"];
+-    }
+-    if (@available(iOS 11.0, *)) {
+-        if (settings[@"includesCallsInRecents"]) {
+-            providerConfiguration.includesCallsInRecents = [settings[@"includesCallsInRecents"] boolValue];
+-        }
+-    }
++    NSString *localizedName = @"Brekeke Phone";
++    CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:localizedName];
++    providerConfiguration.supportedHandleTypes = [RNCallKeep getSupportedHandleTypes:@"generic"];
++    providerConfiguration.supportsVideo = NO;
++    providerConfiguration.maximumCallGroups = 99;
++    providerConfiguration.maximumCallsPerCallGroup = 99;
++    providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"callkit.png"]);
++    providerConfiguration.ringtoneSound = @"incallmanager_ringtone.mp3";
++    providerConfiguration.includesCallsInRecents = NO;
+     return providerConfiguration;
+ }
+ 

@@ -6,13 +6,13 @@
   "scripts": {
     "start": "make -Bs start",
     "build": "make -Bs build",
-    "clean": "make -Bs clean",
+    "clean": "react-native clean-project-auto && make -Bs clean",
     "intl": "make -Bs intl",
     "rn": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "format": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
-    "postinstall": "husky install && patch-package"
+    "postinstall": "husky install && patch-package && react-native setup-ios-permissions"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.0",
@@ -116,10 +116,32 @@
     "metro-react-native-babel-preset": "0.77.0",
     "patch-package": "7.0.2",
     "prettier": "3.0.0",
+    "react-native-clean-project": "4.0.1",
     "react-scripts": "5.0.1",
     "type-coverage": "2.26.0",
     "typescript": "5.1.6"
   },
+  "reactNativePermissionsIOS": [
+    "AppTrackingTransparency",
+    "BluetoothPeripheral",
+    "Calendars",
+    "Camera",
+    "Contacts",
+    "FaceID",
+    "LocationAccuracy",
+    "LocationAlways",
+    "LocationWhenInUse",
+    "MediaLibrary",
+    "Microphone",
+    "Motion",
+    "Notifications",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly",
+    "Reminders",
+    "Siri",
+    "SpeechRecognition",
+    "StoreKit"
+  ],
   "lint-staged": {
     "*.{js,ts,tsx}": [
       "eslint --fix",

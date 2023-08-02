@@ -26,18 +26,17 @@ const onNotification = async (
   initApp: Function,
   isLocal = false,
 ) => {
-  const withGetData: unknown = n0?.getData ? n0.getData() : n0
+  const withGetData: unknown = n0?.getData?.() || n0
   // custom fork of react-native-voip-push-notification to get callkeepUuid
-  const withDictionaryPayload = withGetData as {
+  type Payload = {
     dictionaryPayload: {
       [k: string]: unknown
     }
     callkeepUuid: string
   }
-  let withCallKeepUuid = withGetData as {
-    [k: string]: unknown
-  }
-  if (withDictionaryPayload && withDictionaryPayload.dictionaryPayload) {
+  const withDictionaryPayload = withGetData as Payload | undefined
+  let withCallKeepUuid = withGetData as { [k: string]: unknown } | undefined
+  if (withDictionaryPayload?.dictionaryPayload) {
     withCallKeepUuid = withDictionaryPayload.dictionaryPayload
     withCallKeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
