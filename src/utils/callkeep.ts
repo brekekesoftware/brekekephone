@@ -34,14 +34,6 @@ const setupCallKeepWithCheck = async () => {
 
   alreadySetupCallKeep = true
   const option = {
-    ios: {
-      appName: 'Brekeke Phone',
-      // already put this on our fork to display our logo before js load
-      imageName: 'callkit.png',
-      // https://github.com/react-native-webrtc/react-native-callkeep/issues/193
-      // https://github.com/react-native-webrtc/react-native-callkeep/issues/181
-      supportsVideo: false,
-    },
     android: {
       alertTitle: intl`Permissions required`,
       alertDescription: intl`Brekeke Phone needs to your permission to display calls`,
