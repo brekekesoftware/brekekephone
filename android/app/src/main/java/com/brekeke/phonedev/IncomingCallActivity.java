@@ -737,6 +737,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
+    if (answered) {
+      return;
+    }
     if (checkAndRequestPermissions()) {
       handleClickAnswerCall();
     }
