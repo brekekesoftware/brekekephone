@@ -253,6 +253,12 @@ class PageCallManage extends Component<{
   }
   componentWillUnmount() {
     getCallStore().onCallKeepAction()
+    // with case end outgoing call, the incomingcall will call onPageCallManage
+    const { call } = this.props
+    if (!call.incoming) {
+      getCallStore().prevDisplayingCallId = ''
+    }
+
     this.appStateSubscription?.remove()
   }
 
