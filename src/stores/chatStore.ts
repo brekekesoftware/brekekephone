@@ -1,6 +1,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { sortBy, uniqBy } from 'lodash'
-import { computed, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
@@ -439,7 +439,7 @@ class ChatStore {
     }
     this.groups = [...this.groups]
   }
-  removeGroup = (id: string) => {
+  @action removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]
     delete this.threadConfig[id]
     this.groups = this.groups.filter(gr => gr.id !== id)
