@@ -1,16 +1,26 @@
 import { Platform } from 'react-native'
 import DocumentRnPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
-import ImagePicker from 'react-native-image-picker'
+import {
+  Asset,
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
 import { RnPicker } from '../stores/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
 
+const getFileObject = (assets: Asset[] | undefined) => {
+  if (!assets || !assets.length) {
+    return
+  }
+  return assets[0]
+}
 const actionSheetHandlers = [
   () =>
     new Promise((resolve, reject) => {
-      ImagePicker.launchCamera(
+      launchCamera(
         {
           mediaType: 'photo',
           cameraType: 'back',
@@ -21,12 +31,12 @@ const actionSheetHandlers = [
             ? resolve(null)
             : res.errorMessage
             ? reject(res.errorMessage)
-            : resolve(res),
+            : resolve(getFileObject(res.assets)),
       )
     }),
   () =>
     new Promise((resolve, reject) => {
-      ImagePicker.launchCamera(
+      launchCamera(
         {
           mediaType: 'video',
           cameraType: 'back',
@@ -36,12 +46,12 @@ const actionSheetHandlers = [
             ? resolve(null)
             : res.errorMessage
             ? reject(res.errorMessage)
-            : resolve(res),
+            : resolve(getFileObject(res.assets)),
       )
     }),
   () =>
     new Promise((resolve, reject) => {
-      ImagePicker.launchImageLibrary(
+      launchImageLibrary(
         {
           mediaType: 'mixed',
           assetRepresentationMode: 'auto',
@@ -52,7 +62,7 @@ const actionSheetHandlers = [
             ? resolve(null)
             : res.errorMessage
             ? reject(res.errorMessage)
-            : resolve(res),
+            : resolve(getFileObject(res.assets)),
       )
     }),
   () =>
