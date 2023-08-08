@@ -221,13 +221,19 @@ class AccountStore {
     // for eg: pn data doesnt have all the fields to compare
     return accountStore.accounts.find(_ => compareAccount(_, a))
   }
-  findByPn = (n: ParsedPn) =>
-    this.find({
+  findByPn = (n: ParsedPn) => {
+    const phoneId = n['phone.id']
+      .replace(`${n.tenant}_${n.to}_phone`, '')
+      .replace('_webphone', '')
+
+    return this.find({
       pbxUsername: n.to,
       pbxTenant: n.tenant,
       pbxHostname: n.pbxHostname,
       pbxPort: n.pbxPort,
+      pbxPhoneIndex: phoneId,
     })
+  }
 
   findData = async (a?: AccountUnique) => {
     await storagePromise
@@ -281,7 +287,7 @@ class AccountStore {
 
 export type AccountUnique = Pick<
   Account,
-  'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
+  'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort' | 'pbxPhoneIndex'
 >
 export const getAccountUniqueId = (a: AccountUnique) =>
   jsonStableStringify({
@@ -303,7 +309,8 @@ export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
     compareField(p1, p2, 'pbxUsername') &&
     compareField(p1, p2, 'pbxTenant') &&
     compareField(p1, p2, 'pbxHostname') &&
-    compareField(p1, p2, 'pbxPort')
+    compareField(p1, p2, 'pbxPort') &&
+    compareField(p1, p2, 'pbxPhoneIndex')
   )
 }
 
