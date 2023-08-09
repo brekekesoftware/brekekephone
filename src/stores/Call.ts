@@ -231,8 +231,6 @@ export class Call {
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
-    this.prevHolding = this.holding
-    this.setHolding(true)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -240,7 +238,6 @@ export class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    this.setHolding(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
