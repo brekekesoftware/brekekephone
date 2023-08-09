@@ -423,7 +423,7 @@ class ChatStore {
       }
     }
   }
-  removeFile = (id: string) => {
+  @action removeFile = (id: string) => {
     delete this.filesMap[id]
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
