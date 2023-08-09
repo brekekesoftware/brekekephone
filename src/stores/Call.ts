@@ -143,6 +143,7 @@ export class Call {
     this.muted = !this.muted
     if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
+      BrekekeUtils.setIsMute(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
   }
