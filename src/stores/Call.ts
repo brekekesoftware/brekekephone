@@ -143,6 +143,7 @@ export class Call {
     this.muted = !this.muted
     if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
+      BrekekeUtils.setIsMute(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
   }
@@ -231,8 +232,6 @@ export class Call {
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
-    this.prevHolding = this.holding
-    this.setHolding(true)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -240,7 +239,6 @@ export class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    this.setHolding(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to transfer the call`,
       err,
