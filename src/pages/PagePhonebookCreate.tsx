@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash'
+import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
@@ -29,7 +30,7 @@ export class PagePhonebookCreate extends Component<{
     )
   }
 
-  save = (p: ContactInfo) => {
+  @action save = (p: ContactInfo) => {
     if (isEmpty(p)) {
       return
     }

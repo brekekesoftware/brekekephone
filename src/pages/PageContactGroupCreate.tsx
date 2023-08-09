@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
@@ -100,13 +100,13 @@ const RenderItem = observer(
     index: number
     selectedUsers: { [k: string]: UcBuddy }
   }) => {
-    const selectUser = (i: UcBuddy) => {
+    const selectUser = action((i: UcBuddy) => {
       if (selectedUsers[i.user_id]) {
         delete selectedUsers[item.user_id]
       } else {
         selectedUsers[i.user_id] = i
       }
-    }
+    })
     return (
       <View key={`PageContactGroupCreate-${item.user_id}-${index}`}>
         <RnTouchableOpacity onPress={() => selectUser(item)}>

@@ -252,10 +252,12 @@ class ContactStore {
       .catch(() => {
         // mimic finally
       })
-      .then(() =>
-        ids.forEach(id => {
-          delete this.extraPbxUsersLoadingMap[id]
-        }),
+      .then(
+        action(() =>
+          ids.forEach(id => {
+            delete this.extraPbxUsersLoadingMap[id]
+          }),
+        ),
       )
   }, 17)
 
