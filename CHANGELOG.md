@@ -1,3 +1,11 @@
+#### 2.12.4
+
+- Fix android multiple calls it should back to call screen after ending an outgoing call (issue 748)
+- Fix it should leave group chat without any error (issue 746)
+- Fix camera image picker should work after upgrading version (issue 738)
+- Fix android PN screen mute button should update accordingly (issue 737)
+- Fix ios transfer attend no voice (issue 736)
+
 #### 2.12.3
 
 - Fix android some issues related to permission (issue 725, 727, 728, 731)
