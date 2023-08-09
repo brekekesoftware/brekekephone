@@ -1,22 +1,12 @@
 import { Platform } from 'react-native'
 import DocumentRnPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
-import {
-  Asset,
-  launchCamera,
-  launchImageLibrary,
-} from 'react-native-image-picker'
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
 import { RnPicker } from '../stores/RnPicker'
 import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
 
-const getFileObject = (assets: Asset[] | undefined) => {
-  if (!assets || !assets.length) {
-    return
-  }
-  return assets[0]
-}
 const actionSheetHandlers = [
   () =>
     new Promise((resolve, reject) => {
@@ -26,12 +16,12 @@ const actionSheetHandlers = [
           cameraType: 'back',
           saveToPhotos: false,
         },
-        res =>
-          res.didCancel
+        r =>
+          r.didCancel
             ? resolve(null)
-            : res.errorMessage
-            ? reject(res.errorMessage)
-            : resolve(getFileObject(res.assets)),
+            : r.errorMessage
+            ? reject(r.errorMessage)
+            : resolve(r.assets?.[0]),
       )
     }),
   () =>
@@ -41,12 +31,12 @@ const actionSheetHandlers = [
           mediaType: 'video',
           cameraType: 'back',
         },
-        res =>
-          res.didCancel
+        r =>
+          r.didCancel
             ? resolve(null)
-            : res.errorMessage
-            ? reject(res.errorMessage)
-            : resolve(getFileObject(res.assets)),
+            : r.errorMessage
+            ? reject(r.errorMessage)
+            : resolve(r.assets?.[0]),
       )
     }),
   () =>
@@ -57,12 +47,12 @@ const actionSheetHandlers = [
           assetRepresentationMode: 'auto',
           quality: 1,
         },
-        res =>
-          res.didCancel
+        r =>
+          r.didCancel
             ? resolve(null)
-            : res.errorMessage
-            ? reject(res.errorMessage)
-            : resolve(getFileObject(res.assets)),
+            : r.errorMessage
+            ? reject(r.errorMessage)
+            : resolve(r.assets?.[0]),
       )
     }),
   () =>
