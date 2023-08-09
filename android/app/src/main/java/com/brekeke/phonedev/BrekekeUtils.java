@@ -805,19 +805,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           }
         });
   }
+
   @ReactMethod
   public void setIsMute(String uuid, boolean isMute) {
     UiThreadUtil.runOnUiThread(
-     new Runnable() {
-       @Override
-       public void run() {
-         try {
-           at(uuid).setBtnMuteSelected(isMute);
-         } catch (Exception e) {
-         }
-       }
-     });
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setBtnMuteSelected(isMute);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
+
   @ReactMethod
   public void setSpeakerStatus(Boolean isSpeakerOn) {
     UiThreadUtil.runOnUiThread(

@@ -996,6 +996,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
   }
+
   public void setBtnMuteSelected(boolean isMute) {
     btnMute.setSelected(isMute);
     updateMuteBtnLabel();
