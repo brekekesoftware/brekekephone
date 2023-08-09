@@ -340,7 +340,11 @@ class PageCallManage extends Component<{
   private isVisible = () => {
     const s = getCallStore()
     const { call: c } = this.props
-    return s.inPageCallManage && s.displayingCallId === c.id
+    const v = s.inPageCallManage && s.displayingCallId === c.id
+    if (v && !c.incoming) {
+      s.prevDisplayingCallId = ''
+    }
+    return v
   }
 
   private isBtnHidden = (k: CallConfigKey) => {
