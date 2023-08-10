@@ -85,7 +85,11 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
   }
   let file: File | null = null
   try {
-    file = (await fn()) as File
+    if (i === 3) {
+      file = (await fn())?.[0] as File
+    } else {
+      file = (await fn()) as File
+    }
   } catch (err) {
     if (!DocumentRnPicker.isCancel(err as object)) {
       onPickFileNativeError(err as Error)
