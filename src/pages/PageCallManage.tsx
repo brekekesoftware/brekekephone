@@ -254,6 +254,14 @@ class PageCallManage extends Component<{
   componentWillUnmount() {
     getCallStore().onCallKeepAction()
     this.appStateSubscription?.remove()
+    const { call: c } = this.props
+    if (c.incoming) {
+      return
+    }
+    const s = getCallStore()
+    if (s.ongoingCallId === c.id || s.displayingCallId === c.id) {
+      s.prevDisplayingCallId = ''
+    }
   }
 
   @observable private showButtonsInVideoCall = true
@@ -340,11 +348,7 @@ class PageCallManage extends Component<{
   private isVisible = () => {
     const s = getCallStore()
     const { call: c } = this.props
-    const v = s.inPageCallManage && s.displayingCallId === c.id
-    if (v && !c.incoming) {
-      s.prevDisplayingCallId = ''
-    }
-    return v
+    return s.inPageCallManage && s.displayingCallId === c.id
   }
 
   private isBtnHidden = (k: CallConfigKey) => {
