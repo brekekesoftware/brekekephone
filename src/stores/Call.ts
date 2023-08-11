@@ -218,6 +218,8 @@ export class Call {
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
     }
+    // TODO
+    // might need to check if there wont be multiple calls holding=false
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)
   }
@@ -232,6 +234,8 @@ export class Call {
   }
   @action transferAttended = (number: string) => {
     this.transferring = number
+    // avoid issue no-voice if user set hold before
+    this.setHolding(false)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
