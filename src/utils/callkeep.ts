@@ -132,6 +132,13 @@ export const setupCallKeep = async () => {
   const didPerformSetMutedCallAction = (
     e: EventsPayload['didPerformSetMutedCallAction'],
   ) => {
+    // [RNCallKeepModule][onReceive] ACTION_UNMUTE_CALL
+    // for android when enable speaker, RNCallKeep will auto set unmute for call
+    // we use custom UI for android then user will never interact with the native UI
+    // this event can be ignored for android to fix the issue with loud speaker
+    if (Platform.OS === 'android') {
+      return
+    }
     const uuid = e.callUUID.toUpperCase()
     const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
