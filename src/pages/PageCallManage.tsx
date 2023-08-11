@@ -206,6 +206,12 @@ const css = StyleSheet.create({
 @observer
 export class RenderAllCalls extends Component {
   prevCallsLength = getCallStore().calls.length
+  componentDidMount(): void {
+    const s = getCallStore()
+    if (s.inPageCallManage && !s.calls.length) {
+      Nav().backToPageCallRecents()
+    }
+  }
   componentDidUpdate() {
     const l = getCallStore().calls.length
     if (this.prevCallsLength && !l) {
