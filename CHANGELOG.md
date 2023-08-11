@@ -1,3 +1,10 @@
+#### 2.12.5
+
+- Fix android it should not unmute when enable loud speaker (issue 750)
+- Fix it should open file picker when select option button "More..." (issue 738 reopen)
+- Fix it should have audio in case hold then transfer attended (issue 736 reopen)
+- Fix android it should navigate back after kill app during a call instead of showing loading screen (issue 729)
+
 #### 2.12.4
 
 - Fix android multiple calls it should back to call screen after ending an outgoing call (issue 748)
