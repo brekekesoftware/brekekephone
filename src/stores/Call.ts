@@ -230,8 +230,10 @@ export class Call {
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action transferAttended = (number: string) => {
+  @action transferAttended = async (number: string) => {
     this.transferring = number
+    // avoid issue no-voice if user set hold before
+    this.setHolding(false)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
