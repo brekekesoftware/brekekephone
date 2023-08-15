@@ -105,7 +105,9 @@ export const setupCallKeep = async () => {
     } else {
       cs.setCalleeRejected({ callkeepUuid: uuid })
       cs.onCallKeepEndCall(uuid)
+      BrekekeUtils.webrtcSetAudioEnabled(true)
     }
+
     // try to setup callkeep on each endcall if not yet
     setupCallKeepWithCheck()
   }
