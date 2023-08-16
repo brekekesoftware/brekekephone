@@ -168,39 +168,51 @@ class AccountStore {
     return this._saveAccountsToLocalStorageDebounced()
   }
 
-  @action upsertAccount = (p: Partial<Account>) => {
+  @action upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
     if (!a) {
       this.accounts.push(p as Account)
-    } else {
-      const clonedA = { ...a } // clone before assign
-      Object.assign(a, p)
-      // TODO handle case change phone index
-      if (getAccountUniqueId(clonedA) !== getAccountUniqueId(a)) {
-        clonedA.pushNotificationEnabled = false
-        SyncPnToken().sync(clonedA, {
-          noUpsert: true,
-        })
-      } else if (
-        typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== clonedA.pushNotificationEnabled
-      ) {
-        a.pushNotificationEnabledSynced = false
-        SyncPnToken().sync(a, {
-          onError: err => {
-            RnAlert.error({
-              message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
-              err,
-            })
-            a.pushNotificationEnabled = clonedA.pushNotificationEnabled
-            a.pushNotificationEnabledSynced =
-              clonedA.pushNotificationEnabledSynced
-            this.saveAccountsToLocalStorageDebounced()
-          },
-        })
+      this.saveAccountsToLocalStorageDebounced()
+      return
+    }
+    const clonedA = { ...a } // clone before assign
+    Object.assign(a, p)
+    this.saveAccountsToLocalStorageDebounced()
+    // check and sync pn token
+    const phoneIndexChanged =
+      p.pbxPhoneIndex && p.pbxPhoneIndex !== clonedA.pbxPhoneIndex
+    const wholeAccountChanged =
+      getAccountUniqueId(clonedA) !== getAccountUniqueId(a)
+    if (phoneIndexChanged || wholeAccountChanged) {
+      // delete pn token for old phone_index / account
+      clonedA.pushNotificationEnabled = false
+      clonedA.pushNotificationEnabledSynced = false
+      SyncPnToken().sync(clonedA, {
+        noUpsert: true,
+      })
+      if (wholeAccountChanged) {
+        return
       }
     }
-    this.saveAccountsToLocalStorageDebounced()
+    if (
+      phoneIndexChanged ||
+      (typeof p.pushNotificationEnabled === 'boolean' &&
+        p.pushNotificationEnabled !== clonedA.pushNotificationEnabled)
+    ) {
+      a.pushNotificationEnabledSynced = false
+      SyncPnToken().sync(a, {
+        onError: err => {
+          RnAlert.error({
+            message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
+            err,
+          })
+          a.pushNotificationEnabled = clonedA.pushNotificationEnabled
+          a.pushNotificationEnabledSynced =
+            clonedA.pushNotificationEnabledSynced
+          this.saveAccountsToLocalStorageDebounced()
+        },
+      })
+    }
   }
   @action removeAccount = (id: string) => {
     const a = this.accounts.find(_ => _.id === id)
