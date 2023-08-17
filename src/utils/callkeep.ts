@@ -153,6 +153,7 @@ export const setupCallKeep = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
+    BrekekeUtils.webrtcSetAudioEnabled(!e.hold)
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
