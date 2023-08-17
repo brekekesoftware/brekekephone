@@ -272,6 +272,14 @@ export const setupCallKeep = async () => {
   eventEmitter.addListener('switchCamera', (uuid: string) => {
     getCallStore().getOngoingCall()?.toggleSwitchCamera()
   })
+  eventEmitter.addListener('switchCall', (uuid: string) => {
+    const cs = getCallStore()
+    const c = cs.calls.find(i => i.callkeepUuid === uuid)
+    if (!c || c.id === cs.getOngoingCall()?.id) {
+      return
+    }
+    cs.onSelectBackgroundCall(c)
+  })
 
   // other utils
   eventEmitter.addListener('onBackPressed', onBackPressed)
