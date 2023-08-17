@@ -232,9 +232,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       callerName = "Loading..."
     }
     // To fix no-voice with case multiple call and lock screen
-    RTCAudioSession.sharedInstance()
-      .audioSessionDidDeactivate(AVAudioSession.sharedInstance())
-    RTCAudioSession.sharedInstance().isAudioEnabled = false
+//    RTCAudioSession.sharedInstance()
+//      .audioSessionDidDeactivate(AVAudioSession.sharedInstance())
+//    RTCAudioSession.sharedInstance().isAudioEnabled = false
 
     RNCallKeep.reportNewIncomingCall(uuid,
                                      handle: "Brekeke Phone",
