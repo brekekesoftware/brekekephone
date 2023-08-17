@@ -8,8 +8,8 @@
     "build": "make -Bs build",
     "clean": "react-native clean-project-auto && make -Bs clean",
     "intl": "make -Bs intl",
-    "rn": "react-native start",
-    "android": "react-native run-android",
+    "rn": "react-native start --reset-cache",
+    "android": "react-native run-android --no-packager",
     "ios": "react-native run-ios",
     "format": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
     "postinstall": "husky install && patch-package && react-native setup-ios-permissions"
