@@ -276,7 +276,11 @@ export const setupCallKeep = async () => {
   eventEmitter.addListener('switchCall', (uuid: string) => {
     const cs = getCallStore()
     const c = cs.calls.find(i => i.callkeepUuid === uuid)
-    if (!c || c.id === cs.getOngoingCall()?.id) {
+    if (
+      !c ||
+      c.id === cs.getOngoingCall()?.id ||
+      !cs.getOngoingCall()?.answered
+    ) {
       return
     }
     cs.onSelectBackgroundCall(c)
