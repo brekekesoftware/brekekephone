@@ -1,6 +1,6 @@
 #### 2.12.6
 
-- Sync pn token when ever phone index updated (issue 743)
+- Sync pn token whenever phone index updated (issue 743, 758)
 - Fix android it should switch the call correctly using the hardware task manager button (issue 706)
 - Fix ios audio should work correctly case multiple calls on 2nd incoming call when app killed or device locked (issue 615, 642, 648)
 
