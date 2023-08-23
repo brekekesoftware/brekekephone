@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.12.6",
+  "version": "2.12.7",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -122,25 +122,13 @@
     "typescript": "5.1.6"
   },
   "reactNativePermissionsIOS": [
-    "AppTrackingTransparency",
-    "BluetoothPeripheral",
-    "Calendars",
     "Camera",
-    "Contacts",
-    "FaceID",
-    "LocationAccuracy",
     "LocationAlways",
     "LocationWhenInUse",
-    "MediaLibrary",
     "Microphone",
-    "Motion",
     "Notifications",
     "PhotoLibrary",
-    "PhotoLibraryAddOnly",
-    "Reminders",
-    "Siri",
-    "SpeechRecognition",
-    "StoreKit"
+    "PhotoLibraryAddOnly"
   ],
   "lint-staged": {
     "*.{js,ts,tsx}": [
