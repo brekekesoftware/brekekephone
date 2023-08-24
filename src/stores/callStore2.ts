@@ -757,6 +757,11 @@ export class CallStore {
     ) {
       return false
     }
+    // ios: With case disable PN, We will play ringtone by CallKeep
+    if (Platform.OS === 'ios' && !!!ca?.pushNotificationEnabled) {
+      return false
+    }
+
     return true
   }
 
