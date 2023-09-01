@@ -732,13 +732,18 @@ export class CallStore {
     })
   }
   shouldRingInNotify = (uuid?: string) => {
+    if (Platform.OS === 'web') {
+      return true
+    }
     const ca = getAuthStore().getCurrentAccount()
-    // disable ringtone when enable PN
+    // do not ring if PN is turned on
     if (ca?.pushNotificationEnabled) {
       return false
     }
-    if (Platform.OS === 'web' || !uuid) {
-      return true
+    // do not ring in ios even if PN is turned off
+    // since we already show the call via RNCallKeep in js code
+    if (Platform.OS === 'ios') {
+      return false
     }
     // do not ring on background
     if (RnAppState.currentState !== 'active') {
@@ -746,15 +751,6 @@ export class CallStore {
     }
     // do not ring if has an ongoing answered call
     if (this.calls.some(_ => _.answered)) {
-      return false
-    }
-    // ios: Do not ring if has a callkeep with no action yet
-    if (
-      Platform.OS === 'ios' &&
-      Object.keys(this.callkeepMap).some(
-        u => u !== uuid && !this.callkeepActionMap[u],
-      )
-    ) {
       return false
     }
     return true
