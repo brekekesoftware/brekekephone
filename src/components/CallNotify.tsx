@@ -59,30 +59,32 @@ export class DidMountTimer extends Component<any> {
 }
 
 export const CallNotify = observer(() => {
+  const as = getAuthStore()
+  const cs = getCallStore()
   // try trigger observer?
-  void Object.keys(getCallStore().callkeepMap)
-  void getCallStore().calls.map(_ => _.callkeepUuid)
-  const c = getCallStore().getCallInNotify()
+  void Object.keys(cs.callkeepMap)
+  void cs.calls.map(_ => _.callkeepUuid)
+  const c = cs.getCallInNotify()
   // do not show notify if in page call manage
-  if (getCallStore().inPageCallManage || !c) {
+  if (cs.inPageCallManage || !c) {
     return null
   }
-  const k = getCallStore().callkeepMap[c.callkeepUuid]
+  const k = cs.callkeepMap[c.callkeepUuid]
   const Wrapper =
     k?.hasAction ||
     Platform.OS === 'web' ||
-    !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
+    !as.getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   const configure = getAuthStore().pbxConfig
   const hideHangup =
     c.incoming && configure?.['webphone.call.hangup'] === 'false'
-  const n = getCallStore().calls.filter(
+  const n = cs.calls.filter(
     _ => _.incoming && !_.answered && _.id !== c.id,
   ).length
   return (
     <Wrapper>
-      {getCallStore().shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
+      {cs.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
       <RnTouchableOpacity
         style={css.Notify}
         onPress={() => Nav().goToPageCallManage()}
