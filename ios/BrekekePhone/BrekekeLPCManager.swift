@@ -57,6 +57,7 @@ class BrekekeLPCManager: NSObject {
               .log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
             logger
               .log("Loading new push manager configuration.")
+            loadPushManager()
             return pushManager.load()
           }
           .map { $0 }
@@ -101,7 +102,10 @@ class BrekekeLPCManager: NSObject {
       return
     }
     initialized = true
+    loadPushManager()
+  }
 
+  private func loadPushManager() {
     logger.log("Loading existing push manager.")
 
     // it is important to call loadAllFromPreferences as early as possible
