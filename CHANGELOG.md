@@ -1,3 +1,12 @@
+#### 2.12.8
+
+- Fix ios it should receive LPC with a newly created pbx account, or newly changed device (issue 760, 763)
+- Fix ios it should not play incoming call duplicate ringtone in case PN is turned off (issue 739)
+
+#### 2.12.7
+
+- Update ios permissions config to resolve app store requirements
+
 #### 2.12.6
 
 - Sync pn token whenever phone index updated (issue 743, 758)
