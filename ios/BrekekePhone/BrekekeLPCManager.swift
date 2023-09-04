@@ -107,6 +107,7 @@ class BrekekeLPCManager: NSObject {
 
   private func loadPushManager() {
     logger.log("Loading existing push manager.")
+
     // it is important to call loadAllFromPreferences as early as possible
     // during app initialization in order to set the delegate on
     // your NEAppPushManagers
