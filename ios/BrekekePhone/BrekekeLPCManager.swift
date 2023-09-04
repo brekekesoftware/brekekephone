@@ -32,7 +32,6 @@ class BrekekeLPCManager: NSObject {
         Result<NEAppPushManager?, Swift.Error>,
         Never
       >? in
-
         var publisher: AnyPublisher<NEAppPushManager?, Swift.Error>?
         if pushManagerSettings.isEmpty {
           self.logger.log("pushManagerSettings.isEmpty true")
@@ -56,9 +55,9 @@ class BrekekeLPCManager: NSObject {
             pushManager.delegate = BrekekeLPCManager.shared
             self.logger
               .log("pushManager.delegate = nil? \(pushManager.delegate == nil)")
-            self.logger
+            logger
               .log("Loading new push manager configuration.")
-            self.loadPushManager()
+            loadPushManager()
             return pushManager.load()
           }
           .map { $0 }
@@ -102,8 +101,8 @@ class BrekekeLPCManager: NSObject {
     if initialized {
       return
     }
-    loadPushManager()
     initialized = true
+    loadPushManager()
   }
 
   private func loadPushManager() {
@@ -118,11 +117,7 @@ class BrekekeLPCManager: NSObject {
           .log("Failed to load all managers from preferences: \(error)")
         return
       }
-
-      self.logger
-        .log(
-          "loadAllFromPreferences length:\(String(describing: managers?.count))"
-        )
+      self.logger.log("loadAllFromPreferences length:\(managers?.count)")
       if let a = managers {
         for i in a {
           i.delegate = BrekekeLPCManager.shared
@@ -133,10 +128,7 @@ class BrekekeLPCManager: NSObject {
       guard let manager = managers?.first else {
         return
       }
-      self.logger
-        .log(
-          "to load all managers from preferences:\(manager.providerConfiguration)"
-        )
+      self.logger.log("to load all managers from preferences:")
       // the manager's delegate must be set synchronously in this closure in
       // order to avoid race conditions when the app launches in response
       // to an incoming call
@@ -263,7 +255,6 @@ extension BrekekeLPCManager: NEAppPushDelegate {
         .log("userInfo dictionary is missing a required callkeepUuid field ")
       return
     }
-    print("reportNewIncomingCall:: From Apple LPC ")
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload,
