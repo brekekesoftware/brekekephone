@@ -71,7 +71,7 @@ const syncPnTokenWithoutCatch = async (
     if (Platform.OS === 'ios') {
       tvoip = await PushNotification.getVoipToken()
       if (!tvoip) {
-        throw new Error('PN sync debug: Empty ios voip PN token')
+        throw new Error('PN sync debug: empty ios voip PN token')
       }
       if (!t) {
         // TODO pn token empty when dev app refresh?
@@ -83,9 +83,13 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const c = await pbx.getConfig()
-    const pnmanageNew = compareSemVer(c?.version, '3.14.5') >= 0
+    if (!c) {
+      console.error('PN sync debug: empty getProductInfo')
+      return
+    }
+    const pnmanageNew = compareSemVer(c.version, '3.14.5') >= 0
     console.log(
-      `PN sync debug: pbx version=${c?.version} pnmanageNew=${pnmanageNew}`,
+      `PN sync debug: pbx version=${c.version} pnmanageNew=${pnmanageNew}`,
     )
 
     const params = {
@@ -115,8 +119,8 @@ const syncPnTokenWithoutCatch = async (
       return disconnectPbx(true)
     }
 
-    const lpcPort = parseInt(c?.['webphone.lpc.port'] || '0', 10)
-    const tlsKeyHash = c?.['webphone.lpc.keyhash'] || ''
+    const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
+    const tlsKeyHash = c['webphone.lpc.keyhash'] || ''
     // never establish plain non-tls lpc connection
     const lpcEnabled = lpcPort && tlsKeyHash
     if (lpcPort && !tlsKeyHash) {
@@ -142,12 +146,12 @@ const syncPnTokenWithoutCatch = async (
     }
 
     const remoteSsids =
-      c?.['webphone.lpc.wifi']
+      c['webphone.lpc.wifi']
         ?.split(',')
         .map(w => w.trim())
         .filter(w => w) || []
     const localSsid = remoteSsids.length ? '' : await getLocalSsid()
-    const lpcPn = toBoolean(c?.['webphone.lpc.pn'])
+    const lpcPn = toBoolean(c['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
       pnmanageNew,
       lpcPort,
