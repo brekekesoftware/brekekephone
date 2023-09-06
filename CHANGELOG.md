@@ -1,3 +1,8 @@
+#### 2.13.0
+
+- Embed:
+  - Update pal.js to support `line` method
+
 #### 2.12.8
 
 - Fix ios it should receive LPC with a newly created pbx account, or newly changed device (issue 760, 763)
