@@ -251,7 +251,7 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       return
     }
     // handle PN call
-    guard let uuid = payload["callkeepUuid"] as? String else {
+    guard let uuid = payload["callkeepUuid"] as? String, uuid != nil else {
       logger
         .log("userInfo dictionary is missing a required callkeepUuid field ")
       return
