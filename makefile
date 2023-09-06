@@ -80,7 +80,40 @@ ls:
 ###
 # dev server
 
-d:
+phonedev:
+	export V=$$(jq -r ".version" package.json) && \
+	echo $$V && \
+	make -Bs chmod && \
+	scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa bre:/var/www/upload/brekeke_phonedev$$V.ipa && \
+	rm -rf ../0/build/BrekekePhone && \
+	make -Bs chmod && \
+	cd android && ./gradlew clean && ./gradlew assembleRelease && \
+	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phonedev$$V.apk && \
+	cd .. && make -Bs chmod;
+
+phone:
+	export V=$$(jq -r ".version" package.json) && \
+	echo $$V && \
+	make -Bs chmod && \
+	scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/upload/brekeke_phone$$V.ipa && \
+	rm -rf ../0/build/BrekekePhone && \
+	make -Bs chmod && \
+	cd android && ./gradlew clean && ./gradlew assembleRelease && \
+	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phone$$V.apk && \
+	cd .. && make -Bs chmod;
+
+web:
+	export V=$$(jq -r ".version" package.json) && \
+	echo $$V && \
+	make -Bs chmod && \
+	yarn --ignore-engines && yarn build && \
+	mv build brekeke_phone$$V && zip -vr brekeke_phone$$V.zip brekeke_phone$$V && \
+	scp brekeke_phone$$V.zip bre:/var/www/upload && \
+	rm -rf brekeke_phone* && \
+	ssh bre "cd /var/www && sudo rm -rf phone && unzip /var/www/upload/brekeke_phone$$V.zip && sudo mv brekeke_phone$$V phone" && \
+	make -Bs chmod;
+
+dev01:
 	make -Bs chmod && \
 	cd dev/react-app && yarn --ignore-engines && yarn build && \
 	mv build dev-react-app && zip -vr dev-react-app.zip dev-react-app && \
@@ -93,33 +126,6 @@ d:
 	scp nginx.conf bre:/etc/nginx/conf.d/dev01.conf && \
 	ssh bre "sudo nginx -t && sudo service nginx restart" && \
 	cd ../.. && make -Bs chmod;
-
-w:
-	make -Bs chmod && \
-	yarn --ignore-engines && yarn build && \
-	mv build brekeke_phone && zip -vr brekeke_phone.zip brekeke_phone && \
-	scp brekeke_phone.zip bre:/var/www/upload && \
-	rm -rf brekeke_phone* && \
-	ssh bre "cd /var/www && sudo rm -rf phone && unzip /var/www/upload/brekeke_phone.zip && sudo mv brekeke_phone phone" && \
-	make -Bs chmod;
-
-bd:
-	make -Bs chmod && \
-	scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa bre:/var/www/upload/brekeke_phonedev.ipa && \
-	rm -rf ../0/build/BrekekePhone && \
-	make -Bs chmod && \
-	cd android && ./gradlew clean && ./gradlew assembleRelease && \
-	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phonedev.apk && \
-	cd .. && make -Bs chmod;
-
-bp:
-	make -Bs chmod && \
-	scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/upload/brekeke_phone.ipa && \
-	rm -rf ../0/build/BrekekePhone && \
-	make -Bs chmod && \
-	cd android && ./gradlew clean && ./gradlew assembleRelease && \
-	scp app/build/outputs/apk/release/app-release.apk bre:/var/www/upload/brekeke_phone.apk && \
-	cd .. && make -Bs chmod;
 
 chmod:
 	ssh bre "sudo chmod -R a+rwX /var/www";
