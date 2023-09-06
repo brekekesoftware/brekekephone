@@ -26,14 +26,14 @@ exit;
 # exit from ssh session
 exit;
 
-# download the new tomcat7.p12 to ~/ws/0/brekeke
+# download the new tomcat7.p12 to ../0/brekeke
 # change the directory to your desired one if needed
-scp bre:/etc/letsencrypt/live/dev01.brekeke.com/tomcat7.p12 ~/ws/0/brekeke
+scp bre:/etc/letsencrypt/live/dev01.brekeke.com/tomcat7.p12 ../0/brekeke
 
 # https://dev01.brekeke.com:8443/pbx/gate
 # [SIP SERVER] > [Configuration] > [SIP] > [Key and Certificate]
 # upload new downloaded .p12 file and restart
 
 # if there's still error, might need to check /tomcat/conf/server.xml
-# download the server.xml to ~/ws/0/brekeke
-scp bre:/tomcat/conf/server.xml ~/ws/0/brekeke
+# download the server.xml to ../0/brekeke
+scp bre:/tomcat/conf/server.xml ../0/brekeke
