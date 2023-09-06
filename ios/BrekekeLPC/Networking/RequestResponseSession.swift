@@ -260,7 +260,7 @@ public class RequestResponseSession: NetworkSession {
               options: []
             ) as? [AnyHashable: Any] {
               if var custom = json["custom"] as? [AnyHashable: Any] {
-                custom["callkeepUuid"] = UUID().uuidString
+                custom["callkeepUuid"] = UUID().uuidString.uppercased()
                 msg.custom = custom
               }
             }
