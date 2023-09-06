@@ -1,3 +1,8 @@
+#### 2.13.0
+
+- Embed:
+  - Update pal.js to support `line` method
+
 #### 2.12.9
 
 - Fix it should not open chat recents if receive call PN even UC disabled
