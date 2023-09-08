@@ -3,7 +3,7 @@ import { get } from 'lodash'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
-import { accountStore } from '../stores/accountStore'
+import { accountStore, getAccountUniqueId } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
@@ -222,6 +222,18 @@ export const parse = async (
   // handle nav on notification
   const rawId = raw['id'] as string | undefined
   const nav = Nav()
+
+  const acc = accountStore.accounts.find(
+    _ =>
+      getAccountUniqueId(_) ===
+      jsonStableStringify({
+        u: n.to,
+        t: n.tenant || '-',
+        h: n.pbxHostname,
+        p: n.pbxPort,
+      }),
+  )
+
   if (!accountExist) {
     // do nothing
   } else if (rawId?.startsWith('missedcall')) {
@@ -232,13 +244,20 @@ export const parse = async (
   } else if (!isLocal) {
     // for kill app then get PN chat message
     // don't have full data to go to detail, just go to recent screen
-    if (!n.threadId) {
+    if (!n.isCall && !n.threadId) {
+      if (!acc || !acc.ucEnabled) {
+        return
+      }
       await signInByLocalNotification(n)
       nav.customPageIndex = nav.goToPageChatRecents
       waitTimeout().then(Nav().goToPageChatRecents)
     }
   } else if (isLocal) {
     // chat local notification
+    // isLocal just have Chat and missedcall. Missedcall already checked before
+    if (!acc || !acc.ucEnabled) {
+      return
+    }
     await signInByLocalNotification(n)
     if (!n.threadId) {
       nav.customPageIndex = nav.goToPageChatRecents
