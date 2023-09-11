@@ -32,12 +32,6 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    // construct and load our normal React JS code bundle
-    ReactInstanceManager rim =
-        ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground();
-    }
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
 
     if (initialNotifications == null) {
@@ -51,5 +45,12 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     }
 
     super.onMessageReceived(remoteMessage);
+
+    // construct and load our normal React JS code bundle
+    ReactInstanceManager rim =
+        ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+    if (!rim.hasStartedCreatingInitialContext()) {
+      rim.createReactContextInBackground();
+    }
   }
 }
