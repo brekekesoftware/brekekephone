@@ -41,19 +41,13 @@ const onNotification = async (
     withCallKeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
   await initApp()
-  const n = await parse(withCallKeepUuid, isLocal)
-  if (!n) {
-    return
-  }
-  // TODO ios present local PN?
-  // modify server to set background mode "content only"?
-  // toXPN
+  await parse(withCallKeepUuid, isLocal)
 }
 
 export const PushNotification = {
   register: async (initApp: Function) => {
     initApp()
-    //
+
     Voip.addEventListener('register', onVoipToken)
     Voip.addEventListener('notification', (n: PN) => onNotification(n, initApp))
     Voip.addEventListener(
@@ -74,7 +68,7 @@ export const PushNotification = {
       },
     )
     Voip.registerVoipToken()
-    //
+
     PushNotificationIOS.addEventListener('register', onToken)
     PushNotificationIOS.addEventListener('notification', (n: PN) =>
       onNotification(n, initApp),
@@ -82,17 +76,17 @@ export const PushNotification = {
     PushNotificationIOS.addEventListener('localNotification', (n: PN) =>
       onNotification(n, initApp, true),
     )
-    //
     PushNotificationIOS.requestPermissions()
-    //
+
     const n0 = await PushNotificationIOS.getInitialNotification()
     onNotification(n0, initApp, true)
   },
-  getVoipToken: () => {
-    return Promise.resolve(voipApnsToken)
-  },
+
   getToken: () => {
     return Promise.resolve(apnsToken)
+  },
+  getVoipToken: () => {
+    return Promise.resolve(voipApnsToken)
   },
   resetBadgeNumber: () => {
     PushNotificationIOS.setApplicationIconBadgeNumber(0)

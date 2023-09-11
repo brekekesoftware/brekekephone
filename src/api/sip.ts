@@ -27,13 +27,13 @@ type DeviceInputWeb = {
 }
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
-  const exist = !!(await accountStore.findByPn(n))
+  const acc = await accountStore.findByPn(n)
   const k = n.id || jsonStableStringify(n)
-  if (!alreadyRemovePnTokenViaSip[k] && !exist) {
+  if (!alreadyRemovePnTokenViaSip[k] && !acc) {
     alreadyRemovePnTokenViaSip[k] = true
     removePnTokenViaSip(n)
   }
-  return exist
+  return acc
 }
 
 const removePnTokenViaSip = async (n: ParsedPn) => {
