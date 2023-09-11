@@ -1,3 +1,8 @@
+#### 2.12.9
+
+- Fix it should not open chat recents if receive call PN even UC disabled
+- Fix android it should work normally when app killed and receive PN
+
 #### 2.12.8
 
 - Fix ios it should receive LPC with a newly created pbx account, or newly changed device (issue 760, 763)
