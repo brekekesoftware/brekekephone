@@ -12,6 +12,7 @@ import {
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import { waitTimeout } from '../utils/waitTimeout'
 import {
   Account,
   accountStore,
@@ -350,22 +351,24 @@ export class AuthStore {
       `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
     )
     this.sipPn = n.sipPn
-    this.resetFailureState()
     // find account for the notification target
-    const a = await accountStore.findByPn(n)
-    if (!a?.id) {
+    const acc = await accountStore.findByPn(n)
+    if (!acc) {
       console.log('SIP PN debug: can not find account from notification')
-      return false
+      return
     }
     // use isSignInByNotification to disable UC auto sign in for a while
     if (n.isCall) {
       this.isSignInByNotification = true
       this.clearSignInByNotification()
     }
-    if (this.signedInId !== a.id) {
-      return this.signIn(a)
+    if (this.signedInId === acc.id) {
+      this.resetFailureState()
+      return
     }
-    return false
+    this.signOutWithoutSaving()
+    await waitTimeout()
+    await this.signIn(acc)
   }
 
   userExtensionProperties: null | {
