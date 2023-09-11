@@ -3,7 +3,6 @@ import { get } from 'lodash'
 import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
-import { accountStore, getAccountUniqueId } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
@@ -80,7 +79,11 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
   return n
 }
 
-export const parseNotificationData = (raw: object) => {
+export const parseNotificationData = (raw?: object) => {
+  if (!raw) {
+    return
+  }
+
   let n: ParsedPn | undefined
   if (Platform.OS === 'android') {
     n = parseNotificationDataMultiple(
@@ -175,29 +178,15 @@ export const parseNotificationData = (raw: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-export const signInByLocalNotification = async (n: ParsedPn) => {
-  const a = await accountStore.findByPn(n)
-  const as = getAuthStore()
-  if (as.signedInId === a?.id) {
-    as.resetFailureState()
-  }
-  if (a?.id && !as.signedInId) {
-    as.signIn(a)
-  }
-}
 export const parse = async (
   raw?: { [k: string]: unknown },
   isLocal = false,
 ) => {
-  if (!raw) {
-    return
-  }
   const n = parseNotificationData(raw)
-  if (!n) {
+  if (!raw || !n) {
     return
   }
-  const accountExist = await checkAndRemovePnTokenViaSip(n)
-  //
+
   // handle duplicated pn on android
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (Platform.OS === 'android' && n.callkeepUuid) {
@@ -210,8 +199,36 @@ export const parse = async (
     }
     androidAlreadyProccessedPn[k] = true
   }
-  //
-  // update isLocal
+
+  const acc = await checkAndRemovePnTokenViaSip(n)
+  if (!acc) {
+    console.log(
+      'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
+    )
+    return
+  }
+
+  console.log('SIP PN debug: call signInByNotification')
+  const as = getAuthStore()
+  as.signInByNotification(n)
+
+  const nav = Nav()
+  const navIndex = async (k: keyof typeof nav, params?: any) => {
+    nav.customPageIndex = nav[k]
+    await waitTimeout()
+    nav[k]?.(params)
+  }
+
+  const rawId = raw['id'] as string | undefined
+  // handle missed call local notification
+  if (rawId?.startsWith('missedcall')) {
+    console.log(
+      'SIP PN debug: PushNotification-parse: local notification missed call',
+    )
+    navIndex('goToPageCallRecents')
+    return
+  }
+
   isLocal = Boolean(
     isLocal ||
       raw.my_custom_data ||
@@ -219,99 +236,65 @@ export const parse = async (
       n.my_custom_data ||
       n.is_local_notification,
   )
-  // handle nav on notification
-  const rawId = raw['id'] as string | undefined
-  const nav = Nav()
-
-  const acc = accountStore.accounts.find(
-    _ =>
-      getAccountUniqueId(_) ===
-      jsonStableStringify({
-        u: n.to,
-        t: n.tenant || '-',
-        h: n.pbxHostname,
-        p: n.pbxPort,
-      }),
-  )
-
-  if (!accountExist) {
-    // do nothing
-  } else if (rawId?.startsWith('missedcall')) {
-    // missed call local notification
-    nav.customPageIndex = nav.goToPageCallRecents
-    // do not await timeout here since we will block the login
-    waitTimeout().then(Nav().goToPageCallRecents)
-  } else if (!isLocal) {
-    // for kill app then get PN chat message
-    // don't have full data to go to detail, just go to recent screen
-    if (!n.isCall && !n.threadId) {
-      await signInByLocalNotification(n)
-      if (!acc?.ucEnabled) {
-        return
-      }
-      nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(Nav().goToPageChatRecents)
-    }
-  } else if (isLocal) {
-    // chat local notification
-    // isLocal just have Chat and missedcall. Missedcall already checked before
-    await signInByLocalNotification(n)
-    if (!acc?.ucEnabled) {
+  // handle uc chat local notification
+  if (isLocal) {
+    console.log(
+      'SIP PN debug: PushNotification-parse: local notification UC chat',
+    )
+    // this can still happens:
+    // user enable UC and login, receive UC chat PN but do nothing
+    // then they logout and disable UC, then press the local presented PN
+    if (!acc.ucEnabled) {
+      navIndex('goToPageSettingsCurrentAccount')
       return
     }
     if (!n.threadId) {
-      nav.customPageIndex = nav.goToPageChatRecents
-      await waitTimeout()
-      nav.goToPageChatRecents()
-    } else if (n.isGroupChat) {
-      await waitTimeout()
-      chatStore.handleMoveToChatGroupDetail(n.threadId)
-    } else {
-      nav.customPageIndex = nav.goToPageChatDetail
-      await waitTimeout()
-      nav.goToPageChatDetail({ buddy: n.threadId })
+      navIndex('goToPageChatRecents')
+      return
     }
-    console.log('SIP PN debug: PushNotification-parse: local notification')
+    nav.customPageIndex = nav.goToPageChatRecents
+    await waitTimeout()
+    if (n.isGroupChat) {
+      chatStore.handleMoveToChatGroupDetail(n.threadId)
+      return
+    }
+    nav.goToPageChatDetail({ buddy: n.threadId })
     return
   }
-  const as = getAuthStore()
-  const cs = getCallStore()
-  //
-  // handle chat notification
+
+  // handle uc chat notification on press
+  // currently server is sending PN as not-data-only
+  // if the app is killed, the PN will show up instantly without triggering this code
   if (!n.isCall) {
     console.log('SIP PN debug: PushNotification-parse: n.isCall=false')
-    if (!accountExist) {
-      console.log(
-        'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
-      )
+    // app currently active and we already logged-in above
+    if (AppState.currentState === 'active') {
       return
     }
-    // app currently active and already logged in using this account
-    if (
-      AppState.currentState === 'active' &&
-      as.getCurrentAccount()?.pbxUsername === n.to
-    ) {
-      return
+    if (!acc.ucEnabled) {
+      navIndex('goToPageSettingsCurrentAccount')
+    } else {
+      navIndex('goToPageChatRecents')
     }
-    return n
+    return
   }
-  //
+
   // handle call notification
   if (n.callkeepAt) {
     console.log(
       `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
     )
   }
-  console.log('SIP PN debug: call signInByNotification')
-  as.signInByNotification(n)
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well
+  // then this should not happen
   if (!n.callkeepUuid) {
-    // should not happen
     console.log(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
   }
+  const cs = getCallStore()
+
   cs.calls
     .filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
@@ -372,12 +355,3 @@ export type SipPn = {
   turnCredential: string
   autoAnswer: boolean
 }
-
-export const toXPN = (n: object) =>
-  Object.entries(n).reduce(
-    (m, [k, v]: [string, unknown]) => {
-      m[`x_${k}`] = v
-      return m
-    },
-    {} as { [k: string]: unknown },
-  )

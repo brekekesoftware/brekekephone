@@ -33,19 +33,13 @@ const onNotification = async (
         ns.forEach(n => onNotification(n, initApp)),
       )
     }
-    const n = await parse(n0)
-    if (!n) {
-      return
-    }
+    await parse(n0)
   } catch (err) {
     console.error('PushNotification.android.ts onNotification error:', err)
   }
 }
 
 export const PushNotification = {
-  getToken: () => {
-    return Promise.resolve(fcmPnToken)
-  },
   register: async (initApp: Function) => {
     try {
       await permNotifications()
@@ -136,6 +130,10 @@ export const PushNotification = {
         err: err as Error,
       })
     }
+  },
+
+  getToken: () => {
+    return Promise.resolve(fcmPnToken)
   },
   resetBadgeNumber: () => {
     // TODO
