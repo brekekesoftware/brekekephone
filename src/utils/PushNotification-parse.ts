@@ -245,20 +245,20 @@ export const parse = async (
     // for kill app then get PN chat message
     // don't have full data to go to detail, just go to recent screen
     if (!n.isCall && !n.threadId) {
-      if (!acc || !acc.ucEnabled) {
+      await signInByLocalNotification(n)
+      if (!acc?.ucEnabled) {
         return
       }
-      await signInByLocalNotification(n)
       nav.customPageIndex = nav.goToPageChatRecents
       waitTimeout().then(Nav().goToPageChatRecents)
     }
   } else if (isLocal) {
     // chat local notification
     // isLocal just have Chat and missedcall. Missedcall already checked before
-    if (!acc || !acc.ucEnabled) {
+    await signInByLocalNotification(n)
+    if (!acc?.ucEnabled) {
       return
     }
-    await signInByLocalNotification(n)
     if (!n.threadId) {
       nav.customPageIndex = nav.goToPageChatRecents
       await waitTimeout()
