@@ -362,12 +362,14 @@ export class AuthStore {
       this.isSignInByNotification = true
       this.clearSignInByNotification()
     }
+    this.resetFailureState()
     if (this.signedInId === acc.id) {
-      this.resetFailureState()
       return
     }
-    this.signOutWithoutSaving()
-    await waitTimeout()
+    if (this.signedInId) {
+      this.signedInId = ''
+      await waitTimeout()
+    }
     await this.signIn(acc)
   }
 
