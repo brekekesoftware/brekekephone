@@ -188,6 +188,14 @@ export type PbxPal = {
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
+
+export type PbxCustomPage = {
+  id: string
+  url: string
+  title: string
+  pos: string
+  incoming?: string
+}
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
   'webphone.allusers': string
@@ -217,7 +225,7 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
   version: string
-}
+} & { [k: string]: string }
 export type PbxGetProductInfoParam = {
   webphone: string
 }

@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native'
 
 import { sip } from '../api/sip'
 import {
+  PbxCustomPage,
   PbxGetProductInfoRes,
   UcBuddy,
   UcBuddyGroup,
@@ -127,7 +128,32 @@ export class AuthStore {
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
+  @observable listCustomPage: PbxCustomPage[] = []
 
+  parseListCustomPage = () => {
+    if (!this.pbxConfig) {
+      return
+    }
+    const results: PbxCustomPage[] = []
+    for (const key of Object.keys(this.pbxConfig)) {
+      if (!key.startsWith('webphone.custompage')) {
+        continue
+      }
+      const parts = key.split('.')
+      const id = `${parts[0]}.${parts[1]}`
+      if (!results.some(item => item.id === id)) {
+        results.push({
+          id,
+          url: this.pbxConfig[`${id}.url`],
+          title: this.pbxConfig[`${id}.title`],
+          pos: this.pbxConfig[`${id}.pos`],
+          incoming: this.pbxConfig[`${id}.incoming`],
+        })
+      }
+    }
+    this.listCustomPage = results
+    console.log('thangnt::listCustomPage::', this.listCustomPage)
+  }
   isBigMode() {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
@@ -189,6 +215,7 @@ export class AuthStore {
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
     this.pbxConfig = undefined
     this.ucConfig = undefined
+    this.listCustomPage = []
     userStore.clearStore()
     contactStore.clearStore()
     chatStore.clearStore()

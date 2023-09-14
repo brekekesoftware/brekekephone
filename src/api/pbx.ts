@@ -295,11 +295,13 @@ export class PBX extends EventEmitter {
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
+
     if (!this.isMainInstance) {
       return config
     }
     const s = getAuthStore()
     s.pbxConfig = config
+    console.log('thangnt::config::', { config })
     const d = await s.getCurrentDataAsync()
     if (this.isMainInstance) {
       BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
@@ -308,6 +310,7 @@ export class PBX extends EventEmitter {
     d.userAgent = s.pbxConfig['webphone.useragent']
     d.pnExpires = s.pbxConfig['webphone.pn_expires']
     accountStore.updateAccountData(d)
+    s.parseListCustomPage()
     return s.pbxConfig
   }
 

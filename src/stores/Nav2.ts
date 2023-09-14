@@ -23,6 +23,7 @@ import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
 import { PageContactGroupEdit } from '../pages/PageContactGroupEdit'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
+import { PageCustomPage } from '../pages/PageCustomPage'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageSettingsCurrentAccount } from '../pages/PageSettingsCurrentAccount'
@@ -132,6 +133,13 @@ export class Nav2 {
   backToPagePhonebookUpdate = RnStacker.createBackTo<
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
+
+  goToPageCustomPage = RnStacker.createGoTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage })
+  backToPageCustomPage = RnStacker.createBackTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage })
 
   // call
   goToPageCallManage = (

@@ -3,6 +3,7 @@ import {
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
+import { PbxCustomPage } from '../brekekejs'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
@@ -27,8 +28,41 @@ export type SubMenu = {
   ucRequired?: boolean
   navFn(): void
 }
+const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
+  return customPages
+    .filter(
+      c =>
+        c.pos.includes('setting') &&
+        c.pos.includes(isLeft ? 'left' : 'right') &&
+        c.pos.split(',')?.[2],
+    )
+    .sort(
+      (a, b) =>
+        parseInt(a.pos.split(',')?.[2]) - parseInt(b.pos.split(',')?.[2]),
+    )
+    .map(i => {
+      return { key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }
+    })
+}
+const genMenus = (customPages: PbxCustomPage[]) => {
+  const settingSubMenusLeft = getSettingSubMenus(customPages, true)
+  const settingSubMenusRight = getSettingSubMenus(customPages, false)
+  const settingSubMenus = [
+    ...settingSubMenusLeft,
+    {
+      key: 'account',
+      label: intl`CURRENT ACCOUNT`,
+      navFnKey: 'goToPageSettingsCurrentAccount',
+    },
+    {
+      key: 'other',
+      label: intl`OTHER SETTINGS`,
+      navFnKey: 'goToPageSettingsOther',
+    },
+    ...settingSubMenusRight,
+  ]
+  console.log('thangnt::genMenus::settingSubMenus::', settingSubMenus)
 
-const genMenus = () => {
   const arr = [
     {
       key: 'contact',
@@ -84,18 +118,7 @@ const genMenus = () => {
     {
       key: 'settings',
       icon: mdiCogOutline,
-      subMenus: [
-        {
-          key: 'account',
-          label: intl`CURRENT ACCOUNT`,
-          navFnKey: 'goToPageSettingsCurrentAccount',
-        },
-        {
-          key: 'other',
-          label: intl`OTHER SETTINGS`,
-          navFnKey: 'goToPageSettingsOther',
-        },
-      ],
+      subMenus: settingSubMenus,
       defaultSubMenuKey: 'account',
     },
   ] as Menu[]
@@ -114,7 +137,7 @@ const genMenus = () => {
           return
         }
         // @ts-ignore
-        Nav()[s.navFnKey]()
+        Nav()[s.navFnKey]({ key: 'hello' })
         saveNavigation(i, s.key)
       }
     })
@@ -133,11 +156,19 @@ const genMenus = () => {
 }
 
 let lastLocale = intlStore.locale
-let lastMenus = genMenus()
+let lastMenus = genMenus([])
 export const menus = () => {
+  console.log(
+    'thangnt::genMenus::listCustomPage::',
+    getAuthStore().listCustomPage,
+  )
+  if (getAuthStore().listCustomPage.length) {
+    lastMenus = genMenus(getAuthStore().listCustomPage)
+  }
+
   if (lastLocale !== intlStore.locale) {
     lastLocale = intlStore.locale
-    lastMenus = genMenus()
+    lastMenus = genMenus(getAuthStore().listCustomPage)
   }
   return lastMenus
 }
@@ -161,6 +192,7 @@ const saveNavigation = (i: number, k: string) => {
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
+
   const ca = getAuthStore().getCurrentAccount()
   if (!ca) {
     return
@@ -180,6 +212,8 @@ export const normalizeSavedNavigation = () => {
 
 export const getSubMenus = (menu: string) => {
   const arr = menus()
+  console.log('thangnt::getSubMenus::arr::', arr)
+
   const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
