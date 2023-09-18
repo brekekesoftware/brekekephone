@@ -330,7 +330,7 @@ export const Field: FC<
       }
     }
     const onChangeNumber = (text: string) => {
-      const newPark = { ...$.park, number: text.trim() }
+      const newPark = { ...$.park, number: text.replace(/[^0-9]/g, '').trim() }
       $.set('park', newPark)
       if (props.onValueChange) {
         props.onValueChange(newPark)
@@ -355,6 +355,7 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
+          keyboardType='numeric'
           placeholderTextColor='grey'
           onBlur={() => {
             if (Platform.OS === 'web') {
