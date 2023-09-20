@@ -272,7 +272,7 @@ export class AuthStore {
       return false
     }
     //
-    const { _wn, host, phone_idx, port, tenant, user } = urlParams
+    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
     if (!tenant || !user) {
       return false
     }
@@ -295,6 +295,9 @@ export class AuthStore {
       if (!a.pbxPort) {
         a.pbxPort = port
       }
+      if (!a.pbxPassword) {
+        a.pbxPassword = password
+      }
       a.pbxPhoneIndex = `${phoneIdx}`
       const d = await accountStore.findDataAsync(a)
       if (_wn) {
@@ -310,21 +313,22 @@ export class AuthStore {
       return true
     }
     //
-    const newP = {
+    const newA = {
       ...accountStore.genEmptyAccount(),
       pbxTenant: tenant,
       pbxUsername: user,
+      pbxPassword: password,
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = await accountStore.findDataAsync(newP)
+    const d = await accountStore.findDataAsync(newA)
     //
-    accountStore.upsertAccount(newP)
-    if (d.accessToken) {
-      this.signIn(newP)
+    accountStore.upsertAccount(newA)
+    if (newA.pbxPassword || d.accessToken) {
+      this.signIn(newA)
     } else {
-      Nav().goToPageAccountUpdate({ id: newP.id })
+      Nav().goToPageAccountUpdate({ id: newA.id })
     }
     return true
   }
