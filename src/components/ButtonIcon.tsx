@@ -1,5 +1,6 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import {
+  ActivityIndicator,
   Platform,
   StyleSheet,
   TouchableOpacityProps,
@@ -40,13 +41,27 @@ export const ButtonIcon: FC<{
   name?: string
   textcolor?: string
   styleContainer?: ViewProps['style']
+  msLoading?: number
 }> = p => {
   const size = p.size || 15
+  const [isLoading, setLoading] = useState(false)
+  const onPressBtn = () => {
+    if (p.msLoading) {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+      }, p.msLoading)
+    }
+
+    if (p.onPress) {
+      p.onPress()
+    }
+  }
   return (
     <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
-        disabled={p.disabled}
-        onPress={p.onPress}
+        disabled={isLoading || p.disabled}
+        onPress={onPressBtn}
         style={[
           css.ButtonIcon_Btn,
           p.style,
@@ -56,10 +71,15 @@ export const ButtonIcon: FC<{
           { borderColor: p.bdcolor },
         ]}
       >
-        <Svg height={size} viewBox='0 0 24 24' width={size}>
-          <Path d={p.path} fill={p.color || 'black'} />
-        </Svg>
+        {isLoading ? (
+          <ActivityIndicator style={{ width: size, height: size }} />
+        ) : (
+          <Svg height={size} viewBox='0 0 24 24' width={size}>
+            <Path d={p.path} fill={p.color || 'black'} />
+          </Svg>
+        )}
       </RnTouchableOpacity>
+
       {p.name && (
         <RnText
           small
