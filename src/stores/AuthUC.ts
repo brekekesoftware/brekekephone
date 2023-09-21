@@ -10,6 +10,7 @@ import { ChatMessage, chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
+import { userStore } from './userStore'
 
 class AuthUC {
   private clearShouldAuthReaction?: Lambda
@@ -88,6 +89,13 @@ class AuthUC {
     this.authWithCheck()
   }
   @action private loadUsers = () => {
+    // update logic loadUcBuddyList when UC connect finish
+    const s = getAuthStore()
+    const cp = s.getCurrentAccount()
+    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
+      userStore.loadUcBuddyList()
+    }
+
     const users = uc.getUsers()
     contactStore.ucUsers = users
   }
