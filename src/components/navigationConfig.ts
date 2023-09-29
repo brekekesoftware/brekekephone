@@ -137,7 +137,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           return
         }
         // @ts-ignore
-        Nav()[s.navFnKey]({ key: 'hello' })
+        Nav()[s.navFnKey]({ id: s.key })
         saveNavigation(i, s.key)
       }
     })
@@ -212,7 +212,7 @@ export const normalizeSavedNavigation = () => {
 
 export const getSubMenus = (menu: string) => {
   const arr = menus()
-  console.log('thangnt::getSubMenus::arr::', arr)
+  // console.log('thangnt::getSubMenus::arr::', arr)
 
   const m = arr.find(_ => _.key === menu)
   if (!m) {

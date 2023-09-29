@@ -107,6 +107,12 @@ export class Nav2 {
   backToPageSettingsCurrentAccount = RnStacker.createBackTo<
     ComponentProps<typeof PageSettingsCurrentAccount>
   >({ PageSettingsCurrentAccount }, true)
+  goToPageCustomPage = RnStacker.createGoTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage }, true)
+  backToPageCustomPage = RnStacker.createBackTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage }, true)
 
   // account
   goToPageAccountCreate = RnStacker.createGoTo<
@@ -133,13 +139,6 @@ export class Nav2 {
   backToPagePhonebookUpdate = RnStacker.createBackTo<
     ComponentProps<typeof PagePhonebookUpdate>
   >({ PagePhonebookUpdate })
-
-  goToPageCustomPage = RnStacker.createGoTo<
-    ComponentProps<typeof PageCustomPage>
-  >({ PageCustomPage })
-  backToPageCustomPage = RnStacker.createBackTo<
-    ComponentProps<typeof PageCustomPage>
-  >({ PageCustomPage })
 
   // call
   goToPageCallManage = (
