@@ -223,6 +223,9 @@ export const setupCallKeep = async () => {
   }
 
   const nav = Nav()
+  const haveRootRNStacker = () => {
+    return !!RnStacker.stacks.find(s => s?.isRoot)
+  }
   // events from our custom IncomingCall module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
@@ -240,15 +243,21 @@ export const setupCallKeep = async () => {
     cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
-    await waitTimeout(1000)
+    if (!haveRootRNStacker()) {
+      await waitTimeout(1000)
+    }
     nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
-    await waitTimeout(1000)
+    if (!haveRootRNStacker()) {
+      await waitTimeout(1000)
+    }
     nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
-    await waitTimeout(1000)
+    if (!haveRootRNStacker()) {
+      await waitTimeout(1000)
+    }
     nav.goToPageCallParks2()
   })
   eventEmitter.addListener('video', (uuid: string) => {
@@ -264,7 +273,9 @@ export const setupCallKeep = async () => {
     getCallStore().getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
-    await waitTimeout(1000)
+    if (!haveRootRNStacker()) {
+      await waitTimeout(1000)
+    }
     nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
