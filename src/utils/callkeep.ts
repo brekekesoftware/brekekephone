@@ -194,28 +194,16 @@ export const setupCallKeep = async () => {
     RNCallKeepDidActivateAudioSession: didActivateAudioSession,
     RNCallKeepDidDeactivateAudioSession: didDeactivateAudioSession,
   }
-
-  RNCallKeep.addEventListener('didLoadWithEvents', didLoadWithEvents)
-  RNCallKeep.addEventListener('answerCall', answerCall)
-  RNCallKeep.addEventListener('endCall', endCall)
-  RNCallKeep.addEventListener('didDisplayIncomingCall', didDisplayIncomingCall)
-  RNCallKeep.addEventListener(
-    'didPerformSetMutedCallAction',
-    didPerformSetMutedCallAction,
-  )
-  RNCallKeep.addEventListener(
-    'didToggleHoldCallAction',
-    didToggleHoldCallAction,
-  )
-  RNCallKeep.addEventListener('didPerformDTMFAction', didPerformDTMFAction)
-  RNCallKeep.addEventListener(
-    'didActivateAudioSession',
-    didActivateAudioSession,
-  )
-  RNCallKeep.addEventListener(
-    'didDeactivateAudioSession',
-    didDeactivateAudioSession,
-  )
+  const add = RNCallKeep.addEventListener
+  add('didLoadWithEvents', didLoadWithEvents)
+  add('answerCall', answerCall)
+  add('endCall', endCall)
+  add('didDisplayIncomingCall', didDisplayIncomingCall)
+  add('didPerformSetMutedCallAction', didPerformSetMutedCallAction)
+  add('didToggleHoldCallAction', didToggleHoldCallAction)
+  add('didPerformDTMFAction', didPerformDTMFAction)
+  add('didActivateAudioSession', didActivateAudioSession)
+  add('didDeactivateAudioSession', didDeactivateAudioSession)
 
   // android self-managed connection service forked version
   if (Platform.OS !== 'android') {
@@ -223,9 +211,6 @@ export const setupCallKeep = async () => {
   }
 
   const nav = Nav()
-  const haveRootRNStacker = () => {
-    return !!RnStacker.stacks.find(s => s?.isRoot)
-  }
   // events from our custom IncomingCall module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
@@ -243,19 +228,19 @@ export const setupCallKeep = async () => {
     cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
-    if (!haveRootRNStacker()) {
+    if (!RnStacker.stacks.some(s => s.isRoot)) {
       await waitTimeout(1000)
     }
     nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
-    if (!haveRootRNStacker()) {
+    if (!RnStacker.stacks.some(s => s.isRoot)) {
       await waitTimeout(1000)
     }
     nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
-    if (!haveRootRNStacker()) {
+    if (!RnStacker.stacks.some(s => s.isRoot)) {
       await waitTimeout(1000)
     }
     nav.goToPageCallParks2()
@@ -273,7 +258,7 @@ export const setupCallKeep = async () => {
     getCallStore().getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
-    if (!haveRootRNStacker()) {
+    if (!RnStacker.stacks.some(s => s.isRoot)) {
       await waitTimeout(1000)
     }
     nav.goToPageCallDtmfKeypad()
