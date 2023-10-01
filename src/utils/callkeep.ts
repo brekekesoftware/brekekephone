@@ -198,34 +198,30 @@ export const setupCallKeepEvents = async () => {
     RNCallKeepDidActivateAudioSession: didActivateAudioSession,
     RNCallKeepDidDeactivateAudioSession: didDeactivateAudioSession,
   }
-
-  RNCallKeep.addEventListener('didLoadWithEvents', didLoadWithEvents)
-  RNCallKeep.addEventListener('answerCall', answerCall)
-  RNCallKeep.addEventListener('endCall', endCall)
-  RNCallKeep.addEventListener('didDisplayIncomingCall', didDisplayIncomingCall)
-  RNCallKeep.addEventListener(
-    'didPerformSetMutedCallAction',
-    didPerformSetMutedCallAction,
-  )
-  RNCallKeep.addEventListener(
-    'didToggleHoldCallAction',
-    didToggleHoldCallAction,
-  )
-  RNCallKeep.addEventListener('didPerformDTMFAction', didPerformDTMFAction)
-  RNCallKeep.addEventListener(
-    'didActivateAudioSession',
-    didActivateAudioSession,
-  )
-  RNCallKeep.addEventListener(
-    'didDeactivateAudioSession',
-    didDeactivateAudioSession,
-  )
+  const add = RNCallKeep.addEventListener
+  add('didLoadWithEvents', didLoadWithEvents)
+  add('answerCall', answerCall)
+  add('endCall', endCall)
+  add('didDisplayIncomingCall', didDisplayIncomingCall)
+  add('didPerformSetMutedCallAction', didPerformSetMutedCallAction)
+  add('didToggleHoldCallAction', didToggleHoldCallAction)
+  add('didPerformDTMFAction', didPerformDTMFAction)
+  add('didActivateAudioSession', didActivateAudioSession)
+  add('didDeactivateAudioSession', didDeactivateAudioSession)
 
   if (Platform.OS !== 'android') {
     return
   }
-  const nav = Nav()
+
   // android self-managed connection service
+  const nav = Nav()
+
+  // in killed state, the event handler may fire before the nav object has init
+  const waitTimeoutNav = async () => {
+    const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
+    await waitTimeout(t)
+  }
+
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
@@ -242,15 +238,15 @@ export const setupCallKeepEvents = async () => {
     cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallParks2()
   })
   eventEmitter.addListener('video', (uuid: string) => {
@@ -266,7 +262,7 @@ export const setupCallKeepEvents = async () => {
     cs.getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
