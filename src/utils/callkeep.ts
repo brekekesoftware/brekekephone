@@ -211,7 +211,14 @@ export const setupCallKeep = async () => {
   }
 
   const nav = Nav()
-  // events from our custom IncomingCall module
+
+  // in killed state, the event handler may fire before the nav object has init
+  const waitTimeoutNav = async () => {
+    const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
+    await waitTimeout(t)
+  }
+
+  // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
     getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
@@ -228,21 +235,15 @@ export const setupCallKeep = async () => {
     cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
-    if (!RnStacker.stacks.some(s => s.isRoot)) {
-      await waitTimeout(1000)
-    }
+    await waitTimeoutNav()
     nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
-    if (!RnStacker.stacks.some(s => s.isRoot)) {
-      await waitTimeout(1000)
-    }
+    await waitTimeoutNav()
     nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
-    if (!RnStacker.stacks.some(s => s.isRoot)) {
-      await waitTimeout(1000)
-    }
+    await waitTimeoutNav()
     nav.goToPageCallParks2()
   })
   eventEmitter.addListener('video', (uuid: string) => {
@@ -258,9 +259,7 @@ export const setupCallKeep = async () => {
     getCallStore().getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
-    if (!RnStacker.stacks.some(s => s.isRoot)) {
-      await waitTimeout(1000)
-    }
+    await waitTimeoutNav()
     nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
