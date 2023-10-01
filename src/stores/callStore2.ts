@@ -188,12 +188,22 @@ export class CallStore {
     return oc
   }
 
-  @action updateCallAvatar = (url: string, size?: string) => {
-    const oc = this.getOngoingCall()
-    if (oc) {
-      oc.partyImageUrl = url
-      oc.partyImageSize = size || 'small'
+  @action updateCallAvatar = (n: ParsedPn) => {
+    let c: Call | undefined = undefined
+    if (n.callkeepUuid) {
+      c = this.calls.find(_ => _.callkeepUuid === n.callkeepUuid)
     }
+    if (!c && n.id) {
+      c = this.calls.find(_ => _.pnId === n.id)
+    }
+    if (!c) {
+      c = this.getOngoingCall()
+    }
+    if (!c) {
+      return
+    }
+    c.partyImageUrl = n.image
+    c.partyImageSize = n.image_size || 'small'
   }
 
   private getOriginalUserImageUrl = (tenant: string, name: string): string => {
