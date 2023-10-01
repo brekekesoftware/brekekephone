@@ -40,7 +40,7 @@ import { RnPickerRoot } from '../stores/RnPickerRoot'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { setupCallKeep } from '../utils/callkeep'
+import { setupCallKeepEvents } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import { permForCall, permReadPhoneNumber } from '../utils/permissions'
 // @ts-ignore
@@ -137,7 +137,7 @@ const initApp = async () => {
     }
   }
 
-  setupCallKeep()
+  setupCallKeepEvents()
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {

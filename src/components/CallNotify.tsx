@@ -109,7 +109,12 @@ export const CallNotify = observer(() => {
         <ButtonIcon
           bdcolor={v.colors.primary}
           color={v.colors.primary}
-          onPress={() => c.answer()}
+          onPress={() => {
+            c.answer()
+            if (cs.calls.some(_ => _.answered && _.id !== c.id)) {
+              cs.onSelectBackgroundCall(c)
+            }
+          }}
           path={mdiCheck}
           size={20}
           style={css.Notify_Btn_accept}
