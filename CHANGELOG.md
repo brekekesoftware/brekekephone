@@ -1,3 +1,7 @@
+#### 2.12.10
+
+- Fix it should not have 3-way voice when answer background call in notify bar
+
 #### 2.12.9
 
 - Fix it should not open chat recents if receive call PN even UC disabled
