@@ -1,6 +1,8 @@
 #### 2.12.10
 
-- Fix it should not have 3-way voice when answer background call in notify bar
+- Fix android it should navigate correctly in killed state after end call (issue 772)
+- Fix it should not have 3-way voice when answer background call in notify bar (issue 771)
+- Fix ios it shoud not crash signal 11, by upgrading webview library (issue 765)
 
 #### 2.12.9
 
