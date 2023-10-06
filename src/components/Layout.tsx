@@ -71,6 +71,7 @@ export const Layout: FC<
     isShowToastMessage: boolean
     incomingMessage: string
     children: ReactNode
+    isFullContent?: boolean
   }>
 > = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -141,9 +142,17 @@ export const Layout: FC<
   return (
     <>
       <Container {...containerProps}>
-        <View style={{ height: headerSpace }} />
+        <View
+          style={{
+            height: props?.isFullContent ? headerSpace - 15 : headerSpace,
+          }}
+        />
         {props.children}
-        <View style={css.FooterSpaceInsideScroller} />
+        <View
+          style={
+            props?.isFullContent ? { height: 0 } : css.FooterSpaceInsideScroller
+          }
+        />
       </Container>
       {props.isShowToastMessage && (
         <Toast

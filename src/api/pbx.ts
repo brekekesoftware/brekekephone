@@ -301,7 +301,6 @@ export class PBX extends EventEmitter {
     }
     const s = getAuthStore()
     s.pbxConfig = config
-    console.log('thangnt::config::', { config })
     const d = await s.getCurrentDataAsync()
     if (this.isMainInstance) {
       BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
@@ -499,6 +498,17 @@ export class PBX extends EventEmitter {
       display_name: contact.display_name,
       info: contact.info,
     })
+  }
+
+  getPbxToken = async () => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    const res = await this.client.call_pal('getToken', {})
+    return res
   }
 
   holdTalker = async (tenant: string, talker: string) => {

@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import { debounce, random } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
@@ -129,6 +129,33 @@ export class AuthStore {
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
+  customPageLoadings: { [k: string]: boolean } = {}
+  reLoadCustomPageById = (id: string) => {
+    if (this.customPageLoadings[id]) {
+      return
+    }
+    this.customPageLoadings[id] = true
+    const cp = this.getCustomPageById(id)
+    if (!cp) {
+      return
+    }
+    const r = random(1, 1000, false).toString()
+    const url = cp.url.replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
+    this.updateCustomPage({ ...cp, url })
+  }
+  getCustomPageById = (id: string) => {
+    return this.listCustomPage.find(i => i.id == id)
+  }
+  updateCustomPage = (cp: PbxCustomPage) => {
+    this.listCustomPage = [
+      ...this.listCustomPage.map(i => {
+        if (i.id === cp.id) {
+          return { ...cp }
+        }
+        return i
+      }),
+    ]
+  }
 
   parseListCustomPage = () => {
     if (!this.pbxConfig) {
@@ -152,7 +179,6 @@ export class AuthStore {
       }
     }
     this.listCustomPage = results
-    console.log('thangnt::listCustomPage::', this.listCustomPage)
   }
   isBigMode() {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
@@ -216,6 +242,7 @@ export class AuthStore {
     this.pbxConfig = undefined
     this.ucConfig = undefined
     this.listCustomPage = []
+    this.customPageLoadings = {}
     userStore.clearStore()
     contactStore.clearStore()
     chatStore.clearStore()

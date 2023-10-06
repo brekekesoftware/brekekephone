@@ -37,6 +37,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
+import { RnStacker } from '../stores/RnStacker'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -231,7 +232,30 @@ export const App = observer(() => {
       SplashScreen.hide()
     }
   }, [])
+  //============== handle open custompage tab when received incoming ======
+  const c = getCallStore().getCallInNotify()
+  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+  const au = getAuthStore()
+  // Default will get first page
+  const cp = au.listCustomPage[0]
 
+  if (c && s && cp && cp.incoming === 'open') {
+    if (s.name != 'PageCustomPage') {
+      const hadRoot = RnStacker.stacks.find(i => i.isRoot)
+      // TODO handle multiple tap
+
+      if (hadRoot) {
+        Nav().goToPageCustomPage({ id: cp.id })
+      }
+    } else {
+      au.reLoadCustomPageById(cp.id)
+    }
+  }
+  // update prevent loading
+  if (!c && cp && cp.incoming === 'open') {
+    au.customPageLoadings[cp.id] = false
+  }
+  //============================================================
   const {
     isConnFailure,
     pbxConnectingOrFailure,

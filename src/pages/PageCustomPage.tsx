@@ -1,73 +1,101 @@
+import { random } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
-import WebView from 'react-native-webview'
 
-import { PbxCustomPage } from '../brekekejs'
-import { ListWebchats } from '../components/ChatListWebchats'
-import { Field } from '../components/Field'
+import { pbx } from '../api/pbx'
+import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
-import { SubMenu } from '../components/navigationConfig'
-import { RnText } from '../components/Rn'
 import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { chatStore } from '../stores/chatStore'
 import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { intlStore } from '../stores/intlStore'
 
-const css = StyleSheet.create({
-  image: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-  },
-  imageError: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 100,
-  },
-  loading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: '#00000030',
-    overflow: 'hidden',
-    zIndex: 100,
-  },
-  full: {
-    width: '100%',
-    height: '100%',
-  },
-})
 @observer
 export class PageCustomPage extends Component<{ id: string }> {
+  state = {
+    url: '',
+  }
+  componentDidMount = async () => {
+    const { id } = this.props
+    const cp = getAuthStore().getCustomPageById(id)
+    if (!cp) {
+      return
+    }
+    const hadToken = !cp.url.includes('#pbx-token#')
+    if (!hadToken) {
+      const url = await this.getUrlParams(cp.url)
+      getAuthStore().updateCustomPage({ ...cp, url })
+      this.setState({ url })
+    }
+  }
+
+  getUrlParams = async (url: string) => {
+    const token = await pbx.getPbxToken()
+    const user = getAuthStore().getCurrentAccount()
+    return url
+      .replace('#lang#', intlStore.locale)
+      .replace('#pbx-token#', token.token)
+      .replace('#tenant#', user.pbxTenant)
+      .replace('#user#', user.pbxUsername)
+      .replace('#from-number#', '0')
+  }
+  getURLToken = async (url: string) => {
+    const r = random(1, 1000, false).toString()
+    const { token } = await pbx.getPbxToken()
+    if (!token) {
+      return url
+    }
+    return url
+      .replace(/&sess=(.*?)&/, `&sess=${token}&`)
+      .replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
+  }
+  reloadPage = async () => {
+    const { id } = this.props
+    const cp = getAuthStore().getCustomPageById(id)
+    if (!cp) {
+      return
+    }
+    const url = await this.getURLToken(cp.url)
+    getAuthStore().updateCustomPage({ ...cp, url })
+    this.setState({ url })
+  }
   render() {
     const { id } = this.props
-    const customPage = getAuthStore().listCustomPage.find(cp => cp.id === id)
-    console.error('thangnt::PageCustomPage::', { subMenu: this.props })
+    const cp = getAuthStore().getCustomPageById(id)
+
+    const onTitleChanged = (t: string) => {
+      this.setState({ title: t })
+      // Update title to tab label
+      if (!cp) {
+        return
+      }
+      getAuthStore().updateCustomPage({ ...cp, title: t })
+    }
+
+    const onLoaded = () => {
+      // getAuthStore().customPageLoadings[id] = false
+    }
+
+    console.log('thangnt::', { url: cp?.url })
+
     return (
       <Layout
-        description={customPage?.title}
+        description={cp?.title}
         menu={'settings'}
+        dropdown={[
+          {
+            label: intl`Reload`,
+            onPress: this.reloadPage,
+          },
+        ]}
         subMenu={id}
         title={intl`Custom Page`}
+        isFullContent
       >
-        {customPage && (
-          <WebView
-            source={{
-              uri: customPage?.url,
-            }}
-            // injectedJavaScript={configViewPort}
-            style={[css.full]}
-            bounces={false}
-            startInLoadingState={true}
-            onMessage={() => {}}
-            onLoadEnd={() => {}}
-            originWhitelist={['*']}
-            javaScriptEnabled={true}
-            scalesPageToFit={false}
+        {cp && (
+          <CustomPageWebView
+            url={cp.url}
+            onTitleChanged={onTitleChanged}
+            onLoadEnd={onLoaded}
           />
         )}
       </Layout>

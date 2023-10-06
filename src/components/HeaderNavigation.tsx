@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { FC, useCallback } from 'react'
-import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native'
+import { StyleSheet, View, ViewStyle } from 'react-native'
 
 import { chatStore } from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
@@ -17,10 +17,9 @@ const css = StyleSheet.create({
     backgroundColor: v.bg,
   },
   Btn: {
-    // flex: 1,
+    flex: 1,
     paddingVertical: 8,
     alignItems: 'center',
-    paddingHorizontal: 10,
     borderBottomWidth: 3,
     borderColor: v.borderBg,
   },
@@ -64,32 +63,35 @@ export const Navigation: FC<{
   )
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <View style={css.Navigation}>
-        {tabs.map(s => {
-          const active = s.key === subMenu
-          const totalUnreadChat = chatStore.unreadCount
-          const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
+    <View style={css.Navigation}>
+      {tabs.map(s => {
+        const active = s.key === subMenu
+        const totalUnreadChat = chatStore.unreadCount
+        const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
 
-          return (
-            <RnTouchableOpacity
-              key={s.key}
-              onPress={active ? undefined : s.navFn}
-              style={[css.Btn, active && css.Btn__active]}
+        return (
+          <RnTouchableOpacity
+            key={s.key}
+            onPress={active ? undefined : s.navFn}
+            style={[css.Btn, active && css.Btn__active]}
+          >
+            <RnText
+              small
+              numberOfLines={1}
+              ellipsizeMode={'tail'}
+              style={active && css.Text__active}
             >
-              <RnText small style={active && css.Text__active}>
-                {s.label}
-              </RnText>
-              {s.key === 'chat' &&
-                !!totalUnreadChat &&
-                renderIconNotices(totalUnreadChat)}
-              {s.key === 'webchat' &&
-                !!totalNoticesWebchat &&
-                renderIconNotices(totalNoticesWebchat, css.ml)}
-            </RnTouchableOpacity>
-          )
-        })}
-      </View>
-    </ScrollView>
+              {s.label}
+            </RnText>
+            {s.key === 'chat' &&
+              !!totalUnreadChat &&
+              renderIconNotices(totalUnreadChat)}
+            {s.key === 'webchat' &&
+              !!totalNoticesWebchat &&
+              renderIconNotices(totalNoticesWebchat, css.ml)}
+          </RnTouchableOpacity>
+        )
+      })}
+    </View>
   )
 })

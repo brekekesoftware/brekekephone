@@ -61,7 +61,6 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     },
     ...settingSubMenusRight,
   ]
-  console.log('thangnt::genMenus::settingSubMenus::', settingSubMenus)
 
   const arr = [
     {
@@ -158,10 +157,6 @@ const genMenus = (customPages: PbxCustomPage[]) => {
 let lastLocale = intlStore.locale
 let lastMenus = genMenus([])
 export const menus = () => {
-  console.log(
-    'thangnt::genMenus::listCustomPage::',
-    getAuthStore().listCustomPage,
-  )
   if (getAuthStore().listCustomPage.length) {
     lastMenus = genMenus(getAuthStore().listCustomPage)
   }
@@ -212,8 +207,6 @@ export const normalizeSavedNavigation = () => {
 
 export const getSubMenus = (menu: string) => {
   const arr = menus()
-  // console.log('thangnt::getSubMenus::arr::', arr)
-
   const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
