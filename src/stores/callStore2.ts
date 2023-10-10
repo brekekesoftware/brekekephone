@@ -411,6 +411,7 @@ export class CallStore {
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
     await waitTimeout()
+
     if (c.holding) {
       c.toggleHoldWithCheck()
     }
@@ -529,11 +530,16 @@ export class CallStore {
         c =>
           c.id !== this.ongoingCallId &&
           c.answered &&
-          !c.transferring &&
           !c.holding &&
           !c.isAboutToHangup,
       )
-      .forEach(c => c.toggleHoldWithCheck())
+      .forEach(c => {
+        // when current call answer and bg call is transferring, it should be stop transferring and set hold.
+        if (c.transferring) {
+          c.stopTransferringWithoutHold()
+        }
+        c.toggleHoldWithCheck()
+      })
   }
   private updateBackgroundCallsDebounce = debounce(
     this.updateBackgroundCalls,

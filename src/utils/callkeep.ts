@@ -154,7 +154,8 @@ export const setupCallKeepEvents = async () => {
   ) => {
     const uuid = e.callUUID.toUpperCase()
     const c = cs.calls.find(_ => _.callkeepUuid === uuid)
-    if (c && c.holding !== e.hold) {
+    // should not update hold with transferring.
+    if (c && !c.transferring && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
     BrekekeUtils.webrtcSetAudioEnabled(!e.hold)
