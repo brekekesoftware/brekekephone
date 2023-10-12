@@ -387,10 +387,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void tryExitClearTask() {
+
     if (!activities.isEmpty()) {
       return;
     }
-    if (!firstShowCallAppActive) {
+    // Outgoing call exist, don't move task to background
+    if (!firstShowCallAppActive && jsCallsSize == activitiesSize) {
       try {
         main.moveTaskToBack(true);
       } catch (Exception e) {
