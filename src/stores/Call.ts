@@ -260,6 +260,13 @@ export class Call {
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
+  @action stopTransferringWithoutHold = () => {
+    this.prevTransferring = this.transferring
+    this.transferring = ''
+    return pbx
+      .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
+      .catch(this.onStopTransferringFailure)
+  }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHolding(this.prevHolding)
