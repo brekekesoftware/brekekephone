@@ -36,8 +36,6 @@ export const CustomPageWebView = forwardRef(
   ({ url, onTitleChanged, onLoadEnd }: Props, ref) => {
     const webViewRef = useRef(null)
     const onLoaded = () => {
-      // const iframe = document.getElementById('customPage')
-      // const newFrame = frames['customPage']
       onTitleChanged('customPage')
       onLoadEnd()
     }

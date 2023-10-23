@@ -19,6 +19,7 @@ import SplashScreen from 'react-native-splash-screen'
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { RenderAllCalls } from '../pages/PageCallManage'
+import { PageCustomPageView } from '../pages/PageCustomPageView'
 import {
   accountStore,
   getAccountUniqueId,
@@ -37,7 +38,6 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
-import { RnStacker } from '../stores/RnStacker'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -232,30 +232,7 @@ export const App = observer(() => {
       SplashScreen.hide()
     }
   }, [])
-  //============== handle open custompage tab when received incoming ======
-  const c = getCallStore().getCallInNotify()
-  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
-  const au = getAuthStore()
-  // Default will get first page
-  const cp = au.listCustomPage[0]
 
-  if (c && s && cp && cp.incoming === 'open') {
-    if (s.name != 'PageCustomPage') {
-      const hadRoot = RnStacker.stacks.find(i => i.isRoot)
-      // TODO handle multiple tap
-
-      if (hadRoot) {
-        Nav().goToPageCustomPage({ id: cp.id })
-      }
-    } else {
-      au.reLoadCustomPageById(cp.id)
-    }
-  }
-  // update prevent loading
-  if (!c && cp && cp.incoming === 'open') {
-    au.customPageLoadings[cp.id] = false
-  }
-  //============================================================
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -283,6 +260,8 @@ export const App = observer(() => {
       : isFailure
       ? intl`${serviceConnectingOrFailure} connection failed`
       : intl`Connecting to ${serviceConnectingOrFailure}...`
+
+  const cp = getAuthStore().listCustomPage[0]
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]}>
@@ -319,7 +298,9 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
+
         <RenderAllCalls />
+        {cp && <PageCustomPageView id={cp?.id} />}
         <RnPickerRoot />
         <PhonebookAddItem />
 
