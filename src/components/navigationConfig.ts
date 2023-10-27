@@ -157,14 +157,11 @@ const genMenus = (customPages: PbxCustomPage[]) => {
 let lastLocale = intlStore.locale
 let lastMenus = genMenus([])
 export const menus = () => {
-  if (getAuthStore().listCustomPage.length) {
-    lastMenus = genMenus(getAuthStore().listCustomPage)
-  }
-
   if (lastLocale !== intlStore.locale) {
     lastLocale = intlStore.locale
-    lastMenus = genMenus(getAuthStore().listCustomPage)
   }
+
+  lastMenus = genMenus(getAuthStore().listCustomPage)
   return lastMenus
 }
 
