@@ -1,3 +1,8 @@
+#### 2.13.1
+
+- Embed:
+  - Add acceptBrowserPermission to show when manually prompt for permission
+
 #### 2.13.0
 
 - Parse password when open app from url, take affect in all build: web browser, ios, android
