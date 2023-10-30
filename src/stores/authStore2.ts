@@ -131,7 +131,7 @@ export class AuthStore {
   @observable listCustomPage: PbxCustomPage[] = []
   customPageLoadings: { [k: string]: boolean } = {}
   reLoadCustomPageById = (id: string) => {
-    if (this.customPageLoadings[id]) {
+    if (!!this.customPageLoadings[id]) {
       return
     }
     this.customPageLoadings[id] = true

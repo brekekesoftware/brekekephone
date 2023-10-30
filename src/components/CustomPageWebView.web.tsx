@@ -36,7 +36,6 @@ export const CustomPageWebView = forwardRef(
   ({ url, onTitleChanged, onLoadEnd }: Props, ref) => {
     const webViewRef = useRef(null)
     const onLoaded = () => {
-      onTitleChanged('customPage')
       onLoadEnd()
     }
     return (

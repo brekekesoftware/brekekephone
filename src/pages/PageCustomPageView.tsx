@@ -57,17 +57,18 @@ export class PageCustomPageView extends Component<{ id: string }> {
   }
   render() {
     const { id } = this.props
-    const cp = getAuthStore().getCustomPageById(id)
-    const c = getCallStore().calls.find(i => i.incoming && !i.answered)
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     const au = getAuthStore()
+    const cp = au.getCustomPageById(id)
+    // Trigger get received incoming call
+    const c = getCallStore().calls.find(i => i.incoming && !i.answeredAt)
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
 
     const onTitleChanged = (t: string) => {
       // Update title to tab label
       if (!cp) {
         return
       }
-      getAuthStore().updateCustomPage({ ...cp, title: t })
+      au.updateCustomPage({ ...cp, title: t })
     }
 
     const onLoaded = () => {}
@@ -81,8 +82,8 @@ export class PageCustomPageView extends Component<{ id: string }> {
       // reloadPage
       this.reLoadPage(cp)
     }
-    // update loading page
-    if (cp && (!c || c.answered)) {
+    // update check loading page
+    if (cp && cp.incoming === 'open' && !c) {
       delete au.customPageLoadings[cp.id]
     }
 
