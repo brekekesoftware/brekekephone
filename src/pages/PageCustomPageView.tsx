@@ -1,12 +1,15 @@
 import { random } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
+import { RnText } from '../components/RnText'
+import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { v } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
@@ -14,8 +17,27 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 
+const css = StyleSheet.create({
+  BtnText: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    minWidth: 80,
+    position: 'absolute',
+    top: 200,
+    alignSelf: 'center',
+    backgroundColor: v.colors.primary,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 5,
+    zIndex: 100,
+  },
+})
 @observer
 export class PageCustomPageView extends Component<{ id: string }> {
+  state = {
+    isError: false,
+  }
   getUrlParams = async (url: string) => {
     const token = await pbx.getPbxToken()
     const user = getAuthStore().getCurrentAccount()
@@ -48,15 +70,21 @@ export class PageCustomPageView extends Component<{ id: string }> {
   }
   reloadPageWithNewToken = async () => {
     const { id } = this.props
+    const { isError } = this.state
     const cp = getAuthStore().getCustomPageById(id)
     if (!cp) {
       return
     }
     const url = await this.getURLToken(cp.url)
     getAuthStore().updateCustomPage({ ...cp, url })
+
+    if (isError) {
+      this.setState({ isError: false })
+    }
   }
   render() {
     const { id } = this.props
+    const { isError } = this.state
     const au = getAuthStore()
     const cp = au.getCustomPageById(id)
     // Trigger get received incoming call
@@ -72,6 +100,10 @@ export class PageCustomPageView extends Component<{ id: string }> {
     }
 
     const onLoaded = () => {}
+
+    const onError = () => {
+      this.setState({ isError: true })
+    }
 
     // handle open custompage tab and reload page when received incoming
     if (c && s && cp && cp.incoming === 'open') {
@@ -105,21 +137,27 @@ export class PageCustomPageView extends Component<{ id: string }> {
         <Layout
           description={cp?.title}
           menu={'settings'}
-          dropdown={[
-            {
-              label: intl`Reload`,
-              onPress: this.reloadPageWithNewToken,
-            },
-          ]}
+          dropdown={[]}
           subMenu={id}
           title={intl`Custom Page`}
           isFullContent
         >
+          {isError && (
+            <RnTouchableOpacity
+              onPress={this.reloadPageWithNewToken}
+              style={css.BtnText}
+            >
+              <RnText normal white bold>
+                {intl`Reload`}
+              </RnText>
+            </RnTouchableOpacity>
+          )}
           {cp && (
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}
               onLoadEnd={onLoaded}
+              onError={onError}
             />
           )}
         </Layout>

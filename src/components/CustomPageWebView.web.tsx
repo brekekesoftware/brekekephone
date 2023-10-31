@@ -31,9 +31,10 @@ interface Props {
   url: string
   onTitleChanged: (title: string) => void
   onLoadEnd: () => void
+  onError: () => void
 }
 export const CustomPageWebView = forwardRef(
-  ({ url, onTitleChanged, onLoadEnd }: Props, ref) => {
+  ({ url, onTitleChanged, onLoadEnd, onError }: Props, ref) => {
     const webViewRef = useRef(null)
     const onLoaded = () => {
       onLoadEnd()
