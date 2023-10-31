@@ -129,6 +129,7 @@ export class AuthStore {
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
+  saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
   reLoadCustomPageById = (id: string) => {
     if (!!this.customPageLoadings[id]) {

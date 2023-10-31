@@ -77,7 +77,6 @@ export class PageCustomPageView extends Component<{ id: string }> {
     }
     const url = await this.getURLToken(cp.url)
     getAuthStore().updateCustomPage({ ...cp, url })
-
     if (isError) {
       this.setState({ isError: false })
     }
@@ -106,13 +105,20 @@ export class PageCustomPageView extends Component<{ id: string }> {
     }
 
     // handle open custompage tab and reload page when received incoming
-    if (c && s && cp && cp.incoming === 'open') {
+    if (
+      (c || (!c && au.saveActionOpenCustomPage)) &&
+      s &&
+      cp &&
+      cp.incoming === 'open'
+    ) {
       if (s.name != 'PageCustomPage') {
         // update stacker flow
+        Nav().customPageIndex = Nav().goToPageCustomPage
         Nav().goToPageCustomPage({ id: cp.id })
       }
       // reloadPage
       this.reLoadPage(cp)
+      au.saveActionOpenCustomPage = false
     }
     // update check loading page
     if (cp && cp.incoming === 'open' && !c) {
@@ -137,7 +143,6 @@ export class PageCustomPageView extends Component<{ id: string }> {
         <Layout
           description={cp?.title}
           menu={'settings'}
-          dropdown={[]}
           subMenu={id}
           title={intl`Custom Page`}
           isFullContent
