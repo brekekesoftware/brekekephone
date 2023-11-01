@@ -61,12 +61,9 @@ export class PageCustomPageView extends Component<{ id: string }> {
   reLoadPage = async (cp: PbxCustomPage) => {
     const hadToken = !cp.url.includes('#pbx-token#')
     if (!hadToken) {
-      const url = await this.getUrlParams(cp.url)
-      getAuthStore().updateCustomPage({ ...cp, url })
-      getAuthStore().customPageLoadings[cp.id] = true
-    } else {
-      getAuthStore().reLoadCustomPageById(cp.id)
+      return
     }
+    getAuthStore().reLoadCustomPageById(cp.id)
   }
   reloadPageWithNewToken = async () => {
     const { id } = this.props
@@ -111,14 +108,15 @@ export class PageCustomPageView extends Component<{ id: string }> {
       cp &&
       cp.incoming === 'open'
     ) {
+      au.saveActionOpenCustomPage = false
       if (s.name != 'PageCustomPage') {
         // update stacker flow
         Nav().customPageIndex = Nav().goToPageCustomPage
         Nav().goToPageCustomPage({ id: cp.id })
+        return
       }
       // reloadPage
       this.reLoadPage(cp)
-      au.saveActionOpenCustomPage = false
     }
     // update check loading page
     if (cp && cp.incoming === 'open' && !c) {

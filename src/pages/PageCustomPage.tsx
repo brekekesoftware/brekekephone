@@ -18,6 +18,7 @@ export class PageCustomPage extends Component<{ id: string }> {
     if (!hadToken) {
       const url = await this.getUrlParams(cp.url)
       getAuthStore().updateCustomPage({ ...cp, url })
+      getAuthStore().customPageLoadings[cp.id] = true
     }
   }
 
