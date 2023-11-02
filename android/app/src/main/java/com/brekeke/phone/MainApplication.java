@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
