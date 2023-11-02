@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phone;
 
 public class L {
   public static String l = null;
