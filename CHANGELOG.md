@@ -1,3 +1,8 @@
+#### 2.13.2
+
+- Embed:
+  - Fix global web phone css injection
+
 #### 2.13.1
 
 - Embed:
@@ -5,7 +10,7 @@
 
 #### 2.13.0
 
-- Parse password when open app from url, take affect in all build: web browser, ios, android
+- Parse password when open app from url, affect all build: web browser, ios, android
 - Embed:
   - Update pal.js to support `line` method
 

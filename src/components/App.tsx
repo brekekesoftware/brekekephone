@@ -18,6 +18,7 @@ import SplashScreen from 'react-native-splash-screen'
 
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
+import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import {
   accountStore,
@@ -261,7 +262,7 @@ export const App = observer(() => {
       : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]}>
+    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
