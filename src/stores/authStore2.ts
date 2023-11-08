@@ -13,6 +13,7 @@ import {
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import { isURL } from '../utils/string'
 import { waitTimeout } from '../utils/waitTimeout'
 import {
   Account,
@@ -29,7 +30,7 @@ import { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
-import { intlDebug } from './intl'
+import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
@@ -157,7 +158,13 @@ export class AuthStore {
       }),
     ]
   }
-
+  addParamForURL = (url: string) => {
+    // for refresh page by change from-number value
+    if (!url.includes('#from-number#')) {
+      return url + '&from-number=#from-number#'
+    }
+    return url
+  }
   parseListCustomPage = () => {
     if (!this.pbxConfig) {
       return
@@ -170,11 +177,19 @@ export class AuthStore {
       const parts = key.split('.')
       const id = `${parts[0]}.${parts[1]}`
       if (!results.some(item => item.id === id)) {
+        if (!isURL(this.pbxConfig[`${id}.url`])) {
+          // ignore if not url
+          continue
+        }
         results.push({
           id,
-          url: this.pbxConfig[`${id}.url`],
-          title: this.pbxConfig[`${id}.title`],
-          pos: this.pbxConfig[`${id}.pos`],
+          url: this.addParamForURL(this.pbxConfig[`${id}.url`].toLowerCase()),
+          title: this.pbxConfig[`${id}.title`]
+            ? this.pbxConfig[`${id}.title`]
+            : intl`Pbx user setting`,
+          pos: this.pbxConfig[`${id}.pos`]
+            ? this.pbxConfig[`${id}.pos`]
+            : 'setting,right,1',
           incoming: this.pbxConfig[`${id}.incoming`],
         })
       }

@@ -89,7 +89,8 @@ export class PageCustomPageView extends Component<{ id: string }> {
 
     const onTitleChanged = (t: string) => {
       // Update title to tab label
-      if (!cp) {
+      const tokenNotExist = cp?.url.includes('#pbx-token#')
+      if (!cp || this.state.isError || tokenNotExist) {
         return
       }
       au.updateCustomPage({ ...cp, title: t })
@@ -98,6 +99,10 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const onLoaded = () => {}
 
     const onError = () => {
+      const tokenNotExist = cp?.url.includes('#pbx-token#')
+      if (tokenNotExist) {
+        return
+      }
       this.setState({ isError: true })
     }
 
@@ -155,7 +160,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
               </RnText>
             </RnTouchableOpacity>
           )}
-          {cp && (
+          {cp && !cp.url.includes('#pbx-token#') && (
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}

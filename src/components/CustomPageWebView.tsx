@@ -58,10 +58,11 @@ export const CustomPageWebView = forwardRef(
         bounces={false}
         startInLoadingState={true}
         onLoadEnd={onLoadEnd}
-        onError={onError}
         originWhitelist={['*']}
         javaScriptEnabled={true}
         scalesPageToFit={false}
+        onHttpError={onError}
+        onError={onError}
       />
     )
   },
