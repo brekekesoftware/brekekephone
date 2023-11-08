@@ -66,10 +66,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // universal links
-  private func application(
-    application: UIApplication!,
-    continueUserActivity userActivity: NSUserActivity!,
-    restorationHandler: @escaping ([Any]?) -> Void
+  func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
     RCTLinkingManager.application(application,
                                   continue: userActivity,
@@ -77,8 +77,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     // react-native-callkeep
     return RNCallKeep.application(application,
                                   continue: userActivity,
-                                  restorationHandler: restorationHandler as
-                                    (([Any]?) -> Void))
+                                  restorationHandler: restorationHandler)
   }
 
   // react-native-voip-push-notification add PushKit delegate method
@@ -229,7 +228,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       callerName = "Loading..."
     }
     RNCallKeep.reportNewIncomingCall(uuid,
-                                     handle: "Brekeke Phone",
+                                     handle: callerName,
                                      handleType: "generic",
                                      hasVideo: false,
                                      localizedCallerName: callerName,

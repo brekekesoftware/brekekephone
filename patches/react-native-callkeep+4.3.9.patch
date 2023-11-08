@@ -458,9 +458,18 @@ index f53c052..b8a0e24 100644
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
 diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
-index ee1a7fb..4031efa 100644
+index ee1a7fb..a6230f9 100644
 --- a/node_modules/react-native-callkeep/index.d.ts
 +++ b/node_modules/react-native-callkeep/index.d.ts
+@@ -24,7 +24,7 @@ declare module 'react-native-callkeep' {
+ 
+   export type Events = keyof NativeEvents;
+   export type EventsPayload = {
+-    didReceiveStartCallAction: { handle: string, callUUID?: string, name?: string };
++    didReceiveStartCallAction: { handle: string, callUUID?: string, name?: string, video?: boolean };
+     answerCall: { callUUID: string };
+     endCall: { callUUID: string };
+     didActivateAudioSession: undefined;
 @@ -65,15 +65,6 @@ declare module 'react-native-callkeep' {
    }
  
@@ -513,8 +522,21 @@ index 9f1312b..46b429b 100644
    _setupAndroid = async (options) => {
      RNCallKeepModule.setup(options);
  
+diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
+index c8e7bbd..052f0ac 100644
+--- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
++++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
+@@ -25,7 +25,7 @@
+ 
+ + (BOOL)application:(UIApplication *)application
+ continueUserActivity:(NSUserActivity *)userActivity
+-  restorationHandler:(void(^)(NSArray * __nullable restorableObjects))restorationHandler;
++ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
+ 
+ + (void)reportNewIncomingCall:(NSString *)uuidString
+                        handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..0b75942 100644
+index e67c3cd..2e69728 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
@@ -630,9 +652,13 @@ index e67c3cd..0b75942 100644
  }
  
  RCT_EXPORT_METHOD(getInitialEvents:(RCTPromiseResolveBlock)resolve
-@@ -320,6 +258,9 @@ + (void)setup:(NSDictionary *)options {
+@@ -319,7 +257,13 @@ + (void)setup:(NSDictionary *)options {
+ {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
++    NSLog(@"[RNCallKeep][startCall] handle = %@", handle);
++    NSLog(@"[RNCallKeep][startCall] contactIdentifier = %@", contactIdentifier);
++    NSLog(@"[RNCallKeep][startCall] handleType = %@", handleType);
  #endif
 +    if (self.callKeepProvider == nil) {
 +      [RNCallKeep initCallKitProvider];
@@ -640,7 +666,7 @@ index e67c3cd..0b75942 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -856,37 +797,20 @@ + (int)getHandleType:(NSString *)handleType
+@@ -856,37 +800,20 @@ + (int)getHandleType:(NSString *)handleType
      }
  }
  
@@ -684,7 +710,27 @@ index e67c3cd..0b75942 100644
 +    providerConfiguration.maximumCallsPerCallGroup = 99;
 +    providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"callkit.png"]);
 +    providerConfiguration.ringtoneSound = @"incallmanager_ringtone.mp3";
-+    providerConfiguration.includesCallsInRecents = NO;
++    providerConfiguration.includesCallsInRecents = YES;
      return providerConfiguration;
  }
  
+@@ -935,7 +862,7 @@ + (BOOL)application:(UIApplication *)application
+ 
+ + (BOOL)application:(UIApplication *)application
+ continueUserActivity:(NSUserActivity *)userActivity
+- restorationHandler:(void(^)(NSArray * __nullable restorableObjects))restorationHandler
++ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
+ {
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][application:continueUserActivity]");
+@@ -982,8 +909,9 @@ + (BOOL)application:(UIApplication *)application
+ 
+     if (contact != nil) {
+         handle = contact.personHandle.value;
+-    }
+         
++    }
++//    NSLog(@"[RNCallKeep][application:continueUserActivity]::contact::%@",contact);
+     if (handle != nil && handle.length > 0 ){
+         NSDictionary *userInfo = @{
+             @"handle": handle,
