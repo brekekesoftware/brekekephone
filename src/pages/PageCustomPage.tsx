@@ -14,8 +14,8 @@ export class PageCustomPage extends Component<{ id: string }> {
       return
     }
     // First time open tab PageCustomPage, should update url with params
-    const hadToken = !cp.url.includes('#pbx-token#')
-    if (!hadToken) {
+    const tokenNotExist = /#pbx-token#/i.test(cp.url)
+    if (tokenNotExist) {
       const url = await this.getUrlParams(cp.url)
       getAuthStore().updateCustomPage({ ...cp, url })
       getAuthStore().customPageLoadings[cp.id] = true
@@ -26,11 +26,11 @@ export class PageCustomPage extends Component<{ id: string }> {
     const token = await pbx.getPbxToken()
     const user = getAuthStore().getCurrentAccount()
     return url
-      .replace('#lang#', intlStore.locale)
-      .replace('#pbx-token#', token.token)
-      .replace('#tenant#', user.pbxTenant)
-      .replace('#user#', user.pbxUsername)
-      .replace('#from-number#', '0')
+      .replace(/#lang#/i, intlStore.locale)
+      .replace(/#pbx-token#/i, token.token)
+      .replace(/#tenant#'/i, user.pbxTenant)
+      .replace(/#user#/i, user.pbxUsername)
+      .replace(/#from-number#/i, '0')
   }
 
   render() {

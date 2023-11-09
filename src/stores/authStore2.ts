@@ -160,7 +160,7 @@ export class AuthStore {
   }
   addParamForURL = (url: string) => {
     // for refresh page by change from-number value
-    if (!url.includes('#from-number#')) {
+    if (!/'#from-number#'/i.test(url)) {
       return url + '&from-number=#from-number#'
     }
     return url
@@ -183,7 +183,7 @@ export class AuthStore {
         }
         results.push({
           id,
-          url: this.addParamForURL(this.pbxConfig[`${id}.url`].toLowerCase()),
+          url: this.addParamForURL(this.pbxConfig[`${id}.url`]),
           title: this.pbxConfig[`${id}.title`]
             ? this.pbxConfig[`${id}.title`]
             : intl`Pbx user setting`,
