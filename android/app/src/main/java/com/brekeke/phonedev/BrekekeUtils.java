@@ -2,6 +2,8 @@ package com.brekeke.phonedev;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
@@ -17,6 +19,8 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.CallLog;
+import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -607,6 +611,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  public static void insertPlaceholderCall(String number, int typeCall ){
+
+    ContentValues values = new ContentValues();
+    values.put(CallLog.Calls.NUMBER, number);
+    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+    values.put(CallLog.Calls.DURATION, 0);
+    values.put(CallLog.Calls.TYPE, typeCall);
+    values.put(CallLog.Calls.NEW, 1);
+    values.put(CallLog.Calls.CACHED_NAME, "");
+    values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
+    values.put(CallLog.Calls.CACHED_NUMBER_LABEL, "");
+    Log.d("thangnt", "thangnt::Inserting call log placeholder for " + number);
+    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+  }
   // ==========================================================================
   // react methods
 
