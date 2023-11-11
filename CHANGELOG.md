@@ -1,5 +1,6 @@
 #### 2.13.2
 
+- Fix ios apns token not resolve properly
 - Embed:
   - Fix global web phone css injection
 
