@@ -7,10 +7,15 @@ declare global {
   }
 }
 
+export const webRootId = '__brekeke_phone_web_root'
+export const getWebRootIdProps = () => {
+  return Platform.OS === 'web' && !window._BrekekePhoneWebRoot
+    ? { id: webRootId }
+    : undefined
+}
+
 if (Platform.OS === 'web') {
-  window._BrekekePhoneWebRoot = document.getElementById(
-    '__brekeke_phone_web_root',
-  )
+  window._BrekekePhoneWebRoot = document.getElementById(webRootId)
   if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
     window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
   }

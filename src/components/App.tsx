@@ -18,6 +18,7 @@ import SplashScreen from 'react-native-splash-screen'
 
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
+import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
 import {
@@ -44,7 +45,6 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import { permForCall, permReadPhoneNumber } from '../utils/permissions'
-// @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -264,7 +264,7 @@ export const App = observer(() => {
   const cp = getAuthStore().listCustomPage[0]
 
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]}>
+    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
