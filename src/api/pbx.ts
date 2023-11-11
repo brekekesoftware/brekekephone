@@ -292,25 +292,26 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
+
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
-
     if (!this.isMainInstance) {
       return config
     }
-    const s = getAuthStore()
-    s.pbxConfig = config
-    const d = await s.getCurrentDataAsync()
-    if (this.isMainInstance) {
-      BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(s.pbxConfig)))
-    }
-    d.palParams = parsePalParams(s.pbxConfig)
-    d.userAgent = s.pbxConfig['webphone.useragent']
-    d.pnExpires = s.pbxConfig['webphone.pn_expires']
+    BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(config)))
+
+    const as = getAuthStore()
+    as.pbxConfig = config
+    as.parseListCustomPage()
+
+    const d = await as.getCurrentDataAsync()
+    d.palParams = parsePalParams(as.pbxConfig)
+    d.userAgent = as.pbxConfig['webphone.useragent']
+    d.pnExpires = as.pbxConfig['webphone.pn_expires']
     accountStore.updateAccountData(d)
-    s.parseListCustomPage()
-    return s.pbxConfig
+
+    return as.pbxConfig
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
@@ -448,7 +449,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    const res = await this.client.call_pal('getPhonebooks', {})
+    const res = await this.client.call_pal('getPhonebooks')
     return res?.filter(item => !item.shared) || []
   }
   getContact = async (id: string) => {
@@ -507,7 +508,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    const res = await this.client.call_pal('getToken', {})
+    const res = await this.client.call_pal('getToken')
     return res
   }
 

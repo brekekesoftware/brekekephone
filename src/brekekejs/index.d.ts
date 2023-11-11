@@ -157,7 +157,7 @@ export type PbxPal = {
     reject: ErrorHandler,
   ): void
   getPhonebooks(
-    p: {},
+    p: undefined,
     resolve: (res: PbxBook[]) => void,
     reject: ErrorHandler,
   ): void
@@ -176,7 +176,11 @@ export type PbxPal = {
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
   ): void
-  getToken(p: {}, resolve: (res: any) => void, reject: ErrorHandler): void
+  getToken(
+    p: undefined,
+    resolve: (res: any) => void,
+    reject: ErrorHandler,
+  ): void
   pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler): void
   hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler): void
   unhold: PbxPal['hold']
