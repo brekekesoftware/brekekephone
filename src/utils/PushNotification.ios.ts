@@ -7,18 +7,48 @@ import Voip from 'react-native-voip-push-notification'
 
 import { parse } from './PushNotification-parse'
 
-let voipApnsToken = ''
-const onVoipToken = (t: string) => {
-  if (t) {
-    voipApnsToken = t
+let voipTokenFn: Function | undefined = undefined
+const voipToken = new Promise<string>(resolve => {
+  voipTokenFn = resolve
+})
+const onVoipToken = async (t: string) => {
+  if (!voipTokenFn) {
+    const t2 = await voipToken
+    console.log(`PN token debug: onVoipToken already set old=${t2} new=${t}`)
+    return
   }
+  if (!t) {
+    console.error('PN token debug: onVoipToken empty token')
+    return
+  }
+  if (typeof t !== 'string') {
+    console.error('PN token debug: onVoipToken not string', t)
+    return
+  }
+  voipTokenFn?.(t)
+  voipTokenFn = undefined
 }
 
-let apnsToken = ''
-const onToken = (t: string) => {
-  if (t) {
-    apnsToken = t
+let apnsTokenFn: Function | undefined = undefined
+const apnsToken = new Promise<string>(resolve => {
+  apnsTokenFn = resolve
+})
+const onApnsToken = async (t: string) => {
+  if (!apnsTokenFn) {
+    const t2 = await apnsToken
+    console.log(`PN token debug: onApnsToken already set old=${t2} new=${t}`)
+    return
   }
+  if (!t) {
+    console.error('PN token debug: onApnsToken empty token')
+    return
+  }
+  if (typeof t !== 'string') {
+    console.error('PN token debug: onApnsToken not string', t)
+    return
+  }
+  apnsTokenFn?.(t)
+  apnsTokenFn = undefined
 }
 
 const onNotification = async (
@@ -69,7 +99,7 @@ export const PushNotification = {
     )
     Voip.registerVoipToken()
 
-    PushNotificationIOS.addEventListener('register', onToken)
+    PushNotificationIOS.addEventListener('register', onApnsToken)
     PushNotificationIOS.addEventListener('notification', (n: PN) =>
       onNotification(n, initApp),
     )
@@ -83,10 +113,10 @@ export const PushNotification = {
   },
 
   getToken: () => {
-    return Promise.resolve(apnsToken)
+    return apnsToken
   },
   getVoipToken: () => {
-    return Promise.resolve(voipApnsToken)
+    return voipToken
   },
   resetBadgeNumber: () => {
     PushNotificationIOS.setApplicationIconBadgeNumber(0)
