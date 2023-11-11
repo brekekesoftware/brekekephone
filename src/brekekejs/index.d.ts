@@ -229,7 +229,7 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
   version: string
-} & { [k: string]: string }
+}
 export type PbxGetProductInfoParam = {
   webphone: string
 }
