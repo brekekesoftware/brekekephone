@@ -42,11 +42,11 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const token = await pbx.getPbxToken()
     const user = getAuthStore().getCurrentAccount()
     return url
-      .replace('#lang#', intlStore.locale)
-      .replace('#pbx-token#', token.token)
-      .replace('#tenant#', user.pbxTenant)
-      .replace('#user#', user.pbxUsername)
-      .replace('#from-number#', '0')
+      .replace(/#lang#/i, intlStore.locale)
+      .replace(/#pbx-token#/i, token.token)
+      .replace(/#tenant#'/i, user.pbxTenant)
+      .replace(/#user#/i, user.pbxUsername)
+      .replace(/#from-number#/i, '0')
   }
   getURLToken = async (url: string) => {
     const r = random(1, 1000, false).toString()
@@ -59,8 +59,8 @@ export class PageCustomPageView extends Component<{ id: string }> {
       .replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
   }
   reLoadPage = async (cp: PbxCustomPage) => {
-    const hadToken = !cp.url.includes('#pbx-token#')
-    if (!hadToken) {
+    const tokenNotExist = /#pbx-token#/i.test(cp.url)
+    if (tokenNotExist) {
       return
     }
     getAuthStore().reLoadCustomPageById(cp.id)
@@ -89,7 +89,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
 
     const onTitleChanged = (t: string) => {
       // Update title to tab label
-      if (!cp) {
+      if (!cp || this.state.isError || /#pbx-token#/i.test(cp.url)) {
         return
       }
       au.updateCustomPage({ ...cp, title: t })
@@ -98,6 +98,9 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const onLoaded = () => {}
 
     const onError = () => {
+      if (cp && /#pbx-token#/i.test(cp.url)) {
+        return
+      }
       this.setState({ isError: true })
     }
 
@@ -155,7 +158,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
               </RnText>
             </RnTouchableOpacity>
           )}
-          {cp && (
+          {cp && !/#pbx-token#/i.test(cp.url) && (
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}
