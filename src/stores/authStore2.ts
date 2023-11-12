@@ -1,6 +1,7 @@
 import { debounce, random } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
+import validator from 'validator'
 
 import { sip } from '../api/sip'
 import {
@@ -13,7 +14,6 @@ import {
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
-import { isURL } from '../utils/string'
 import { waitTimeout } from '../utils/waitTimeout'
 import {
   Account,
@@ -177,7 +177,7 @@ export class AuthStore {
       const parts = key.split('.')
       const id = `${parts[0]}.${parts[1]}`
       if (!results.some(item => item.id === id)) {
-        if (!isURL(this.pbxConfig[`${id}.url`])) {
+        if (!validator.isURL(this.pbxConfig[`${id}.url`])) {
           // ignore if not url
           continue
         }
