@@ -114,12 +114,14 @@
     <activity
       android:name="com.facebook.react.devsupport.DevSettingsActivity"
     />
+
     <receiver android:name="MyOutgoingCallHandler"
       android:exported="true">
       <intent-filter >
         <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
       </intent-filter>
     </receiver>
+
     <!-- main -->
     <activity
       android:name=".MainActivity"

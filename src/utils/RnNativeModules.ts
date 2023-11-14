@@ -3,6 +3,11 @@ import { NativeModule, NativeModules, Platform } from 'react-native'
 
 import { TCallKeepAction } from '../stores/callStore2'
 
+export enum CallLogType {
+  INCOMING_TYPE = 1,
+  OUTGOING_TYPE = 2,
+  MISSED_TYPE = 3,
+}
 type TBrekekeUtils = {
   // these methods only available on android
   getInitialNotifications(): Promise<string | null>
@@ -30,6 +35,7 @@ type TBrekekeUtils = {
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
+  insertCallLog(number: string, typeCallLog: CallLogType): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -80,6 +86,7 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
+  insertCallLog: () => undefined,
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

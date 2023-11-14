@@ -2,7 +2,6 @@ package com.brekeke.phonedev;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.CallLog;
-import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -50,6 +48,7 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
+  public static String actionMakeCallNumber = "";
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -161,7 +160,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @Override
   public void initialize() {
     super.initialize();
-    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
+    if (eventEmitter == null) {
+      eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
+    }
   }
 
   @Override
@@ -611,22 +612,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public static void insertPlaceholderCall(String number, int typeCall ){
+  // ==========================================================================
+  // react methods
 
+  @ReactMethod
+  public void insertCallLog(String number, int typeCallLog) {
     ContentValues values = new ContentValues();
     values.put(CallLog.Calls.NUMBER, number);
     values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.DURATION, 0);
-    values.put(CallLog.Calls.TYPE, typeCall);
-    values.put(CallLog.Calls.NEW, 1);
-    values.put(CallLog.Calls.CACHED_NAME, "");
-    values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
-    values.put(CallLog.Calls.CACHED_NUMBER_LABEL, "");
-    Log.d("thangnt", "thangnt::Inserting call log placeholder for " + number);
+    values.put(CallLog.Calls.TYPE, typeCallLog);
+    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
     ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
   }
-  // ==========================================================================
-  // react methods
 
   @ReactMethod
   public void getInitialNotifications(Promise promise) {

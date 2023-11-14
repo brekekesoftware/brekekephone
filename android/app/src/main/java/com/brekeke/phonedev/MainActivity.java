@@ -1,54 +1,48 @@
 package com.brekeke.phonedev;
 
-import android.Manifest;
-import android.Manifest.permission;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import io.wazo.callkeep.RNCallKeepModule;
+
 public class MainActivity extends ReactActivity {
   // ==========================================================================
   // set/unset BrekekeUtils.main
-final int  PERMISSIONS_REQUEST_WRITE_CALL_LOG = 1234556;
-
   @Override
   protected void onStart() {
     BrekekeUtils.main = this;
     super.onStart();
   }
-  /**
-   * Show the contacts in the ListView.
-   */
-  private void requestPermissionCallLog() {
-    // Check the SDK version and whether the permission is already granted or not.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(permission.WRITE_CALL_LOG) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED ) {
-      requestPermissions(new String[]{Manifest.permission.WRITE_CALL_LOG, permission.WRITE_CONTACTS, permission.PROCESS_OUTGOING_CALLS}, PERMISSIONS_REQUEST_WRITE_CALL_LOG);
-      //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-    } else {
-      // Android version is lesser than 6.0 or the permission is already granted.
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    Bundle b = getIntent().getExtras();
+    if (b != null) {
+      String phone = b.getString("extra_phone");
+      if (phone != null && phone.isEmpty() == false) {
+        if (BrekekeUtils.eventEmitter == null) {
+          // wait BrekekeUtils init completed
+          Runnable runnable =
+              new Runnable() {
+                public void run() {
+                  BrekekeUtils.emit("makeCall", phone);
+                }
+              };
+          Handler handler = new android.os.Handler();
+          handler.postDelayed(runnable, 5000);
+        } else {
+          BrekekeUtils.emit("makeCall", phone);
+        }
+      }
     }
   }
-
-//  @Override
-//  public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//   int[] grantResults) {
-//    if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
-//      if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//        // Permission is granted
-//        showContacts();
-//      } else {
-//        Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
-//      }
-//    }
-//  }
 
   @Override
   protected void onDestroy() {
@@ -62,12 +56,6 @@ final int  PERMISSIONS_REQUEST_WRITE_CALL_LOG = 1234556;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    requestPermissionCallLog();
-    String phone= getIntent().getStringExtra("extra_phone");
-    Toast.makeText(getBaseContext(), ""+phone, Toast.LENGTH_LONG).show();
-//    if(!phone.equals(null)){
-//      Toast.makeText(getBaseContext(), phone, Toast.LENGTH_LONG).show();
-//    }
   }
 
   // ==========================================================================
@@ -110,20 +98,12 @@ final int  PERMISSIONS_REQUEST_WRITE_CALL_LOG = 1234556;
 
   @Override
   public void onRequestPermissionsResult(
-    int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     switch (requestCode) {
       case RNCallKeepModule.REQUEST_READ_PHONE_STATE:
         RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        break;
-      case PERMISSIONS_REQUEST_WRITE_CALL_LOG:
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          // Permission is granted
-          requestPermissionCallLog();
-        } else {
-          Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
-        }
         break;
     }
   }

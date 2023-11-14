@@ -5,7 +5,9 @@ import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
 import { getPartyName } from '../stores/contactStore'
+import { permForCallLog } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
+import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
 import { getAuthStore } from './authStore'
@@ -83,8 +85,34 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     return
   }
   as.pushRecentCall(info)
+  if (Platform.OS === 'android') {
+    addToCallLog(info)
+  }
 }
-
+const addToCallLog = async (call: {
+  id: string
+  incoming: boolean
+  answered: boolean
+  partyName: string
+  partyNumber: string
+  duration: number
+  created: string
+}) => {
+  if (!(await permForCallLog())) {
+    return
+  }
+  const { incoming, answered, partyName, partyNumber } = call
+  if (!partyNumber || !partyName) {
+    return
+  }
+  const callLogType =
+    incoming && !answered
+      ? CallLogType.MISSED_TYPE
+      : incoming && answered
+      ? CallLogType.INCOMING_TYPE
+      : CallLogType.OUTGOING_TYPE
+  BrekekeUtils.insertCallLog(partyNumber ? partyNumber : partyName, callLogType)
+}
 const presentNotification = (c: {
   id: string
   incoming: boolean

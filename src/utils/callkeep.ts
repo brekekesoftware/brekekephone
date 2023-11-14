@@ -306,7 +306,19 @@ export const setupCallKeepEvents = async () => {
     }
     cs.onSelectBackgroundCall(c)
   })
-
+  eventEmitter.addListener('makeCall', async (phoneNumber: string) => {
+    const au = getAuthStore()
+    if (!au.signedInId) {
+      const d = await getLastSignedInId(true)
+      const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+      if (!a) {
+        return
+      }
+      await au.signIn(a, true)
+    }
+    await waitSip()
+    getCallStore().startCall(phoneNumber)
+  })
   // other utils
   eventEmitter.addListener('onBackPressed', onBackPressed)
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {

@@ -13,8 +13,6 @@ import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.provider.CallLog;
-import android.provider.CallLog.Calls;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -734,7 +732,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void handleClickAnswerCall() {
-    BrekekeUtils.insertPlaceholderCall(this.callerName, Calls.OUTGOING_TYPE);
     setCallAnswered();
     vCardAvatarTalking.setVisibility(View.GONE);
     vCallManageControls.setVisibility(View.GONE);
