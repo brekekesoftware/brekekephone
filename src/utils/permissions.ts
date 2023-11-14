@@ -99,24 +99,14 @@ export const permForCall = async () => {
 export const permForCallLog = async () => {
   const r = await requestMultiple([
     PERMISSIONS.ANDROID.WRITE_CALL_LOG,
-    PERMISSIONS.ANDROID.WRITE_CONTACTS,
     PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS,
   ])
   const writeCallLog = r[PERMISSIONS.ANDROID.WRITE_CALL_LOG]
-  const writeContacts = r[PERMISSIONS.ANDROID.WRITE_CONTACTS]
   const processOutgoingCall = r[PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS]
-  if (
-    writeCallLog === 'granted' &&
-    writeContacts === 'granted' &&
-    processOutgoingCall === 'granted'
-  ) {
+  if (writeCallLog === 'granted' && processOutgoingCall === 'granted') {
     return true
   }
-  if (
-    writeCallLog !== 'blocked' &&
-    writeContacts !== 'blocked' &&
-    processOutgoingCall !== 'blocked'
-  ) {
+  if (writeCallLog !== 'blocked' && processOutgoingCall !== 'blocked') {
     return false
   }
   RnAlert.prompt({
