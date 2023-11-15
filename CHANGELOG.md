@@ -6,6 +6,7 @@
   - When the call is made from the native OS history, it will automatically login into the last signed account and perform sip make call in that account
 - Fix ios apns token not resolve properly
 - Fix custom page params such as #pbx-token# should ignore case
+- Fix it should trim account hostname, port, username, password
 - Fix android should not show incoming call if the notification is disabled from OS app settings (issue 777)
 - Fix android should show the correct call in multiple calls case: app killed then press back button to make an outgoing call (issue 775)
 - Fix android should not show home screen after ending incoming call in multiple calls case: press home then receive incoming call then press back button to make an outgoing call (issue 774)
