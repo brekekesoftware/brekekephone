@@ -1,6 +1,7 @@
 #### 2.13.2
 
 - Fix ios apns token not resolve properly
+- Fix android should not show home screen after ending incoming call in multiple calls mix with outgoing call (issue 774)
 - Fix hold button should not allow to toggle multiple times immediately (issue 770)
 - Fix uc should load buddy list case receiving call while connecting (issue 769)
 - Fix park number should only allow characters: 0-9 a-z A-Z - \_ (issue 767)
