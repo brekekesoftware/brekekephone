@@ -1,5 +1,6 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import {
+  ActivityIndicator,
   Platform,
   StyleSheet,
   TouchableOpacityProps,
@@ -8,6 +9,7 @@ import {
 } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
@@ -40,13 +42,25 @@ export const ButtonIcon: FC<{
   name?: string
   textcolor?: string
   styleContainer?: ViewProps['style']
+  msLoading?: number
 }> = p => {
+  const [isLoading, setLoading] = useState(false)
+  const onBtnPress = () => {
+    if (p.msLoading) {
+      setLoading(true)
+      BackgroundTimer.setTimeout(() => {
+        // TODO possible react warning memory leak set state after unmount
+        setLoading(false)
+      }, p.msLoading)
+    }
+    p.onPress?.()
+  }
   const size = p.size || 15
   return (
     <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
-        disabled={p.disabled}
-        onPress={p.onPress}
+        disabled={isLoading || p.disabled}
+        onPress={onBtnPress}
         style={[
           css.ButtonIcon_Btn,
           p.style,
@@ -56,9 +70,13 @@ export const ButtonIcon: FC<{
           { borderColor: p.bdcolor },
         ]}
       >
-        <Svg height={size} viewBox='0 0 24 24' width={size}>
-          <Path d={p.path} fill={p.color || 'black'} />
-        </Svg>
+        {isLoading ? (
+          <ActivityIndicator style={{ width: size, height: size }} />
+        ) : (
+          <Svg height={size} viewBox='0 0 24 24' width={size}>
+            <Path d={p.path} fill={p.color || 'black'} />
+          </Svg>
+        )}
       </RnTouchableOpacity>
       {p.name && (
         <RnText
