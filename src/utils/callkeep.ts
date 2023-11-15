@@ -16,20 +16,25 @@ import { waitTimeout } from './waitTimeout'
 
 let alreadySetupCallKeep = false
 
-const setupCallKeepWithCheck = async () => {
+const setupCallKeep = async () => {
   if (alreadySetupCallKeep) {
     return
   }
+  const cs = getCallStore()
 
   // do not re-setup ios when having an ongoing call
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
-  if (
-    Platform.OS === 'ios' &&
-    (Object.keys((await RNCallKeep.getCalls()) || {}).length ||
-      Object.keys(getCallStore().callkeepMap).length ||
-      AppState.currentState !== 'active')
-  ) {
-    return
+  if (Platform.OS === 'ios') {
+    if (AppState.currentState !== 'active') {
+      return
+    }
+    if (Object.keys(cs.callkeepMap).length) {
+      return
+    }
+    const map = await RNCallKeep.getCalls()
+    if (map && Object.keys(map).length) {
+      return
+    }
   }
 
   alreadySetupCallKeep = true
@@ -77,12 +82,12 @@ export type TEventDidLoad = {
   data: unknown
 }
 
-export const setupCallKeep = async () => {
+export const setupCallKeepEvents = async () => {
   if (Platform.OS === 'web') {
     return
   }
-
-  await setupCallKeepWithCheck()
+  const cs = getCallStore()
+  await setupCallKeep()
 
   const didLoadWithEvents = (e: EventsPayload['didLoadWithEvents']) => {
     e.forEach(_ => didLoadWithEventsHandlers[_.name]?.(_.data))
@@ -93,12 +98,11 @@ export const setupCallKeep = async () => {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
     } else {
-      getCallStore().onCallKeepAnswerCall(uuid)
+      cs.onCallKeepAnswerCall(uuid)
     }
   }
   const endCall = (e: EventsPayload['endCall']) => {
     const uuid = e.callUUID.toUpperCase()
-    const cs = getCallStore()
     if (Platform.OS === 'android') {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
@@ -107,7 +111,7 @@ export const setupCallKeep = async () => {
       cs.onCallKeepEndCall(uuid)
     }
     // try to setup callkeep on each endcall if not yet
-    setupCallKeepWithCheck()
+    setupCallKeep()
   }
   const didDisplayIncomingCall = (
     e: EventsPayload['didDisplayIncomingCall'],
@@ -121,7 +125,7 @@ export const setupCallKeep = async () => {
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
-    getCallStore().onCallKeepDidDisplayIncomingCall(uuid, n)
+    cs.onCallKeepDidDisplayIncomingCall(uuid, n)
     if (!n) {
       // when PN is off we will manually call RNCallKeep.displayIncomingCall
       // pnData will be empty here
@@ -140,7 +144,7 @@ export const setupCallKeep = async () => {
       return
     }
     const uuid = e.callUUID.toUpperCase()
-    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
+    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
       c.toggleMuted()
     }
@@ -149,7 +153,7 @@ export const setupCallKeep = async () => {
     e: EventsPayload['didToggleHoldCallAction'],
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
+    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
@@ -157,7 +161,7 @@ export const setupCallKeep = async () => {
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = getCallStore().calls.find(_ => _.callkeepUuid === uuid)
+    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
     if (c) {
       sip.sendDTMF({
         sessionId: c.id,
@@ -180,7 +184,7 @@ export const setupCallKeep = async () => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
-    getCallStore().updateBackgroundCalls()
+    cs.updateBackgroundCalls()
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
@@ -194,43 +198,37 @@ export const setupCallKeep = async () => {
     RNCallKeepDidActivateAudioSession: didActivateAudioSession,
     RNCallKeepDidDeactivateAudioSession: didDeactivateAudioSession,
   }
+  const add = RNCallKeep.addEventListener
+  add('didLoadWithEvents', didLoadWithEvents)
+  add('answerCall', answerCall)
+  add('endCall', endCall)
+  add('didDisplayIncomingCall', didDisplayIncomingCall)
+  add('didPerformSetMutedCallAction', didPerformSetMutedCallAction)
+  add('didToggleHoldCallAction', didToggleHoldCallAction)
+  add('didPerformDTMFAction', didPerformDTMFAction)
+  add('didActivateAudioSession', didActivateAudioSession)
+  add('didDeactivateAudioSession', didDeactivateAudioSession)
 
-  RNCallKeep.addEventListener('didLoadWithEvents', didLoadWithEvents)
-  RNCallKeep.addEventListener('answerCall', answerCall)
-  RNCallKeep.addEventListener('endCall', endCall)
-  RNCallKeep.addEventListener('didDisplayIncomingCall', didDisplayIncomingCall)
-  RNCallKeep.addEventListener(
-    'didPerformSetMutedCallAction',
-    didPerformSetMutedCallAction,
-  )
-  RNCallKeep.addEventListener(
-    'didToggleHoldCallAction',
-    didToggleHoldCallAction,
-  )
-  RNCallKeep.addEventListener('didPerformDTMFAction', didPerformDTMFAction)
-  RNCallKeep.addEventListener(
-    'didActivateAudioSession',
-    didActivateAudioSession,
-  )
-  RNCallKeep.addEventListener(
-    'didDeactivateAudioSession',
-    didDeactivateAudioSession,
-  )
-
-  // android self-managed connection service forked version
   if (Platform.OS !== 'android') {
     return
   }
 
+  // android self-managed connection service
   const nav = Nav()
-  // events from our custom IncomingCall module
+
+  // in killed state, the event handler may fire before the nav object has init
+  const waitTimeoutNav = async () => {
+    const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
+    await waitTimeout(t)
+  }
+
+  // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
-    getCallStore().onCallKeepAnswerCall(uuid.toUpperCase())
+    cs.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
   })
   eventEmitter.addListener('rejectCall', (uuid: string) => {
-    const cs = getCallStore()
     if (uuid.startsWith('CalleeClickReject-')) {
       uuid = uuid.replace('CalleeClickReject-', '').toUpperCase()
       cs.setCalleeRejected({ callkeepUuid: uuid })
@@ -240,41 +238,40 @@ export const setupCallKeep = async () => {
     cs.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallParks2()
   })
   eventEmitter.addListener('video', (uuid: string) => {
-    getCallStore().getOngoingCall()?.toggleVideo()
+    cs.getOngoingCall()?.toggleVideo()
   })
   eventEmitter.addListener('speaker', (uuid: string) => {
-    getCallStore().toggleLoudSpeaker()
+    cs.toggleLoudSpeaker()
   })
   eventEmitter.addListener('mute', (uuid: string) => {
-    getCallStore().getOngoingCall()?.toggleMuted()
+    cs.getOngoingCall()?.toggleMuted()
   })
   eventEmitter.addListener('record', (uuid: string) => {
-    getCallStore().getOngoingCall()?.toggleRecording()
+    cs.getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
-    await waitTimeout(100)
+    await waitTimeoutNav()
     nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
-    getCallStore().getOngoingCall()?.toggleHoldWithCheck()
+    cs.getOngoingCall()?.toggleHoldWithCheck()
   })
   eventEmitter.addListener('switchCamera', (uuid: string) => {
-    getCallStore().getOngoingCall()?.toggleSwitchCamera()
+    cs.getOngoingCall()?.toggleSwitchCamera()
   })
   eventEmitter.addListener('switchCall', (uuid: string) => {
-    const cs = getCallStore()
     const oc = cs.getOngoingCall()
     const c = cs.calls.find(i => i.callkeepUuid === uuid)
     if (!c || c.id === oc?.id || !oc?.answered) {
@@ -291,7 +288,7 @@ export const setupCallKeep = async () => {
     } else {
       RnStacker.stacks = [RnStacker.stacks[0]]
     }
-    getCallStore().inPageCallManage = undefined
+    cs.inPageCallManage = undefined
   })
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
@@ -311,9 +308,9 @@ export const onBackPressed = () => {
     RnPicker.dismiss()
     return true
   }
-  const s = getCallStore()
-  if (s.inPageCallManage) {
-    s.inPageCallManage = undefined
+  const cs = getCallStore()
+  if (cs.inPageCallManage) {
+    cs.inPageCallManage = undefined
     return true
   }
   if (RnStacker.stacks.length > 1) {
