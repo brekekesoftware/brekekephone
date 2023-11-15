@@ -610,14 +610,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public static boolean checkNotificationPermission(Context ctx) { // true if GRANTED
+  public static boolean checkNotificationPermission(Context ctx) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
       return ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
-    } else {
-      NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ctx);
-      return notificationManager.areNotificationsEnabled();
     }
+    return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
   }
 
   // ==========================================================================
