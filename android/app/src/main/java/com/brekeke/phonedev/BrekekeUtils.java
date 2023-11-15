@@ -51,7 +51,6 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
-  public static String actionMakeCallNumber = "";
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();

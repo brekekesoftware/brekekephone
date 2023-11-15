@@ -24,24 +24,25 @@ public class MainActivity extends ReactActivity {
   protected void onResume() {
     super.onResume();
     Bundle b = getIntent().getExtras();
-    if (b != null) {
-      String phone = b.getString("extra_phone");
-      if (phone != null && phone.isEmpty() == false) {
-        if (BrekekeUtils.eventEmitter == null) {
-          // wait BrekekeUtils init completed
-          Runnable runnable =
-              new Runnable() {
-                public void run() {
-                  BrekekeUtils.emit("makeCall", phone);
-                }
-              };
-          Handler handler = new android.os.Handler();
-          handler.postDelayed(runnable, 5000);
-        } else {
-          BrekekeUtils.emit("makeCall", phone);
-        }
-      }
+    if (b == null) {
+      return;
     }
+    String phone = b.getString("extra_phone");
+    if (phone == null || phone.isEmpty()) {
+      return;
+    }
+    if (BrekekeUtils.eventEmitter != null) {
+      BrekekeUtils.emit("makeCall", phone);
+      return;
+    }
+    Runnable r =
+        new Runnable() {
+          public void run() {
+            BrekekeUtils.emit("makeCall", phone);
+          }
+        };
+    Handler handler = new android.os.Handler();
+    handler.postDelayed(r, 5000);
   }
 
   @Override
