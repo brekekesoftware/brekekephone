@@ -89,19 +89,23 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     addToCallLog(info)
   }
 }
-const addToCallLog = async (call: {
+
+export type CallHistoryInfo = {
   id: string
+  created: string
   incoming: boolean
   answered: boolean
   partyName: string
   partyNumber: string
   duration: number
-  created: string
-}) => {
+  isAboutToHangup: boolean
+}
+
+const addToCallLog = async (c: CallHistoryInfo) => {
   if (!(await permForCallLog())) {
     return
   }
-  const { incoming, answered, partyName, partyNumber } = call
+  const { incoming, answered, partyName, partyNumber } = c
   if (!partyNumber || !partyName) {
     return
   }
@@ -113,16 +117,8 @@ const addToCallLog = async (call: {
       : CallLogType.OUTGOING_TYPE
   BrekekeUtils.insertCallLog(partyNumber || partyName, type)
 }
-const presentNotification = (c: {
-  id: string
-  incoming: boolean
-  answered: boolean
-  partyName: string
-  partyNumber: string
-  duration: number
-  created: string
-  isAboutToHangup: boolean
-}) => {
+
+const presentNotification = (c: CallHistoryInfo) => {
   if (Platform.OS === 'web') {
     return
   }
