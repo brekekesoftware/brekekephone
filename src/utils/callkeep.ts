@@ -2,11 +2,6 @@ import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
-import {
-  accountStore,
-  getAccountUniqueId,
-  getLastSignedInId,
-} from '../stores/accountStore'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
