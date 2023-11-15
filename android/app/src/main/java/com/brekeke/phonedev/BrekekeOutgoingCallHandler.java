@@ -7,20 +7,15 @@ import android.os.Bundle;
 
 public class BrekekeOutgoingCallHandler extends BroadcastReceiver {
   @Override
-  public void onReceive(Context context, Intent intent) {
-    // Extract phone number reformatted by previous receivers
+  public void onReceive(Context ctx, Intent intent) {
     Bundle b = intent.getExtras();
-    // for (String key: b.keySet())
-    // {
-    //  Log.d ("thangnt::", "thangnt::"+ key + " is a key in the bundle::"+ b.get(key));
-    // }
-    String phoneNumber = intent.getStringExtra("com.android.phone.ROAMING_ORIGIN_NUMBER");
-    // Start my app
-    if (phoneNumber != null) {
-      Intent i = new Intent(context, MainActivity.class);
-      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      i.putExtra("extra_phone", phoneNumber);
-      context.startActivity(i);
+    String number = intent.getStringExtra("com.android.phone.ROAMING_ORIGIN_NUMBER");
+    if (number == null) {
+      return;
     }
+    Intent i = new Intent(ctx, MainActivity.class);
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    i.putExtra("extra_phone", number);
+    ctx.startActivity(i);
   }
 }
