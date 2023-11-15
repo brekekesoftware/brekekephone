@@ -322,19 +322,16 @@ export const Field: FC<
   }
   const renderPark = () => {
     const value = props.value as Park
-    const onChangeName = (text: string) => {
-      const newPark = { ...$.park, name: text }
+    const onChangeName = (name: string) => {
+      const newPark = { ...$.park, name }
       $.set('park', newPark)
-      if (props.onValueChange) {
-        props.onValueChange(newPark)
-      }
+      props.onValueChange?.(newPark)
     }
-    const onChangeNumber = (text: string) => {
-      const newPark = { ...$.park, number: text.trim() }
+    const onChangeNumber = (number: string) => {
+      number = number.replace(/[^0-9a-zA-Z-_]/g, '')
+      const newPark = { ...$.park, number }
       $.set('park', newPark)
-      if (props.onValueChange) {
-        props.onValueChange(newPark)
-      }
+      props.onValueChange?.(newPark)
     }
     return (
       <View style={css.Field_ViewRow}>
