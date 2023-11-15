@@ -95,7 +95,6 @@ class AuthUC {
     if (s.isBigMode() || !cp.pbxLocalAllUsers) {
       userStore.loadUcBuddyList()
     }
-
     const users = uc.getUsers()
     contactStore.ucUsers = users
   }
