@@ -160,7 +160,6 @@ export const menus = () => {
   if (lastLocale !== intlStore.locale) {
     lastLocale = intlStore.locale
   }
-
   lastMenus = genMenus(getAuthStore().listCustomPage)
   return lastMenus
 }
@@ -184,7 +183,6 @@ const saveNavigation = (i: number, k: string) => {
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-
   const ca = getAuthStore().getCurrentAccount()
   if (!ca) {
     return

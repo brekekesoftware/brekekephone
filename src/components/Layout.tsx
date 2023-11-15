@@ -34,6 +34,9 @@ const css = StyleSheet.create({
   FooterSpaceInsideScroller: {
     height: 15,
   },
+  FooterSpaceFullContent: {
+    height: 0,
+  },
   LoadMore: {
     alignSelf: 'center',
     paddingBottom: 15,
@@ -150,7 +153,9 @@ export const Layout: FC<
         {props.children}
         <View
           style={
-            props?.isFullContent ? { height: 0 } : css.FooterSpaceInsideScroller
+            props?.isFullContent
+              ? css.FooterSpaceFullContent
+              : css.FooterSpaceInsideScroller
           }
         />
       </Container>
