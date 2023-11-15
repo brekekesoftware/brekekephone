@@ -49,7 +49,6 @@ import {
   permForCallLog,
   permReadPhoneNumber,
 } from '../utils/permissions'
-// @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
