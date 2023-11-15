@@ -352,7 +352,6 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
-          keyboardType='numeric'
           placeholderTextColor='grey'
           onBlur={() => {
             if (Platform.OS === 'web') {
