@@ -211,27 +211,29 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?
   ) {
-    var callerName: String! = payload["x_displayname"] as? String
-    if callerName == nil {
-      callerName = (payload["x_from"] as? String)
-      if callerName == nil {
-        let aps: NSDictionary! = payload["aps"] as? NSDictionary
-        if aps != nil {
-          callerName = aps.value(forKey: "x_displayname") as? String
-          if callerName == nil {
-            callerName = aps.value(forKey: "x_from") as? String
-          }
-        }
-      }
+    let aps: NSDictionary! = payload["aps"] as? NSDictionary
+    var from: String! = payload["x_from"] as? String
+    if from == nil && aps != nil {
+      from = aps.value(forKey: "x_from") as? String
     }
-    if callerName == nil {
-      callerName = "Loading..."
+    var name: String! = payload["x_displayname"] as? String
+    if name == nil && aps != nil {
+      name = aps.value(forKey: "x_displayname") as? String
+    }
+    if name == nil && from != nil {
+      name = from
+    }
+    if from == nil {
+      from = "Brekeke Phone"
+    }
+    if name == nil {
+      name = "Loading..."
     }
     RNCallKeep.reportNewIncomingCall(uuid,
-                                     handle: callerName,
+                                     handle: from,
                                      handleType: "generic",
                                      hasVideo: false,
-                                     localizedCallerName: callerName,
+                                     localizedCallerName: name,
                                      supportsHolding: true,
                                      supportsDTMF: true,
                                      supportsGrouping: false,

@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>
+  <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>
       Brekeke Phone requires access to your local network in order to
       activate the Local Push Connectivity extension
     </string>
@@ -100,10 +101,10 @@
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false />
     <key>NSUserActivityTypes</key>
-	  <array>
-		  <string>INStartCallIntent</string>
-		  <string>INStartAudioCallIntent</string>
-		  <string>INStartVideoCallIntent</string>
-	  </array>
+    <array>
+      <string>INStartCallIntent</string>
+      <string>INStartAudioCallIntent</string>
+      <string>INStartVideoCallIntent</string>
+    </array>
   </dict>
 </plist>

@@ -145,7 +145,7 @@ const initApp = async () => {
   }
 
   setupCallKeepEvents()
-    
+
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {

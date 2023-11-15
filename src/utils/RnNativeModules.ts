@@ -8,6 +8,7 @@ export enum CallLogType {
   OUTGOING_TYPE = 2,
   MISSED_TYPE = 3,
 }
+
 type TBrekekeUtils = {
   // these methods only available on android
   getInitialNotifications(): Promise<string | null>
@@ -35,7 +36,8 @@ type TBrekekeUtils = {
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
-  insertCallLog(number: string, typeCallLog: CallLogType): void
+  insertCallLog(number: string, type: CallLogType): void
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -87,6 +89,7 @@ const Polyfill: TBrekekeUtils = {
   onPageCallManage: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
   insertCallLog: () => undefined,
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

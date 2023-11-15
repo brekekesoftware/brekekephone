@@ -105,13 +105,13 @@ const addToCallLog = async (call: {
   if (!partyNumber || !partyName) {
     return
   }
-  const callLogType =
+  const type =
     incoming && !answered
       ? CallLogType.MISSED_TYPE
       : incoming && answered
       ? CallLogType.INCOMING_TYPE
       : CallLogType.OUTGOING_TYPE
-  BrekekeUtils.insertCallLog(partyNumber ? partyNumber : partyName, callLogType)
+  BrekekeUtils.insertCallLog(partyNumber || partyName, type)
 }
 const presentNotification = (c: {
   id: string

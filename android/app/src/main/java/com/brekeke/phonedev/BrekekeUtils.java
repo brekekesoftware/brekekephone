@@ -163,9 +163,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @Override
   public void initialize() {
     super.initialize();
-    if (eventEmitter == null) {
-      eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
-    }
+    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
   }
 
   @Override
@@ -627,11 +625,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
 
   @ReactMethod
-  public void insertCallLog(String number, int typeCallLog) {
+  public void insertCallLog(String number, int type) {
     ContentValues values = new ContentValues();
     values.put(CallLog.Calls.NUMBER, number);
     values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.TYPE, typeCallLog);
+    values.put(CallLog.Calls.TYPE, type);
     values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
     ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
   }

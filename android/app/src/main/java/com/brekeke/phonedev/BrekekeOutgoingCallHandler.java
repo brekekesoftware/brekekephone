@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class MyOutgoingCallHandler extends BroadcastReceiver {
+public class BrekekeOutgoingCallHandler extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     // Extract phone number reformatted by previous receivers

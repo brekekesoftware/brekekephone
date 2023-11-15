@@ -1,6 +1,6 @@
-
 #### 2.13.2
 
+- ## Implement call history first simple version:
 - Fix ios apns token not resolve properly
 - Fix custom page params such as #pbx-token# should ignore case
 - Fix android should not show incoming call if the notification is disabled from OS app settings (issue 777)
