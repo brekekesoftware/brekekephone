@@ -96,3 +96,26 @@ export const permForCall = async () => {
   })
   return false
 }
+
+export const permForCallLog = async () => {
+  const r = await requestMultiple([
+    PERMISSIONS.ANDROID.WRITE_CALL_LOG,
+    PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS,
+  ])
+  const writeCallLog = r[PERMISSIONS.ANDROID.WRITE_CALL_LOG]
+  const processOutgoingCall = r[PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS]
+  if (writeCallLog === 'granted' && processOutgoingCall === 'granted') {
+    return true
+  }
+  if (writeCallLog !== 'blocked' && processOutgoingCall !== 'blocked') {
+    return false
+  }
+  RnAlert.prompt({
+    title: 'WRITE_CALL_LOG, PROCESS_OUTGOING_CALLS',
+    message: intl`Please provide the required permissions from settings`,
+    onConfirm: openSettings,
+    confirmText: intl`OK`,
+    dismissText: intl`Cancel`,
+  })
+  return false
+}

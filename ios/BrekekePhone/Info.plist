@@ -100,5 +100,11 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false />
+    <key>NSUserActivityTypes</key>
+    <array>
+      <string>INStartCallIntent</string>
+      <string>INStartAudioCallIntent</string>
+      <string>INStartVideoCallIntent</string>
+    </array>
   </dict>
 </plist>

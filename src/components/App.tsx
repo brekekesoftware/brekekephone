@@ -44,7 +44,11 @@ import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
-import { permForCall, permReadPhoneNumber } from '../utils/permissions'
+import {
+  permForCall,
+  permForCallLog,
+  permReadPhoneNumber,
+} from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -132,13 +136,15 @@ const initApp = async () => {
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     if (Platform.OS === 'android') {
-      permForCall()
+      await permForCall()
+      await permForCallLog()
     } else {
       getAudioVideoPermission()
     }
   }
 
   setupCallKeepEvents()
+
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {
