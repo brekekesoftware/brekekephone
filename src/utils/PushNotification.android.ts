@@ -14,11 +14,26 @@ import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 
-let fcmPnToken = ''
-const onToken = (t: string) => {
-  if (t) {
-    fcmPnToken = t
+let fcmTokenFn: Function | undefined = undefined
+const fcmToken = new Promise<string>(resolve => {
+  fcmTokenFn = resolve
+})
+const onFcmToken = async (t: string) => {
+  if (!fcmTokenFn) {
+    const t2 = await fcmToken
+    console.log(`PN token debug: onFcmToken already set old=${t2} new=${t}`)
+    return
   }
+  if (!t) {
+    console.error('PN token debug: onFcmToken empty token')
+    return
+  }
+  if (typeof t !== 'string') {
+    console.error('PN token debug: onFcmToken not string', t)
+    return
+  }
+  fcmTokenFn?.(t)
+  fcmTokenFn = undefined
 }
 
 const onNotification = async (
@@ -55,7 +70,7 @@ export const PushNotification = {
 
       const events = Notifications.events()
       events.registerRemoteNotificationsRegistered((e: Registered) => {
-        onToken(e.deviceToken)
+        onFcmToken(e.deviceToken)
       })
 
       events.registerRemoteNotificationsRegistrationFailed(
@@ -133,7 +148,7 @@ export const PushNotification = {
   },
 
   getToken: () => {
-    return Promise.resolve(fcmPnToken)
+    return fcmToken
   },
   resetBadgeNumber: () => {
     // TODO

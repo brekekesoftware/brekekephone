@@ -10,6 +10,7 @@ import brand from '../assets/brand.png'
 import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
 import { bundleIdentifier } from '../config'
+import { getWebRootIdProps, webRootId } from '../embed/polyfill'
 import { intl } from '../stores/intl'
 import { parse } from '../utils/deeplink-parse'
 // @ts-ignore
@@ -18,11 +19,12 @@ import { BrekekeGradient } from './BrekekeGradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
-const globalCss = `* {
+// only insert css that affect this root id
+const globalCss = `#${webRootId} * {
   outline: none !important;
   box-sizing: border-box;
 }
-a {
+#${webRootId} a {
   text-decoration: none;
 }`
 
@@ -133,7 +135,11 @@ export const App = () => {
     )
   }
   const Container = isBrowser ? View : BrekekeGradient
-  return <Container style={css.WebApp}>{child}</Container>
+  return (
+    <Container style={css.WebApp} {...getWebRootIdProps()}>
+      {child}
+    </Container>
+  )
 }
 
 // eslint-disable-next-line import/no-default-export

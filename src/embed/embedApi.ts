@@ -11,6 +11,7 @@ import {
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { arrToMap } from '../utils/arrToMap'
+import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 
@@ -27,6 +28,7 @@ export class EmbedApi extends EventEmitter {
    */
 
   promptBrowserPermission = webPromptPermission
+  acceptBrowserPermission = getAudioVideoPermission
 
   getCurrentAccount = () => getAuthStore().getCurrentAccount()
 
