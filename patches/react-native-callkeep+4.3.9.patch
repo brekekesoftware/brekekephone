@@ -536,7 +536,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..2e69728 100644
+index e67c3cd..52fcfc6 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
@@ -723,14 +723,3 @@ index e67c3cd..2e69728 100644
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][application:continueUserActivity]");
-@@ -982,8 +909,9 @@ + (BOOL)application:(UIApplication *)application
- 
-     if (contact != nil) {
-         handle = contact.personHandle.value;
--    }
-         
-+    }
-+//    NSLog(@"[RNCallKeep][application:continueUserActivity]::contact::%@",contact);
-     if (handle != nil && handle.length > 0 ){
-         NSDictionary *userInfo = @{
-             @"handle": handle,
