@@ -20,6 +20,7 @@ import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
+import { PageCustomPageView } from '../pages/PageCustomPageView'
 import {
   accountStore,
   getAccountUniqueId,
@@ -260,6 +261,8 @@ export const App = observer(() => {
       ? intl`${serviceConnectingOrFailure} connection failed`
       : intl`Connecting to ${serviceConnectingOrFailure}...`
 
+  const cp = getAuthStore().listCustomPage[0]
+
   return (
     <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
@@ -295,10 +298,10 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
+        {cp && <PageCustomPageView id={cp?.id} />}
+        <PhonebookAddItem />
         <RenderAllCalls />
         <RnPickerRoot />
-        <PhonebookAddItem />
-
         <RnAlertRoot />
         {isFailure && (
           <RnTouchableOpacity
