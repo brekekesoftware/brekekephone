@@ -101,7 +101,6 @@ public class MainActivity extends ReactActivity {
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
     switch (requestCode) {
       case RNCallKeepModule.REQUEST_READ_PHONE_STATE:
         RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -65,19 +65,20 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                    options: options as! [UIApplication.OpenURLOptionsKey: Any])
   }
 
-  // universal links
   func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
+    // universal links
     RCTLinkingManager.application(application,
                                   continue: userActivity,
                                   restorationHandler: restorationHandler)
     // react-native-callkeep
-    return RNCallKeep.application(application,
-                                  continue: userActivity,
-                                  restorationHandler: restorationHandler)
+    RNCallKeep.application(application,
+                           continue: userActivity,
+                           restorationHandler: restorationHandler)
+    return true
   }
 
   // react-native-voip-push-notification add PushKit delegate method
