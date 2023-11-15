@@ -33,6 +33,7 @@ const css = StyleSheet.create({
     zIndex: 100,
   },
 })
+
 @observer
 export class PageCustomPageView extends Component<{ id: string }> {
   state = {
@@ -95,7 +96,9 @@ export class PageCustomPageView extends Component<{ id: string }> {
       au.updateCustomPage({ ...cp, title: t })
     }
 
-    const onLoaded = () => {}
+    const onLoaded = () => {
+      //
+    }
 
     const onError = () => {
       if (cp && /#pbx-token#/i.test(cp.url)) {
@@ -143,7 +146,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
       >
         <Layout
           description={cp?.title}
-          menu={'settings'}
+          menu='settings'
           subMenu={id}
           title={intl`Custom Page`}
           isFullContent

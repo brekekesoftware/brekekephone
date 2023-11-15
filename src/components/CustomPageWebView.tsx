@@ -1,4 +1,3 @@
-import { forwardRef, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
@@ -28,42 +27,41 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
-interface Props {
+
+type Props = {
   url: string
-  onTitleChanged: (title: string) => void
-  onLoadEnd: () => void
-  onError: () => void
+  onTitleChanged(title: string): void
+  onLoadEnd(): void
+  onError(): void
 }
-export const CustomPageWebView = forwardRef(
-  ({ url, onTitleChanged, onLoadEnd, onError }: Props, ref) => {
-    const webviewRef = useRef(null)
 
-    const handleMessage = (message: WebViewMessageEvent) => {
-      const title = message?.nativeEvent?.data
-      if (!title) {
-        return
-      }
-      onTitleChanged(title)
+export const CustomPageWebView = ({
+  url,
+  onTitleChanged,
+  onLoadEnd,
+  onError,
+}: Props) => {
+  const handleMessage = (message: WebViewMessageEvent) => {
+    const title = message?.nativeEvent?.data
+    if (!title) {
+      return
     }
-
-    return (
-      <WebView
-        source={{
-          uri: url,
-        }}
-        ref={webviewRef}
-        injectedJavaScript='window.ReactNativeWebView.postMessage(document.title)'
-        onMessage={handleMessage}
-        style={[css.full]}
-        bounces={false}
-        startInLoadingState={true}
-        onLoadEnd={onLoadEnd}
-        originWhitelist={['*']}
-        javaScriptEnabled={true}
-        scalesPageToFit={false}
-        onHttpError={onError}
-        onError={onError}
-      />
-    )
-  },
-)
+    onTitleChanged(title)
+  }
+  return (
+    <WebView
+      source={{ uri: url }}
+      injectedJavaScript='window.ReactNativeWebView.postMessage(document.title)'
+      onMessage={handleMessage}
+      style={css.full}
+      bounces={false}
+      startInLoadingState={true}
+      onLoadEnd={onLoadEnd}
+      originWhitelist={['*']}
+      javaScriptEnabled={true}
+      scalesPageToFit={false}
+      onHttpError={onError}
+      onError={onError}
+    />
+  )
+}

@@ -78,7 +78,7 @@ export const Navigation: FC<{
             <RnText
               small
               numberOfLines={1}
-              ellipsizeMode={'tail'}
+              ellipsizeMode='tail'
               style={active && css.Text__active}
             >
               {s.label}
