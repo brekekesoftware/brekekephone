@@ -75,7 +75,12 @@ export const Navigation: FC<{
             onPress={active ? undefined : s.navFn}
             style={[css.Btn, active && css.Btn__active]}
           >
-            <RnText small style={active && css.Text__active}>
+            <RnText
+              small
+              numberOfLines={1}
+              ellipsizeMode='tail'
+              style={active && css.Text__active}
+            >
               {s.label}
             </RnText>
             {s.key === 'chat' &&

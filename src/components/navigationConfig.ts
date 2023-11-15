@@ -3,6 +3,7 @@ import {
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
+import { PbxCustomPage } from '../brekekejs'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
@@ -27,8 +28,40 @@ export type SubMenu = {
   ucRequired?: boolean
   navFn(): void
 }
+const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
+  return customPages
+    .filter(
+      c =>
+        c.pos.includes('setting') &&
+        c.pos.includes(isLeft ? 'left' : 'right') &&
+        c.pos.split(',')?.[2],
+    )
+    .sort(
+      (a, b) =>
+        parseInt(a.pos.split(',')?.[2]) - parseInt(b.pos.split(',')?.[2]),
+    )
+    .map(i => {
+      return { key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }
+    })
+}
+const genMenus = (customPages: PbxCustomPage[]) => {
+  const settingSubMenusLeft = getSettingSubMenus(customPages, true)
+  const settingSubMenusRight = getSettingSubMenus(customPages, false)
+  const settingSubMenus = [
+    ...settingSubMenusLeft,
+    {
+      key: 'account',
+      label: intl`CURRENT ACCOUNT`,
+      navFnKey: 'goToPageSettingsCurrentAccount',
+    },
+    {
+      key: 'other',
+      label: intl`OTHER SETTINGS`,
+      navFnKey: 'goToPageSettingsOther',
+    },
+    ...settingSubMenusRight,
+  ]
 
-const genMenus = () => {
   const arr = [
     {
       key: 'contact',
@@ -84,18 +117,7 @@ const genMenus = () => {
     {
       key: 'settings',
       icon: mdiCogOutline,
-      subMenus: [
-        {
-          key: 'account',
-          label: intl`CURRENT ACCOUNT`,
-          navFnKey: 'goToPageSettingsCurrentAccount',
-        },
-        {
-          key: 'other',
-          label: intl`OTHER SETTINGS`,
-          navFnKey: 'goToPageSettingsOther',
-        },
-      ],
+      subMenus: settingSubMenus,
       defaultSubMenuKey: 'account',
     },
   ] as Menu[]
@@ -114,7 +136,7 @@ const genMenus = () => {
           return
         }
         // @ts-ignore
-        Nav()[s.navFnKey]()
+        Nav()[s.navFnKey]({ id: s.key })
         saveNavigation(i, s.key)
       }
     })
@@ -133,12 +155,12 @@ const genMenus = () => {
 }
 
 let lastLocale = intlStore.locale
-let lastMenus = genMenus()
+let lastMenus = genMenus([])
 export const menus = () => {
   if (lastLocale !== intlStore.locale) {
     lastLocale = intlStore.locale
-    lastMenus = genMenus()
   }
+  lastMenus = genMenus(getAuthStore().listCustomPage)
   return lastMenus
 }
 

@@ -41,7 +41,9 @@ export const Title: FC<{
         {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (
-        <RnText style={css.Description}>{description || '\u200a'}</RnText>
+        <RnText numberOfLines={1} style={css.Description}>
+          {description || '\u200a'}
+        </RnText>
       )}
     </Animated.View>
   )

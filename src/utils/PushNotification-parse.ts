@@ -284,6 +284,7 @@ export const parse = async (
     console.log(
       `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
     )
+    getAuthStore().saveActionOpenCustomPage = true
   }
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well

@@ -157,7 +157,7 @@ export type PbxPal = {
     reject: ErrorHandler,
   ): void
   getPhonebooks(
-    p: {},
+    p: undefined,
     resolve: (res: PbxBook[]) => void,
     reject: ErrorHandler,
   ): void
@@ -176,7 +176,11 @@ export type PbxPal = {
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
   ): void
-
+  getToken(
+    p: undefined,
+    resolve: (res: any) => void,
+    reject: ErrorHandler,
+  ): void
   pnmanage(p: PbxPnmanageParam, resolve: () => void, reject: ErrorHandler): void
   hold(p: PbxHoldParam, resolve: () => void, reject: ErrorHandler): void
   unhold: PbxPal['hold']
@@ -187,6 +191,14 @@ export type PbxPal = {
   cancelTransfer: PbxPal['hold']
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
+}
+
+export type PbxCustomPage = {
+  id: string
+  url: string
+  title: string
+  pos: string
+  incoming?: string
 }
 export type PbxGetProductInfoRes = {
   'sip.wss.port': string
@@ -202,7 +214,6 @@ export type PbxGetProductInfoRes = {
   'webphone.call.video': string
   'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
-  'webphone.hacky.speaker': string
   'webphone.lpc.keyhash': string
   'webphone.lpc.pn': string
   'webphone.lpc.port': string
