@@ -23,6 +23,7 @@ import { PageContactGroupCreate } from '../pages/PageContactGroupCreate'
 import { PageContactGroupEdit } from '../pages/PageContactGroupEdit'
 import { PageContactPhonebook } from '../pages/PageContactPhonebook'
 import { PageContactUsers } from '../pages/PageContactUsers'
+import { PageCustomPage } from '../pages/PageCustomPage'
 import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageSettingsCurrentAccount } from '../pages/PageSettingsCurrentAccount'
@@ -106,6 +107,12 @@ export class Nav2 {
   backToPageSettingsCurrentAccount = RnStacker.createBackTo<
     ComponentProps<typeof PageSettingsCurrentAccount>
   >({ PageSettingsCurrentAccount }, true)
+  goToPageCustomPage = RnStacker.createGoTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage }, true)
+  backToPageCustomPage = RnStacker.createBackTo<
+    ComponentProps<typeof PageCustomPage>
+  >({ PageCustomPage }, true)
 
   // account
   goToPageAccountCreate = RnStacker.createGoTo<
@@ -145,6 +152,9 @@ export class Nav2 {
     const oc = s.getOngoingCall()
     const uuid = oc?.callkeepUuid
     if (!props?.isOutgoingCall && uuid && !oc.transferring) {
+      // with case kill app not rendered yet and openJavaPnOnVisible not called
+      // we should update prevDisplayingCallId here together with onPageCallManage
+      s.prevDisplayingCallId = oc.id
       BrekekeUtils.onPageCallManage(uuid)
     }
     s.inPageCallManage = {

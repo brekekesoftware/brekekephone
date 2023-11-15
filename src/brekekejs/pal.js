@@ -41,7 +41,6 @@ Brekeke.pbx.getPalPrototype = function () {
     }
   }
   pal.methods = [
-    'deleteContact',
     'createExtension',
     'deleteExtension',
     'getExtensionProperties',
@@ -103,6 +102,15 @@ Brekeke.pbx.getPalPrototype = function () {
     'zohoGetStatus',
     'zohoSetUserInfo',
     'zohoGetUserInfo',
+    'copyTenant',
+    'deleteContact',
+    'getFlowNames',
+    'line',
+    'copyRouteTemplate',
+    'renameRouteTemplate',
+    'getToken',
+    'getVoicemails',
+    'getTalkerInfo',
   ]
   for (var i = 0; i < pal.methods.length; i++) {
     pal.regMethod(pal.methods[i])

@@ -9,101 +9,101 @@
       Brekeke Phone requires access to your local network in order to
       activate the Local Push Connectivity extension
     </string>
-	<key>CFBundleDisplayName</key>
-	<string>Brekeke Phone Dev</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>2.12.10</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>brekekeapp</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>mailto</string>
-	</array>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsArbitraryLoadsInWebContent</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>To capture a new photo to send</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>To capture a new video to send</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To select from photo library</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>To save photo to photo library</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>To get network SSID for LPC</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>To get network SSID for LPC</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>To get network SSID for LPC</string>
-	<key>UIAppFonts</key>
-	<array/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-		<string>fetch</string>
-		<string>remote-notification</string>
-		<string>voip</string>
-	</array>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UIRequiresFullScreen</key>
-	<true/>
-	<key>UIStatusBarHidden</key>
-	<false/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>INStartCallIntent</string>
-		<string>INStartAudioCallIntent</string>
-		<string>INStartVideoCallIntent</string>
-	</array>
-</dict>
+    <key>CFBundleDisplayName</key>
+    <string>Brekeke Phone Dev</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>2.13.2</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>brekekeapp</string>
+        </array>
+      </dict>
+    </array>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>mailto</string>
+    </array>
+    <key>LSRequiresIPhoneOS</key>
+    <true />
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true />
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <false />
+      <key>NSAllowsArbitraryLoadsInWebContent</key>
+      <false />
+      <key>NSAllowsLocalNetworking</key>
+      <true />
+    </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>To capture a new photo to send</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>To capture a new video to send</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>To select from photo library</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>To save photo to photo library</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>To get network SSID for LPC</string>
+    <key>UIAppFonts</key>
+    <array />
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>audio</string>
+      <string>fetch</string>
+      <string>remote-notification</string>
+      <string>voip</string>
+    </array>
+    <key>UIFileSharingEnabled</key>
+    <true />
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+      <string>armv7</string>
+    </array>
+    <key>UIRequiresFullScreen</key>
+    <true />
+    <key>UIStatusBarHidden</key>
+    <false />
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    </array>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false />
+    <key>NSUserActivityTypes</key>
+	  <array>
+		  <string>INStartCallIntent</string>
+		  <string>INStartAudioCallIntent</string>
+		  <string>INStartVideoCallIntent</string>
+	  </array>
+  </dict>
 </plist>

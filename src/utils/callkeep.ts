@@ -190,6 +190,7 @@ export const setupCallKeepEvents = async () => {
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
     cs.updateBackgroundCalls()
+
   }
   const didReceiveStartCallAction = async (
     e: EventsPayload['didReceiveStartCallAction'],
@@ -211,7 +212,7 @@ export const setupCallKeepEvents = async () => {
       await waitSip()
       getCallStore().startCall(e.handle)
     }
-  }
+ }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
   const didLoadWithEventsHandlers: { [k: string]: Function } = {
@@ -236,6 +237,7 @@ export const setupCallKeepEvents = async () => {
   add('didActivateAudioSession', didActivateAudioSession)
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
+
   if (Platform.OS !== 'android') {
     return
   }

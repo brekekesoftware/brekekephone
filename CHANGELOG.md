@@ -1,3 +1,33 @@
+
+#### 2.13.2
+
+- Fix ios apns token not resolve properly
+- Fix custom page params such as #pbx-token# should ignore case
+- Fix android should not show incoming call if the notification is disabled from OS app settings (issue 777)
+- Fix android should show the correct call in multiple calls case: app killed then press back button to make an outgoing call (issue 775)
+- Fix android should not show home screen after ending incoming call in multiple calls case: press home then receive incoming call then press back button to make an outgoing call (issue 774)
+- Fix hold button should not allow to toggle multiple times immediately (issue 770)
+- Fix uc should load buddy list case receiving call while connecting (issue 769)
+- Fix park number should only allow characters: 0-9 a-z A-Z - \_ (issue 767)
+- Embed:
+  - Fix global web phone css injection
+
+#### 2.13.1
+
+- Embed:
+  - Add acceptBrowserPermission to show when manually prompt for permission
+
+#### 2.13.0
+
+- Implement custom page using webview first simple version:
+  - Only support 1 page
+  - The settings must be case sensitive all lowercase to work
+  - On web browser, can not get the page title from iframe if not on the same origin
+  - On web browser, can not get http reponse code to handle specific code such as 401 to reload
+- Parse password when open app from url, affect all build: web browser, ios, android
+- Embed:
+  - Update pal.js to support `line` method
+
 #### 2.12.10
 
 - Fix android it should navigate correctly in killed state after end call (issue 772)

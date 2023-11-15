@@ -1,9 +1,11 @@
-import { debounce } from 'lodash'
+import { debounce, random } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
+import validator from 'validator'
 
 import { sip } from '../api/sip'
 import {
+  PbxCustomPage,
   PbxGetProductInfoRes,
   UcBuddy,
   UcBuddyGroup,
@@ -28,7 +30,7 @@ import { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
-import { intlDebug } from './intl'
+import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
@@ -127,7 +129,73 @@ export class AuthStore {
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
-
+  @observable listCustomPage: PbxCustomPage[] = []
+  saveActionOpenCustomPage = false
+  customPageLoadings: { [k: string]: boolean } = {}
+  reLoadCustomPageById = (id: string) => {
+    if (!!this.customPageLoadings[id]) {
+      return
+    }
+    this.customPageLoadings[id] = true
+    const cp = this.getCustomPageById(id)
+    if (!cp) {
+      return
+    }
+    const r = random(1, 1000, false).toString()
+    const url = cp.url.replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
+    this.updateCustomPage({ ...cp, url })
+  }
+  getCustomPageById = (id: string) => {
+    return this.listCustomPage.find(i => i.id == id)
+  }
+  updateCustomPage = (cp: PbxCustomPage) => {
+    this.listCustomPage = [
+      ...this.listCustomPage.map(i => {
+        if (i.id === cp.id) {
+          return { ...cp }
+        }
+        return i
+      }),
+    ]
+  }
+  addParamForURL = (url: string) => {
+    // for refresh page by change from-number value
+    if (!/'#from-number#'/i.test(url)) {
+      return url + '&from-number=#from-number#'
+    }
+    return url
+  }
+  parseListCustomPage = () => {
+    if (!this.pbxConfig) {
+      return
+    }
+    const results: PbxCustomPage[] = []
+    for (const key of Object.keys(this.pbxConfig)) {
+      if (!key.startsWith('webphone.custompage')) {
+        continue
+      }
+      const parts = key.split('.')
+      const id = `${parts[0]}.${parts[1]}`
+      if (!results.some(item => item.id === id)) {
+        if (!validator.isURL(this.pbxConfig[`${id}.url`])) {
+          // ignore if not url
+          continue
+        }
+        results.push({
+          id,
+          url: this.addParamForURL(this.pbxConfig[`${id}.url`]),
+          title: this.pbxConfig[`${id}.title`]
+            ? this.pbxConfig[`${id}.title`]
+            : intl`Pbx user setting`,
+          pos: this.pbxConfig[`${id}.pos`]
+            ? this.pbxConfig[`${id}.pos`]
+            : 'setting,right,1',
+          incoming: this.pbxConfig[`${id}.incoming`],
+        })
+      }
+    }
+    this.listCustomPage = results
+  }
   isBigMode() {
     return this.pbxConfig?.['webphone.allusers'] === 'false'
   }
@@ -189,6 +257,8 @@ export class AuthStore {
     this.resetFailureStateIncludeUcLoginFromAnotherPlace()
     this.pbxConfig = undefined
     this.ucConfig = undefined
+    this.listCustomPage = []
+    this.customPageLoadings = {}
     userStore.clearStore()
     contactStore.clearStore()
     chatStore.clearStore()
@@ -272,7 +342,7 @@ export class AuthStore {
       return false
     }
     //
-    const { _wn, host, phone_idx, port, tenant, user } = urlParams
+    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
     if (!tenant || !user) {
       return false
     }
@@ -295,6 +365,9 @@ export class AuthStore {
       if (!a.pbxPort) {
         a.pbxPort = port
       }
+      if (!a.pbxPassword) {
+        a.pbxPassword = password
+      }
       a.pbxPhoneIndex = `${phoneIdx}`
       const d = await accountStore.findDataAsync(a)
       if (_wn) {
@@ -310,21 +383,22 @@ export class AuthStore {
       return true
     }
     //
-    const newP = {
+    const newA = {
       ...accountStore.genEmptyAccount(),
       pbxTenant: tenant,
       pbxUsername: user,
+      pbxPassword: password,
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = await accountStore.findDataAsync(newP)
+    const d = await accountStore.findDataAsync(newA)
     //
-    accountStore.upsertAccount(newP)
-    if (d.accessToken) {
-      this.signIn(newP)
+    accountStore.upsertAccount(newA)
+    if (newA.pbxPassword || d.accessToken) {
+      this.signIn(newA)
     } else {
-      Nav().goToPageAccountUpdate({ id: newP.id })
+      Nav().goToPageAccountUpdate({ id: newA.id })
     }
     return true
   }

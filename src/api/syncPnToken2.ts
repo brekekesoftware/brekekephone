@@ -3,7 +3,6 @@ import { getCurrentWifiSSID } from 'react-native-wifi-reborn'
 
 import { Account, accountStore } from '../stores/accountStore'
 import { compareSemVer } from '../stores/debugStore'
-// @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'

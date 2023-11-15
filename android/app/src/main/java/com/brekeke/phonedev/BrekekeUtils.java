@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -19,6 +20,8 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.CallLog;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -392,7 +395,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void tryExitClearTask() {
-    if (!activities.isEmpty()) {
+    if (!activities.isEmpty() || jsCallsSize > activitiesSize) {
       return;
     }
     if (!firstShowCallAppActive) {
@@ -610,6 +613,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
       mp = null;
     }
+  }
+
+  public static boolean checkNotificationPermission(Context ctx) {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+      return ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+          == PackageManager.PERMISSION_GRANTED;
+    }
+    return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
   }
 
   // ==========================================================================

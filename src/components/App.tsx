@@ -18,7 +18,9 @@ import SplashScreen from 'react-native-splash-screen'
 
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
+import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
+import { PageCustomPageView } from '../pages/PageCustomPageView'
 import {
   accountStore,
   getAccountUniqueId,
@@ -143,7 +145,7 @@ const initApp = async () => {
   }
 
   setupCallKeepEvents()
-
+    
   await accountStore.loadAccountsFromLocalStorage()
 
   const onAuthUpdate = debounce(() => {
@@ -266,8 +268,10 @@ export const App = observer(() => {
       ? intl`${serviceConnectingOrFailure} connection failed`
       : intl`Connecting to ${serviceConnectingOrFailure}...`
 
+  const cp = getAuthStore().listCustomPage[0]
+
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]}>
+    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
@@ -301,10 +305,10 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
+        {cp && <PageCustomPageView id={cp?.id} />}
+        <PhonebookAddItem />
         <RenderAllCalls />
         <RnPickerRoot />
-        <PhonebookAddItem />
-
         <RnAlertRoot />
         {isFailure && (
           <RnTouchableOpacity
