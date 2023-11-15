@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
+import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
@@ -43,25 +44,23 @@ export const ButtonIcon: FC<{
   styleContainer?: ViewProps['style']
   msLoading?: number
 }> = p => {
-  const size = p.size || 15
   const [isLoading, setLoading] = useState(false)
-  const onPressBtn = () => {
+  const onBtnPress = () => {
     if (p.msLoading) {
       setLoading(true)
-      setTimeout(() => {
+      BackgroundTimer.setTimeout(() => {
+        // TODO possible react warning memory leak set state after unmount
         setLoading(false)
       }, p.msLoading)
     }
-
-    if (p.onPress) {
-      p.onPress()
-    }
+    p.onPress?.()
   }
+  const size = p.size || 15
   return (
     <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
         disabled={isLoading || p.disabled}
-        onPress={onPressBtn}
+        onPress={onBtnPress}
         style={[
           css.ButtonIcon_Btn,
           p.style,
@@ -79,7 +78,6 @@ export const ButtonIcon: FC<{
           </Svg>
         )}
       </RnTouchableOpacity>
-
       {p.name && (
         <RnText
           small
