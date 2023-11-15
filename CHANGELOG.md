@@ -1,7 +1,9 @@
 #### 2.13.2
 
 - Implement call history first simple version:
-  - cc
+  - Allow to add call history into native OS history on both android ios
+  - Allow to make call from native OS history
+  - When the call is made from the native OS history, it will automatically login into the last signed account and perform sip make call in that account
 - Fix ios apns token not resolve properly
 - Fix custom page params such as #pbx-token# should ignore case
 - Fix android should not show incoming call if the notification is disabled from OS app settings (issue 777)

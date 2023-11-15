@@ -219,12 +219,20 @@ export class AuthStore {
     }
     return true
   }
-  autoSignInEmbed = async () => {
+  autoSignInLast = async () => {
     const d = await getLastSignedInId()
-    this.signIn(
-      accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id) ||
-        accountStore.accounts[0],
-    )
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (!a) {
+      return false
+    }
+    await this.signIn(a, true)
+    return true
+  }
+  autoSignInEmbed = async () => {
+    if (await this.autoSignInLast()) {
+      return
+    }
+    this.signIn(accountStore.accounts[0])
   }
 
   signOut = () => {

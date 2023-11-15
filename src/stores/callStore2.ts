@@ -339,7 +339,7 @@ export class CallStore {
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
-        c.partyNumber,
+        c.getDisplayName(),
         'generic',
       )
     }

@@ -96,6 +96,7 @@ export const permForCall = async () => {
   })
   return false
 }
+
 export const permForCallLog = async () => {
   const r = await requestMultiple([
     PERMISSIONS.ANDROID.WRITE_CALL_LOG,
@@ -110,7 +111,7 @@ export const permForCallLog = async () => {
     return false
   }
   RnAlert.prompt({
-    title: 'WRITE_CALL_LOG, WRITE_CONTACTS, PROCESS_OUTGOING_CALLS',
+    title: 'WRITE_CALL_LOG, PROCESS_OUTGOING_CALLS',
     message: intl`Please provide the required permissions from settings`,
     onConfirm: openSettings,
     confirmText: intl`OK`,

@@ -195,22 +195,16 @@ export const setupCallKeepEvents = async () => {
     e: EventsPayload['didReceiveStartCallAction'],
   ) => {
     // only in ios
-    // From call history of OS
-    if (!e?.callUUID) {
-      const au = getAuthStore()
-      if (!au.signedInId) {
-        const d = await getLastSignedInId(true)
-        const a = accountStore.accounts.find(
-          _ => getAccountUniqueId(_) === d.id,
-        )
-        if (!a) {
-          return
-        }
-        await au.signIn(a, true)
-      }
-      await waitSip()
-      getCallStore().startCall(e.handle)
+    console.log('CallKeep debug: didReceiveStartCallAction', e)
+    if (e?.callUUID) {
+      // our RNCallKeep.startCall
+      return
     }
+    if (!(await getAuthStore().autoSignInLast())) {
+      return
+    }
+    await waitSip()
+    getCallStore().startCall(e.handle)
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
@@ -308,14 +302,8 @@ export const setupCallKeepEvents = async () => {
     cs.onSelectBackgroundCall(c)
   })
   eventEmitter.addListener('makeCall', async (phoneNumber: string) => {
-    const au = getAuthStore()
-    if (!au.signedInId) {
-      const d = await getLastSignedInId(true)
-      const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
-      if (!a) {
-        return
-      }
-      await au.signIn(a, true)
+    if (!(await getAuthStore().autoSignInLast())) {
+      return
     }
     await waitSip()
     getCallStore().startCall(phoneNumber)
