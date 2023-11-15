@@ -145,6 +145,9 @@ export class Nav2 {
     const oc = s.getOngoingCall()
     const uuid = oc?.callkeepUuid
     if (!props?.isOutgoingCall && uuid && !oc.transferring) {
+      // with case kill app not rendered yet and openJavaPnOnVisible not called
+      // we should update prevDisplayingCallId here together with onPageCallManage
+      s.prevDisplayingCallId = oc.id
       BrekekeUtils.onPageCallManage(uuid)
     }
     s.inPageCallManage = {
