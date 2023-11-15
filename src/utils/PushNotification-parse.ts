@@ -74,7 +74,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       return map
     }, {})
   if (n.image) {
-    getCallStore().updateCallAvatar(n.image, n.image_size)
+    getCallStore().updateCallAvatar(n)
   }
   return n
 }

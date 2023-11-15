@@ -61,11 +61,14 @@ export class Call {
     videoOptions?: object,
     exInfo?: object,
   ) => {
+    this.holding = false
+    this.answered = true
+    this.store.setCurrentCallId(this.id)
+    this.answerCallKeep()
     const ignoreNav = options?.ignoreNav
     if (options) {
       delete options.ignoreNav
     }
-    this.answered = true
     sip.phone?.answer(
       this.id,
       options,
@@ -76,7 +79,6 @@ export class Call {
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
-    this.answerCallKeep()
   }
   answerCallKeep = async () => {
     this.store.setCurrentCallId(this.id)
