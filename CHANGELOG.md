@@ -1,5 +1,19 @@
+#### 2.13.2
+
+- Fix ios apns token not resolve properly
+- Fix uc should load buddy list case receiving call while connecting (issue 769)
+- Fix hold button should not allow to toggle multiple times immediately (issue 770)
+- Embed:
+  - Fix global web phone css injection
+
+#### 2.13.1
+
+- Embed:
+  - Add acceptBrowserPermission to show when manually prompt for permission
+
 #### 2.13.0
 
+- Parse password when open app from url, affect all build: web browser, ios, android
 - Embed:
   - Update pal.js to support `line` method
 

@@ -36,12 +36,16 @@ export const parse = (location: string | Url<any> | null) => {
   if (!params.port) {
     params.port = '' + location.port
   }
+  if (!params.password) {
+    params.password = ''
+  }
   //
   return params as any as UrlParams
 }
 
 export interface UrlParams {
   user: string
+  password: string
   tenant: string
   host: string
   port: string

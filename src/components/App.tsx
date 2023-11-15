@@ -18,6 +18,7 @@ import SplashScreen from 'react-native-splash-screen'
 
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
+import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import {
   accountStore,
@@ -43,7 +44,6 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeep } from '../utils/callkeep'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import { permForCall, permReadPhoneNumber } from '../utils/permissions'
-// @ts-ignore
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -261,7 +261,7 @@ export const App = observer(() => {
       : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]}>
+    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
