@@ -70,6 +70,7 @@
 		9CF382FE28ED908E008FC490 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FB28ED908E008FC490 /* SettingsManager.swift */; };
 		9CF382FF28ED908E008FC490 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FB28ED908E008FC490 /* SettingsManager.swift */; };
 		9CF3830128ED909C008FC490 /* BrekekeLPCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */; };
+		CB2145672AF4EF5D004D2EAA /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2145662AF4EF5D004D2EAA /* Intents.framework */; };
 		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
 		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CBAD324D29F374A20057D82C /* ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBAD324C29F374A20057D82C /* ding.mp3 */; };
@@ -150,6 +151,7 @@
 		9CF382FA28ED908E008FC490 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		9CF382FB28ED908E008FC490 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeLPCManager.swift; path = BrekekePhone/BrekekeLPCManager.swift; sourceTree = "<group>"; };
+		CB2145662AF4EF5D004D2EAA /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -172,6 +174,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB2145672AF4EF5D004D2EAA /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +206,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CB2145662AF4EF5D004D2EAA /* Intents.framework */,
 				9C92A07628E201AA00AF2311 /* Network.framework */,
 				9C3747BA28E1935F00327869 /* NetworkExtension.framework */,
 				9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */,

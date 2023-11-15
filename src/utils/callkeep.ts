@@ -2,7 +2,12 @@ import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
-import { getAuthStore } from '../stores/authStore'
+import {
+  accountStore,
+  getAccountUniqueId,
+  getLastSignedInId,
+} from '../stores/accountStore'
+import { getAuthStore, waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -186,6 +191,21 @@ export const setupCallKeepEvents = async () => {
     BrekekeUtils.webrtcSetAudioEnabled(false)
     cs.updateBackgroundCalls()
   }
+  const didReceiveStartCallAction = async (
+    e: EventsPayload['didReceiveStartCallAction'],
+  ) => {
+    // only in ios
+    console.log('CallKeep debug: didReceiveStartCallAction', e)
+    if (e?.callUUID) {
+      // our RNCallKeep.startCall
+      return
+    }
+    if (!(await getAuthStore().autoSignInLast())) {
+      return
+    }
+    await waitSip()
+    getCallStore().startCall(e.handle)
+  }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
   const didLoadWithEventsHandlers: { [k: string]: Function } = {
@@ -197,6 +217,7 @@ export const setupCallKeepEvents = async () => {
     RNCallKeepDidPerformDTMFAction: didPerformDTMFAction,
     RNCallKeepDidActivateAudioSession: didActivateAudioSession,
     RNCallKeepDidDeactivateAudioSession: didDeactivateAudioSession,
+    RNCallKeepDidReceiveStartCallAction: didReceiveStartCallAction,
   }
   const add = RNCallKeep.addEventListener
   add('didLoadWithEvents', didLoadWithEvents)
@@ -208,6 +229,7 @@ export const setupCallKeepEvents = async () => {
   add('didPerformDTMFAction', didPerformDTMFAction)
   add('didActivateAudioSession', didActivateAudioSession)
   add('didDeactivateAudioSession', didDeactivateAudioSession)
+  add('didReceiveStartCallAction', didReceiveStartCallAction)
 
   if (Platform.OS !== 'android') {
     return
@@ -279,7 +301,13 @@ export const setupCallKeepEvents = async () => {
     }
     cs.onSelectBackgroundCall(c)
   })
-
+  eventEmitter.addListener('makeCall', async (phoneNumber: string) => {
+    if (!(await getAuthStore().autoSignInLast())) {
+      return
+    }
+    await waitSip()
+    getCallStore().startCall(phoneNumber)
+  })
   // other utils
   eventEmitter.addListener('onBackPressed', onBackPressed)
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {

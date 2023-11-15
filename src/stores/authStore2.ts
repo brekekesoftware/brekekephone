@@ -22,6 +22,7 @@ import {
   getLastSignedInId,
   saveLastSignedInId,
 } from './accountStore'
+import { CallHistoryInfo } from './addCallHistory'
 import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { setAuthStore } from './authStore'
@@ -218,12 +219,20 @@ export class AuthStore {
     }
     return true
   }
-  autoSignInEmbed = async () => {
+  autoSignInLast = async () => {
     const d = await getLastSignedInId()
-    this.signIn(
-      accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id) ||
-        accountStore.accounts[0],
-    )
+    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (!a) {
+      return false
+    }
+    await this.signIn(a, true)
+    return true
+  }
+  autoSignInEmbed = async () => {
+    if (await this.autoSignInLast()) {
+      return
+    }
+    this.signIn(accountStore.accounts[0])
   }
 
   signOut = () => {
@@ -289,15 +298,7 @@ export class AuthStore {
     authUC.authWithCheck()
   }
 
-  pushRecentCall = async (call: {
-    id: string
-    incoming: boolean
-    answered: boolean
-    partyName: string
-    partyNumber: string
-    duration: number
-    created: string
-  }) => {
+  pushRecentCall = async (call: CallHistoryInfo) => {
     const d = await this.getCurrentDataAsync()
     d.recentCalls = [call, ...d.recentCalls]
     if (d.recentCalls.length > 20) {

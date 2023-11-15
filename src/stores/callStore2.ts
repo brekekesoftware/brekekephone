@@ -336,7 +336,12 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
-      RNCallKeep.displayIncomingCall(uuid, 'Brekeke Phone', c.getDisplayName())
+      RNCallKeep.displayIncomingCall(
+        uuid,
+        c.partyNumber,
+        c.getDisplayName(),
+        'generic',
+      )
     }
     // get and check callkeep if pending incoming call
     if (Platform.OS === 'web' || !c.incoming || c.answered) {
@@ -473,7 +478,11 @@ export class CallStore {
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
-      RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
+      if (Platform.OS == 'android') {
+        RNCallKeep.startCall(uuid, 'Brekeke phone', number)
+      } else {
+        RNCallKeep.startCall(uuid, number, number, 'generic', false)
+      }
       this.setAutoEndCallKeepTimer(uuid)
     }
     // check for each 0.5s: auto update currentCallId
