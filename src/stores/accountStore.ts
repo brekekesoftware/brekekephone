@@ -119,6 +119,7 @@ class AccountStore {
       // set tenant to '-' if empty
       accounts.forEach(a => {
         a.pbxTenant = a.pbxTenant || '-'
+        trimAccount(a)
       })
       runInAction(() => {
         this.accounts = accounts.filter(a => a.id && a.pbxUsername)
@@ -164,6 +165,7 @@ class AccountStore {
     // set tenant to '-' if empty
     this.accounts.forEach(a => {
       a.pbxTenant = a.pbxTenant || '-'
+      trimAccount(a)
     })
     return this._saveAccountsToLocalStorageDebounced()
   }
@@ -380,3 +382,13 @@ export const saveLastSignedInId = async (id: string | false) => {
   })
   await RnAsyncStorage.setItem('lastSignedInId', j)
 }
+
+const trimAccount = (a: Account) => {
+  a.pbxHostname = trim(a.pbxHostname)
+  a.pbxPort = trim(a.pbxPort)
+  a.pbxTenant = trim(a.pbxTenant)
+  a.pbxUsername = trim(a.pbxUsername)
+  a.pbxPassword = trim(a.pbxPassword)
+  a.pbxPhoneIndex = trim(a.pbxPhoneIndex)
+}
+const trim = (v?: string) => v?.trim?.() || ''
