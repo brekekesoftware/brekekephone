@@ -2,6 +2,7 @@
 
 - Fix ios apns token not resolve properly
 - Fix uc should load buddy list case receiving call while connecting (issue 769)
+- Fix hold button should not allow to toggle multiple times immediately (issue 770)
 - Embed:
   - Fix global web phone css injection
 

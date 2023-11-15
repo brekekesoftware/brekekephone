@@ -657,6 +657,7 @@ class PageCallManage extends Component<{
               onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
+              msLoading={1000}
               textcolor='white'
             />
           )}
