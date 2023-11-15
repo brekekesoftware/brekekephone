@@ -1,6 +1,7 @@
 #### 2.13.2
 
 - Fix ios apns token not resolve properly
+- Fix uc should load buddy list case receiving call while connecting (issue 769)
 - Embed:
   - Fix global web phone css injection
 

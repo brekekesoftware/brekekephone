@@ -85,6 +85,9 @@ class UserStore {
   @action loadUcBuddyList = async (isAllUser: boolean = false) => {
     await waitUc()
     const s = getAuthStore()
+    if (s.ucState !== 'success') {
+      return
+    }
     this.resetCache()
     this.type = 'UcBuddy'
     const userList = uc.client.getBuddylist()
@@ -105,7 +108,6 @@ class UserStore {
             }) as UcBuddy,
         )
     }
-
     if (s.isBigMode()) {
       this.isSelectedAddAllUser = false
     } else {
@@ -198,7 +200,6 @@ class UserStore {
     const displayUsers: GroupUserSectionListData[] = []
     let totalContact = 0
     let totalOnlineContact = 0
-
     this.dataDisplayGroupAllUser.forEach(s => {
       // list all user
       const dataAllUsers =
@@ -211,7 +212,6 @@ class UserStore {
       const dataAllUsersFiltered = dataAllUsers.filter(
         u => u.user_id.includes(searchTxt) || u.name.includes(searchTxt),
       )
-
       // list online user
       const dataOnlineUser = s.data
         .filter(u => this.userOnline[u.user_id])
