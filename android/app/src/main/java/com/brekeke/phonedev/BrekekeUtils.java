@@ -104,7 +104,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     super(c);
     ctx = c;
     initStaticServices(c);
-    this.debugAudioListener();
+    debugAudioListener();
   }
 
   private void debugAudioListener() {
