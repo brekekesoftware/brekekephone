@@ -123,6 +123,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     // completion();
   }
 
+  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
   func application(
     _: UIApplication,
     didRegister notificationSettings: UIUserNotificationSettings
@@ -130,22 +131,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNCPushNotificationIOS.didRegister(notificationSettings)
   }
 
-  private func application(
-    application _: UIApplication!,
-    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData!
-  ) {
+  func application(_: UIApplication,
+                   didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     RNCPushNotificationIOS
       .didRegisterForRemoteNotifications(withDeviceToken: deviceToken as Data?)
   }
 
-  private func application(
-    application _: UIApplication!,
-    didFailToRegisterForRemoteNotificationsWithError error: NSError!
-  ) {
+  func application(_: UIApplication,
+                   didFailToRegisterForRemoteNotificationsWithError error: Error) {
     RNCPushNotificationIOS
       .didFailToRegisterForRemoteNotificationsWithError(error)
   }
 
+  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623117-application?language=objc
   private func application(
     application _: UIApplication!,
     didReceiveRemoteNotification userInfo: NSDictionary!,
@@ -161,6 +159,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler(.newData)
   }
 
+  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
   private func application(
     application _: UIApplication!,
     didReceiveLocalNotification notification: UILocalNotification!
@@ -168,7 +167,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNCPushNotificationIOS.didReceive(notification)
   }
 
-  private func userNotificationCenter(
+  internal func userNotificationCenter(
     center _: UNUserNotificationCenter!,
     didReceiveNotificationResponse response: UNNotificationResponse!,
     withCompletionHandler completionHandler: () -> Void
@@ -214,14 +213,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) {
     let aps: NSDictionary! = payload["aps"] as? NSDictionary
     var from: String! = payload["x_from"] as? String
-    if from == nil && aps != nil {
+    if from == nil, aps != nil {
       from = aps.value(forKey: "x_from") as? String
     }
     var name: String! = payload["x_displayname"] as? String
-    if name == nil && aps != nil {
+    if name == nil, aps != nil {
       name = aps.value(forKey: "x_displayname") as? String
     }
-    if name == nil && from != nil {
+    if name == nil, from != nil {
       name = from
     }
     if from == nil {
