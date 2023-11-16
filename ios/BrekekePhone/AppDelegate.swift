@@ -2,7 +2,6 @@ import Combine
 import Foundation
 import SwiftUI
 import UIKit
-import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
@@ -34,8 +33,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = rootViewController
     window?.makeKeyAndVisible()
-    let center: UNUserNotificationCenter! = UNUserNotificationCenter.current()
-    center.delegate = self
+//    let center: UNUserNotificationCenter! = UNUserNotificationCenter.current()
+    UNUserNotificationCenter.current().delegate = self
     RNSplashScreen.show()
     return true
   }
@@ -144,64 +143,71 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623117-application?language=objc
-  private func application(
-    application _: UIApplication!,
-    didReceiveRemoteNotification userInfo: NSDictionary!,
-    fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void
+  func application(
+    _: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler _: @escaping (
+      UIBackgroundFetchResult
+    )
+      -> Void
   ) {
     RNCPushNotificationIOS.didReceiveRemoteNotification(
-      userInfo as! [AnyHashable: Any],
+      userInfo as? [AnyHashable: Any],
       fetchCompletionHandler: { (_: UIBackgroundFetchResult) in
         // empty handler to fix error:
         // "There is no completion handler with notification id"
       }
     )
-    completionHandler(.newData)
+//
   }
 
   // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
   private func application(
     application _: UIApplication!,
-    didReceiveLocalNotification notification: UILocalNotification!
+    didReceiveLocalNotification _: UILocalNotification!
   ) {
-    RNCPushNotificationIOS.didReceive(notification)
+//    print("UIApplication::didReceiveLocalNotification")
+//    RNCPushNotificationIOS.didReceive(notification)
   }
 
   internal func userNotificationCenter(
     center _: UNUserNotificationCenter!,
-    didReceiveNotificationResponse response: UNNotificationResponse!,
+    didReceiveNotificationResponse _: UNNotificationResponse!,
     withCompletionHandler completionHandler: () -> Void
   ) {
-    RNCPushNotificationIOS.didReceive(response)
+//    print("UNUserNotificationCenter::didReceiveNotificationResponse")
+//    RNCPushNotificationIOS.didReceive(response)
     completionHandler()
   }
 
   // process the user's response to a delivered notification
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
-    didReceive response: UNNotificationResponse,
+    didReceive _: UNNotificationResponse,
     withCompletionHandler completionHandler: () -> Void
   ) {
-    RNCPushNotificationIOS.didReceive(response)
+//    print("UNUserNotificationCenter::didReceive")
+//    addNotification(title: "UNUserNotificationCenter::didReceive")
+//    RNCPushNotificationIOS.didReceive(response)
     completionHandler()
   }
 
   // manage notifications while app is in the foreground
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
-    willPresent notification: UNNotification,
+    willPresent _: UNNotification,
     withCompletionHandler completionHandler: (UNNotificationPresentationOptions)
       -> Void
   ) {
-    let userInfo: NSDictionary! = notification.request.content
-      .userInfo as NSDictionary
-    RNCPushNotificationIOS.didReceiveRemoteNotification(
-      userInfo as? [AnyHashable: Any],
-      fetchCompletionHandler: { _ in UIBackgroundFetchResult.self
-        // empty handler to fix error:
-        // "There is no completion handler with notification id"
-      }
-    )
+//    let userInfo: NSDictionary! = notification.request.content
+//      .userInfo as NSDictionary
+//    RNCPushNotificationIOS.didReceiveRemoteNotification(
+//      userInfo as? [AnyHashable: Any],
+//      fetchCompletionHandler: { _ in UIBackgroundFetchResult.self
+//        // empty handler to fix error:
+//        // "There is no completion handler with notification id"
+//      }
+//    )
     // 'alert' was deprecated in iOS 14.0 instead by banner
     completionHandler([.sound, .badge, .banner])
   }
