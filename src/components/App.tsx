@@ -304,10 +304,10 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
-        {cp && <PageCustomPageView id={cp?.id} />}
-        <PhonebookAddItem />
         <RenderAllCalls />
+        {cp && <PageCustomPageView id={cp?.id} />}
         <RnPickerRoot />
+        <PhonebookAddItem />
         <RnAlertRoot />
         {isFailure && (
           <RnTouchableOpacity

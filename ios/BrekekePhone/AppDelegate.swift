@@ -2,7 +2,6 @@ import Combine
 import Foundation
 import SwiftUI
 import UIKit
-import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
@@ -34,8 +33,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = rootViewController
     window?.makeKeyAndVisible()
-    let center: UNUserNotificationCenter! = UNUserNotificationCenter.current()
-    center.delegate = self
+    UNUserNotificationCenter.current().delegate = self
     RNSplashScreen.show()
     return true
   }
@@ -54,7 +52,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // deep links
-  private func application(
+  func application(
     application: UIApplication!,
     openURL url: NSURL!,
     options: NSDictionary!
@@ -123,6 +121,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     // completion();
   }
 
+  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
   func application(
     _: UIApplication,
     didRegister notificationSettings: UIUserNotificationSettings
@@ -130,51 +129,33 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     RNCPushNotificationIOS.didRegister(notificationSettings)
   }
 
-  private func application(
-    application _: UIApplication!,
-    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData!
-  ) {
+  func application(_: UIApplication,
+                   didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     RNCPushNotificationIOS
       .didRegisterForRemoteNotifications(withDeviceToken: deviceToken as Data?)
   }
 
-  private func application(
-    application _: UIApplication!,
-    didFailToRegisterForRemoteNotificationsWithError error: NSError!
-  ) {
+  func application(_: UIApplication,
+                   didFailToRegisterForRemoteNotificationsWithError error: Error) {
     RNCPushNotificationIOS
       .didFailToRegisterForRemoteNotificationsWithError(error)
   }
 
-  private func application(
-    application _: UIApplication!,
-    didReceiveRemoteNotification userInfo: NSDictionary!,
-    fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void
+  func application(
+    _: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler _: @escaping (
+      UIBackgroundFetchResult
+    )
+      -> Void
   ) {
     RNCPushNotificationIOS.didReceiveRemoteNotification(
-      userInfo as! [AnyHashable: Any],
+      userInfo as? [AnyHashable: Any],
       fetchCompletionHandler: { (_: UIBackgroundFetchResult) in
         // empty handler to fix error:
         // "There is no completion handler with notification id"
       }
     )
-    completionHandler(.newData)
-  }
-
-  private func application(
-    application _: UIApplication!,
-    didReceiveLocalNotification notification: UILocalNotification!
-  ) {
-    RNCPushNotificationIOS.didReceive(notification)
-  }
-
-  private func userNotificationCenter(
-    center _: UNUserNotificationCenter!,
-    didReceiveNotificationResponse response: UNNotificationResponse!,
-    withCompletionHandler completionHandler: () -> Void
-  ) {
-    RNCPushNotificationIOS.didReceive(response)
-    completionHandler()
   }
 
   // process the user's response to a delivered notification
@@ -214,14 +195,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) {
     let aps: NSDictionary! = payload["aps"] as? NSDictionary
     var from: String! = payload["x_from"] as? String
-    if from == nil && aps != nil {
+    if from == nil, aps != nil {
       from = aps.value(forKey: "x_from") as? String
     }
     var name: String! = payload["x_displayname"] as? String
-    if name == nil && aps != nil {
+    if name == nil, aps != nil {
       name = aps.value(forKey: "x_displayname") as? String
     }
-    if name == nil && from != nil {
+    if name == nil, from != nil {
       name = from
     }
     if from == nil {
