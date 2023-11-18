@@ -31,6 +31,8 @@ public class MainActivity extends ReactActivity {
     if (phone == null || phone.isEmpty()) {
       return;
     }
+    // remove cache when open app again
+    getIntent().removeExtra("extra_phone");
     if (BrekekeUtils.eventEmitter != null) {
       BrekekeUtils.emit("makeCall", phone);
       return;

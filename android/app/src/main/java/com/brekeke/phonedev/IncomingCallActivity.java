@@ -270,7 +270,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (!answered) {
       BrekekeUtils.staticStartRingtone();
     } else {
-      BrekekeUtils.emit("switchCall", this.uuid);
+      BrekekeUtils.emit("switchCall", uuid);
     }
     paused = false;
   }
