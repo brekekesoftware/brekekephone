@@ -33,7 +33,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = rootViewController
     window?.makeKeyAndVisible()
-//    let center: UNUserNotificationCenter! = UNUserNotificationCenter.current()
     UNUserNotificationCenter.current().delegate = self
     RNSplashScreen.show()
     return true
@@ -142,7 +141,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       .didFailToRegisterForRemoteNotificationsWithError(error)
   }
 
-  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623117-application?language=objc
   func application(
     _: UIApplication,
     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
@@ -158,56 +156,34 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
         // "There is no completion handler with notification id"
       }
     )
-//
-  }
-
-  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
-  private func application(
-    application _: UIApplication!,
-    didReceiveLocalNotification _: UILocalNotification!
-  ) {
-//    print("UIApplication::didReceiveLocalNotification")
-//    RNCPushNotificationIOS.didReceive(notification)
-  }
-
-  internal func userNotificationCenter(
-    center _: UNUserNotificationCenter!,
-    didReceiveNotificationResponse _: UNNotificationResponse!,
-    withCompletionHandler completionHandler: () -> Void
-  ) {
-//    print("UNUserNotificationCenter::didReceiveNotificationResponse")
-//    RNCPushNotificationIOS.didReceive(response)
-    completionHandler()
   }
 
   // process the user's response to a delivered notification
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
-    didReceive _: UNNotificationResponse,
+    didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: () -> Void
   ) {
-//    print("UNUserNotificationCenter::didReceive")
-//    addNotification(title: "UNUserNotificationCenter::didReceive")
-//    RNCPushNotificationIOS.didReceive(response)
+    RNCPushNotificationIOS.didReceive(response)
     completionHandler()
   }
 
   // manage notifications while app is in the foreground
   internal func userNotificationCenter(
     _: UNUserNotificationCenter,
-    willPresent _: UNNotification,
+    willPresent notification: UNNotification,
     withCompletionHandler completionHandler: (UNNotificationPresentationOptions)
       -> Void
   ) {
-//    let userInfo: NSDictionary! = notification.request.content
-//      .userInfo as NSDictionary
-//    RNCPushNotificationIOS.didReceiveRemoteNotification(
-//      userInfo as? [AnyHashable: Any],
-//      fetchCompletionHandler: { _ in UIBackgroundFetchResult.self
-//        // empty handler to fix error:
-//        // "There is no completion handler with notification id"
-//      }
-//    )
+    let userInfo: NSDictionary! = notification.request.content
+      .userInfo as NSDictionary
+    RNCPushNotificationIOS.didReceiveRemoteNotification(
+      userInfo as? [AnyHashable: Any],
+      fetchCompletionHandler: { _ in UIBackgroundFetchResult.self
+        // empty handler to fix error:
+        // "There is no completion handler with notification id"
+      }
+    )
     // 'alert' was deprecated in iOS 14.0 instead by banner
     completionHandler([.sound, .badge, .banner])
   }
