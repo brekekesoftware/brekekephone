@@ -52,7 +52,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // deep links
-  private func application(
+  func application(
     application: UIApplication!,
     openURL url: NSURL!,
     options: NSDictionary!
