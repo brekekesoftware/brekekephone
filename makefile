@@ -130,6 +130,9 @@ dev01:
 chmod:
 	ssh bre "sudo chmod -R a+rwX /var/www";
 
+ssl:
+	bash dev/renewssl.sh;
+
 keyhash1:
 	ssh bre "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64";
 
