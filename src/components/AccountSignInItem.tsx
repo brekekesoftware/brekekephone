@@ -150,9 +150,11 @@ export const AccountSignInItem: FC<{
       {Platform.OS !== 'web' && (
         <Field
           label={intl`CALL HISTORY SYSTEM`}
-          onValueChange={(e: boolean) => {
+          onValueChange={async (e: boolean) => {
             accountStore.saveToCallLogSystem = e
-            //For ios
+            // Save local storage
+            await accountStore.saveSetupCallLog(e)
+            // For ios
             RNCallKeep.setSaveCallLog(e)
           }}
           type='Switch'

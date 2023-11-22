@@ -103,6 +103,7 @@ class AccountStore {
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
+    const isSave = await RnAsyncStorage.getItem('SAVE_CALL_LOG')
     let d: TAccountDataInStorage | undefined
     if (arr && !Array.isArray(arr)) {
       try {
@@ -124,6 +125,7 @@ class AccountStore {
         trimAccount(a)
       })
       runInAction(() => {
+        this.saveToCallLogSystem = !!isSave && /^true$/i.test(isSave)
         this.accounts = accounts.filter(a => a.id && a.pbxUsername)
         if (accounts.length !== this.accounts.length) {
           console.error(
@@ -163,6 +165,16 @@ class AccountStore {
     100,
     { maxWait: 1000 },
   )
+  saveSetupCallLog = async (isSave: boolean) => {
+    try {
+      await RnAsyncStorage.setItem('SAVE_CALL_LOG', isSave.toString())
+    } catch (err) {
+      RnAlert.error({
+        message: intlDebug`Failed to save config call history to local storage`,
+        err: err as Error,
+      })
+    }
+  }
   saveAccountsToLocalStorageDebounced = () => {
     // set tenant to '-' if empty
     this.accounts.forEach(a => {
