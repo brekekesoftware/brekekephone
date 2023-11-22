@@ -3,13 +3,17 @@ package com.brekeke.phonedev;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 public class BrekekeOutgoingCallHandler extends BroadcastReceiver {
   @Override
   public void onReceive(Context ctx, Intent intent) {
-    Bundle b = intent.getExtras();
-    String number = intent.getStringExtra("com.android.phone.ROAMING_ORIGIN_NUMBER");
+    String number = getResultData();
+    if (number == null) {
+      number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+      if (number == null) {
+        number = intent.getStringExtra("com.android.phone.ROAMING_ORIGIN_NUMBER");
+      }
+    }
     if (number == null) {
       return;
     }

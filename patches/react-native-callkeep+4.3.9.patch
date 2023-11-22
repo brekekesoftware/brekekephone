@@ -458,7 +458,7 @@ index f53c052..b8a0e24 100644
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
 diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
-index ee1a7fb..a6230f9 100644
+index ee1a7fb..a66156b 100644
 --- a/node_modules/react-native-callkeep/index.d.ts
 +++ b/node_modules/react-native-callkeep/index.d.ts
 @@ -24,7 +24,7 @@ declare module 'react-native-callkeep' {
@@ -486,24 +486,39 @@ index ee1a7fb..a6230f9 100644
      android: {
        alertTitle: string,
        alertDescription: string,
+@@ -179,7 +170,8 @@ declare module 'react-native-callkeep' {
+     static setReachable(): void
+ 
+     static setSettings(settings: IOptions): void;
+-
++    // set config save to call history system
++    static setSaveCallLog(isSave: boolean): void;
+     /**
+      * @description isCallActive method is available only on iOS.
+      */
 diff --git a/node_modules/react-native-callkeep/index.js b/node_modules/react-native-callkeep/index.js
-index 9f1312b..46b429b 100644
+index 9f1312b..fa097c8 100644
 --- a/node_modules/react-native-callkeep/index.js
 +++ b/node_modules/react-native-callkeep/index.js
-@@ -71,12 +71,8 @@ class RNCallKeep {
+@@ -71,11 +71,14 @@ class RNCallKeep {
      if (!isIOS) {
        return this._setupAndroid(options.android);
      }
 -
 -    return this._setupIOS(options.ios);
    };
- 
+   
 -  setSettings = (settings) => RNCallKeepModule.setSettings(settings[isIOS ? 'ios' : 'android']);
--
++  setSaveCallLog = (isSave) => {
++    if (!isIOS) {
++      return
++    }
++    RNCallKeepModule.setSaveCallLog(isSave)
++  }
+ 
    registerPhoneAccount = (options) => {
      if (isIOS) {
-       return;
-@@ -299,18 +295,6 @@ class RNCallKeep {
+@@ -299,18 +302,6 @@ class RNCallKeep {
        : Promise.reject('RNCallKeep.reportUpdatedCall was called from unsupported OS');
    };
  
@@ -536,7 +551,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..52fcfc6 100644
+index e67c3cd..530f477 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
@@ -581,7 +596,7 @@ index e67c3cd..52fcfc6 100644
      }
  }
  
-@@ -181,48 +176,6 @@ + (NSString *) getAudioOutput {
+@@ -181,47 +176,18 @@ + (NSString *) getAudioOutput {
      return [AVAudioSession sharedInstance].currentRoute.outputs.count > 0 ? [AVAudioSession sharedInstance].currentRoute.outputs[0].portType : nil;
  }
  
@@ -592,7 +607,8 @@ index e67c3cd..52fcfc6 100644
 -}
 -
 -RCT_EXPORT_METHOD(setup:(NSDictionary *)options)
--{
++RCT_EXPORT_METHOD(setSaveCallLog:(BOOL)isSave)
+ {
 -    if (isSetupNatively) {
 -#ifdef DEBUG
 -        NSLog(@"[RNCallKeep][setup] already setup");
@@ -601,9 +617,10 @@ index e67c3cd..52fcfc6 100644
 -        return;
 -    }
 -
--#ifdef DEBUG
+ #ifdef DEBUG
 -    NSLog(@"[RNCallKeep][setup] options = %@", options);
--#endif
++    NSLog(@"[RNCallKeep][setSaveCallLog] isSave = %d", isSave);
+ #endif
 -    _version = [[[NSProcessInfo alloc] init] operatingSystemVersion];
 -    self.callKeepCallController = [[CXCallController alloc] init];
 -
@@ -611,10 +628,14 @@ index e67c3cd..52fcfc6 100644
 -
 -    [RNCallKeep initCallKitProvider];
 -
--    self.callKeepProvider = sharedProvider;
++    CXProviderConfiguration *providerConfiguration = [RNCallKeep getProviderConfiguration];
++    providerConfiguration.includesCallsInRecents = isSave;
++    sharedProvider = [[CXProvider alloc] initWithConfiguration: providerConfiguration];
+     self.callKeepProvider = sharedProvider;
 -    [self.callKeepProvider setDelegate:self queue:nil];
--}
--
++    NSLog(@"[RNCallKeep][setSaveCallLog] configuration = %d", [sharedProvider.configuration includesCallsInRecents]);
+ }
+ 
 -RCT_EXPORT_METHOD(setSettings:(NSDictionary *)options)
 -{
 -#ifdef DEBUG
@@ -626,11 +647,10 @@ index e67c3cd..52fcfc6 100644
 -    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
 -    [[NSUserDefaults standardUserDefaults] synchronize];
 -}
--
+ 
  RCT_EXPORT_METHOD(setReachable)
  {
- #ifdef DEBUG
-@@ -277,21 +230,6 @@ + (void)setup:(NSDictionary *)options {
+@@ -277,21 +243,6 @@ + (void)setup:(NSDictionary *)options {
                            fromPushKit: NO
                                payload: nil
                  withCompletionHandler: nil];
@@ -652,7 +672,7 @@ index e67c3cd..52fcfc6 100644
  }
  
  RCT_EXPORT_METHOD(getInitialEvents:(RCTPromiseResolveBlock)resolve
-@@ -319,7 +257,13 @@ + (void)setup:(NSDictionary *)options {
+@@ -319,7 +270,13 @@ + (void)setup:(NSDictionary *)options {
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
@@ -666,7 +686,7 @@ index e67c3cd..52fcfc6 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -856,37 +800,20 @@ + (int)getHandleType:(NSString *)handleType
+@@ -856,37 +813,20 @@ + (int)getHandleType:(NSString *)handleType
      }
  }
  
@@ -710,11 +730,11 @@ index e67c3cd..52fcfc6 100644
 +    providerConfiguration.maximumCallsPerCallGroup = 99;
 +    providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"callkit.png"]);
 +    providerConfiguration.ringtoneSound = @"incallmanager_ringtone.mp3";
-+    providerConfiguration.includesCallsInRecents = YES;
++    providerConfiguration.includesCallsInRecents = NO;
      return providerConfiguration;
  }
  
-@@ -935,7 +862,7 @@ + (BOOL)application:(UIApplication *)application
+@@ -935,7 +875,7 @@ + (BOOL)application:(UIApplication *)application
  
  + (BOOL)application:(UIApplication *)application
  continueUserActivity:(NSUserActivity *)userActivity

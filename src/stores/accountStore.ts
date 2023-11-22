@@ -70,6 +70,8 @@ export type AccountData = {
 }
 
 class AccountStore {
+  @observable saveToCallLogSystem = false
+
   @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise

@@ -102,7 +102,7 @@ export type CallHistoryInfo = {
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
-  if (!(await permForCallLog())) {
+  if (!(await permForCallLog()) || !accountStore.saveToCallLogSystem) {
     return
   }
   const { incoming, answered, partyName, partyNumber } = c

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
+import RNCallKeep from 'react-native-callkeep'
 
 import {
   mdiAccountCircleOutline,
@@ -146,6 +147,18 @@ export const AccountSignInItem: FC<{
         type='Switch'
         value={a.ucEnabled}
       />
+      {Platform.OS !== 'web' && (
+        <Field
+          label={intl`CALL HISTORY SYSTEM`}
+          onValueChange={(e: boolean) => {
+            accountStore.saveToCallLogSystem = e
+            //For ios
+            RNCallKeep.setSaveCallLog(e)
+          }}
+          type='Switch'
+          value={accountStore.saveToCallLogSystem}
+        />
+      )}
       <View style={css.AccountSignInItem_Btns}>
         <FooterActions
           onBack={() => {
