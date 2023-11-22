@@ -89,8 +89,9 @@ export class PageCustomPageView extends Component<{ id: string }> {
       }
       as.updateCustomPage({ ...cp, title: t })
     }
-    const onLoaded = () => {
-      //
+
+    const onLoadedSuccess = () => {
+      this.setState({ isError: false })
     }
     const onError = () => {
       if (cp && !isCustomPageUrlBuilt(cp.url)) {
@@ -155,7 +156,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}
-              onLoadEnd={onLoaded}
+              onLoadEnd={onLoadedSuccess}
               onError={onError}
             />
           )}
