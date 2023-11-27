@@ -273,6 +273,8 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         BrekekeUtils.onCallConnected(e.callkeepUuid)
+        // Should be update prevDisplayingCallId when Call connected and native pageManageCall screen is showing.
+        this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       }
       Object.assign(e, p, {
