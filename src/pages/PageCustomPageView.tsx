@@ -40,24 +40,36 @@ export class PageCustomPageView extends Component<{ id: string }> {
     isError: false,
   }
   getUrlParams = async (url: string) => {
-    const token = await pbx.getPbxToken()
-    const user = getAuthStore().getCurrentAccount()
-    return url
-      .replace(/#lang#/i, intlStore.locale)
-      .replace(/#pbx-token#/i, token.token)
-      .replace(/#tenant#'/i, user.pbxTenant)
-      .replace(/#user#/i, user.pbxUsername)
-      .replace(/#from-number#/i, '0')
-  }
-  getURLToken = async (url: string) => {
-    const r = random(1, 1000, false).toString()
-    const { token } = await pbx.getPbxToken()
-    if (!token) {
+    try {
+      const { token } = await pbx.getPbxToken()
+      if (!token) {
+        return url
+      }
+      const user = getAuthStore().getCurrentAccount()
+      return url
+        .replace(/#lang#/i, intlStore.locale)
+        .replace(/#pbx-token#/i, token)
+        .replace(/#tenant#'/i, user.pbxTenant)
+        .replace(/#user#/i, user.pbxUsername)
+        .replace(/#from-number#/i, '0')
+    } catch (error) {
       return url
     }
-    return url
-      .replace(/&sess=(.*?)&/, `&sess=${token}&`)
-      .replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
+  }
+  getURLToken = async (url: string) => {
+    // should be catch getPbxToken when get error
+    try {
+      const r = random(1, 1000, false).toString()
+      const { token } = await pbx.getPbxToken()
+      if (!token) {
+        return url
+      }
+      return url
+        .replace(/&sess=(.*?)&/, `&sess=${token}&`)
+        .replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
+    } catch (error) {
+      return url
+    }
   }
   reLoadPage = async (cp: PbxCustomPage) => {
     const tokenNotExist = /#pbx-token#/i.test(cp.url)
