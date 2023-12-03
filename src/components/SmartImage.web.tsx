@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
-import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
 import noPhoto from '../assets/no_photo.png'
-import { checkImageUrl } from '../utils/checkImageURL'
+import { checkImageUrl } from '../utils/checkImageUrl'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
-
 const css = StyleSheet.create({
   image: {
     overflow: 'hidden',
     backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageError: {
     overflow: 'hidden',
@@ -33,20 +33,15 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
-const configViewPort =
-  "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); "
 
 export const SmartImage = (p: { uri: string; style: object }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
+  const [size, setSize] = useState(0)
   useEffect(() => {
     setStatusImageLoading(0)
-    console.log(`SmartImage url=${p.uri}`)
   }, [p.uri])
 
-  const onMessage = (event: WebViewMessageEvent) => {
-    setStatusImageLoading(1)
-  }
-  const onLoadEnd = () => {
+  const onLoaded = () => {
     setStatusImageLoading(1)
   }
   const onImageLoadError = () => {
@@ -55,10 +50,17 @@ export const SmartImage = (p: { uri: string; style: object }) => {
   const onImageLoad = () => {
     setStatusImageLoading(1)
   }
+
   const isImageUrl = checkImageUrl(p.uri)
 
   return (
-    <View style={[css.image, p.style]}>
+    <View
+      style={[css.image, p.style]}
+      onLayout={event => {
+        const { height } = event.nativeEvent.layout
+        setSize(height)
+      }}
+    >
       {!statusImageLoading && (
         <ActivityIndicator
           size='small'
@@ -67,26 +69,22 @@ export const SmartImage = (p: { uri: string; style: object }) => {
         />
       )}
       {!isImageUrl ? (
-        <WebView
-          source={{
-            uri: p.uri,
-          }}
-          injectedJavaScript={configViewPort}
-          style={[css.image, css.full]}
-          bounces={false}
-          startInLoadingState={true}
-          onMessage={onMessage}
-          onLoadEnd={onLoadEnd}
-          originWhitelist={['*']}
-          javaScriptEnabled={true}
-          scalesPageToFit={false}
-        />
+        <div>
+          <iframe
+            title='Load Image'
+            src={p.uri}
+            height={size}
+            width={size}
+            onLoad={onLoaded}
+            frameBorder='0'
+          />
+        </div>
       ) : (
         <Image
           source={{
             uri: p.uri,
           }}
-          style={[css.image, css.full]}
+          style={[css.image, { width: size, height: size }]}
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode='cover'
@@ -95,7 +93,7 @@ export const SmartImage = (p: { uri: string; style: object }) => {
       {statusImageLoading === 2 && isImageUrl && (
         <Image
           source={noPhotoImg}
-          style={[css.imageError, css.full]}
+          style={[css.imageError, { width: size, height: size }]}
           resizeMode='cover'
         />
       )}

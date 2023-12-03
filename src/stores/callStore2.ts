@@ -280,7 +280,7 @@ export class CallStore {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
       if (e.incoming && e.callkeepUuid) {
-        BrekekeUtils.setRemoteVideoStreamURL(
+        BrekekeUtils.setRemoteVideoStreamUrl(
           e.callkeepUuid,
           e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
         )

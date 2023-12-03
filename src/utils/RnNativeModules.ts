@@ -26,7 +26,7 @@ type TBrekekeUtils = {
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
   setIsVideoCall(uuid: string, isVideoCall: boolean): void
-  setRemoteVideoStreamURL(uuid: string, url: string): void
+  setRemoteVideoStreamUrl(uuid: string, url: string): void
   setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
   setIsMute(uuid: string, isMute: boolean): void
@@ -78,7 +78,7 @@ const Polyfill: TBrekekeUtils = {
   setJsCallsSize: () => undefined,
   setRecordingStatus: () => undefined,
   setIsVideoCall: () => undefined,
-  setRemoteVideoStreamURL: () => undefined,
+  setRemoteVideoStreamUrl: () => undefined,
   setIsFrontCamera: () => undefined,
   setOnHold: () => undefined,
   setIsMute: () => undefined,
