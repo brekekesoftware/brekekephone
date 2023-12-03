@@ -2,6 +2,7 @@ package com.brekeke.phonedev;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
@@ -22,29 +23,33 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    // disable call history
-    //    Bundle b = getIntent().getExtras();
-    //    if (b == null) {
-    //      return;
-    //    }
-    //    String phone = b.getString("extra_phone");
-    //    if (phone == null || phone.isEmpty()) {
-    //      return;
-    //    }
-    //    // remove cache when open app again
-    //    getIntent().removeExtra("extra_phone");
-    //    if (BrekekeUtils.eventEmitter != null) {
-    //      BrekekeUtils.emit("makeCall", phone);
-    //      return;
-    //    }
-    //    Runnable r =
-    //        new Runnable() {
-    //          public void run() {
-    //            BrekekeUtils.emit("makeCall", phone);
-    //          }
-    //        };
-    //    Handler handler = new android.os.Handler();
-    //    handler.postDelayed(r, 5000);
+    // call history
+    // temporary disabled
+    if (true) {
+      return;
+    }
+    Bundle b = getIntent().getExtras();
+    if (b == null) {
+      return;
+    }
+    String phone = b.getString("extra_phone");
+    if (phone == null || phone.isEmpty()) {
+      return;
+    }
+    // remove cache when open app again
+    getIntent().removeExtra("extra_phone");
+    if (BrekekeUtils.eventEmitter != null) {
+      BrekekeUtils.emit("makeCall", phone);
+      return;
+    }
+    Runnable r =
+        new Runnable() {
+          public void run() {
+            BrekekeUtils.emit("makeCall", phone);
+          }
+        };
+    Handler handler = new android.os.Handler();
+    handler.postDelayed(r, 5000);
   }
 
   @Override
