@@ -151,7 +151,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
               </RnText>
             </RnTouchableOpacity>
           )}
-          {cp && isCustomPageUrlBuilt(cp.url) && (
+          {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}
