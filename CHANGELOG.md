@@ -1,3 +1,7 @@
+#### 2.13.3
+
+- Fix it should use try catch while loading custom page to have backward compatibility (issue 807)
+
 #### 2.13.2
 
 - Implement call history first simple version:

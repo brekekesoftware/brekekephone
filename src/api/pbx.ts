@@ -11,6 +11,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
+import { _parseListCustomPage } from './pbxCustomPage'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
@@ -303,7 +304,7 @@ export class PBX extends EventEmitter {
 
     const as = getAuthStore()
     as.pbxConfig = config
-    as.parseListCustomPage()
+    _parseListCustomPage()
 
     const d = await as.getCurrentDataAsync()
     d.palParams = parsePalParams(as.pbxConfig)

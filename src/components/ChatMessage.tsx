@@ -149,7 +149,7 @@ const File: FC<
             </RnText>
           </RnTouchableOpacity>
         )}
-        {!!p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
+        {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity onPress={p.accept}>
             <RnText
               style={[css.Message_File_Button, css.Message_File_Accept_Button]}

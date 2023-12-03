@@ -1,9 +1,12 @@
-import { random } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { pbx } from '../api/pbx'
+import {
+  isCustomPageUrlBuilt,
+  rebuildCustomPageUrl,
+  rebuildCustomPageUrlNonce,
+} from '../api/pbxCustomPage'
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
@@ -13,7 +16,6 @@ import { v } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 
@@ -39,94 +41,82 @@ export class PageCustomPageView extends Component<{ id: string }> {
   state = {
     isError: false,
   }
-  getUrlParams = async (url: string) => {
-    const token = await pbx.getPbxToken()
-    const user = getAuthStore().getCurrentAccount()
-    return url
-      .replace(/#lang#/i, intlStore.locale)
-      .replace(/#pbx-token#/i, token.token)
-      .replace(/#tenant#'/i, user.pbxTenant)
-      .replace(/#user#/i, user.pbxUsername)
-      .replace(/#from-number#/i, '0')
-  }
-  getURLToken = async (url: string) => {
-    const r = random(1, 1000, false).toString()
-    const { token } = await pbx.getPbxToken()
-    if (!token) {
-      return url
-    }
-    return url
-      .replace(/&sess=(.*?)&/, `&sess=${token}&`)
-      .replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
-  }
-  reLoadPage = async (cp: PbxCustomPage) => {
-    const tokenNotExist = /#pbx-token#/i.test(cp.url)
-    if (tokenNotExist) {
+  reloadPage = async (cp: PbxCustomPage) => {
+    if (!isCustomPageUrlBuilt(cp.url)) {
       return
     }
-    getAuthStore().reLoadCustomPageById(cp.id)
-  }
-  reloadPageWithNewToken = async () => {
-    const { id } = this.props
-    const { isError } = this.state
-    const cp = getAuthStore().getCustomPageById(id)
+    const as = getAuthStore()
+    if (as.customPageLoadings[cp.id]) {
+      return
+    }
+    as.customPageLoadings[cp.id] = true
     if (!cp) {
       return
     }
-    const url = await this.getURLToken(cp.url)
-    getAuthStore().updateCustomPage({ ...cp, url })
+    const url = rebuildCustomPageUrlNonce(cp.url)
+    as.updateCustomPage({ ...cp, url })
+  }
+  reloadPageWithNewToken = async () => {
+    const {
+      props: { id },
+      state: { isError },
+    } = this
+    const as = getAuthStore()
+    const cp = as.getCustomPageById(id)
+    if (!cp) {
+      return
+    }
+    const url = await rebuildCustomPageUrl(cp.url)
+    as.updateCustomPage({ ...cp, url })
     if (isError) {
       this.setState({ isError: false })
     }
   }
   render() {
-    const { id } = this.props
-    const { isError } = this.state
-    const au = getAuthStore()
-    const cp = au.getCustomPageById(id)
-    // Trigger get received incoming call
+    const {
+      props: { id },
+      state: { isError },
+    } = this
+    const as = getAuthStore()
+    const cp = as.getCustomPageById(id)
+    // trigger when receiving incoming call
     const c = getCallStore().calls.find(i => i.incoming && !i.answeredAt)
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
-
+    // update title to tab label
     const onTitleChanged = (t: string) => {
-      // Update title to tab label
-      if (!cp || this.state.isError || /#pbx-token#/i.test(cp.url)) {
+      if (!cp || this.state.isError || !isCustomPageUrlBuilt(cp.url)) {
         return
       }
-      au.updateCustomPage({ ...cp, title: t })
+      as.updateCustomPage({ ...cp, title: t })
     }
-
     const onLoaded = () => {
       //
     }
-
     const onError = () => {
-      if (cp && /#pbx-token#/i.test(cp.url)) {
+      if (cp && !isCustomPageUrlBuilt(cp.url)) {
         return
       }
       this.setState({ isError: true })
     }
-
     // handle open custompage tab and reload page when received incoming
     if (
-      (c || (!c && au.saveActionOpenCustomPage)) &&
+      (c || (!c && as.saveActionOpenCustomPage)) &&
       s &&
       cp &&
       cp.incoming === 'open'
     ) {
-      au.saveActionOpenCustomPage = false
+      as.saveActionOpenCustomPage = false
       if (s.name != 'PageCustomPage') {
         // update stacker flow
         Nav().customPageIndex = Nav().goToPageCustomPage
         Nav().goToPageCustomPage({ id: cp.id })
         return
       }
-      // reloadPage
-      this.reLoadPage(cp)
+      this.reloadPage(cp)
     }
     // update check loading page
     if (cp && cp.incoming === 'open' && !c) {
-      delete au.customPageLoadings[cp.id]
+      delete as.customPageLoadings[cp.id]
     }
 
     const isVisible =
@@ -161,7 +151,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
               </RnText>
             </RnTouchableOpacity>
           )}
-          {cp && !/#pbx-token#/i.test(cp.url) && (
+          {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}

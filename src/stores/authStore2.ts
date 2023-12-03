@@ -1,7 +1,6 @@
-import { debounce, random } from 'lodash'
+import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
-import validator from 'validator'
 
 import { sip } from '../api/sip'
 import {
@@ -31,7 +30,7 @@ import { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
-import { intl, intlDebug } from './intl'
+import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
@@ -133,69 +132,15 @@ export class AuthStore {
   @observable listCustomPage: PbxCustomPage[] = []
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
-  reLoadCustomPageById = (id: string) => {
-    if (!!this.customPageLoadings[id]) {
-      return
-    }
-    this.customPageLoadings[id] = true
-    const cp = this.getCustomPageById(id)
-    if (!cp) {
-      return
-    }
-    const r = random(1, 1000, false).toString()
-    const url = cp.url.replace(/&from-number=([0-9]+)/, `&from-number=${r}`)
-    this.updateCustomPage({ ...cp, url })
-  }
   getCustomPageById = (id: string) => {
     return this.listCustomPage.find(i => i.id == id)
   }
   updateCustomPage = (cp: PbxCustomPage) => {
-    this.listCustomPage = [
-      ...this.listCustomPage.map(i => {
-        if (i.id === cp.id) {
-          return { ...cp }
-        }
-        return i
-      }),
-    ]
-  }
-  addParamForURL = (url: string) => {
-    // for refresh page by change from-number value
-    if (!/'#from-number#'/i.test(url)) {
-      return url + '&from-number=#from-number#'
-    }
-    return url
-  }
-  parseListCustomPage = () => {
-    if (!this.pbxConfig) {
+    const found = this.listCustomPage.find(p => p.id === cp.id)
+    if (!found) {
       return
     }
-    const results: PbxCustomPage[] = []
-    for (const key of Object.keys(this.pbxConfig)) {
-      if (!key.startsWith('webphone.custompage')) {
-        continue
-      }
-      const parts = key.split('.')
-      const id = `${parts[0]}.${parts[1]}`
-      if (!results.some(item => item.id === id)) {
-        if (!validator.isURL(this.pbxConfig[`${id}.url`])) {
-          // ignore if not url
-          continue
-        }
-        results.push({
-          id,
-          url: this.addParamForURL(this.pbxConfig[`${id}.url`]),
-          title: this.pbxConfig[`${id}.title`]
-            ? this.pbxConfig[`${id}.title`]
-            : intl`Pbx user setting`,
-          pos: this.pbxConfig[`${id}.pos`]
-            ? this.pbxConfig[`${id}.pos`]
-            : 'setting,right,1',
-          incoming: this.pbxConfig[`${id}.incoming`],
-        })
-      }
-    }
-    this.listCustomPage = results
+    Object.assign(found, cp)
   }
   isBigMode() {
     return this.pbxConfig?.['webphone.allusers'] === 'false'

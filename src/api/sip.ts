@@ -451,7 +451,7 @@ const getUserAgent = async (a: ParsedPn | AccountUnique) => {
     return d.userAgent
   }
   const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion} /JsSIP 3.2.15`
+  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15`
 }
 
 const getWssUrl = (host?: string, port?: string) =>
