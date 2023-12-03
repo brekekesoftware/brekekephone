@@ -23,6 +23,11 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    // call history
+    // temporary disabled
+    if (true) {
+      return;
+    }
     Bundle b = getIntent().getExtras();
     if (b == null) {
       return;

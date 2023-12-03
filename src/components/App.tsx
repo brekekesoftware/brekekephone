@@ -137,7 +137,9 @@ const initApp = async () => {
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     if (Platform.OS === 'android') {
       await permForCall()
-      await permForCallLog()
+      // temporary disabled
+      // await permForCallLog()
+      void permForCallLog
     } else {
       getAudioVideoPermission()
     }
@@ -305,7 +307,7 @@ export const App = observer(() => {
       <View style={css.App_Inner}>
         <RnStackerRoot />
         <RenderAllCalls />
-        {cp && <PageCustomPageView id={cp?.id} />}
+        {cp && <PageCustomPageView id={cp.id} />}
         <RnPickerRoot />
         <PhonebookAddItem />
         <RnAlertRoot />

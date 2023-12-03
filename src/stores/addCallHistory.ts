@@ -102,6 +102,11 @@ export type CallHistoryInfo = {
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
+  // temporary disabled
+  const disabled = true
+  if (disabled) {
+    return
+  }
   if (!(await permForCallLog())) {
     return
   }
