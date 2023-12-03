@@ -59,14 +59,14 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   state,
   fileType,
 }) => {
-  const [objectURL, setObjectUrl] = useState<string>('')
+  const [objectUrl, setObjectUrl] = useState<string>('')
 
   const onShowImage = useCallback(() => {
     const image = new Image()
-    image.src = objectURL || ''
+    image.src = objectUrl || ''
     const w = window.open('')
     w?.document.write(image.outerHTML)
-  }, [objectURL])
+  }, [objectUrl])
 
   const readImage = async (_: string) => {
     try {
@@ -76,7 +76,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       const response = await cache.match(request)
       const blobFile = await response?.blob()
       if (blobFile) {
-        setObjectUrl(URL.createObjectURL(blobFile))
+        setObjectUrl(window.URL.createObjectURL(blobFile))
       }
     } catch (err) {
       setObjectUrl('')
@@ -93,7 +93,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     if (fileType === 'image') {
       return (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: objectURL }} style={css.image} />
+          <FastImage source={{ uri: objectUrl }} style={css.image} />
         </RnTouchableOpacity>
       )
     } else {
@@ -101,7 +101,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
         <View style={css.video}>
           <video
             controls
-            src={objectURL}
+            src={objectUrl}
             playsInline
             width={size}
             height={size}
@@ -113,8 +113,8 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const isLoading =
     state !== 'success' && state !== 'failure' && state !== 'stopped'
   const isLoadFailed = state === 'failure' || state === 'stopped'
-  const isLoadSuccess = state === 'success' && !!objectURL
-  if (state === 'success' && !objectURL) {
+  const isLoadSuccess = state === 'success' && !!objectUrl
+  if (state === 'success' && !objectUrl) {
     return null
   }
   const cssLoading = fileType === 'image' ? css.loading : css.loadingVideo

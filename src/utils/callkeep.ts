@@ -2,6 +2,7 @@ import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
 import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
+import { bundleIdentifier } from '../config'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -47,7 +48,7 @@ const setupCallKeep = async () => {
       imageName: 'phone_account_icon',
       additionalPermissions: [],
       foregroundService: {
-        channelId: 'com.brekeke.phone',
+        channelId: bundleIdentifier,
         channelName: intl`Background service for Brekeke Phone`,
         notificationTitle: intl`Brekeke Phone is running on background`,
         notificationIcon: 'ic_launcher',

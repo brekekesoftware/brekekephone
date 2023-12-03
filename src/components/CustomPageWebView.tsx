@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
+import { buildWebViewSource } from '../config'
+
 const css = StyleSheet.create({
   image: {
     overflow: 'hidden',
@@ -41,6 +43,9 @@ export const CustomPageWebView = ({
   onLoadEnd,
   onError,
 }: Props) => {
+  if (!url) {
+    return null
+  }
   const handleMessage = (message: WebViewMessageEvent) => {
     const title = message?.nativeEvent?.data
     if (!title) {
@@ -50,7 +55,7 @@ export const CustomPageWebView = ({
   }
   return (
     <WebView
-      source={{ uri: url }}
+      source={buildWebViewSource(url)}
       injectedJavaScript='window.ReactNativeWebView.postMessage(document.title)'
       onMessage={handleMessage}
       style={css.full}
