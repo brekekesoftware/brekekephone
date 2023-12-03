@@ -710,7 +710,7 @@ index e67c3cd..52fcfc6 100644
 +    providerConfiguration.maximumCallsPerCallGroup = 99;
 +    providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"callkit.png"]);
 +    providerConfiguration.ringtoneSound = @"incallmanager_ringtone.mp3";
-+    providerConfiguration.includesCallsInRecents = YES;
++    providerConfiguration.includesCallsInRecents = NO;
      return providerConfiguration;
  }
  

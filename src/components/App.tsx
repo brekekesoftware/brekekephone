@@ -137,7 +137,9 @@ const initApp = async () => {
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     if (Platform.OS === 'android') {
       await permForCall()
-      await permForCallLog()
+      // temporary disabled
+      // await permForCallLog()
+      void permForCallLog
     } else {
       getAudioVideoPermission()
     }
