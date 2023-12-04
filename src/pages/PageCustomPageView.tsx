@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 
 import {
   isCustomPageUrlBuilt,
@@ -10,31 +10,11 @@ import {
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
-import { RnText } from '../components/RnText'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { v } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
-
-const css = StyleSheet.create({
-  BtnText: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    minWidth: 80,
-    position: 'absolute',
-    top: 200,
-    alignSelf: 'center',
-    backgroundColor: v.colors.primary,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
-    zIndex: 100,
-  },
-})
 
 @observer
 export class PageCustomPageView extends Component<{ id: string }> {
@@ -72,6 +52,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
       this.setState({ isError: false })
     }
   }
+
   render() {
     const {
       props: { id },
@@ -99,6 +80,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
       }
       this.setState({ isError: true })
     }
+
     // handle open custompage tab and reload page when received incoming
     if (
       (c || (!c && as.saveActionOpenCustomPage)) &&
@@ -111,7 +93,6 @@ export class PageCustomPageView extends Component<{ id: string }> {
         // update stacker flow
         Nav().customPageIndex = Nav().goToPageCustomPage
         Nav().goToPageCustomPage({ id: cp.id })
-        return
       }
       this.reloadPage(cp)
     }
@@ -139,19 +120,19 @@ export class PageCustomPageView extends Component<{ id: string }> {
           description={cp?.title}
           menu='settings'
           subMenu={id}
+          dropdown={
+            isError
+              ? [
+                  {
+                    label: intl`Reload`,
+                    onPress: this.reloadPageWithNewToken,
+                  },
+                ]
+              : undefined
+          }
           title={intl`Custom Page`}
           isFullContent
         >
-          {isError && (
-            <RnTouchableOpacity
-              onPress={this.reloadPageWithNewToken}
-              style={css.BtnText}
-            >
-              <RnText normal white bold>
-                {intl`Reload`}
-              </RnText>
-            </RnTouchableOpacity>
-          )}
           {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
             <CustomPageWebView
               url={cp.url}

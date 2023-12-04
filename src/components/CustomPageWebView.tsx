@@ -1,5 +1,5 @@
 import jsonStableStringify from 'json-stable-stringify'
-import { useState } from 'react'
+import { useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 import {
@@ -50,11 +50,10 @@ export const CustomPageWebView = ({
   onLoadEnd,
   onError,
 }: Props) => {
-  
   if (!url) {
     return null
   }
-  const [currentUrlLoadedError, setCurrentUrlLoadedError] = useState('')
+  const refUrlError = useRef('')
 
   const handleMessage = (message: WebViewMessageEvent) => {
     const title = message?.nativeEvent?.data
@@ -78,8 +77,9 @@ export const CustomPageWebView = ({
           return
         }
         if (
-          jsonStableStringify(currentUrlLoadedError) ==
-          jsonStableStringify(urlLoaded)
+          refUrlError.current &&
+          jsonStableStringify(refUrlError.current) ==
+            jsonStableStringify(urlLoaded)
         ) {
           onError()
         } else {
@@ -94,14 +94,14 @@ export const CustomPageWebView = ({
         if (!urlError) {
           return
         }
-        setCurrentUrlLoadedError(urlError)
+        refUrlError.current = urlError
       }}
       onError={(e: WebViewErrorEvent) => {
         const urlError = e.nativeEvent.url
         if (!urlError) {
           return
         }
-        setCurrentUrlLoadedError(urlError)
+        refUrlError.current = urlError
       }}
     />
   )
