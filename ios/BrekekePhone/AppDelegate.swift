@@ -52,15 +52,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // deep links
-  func application(
-    application: UIApplication!,
-    openURL url: NSURL!,
-    options: NSDictionary!
+  internal func application(
+    _ application: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
   ) -> Bool {
     return RCTLinkingManager
       .application(application,
                    open: url as URL,
-                   options: options as! [UIApplication.OpenURLOptionsKey: Any])
+                   options: options)
   }
 
   func application(
