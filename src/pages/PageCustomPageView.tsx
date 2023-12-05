@@ -18,9 +18,6 @@ import { RnStacker } from '../stores/RnStacker'
 
 @observer
 export class PageCustomPageView extends Component<{ id: string }> {
-  state = {
-    isError: false,
-  }
   reloadPage = async (cp: PbxCustomPage) => {
     if (!isCustomPageUrlBuilt(cp.url)) {
       return
@@ -39,7 +36,6 @@ export class PageCustomPageView extends Component<{ id: string }> {
   reloadPageWithNewToken = async () => {
     const {
       props: { id },
-      state: { isError },
     } = this
     const as = getAuthStore()
     const cp = as.getCustomPageById(id)
@@ -48,15 +44,11 @@ export class PageCustomPageView extends Component<{ id: string }> {
     }
     const url = await rebuildCustomPageUrl(cp.url)
     as.updateCustomPage({ ...cp, url })
-    if (isError) {
-      this.setState({ isError: false })
-    }
   }
 
   render() {
     const {
       props: { id },
-      state: { isError },
     } = this
     const as = getAuthStore()
     const cp = as.getCustomPageById(id)
@@ -65,21 +57,14 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     // update title to tab label
     const onTitleChanged = (t: string) => {
-      if (!cp || this.state.isError || !isCustomPageUrlBuilt(cp.url)) {
+      if (!cp || !isCustomPageUrlBuilt(cp.url)) {
         return
       }
       as.updateCustomPage({ ...cp, title: t })
     }
 
-    const onLoadedSuccess = () => {
-      this.setState({ isError: false })
-    }
-    const onError = () => {
-      if (cp && !isCustomPageUrlBuilt(cp.url)) {
-        return
-      }
-      this.setState({ isError: true })
-    }
+    const onLoadEnd = () => {}
+    const onError = () => {}
 
     // handle open custompage tab and reload page when received incoming
     if (
@@ -120,16 +105,12 @@ export class PageCustomPageView extends Component<{ id: string }> {
           description={cp?.title}
           menu='settings'
           subMenu={id}
-          dropdown={
-            isError
-              ? [
-                  {
-                    label: intl`Reload`,
-                    onPress: this.reloadPageWithNewToken,
-                  },
-                ]
-              : undefined
-          }
+          dropdown={[
+            {
+              label: intl`Reload`,
+              onPress: this.reloadPageWithNewToken,
+            },
+          ]}
           title={intl`Custom Page`}
           isFullContent
         >
@@ -137,7 +118,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
             <CustomPageWebView
               url={cp.url}
               onTitleChanged={onTitleChanged}
-              onLoadEnd={onLoadedSuccess}
+              onLoadEnd={onLoadEnd}
               onError={onError}
             />
           )}

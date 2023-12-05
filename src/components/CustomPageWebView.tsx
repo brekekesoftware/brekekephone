@@ -1,12 +1,5 @@
-import jsonStableStringify from 'json-stable-stringify'
-import { useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
-import {
-  WebViewErrorEvent,
-  WebViewHttpErrorEvent,
-  WebViewNavigationEvent,
-} from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
 
@@ -53,8 +46,6 @@ export const CustomPageWebView = ({
   if (!url) {
     return null
   }
-  const refUrlError = useRef('')
-
   const handleMessage = (message: WebViewMessageEvent) => {
     const title = message?.nativeEvent?.data
     if (!title) {
@@ -71,38 +62,11 @@ export const CustomPageWebView = ({
       style={css.full}
       bounces={false}
       startInLoadingState={true}
-      onLoadEnd={(e: WebViewNavigationEvent | WebViewErrorEvent) => {
-        const urlLoaded = e.nativeEvent.url
-        if (!urlLoaded) {
-          return
-        }
-        if (
-          refUrlError.current &&
-          jsonStableStringify(refUrlError.current) ==
-            jsonStableStringify(urlLoaded)
-        ) {
-          onError()
-        } else {
-          onLoadEnd()
-        }
-      }}
+      onLoadEnd={onLoadEnd}
       originWhitelist={['*']}
       javaScriptEnabled={true}
       scalesPageToFit={false}
-      onHttpError={(e: WebViewHttpErrorEvent) => {
-        const urlError = e.nativeEvent.url
-        if (!urlError) {
-          return
-        }
-        refUrlError.current = urlError
-      }}
-      onError={(e: WebViewErrorEvent) => {
-        const urlError = e.nativeEvent.url
-        if (!urlError) {
-          return
-        }
-        refUrlError.current = urlError
-      }}
+      onError={onError}
     />
   )
 }
