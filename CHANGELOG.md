@@ -1,9 +1,11 @@
 #### 2.13.3
 
 - Disable adding OS call history
-- Fix it should include X-Requested-With header in webview, the value will be com.brekeke.phone or com.brekeke.phonedev depends on the build (reported by Akira)
-- Fix ios it should not show error in avatar: do not load webview if the url is empty (reported by Akira)
-- Fix it should not open dev version if try to open from webphone (reported by Akira)
+- Fix it should include X-Requested-With header in webview, the value will be com.brekeke.phone or com.brekeke.phonedev depends on the build
+- Fix ios it should not show error in avatar: do not load webview if the url is empty
+- Fix it should not open dev version if try to open from webphone
+- Fix ios open from url should work without crash
+- Fix custom page webview handle redirect on client side (issue 795)
 - Fix it should use try catch while loading custom page to have backward compatibility (issue 807)
 - Fix android it should not show loading screen after hangup a call case: app killed with multiple calls (issue 805)
 
@@ -351,7 +353,7 @@
 - Implement PBX buddy list
 - Handle canceled PN call completed elsewhere: do not add history
 - Trim html on UC message render
-- Fix: android 10 rare case ringtone can not stop (reported by Akira)
+- Fix: android 10 rare case ringtone can not stop
 - Fix: PN switch enable take long time
 - Fix: bug chat scroll to end on new message
 - Web: Try trigger audio permission on OK press so it can play ringtone even window minimized
@@ -385,7 +387,7 @@
 - Android: Add bluetooth permission and test bluetooth earphone (still has some issues)
 - Add missing locale labels
 - If there's no locale selected, system locale will be selected by default
-- Update missed call notification as Akira requested: title={{name || number}} body="Missed call"
+- Update missed call notification: title={{name || number}} body="Missed call"
 
 #### 2.8.60
 
