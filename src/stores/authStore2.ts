@@ -130,6 +130,7 @@ export class AuthStore {
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
+
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
   getCustomPageById = (id: string) => {
