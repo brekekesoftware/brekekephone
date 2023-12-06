@@ -53,6 +53,7 @@ export const CustomPageWebView = ({
     }
     onTitleChanged(title)
   }
+
   return (
     <WebView
       source={buildWebViewSource(url)}
@@ -65,7 +66,6 @@ export const CustomPageWebView = ({
       originWhitelist={['*']}
       javaScriptEnabled={true}
       scalesPageToFit={false}
-      onHttpError={onError}
       onError={onError}
     />
   )
