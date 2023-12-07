@@ -845,6 +845,11 @@ export class CallStore {
   // style in CallVideosUI to save the previous video position
   @observable videoPositionT = 25
   @observable videoPositionL = 5
+  // to set ringtone in CallVoicesUI.web.tsx
+  @observable ringtone = ''
+  @action setIncomingRingtone = (ringtone: string) => {
+    this.ringtone = ringtone
+  }
 }
 
 const callStore = new CallStore()

@@ -93,6 +93,10 @@
     // prompt for permission if needed
     phone.promptBrowserPermission()
 
+    // set custom ringtone url
+    var ringtoneUrl = ''
+    phone.setIncomingRingtone(ringtoneUrl)
+
     // or if we manually show the prompt, we can accept the permission on user click
     // phone.acceptBrowserPermission()
 

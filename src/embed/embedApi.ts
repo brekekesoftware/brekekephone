@@ -29,6 +29,9 @@ export class EmbedApi extends EventEmitter {
 
   promptBrowserPermission = webPromptPermission
   acceptBrowserPermission = getAudioVideoPermission
+  setIncomingRingtone = (ringtone: string) => {
+    getCallStore().setIncomingRingtone(ringtone)
+  }
 
   getCurrentAccount = () => getAuthStore().getCurrentAccount()
 
