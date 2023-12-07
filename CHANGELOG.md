@@ -8,6 +8,8 @@
 - Fix custom page webview handle redirect on client side (issue 795)
 - Fix it should use try catch while loading custom page to have backward compatibility (issue 807)
 - Fix android it should not show loading screen after hangup a call case: app killed with multiple calls (issue 805)
+- Embed:
+  - Add api to change ringtone
 
 #### 2.13.2
 
