@@ -82,16 +82,16 @@ export class Call {
   }
   answerCallKeep = async () => {
     this.store.setCurrentCallId(this.id)
+    await waitTimeout()
     if (!this.callkeepUuid) {
       return
     }
-    this.callkeepAlreadyAnswered = true
-    await waitTimeout()
     if (this.incoming) {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
     } else {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
     }
+    this.callkeepAlreadyAnswered = true
     RNCallKeep.setCurrentCallActive(this.callkeepUuid)
     RNCallKeep.setOnHold(this.callkeepUuid, false)
     BrekekeUtils.setOnHold(this.callkeepUuid, false)

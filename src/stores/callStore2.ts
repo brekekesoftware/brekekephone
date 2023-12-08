@@ -60,6 +60,9 @@ export class CallStore {
   }
 
   private autoAnswer = (uuid: string) => {
+    if (!uuid) {
+      return
+    }
     if (Platform.OS === 'ios') {
       RNCallKeep.answerIncomingCall(uuid)
     }
