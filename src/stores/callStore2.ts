@@ -520,7 +520,12 @@ export class CallStore {
         // it's likely a connection issue occurred
         if (!curr && !reconnectCalled && diff > 3000) {
           reconnectCalled = true
-          reconnectAndWaitSip().then(sipCreateSession)
+          reconnectAndWaitSip().then(() => {
+            if (!this.startCallIntervalId) {
+              return
+            }
+            sipCreateSession()
+          })
           this.clearStartCallIntervalTimer()
         }
       }),
