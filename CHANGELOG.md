@@ -1,3 +1,8 @@
+#### 2.13.4
+
+- Fix it should not crash if very quickly answer edge case multiple calls (issue 814)
+- Fix it should not retry to make call again if user has ended the pending call (issue 815)
+
 #### 2.13.3
 
 - Disable adding OS call history
