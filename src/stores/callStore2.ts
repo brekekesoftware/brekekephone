@@ -5,7 +5,6 @@ import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
-import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { MakeCallFn, Session } from '../brekekejs'
@@ -443,35 +442,6 @@ export class CallStore {
       })
       return
     }
-    const as = getAuthStore()
-    as.sipTotalFailure = 0
-    const sipCreateSession = () => sip.phone?.makeCall(number, ...args)
-    if (
-      as.sipState === 'waiting' ||
-      as.sipState === 'failure' ||
-      as.sipState === 'stopped'
-    ) {
-      reconnectAndWaitSip().then(sipCreateSession)
-      Nav().goToPageCallManage({ isOutgoingCall: true })
-      return
-    }
-    if (as.sipState === 'connecting') {
-      waitSip().then(sipCreateSession)
-      Nav().goToPageCallManage({ isOutgoingCall: true })
-      return
-    }
-
-    let reconnectCalled = false
-    try {
-      // try to call pbx first to see if there's any error with the network
-      // TODO
-      void pbx
-      sipCreateSession()
-    } catch (err) {
-      reconnectCalled = true
-      reconnectAndWaitSip().then(sipCreateSession)
-    }
-    Nav().goToPageCallManage({ isOutgoingCall: true })
     // start call logic in RNCallKeep
     // adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
@@ -485,13 +455,47 @@ export class CallStore {
       }
       this.setAutoEndCallKeepTimer(uuid)
     }
-    // check for each 0.5s: auto update currentCallId
-    // the call will be emitted from sip, we'll use interval here to set it
+    const sipCreateSession = () => {
+      // do not make call if the callkeep ended
+      if (uuid && uuid !== this.callkeepUuidPending) {
+        return
+      }
+      sip.phone?.makeCall(number, ...args)
+    }
+    // reset sip connection state and navigate to the call manage screen
+    const as = getAuthStore()
+    as.sipTotalFailure = 0
+    Nav().goToPageCallManage({ isOutgoingCall: true })
+    if (
+      as.sipState === 'waiting' ||
+      as.sipState === 'failure' ||
+      as.sipState === 'stopped'
+    ) {
+      reconnectAndWaitSip().then(sipCreateSession)
+      return
+    }
+    if (as.sipState === 'connecting') {
+      waitSip().then(sipCreateSession)
+      return
+    }
+    // in case of sip state is success
+    // there could still cases that the sip is disconnected but state not updated yet
+    // like putting the phone on background or changing the network
+    let reconnectCalled = false
+    try {
+      sipCreateSession()
+    } catch (err) {
+      reconnectCalled = true
+      reconnectAndWaitSip().then(sipCreateSession)
+    }
+    // reset the currentCallId to display the new call
+    // check for each 0.5s internval auto update currentCallId
+    // the call will be emitted from sip, we need to use interval here to set it
+    // also if after 3s there's no call in store, reconnect
     runInAction(() => {
       this.setCurrentCallId('')
     })
-    const prevIds = arrToMap(this.calls, 'id') as { [k: string]: boolean }
-    // also if after 3s there's no call in store, reconnect
+    const prevIds = arrToMap(this.calls, 'id')
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
     this.startCallIntervalId = BackgroundTimer.setInterval(
@@ -515,9 +519,9 @@ export class CallStore {
           this.clearStartCallIntervalTimer()
           return
         }
-        // and if after 3s there's no call in store, reconnect
+        // also if after 3s there's no call in store, reconnect
         // it's likely a connection issue occurred
-        if (!curr && !reconnectCalled && diff > 3000) {
+        if (!reconnectCalled && diff > 3000) {
           reconnectCalled = true
           reconnectAndWaitSip().then(sipCreateSession)
           this.clearStartCallIntervalTimer()
@@ -643,6 +647,9 @@ export class CallStore {
   ) => {
     if (!uuid) {
       return
+    }
+    if (uuid === this.callkeepUuidPending) {
+      this.callkeepUuidPending = ''
     }
     console.log('PN callkeep debug: endCallKeep ' + uuid)
     if (setAction) {
