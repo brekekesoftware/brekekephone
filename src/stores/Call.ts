@@ -82,11 +82,13 @@ export class Call {
   }
   answerCallKeep = async () => {
     this.store.setCurrentCallId(this.id)
+    // this wait timeout was added intentionally to prevent interacting with callkeep too quick
+    // but not sure if it actually improves any?
+    await waitTimeout()
     if (!this.callkeepUuid) {
       return
     }
     this.callkeepAlreadyAnswered = true
-    await waitTimeout()
     if (this.incoming) {
       RNCallKeep.answerIncomingCall(this.callkeepUuid)
     } else {

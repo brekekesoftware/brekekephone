@@ -58,25 +58,24 @@ export class CallStore {
     )
   }
 
-  private autoAnswer = (uuid: string) => {
-    if (Platform.OS === 'ios') {
-      RNCallKeep.answerIncomingCall(uuid)
-    }
-    BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-  }
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
     n?: ParsedPn,
   ) => {
     this.setAutoEndCallKeepTimer(uuid, n)
-    if (!n) {
+    if (!uuid || !n) {
       return
     }
     if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
-      BackgroundTimer.setTimeout(() => this.autoAnswer(uuid), 2000)
+      BackgroundTimer.setTimeout(() => {
+        if (Platform.OS === 'ios') {
+          RNCallKeep.answerIncomingCall(uuid)
+        }
+        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
+      }, 2000)
     }
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
