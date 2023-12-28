@@ -393,7 +393,7 @@ export class CallStore {
     if (Platform.OS !== 'web' && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
       if (Platform.OS === 'ios') {
-        IncallManager.setForceSpeakerphoneOn(false)
+        // IncallManager.setForceSpeakerphoneOn(false)
       }
     }
     // stop android incall manager if there's no call left
