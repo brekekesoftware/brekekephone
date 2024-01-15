@@ -33,6 +33,7 @@ import {
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { IncomingItemWithTimer } from '../components/CallNotify'
+import { Mini } from '../components/CallVideosUI'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
@@ -52,6 +53,27 @@ import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
 const css = StyleSheet.create({
+  Mini: {
+    position: 'absolute',
+    width: 150,
+    backgroundColor: 'black',
+    ...Platform.select({
+      android: {
+        borderRadius: 0,
+        height: 200,
+      },
+      ios: {
+        borderRadius: 15,
+        height: 200,
+      },
+      web: {
+        borderRadius: v.borderRadius,
+      },
+    }),
+    overflow: 'hidden',
+    ...v.boxShadow,
+    ...v.backdropZindex,
+  },
   BtnSwitchCamera: {
     position: 'absolute',
     top: 10, // header compact height
@@ -436,6 +458,7 @@ class PageCallManage extends Component<{
 
   private renderVideo = () => {
     const { call: c } = this.props
+
     return (
       <>
         <View style={css.cameraStyle}>
@@ -457,6 +480,13 @@ class PageCallManage extends Component<{
           onPress={this.toggleButtons}
           style={StyleSheet.absoluteFill}
         />
+        {c.localVideoStreamObject && (
+          <Mini
+            style={css.Mini}
+            sourceObject={c.localVideoStreamObject}
+            onDoubleTap={() => {}}
+          />
+        )}
       </>
     )
   }

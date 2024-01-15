@@ -9,6 +9,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native'
 
 import { getCallStore } from '../stores/callStore'
@@ -43,10 +44,11 @@ const css = StyleSheet.create({
 type Props = {
   onDoubleTap: Function
   sourceObject: MediaStream
+  style?: ViewStyle
 }
 
 @observer
-class Mini extends Component<Props> {
+export class Mini extends Component<Props> {
   panResponder: PanResponderInstance
   view?: View
   private lastTap?: number
@@ -69,7 +71,7 @@ class Mini extends Component<Props> {
       <View
         ref={this.setViewRef}
         style={[
-          css.Mini,
+          { ...css.Mini, ...this.props.style },
           {
             top: getCallStore().videoPositionT,
             left: getCallStore().videoPositionL,

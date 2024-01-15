@@ -788,13 +788,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setRemoteVideoStreamUrl(String uuid, String url) {
+  public void setRemoteVideoStreamUrl(String uuid, String url, String localUrl) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setRemoteVideoStreamUrl(url);
+              at(uuid).setRemoteVideoStreamUrl(url, localUrl);
             } catch (Exception e) {
             }
           }

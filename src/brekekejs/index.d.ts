@@ -468,6 +468,7 @@ export type Session = {
   remoteWithVideo: boolean
   remoteStreamObject: MediaStream
   localStreamObject: MediaStream
+  localVideoStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string | undefined
     body?: object

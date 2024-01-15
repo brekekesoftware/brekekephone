@@ -64,7 +64,9 @@
           android:indeterminateTint="@color/white"
           android:visibility="gone"
         />
+
       </RelativeLayout>
+
       <RelativeLayout
         android:id="@+id/header_incoming"
         android:layout_width="match_parent"
@@ -227,6 +229,7 @@
         android:id="@+id/view_call_manage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
       >
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -617,6 +620,7 @@
               android:visibility="gone"
             />
           </RelativeLayout>
+
           <androidx.cardview.widget.CardView
             android:id="@+id/card_avatar_talking"
             android:layout_width="0dp"
@@ -666,7 +670,14 @@
             />
           </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
       </RelativeLayout>
     </RelativeLayout>
   </LinearLayout>
+  <com.brekeke.phonedev.LocalVideoStream
+    android:id="@+id/view_local_video"
+    android:layout_width="170dp"
+    android:layout_height="220dp"
+    android:visibility="invisible"
+    ></com.brekeke.phonedev.LocalVideoStream>
 </RelativeLayout>

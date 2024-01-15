@@ -48,6 +48,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vHeaderIncomingCall,
       vWebViewAvatarLoading,
       vWebViewAvatarTalkingLoading;
+  public LocalVideoStream vLocalVideo;
   public LinearLayout vNavHeader,
       vCallManageControls,
       vBtnTransfer,
@@ -154,6 +155,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vNavHeader = (LinearLayout) findViewById(R.id.view_nav_header);
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
+    vLocalVideo = (LocalVideoStream) findViewById(R.id.view_local_video);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
     vCallManage = (RelativeLayout) findViewById(R.id.view_call_manage);
     vCallManageLoading = (RelativeLayout) findViewById(R.id.view_call_manage_loading);
@@ -455,6 +457,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     vWebrtcVideo.setObjectFit("cover");
     vWebrtc.addView(vWebrtcVideo);
+    vLocalVideo.setVisibility(View.VISIBLE);
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
@@ -467,13 +470,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnSwitchCamera.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtc.setVisibility(View.GONE);
+      vLocalVideo.setVisibility(View.GONE);
       videoLoading.setVisibility(View.GONE);
       vCardAvatarTalking.setVisibility(View.VISIBLE);
       showCallManageControls();
     }
   }
 
-  public void setRemoteVideoStreamUrl(String url) {
+  public void setRemoteVideoStreamUrl(String url, String localUrl) {
     if (url == null || url.isEmpty()) {
       if (vWebrtcVideo == null) {
         return;
@@ -485,6 +489,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnSwitchCamera.setVisibility(View.VISIBLE);
       vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
+      vLocalVideo.setStreamURL(localUrl);
+
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
       }

@@ -26,7 +26,7 @@ type TBrekekeUtils = {
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
   setIsVideoCall(uuid: string, isVideoCall: boolean): void
-  setRemoteVideoStreamUrl(uuid: string, url: string): void
+  setRemoteVideoStreamUrl(uuid: string, url: string, localURL): void
   setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
   setIsMute(uuid: string, isMute: boolean): void
