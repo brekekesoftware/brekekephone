@@ -231,6 +231,13 @@ export class AuthStore {
     authPBX.authWithCheck()
   }
   @action reconnectSip = () => {
+    const count = sip.phone?.getSessionCount()
+    if (count) {
+      console.log(
+        `SIP PN debug: can not reconnect sip due to ongoing sessions getSessionCount=${count} sipState=${this.sipState}`,
+      )
+      return
+    }
     console.log('SIP PN debug: set sipState stopped reconnect')
     this.resetFailureState()
     this.sipState = 'stopped'

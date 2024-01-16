@@ -1,3 +1,7 @@
+#### 2.13.5
+
+- Fix it should not stuck on call screen if very quickly answer edge case multiple calls (issue 820)
+
 #### 2.13.4
 
 - Fix it should not crash if very quickly answer edge case multiple calls (issue 814)

@@ -304,6 +304,12 @@ export class SIP extends EventEmitter {
     }
   }
   stopWebRTC = () => {
+    const count = this.phone?.getSessionCount()
+    if (count) {
+      console.error(
+        `SIP PN debug: sip.stopWebRTC: should not stop because getSessionCount=${count}`,
+      )
+    }
     this.hackJssipFork()
     if (this.phone) {
       console.log('SIP PN debug: sip.stopWebRTC: call phone.stopWebRTC')
