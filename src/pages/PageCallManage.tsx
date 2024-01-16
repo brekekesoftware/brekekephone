@@ -63,7 +63,7 @@ const css = StyleSheet.create({
         height: 200,
       },
       ios: {
-        borderRadius: 15,
+        borderRadius: 0,
         height: 200,
       },
       web: {
