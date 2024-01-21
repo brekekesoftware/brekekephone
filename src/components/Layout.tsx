@@ -22,6 +22,10 @@ import { v } from './variables'
 const DEFAULT_TOAST_MESSAGE = 'new message'
 
 const css = StyleSheet.create({
+  FullScreen: {
+    width: '100%',
+    height: '100%',
+  },
   Layout: {
     flex: 1,
     height: '100%',
@@ -99,15 +103,9 @@ export const Layout: FC<
     {} as { [k: string]: unknown },
   )
 
-  const style: unknown[] = [
-    css.Layout,
-    props.transparent && css.Layout__transparent,
-  ]
-  if (props.style) {
-    style.push(props.style)
-    delete props.style
-  }
-  containerProps.style = style
+  Object.assign(containerProps, {
+    style: [css.Layout, props.transparent && css.Layout__transparent],
+  })
 
   if (!props.noScroll) {
     containerProps.contentContainerStyle = [css.Scroller]
@@ -150,7 +148,7 @@ export const Layout: FC<
   }
 
   return (
-    <>
+    <View style={[css.FullScreen, props.style]}>
       <Container {...containerProps}>
         <View
           style={{
@@ -179,6 +177,6 @@ export const Layout: FC<
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
-    </>
+    </View>
   )
 })
