@@ -99,24 +99,28 @@ export const Layout: FC<
     {} as { [k: string]: unknown },
   )
 
-  Object.assign(containerProps, {
-    style: [css.Layout, props.transparent && css.Layout__transparent],
-  })
+  const style: unknown[] = [
+    css.Layout,
+    props.transparent && css.Layout__transparent,
+  ]
+  if (props.style) {
+    style.push(props.style)
+    delete props.style
+  }
+  containerProps.style = style
 
   if (!props.noScroll) {
-    Object.assign(containerProps, {
-      contentContainerStyle: [css.Scroller],
-      keyboardShouldPersistTaps: 'always',
-      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
-        if (newHeaderOverflow !== headerOverflow) {
-          setHeaderOverflow(newHeaderOverflow)
-        }
-        originalProps.containerOnScroll?.(e)
-      },
-      scrollEventThrottle: 170,
-      showsVerticalScrollIndicator: false,
-    })
+    containerProps.contentContainerStyle = [css.Scroller]
+    containerProps.keyboardShouldPersistTaps = 'always'
+    containerProps.onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
+      if (newHeaderOverflow !== headerOverflow) {
+        setHeaderOverflow(newHeaderOverflow)
+      }
+      originalProps.containerOnScroll?.(e)
+    }
+    containerProps.scrollEventThrottle = 170
+    containerProps.showsVerticalScrollIndicator = false
   }
 
   if (props.compact) {
