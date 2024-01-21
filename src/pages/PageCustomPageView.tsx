@@ -6,7 +6,7 @@ import {
   isCustomPageUrlBuilt,
   rebuildCustomPageUrl,
   rebuildCustomPageUrlNonce,
-} from '../api/pbxCustomPage'
+} from '../api/pbx'
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
