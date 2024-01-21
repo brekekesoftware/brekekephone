@@ -74,7 +74,7 @@ export const _parseListCustomPage = () => {
       return
     }
     url = _addCustomPageUrlNonce(url)
-    const title = c[`${id}.title`] || intl`Pbx user setting`
+    const title = c[`${id}.title`] || intl`PBX user settings`
     const pos = c[`${id}.pos`] || 'setting,right,1'
     const incoming = c[`${id}.incoming`]
     results.push({

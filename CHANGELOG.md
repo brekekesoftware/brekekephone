@@ -1,3 +1,7 @@
+#### 2.13.6
+
+- Improve page pbx user settings: update title display and some code refactor
+
 #### 2.13.5
 
 - Fix it should not stuck on call screen if very quickly answer edge case multiple calls (issue 820)

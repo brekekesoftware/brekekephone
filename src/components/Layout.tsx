@@ -5,8 +5,10 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
+  StyleProp,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
@@ -74,6 +76,7 @@ export const Layout: FC<
     isShowToastMessage: boolean
     incomingMessage: string
     children: ReactNode
+    style?: StyleProp<ViewStyle>
     isFullContent?: boolean
   }>
 > = observer(originalProps => {

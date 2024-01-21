@@ -1,5 +1,8 @@
 import { StyleSheet } from 'react-native'
-import WebView, { WebViewMessageEvent } from 'react-native-webview'
+import WebView, {
+  WebViewMessageEvent,
+  WebViewProps,
+} from 'react-native-webview'
 
 import { buildWebViewSource } from '../config'
 
@@ -30,43 +33,82 @@ const css = StyleSheet.create({
   },
 })
 
-type Props = {
+type Props = Pick<WebViewProps, 'onLoadStart' | 'onLoadEnd' | 'onError'> & {
   url: string
-  onTitleChanged(title: string): void
-  onLoadEnd(): void
-  onError(): void
+  onTitle(title: string): void
+  onJsLoading(loading: boolean): void
 }
 
 export const CustomPageWebView = ({
   url,
-  onTitleChanged,
+  onTitle,
+  onJsLoading,
+  onLoadStart,
   onLoadEnd,
   onError,
 }: Props) => {
   if (!url) {
     return null
   }
-  const handleMessage = (message: WebViewMessageEvent) => {
-    const title = message?.nativeEvent?.data
-    if (!title) {
+  const onMessage = (e: WebViewMessageEvent) => {
+    try {
+      const data = e?.nativeEvent?.data
+      if (!data) {
+        return
+      }
+      const json = JSON.parse(data)
+      if (!json) {
+        return
+      }
+      if (json.title) {
+        onTitle(json.title)
+      }
+      if (typeof json.loading === 'boolean') {
+        onJsLoading(json.loading)
+      }
+    } catch (err) {
       return
     }
-    onTitleChanged(title)
   }
 
   return (
     <WebView
       source={buildWebViewSource(url)}
-      injectedJavaScript='window.ReactNativeWebView.postMessage(document.title)'
-      onMessage={handleMessage}
+      injectedJavaScript={js}
       style={css.full}
       bounces={false}
       startInLoadingState={true}
-      onLoadEnd={onLoadEnd}
       originWhitelist={['*']}
       javaScriptEnabled={true}
       scalesPageToFit={false}
+      onMessage={onMessage}
+      onLoadStart={onLoadStart}
+      onLoadEnd={onLoadEnd}
       onError={onError}
     />
   )
 }
+
+const js = `
+  function sendJsonToRn(json) {
+    window.ReactNativeWebView.postMessage(JSON.stringify(json));
+  }
+  sendJsonToRn({ loading: true, title: document.title });
+  window.addEventListener('load', function() {
+    addTitleListener();
+    sendJsonToRn({ loading: false, title: document.title });
+  });
+  // https://stackoverflow.com/a/29540461
+  function addTitleListener() {
+    var titleDomNode = document.querySelector('title');
+    if (!titleDomNode) {
+      // TODO handle if html has no title
+      return false;
+    }
+    var observer = new MutationObserver(function() {
+      sendJsonToRn({ title: document.title });
+    });
+    observer.observe(titleDomNode, { subtree: true, characterData: true, childList: true });
+    return true;
+  }
+`
