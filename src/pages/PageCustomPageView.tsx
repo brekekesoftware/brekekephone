@@ -138,7 +138,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
             onLoadStart={() => this.setState({ webviewLoading: true })}
             onLoadEnd={e =>
               this.setState({
-                viewviewLoading: false,
+                webviewLoading: false,
                 webviewError:
                   'code' in e.nativeEvent &&
                   typeof e.nativeEvent.code === 'number',
