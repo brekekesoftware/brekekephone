@@ -1,8 +1,10 @@
+import { useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import WebView, {
   WebViewMessageEvent,
   WebViewProps,
 } from 'react-native-webview'
+import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
 
@@ -50,10 +52,24 @@ export const CustomPageWebView = ({
   if (!url) {
     return null
   }
+  const nLoading = useRef(false)
+  const cUrl = useRef(url)
+  const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
+    const cPageUrl = e?.nativeEvent?.url
+    if (!cPageUrl || cPageUrl === cUrl.current) {
+      return
+    }
+    nLoading.current = true
+    cUrl.current = cPageUrl
+    onLoadStart?.(e)
+  }
   const onMessage = (e: WebViewMessageEvent) => {
     try {
       const data = e?.nativeEvent?.data
       if (!data) {
+        return
+      }
+      if (!nLoading.current) {
         return
       }
       const json = JSON.parse(data)
@@ -65,6 +81,9 @@ export const CustomPageWebView = ({
       }
       if (typeof json.loading === 'boolean') {
         onJsLoading(json.loading)
+        if (!json.loading) {
+          nLoading.current = false
+        }
       }
     } catch (err) {
       return
@@ -77,12 +96,11 @@ export const CustomPageWebView = ({
       injectedJavaScript={js}
       style={css.full}
       bounces={false}
-      startInLoadingState={true}
       originWhitelist={['*']}
       javaScriptEnabled={true}
       scalesPageToFit={false}
       onMessage={onMessage}
-      onLoadStart={onLoadStart}
+      onLoadStart={onLoadStartForLoading}
       onLoadEnd={onLoadEnd}
       onError={onError}
     />
@@ -96,7 +114,7 @@ const js = `
   sendJsonToRn({ loading: true, title: document.title });
   window.addEventListener('load', function() {
     addTitleListener();
-    sendJsonToRn({ loading: false, title: document.title });
+    sendJsonToRn({ loading: false, title: document.title});
   });
   // https://stackoverflow.com/a/29540461
   function addTitleListener() {
