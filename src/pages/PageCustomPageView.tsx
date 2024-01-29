@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { View } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 import {
   isCustomPageUrlBuilt,
   rebuildCustomPageUrl,
   rebuildCustomPageUrlNonce,
-} from '../api/pbxCustomPage'
+} from '../api/pbx'
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
@@ -16,8 +16,20 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnStacker } from '../stores/RnStacker'
 
+const css = StyleSheet.create({
+  invisible: {
+    top: '-100%',
+    left: '-100%',
+  },
+})
+
 @observer
 export class PageCustomPageView extends Component<{ id: string }> {
+  state = {
+    webviewLoading: false,
+    webviewError: false,
+    jsLoading: false,
+  }
   reloadPage = async (cp: PbxCustomPage) => {
     if (!isCustomPageUrlBuilt(cp.url)) {
       return
@@ -56,15 +68,12 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const c = getCallStore().calls.find(i => i.incoming && !i.answeredAt)
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     // update title to tab label
-    const onTitleChanged = (t: string) => {
+    const onTitle = (t: string) => {
       if (!cp || !isCustomPageUrlBuilt(cp.url)) {
         return
       }
       as.updateCustomPage({ ...cp, title: t })
     }
-
-    const onLoadEnd = () => {}
-    const onError = () => {}
 
     // handle open custompage tab and reload page when received incoming
     if (
@@ -93,37 +102,52 @@ export class PageCustomPageView extends Component<{ id: string }> {
       s.name == 'PageCustomPage' &&
       RnStacker.stacks.length == 1
 
+    const loading = this.state.jsLoading || this.state.webviewLoading
+    const title = cp?.title
+      ? cp.title
+      : loading
+      ? intl`Loading...`
+      : intl`PBX user settings`
+    const description = loading
+      ? intl`Loading...`
+      : this.state.webviewError
+      ? // TODO
+        ''
+      : ''
+
     return (
-      <View
-        style={
-          !isVisible
-            ? { width: 0, marginLeft: -100 }
-            : { width: '100%', height: '100%' }
-        }
+      <Layout
+        title={title}
+        description={description}
+        menu='settings'
+        subMenu={id}
+        dropdown={[
+          {
+            label: intl`Reload`,
+            onPress: this.reloadPageWithNewToken,
+          },
+        ]}
+        isFullContent
+        style={isVisible ? undefined : css.invisible}
       >
-        <Layout
-          description={cp?.title}
-          menu='settings'
-          subMenu={id}
-          dropdown={[
-            {
-              label: intl`Reload`,
-              onPress: this.reloadPageWithNewToken,
-            },
-          ]}
-          title={intl`Custom Page`}
-          isFullContent
-        >
-          {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
-            <CustomPageWebView
-              url={cp.url}
-              onTitleChanged={onTitleChanged}
-              onLoadEnd={onLoadEnd}
-              onError={onError}
-            />
-          )}
-        </Layout>
-      </View>
+        {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
+          <CustomPageWebView
+            url={cp.url}
+            onTitle={onTitle}
+            onJsLoading={jsLoading => this.setState({ jsLoading })}
+            onLoadStart={() => this.setState({ webviewLoading: true })}
+            onLoadEnd={e =>
+              this.setState({
+                webviewLoading: false,
+                webviewError:
+                  'code' in e.nativeEvent &&
+                  typeof e.nativeEvent.code === 'number',
+              })
+            }
+            onError={() => this.setState({ webviewError: true })}
+          />
+        )}
+      </Layout>
     )
   }
 }

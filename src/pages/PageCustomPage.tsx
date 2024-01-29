@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { buildCustomPageUrl, isCustomPageUrlBuilt } from '../api/pbxCustomPage'
+import { buildCustomPageUrl, isCustomPageUrlBuilt } from '../api/pbx'
 import { getAuthStore } from '../stores/authStore'
 
 @observer

@@ -5,8 +5,10 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
+  StyleProp,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
@@ -20,6 +22,10 @@ import { v } from './variables'
 const DEFAULT_TOAST_MESSAGE = 'new message'
 
 const css = StyleSheet.create({
+  FullScreen: {
+    width: '100%',
+    height: '100%',
+  },
   Layout: {
     flex: 1,
     height: '100%',
@@ -74,6 +80,7 @@ export const Layout: FC<
     isShowToastMessage: boolean
     incomingMessage: string
     children: ReactNode
+    style?: StyleProp<ViewStyle>
     isFullContent?: boolean
   }>
 > = observer(originalProps => {
@@ -101,19 +108,17 @@ export const Layout: FC<
   })
 
   if (!props.noScroll) {
-    Object.assign(containerProps, {
-      contentContainerStyle: [css.Scroller],
-      keyboardShouldPersistTaps: 'always',
-      onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
-        if (newHeaderOverflow !== headerOverflow) {
-          setHeaderOverflow(newHeaderOverflow)
-        }
-        originalProps.containerOnScroll?.(e)
-      },
-      scrollEventThrottle: 170,
-      showsVerticalScrollIndicator: false,
-    })
+    containerProps.contentContainerStyle = [css.Scroller]
+    containerProps.keyboardShouldPersistTaps = 'always'
+    containerProps.onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
+      if (newHeaderOverflow !== headerOverflow) {
+        setHeaderOverflow(newHeaderOverflow)
+      }
+      originalProps.containerOnScroll?.(e)
+    }
+    containerProps.scrollEventThrottle = 170
+    containerProps.showsVerticalScrollIndicator = false
   }
 
   if (props.compact) {
@@ -143,7 +148,7 @@ export const Layout: FC<
   }
 
   return (
-    <>
+    <View style={[css.FullScreen, props.style]}>
       <Container {...containerProps}>
         <View
           style={{
@@ -172,6 +177,6 @@ export const Layout: FC<
       {!props.isTab && <View style={{ height: footerSpace }} />}
       {<Footer {...props} menu={props.menu as string} />}
       <Header {...props} compact={props.compact || headerOverflow} />
-    </>
+    </View>
   )
 })

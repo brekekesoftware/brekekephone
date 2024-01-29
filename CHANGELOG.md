@@ -1,3 +1,8 @@
+#### 2.13.6
+
+- Improve page custom pbx user settings: update title display and loading state
+- Improve avatar should not show loading indefinitely
+
 #### 2.13.5
 
 - Fix it should not stuck on call screen if very quickly answer edge case multiple calls (issue 820)
