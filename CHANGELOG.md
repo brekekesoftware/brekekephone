@@ -1,6 +1,7 @@
 #### 2.13.6
 
-- Improve page pbx user settings: update title display and some code refactor
+- Improve page custom pbx user settings: update title display and loading state
+- Improve avatar should not show loading indefinitely
 
 #### 2.13.5
 
