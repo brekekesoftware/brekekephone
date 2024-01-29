@@ -19,6 +19,7 @@ const css = StyleSheet.create({
   },
   Description: {
     color: v.subColor,
+    paddingRight: 15,
   },
 })
 
@@ -37,7 +38,7 @@ export const Title: FC<{
   })
   return (
     <Animated.View style={[css.Container, cssContainerA]}>
-      <AnimatedText style={[css.Title, cssTitleA]}>
+      <AnimatedText singleLine style={[css.Title, cssTitleA]}>
         {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (

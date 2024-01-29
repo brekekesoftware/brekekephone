@@ -47,7 +47,7 @@ class AuthPBX {
       .connect(s.getCurrentAccount())
       .then(connected => {
         if (!connected) {
-          throw new Error('Pbx login connection timed out')
+          throw new Error('PBX login connection timed out')
         }
       })
       .catch(

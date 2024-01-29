@@ -1,6 +1,6 @@
 {
   "name": "brekekephone",
-  "version": "2.13.5",
+  "version": "2.13.6",
   "private": true,
   "homepage": "./",
   "scripts": {
@@ -77,16 +77,16 @@
     "validatorjs": "3.22.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.23.0",
-    "@babel/core": "7.23.3",
-    "@babel/plugin-proposal-decorators": "7.23.3",
+    "@babel/cli": "7.23.4",
+    "@babel/core": "7.23.7",
+    "@babel/plugin-proposal-decorators": "7.23.7",
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@babel/plugin-transform-class-properties": "7.23.3",
     "@babel/plugin-transform-flow-strip-types": "7.23.3",
     "@babel/plugin-transform-private-methods": "7.23.3",
-    "@babel/plugin-transform-private-property-in-object": "7.23.3",
-    "@babel/plugin-transform-react-jsx": "7.22.15",
+    "@babel/plugin-transform-private-property-in-object": "7.23.4",
+    "@babel/plugin-transform-react-jsx": "7.23.4",
     "@craco/craco": "7.1.0",
     "@prettier/plugin-xml": "3.2.2",
     "@react-native/metro-config": "0.73.2",
