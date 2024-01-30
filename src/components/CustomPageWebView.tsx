@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import WebView, {
   WebViewMessageEvent,
   WebViewProps,
@@ -93,8 +93,7 @@ export const CustomPageWebView = ({
   return (
     <WebView
       source={buildWebViewSource(url)}
-      //This is a script that runs before the web page loads for the first time.
-      injectedJavaScriptBeforeContentLoaded={js}
+      injectedJavaScript={js}
       style={css.full}
       bounces={false}
       originWhitelist={['*']}
@@ -108,16 +107,35 @@ export const CustomPageWebView = ({
   )
 }
 
+//ref: https://gomakethings.com/a-native-javascript-equivalent-of-jquerys-ready-method/
+const onLoadJs =
+  Platform.OS === 'ios'
+    ? `
+  window.addEventListener('load', function() {
+    addTitleListener();
+    sendJsonToRn({ loading: false, title: document.title});
+  });
+`
+    : `var ready = function ( fn ) {
+  if ( typeof fn !== 'function' ) return;
+  if ( document.readyState === 'complete'  ) {
+    return fn();
+  }
+  // Otherwise, wait until document is loaded
+  document.addEventListener( 'DOMContentLoaded', fn, false );
+};
+
+ready(function() {
+  addTitleListener();
+  sendJsonToRn({ loading: false, title: document.title});
+});
+`
 const js = `
   function sendJsonToRn(json) {
     window.ReactNativeWebView.postMessage(JSON.stringify(json));
   }
   sendJsonToRn({ loading: true, title: document.title });
-  window.addEventListener('load', function() {
-    addTitleListener();
-    sendJsonToRn({ loading: false, title: document.title});
-  });
-  
+  ${onLoadJs}
   // https://stackoverflow.com/a/29540461
   function addTitleListener() {
     var titleDomNode = document.querySelector('title');

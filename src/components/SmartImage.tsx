@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
@@ -35,6 +41,26 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
+//ref: https://gomakethings.com/a-native-javascript-equivalent-of-jquerys-ready-method/
+const onLoadJs =
+  Platform.OS === 'ios'
+    ? `
+  window.addEventListener('load', function() {
+    sendJsonToRn({loaded: true});
+  });
+`
+    : `var ready = function ( fn ) {
+  if ( typeof fn !== 'function' ) return;
+  if ( document.readyState === 'complete'  ) {
+    return fn();
+  }
+  // Otherwise, wait until document is loaded
+  document.addEventListener( 'DOMContentLoaded', fn, false );
+};
+ready(function() {
+  sendJsonToRn({loaded: true});
+});
+`
 const configViewPort = `
 const meta = document.createElement('meta'); 
 meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); 
@@ -44,11 +70,7 @@ document.getElementsByTagName('head')[0].appendChild(meta);
 function sendJsonToRn(json) {
   window.ReactNativeWebView.postMessage(JSON.stringify(json));
 }
-
-window.addEventListener('load', function() {
-    sendJsonToRn({loaded: true});
-});
-
+${onLoadJs}
 `
 enum StatusImage {
   loading = 0,
@@ -124,7 +146,7 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
       {!uri ? null : !isImageUrl ? (
         <WebView
           source={buildWebViewSource(uri)}
-          injectedJavaScriptBeforeContentLoaded={configViewPort}
+          injectedJavaScript={configViewPort}
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}
