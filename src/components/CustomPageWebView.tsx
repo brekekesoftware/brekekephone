@@ -53,7 +53,7 @@ export const CustomPageWebView = ({
     return null
   }
   const nLoading = useRef(false)
-  const cUrl = useRef(url)
+  const cUrl = useRef('')
   const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
     const cPageUrl = e?.nativeEvent?.url
     if (!cPageUrl || cPageUrl === cUrl.current) {
@@ -93,7 +93,8 @@ export const CustomPageWebView = ({
   return (
     <WebView
       source={buildWebViewSource(url)}
-      injectedJavaScript={js}
+      //This is a script that runs before the web page loads for the first time.
+      injectedJavaScriptBeforeContentLoaded={js}
       style={css.full}
       bounces={false}
       originWhitelist={['*']}
@@ -116,6 +117,7 @@ const js = `
     addTitleListener();
     sendJsonToRn({ loading: false, title: document.title});
   });
+  
   // https://stackoverflow.com/a/29540461
   function addTitleListener() {
     var titleDomNode = document.querySelector('title');

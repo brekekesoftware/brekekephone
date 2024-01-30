@@ -107,7 +107,9 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
   const onImageLoad = () => {
     setStatusImageLoading(StatusImage.loaded)
   }
-
+  const onHttpError = () => {
+    setStatusImageLoading(StatusImage.loaded)
+  }
   const isImageUrl = checkImageUrl(uri)
 
   return (
@@ -122,12 +124,13 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
       {!uri ? null : !isImageUrl ? (
         <WebView
           source={buildWebViewSource(uri)}
-          injectedJavaScript={configViewPort}
+          injectedJavaScriptBeforeContentLoaded={configViewPort}
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}
           onMessage={onMessage}
           onLoadEnd={onLoadEnd}
+          onHttpError={onHttpError}
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
