@@ -35,14 +35,17 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     if (!BrekekeUtils.checkNotificationPermission(this)) {
       return;
     }
-    BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
+    RemoteMessage decodeRemoteMessage =
+        FcmInstanceIdListenerService.decodeRemoteMessage(remoteMessage);
+    BrekekeUtils.onFcmMessageReceived(this, decodeRemoteMessage.getData());
 
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();
     }
     try {
       initialNotifications.add(
-          ReactNativeJson.convertMapToJson(BrekekeUtils.parseParams(remoteMessage)).toString());
+          ReactNativeJson.convertMapToJson(BrekekeUtils.parseParams(decodeRemoteMessage))
+              .toString());
     } catch (Exception e) {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }

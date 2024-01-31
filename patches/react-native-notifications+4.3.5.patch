@@ -1,0 +1,92 @@
+diff --git a/node_modules/react-native-notifications/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java b/node_modules/react-native-notifications/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+index f9c858b..94ea188 100644
+--- a/node_modules/react-native-notifications/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
++++ b/node_modules/react-native-notifications/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+@@ -2,8 +2,8 @@
+ package com.wix.reactnativenotifications;
+ 
+ import android.content.Context;
+-import android.support.annotation.NonNull;
+-import android.support.v4.app.NotificationManagerCompat;
++import androidx.annotation.NonNull;
++import androidx.core.app.NotificationManagerCompat;
+ 
+ public abstract class NotificationManagerCompatFacade {
+     public static NotificationManagerCompat from(@NonNull Context context) {
+diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmInstanceIdListenerService.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmInstanceIdListenerService.java
+index adea989..94bc534 100644
+--- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmInstanceIdListenerService.java
++++ b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmInstanceIdListenerService.java
+@@ -1,6 +1,8 @@
+ package com.wix.reactnativenotifications.fcm;
+ 
+ import android.os.Bundle;
++import android.util.JsonReader;
++import android.util.JsonToken;
+ import android.util.Log;
+ 
+ import com.google.firebase.messaging.FirebaseMessagingService;
+@@ -8,6 +10,8 @@ import com.google.firebase.messaging.RemoteMessage;
+ import com.wix.reactnativenotifications.BuildConfig;
+ import com.wix.reactnativenotifications.core.notification.IPushNotification;
+ import com.wix.reactnativenotifications.core.notification.PushNotification;
++import java.io.IOException;
++import java.io.StringReader;
+ 
+ import static com.wix.reactnativenotifications.Defs.LOGTAG;
+ 
+@@ -18,11 +22,37 @@ import static com.wix.reactnativenotifications.Defs.LOGTAG;
+  */
+ public class FcmInstanceIdListenerService extends FirebaseMessagingService {
+ 
++    public static String decodeString(String content){
++        // Decode Unicode escape sequences
++        JsonReader reader = new JsonReader(new StringReader("\"" + content + "\""));
++        reader.setLenient(true);
++        String decodedString = null;
++        try {
++            if (reader.peek() != JsonToken.NULL) {
++                decodedString = reader.nextString();
++            }
++            reader.close();
++        } catch (IOException e) {
++            return null;
++        }
++        return decodedString;
++    }
++    public static RemoteMessage decodeRemoteMessage(RemoteMessage inputMessage) {
++        RemoteMessage.Builder builder = new RemoteMessage.Builder(inputMessage.getMessageId());
++        // Decode the data payload
++        for (String key : inputMessage.getData().keySet()) {
++            String decodedValue = decodeString(inputMessage.getData().get(key));
++            builder.addData(key, decodedValue);
++        }
++        return builder.build();
++    }
++
++
+     @Override
+     public void onMessageReceived(RemoteMessage message){
+-        Bundle bundle = message.toIntent().getExtras();
++        RemoteMessage decodeRemoteMessage = decodeRemoteMessage(message);
++        Bundle bundle = decodeRemoteMessage.toIntent().getExtras();
+         if(BuildConfig.DEBUG) Log.d(LOGTAG, "New message from FCM: " + bundle);
+-
+         try {
+             final IPushNotification notification = PushNotification.get(getApplicationContext(), bundle);
+             notification.onReceived();
+diff --git a/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java b/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+index f9c858b..94ea188 100644
+--- a/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
++++ b/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+@@ -2,8 +2,8 @@
+ package com.wix.reactnativenotifications;
+ 
+ import android.content.Context;
+-import android.support.annotation.NonNull;
+-import android.support.v4.app.NotificationManagerCompat;
++import androidx.annotation.NonNull;
++import androidx.core.app.NotificationManagerCompat;
+ 
+ public abstract class NotificationManagerCompatFacade {
+     public static NotificationManagerCompat from(@NonNull Context context) {
