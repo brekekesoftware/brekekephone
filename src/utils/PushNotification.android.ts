@@ -1,5 +1,6 @@
 import './callkeep'
 
+import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
 import {
   Notification,
@@ -8,6 +9,7 @@ import {
   RegistrationError,
 } from 'react-native-notifications'
 
+import { chatStore } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { permNotifications } from './permissions'
@@ -45,7 +47,9 @@ const onNotification = async (
     // flush initial notification
     if (!n0?.callkeepUuid) {
       getInitialNotifications().then(ns =>
-        ns.forEach(n => onNotification(n, initApp)),
+        ns.forEach(n => {
+          onNotification(n, initApp)
+        }),
       )
     }
     await parse(n0)
@@ -168,9 +172,26 @@ const getInitialNotifications = async () => {
     return []
   }
   try {
-    return (JSON.parse(n) as string[]).map(
-      s => JSON.parse(s) as { [k: string]: unknown },
-    )
+    const ns = JSON.parse(n) as string[]
+    if (isEmpty(ns)) {
+      return []
+    }
+    // handle push local notification for chat message
+    ns.forEach(i => {
+      const payload = JSON.parse(i) as { [k: string]: string | undefined }
+      // check notification type chat message
+      if (
+        isEmpty(payload) ||
+        payload?.event !== 'message' ||
+        payload?.title ||
+        payload?.body
+      ) {
+        return
+      }
+      chatStore.pushChatNotification('', payload?.message || '')
+    })
+
+    return ns.map(s => JSON.parse(s) as { [k: string]: unknown })
   } catch (err) {
     console.error(`getInitialNotifications n=${n} error:`, err)
     return []
