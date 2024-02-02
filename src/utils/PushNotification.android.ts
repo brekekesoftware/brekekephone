@@ -188,7 +188,14 @@ const getInitialNotifications = async () => {
       ) {
         return
       }
-      chatStore.pushChatNotification('', payload?.message || '')
+      const senderId = payload?.senderUserId
+      const confId = payload?.confId
+      chatStore.pushChatNotification(
+        '',
+        payload?.message || '',
+        senderId || confId,
+        !!!senderId,
+      )
     })
 
     return ns.map(s => JSON.parse(s) as { [k: string]: unknown })
