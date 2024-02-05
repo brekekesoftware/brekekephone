@@ -89,13 +89,14 @@ export class PageChatDetail extends Component<{
     })
   }
   componentDidUpdate() {
-    if (getAuthStore().ucState) {
-      const { buddy: id } = this.props
-      if (chatStore.getThreadConfig(id).isUnread) {
-        chatStore.updateThreadConfig(id, false, {
-          isUnread: false,
-        })
-      }
+    if (getAuthStore().ucState !== 'success') {
+      return
+    }
+    const { buddy: id } = this.props
+    if (chatStore.getThreadConfig(id).isUnread) {
+      chatStore.updateThreadConfig(id, false, {
+        isUnread: false,
+      })
     }
   }
   componentWillUnmount() {
@@ -124,6 +125,9 @@ export class PageChatDetail extends Component<{
   }
 
   render() {
+    // trigger componentDidUpdate
+    void getAuthStore().ucState
+
     const { buddy: id } = this.props
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state

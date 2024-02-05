@@ -14,7 +14,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
 
-  private void getInitialNotifications(Promise promise) {
+  public static void getInitialNotifications(Promise promise) {
     if (initialNotifications == null) {
       promise.resolve(null);
       return;
