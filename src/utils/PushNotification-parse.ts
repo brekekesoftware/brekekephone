@@ -267,6 +267,9 @@ export const parse = async (
     if (!acc.ucEnabled) {
       return
     }
+    // if (AppState.currentState !== 'active') {
+    //   return
+    // }
     // const senderId = n?.senderUserId || n.threadId
     // const confId = n?.confId || n.threadId
     // if (!senderId && !confId) {
@@ -284,6 +287,7 @@ export const parse = async (
     //   return
     // }
     void chatStore
+    void AppState
     navIndex('goToPageChatRecents')
     return
   }
