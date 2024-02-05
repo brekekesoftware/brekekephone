@@ -14,7 +14,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
 
-  public static void getInitialNotifications(Promise promise) {
+  private void getInitialNotifications(Promise promise) {
     if (initialNotifications == null) {
       promise.resolve(null);
       return;
@@ -35,17 +35,14 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     if (!BrekekeUtils.checkNotificationPermission(this)) {
       return;
     }
-    RemoteMessage decodeRemoteMessage =
-        FcmInstanceIdListenerService.decodeRemoteMessage(remoteMessage);
-    BrekekeUtils.onFcmMessageReceived(this, decodeRemoteMessage.getData());
+    BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
 
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();
     }
     try {
       initialNotifications.add(
-          ReactNativeJson.convertMapToJson(BrekekeUtils.parseParams(decodeRemoteMessage))
-              .toString());
+          ReactNativeJson.convertMapToJson(BrekekeUtils.parseParams(remoteMessage)).toString());
     } catch (Exception e) {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }
