@@ -19,6 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
+import { getAuthStore, waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
@@ -75,6 +76,11 @@ export class PageChatDetail extends Component<{
   editingTextReplace = false
 
   componentDidMount() {
+    this.waitToLoadMessage()
+  }
+  waitToLoadMessage = async () => {
+    this.setState({ loadingRecent: true })
+    await waitUc()
     this.loadRecent()
     const { buddy: id } = this.props
     uc.readUnreadChats(id)
@@ -83,11 +89,13 @@ export class PageChatDetail extends Component<{
     })
   }
   componentDidUpdate() {
-    const { buddy: id } = this.props
-    if (chatStore.getThreadConfig(id).isUnread) {
-      chatStore.updateThreadConfig(id, false, {
-        isUnread: false,
-      })
+    if (getAuthStore().ucState) {
+      const { buddy: id } = this.props
+      if (chatStore.getThreadConfig(id).isUnread) {
+        chatStore.updateThreadConfig(id, false, {
+          isUnread: false,
+        })
+      }
     }
   }
   componentWillUnmount() {
@@ -306,7 +314,6 @@ export class PageChatDetail extends Component<{
     return contactStore.getUcUserById(creator) || {}
   }
   loadRecent = () => {
-    this.setState({ loadingRecent: true })
     const { buddy: id } = this.props
     uc.getBuddyChats(id, {
       max: numberOfChatsPerLoad,
