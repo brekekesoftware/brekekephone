@@ -79,9 +79,11 @@ export class PageChatGroupDetail extends Component<{
     topic_id: '',
     emojiTurnOn: false,
   }
+
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
   editingTextReplace = false
+
   componentDidMount() {
     this.componentDidMountAsync()
   }
