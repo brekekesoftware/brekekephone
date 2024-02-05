@@ -19,7 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
-import { getAuthStore, waitUc } from '../stores/authStore'
+import { waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
@@ -59,6 +59,7 @@ export class PageChatDetail extends Component<{
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
   }
+
   state = {
     loadingRecent: false,
     loadingMore: false,
@@ -71,27 +72,37 @@ export class PageChatDetail extends Component<{
     emojiTurnOn: false,
     blobVideo: undefined,
   }
+
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
   editingTextReplace = false
 
   componentDidMount() {
-    this.waitToLoadMessage()
+    this.componentDidMountAsync()
   }
-  waitToLoadMessage = async () => {
+  componentDidMountAsync = async () => {
+    const { buddy: id } = this.props
     this.setState({ loadingRecent: true })
     await waitUc()
-    this.loadRecent()
-    const { buddy: id } = this.props
+    await uc
+      .getBuddyChats(id, { max: numberOfChatsPerLoad })
+      .then(chats => {
+        chatStore.pushMessages(id, chats)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to get recent chats`,
+          err,
+        })
+      })
+    this.setState({ loadingRecent: false })
     uc.readUnreadChats(id)
     chatStore.updateThreadConfig(id, false, {
       isUnread: false,
     })
   }
   componentDidUpdate() {
-    if (getAuthStore().ucState !== 'success') {
-      return
-    }
     const { buddy: id } = this.props
     if (chatStore.getThreadConfig(id).isUnread) {
       chatStore.updateThreadConfig(id, false, {
@@ -125,9 +136,6 @@ export class PageChatDetail extends Component<{
   }
 
   render() {
-    // trigger componentDidUpdate
-    void getAuthStore().ucState
-
     const { buddy: id } = this.props
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state
@@ -316,25 +324,6 @@ export class PageChatDetail extends Component<{
       return this.me
     }
     return contactStore.getUcUserById(creator) || {}
-  }
-  loadRecent = () => {
-    const { buddy: id } = this.props
-    uc.getBuddyChats(id, {
-      max: numberOfChatsPerLoad,
-    })
-      .then(chats => {
-        chatStore.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get recent chats`,
-          err,
-        })
-      })
-      .then(() => {
-        this.setState({ loadingRecent: false })
-      })
   }
 
   loadMore = () => {
