@@ -47,9 +47,7 @@ const onNotification = async (
     // flush initial notification
     if (!n0?.callkeepUuid) {
       getInitialNotifications().then(ns =>
-        ns.forEach(n => {
-          onNotification(n, initApp)
-        }),
+        ns.forEach(n => onNotification(n, initApp)),
       )
     }
     await parse(n0)
