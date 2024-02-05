@@ -194,7 +194,7 @@ const getInitialNotifications = async () => {
         '',
         payload?.message || '',
         senderId || confId,
-        !!!senderId,
+        !senderId,
       )
     })
 

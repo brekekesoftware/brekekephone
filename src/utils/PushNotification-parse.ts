@@ -1,10 +1,11 @@
 import jsonStableStringify from 'json-stable-stringify'
 import { get } from 'lodash'
-import { Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
+import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
@@ -234,60 +235,56 @@ export const parse = async (
     return
   }
 
-  // const isChatMessage = Boolean(
-  //   isLocal ||
-  //     raw.my_custom_data ||
-  //     raw.is_local_notification ||
-  //     n.my_custom_data ||
-  //     n.is_local_notification ||
-  //     !n.isCall,
-  // )
-  // // handle uc chat local/remote notification
-  // if (isChatMessage) {
-  //   // handle get value from non-background for android
-  //   const senderId = n?.senderUserId || n.threadId
-  //   const confId = n?.confId || n.threadId
-  //   console.log(
-  //     'SIP PN debug: PushNotification-parse: local notification UC chat',
-  //   )
-  //   // this can still happens:
-  //   // user enable UC and login, receive UC chat PN but do nothing
-  //   // then they logout and disable UC, then press the local presented PN
-  //   if (!acc.ucEnabled) {
-  //     navIndex('goToPageSettingsCurrentAccount')
-  //     return
-  //   }
-  //   if (!senderId || !confId) {
-  //     navIndex('goToPageChatRecents')
-  //     return
-  //   }
-  //   console.log('thangnt::nav::', nav)
-  //   nav.customPageIndex = nav.goToPageChatRecents
-  //   await waitTimeout()
-  //   if (n.isGroupChat || !!!senderId) {
-  //     chatStore.handleMoveToChatGroupDetail(confId)
-  //     return
-  //   }
-  //   console.log('thangnt::nav::', nav)
-
-  //   nav.goToPageChatDetail({ buddy: senderId })
-  //   return
-  // }
+  const isChatMessage = Boolean(
+    isLocal ||
+      raw.my_custom_data ||
+      raw.is_local_notification ||
+      n.my_custom_data ||
+      n.is_local_notification ||
+      !n.isCall,
+  )
+  // handle uc chat local/remote notification
+  if (isChatMessage) {
+    // handle get value from non-background for android
+    console.log(
+      'SIP PN debug: PushNotification-parse: local notification UC chat',
+    )
+    // this can still happens:
+    // user enable UC and login, receive UC chat PN but do nothing
+    // then they logout and disable UC, then press the local presented PN
+    if (!acc.ucEnabled) {
+      navIndex('goToPageSettingsCurrentAccount')
+      return
+    }
+    return
+  }
 
   // handle uc chat notification on press
   // currently server is sending PN as not-data-only
   // if the app is killed, the PN will show up instantly without triggering this code
-  if (!n.isCall) {
-    console.log('SIP PN debug: PushNotification-parse: n.isCall=false')
-    // app currently active and we already logged-in above
-    // if (AppState.currentState === 'active') {
+  if (!isChatMessage) {
+    console.log('SIP PN debug: PushNotification-parse: isChatMessage=true')
+    if (!acc.ucEnabled) {
+      return
+    }
+    // const senderId = n?.senderUserId || n.threadId
+    // const confId = n?.confId || n.threadId
+    // if (!senderId && !confId) {
+    //   navIndex('goToPageChatRecents')
     //   return
     // }
-    if (!acc.ucEnabled) {
-      navIndex('goToPageSettingsCurrentAccount')
-    } else {
-      navIndex('goToPageChatRecents')
-    }
+    // if ((n.isGroupChat || !senderId) && confId) {
+    //   nav.customPageIndex = nav.goToPageChatRecents
+    //   waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
+    //   return
+    // }
+    // if (senderId) {
+    //   nav.customPageIndex = nav.goToPageChatRecents
+    //   waitTimeout().then(() => nav.goToPageChatDetail({ buddy: senderId }))
+    //   return
+    // }
+    void chatStore
+    navIndex('goToPageChatRecents')
     return
   }
 
