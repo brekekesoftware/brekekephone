@@ -243,40 +243,28 @@ export const parse = async (
       n.is_local_notification ||
       !n.isCall,
   )
-  // handle uc chat local/remote notification
-  if (isChatMessage) {
-    // handle get value from non-background for android
-    console.log(
-      'SIP PN debug: PushNotification-parse: local notification UC chat',
-    )
-    // this can still happens:
-    // user enable UC and login, receive UC chat PN but do nothing
-    // then they logout and disable UC, then press the local presented PN
-    if (!acc.ucEnabled) {
-      navIndex('goToPageSettingsCurrentAccount')
-      return
-    }
-    return
-  }
-
   // handle uc chat notification on press
   // currently server is sending PN as not-data-only
   // if the app is killed, the PN will show up instantly without triggering this code
-  if (!isChatMessage) {
-    console.log('SIP PN debug: PushNotification-parse: isChatMessage=true')
+  if (isChatMessage) {
+    const appState = AppState.currentState
+    const senderId = n?.senderUserId || n.threadId
+    const confId = n?.confId || n.threadId
+    const isGroupChat = n.isGroupChat
+    console.log(
+      `SIP PN debug: PushNotification-parse: isChatMessage=true appState=${appState} senderId=${senderId} confId=${confId} isGroupChat=${isGroupChat}`,
+    )
     if (!acc.ucEnabled) {
       return
     }
     // if (AppState.currentState !== 'active') {
     //   return
     // }
-    // const senderId = n?.senderUserId || n.threadId
-    // const confId = n?.confId || n.threadId
     // if (!senderId && !confId) {
     //   navIndex('goToPageChatRecents')
     //   return
     // }
-    // if ((n.isGroupChat || !senderId) && confId) {
+    // if ((isGroupChat || !senderId) && confId) {
     //   nav.customPageIndex = nav.goToPageChatRecents
     //   waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
     //   return
@@ -287,7 +275,6 @@ export const parse = async (
     //   return
     // }
     void chatStore
-    void AppState
     navIndex('goToPageChatRecents')
     return
   }
