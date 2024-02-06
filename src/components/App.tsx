@@ -19,6 +19,7 @@ import SplashScreen from 'react-native-splash-screen'
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
+import { CallUI } from '../invoke/CallUI'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
 import {
@@ -305,7 +306,8 @@ export const App = observer(() => {
       <UnreadChatNoti />
 
       <View style={css.App_Inner}>
-        <RnStackerRoot />
+        {/* <RnStackerRoot /> */}
+        <CallUI />
         <RenderAllCalls />
         {cp && <PageCustomPageView id={cp.id} />}
         <RnPickerRoot />
