@@ -10,19 +10,24 @@ import {
 import { KeyPad } from '../components/CallKeyPad'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { KeyPadTablet } from './KeyPadTablet'
 
 const css = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
+    backgroundColor: 'rgb(16,46,95)',
   },
   left: {
-    flex: 1,
+    // flex: 1,
+    width: '40%',
+    padding: 5,
   },
   right: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   infoCall: {
     justifyContent: 'center',
@@ -35,19 +40,39 @@ const css = StyleSheet.create({
     flexDirection: 'row',
   },
   button: {
-    flex: 1,
+    width: 210,
     height: 60,
     backgroundColor: 'rgb(82,99,96)',
-    borderRadius: 3,
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   person: {
     color: 'rgb(152,73,107)',
-    fontSize: 20,
+    fontSize: 30,
   },
   textAction: {
     color: 'white',
+  },
+  keypad: {
+    flex: 1,
+    marginBottom: 5,
+  },
+  endCallBtn: {
+    height: 45,
+    backgroundColor: 'rgb(216,44,69)',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  endCallText: {
+    fontSize: 20,
+    color: 'white',
+    textAlign: 'center',
+  },
+  phone: {
+    color: 'white',
+    fontSize: 30,
   },
 })
 
@@ -60,11 +85,17 @@ export const InCallUI = () => {
   return (
     <View style={css.container}>
       <View style={css.left}>
-        <KeyPad onPressNumber={() => {}} showKeyboard={() => {}} />
+        <View style={{ height: 200 }}></View>
+        <View style={css.keypad}>
+          <KeyPadTablet onPressNumber={() => {}} showKeyboard={() => {}} />
+        </View>
+        <RnTouchableOpacity style={css.endCallBtn}>
+          <Text style={css.endCallText}>End call</Text>
+        </RnTouchableOpacity>
       </View>
       <View style={css.right}>
         <View style={css.infoCall}>
-          <Text>3021</Text>
+          <Text style={css.phone}>3021</Text>
           <Text style={css.person}>Duy Phan</Text>
         </View>
         <View style={css.empty} />

@@ -16,15 +16,15 @@ import { ShowNumber } from '../components/CallShowNumbers'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { InCallUI } from './InCallUI'
+import { KeyPadTablet } from './KeyPadTablet'
 
 const css = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'black'
+    backgroundColor: ' black',
   },
   main: {
     flex: 1,
-    position: 'relative',
   },
   button: {
     backgroundColor: 'rgb(242,144,0)',
@@ -34,11 +34,13 @@ const css = StyleSheet.create({
   },
   textAction: {
     color: 'white',
-    fontSize: 15,
+    fontSize: 18,
   },
   tabView: {
-    height: 50,
+    height: 60,
     flexDirection: 'row',
+    backgroundColor: 'black',
+    paddingBottom: 20,
   },
   tabItem: {
     flex: 1,
@@ -49,10 +51,18 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    width: 80,
+    width: 90,
   },
   textPhone: {
     textAlign: 'center',
+  },
+  tabText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  borderLine: {
+    borderRightColor: 'white',
+    borderRightWidth: 1,
   },
 })
 
@@ -83,7 +93,7 @@ export const CallUI = () => {
 
   return (
     <View style={css.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
         <ShowNumber
           refInput={refNumber}
           selectionChange={(
@@ -101,21 +111,24 @@ export const CallUI = () => {
           value={phone}
         />
         <View style={css.tabView}>
-          <View style={css.tabItem}>
+          <View style={[css.tabItem, css.borderLine]}>
             <View style={css.tabValue}>
-              <RnIcon path={mdiBookOpenBlank} color='black' />
-              <Text>Library</Text>
+              <RnIcon path={mdiBookOpenBlank} color='white' />
+              <Text style={css.tabText}>Library</Text>
             </View>
           </View>
           <View style={css.tabItem}>
             <View style={css.tabValue}>
-              <RnIcon path={mdiHistory} color='black' />
-              <Text>History</Text>
+              <RnIcon path={mdiHistory} color='white' />
+              <Text style={css.tabText}>History</Text>
             </View>
           </View>
         </View>
         <View style={css.main}>
-          <KeyPad onPressNumber={handlePressNumber} showKeyboard={() => {}} />
+          <KeyPadTablet
+            onPressNumber={handlePressNumber}
+            showKeyboard={() => {}}
+          />
         </View>
         <RnTouchableOpacity style={css.button}>
           <Text style={css.textAction}>Call</Text>
