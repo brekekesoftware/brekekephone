@@ -19,7 +19,6 @@ const css = StyleSheet.create({
     backgroundColor: 'rgb(16,46,95)',
   },
   left: {
-    // flex: 1,
     width: '40%',
     padding: 5,
   },
@@ -58,12 +57,17 @@ const css = StyleSheet.create({
     flex: 1,
     marginBottom: 5,
   },
-  endCallBtn: {
+  callBtn: {
     height: 45,
-    backgroundColor: 'rgb(216,44,69)',
     borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  bgEndCall: {
+    backgroundColor: 'rgb(216,44,69)',
+  },
+  bgAcceptCall: {
+    backgroundColor: 'green',
   },
   endCallText: {
     fontSize: 20,
@@ -73,6 +77,13 @@ const css = StyleSheet.create({
   phone: {
     color: 'white',
     fontSize: 30,
+  },
+  receiveCall: {
+    flexDirection: 'row',
+    height: 45,
+  },
+  btn: {
+    flex: 1,
   },
 })
 
@@ -87,11 +98,23 @@ export const InCallUI = () => {
       <View style={css.left}>
         <View style={{ height: 200 }}></View>
         <View style={css.keypad}>
-          <KeyPadTablet onPressNumber={() => {}} showKeyboard={() => {}} />
+          <KeyPadTablet
+            onPressNumber={() => {}}
+            showKeyboard={() => {}}
+            isHideBackspace
+          />
         </View>
-        <RnTouchableOpacity style={css.endCallBtn}>
+        {/* <RnTouchableOpacity style={[css.callBtn, css.bgEndCall]}>
           <Text style={css.endCallText}>End call</Text>
-        </RnTouchableOpacity>
+        </RnTouchableOpacity> */}
+        <View style={css.receiveCall}>
+          <RnTouchableOpacity style={[css.callBtn, css.bgAcceptCall, css.btn]}>
+            <Text style={css.endCallText}>Accept call</Text>
+          </RnTouchableOpacity>
+          <RnTouchableOpacity style={[css.callBtn, css.bgEndCall, css.btn]}>
+            <Text style={css.endCallText}>Reject call</Text>
+          </RnTouchableOpacity>
+        </View>
       </View>
       <View style={css.right}>
         <View style={css.infoCall}>

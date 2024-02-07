@@ -37,7 +37,7 @@ const css = StyleSheet.create({
     fontSize: 18,
   },
   tabView: {
-    height: 60,
+    height: 70,
     flexDirection: 'row',
     backgroundColor: 'black',
     paddingBottom: 20,
@@ -63,6 +63,17 @@ const css = StyleSheet.create({
   borderLine: {
     borderRightColor: 'white',
     borderRightWidth: 1,
+  },
+  infoCall: {
+    flexDirection: 'row',
+    backgroundColor: 'rgb(34,86,154)',
+    paddingHorizontal: 5,
+  },
+  infoText: {
+    color: 'white',
+  },
+  empty: {
+    flex: 1,
   },
 })
 
@@ -94,22 +105,11 @@ export const CallUI = () => {
   return (
     <View style={css.container}>
       <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
-        <ShowNumber
-          refInput={refNumber}
-          selectionChange={(
-            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-          ) => {
-            // Object.assign(this.txtSelection, {
-            //   start: e.nativeEvent.selection.end,
-            //   end: e.nativeEvent.selection.end,
-            // })
-            console.log('#Duy Phan console', e)
-          }}
-          setTarget={(v: string) => {
-            console.log('#Duy Phan console', v)
-          }}
-          value={phone}
-        />
+        <View style={css.infoCall}>
+          <Text style={css.infoText}>3002</Text>
+          <View style={css.empty} />
+          <Text style={css.infoText}>ver 1.1.1 ZL</Text>
+        </View>
         <View style={css.tabView}>
           <View style={[css.tabItem, css.borderLine]}>
             <View style={css.tabValue}>

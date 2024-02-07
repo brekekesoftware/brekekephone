@@ -86,16 +86,19 @@ export const KeyPadTablet = (p: {
   showKeyboard(): void
   callVoice?(): void
   callVoiceForward?(): void
+  isHideBackspace?: boolean
 }) => (
   <>
-    <View style={css.KeyPad_Backspace}>
-      <RnTouchableOpacity
-        onPress={() => p.onPressNumber('')}
-        style={css.KeyPad_Number_Backspace}
-      >
-        <RnIcon path={mdiBackspace} color='white' size={30} />
-      </RnTouchableOpacity>
-    </View>
+    {!p.isHideBackspace && (
+      <View style={css.KeyPad_Backspace}>
+        <RnTouchableOpacity
+          onPress={() => p.onPressNumber('')}
+          style={css.KeyPad_Number_Backspace}
+        >
+          <RnIcon path={mdiBackspace} color='white' size={30} />
+        </RnTouchableOpacity>
+      </View>
+    )}
     {keys.map((row, i) => (
       <View key={i} style={css.KeyPad_Number}>
         {row.map((key, inD) => (
