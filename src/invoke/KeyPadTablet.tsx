@@ -24,7 +24,6 @@ const css = StyleSheet.create({
   KeyPad_NumberBtn: {
     width: '33.3%',
     backgroundColor: 'black',
-    // height: 120,
     borderBottomColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
@@ -37,7 +36,7 @@ const css = StyleSheet.create({
   KeyPad_Btn: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 25,
+    height: 40,
   },
   KeyPad_Btn__call: {
     backgroundColor: v.colors.primary,
@@ -61,6 +60,18 @@ const css = StyleSheet.create({
     height: 50,
     borderRadius: 50 / 2,
   },
+  KeyPad_Backspace: {
+    height: 70,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingRight: 10,
+  },
+  KeyPad_Number_Backspace: {
+    width: 200,
+    color: 'white',
+    alignItems: 'flex-end',
+  },
 })
 
 const keys = [
@@ -77,6 +88,14 @@ export const KeyPadTablet = (p: {
   callVoiceForward?(): void
 }) => (
   <>
+    <View style={css.KeyPad_Backspace}>
+      <RnTouchableOpacity
+        onPress={() => p.onPressNumber('')}
+        style={css.KeyPad_Number_Backspace}
+      >
+        <RnIcon path={mdiBackspace} color='white' size={30} />
+      </RnTouchableOpacity>
+    </View>
     {keys.map((row, i) => (
       <View key={i} style={css.KeyPad_Number}>
         {row.map((key, inD) => (
@@ -93,42 +112,5 @@ export const KeyPadTablet = (p: {
         ))}
       </View>
     ))}
-    {/* <View style={css.KeyPad_Btn}>
-      <RnTouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
-        <RnIcon
-          color={Platform.OS === 'web' ? 'white' : undefined}
-          path={mdiKeyboard}
-        />
-      </RnTouchableOpacity>
-      <View style={p.callVoiceForward ? css.KeyPad_view : undefined}>
-        {p.callVoiceForward && (
-          <RnTouchableOpacity
-            onPress={p.callVoiceForward}
-            style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call_2]}
-          >
-            <RnIcon path={mdiPhoneForward} />
-          </RnTouchableOpacity>
-        )}
-        {p.callVoice && (
-          <RnTouchableOpacity
-            onPress={p.callVoice}
-            style={[
-              css.KeyPad_NumberBtn,
-              !p.callVoiceForward
-                ? css.KeyPad_Btn__call
-                : css.KeyPad_Btn__call_2,
-            ]}
-          >
-            <RnIcon path={mdiPhone} />
-          </RnTouchableOpacity>
-        )}
-      </View>
-      <RnTouchableOpacity
-        onPress={() => p.onPressNumber('')}
-        style={css.KeyPad_NumberBtn}
-      >
-        <RnIcon path={mdiBackspace} />
-      </RnTouchableOpacity>
-    </View> */}
   </>
 )
