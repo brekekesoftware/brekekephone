@@ -1,3 +1,7 @@
+#### 2.13.7
+
+- Fix and adapt UC chat push notification according to server change
+
 #### 2.13.6
 
 - Improve page custom pbx user settings: update title display and loading state

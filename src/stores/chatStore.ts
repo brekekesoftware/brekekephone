@@ -391,7 +391,7 @@ class ChatStore {
     }
   }
   updateTimeout = (id: string) => {
-    if (!!this.timeoutTransferImage[id]) {
+    if (this.timeoutTransferImage[id]) {
       this.clearTimeout(id)
       this.startTimeout(id)
     }

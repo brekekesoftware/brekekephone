@@ -56,6 +56,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
     params.putString("google.message_id", message.getMessageId());
+    params.putString("google.to", message.getTo());
     params.putDouble("google.sent_time", message.getSentTime());
     if (message.getData() != null) {
       Map<String, String> data = message.getData();
