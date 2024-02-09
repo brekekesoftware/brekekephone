@@ -21,6 +21,7 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/RnText'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { v } from '../components/variables'
+import { waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import {
   ChatFile,
@@ -78,12 +79,34 @@ export class PageChatGroupDetail extends Component<{
     topic_id: '',
     emojiTurnOn: false,
   }
+
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
   editingTextReplace = false
+
   componentDidMount() {
-    this.loadRecent()
-    chatStore.updateThreadConfig(this.props.groupId, true, {
+    this.componentDidMountAsync()
+  }
+  componentDidMountAsync = async () => {
+    const { groupId } = this.props
+    this.setState({ loadingRecent: true })
+    await waitUc()
+    await uc
+      .getGroupChats(groupId, {
+        max: numberOfChatsPerLoad,
+      })
+      .then(chats => {
+        chatStore.pushMessages(groupId, chats)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to get recent chats`,
+          err,
+        })
+      })
+    this.setState({ loadingRecent: false })
+    chatStore.updateThreadConfig(groupId, true, {
       isUnread: false,
     })
   }
@@ -307,26 +330,6 @@ export class PageChatGroupDetail extends Component<{
       created: chat.created,
       createdByMe: creator.id === this.me.id,
     }
-  }
-
-  loadRecent() {
-    this.setState({ loadingRecent: true })
-    uc.getGroupChats(this.props.groupId, {
-      max: numberOfChatsPerLoad,
-    })
-      .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get recent chats`,
-          err,
-        })
-      })
-      .then(() => {
-        this.setState({ loadingRecent: false })
-      })
   }
 
   loadMore = () => {
