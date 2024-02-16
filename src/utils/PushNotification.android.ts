@@ -41,6 +41,7 @@ const onFcmToken = async (t: string) => {
 const onNotification = async (
   n0: { [k: string]: unknown },
   initApp: Function,
+  isClickAction?: boolean,
 ) => {
   try {
     await initApp()
@@ -50,7 +51,7 @@ const onNotification = async (
         ns.forEach(n => onNotification(n, initApp)),
       )
     }
-    await parse(n0)
+    await parse(n0, false, isClickAction)
   } catch (err) {
     console.error('PushNotification.android.ts onNotification error:', err)
   }
@@ -127,7 +128,7 @@ export const PushNotification = {
       events.registerNotificationOpened(
         (n: Notification, completion: Function, action: any) => {
           const payload = n.payload?.payload || n.payload
-          onNotification(payload, initApp)
+          onNotification(payload, initApp, true)
         },
       )
 
@@ -135,11 +136,11 @@ export const PushNotification = {
         const payload = n.payload?.payload || n.payload
         onNotification(payload, initApp)
       })
-      // if the app was launched by a push notification
-      // this promise resolves to an object of type Notification
+      // // if the app was launched by a push notification
+      // // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
         const payload = n?.payload?.payload || n?.payload
-        onNotification(payload, initApp)
+        onNotification(payload, initApp, true)
       })
     } catch (err) {
       RnAlert.error({
