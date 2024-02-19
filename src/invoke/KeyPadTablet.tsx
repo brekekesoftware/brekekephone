@@ -28,7 +28,12 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  KeyPad_Btn: {
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 10,
+    flexDirection: 'row',
   },
   KeyPad_Border: {
     borderRightColor: 'white',
@@ -37,11 +42,6 @@ const css = StyleSheet.create({
   KeyPad_BorderBottom: {
     borderBottomColor: 'white',
     borderBottomWidth: 1,
-  },
-  KeyPad_Btn: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 40,
   },
   KeyPad_Btn__call: {
     backgroundColor: v.colors.primary,
@@ -123,8 +123,10 @@ export const KeyPadTablet = (p: {
               keys.length - 1 !== i ? css.KeyPad_BorderBottom : undefined,
             ]}
           >
-            <RnText style={css.KeyPad_NumberTxt}>{key}</RnText>
-            <RnText style={css.KeyPad_Txt}>{characters[i][inD]}</RnText>
+            <View style={css.KeyPad_Btn}>
+              <RnText style={css.KeyPad_NumberTxt}>{key}</RnText>
+              <RnText style={css.KeyPad_Txt}>{characters[i][inD]}</RnText>
+            </View>
           </RnTouchableOpacity>
         ))}
       </View>

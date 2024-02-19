@@ -10,7 +10,7 @@ import { KeyPadTablet } from './KeyPadTablet'
 const css = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ' black',
+    backgroundColor: 'black',
   },
   main: {
     flex: 1,

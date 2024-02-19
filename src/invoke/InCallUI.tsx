@@ -36,6 +36,7 @@ const css = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
+    gap: 1,
   },
   button: {
     width: 210,
