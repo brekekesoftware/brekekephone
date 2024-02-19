@@ -136,8 +136,8 @@ export const PushNotification = {
         const payload = n.payload?.payload || n.payload
         onNotification(payload, initApp)
       })
-      // // if the app was launched by a push notification
-      // // this promise resolves to an object of type Notification
+      // if the app was launched by a push notification
+      // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
         const payload = n?.payload?.payload || n?.payload
         onNotification(payload, initApp, true)
