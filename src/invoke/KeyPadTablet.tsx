@@ -21,17 +21,27 @@ const css = StyleSheet.create({
     paddingVertical: 20,
     color: 'white',
   },
+  KeyPad_Txt: {
+    fontSize: 15,
+    color: 'white',
+    paddingVertical: 20,
+    textAlign: 'center',
+  },
   KeyPad_NumberBtn: {
     width: '33.3%',
     backgroundColor: 'black',
-    borderBottomColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: 10,
   },
   KeyPad_Border: {
     borderRightColor: 'white',
     borderRightWidth: 1,
+  },
+  KeyPad_BorderBottom: {
+    borderBottomColor: 'white',
+    borderBottomWidth: 1,
   },
   KeyPad_Btn: {
     flexDirection: 'row',
@@ -81,6 +91,13 @@ const keys = [
   ['*', '0', '#'],
 ]
 
+const characters = [
+  ['', 'ABC', 'DEF'],
+  ['GHI', 'JKL', 'MNO'],
+  ['PQRS', 'TUV', 'WXYZ'],
+  ['', '+', ''],
+]
+
 export const KeyPadTablet = (p: {
   onPressNumber(k: string): void
   showKeyboard(): void
@@ -108,9 +125,11 @@ export const KeyPadTablet = (p: {
             style={[
               css.KeyPad_NumberBtn,
               row.length - 1 !== inD ? css.KeyPad_Border : undefined,
+              keys.length - 1 !== i ? css.KeyPad_BorderBottom : undefined,
             ]}
           >
             <RnText style={css.KeyPad_NumberTxt}>{key}</RnText>
+            <RnText style={css.KeyPad_Txt}>{characters[i][inD]}</RnText>
           </RnTouchableOpacity>
         ))}
       </View>

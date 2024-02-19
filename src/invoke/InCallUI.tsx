@@ -7,7 +7,6 @@ import {
   mdiVolumeHigh,
   mdiVolumeMute,
 } from '../assets/icons'
-import { KeyPad } from '../components/CallKeyPad'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { KeyPadTablet } from './KeyPadTablet'
@@ -81,6 +80,7 @@ const css = StyleSheet.create({
   receiveCall: {
     flexDirection: 'row',
     height: 45,
+    gap: 10,
   },
   btn: {
     flex: 1,
