@@ -1,18 +1,7 @@
 import { useRef, useState } from 'react'
-import {
-  NativeSyntheticEvent,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TextInputSelectionChangeEventData,
-  View,
-} from 'react-native'
-import { Button } from 'react-native-share'
+import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
-import { KeyPad } from '../components/CallKeyPad'
-import { ShowNumber } from '../components/CallShowNumbers'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { InCallUI } from './InCallUI'
@@ -78,7 +67,6 @@ const css = StyleSheet.create({
 })
 
 export const CallUI = () => {
-  const refNumber = useRef<TextInput>(null)
   const reftxtSelection = useRef({ start: 0, end: 0 })
   const [phone, setPhone] = useState('')
 
@@ -98,7 +86,13 @@ export const CallUI = () => {
     reftxtSelection.current.end = p
   }
 
-  const handlePressButton = () => {}
+  const handlePressCall = async () => {
+    try {
+      await Linking.openURL('zlinkapp_dev://open')
+    } catch (e) {
+      console.log('#Duy Phan console', e)
+    }
+  }
 
   // return <InCallUI />
 
@@ -106,7 +100,7 @@ export const CallUI = () => {
     <View style={css.container}>
       <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
         <View style={css.infoCall}>
-          <Text style={css.infoText}>3002</Text>
+          <Text style={css.infoText}>{phone}</Text>
           <View style={css.empty} />
           <Text style={css.infoText}>ver 1.1.1 ZL</Text>
         </View>
@@ -130,7 +124,7 @@ export const CallUI = () => {
             showKeyboard={() => {}}
           />
         </View>
-        <RnTouchableOpacity style={css.button}>
+        <RnTouchableOpacity style={css.button} onPress={handlePressCall}>
           <Text style={css.textAction}>Call</Text>
         </RnTouchableOpacity>
       </ScrollView>

@@ -1,11 +1,6 @@
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
-import {
-  mdiBackspace,
-  mdiKeyboard,
-  mdiPhone,
-  mdiPhoneForward,
-} from '../assets/icons'
+import { mdiBackspace } from '../assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 

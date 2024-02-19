@@ -44,6 +44,7 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
+import { getUrlParams } from '../utils/deeplink'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import {
   permForCall,
@@ -104,6 +105,8 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
+    const upr = await getUrlParams()
+    console.log('#Duy Phan console', upr)
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
@@ -306,7 +309,7 @@ export const App = observer(() => {
       <UnreadChatNoti />
 
       <View style={css.App_Inner}>
-        {/* <RnStackerRoot /> */}
+        <RnStackerRoot />
         <CallUI />
         <RenderAllCalls />
         {cp && <PageCustomPageView id={cp.id} />}
