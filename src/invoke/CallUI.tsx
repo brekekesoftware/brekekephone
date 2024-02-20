@@ -15,6 +15,8 @@ const css = StyleSheet.create({
   },
   main: {
     flex: 1,
+    backgroundColor: 'rgb(135,135,135)',
+    marginRight: -2,
   },
   button: {
     backgroundColor: 'rgb(242,144,0)',
@@ -58,6 +60,7 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'rgb(34,86,154)',
     paddingHorizontal: 5,
+    paddingVertical: 4,
   },
   infoText: {
     color: 'white',
@@ -89,7 +92,7 @@ export const CallUI = () => {
   }
 
   if (showInCall) {
-    return <InCallUI />
+    return <InCallUI onBackToCall={() => setInCall(false)} />
   }
 
   return (

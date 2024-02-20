@@ -19,7 +19,7 @@ const css = StyleSheet.create({
   },
   left: {
     width: '40%',
-    padding: 5,
+    paddingBottom: 5,
   },
   right: {
     flex: 1,
@@ -39,10 +39,11 @@ const css = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     gap: 1,
+    paddingBottom: 2,
   },
   button: {
     width: 210,
-    height: 60,
+    height: 70,
     backgroundColor: 'rgb(82,99,96)',
     borderRadius: 5,
     justifyContent: 'center',
@@ -60,11 +61,12 @@ const css = StyleSheet.create({
   },
   keypad: {
     flex: 1,
-    marginBottom: 5,
+    marginBottom: 2,
+    backgroundColor: 'rgb(135,135,135)',
   },
   callBtn: {
     height: 45,
-    borderRadius: 4,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -96,6 +98,7 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'rgb(34,86,154)',
     paddingHorizontal: 5,
+    paddingVertical: 4,
   },
   infoText: {
     color: 'white',
@@ -103,10 +106,11 @@ const css = StyleSheet.create({
   content: { flex: 1, flexDirection: 'row' },
 })
 
-export const InCallUI = () => {
+export const InCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
   const handlePressCall = async () => {
     try {
       await Linking.openURL('zlinkapp_dev://open')
+      onBackToCall()
     } catch (e) {
       console.log('#Duy Phan console', e)
     }
@@ -163,6 +167,7 @@ export const InCallUI = () => {
               <RnIcon
                 path={mic ? mdiMicrophone : mdiMicrophoneOff}
                 color='white'
+                size={30}
               />
               <Text style={css.textAction}>{intl`MUTE`}</Text>
             </RnTouchableOpacity>
@@ -173,6 +178,7 @@ export const InCallUI = () => {
               <RnIcon
                 path={sound ? mdiVolumeHigh : mdiVolumeMute}
                 color='white'
+                size={30}
               />
               <Text style={css.textAction}>{intl`SPEAKER`}</Text>
             </RnTouchableOpacity>

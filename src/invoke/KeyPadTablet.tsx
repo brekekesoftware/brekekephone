@@ -28,6 +28,7 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    borderRadius: 6,
   },
   KeyPad_Btn: {
     justifyContent: 'center',
@@ -36,11 +37,11 @@ const css = StyleSheet.create({
     flexDirection: 'row',
   },
   KeyPad_Border: {
-    borderRightColor: 'white',
+    borderRightColor: 'rgb(135,135,135)',
     borderRightWidth: 1,
   },
   KeyPad_BorderBottom: {
-    borderBottomColor: 'white',
+    borderBottomColor: 'rgb(135,135,135)',
     borderBottomWidth: 1,
   },
   KeyPad_Btn__call: {
@@ -80,6 +81,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     position: 'relative',
+    backgroundColor: 'black',
   },
   KeyPad_Number_Backspace: {
     width: 200,
