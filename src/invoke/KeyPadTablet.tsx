@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import { mdiBackspace } from '../assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
@@ -65,17 +65,28 @@ const css = StyleSheet.create({
     height: 50,
     borderRadius: 50 / 2,
   },
+  PhoneView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  PhoneTxt: {
+    color: 'white',
+    fontSize: 30,
+  },
   KeyPad_Backspace: {
     height: 70,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingRight: 10,
+    position: 'relative',
   },
   KeyPad_Number_Backspace: {
     width: 200,
     color: 'white',
     alignItems: 'flex-end',
+    position: 'absolute',
+    right: 10,
   },
 })
 
@@ -99,10 +110,14 @@ export const KeyPadTablet = (p: {
   callVoice?(): void
   callVoiceForward?(): void
   isHideBackspace?: boolean
+  phone?: string
 }) => (
   <>
     {!p.isHideBackspace && (
       <View style={css.KeyPad_Backspace}>
+        <View style={css.PhoneView}>
+          <Text style={css.PhoneTxt}>{p.phone ?? ''}</Text>
+        </View>
         <RnTouchableOpacity
           onPress={() => p.onPressNumber('')}
           style={css.KeyPad_Number_Backspace}

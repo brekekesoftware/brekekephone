@@ -4,6 +4,7 @@ import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { intl } from '../stores/intl'
 import { InCallUI } from './InCallUI'
 import { KeyPadTablet } from './KeyPadTablet'
 
@@ -40,7 +41,7 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    width: 90,
+    gap: 2,
   },
   textPhone: {
     textAlign: 'center',
@@ -95,21 +96,26 @@ export const CallUI = () => {
     <View style={css.container}>
       <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
         <View style={css.infoCall}>
-          <Text style={css.infoText}>{phone}</Text>
+          <Text style={css.infoText}>3002</Text>
           <View style={css.empty} />
           <Text style={css.infoText}>ver 1.1.1 ZL</Text>
         </View>
         <View style={css.tabView}>
           <View style={[css.tabItem, css.borderLine]}>
             <View style={css.tabValue}>
-              <RnIcon path={mdiBookOpenBlank} color='white' />
-              <Text style={css.tabText}>Library</Text>
+              <View>
+                <RnIcon path={mdiBookOpenBlank} color='white' />
+              </View>
+
+              <Text style={css.tabText}>{intl`Phonebook`}</Text>
             </View>
           </View>
           <View style={css.tabItem}>
             <View style={css.tabValue}>
-              <RnIcon path={mdiHistory} color='white' />
-              <Text style={css.tabText}>History</Text>
+              <View>
+                <RnIcon path={mdiHistory} color='white' />
+              </View>
+              <Text style={css.tabText}>{intl`Call history`}</Text>
             </View>
           </View>
         </View>
@@ -117,10 +123,11 @@ export const CallUI = () => {
           <KeyPadTablet
             onPressNumber={handlePressNumber}
             showKeyboard={() => {}}
+            phone={phone}
           />
         </View>
         <RnTouchableOpacity style={css.button} onPress={() => setInCall(true)}>
-          <Text style={css.textAction}>Call</Text>
+          <Text style={css.textAction}>{intl`Call`}</Text>
         </RnTouchableOpacity>
       </ScrollView>
     </View>

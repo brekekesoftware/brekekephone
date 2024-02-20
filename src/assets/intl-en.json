@@ -267,5 +267,10 @@
   "{{$0}} other call is in background",
   "{{$0}} other calls are in background",
   "{{$0}} total",
-  "{{$0}}/{{$1}} online"
+  "{{$0}}/{{$1}} online",
+  "Call history",
+  "Call",
+  "The call ended",
+  "Cutting",
+  "Denial"
 ]
