@@ -10,16 +10,16 @@ const css = StyleSheet.create({
     flex: 1,
   },
   KeyPad_NumberTxt: {
-    fontSize: 30,
+    fontSize: 35,
     fontWeight: '600',
     textAlign: 'center',
-    paddingVertical: 20,
+    paddingTop: 15,
     color: 'white',
   },
   KeyPad_Txt: {
     fontSize: 15,
     color: 'white',
-    paddingVertical: 20,
+    paddingTop: 6,
     textAlign: 'center',
   },
   KeyPad_NumberBtn: {

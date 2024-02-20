@@ -69,6 +69,7 @@ const css = StyleSheet.create({
 export const CallUI = () => {
   const reftxtSelection = useRef({ start: 0, end: 0 })
   const [phone, setPhone] = useState('')
+  const [showInCall, setInCall] = useState(false)
 
   const handlePressNumber = v => {
     const { end, start } = reftxtSelection.current
@@ -86,15 +87,9 @@ export const CallUI = () => {
     reftxtSelection.current.end = p
   }
 
-  const handlePressCall = async () => {
-    try {
-      await Linking.openURL('zlinkapp_dev://open')
-    } catch (e) {
-      console.log('#Duy Phan console', e)
-    }
+  if (showInCall) {
+    return <InCallUI />
   }
-
-  // return <InCallUI />
 
   return (
     <View style={css.container}>
@@ -124,7 +119,7 @@ export const CallUI = () => {
             showKeyboard={() => {}}
           />
         </View>
-        <RnTouchableOpacity style={css.button} onPress={handlePressCall}>
+        <RnTouchableOpacity style={css.button} onPress={() => setInCall(true)}>
           <Text style={css.textAction}>Call</Text>
         </RnTouchableOpacity>
       </ScrollView>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Linking, StyleSheet, Text, View } from 'react-native'
 
 import {
   mdiMicrophone,
@@ -30,6 +30,8 @@ const css = StyleSheet.create({
   infoCall: {
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
   },
   empty: {
     flex: 1,
@@ -49,6 +51,9 @@ const css = StyleSheet.create({
   person: {
     color: 'rgb(152,73,107)',
     fontSize: 30,
+  },
+  time: {
+    color: 'rgb(152,73,107)',
   },
   textAction: {
     color: 'white',
@@ -86,10 +91,17 @@ const css = StyleSheet.create({
   btn: {
     flex: 1,
   },
+  info: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 })
 
 export const InCallUI = () => {
-  const handlePressButton = () => {}
+  const handlePressCall = async () => {
+    try {
+      await Linking.openURL('zlinkapp_dev://open')
+    } catch (e) {
+      console.log('#Duy Phan console', e)
+    }
+  }
 
   const [mic, setMic] = useState(false)
   const [sound, setSound] = useState(false)
@@ -112,15 +124,21 @@ export const InCallUI = () => {
           <RnTouchableOpacity style={[css.callBtn, css.bgAcceptCall, css.btn]}>
             <Text style={css.endCallText}>Accept call</Text>
           </RnTouchableOpacity>
-          <RnTouchableOpacity style={[css.callBtn, css.bgEndCall, css.btn]}>
+          <RnTouchableOpacity
+            style={[css.callBtn, css.bgEndCall, css.btn]}
+            onPress={handlePressCall}
+          >
             <Text style={css.endCallText}>Reject call</Text>
           </RnTouchableOpacity>
         </View>
       </View>
       <View style={css.right}>
         <View style={css.infoCall}>
-          <Text style={css.phone}>3021</Text>
-          <Text style={css.person}>Duy Phan</Text>
+          <View style={css.info}>
+            <Text style={css.phone}>3021</Text>
+            <Text style={css.person}>Duy Phan</Text>
+          </View>
+          <Text style={css.time}>00:06</Text>
         </View>
         <View style={css.empty} />
         <View style={css.buttons}>
