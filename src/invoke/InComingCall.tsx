@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Linking, StyleSheet, Text, View } from 'react-native'
 
 import {
   mdiMicrophone,
@@ -111,9 +111,18 @@ const css = StyleSheet.create({
   },
 })
 
-export const InCallUI = () => {
+export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
   const [mic, setMic] = useState(false)
   const [sound, setSound] = useState(false)
+
+  const handlePressCall = async () => {
+    try {
+      await Linking.openURL('zlinkapp_dev://open')
+      onBackToCall()
+    } catch (e) {
+      console.log('#Duy Phan console', e)
+    }
+  }
 
   return (
     <View style={css.container}>
@@ -132,17 +141,26 @@ export const InCallUI = () => {
               isHideBackspace
             />
           </View>
-          <RnTouchableOpacity style={[css.callBtn, css.bgEndCall]}>
-            <Text style={css.endCallText}>{intl`Cutting`}</Text>
-          </RnTouchableOpacity>
+          <View style={css.receiveCall}>
+            <RnTouchableOpacity
+              style={[css.callBtn, css.bgAcceptCall, css.btn]}
+            >
+              <Text style={css.endCallText}>{intl`Answer`}</Text>
+            </RnTouchableOpacity>
+            <RnTouchableOpacity
+              style={[css.callBtn, css.bgEndCall, css.btn]}
+              onPress={handlePressCall}
+            >
+              <Text style={css.endCallText}>{intl`Denial`}</Text>
+            </RnTouchableOpacity>
+          </View>
         </View>
         <View style={css.right}>
           <View style={css.infoCall}>
             <View style={css.info}>
               <Text style={css.phone}>3021</Text>
-              <Text style={css.person}>{intl`The call ended`}</Text>
+              <Text style={css.incomingCall}>{intl`Incoming Call`}</Text>
             </View>
-            <Text style={css.time}>00:06</Text>
           </View>
           <View style={css.empty} />
           <View style={css.buttons}>
