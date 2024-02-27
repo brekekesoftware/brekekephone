@@ -40,4 +40,4 @@ You can see all about `Linking` at https://reactnative.dev/docs/linking
 - We will have 3 main screens for this:
   - `Call UI`: When the app is invoked, will show this screen and have the keypad allow type numbers to call.
   - `Incoming call UI`: Have info from incoming calls, allow 2 actions `Answer` or `Denial`.
-  - `In call UI`: Have info in the call, and allow action to end the call. Can on/off micro, on/off speaker
+  - `In call UI`: Have info in the call, and allow action to end the call. Can on/off micro, on/off speaker.
