@@ -74,7 +74,7 @@ const css = StyleSheet.create({
 export const CallUI = () => {
   const reftxtSelection = useRef({ start: 0, end: 0 })
   const [phone, setPhone] = useState('')
-  const [showInCall, setInCall] = useState(false)
+  const [showInCall, setInCall] = useState('call')
 
   const handlePressNumber = v => {
     const { end, start } = reftxtSelection.current
@@ -92,9 +92,12 @@ export const CallUI = () => {
     reftxtSelection.current.end = p
   }
 
-  if (showInCall) {
-    return <InCallUI />
-    // return <InComingCallUI onBackToCall={() => setInCall(false)} />
+  if (showInCall === 'incoming') {
+    return <InComingCallUI onBackToCall={() => setInCall('incall')} />
+  }
+
+  if (showInCall === 'incall') {
+    return <InCallUI onBackToCall={() => setInCall('call')} />
   }
 
   return (
@@ -131,7 +134,10 @@ export const CallUI = () => {
             phone={phone}
           />
         </View>
-        <RnTouchableOpacity style={css.button} onPress={() => setInCall(true)}>
+        <RnTouchableOpacity
+          style={css.button}
+          onPress={() => setInCall('incoming')}
+        >
           <Text style={css.textAction}>{intl`Call`}</Text>
         </RnTouchableOpacity>
       </ScrollView>

@@ -1,5 +1,6 @@
+import qs from 'qs'
 import { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Linking, StyleSheet, Text, View } from 'react-native'
 
 import {
   mdiMicrophone,
@@ -69,6 +70,7 @@ const css = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   bgEndCall: {
     backgroundColor: 'rgb(216,44,69)',
@@ -111,9 +113,19 @@ const css = StyleSheet.create({
   },
 })
 
-export const InCallUI = () => {
+export const InCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
   const [mic, setMic] = useState(false)
   const [sound, setSound] = useState(false)
+
+  const handlePressCall = async () => {
+    try {
+      const params = qs.stringify({ name: 'Duy', age: 27 })
+      await Linking.openURL(`zlinkapp_dev://open?${params}`)
+      onBackToCall()
+    } catch (e) {
+      console.log('#Duy Phan console', e)
+    }
+  }
 
   return (
     <InvokeGradient>
@@ -125,7 +137,7 @@ export const InCallUI = () => {
         </View>
         <View style={css.content}>
           <View style={css.left}>
-            <View style={{ height: 200 }}></View>
+            <View style={{ height: 130 }}></View>
             <View style={css.keypad}>
               <KeyPadTablet
                 onPressNumber={() => {}}
@@ -138,7 +150,7 @@ export const InCallUI = () => {
               style={css.callBtn}
               locations={[0, 0.5, 0.6]}
             >
-              <RnTouchableOpacity>
+              <RnTouchableOpacity onPress={handlePressCall} style={css.callBtn}>
                 <Text style={css.endCallText}>{intl`Cutting`}</Text>
               </RnTouchableOpacity>
             </InvokeGradient>

@@ -43,7 +43,7 @@ const css = StyleSheet.create({
     paddingBottom: 2,
   },
   button: {
-    width: 220,
+    width: 210,
     height: 65,
     backgroundColor: 'rgb(82,99,96)',
     borderRadius: 5,
@@ -94,6 +94,7 @@ const css = StyleSheet.create({
   },
   btn: {
     flex: 1,
+    width: '100%',
   },
   info: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
@@ -115,16 +116,6 @@ const css = StyleSheet.create({
 export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
   const [mic, setMic] = useState(false)
   const [sound, setSound] = useState(false)
-
-  const handlePressCall = async () => {
-    try {
-      const params = qs.stringify({ name: 'Duy', age: 27 })
-      await Linking.openURL(`zlinkapp_dev://open?${params}`)
-      onBackToCall()
-    } catch (e) {
-      console.log('#Duy Phan console', e)
-    }
-  }
 
   return (
     <InvokeGradient>
@@ -150,7 +141,7 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
                 style={[css.callBtn, css.btn]}
                 locations={[0, 0.5, 0.6]}
               >
-                <RnTouchableOpacity>
+                <RnTouchableOpacity style={[css.callBtn, css.btn]}>
                   <Text style={css.endCallText}>{intl`Answer`}</Text>
                 </RnTouchableOpacity>
               </InvokeGradient>
@@ -163,7 +154,10 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
                 style={[css.callBtn, css.btn]}
                 locations={[0, 0.5, 0.6]}
               >
-                <RnTouchableOpacity onPress={handlePressCall}>
+                <RnTouchableOpacity
+                  onPress={onBackToCall}
+                  style={[css.callBtn, css.btn]}
+                >
                   <Text style={css.endCallText}>{intl`Denial`}</Text>
                 </RnTouchableOpacity>
               </InvokeGradient>
