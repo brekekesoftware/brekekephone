@@ -5,6 +5,7 @@
 
 - [Custom branding build](./.doc/custom-branding.md)
 - [Network proxy setup](./.doc/network-proxy-setup.md)
+- [Invoke setup](./.doc/invoke-setup.md)
 
 ### Environment requirement
 

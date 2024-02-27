@@ -19,8 +19,6 @@ You can see more about intents filters at:
 
 ## 2. Invoke this app from another app
 
-We will use `Linking` of React Native to handle.
-
 - Use `Linking.canOpenURL(url)` to check URL can be handled. If it return `true`, you can invoke app with the `url`.
 - Use ``Linking.openUrl(`brekekeapp_phonedev:open?${params}`)`` to invoke this app, in which:
   - The `brekekeapp_phonedev` is the attribute `android:scheme` in tag `<data>` in `Androidmanifest.xml` file.
@@ -40,6 +38,6 @@ You can see all about `Linking` at https://reactnative.dev/docs/linking
 ## 4. About UI when invoked
 
 - We will have 3 main screens for this:
-- `Call UI`: When the app is invoked, will show this screen and have the keypad allow type numbers to call.
-- `Incoming call UI`: Have info from incoming calls, allow 2 actions `Answer` or `Denial`.
-- `In call UI`: Have info in the call, allow action end call.
+  - `Call UI`: When the app is invoked, will show this screen and have the keypad allow type numbers to call.
+  - `Incoming call UI`: Have info from incoming calls, allow 2 actions `Answer` or `Denial`.
+  - `In call UI`: Have info in the call, and allow action to end the call. Can on/off micro, on/off speaker
