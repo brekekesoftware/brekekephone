@@ -145,17 +145,28 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
               />
             </View>
             <View style={css.receiveCall}>
-              <RnTouchableOpacity
-                style={[css.callBtn, css.bgAcceptCall, css.btn]}
+              <InvokeGradient
+                colors={['rgb(90, 207,146)', 'rgb(0,154, 41)', 'rgb(0,141,31)']}
+                style={[css.callBtn, css.btn]}
+                locations={[0, 0.5, 0.6]}
               >
-                <Text style={css.endCallText}>{intl`Answer`}</Text>
-              </RnTouchableOpacity>
-              <RnTouchableOpacity
-                style={[css.callBtn, css.bgEndCall, css.btn]}
-                onPress={handlePressCall}
+                <RnTouchableOpacity>
+                  <Text style={css.endCallText}>{intl`Answer`}</Text>
+                </RnTouchableOpacity>
+              </InvokeGradient>
+              <InvokeGradient
+                colors={[
+                  'rgb(228,126,123)',
+                  'rgb(242,38,32)',
+                  'rgb(215,46,39)',
+                ]}
+                style={[css.callBtn, css.btn]}
+                locations={[0, 0.5, 0.6]}
               >
-                <Text style={css.endCallText}>{intl`Denial`}</Text>
-              </RnTouchableOpacity>
+                <RnTouchableOpacity onPress={handlePressCall}>
+                  <Text style={css.endCallText}>{intl`Denial`}</Text>
+                </RnTouchableOpacity>
+              </InvokeGradient>
             </View>
           </View>
           <View style={css.right}>
@@ -178,6 +189,7 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
                 />
                 <Text style={css.textAction}>{intl`MUTE`}</Text>
               </RnTouchableOpacity>
+
               <RnTouchableOpacity
                 style={css.button}
                 onPress={() => setSound(!sound)}

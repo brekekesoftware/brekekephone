@@ -93,8 +93,8 @@ export const CallUI = () => {
   }
 
   if (showInCall) {
-    // return <InCallUI  />
-    return <InComingCallUI onBackToCall={() => setInCall(false)} />
+    return <InCallUI />
+    // return <InComingCallUI onBackToCall={() => setInCall(false)} />
   }
 
   return (

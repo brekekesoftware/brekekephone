@@ -7,22 +7,27 @@ import LinearGradient, {
 const css = StyleSheet.create({
   BrekekeGradient: {
     height: '100%',
-    minHeight: 550,
   },
 })
 
 export type InvokeGradientProps = Omit<LinearGradientProps, 'colors'> & {
   white?: boolean
+  colors?: (string | number)[]
 }
-export const InvokeGradient: FC<InvokeGradientProps> = props => (
+export const InvokeGradient: FC<InvokeGradientProps> = ({
+  colors,
+  ...props
+}) => (
   <LinearGradient
+    colors={
+      colors ?? [
+        'rgb(0,13,56)',
+        'rgb(0,50,99)',
+        'rgb(0,100,154)',
+        'rgb(0,126,182)',
+      ]
+    }
     {...props}
-    colors={[
-      'rgb(0,13,56)',
-      'rgb(0,50,99)',
-      'rgb(0,100,154)',
-      'rgb(0,126,182)',
-    ]}
     style={[css.BrekekeGradient, props.style]}
   />
 )

@@ -133,9 +133,15 @@ export const InCallUI = () => {
                 isHideBackspace
               />
             </View>
-            <RnTouchableOpacity style={[css.callBtn, css.bgEndCall]}>
-              <Text style={css.endCallText}>{intl`Cutting`}</Text>
-            </RnTouchableOpacity>
+            <InvokeGradient
+              colors={['rgb(228,126,123)', 'rgb(242,38,32)', 'rgb(215,46,39)']}
+              style={css.callBtn}
+              locations={[0, 0.5, 0.6]}
+            >
+              <RnTouchableOpacity>
+                <Text style={css.endCallText}>{intl`Cutting`}</Text>
+              </RnTouchableOpacity>
+            </InvokeGradient>
           </View>
           <View style={css.right}>
             <View style={css.infoCall}>
