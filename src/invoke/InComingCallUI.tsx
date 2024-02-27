@@ -1,3 +1,4 @@
+import qs from 'qs'
 import { useState } from 'react'
 import { Linking, StyleSheet, Text, View } from 'react-native'
 
@@ -117,7 +118,8 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
 
   const handlePressCall = async () => {
     try {
-      await Linking.openURL('zlinkapp_dev://open')
+      const params = qs.stringify({ name: 'Duy', age: 27 })
+      await Linking.openURL(`zlinkapp_dev://open?${params}`)
       onBackToCall()
     } catch (e) {
       console.log('#Duy Phan console', e)

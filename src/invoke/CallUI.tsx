@@ -6,7 +6,7 @@ import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl } from '../stores/intl'
 import { InCallUI } from './InCallUI'
-import { InComingCallUI } from './InComingCall'
+import { InComingCallUI } from './InComingCallUI'
 import { KeyPadTablet } from './KeyPadTablet'
 
 const css = StyleSheet.create({
