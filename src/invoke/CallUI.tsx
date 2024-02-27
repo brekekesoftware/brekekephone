@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
 import { RnIcon } from '../components/RnIcon'

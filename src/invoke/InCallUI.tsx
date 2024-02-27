@@ -10,12 +10,12 @@ import {
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl } from '../stores/intl'
+import { InvokeGradient } from './InvokeGradient'
 import { KeyPadTablet } from './KeyPadTablet'
 
 const css = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(16,46,95)',
   },
   left: {
     width: '40%',
@@ -43,7 +43,7 @@ const css = StyleSheet.create({
   },
   button: {
     width: 210,
-    height: 70,
+    height: 65,
     backgroundColor: 'rgb(82,99,96)',
     borderRadius: 5,
     justifyContent: 'center',
@@ -116,58 +116,63 @@ export const InCallUI = () => {
   const [sound, setSound] = useState(false)
 
   return (
-    <View style={css.container}>
-      <View style={css.header}>
-        <Text style={css.infoText}>3002</Text>
-        <View style={css.empty} />
-        <Text style={css.infoText}>ver 1.1.1 ZL</Text>
-      </View>
-      <View style={css.content}>
-        <View style={css.left}>
-          <View style={{ height: 200 }}></View>
-          <View style={css.keypad}>
-            <KeyPadTablet
-              onPressNumber={() => {}}
-              showKeyboard={() => {}}
-              isHideBackspace
-            />
-          </View>
-          <RnTouchableOpacity style={[css.callBtn, css.bgEndCall]}>
-            <Text style={css.endCallText}>{intl`Cutting`}</Text>
-          </RnTouchableOpacity>
-        </View>
-        <View style={css.right}>
-          <View style={css.infoCall}>
-            <View style={css.info}>
-              <Text style={css.phone}>3021</Text>
-              <Text style={css.person}>{intl`The call ended`}</Text>
-            </View>
-            <Text style={css.time}>00:06</Text>
-          </View>
+    <InvokeGradient>
+      <View style={css.container}>
+        <View style={css.header}>
+          <Text style={css.infoText}>3002</Text>
           <View style={css.empty} />
-          <View style={css.buttons}>
-            <RnTouchableOpacity style={css.button} onPress={() => setMic(!mic)}>
-              <RnIcon
-                path={mic ? mdiMicrophone : mdiMicrophoneOff}
-                color='white'
-                size={30}
+          <Text style={css.infoText}>ver 1.1.1 ZL</Text>
+        </View>
+        <View style={css.content}>
+          <View style={css.left}>
+            <View style={{ height: 200 }}></View>
+            <View style={css.keypad}>
+              <KeyPadTablet
+                onPressNumber={() => {}}
+                showKeyboard={() => {}}
+                isHideBackspace
               />
-              <Text style={css.textAction}>{intl`MUTE`}</Text>
+            </View>
+            <RnTouchableOpacity style={[css.callBtn, css.bgEndCall]}>
+              <Text style={css.endCallText}>{intl`Cutting`}</Text>
             </RnTouchableOpacity>
-            <RnTouchableOpacity
-              style={css.button}
-              onPress={() => setSound(!sound)}
-            >
-              <RnIcon
-                path={sound ? mdiVolumeHigh : mdiVolumeMute}
-                color='white'
-                size={30}
-              />
-              <Text style={css.textAction}>{intl`SPEAKER`}</Text>
-            </RnTouchableOpacity>
+          </View>
+          <View style={css.right}>
+            <View style={css.infoCall}>
+              <View style={css.info}>
+                <Text style={css.phone}>3021</Text>
+                <Text style={css.person}>{intl`The call ended`}</Text>
+              </View>
+              <Text style={css.time}>00:06</Text>
+            </View>
+            <View style={css.empty} />
+            <View style={css.buttons}>
+              <RnTouchableOpacity
+                style={css.button}
+                onPress={() => setMic(!mic)}
+              >
+                <RnIcon
+                  path={mic ? mdiMicrophone : mdiMicrophoneOff}
+                  color='white'
+                  size={30}
+                />
+                <Text style={css.textAction}>{intl`MUTE`}</Text>
+              </RnTouchableOpacity>
+              <RnTouchableOpacity
+                style={css.button}
+                onPress={() => setSound(!sound)}
+              >
+                <RnIcon
+                  path={sound ? mdiVolumeHigh : mdiVolumeMute}
+                  color='white'
+                  size={30}
+                />
+                <Text style={css.textAction}>{intl`SPEAKER`}</Text>
+              </RnTouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
-    </View>
+    </InvokeGradient>
   )
 }
