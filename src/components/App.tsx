@@ -54,6 +54,7 @@ import {
 } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { updateParamsWithInvoke } from '../utils/updateParamsWithInvoke'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
@@ -107,6 +108,10 @@ const initApp = async () => {
       return
     }
     const upr = await getUrlParams()
+    if (upr) {
+      updateParamsWithInvoke(upr)
+    }
+
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()

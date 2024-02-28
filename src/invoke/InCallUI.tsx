@@ -1,4 +1,4 @@
-import qs from 'qs'
+import { observer } from 'mobx-react'
 import { useState } from 'react'
 import { Linking, StyleSheet, Text, View } from 'react-native'
 
@@ -10,6 +10,8 @@ import {
 } from '../assets/icons'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { getAuthStore } from '../stores/authStore'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { InvokeGradient } from './InvokeGradient'
 import { KeyPadTablet } from './KeyPadTablet'
@@ -111,86 +113,118 @@ const css = StyleSheet.create({
     color: 'white',
     fontSize: 30,
   },
+  textConnecting: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 30,
+  },
 })
 
-export const InCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
-  const [mic, setMic] = useState(false)
-  const [sound, setSound] = useState(false)
+export const InCallUI = observer(
+  ({ onBackToCall }: { onBackToCall(): void }) => {
+    const [mic, setMic] = useState(false)
+    const [sound, setSound] = useState(false)
 
-  const handlePressCall = async () => {
-    try {
-      const params = qs.stringify({ name: 'Duy', age: 27 })
-      await Linking.openURL(`zlinkapp_dev://open?${params}`)
-      onBackToCall()
-    } catch (e) {
-      console.log('#Duy Phan console', e)
+    const {
+      pbxConnectingOrFailure,
+      sipConnectingOrFailure,
+      ucConnectingOrFailure,
+    } = getAuthStore()
+    const isConnecting =
+      pbxConnectingOrFailure() ||
+      sipConnectingOrFailure() ||
+      ucConnectingOrFailure()
+
+    if (isConnecting) {
+      return (
+        <InvokeGradient>
+          <View style={css.container}>
+            <Text style={css.textConnecting}>Connecting...</Text>
+          </View>
+        </InvokeGradient>
+      )
     }
-  }
 
-  return (
-    <InvokeGradient>
-      <View style={css.container}>
-        <View style={css.header}>
-          <Text style={css.infoText}>3002</Text>
-          <View style={css.empty} />
-          <Text style={css.infoText}>ver 1.1.1 ZL</Text>
-        </View>
-        <View style={css.content}>
-          <View style={css.left}>
-            <View style={{ height: 130 }}></View>
-            <View style={css.keypad}>
-              <KeyPadTablet
-                onPressNumber={() => {}}
-                showKeyboard={() => {}}
-                isHideBackspace
-              />
-            </View>
-            <InvokeGradient
-              colors={['rgb(228,126,123)', 'rgb(242,38,32)', 'rgb(215,46,39)']}
-              style={css.callBtn}
-              locations={[0, 0.5, 0.6]}
-            >
-              <RnTouchableOpacity onPress={handlePressCall} style={css.callBtn}>
-                <Text style={css.endCallText}>{intl`Cutting`}</Text>
-              </RnTouchableOpacity>
-            </InvokeGradient>
-          </View>
-          <View style={css.right}>
-            <View style={css.infoCall}>
-              <View style={css.info}>
-                <Text style={css.phone}>3021</Text>
-                <Text style={css.person}>{intl`The call ended`}</Text>
+    const infoCall = getCallStore().calls[0]
+
+    const handlePressCall = async () => {
+      try {
+        await Linking.openURL('brekeke_invoke_dev://open')
+        onBackToCall()
+      } catch (e) {
+        console.log('#Duy Phan console', e)
+      }
+    }
+
+    return (
+      <InvokeGradient>
+        <View style={css.container}>
+          <View style={css.content}>
+            <View style={css.left}>
+              <View style={{ height: 130 }}></View>
+              <View style={css.keypad}>
+                <KeyPadTablet
+                  onPressNumber={() => {}}
+                  showKeyboard={() => {}}
+                  isHideBackspace
+                />
               </View>
-              <Text style={css.time}>00:06</Text>
+              <InvokeGradient
+                colors={[
+                  'rgb(228,126,123)',
+                  'rgb(242,38,32)',
+                  'rgb(215,46,39)',
+                ]}
+                style={css.callBtn}
+                locations={[0, 0.5, 0.6]}
+              >
+                <RnTouchableOpacity
+                  onPress={handlePressCall}
+                  style={css.callBtn}
+                >
+                  <Text style={css.endCallText}>{intl`Cutting`}</Text>
+                </RnTouchableOpacity>
+              </InvokeGradient>
             </View>
-            <View style={css.empty} />
-            <View style={css.buttons}>
-              <RnTouchableOpacity
-                style={css.button}
-                onPress={() => setMic(!mic)}
-              >
-                <RnIcon
-                  path={mic ? mdiMicrophone : mdiMicrophoneOff}
-                  color='white'
-                  size={30}
-                />
-                <Text style={css.textAction}>{intl`MUTE`}</Text>
-              </RnTouchableOpacity>
-              <RnTouchableOpacity
-                style={css.button}
-                onPress={() => setSound(!sound)}
-              >
-                <RnIcon
-                  path={sound ? mdiVolumeHigh : mdiVolumeMute}
-                  color='white'
-                  size={30}
-                />
-                <Text style={css.textAction}>{intl`SPEAKER`}</Text>
-              </RnTouchableOpacity>
+            <View style={css.right}>
+              <View style={css.infoCall}>
+                <View style={css.info}>
+                  <Text style={css.phone}>
+                    {infoCall?.getDisplayName() ?? ''}
+                  </Text>
+                  <Text style={css.person}>{intl`The call ended`}</Text>
+                </View>
+                <Text style={css.time}>00:06</Text>
+              </View>
+              <View style={css.empty} />
+              <View style={css.buttons}>
+                <RnTouchableOpacity
+                  style={css.button}
+                  onPress={() => setMic(!mic)}
+                >
+                  <RnIcon
+                    path={mic ? mdiMicrophone : mdiMicrophoneOff}
+                    color='white'
+                    size={30}
+                  />
+                  <Text style={css.textAction}>{intl`MUTE`}</Text>
+                </RnTouchableOpacity>
+                <RnTouchableOpacity
+                  style={css.button}
+                  onPress={() => setSound(!sound)}
+                >
+                  <RnIcon
+                    path={sound ? mdiVolumeHigh : mdiVolumeMute}
+                    color='white'
+                    size={30}
+                  />
+                  <Text style={css.textAction}>{intl`SPEAKER`}</Text>
+                </RnTouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </InvokeGradient>
-  )
-}
+      </InvokeGradient>
+    )
+  },
+)

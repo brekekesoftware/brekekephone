@@ -39,6 +39,9 @@ export const parse = (location: string | Url<any> | null) => {
   if (!params.password) {
     params.password = ''
   }
+  if (!params.callTo) {
+    params.callTo = ''
+  }
   //
   return params as any as UrlParams
 }
@@ -52,4 +55,5 @@ export interface UrlParams {
   phone_idx: string
   _wn: string
   action: string
+  callTo: string
 }

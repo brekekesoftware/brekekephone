@@ -1,10 +1,13 @@
-import { useRef, useState } from 'react'
+import { observer } from 'mobx-react'
+import { useEffect, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
+import { RNInvokeState } from '../stores/RNInvokeStore'
 import { InCallUI } from './InCallUI'
 import { InComingCallUI } from './InComingCallUI'
 import { KeyPadTablet } from './KeyPadTablet'
@@ -75,10 +78,19 @@ const css = StyleSheet.create({
   },
 })
 
-export const CallUI = () => {
+export const CallUI = observer(() => {
   const reftxtSelection = useRef({ start: 0, end: 0 })
   const [phone, setPhone] = useState('')
   const [showInCall, setInCall] = useState('call')
+
+  const { callTo } = RNInvokeState
+
+  useEffect(() => {
+    if (callTo) {
+      getCallStore().startCall(callTo)
+      setInCall('incall')
+    }
+  }, [callTo])
 
   const handlePressNumber = v => {
     const { end, start } = reftxtSelection.current
@@ -147,4 +159,4 @@ export const CallUI = () => {
       </ScrollView>
     </View>
   )
-}
+})

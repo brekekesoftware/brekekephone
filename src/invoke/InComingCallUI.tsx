@@ -120,11 +120,6 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
   return (
     <InvokeGradient>
       <View style={css.container}>
-        <View style={css.header}>
-          <Text style={css.infoText}>3002</Text>
-          <View style={css.empty} />
-          <Text style={css.infoText}>ver 1.1.1 ZL</Text>
-        </View>
         <View style={css.content}>
           <View style={css.left}>
             <View style={{ height: 130 }}></View>
