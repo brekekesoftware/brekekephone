@@ -51,4 +51,5 @@ export interface UrlParams {
   port: string
   phone_idx: string
   _wn: string
+  action: string
 }

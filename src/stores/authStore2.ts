@@ -34,6 +34,7 @@ import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RNInvokeState } from './RNInvokeStore'
 import { userStore } from './userStore'
 
 type ConnectionState =
@@ -296,10 +297,25 @@ export class AuthStore {
       return false
     }
     //
-    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
+    const {
+      _wn,
+      host,
+      phone_idx,
+      port,
+      tenant,
+      user,
+      password,
+      action: actionInvoke,
+    } = urlParams
     if (!tenant || !user) {
       return false
     }
+
+    // Set active invoke in store
+    if (actionInvoke === 'invoke-example') {
+      RNInvokeState.updateStateInvoke(true)
+    }
+
     //
     const a = await accountStore.find({
       pbxUsername: user,

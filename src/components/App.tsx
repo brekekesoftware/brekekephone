@@ -39,6 +39,7 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
+import { RNInvokeState } from '../stores/RNInvokeStore'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
@@ -106,7 +107,6 @@ const initApp = async () => {
       return
     }
     const upr = await getUrlParams()
-    console.log('#Duy Phan console', upr)
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
@@ -310,7 +310,7 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
-        <CallUI />
+        {RNInvokeState.isHasInvoke && <CallUI />}
         <RenderAllCalls />
         {cp && <PageCustomPageView id={cp.id} />}
         <RnPickerRoot />

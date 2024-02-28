@@ -13,6 +13,10 @@ const css = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    zIndex: 99999,
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
   },
   main: {
     flex: 1,
