@@ -120,9 +120,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           navFnKey: 'goToPageVoicemail',
         },
       ],
-      defaultSubMenuKey: getAuthStore().phoneappliEnabled()
-        ? 'keypad'
-        : 'recents',
+      defaultSubMenuKey: 'keypad',
     },
     {
       key: 'settings',

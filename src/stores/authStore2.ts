@@ -331,7 +331,7 @@ export class AuthStore {
       }
 
       // checking phoneappli is enabled
-      if (!auth.getCurrentAccount().phoneappliEnabled) {
+      if (!auth.phoneappliEnabled()) {
         cleanUpUrlParams()
         return true
       }
