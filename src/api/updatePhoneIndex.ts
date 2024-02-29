@@ -27,10 +27,12 @@ export const updatePhoneIndex = async (
   }
 
   // upsert account info with properties phoneappli.enable
-  accountStore.upsertAccount({
-    id: p.id,
-    phoneappliEnabled: extProps.phoneappli,
-  })
+  if (p === getAuthStore().getCurrentAccount()) {
+    accountStore.upsertAccount({
+      id: p.id,
+      phoneappliEnabled: extProps.phoneappli,
+    })
+  }
 
   const phone = extProps.phones[phoneIndex - 1]
   const phoneTypeCorrect = phone.type === 'Web Phone'
