@@ -106,12 +106,13 @@ const initApp = async () => {
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
+    const h = await s.handleUrlParams()
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
     // https://github.com/facebook/react-native-website/issues/273
     if (Platform.OS !== 'ios') {
       return
     }
-    if (!checkHasCallOrWakeFromPN() && !(await s.handleUrlParams())) {
+    if (!checkHasCallOrWakeFromPN() && !h) {
       await autoLogin()
     }
   })
@@ -167,7 +168,6 @@ const initApp = async () => {
   }, 17)
   const clearReaction = reaction(() => s.signedInId, onAuthUpdate)
   void clearReaction
-
   if (await s.handleUrlParams()) {
     console.log('App navigated by url params')
     // already navigated

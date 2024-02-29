@@ -384,6 +384,7 @@ export class PBX extends EventEmitter {
         'p4_ptype',
         'pnumber',
         'language',
+        'phoneappli.enable',
       ],
     })
 
@@ -416,6 +417,7 @@ export class PBX extends EventEmitter {
       name: userName,
       phones,
       language: lang,
+      phoneappli: toBoolean(res?.[7]),
     }
   }
 

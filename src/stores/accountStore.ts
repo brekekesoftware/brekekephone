@@ -39,6 +39,7 @@ export type Account = {
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]
+  phoneappliEnabled?: boolean
 }
 export type AccountData = {
   id: string

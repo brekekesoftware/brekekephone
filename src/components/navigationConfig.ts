@@ -1,3 +1,5 @@
+import { Linking } from 'react-native'
+
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -11,6 +13,7 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
+import { URLSchemes } from '../utils/deeplink'
 
 export type Menu = {
   key: string
@@ -112,7 +115,9 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           navFnKey: 'goToPageCallParks',
         },
       ],
-      defaultSubMenuKey: 'recents',
+      defaultSubMenuKey: getAuthStore().phoneappliEnabled()
+        ? 'keypad'
+        : 'recents',
     },
     {
       key: 'settings',
@@ -121,6 +126,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
       defaultSubMenuKey: 'account',
     },
   ] as Menu[]
+
   //
   arr.forEach((m, i) => {
     m.subMenusMap = arrToMap(
@@ -131,9 +137,22 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled) {
+        const authStore = getAuthStore()
+        const currentAccount = authStore.getCurrentAccount()
+        if (s.ucRequired && !currentAccount?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
+        }
+        // handle link to phoneappli app
+        if (authStore.phoneappliEnabled()) {
+          if (s.navFnKey === 'goToPageContactPhonebook') {
+            Linking.openURL(URLSchemes.phoneappli.USERS)
+            return
+          }
+          if (s.navFnKey === 'goToPageCallRecents') {
+            Linking.openURL(URLSchemes.phoneappli.HISTORY_CALLED)
+            return
+          }
         }
         // @ts-ignore
         Nav()[s.navFnKey]({ id: s.key })

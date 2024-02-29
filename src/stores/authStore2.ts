@@ -11,7 +11,7 @@ import {
   UcConfig,
 } from '../brekekejs'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { getUrlParams } from '../utils/deeplink'
+import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { waitTimeout } from '../utils/waitTimeout'
 import {
@@ -24,7 +24,7 @@ import {
 import { CallHistoryInfo } from './addCallHistory'
 import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
-import { setAuthStore } from './authStore'
+import { getAuthStore, setAuthStore, waitSip } from './authStore'
 import { authUC } from './AuthUC'
 import { Call } from './Call'
 import { getCallStore } from './callStore'
@@ -34,6 +34,7 @@ import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RnStacker } from './RnStacker'
 import { userStore } from './userStore'
 
 type ConnectionState =
@@ -282,7 +283,79 @@ export class AuthStore {
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
+  alreadyHandleDeepLinkMakeCall = false
   handleUrlParams = async () => {
+    const urlParams = await getUrlParams()
+
+    if (!urlParams) {
+      return false
+    }
+
+    //
+    const { _wn, host, phone_idx, port, tenant, user, password, type, number } =
+      urlParams
+    if (!tenant || !user) {
+      return false
+    }
+
+    const a = await accountStore.find({
+      pbxUsername: user,
+      pbxTenant: tenant,
+      pbxHostname: host,
+      pbxPort: port,
+    })
+
+    // clean up url params
+    const cleanUpUrlParams = () => {
+      this.alreadyHandleDeepLinkMakeCall = false
+      clearUrlParams()
+    }
+    // handle deep link: make call
+    if (type === 'startCall' && number) {
+      // prevent double start call
+      if (this.alreadyHandleDeepLinkMakeCall) {
+        return true
+      }
+      this.alreadyHandleDeepLinkMakeCall = true
+      const auth = getAuthStore()
+
+      // checking user is current user or not
+      if (!(this.signedInId && this.signedInId === a?.id)) {
+        const signed = a
+          ? await this.signIn(a, true)
+          : await auth.autoSignInLast()
+        if (!signed) {
+          cleanUpUrlParams()
+          return true
+        }
+      }
+
+      // checking phoneappli is enabled
+      if (!auth.getCurrentAccount().phoneappliEnabled) {
+        cleanUpUrlParams()
+        return true
+      }
+      await waitSip()
+
+      // handle transfer call from deep link
+      const cs = RnStacker.stacks[RnStacker.stacks.length - 1]
+      if (
+        getCallStore().calls.length &&
+        (cs.name === 'PageCallTransferChooseUser' ||
+          cs.name === 'PageCallTransferDial')
+      ) {
+        getCallStore().getOngoingCall()?.transferAttended(number)
+        cleanUpUrlParams()
+        return true
+      }
+
+      // handle start call
+      getCallStore().startCall(number)
+      cleanUpUrlParams()
+      return true
+    }
+
+    // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||
       sip.phone?.getSessionCount() ||
@@ -290,28 +363,11 @@ export class AuthStore {
     ) {
       return false
     }
-    //
-    const urlParams = await getUrlParams()
-    if (!urlParams) {
-      return false
-    }
-    //
-    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
-    if (!tenant || !user) {
-      return false
-    }
-    //
-    const a = await accountStore.find({
-      pbxUsername: user,
-      pbxTenant: tenant,
-      pbxHostname: host,
-      pbxPort: port,
-    })
+
     let phoneIdx = parseInt(phone_idx)
     if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {
       phoneIdx = 4
     }
-    //
     if (a) {
       if (!a.pbxHostname) {
         a.pbxHostname = host
@@ -400,11 +456,13 @@ export class AuthStore {
     }
     await this.signIn(acc)
   }
-
+  phoneappliEnabled = () =>
+    this.getCurrentAccount().phoneappliEnabled && Platform.OS !== 'web'
   userExtensionProperties: null | {
     id: string
     name: string
     language: string
+    phoneappli: boolean
     phones: {
       id: string
       type: string
