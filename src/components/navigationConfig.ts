@@ -1,5 +1,3 @@
-import { Linking } from 'react-native'
-
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -13,7 +11,7 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
-import { URLSchemes } from '../utils/deeplink'
+import { openLinkSafely, URLSchemes } from '../utils/deeplink'
 
 export type Menu = {
   key: string
@@ -150,14 +148,14 @@ const genMenus = (customPages: PbxCustomPage[]) => {
         // handle link to phoneappli app
         if (authStore.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
-            Linking.openURL(URLSchemes.phoneappli.USERS)
+            openLinkSafely(URLSchemes.phoneappli.USERS)
             return
           }
           if (
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
-            Linking.openURL(URLSchemes.phoneappli.HISTORY_CALLED)
+            openLinkSafely(URLSchemes.phoneappli.HISTORY_CALLED)
             return
           }
         }

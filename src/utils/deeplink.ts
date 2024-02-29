@@ -12,6 +12,17 @@ export const URLSchemes = {
     HISTORY_CALLED: 'deeplink://history?type=called',
   },
 }
+
+export const openLinkSafely = async (url: string) => {
+  if (!url) {
+    return
+  }
+  try {
+    await Linking.openURL(url)
+  } catch (error) {
+    console.log(`Open ${url} get error: ${error}`)
+  }
+}
 export const getUrlParams = async () => {
   if (alreadyHandleFirstOpen) {
     return urlParams
