@@ -114,6 +114,11 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           label: intl`PARKS`,
           navFnKey: 'goToPageCallParks',
         },
+        {
+          key: 'voicemail',
+          label: intl`VOICEMAIL`,
+          navFnKey: 'goToPageVoicemail',
+        },
       ],
       defaultSubMenuKey: getAuthStore().phoneappliEnabled()
         ? 'keypad'
@@ -143,13 +148,17 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           m.defaultSubMenu.navFn()
           return
         }
+
         // handle link to phoneappli app
         if (authStore.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
             Linking.openURL(URLSchemes.phoneappli.USERS)
             return
           }
-          if (s.navFnKey === 'goToPageCallRecents') {
+          if (
+            s.navFnKey === 'goToPageCallRecents' ||
+            s.navFnKey === 'backToPageCallRecents'
+          ) {
             Linking.openURL(URLSchemes.phoneappli.HISTORY_CALLED)
             return
           }
