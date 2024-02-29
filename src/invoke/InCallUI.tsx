@@ -5,20 +5,27 @@ import { Linking, StyleSheet, Text, View } from 'react-native'
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
+  mdiPhone,
   mdiVolumeHigh,
   mdiVolumeMute,
 } from '../assets/icons'
+import { ButtonIcon } from '../components/ButtonIcon'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { v } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
+import { RNInvokeState } from '../stores/RNInvokeStore'
+import { Duration } from '../stores/timerStore'
 import { InvokeGradient } from './InvokeGradient'
-import { KeyPadTablet } from './KeyPadTablet'
+import { KeyPadInvoke } from './KeyPadInvoke'
 
 const css = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   left: {
     width: '40%',
@@ -38,6 +45,8 @@ const css = StyleSheet.create({
   },
   empty: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttons: {
     flexDirection: 'row',
@@ -73,6 +82,7 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    marginBottom: 10,
   },
   bgEndCall: {
     backgroundColor: 'rgb(216,44,69)',
@@ -149,7 +159,7 @@ export const InCallUI = observer(
 
     const handlePressCall = async () => {
       try {
-        await Linking.openURL('brekeke_invoke_dev://open')
+        infoCall.hangupWithUnhold()
         onBackToCall()
       } catch (e) {
         console.log('#Duy Phan console', e)
@@ -160,10 +170,10 @@ export const InCallUI = observer(
       <InvokeGradient>
         <View style={css.container}>
           <View style={css.content}>
-            <View style={css.left}>
+            {/* <View style={css.left}>
               <View style={{ height: 130 }}></View>
               <View style={css.keypad}>
-                <KeyPadTablet
+                <KeyPadInvoke
                   onPressNumber={() => {}}
                   showKeyboard={() => {}}
                   isHideBackspace
@@ -185,41 +195,54 @@ export const InCallUI = observer(
                   <Text style={css.endCallText}>{intl`Cutting`}</Text>
                 </RnTouchableOpacity>
               </InvokeGradient>
-            </View>
+            </View> */}
             <View style={css.right}>
               <View style={css.infoCall}>
                 <View style={css.info}>
                   <Text style={css.phone}>
                     {infoCall?.getDisplayName() ?? ''}
                   </Text>
-                  <Text style={css.person}>{intl`The call ended`}</Text>
                 </View>
-                <Text style={css.time}>00:06</Text>
+                {infoCall?.answered && (
+                  <Duration subTitle white center>
+                    {infoCall.answeredAt}
+                  </Duration>
+                )}
               </View>
-              <View style={css.empty} />
-              <View style={css.buttons}>
-                <RnTouchableOpacity
-                  style={css.button}
-                  onPress={() => setMic(!mic)}
-                >
-                  <RnIcon
-                    path={mic ? mdiMicrophone : mdiMicrophoneOff}
-                    color='white'
-                    size={30}
-                  />
-                  <Text style={css.textAction}>{intl`MUTE`}</Text>
-                </RnTouchableOpacity>
-                <RnTouchableOpacity
-                  style={css.button}
-                  onPress={() => setSound(!sound)}
-                >
-                  <RnIcon
-                    path={sound ? mdiVolumeHigh : mdiVolumeMute}
-                    color='white'
-                    size={30}
-                  />
-                  <Text style={css.textAction}>{intl`SPEAKER`}</Text>
-                </RnTouchableOpacity>
+              <View style={css.empty}>
+                <View style={css.buttons}>
+                  <RnTouchableOpacity
+                    style={css.button}
+                    onPress={() => setMic(!mic)}
+                  >
+                    <RnIcon
+                      path={mic ? mdiMicrophone : mdiMicrophoneOff}
+                      color='white'
+                      size={30}
+                    />
+                    {/* <Text style={css.textAction}>{intl`MUTE`}</Text> */}
+                  </RnTouchableOpacity>
+                  <RnTouchableOpacity
+                    style={css.button}
+                    onPress={() => setSound(!sound)}
+                  >
+                    <RnIcon
+                      path={sound ? mdiVolumeHigh : mdiVolumeMute}
+                      color='white'
+                      size={30}
+                    />
+                    {/* <Text style={css.textAction}>{intl`SPEAKER`}</Text> */}
+                  </RnTouchableOpacity>
+                </View>
+              </View>
+
+              <View style={{ width: 200 }}>
+                <ButtonIcon
+                  path={mdiPhone}
+                  bgcolor={v.colors.danger}
+                  color='white'
+                  onPress={handlePressCall}
+                />
               </View>
             </View>
           </View>

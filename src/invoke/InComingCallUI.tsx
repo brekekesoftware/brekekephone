@@ -12,7 +12,7 @@ import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { intl } from '../stores/intl'
 import { InvokeGradient } from './InvokeGradient'
-import { KeyPadTablet } from './KeyPadTablet'
+import { KeyPadInvoke } from './KeyPadInvoke'
 
 const css = StyleSheet.create({
   container: {
@@ -124,7 +124,7 @@ export const InComingCallUI = ({ onBackToCall }: { onBackToCall(): void }) => {
           <View style={css.left}>
             <View style={{ height: 130 }}></View>
             <View style={css.keypad}>
-              <KeyPadTablet
+              <KeyPadInvoke
                 onPressNumber={() => {}}
                 showKeyboard={() => {}}
                 isHideBackspace

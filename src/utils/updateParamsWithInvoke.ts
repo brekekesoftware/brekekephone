@@ -8,4 +8,5 @@ export const updateParamsWithInvoke = ({ action, callTo }: UrlParams) => {
   }
 
   RNInvokeState.updateCallTo(callTo)
+  RNInvokeState.updateTime()
 }

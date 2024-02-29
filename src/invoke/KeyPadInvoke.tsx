@@ -106,7 +106,7 @@ const characters = [
   ['', '+', ''],
 ]
 
-export const KeyPadTablet = (p: {
+export const KeyPadInvoke = (p: {
   onPressNumber(k: string): void
   showKeyboard(): void
   callVoice?(): void

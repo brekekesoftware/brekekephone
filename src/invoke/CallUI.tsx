@@ -1,22 +1,22 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
 import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
+import { intl, intlDebug } from '../stores/intl'
 import { RNInvokeState } from '../stores/RNInvokeStore'
 import { InCallUI } from './InCallUI'
 import { InComingCallUI } from './InComingCallUI'
-import { KeyPadTablet } from './KeyPadTablet'
+import { KeyPadInvoke } from './KeyPadInvoke'
 
 const css = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    zIndex: 99999,
+    zIndex: 9999,
     position: 'absolute',
     height: '100%',
     width: '100%',
@@ -78,22 +78,56 @@ const css = StyleSheet.create({
   },
 })
 
-export const CallUI = observer(() => {
-  const reftxtSelection = useRef({ start: 0, end: 0 })
-  const [phone, setPhone] = useState('')
-  const [showInCall, setInCall] = useState('call')
+export type TScreen = 'keypad' | 'incall' | 'incoming'
 
-  const { callTo } = RNInvokeState
+export const CallUI = observer(() => {
+  const refTxtSelection = useRef({ start: 0, end: 0 })
+  const refCallPrevLength = useRef(0)
+  const [phone, setPhone] = useState('')
+  const [screen, setScreen] = useState<TScreen>('keypad')
+
+  const { callTo, timeNow } = RNInvokeState
+  const callStore = getCallStore()
+  const callInNotify = callStore.getCallInNotify()
+  const callLength = callStore.calls.length
+
+  const invokeToApp = async () => {
+    try {
+      await Linking.openURL('brekeke_invoke_dev://open')
+    } catch (e) {
+      console.log('#Duy Phan console', e)
+    }
+  }
 
   useEffect(() => {
     if (callTo) {
-      getCallStore().startCall(callTo)
-      setInCall('incall')
+      callStore.startCall(callTo)
+      setScreen('incall')
+      return
     }
-  }, [callTo])
+    setScreen('keypad')
+    setPhone('')
+  }, [timeNow])
+
+  useEffect(() => {
+    if (!callInNotify) {
+      return
+    }
+    setScreen('incoming')
+  }, [callInNotify])
+
+  useEffect(() => {
+    if (refCallPrevLength.current && !callLength && screen === 'incall') {
+      if (callTo) {
+        invokeToApp()
+      }
+      setScreen('keypad')
+    }
+    refCallPrevLength.current = callLength
+  }, [callLength])
 
   const handlePressNumber = v => {
-    const { end, start } = reftxtSelection.current
+    const { end, start } = refTxtSelection.current
     let min = Math.min(start, end)
     const max = Math.max(start, end)
     const isDelete = v === ''
@@ -104,27 +138,30 @@ export const CallUI = observer(() => {
     }
     setPhone(phone.substring(0, min) + v + phone.substring(max))
     const p = min + (isDelete ? 0 : 1)
-    reftxtSelection.current.start = p
-    reftxtSelection.current.end = p
+    refTxtSelection.current.start = p
+    refTxtSelection.current.end = p
   }
 
-  if (showInCall === 'incoming') {
-    return <InComingCallUI onBackToCall={() => setInCall('incall')} />
+  const makeCall = () => {
+    if (!phone) {
+      return
+    }
+    getCallStore().startCall(phone)
+    setScreen('incall')
   }
 
-  if (showInCall === 'incall') {
-    return <InCallUI onBackToCall={() => setInCall('call')} />
+  if (screen === 'incoming') {
+    return <InComingCallUI onBackToCall={() => setScreen('incall')} />
+  }
+
+  if (screen === 'incall') {
+    return <InCallUI onBackToCall={() => setScreen('keypad')} />
   }
 
   return (
     <View style={css.container}>
       <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
-        <View style={css.infoCall}>
-          <Text style={css.infoText}>3002</Text>
-          <View style={css.empty} />
-          <Text style={css.infoText}>ver 1.1.1 ZL</Text>
-        </View>
-        <View style={css.tabView}>
+        {/* <View style={css.tabView}>
           <View style={[css.tabItem, css.borderLine]}>
             <View style={css.tabValue}>
               <View>
@@ -142,18 +179,15 @@ export const CallUI = observer(() => {
               <Text style={css.tabText}>{intl`Call history`}</Text>
             </View>
           </View>
-        </View>
+        </View> */}
         <View style={css.main}>
-          <KeyPadTablet
+          <KeyPadInvoke
             onPressNumber={handlePressNumber}
             showKeyboard={() => {}}
             phone={phone}
           />
         </View>
-        <RnTouchableOpacity
-          style={css.button}
-          onPress={() => setInCall('incoming')}
-        >
+        <RnTouchableOpacity style={css.button} onPress={makeCall}>
           <Text style={css.textAction}>{intl`Call`}</Text>
         </RnTouchableOpacity>
       </ScrollView>
