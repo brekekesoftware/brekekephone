@@ -23,7 +23,6 @@ const css = StyleSheet.create({
   },
   main: {
     flex: 1,
-    backgroundColor: 'rgb(135,135,135)',
     marginRight: -2,
   },
   button: {
@@ -88,7 +87,6 @@ export const CallUI = observer(() => {
 
   const { callTo, timeNow } = RNInvokeState
   const callStore = getCallStore()
-  const callInNotify = callStore.getCallInNotify()
   const callLength = callStore.calls.length
 
   const invokeToApp = async () => {
@@ -108,13 +106,6 @@ export const CallUI = observer(() => {
     setScreen('keypad')
     setPhone('')
   }, [timeNow])
-
-  useEffect(() => {
-    if (!callInNotify) {
-      return
-    }
-    setScreen('incoming')
-  }, [callInNotify])
 
   useEffect(() => {
     if (refCallPrevLength.current && !callLength && screen === 'incall') {
@@ -161,31 +152,26 @@ export const CallUI = observer(() => {
   return (
     <View style={css.container}>
       <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'black' }}>
-        {/* <View style={css.tabView}>
-          <View style={[css.tabItem, css.borderLine]}>
-            <View style={css.tabValue}>
-              <View>
-                <RnIcon path={mdiBookOpenBlank} color='white' />
-              </View>
-
-              <Text style={css.tabText}>{intl`Phonebook`}</Text>
-            </View>
-          </View>
-          <View style={css.tabItem}>
-            <View style={css.tabValue}>
-              <View>
-                <RnIcon path={mdiHistory} color='white' />
-              </View>
-              <Text style={css.tabText}>{intl`Call history`}</Text>
-            </View>
-          </View>
-        </View> */}
         <View style={css.main}>
-          <KeyPadInvoke
-            onPressNumber={handlePressNumber}
-            showKeyboard={() => {}}
-            phone={phone}
-          />
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 24,
+                textAlign: 'center',
+                paddingTop: 15,
+              }}
+            >
+              Keypad
+            </Text>
+          </View>
+          <View style={{ flex: 3 }}>
+            <KeyPadInvoke
+              onPressNumber={handlePressNumber}
+              showKeyboard={() => {}}
+              phone={phone}
+            />
+          </View>
         </View>
         <RnTouchableOpacity style={css.button} onPress={makeCall}>
           <Text style={css.textAction}>{intl`Call`}</Text>

@@ -203,45 +203,39 @@ export const InCallUI = observer(
                     {infoCall?.getDisplayName() ?? ''}
                   </Text>
                 </View>
-                {infoCall?.answered && (
-                  <Duration subTitle white center>
-                    {infoCall.answeredAt}
-                  </Duration>
-                )}
               </View>
+              {infoCall?.answered && (
+                <Duration subTitle white center>
+                  {infoCall.answeredAt}
+                </Duration>
+              )}
               <View style={css.empty}>
                 <View style={css.buttons}>
-                  <RnTouchableOpacity
-                    style={css.button}
+                  <ButtonIcon
+                    path={mic ? mdiMicrophone : mdiMicrophoneOff}
+                    bgcolor={'rgb(82,99,96)'}
+                    color='white'
                     onPress={() => setMic(!mic)}
-                  >
-                    <RnIcon
-                      path={mic ? mdiMicrophone : mdiMicrophoneOff}
-                      color='white'
-                      size={30}
-                    />
-                    {/* <Text style={css.textAction}>{intl`MUTE`}</Text> */}
-                  </RnTouchableOpacity>
-                  <RnTouchableOpacity
-                    style={css.button}
+                    size={40}
+                  />
+
+                  <ButtonIcon
+                    path={sound ? mdiVolumeHigh : mdiVolumeMute}
+                    bgcolor={'rgb(82,99,96)'}
+                    color='white'
                     onPress={() => setSound(!sound)}
-                  >
-                    <RnIcon
-                      path={sound ? mdiVolumeHigh : mdiVolumeMute}
-                      color='white'
-                      size={30}
-                    />
-                    {/* <Text style={css.textAction}>{intl`SPEAKER`}</Text> */}
-                  </RnTouchableOpacity>
+                    size={40}
+                  />
                 </View>
               </View>
 
-              <View style={{ width: 200 }}>
+              <View style={{ marginBottom: 10 }}>
                 <ButtonIcon
                   path={mdiPhone}
                   bgcolor={v.colors.danger}
                   color='white'
                   onPress={handlePressCall}
+                  size={40}
                 />
               </View>
             </View>
