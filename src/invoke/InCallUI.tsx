@@ -160,7 +160,7 @@ export const InCallUI = observer(
     const handlePressCall = async () => {
       try {
         infoCall.hangupWithUnhold()
-        onBackToCall()
+        // onBackToCall()
       } catch (e) {
         console.log('#Duy Phan console', e)
       }
