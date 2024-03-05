@@ -109,10 +109,7 @@ export const CallUI = observer(() => {
 
   useEffect(() => {
     if (refCallPrevLength.current && !callLength && screen === 'incall') {
-      if (callTo) {
-        invokeToApp()
-      }
-      setScreen('keypad')
+      invokeToApp()
     }
     refCallPrevLength.current = callLength
   }, [callLength])
