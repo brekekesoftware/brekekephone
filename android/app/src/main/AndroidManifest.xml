@@ -131,7 +131,6 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="brekekeappphonedev" android:host="open" />
-        <data android:scheme="brekekeappphonedev" android:host="makecall" />
         <data android:scheme="brekekephonedev" android:host="makecall" />
       </intent-filter>
     </activity>

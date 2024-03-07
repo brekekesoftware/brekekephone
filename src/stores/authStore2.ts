@@ -290,28 +290,16 @@ export class AuthStore {
     if (!urlParams) {
       return false
     }
-
     //
-    const { _wn, host, phone_idx, port, tenant, user, password, type, number } =
+    const { _wn, host, phone_idx, port, tenant, user, password, number } =
       urlParams
-    if (!tenant || !user) {
-      return false
-    }
-
-    const a = await accountStore.find({
-      pbxUsername: user,
-      pbxTenant: tenant,
-      pbxHostname: host,
-      pbxPort: port,
-    })
-
     // clean up url params
     const cleanUpUrlParams = () => {
       this.alreadyHandleDeepLinkMakeCall = false
       clearUrlParams()
     }
     // handle deep link: make call
-    if (type === 'startCall' && number) {
+    if (number) {
       // prevent double start call
       if (this.alreadyHandleDeepLinkMakeCall) {
         return true
@@ -319,12 +307,10 @@ export class AuthStore {
       this.alreadyHandleDeepLinkMakeCall = true
       const auth = getAuthStore()
 
-      // checking user is current user or not
-      if (!(this.signedInId && this.signedInId === a?.id)) {
-        const signed = a
-          ? await this.signIn(a, true)
-          : await auth.autoSignInLast()
-        if (!signed) {
+      // checking user login
+      if (!this.signedInId) {
+        const success = await auth.autoSignInLast()
+        if (!success) {
           cleanUpUrlParams()
           return true
         }
@@ -355,6 +341,10 @@ export class AuthStore {
       return true
     }
 
+    if (!tenant || !user) {
+      return false
+    }
+
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||
@@ -363,6 +353,13 @@ export class AuthStore {
     ) {
       return false
     }
+
+    const a = await accountStore.find({
+      pbxUsername: user,
+      pbxTenant: tenant,
+      pbxHostname: host,
+      pbxPort: port,
+    })
 
     let phoneIdx = parseInt(phone_idx)
     if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {

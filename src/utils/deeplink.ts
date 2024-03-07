@@ -8,8 +8,8 @@ let alreadyHandleFirstOpen = false
 let urlParams: Promise<UrlParams | null> | UrlParams | null = null
 export const URLSchemes = {
   phoneappli: {
-    USERS: 'deeplink://directory?type=users',
-    HISTORY_CALLED: 'deeplink://history?type=called',
+    USERS: 'pa-rtk://directory?type=users',
+    HISTORY_CALLED: 'pa-rtk://history?type=called',
   },
 }
 

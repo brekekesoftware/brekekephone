@@ -52,5 +52,4 @@ export interface UrlParams {
   phone_idx: string
   _wn: string
   number: string | undefined
-  type: string | undefined
 }
