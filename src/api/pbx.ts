@@ -458,6 +458,24 @@ export class PBX extends EventEmitter {
     const res = await this.client.call_pal('getPhonebooks')
     return res?.filter(item => !item.shared) || []
   }
+  getPhoneappliContact = async (tenant: string, user: string, tel: string) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    try {
+      const res = await this.client.call_pal('getPhoneAppliContact', {
+        tenant,
+        user,
+        tel,
+      })
+      return res
+    } catch (error) {
+      return {}
+    }
+  }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
       await waitPbx()

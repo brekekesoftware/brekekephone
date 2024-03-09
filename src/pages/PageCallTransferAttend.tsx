@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import {
   mdiArrowRight,
@@ -12,6 +13,7 @@ import {
 import { Avatar } from '../components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
+import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -23,30 +25,36 @@ export const css = StyleSheet.create({
     backgroundColor: 'white',
   },
   Inner: {
-    width: '100%',
+    width: '70%',
     flexDirection: 'row',
-    maxWidth: 320,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
+    marginBottom: 30,
   },
   Inner__info: {
-    maxWidth: 280,
-    marginBottom: 100,
+    maxWidth: 'auto',
+    marginBottom: 80,
   },
   Info: {
     position: 'absolute',
     alignItems: 'center',
   },
   Info__from: {
-    left: 20,
-    top: 30,
+    flex: 5,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   Info__to: {
-    right: 20,
-    top: 30,
+    flex: 5,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   Arrow: {
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    top: 60,
+    flex: 1,
   },
 
   BtnOuter: {
@@ -75,7 +83,55 @@ export const css = StyleSheet.create({
 @observer
 export class PageCallTransferAttend extends Component {
   prevId?: string
+
+  state = {
+    phoneappliSource: {
+      avatar: '',
+      username: '',
+    },
+    phoneappliTarget: {
+      avatar: '',
+      username: '',
+    },
+  }
+
+  getPhoneappliInfo = async () => {
+    const auth = getAuthStore()
+    if (!auth.phoneappliEnabled()) {
+      return
+    }
+    const oc = getCallStore().getOngoingCall()
+    if (!oc) {
+      return
+    }
+    try {
+      const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+      const rs = await pbx.getPhoneappliContact(
+        pbxTenant,
+        pbxUsername,
+        oc.partyNumber,
+      )
+      const phoneappliSource = {
+        avatar: rs?.image_url,
+        username: rs?.display_name,
+      }
+      const rt = await pbx.getPhoneappliContact(
+        pbxTenant,
+        pbxUsername,
+        oc.transferring,
+      )
+      const phoneappliTarget = {
+        avatar: rt?.image_url,
+        username: rt?.display_name,
+      }
+      this.setState({ phoneappliSource, phoneappliTarget })
+    } catch (error) {
+      return
+    }
+  }
+
   componentDidMount() {
+    this.getPhoneappliInfo()
     this.componentDidUpdate()
   }
   componentDidUpdate() {
@@ -101,24 +157,31 @@ export class PageCallTransferAttend extends Component {
     }
     const usersource = this.resolveMatch(oc.partyNumber)
     const usertarget = this.resolveMatch(oc.transferring)
+    const { phoneappliSource, phoneappliTarget } = this.state
     return (
       <View style={css.Outer}>
         <RnText center subTitle>{intl`Transferring`}</RnText>
         <View style={css.Space} />
-        <View style={[css.Inner, css.Inner__info]}>
-          <View style={[css.Info, css.Info__from]}>
-            <Avatar source={{ uri: usersource?.avatar }} />
+        <View style={[css.Inner]}>
+          <View style={[css.Info__from]}>
+            <Avatar
+              source={{ uri: phoneappliSource.avatar || usersource?.avatar }}
+            />
             <RnText center singleLine small>
-              {oc.getDisplayName()}
+              {phoneappliSource.username || oc.getDisplayName()}
             </RnText>
           </View>
           <View style={css.Arrow}>
             <RnIcon path={mdiArrowRight} />
           </View>
-          <View style={[css.Info, css.Info__to]}>
-            <Avatar source={{ uri: usertarget?.avatar }} />
+          <View style={[css.Info__to]}>
+            <Avatar
+              source={{ uri: phoneappliTarget.avatar || usertarget?.avatar }}
+            />
             <RnText center singleLine small>
-              {getPartyName(oc.transferring) || oc.transferring}
+              {phoneappliTarget.username ||
+                getPartyName(oc.transferring) ||
+                oc.transferring}
             </RnText>
           </View>
         </View>
