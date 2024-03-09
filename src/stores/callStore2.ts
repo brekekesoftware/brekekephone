@@ -5,6 +5,7 @@ import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
 
+import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { MakeCallFn, Session } from '../brekekejs'
@@ -238,6 +239,7 @@ export class CallStore {
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
   ) => {
+    const auth = getAuthStore()
     this.updateCurrentCallDebounce()
     const now = Date.now()
     this.recentCallActivityAt = now
@@ -277,6 +279,16 @@ export class CallStore {
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
+
+      // handle always show Avatar and Username when phoneappli enabled
+      if (auth.phoneappliEnabled()) {
+        Object.assign(e, {
+          partyImageUrl: e.phoneappliAvatar || p.partyImageUrl,
+          talkingImageUrl: e.phoneappliAvatar || p.talkingImageUrl,
+          partyName: e.phoneappliUsername || p.partyName,
+          partyImageSize: e.phoneappliAvatar ? 'large' : p.partyImageSize,
+        })
+      }
       if (e.incoming && e.callkeepUuid) {
         BrekekeUtils.setRemoteVideoStreamUrl(
           e.callkeepUuid,
@@ -297,6 +309,7 @@ export class CallStore {
       ) {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
+
       // emit to embed api
       if (!window._BrekekePhoneWebRoot) {
         embedApi.emit('call_update', e)
@@ -307,6 +320,28 @@ export class CallStore {
     // construct a new call
     const c = new Call(this)
     Object.assign(c, p)
+
+    // get Avatar and Username of phoneappli
+    if (auth.phoneappliEnabled()) {
+      const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+      pbx
+        .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
+        .then(res => {
+          const partyImageUrl = res?.image_url || c.partyImageUrl
+          const talkingImageUrl = res?.image_url || c.talkingImageUrl
+          const partyName = res?.display_name || c.partyName
+          const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
+          Object.assign(c, {
+            partyImageUrl,
+            talkingImageUrl,
+            partyName,
+            partyImageSize,
+            phoneappliAvatar: res?.image_url,
+            phoneappliUsername: res?.display_name,
+          })
+        })
+    }
+
     this.calls = [c, ...this.calls]
     this.displayingCallId = c.id // do not set ongoing call
     // update java and embed api
