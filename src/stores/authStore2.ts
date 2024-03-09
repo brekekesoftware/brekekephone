@@ -326,10 +326,12 @@ export class AuthStore {
         })
         // checking user is current user or not
         if (!(this.signedInId && this.signedInId === ac?.id)) {
-          this.signOut()
+          if (this.signedInId) {
+            this.signOut()
+          }
           const signed = ac
             ? await this.signIn(ac, true)
-            : await auth.autoSignInLast()
+            : await auth.autoSignInFistAccount()
           if (!signed) {
             cleanUpUrlParams()
             return true
