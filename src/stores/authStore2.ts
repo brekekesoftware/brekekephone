@@ -175,6 +175,14 @@ export class AuthStore {
     await this.signIn(a, true)
     return true
   }
+  autoSignInFistAccount = async () => {
+    const a = accountStore.accounts?.[0]
+    if (!a) {
+      return false
+    }
+    await this.signIn(a, true)
+    return true
+  }
   autoSignInEmbed = async () => {
     if (await this.autoSignInLast()) {
       return
@@ -300,19 +308,47 @@ export class AuthStore {
     }
     // handle deep link: make call
     if (number) {
-      // prevent double start call
-      if (this.alreadyHandleDeepLinkMakeCall) {
+      // prevent double start call and check list account
+      if (this.alreadyHandleDeepLinkMakeCall || !accountStore.accounts.length) {
         return true
       }
       this.alreadyHandleDeepLinkMakeCall = true
       const auth = getAuthStore()
 
       // checking user login
-      if (!this.signedInId) {
-        const success = await auth.autoSignInLast()
-        if (!success) {
-          cleanUpUrlParams()
-          return true
+      const isUserLoginValid = port && tenant && user && host
+      if (isUserLoginValid) {
+        const ac = await accountStore.find({
+          pbxUsername: user,
+          pbxTenant: tenant,
+          pbxHostname: host,
+          pbxPort: port,
+        })
+        // checking user is current user or not
+        if (!(this.signedInId && this.signedInId === ac?.id)) {
+          this.signOut()
+          const signed = ac
+            ? await this.signIn(ac, true)
+            : await auth.autoSignInLast()
+          if (!signed) {
+            cleanUpUrlParams()
+            return true
+          }
+        }
+      } else {
+        // checking current user is first account or user already login
+        if (
+          !this.signedInId ||
+          this.signedInId !== accountStore.accounts[0]?.id
+        ) {
+          if (this.signedInId) {
+            this.signOut()
+          }
+          const success = await auth.autoSignInFistAccount()
+          if (!success) {
+            cleanUpUrlParams()
+            return true
+          }
         }
       }
 
