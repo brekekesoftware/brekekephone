@@ -20,8 +20,8 @@ You can see more about intents filters at:
 ## 2. Invoke this app from another app
 
 - Use `Linking.canOpenURL(url)` to check URL can be handled. If it return `true`, you can invoke app with the `url`.
-- Use ``Linking.openUrl(`brekekeapp_phonedev:open?${params}`)`` to invoke this app, in which:
-  - The `brekekeapp_phonedev` is the attribute `android:scheme` in tag `<data>` in `Androidmanifest.xml` file.
+- Use ``Linking.openUrl(`brekekephonedev:open?${params}`)`` to invoke this app, in which:
+  - The `brekekephonedev` is the attribute `android:scheme` in tag `<data>` in `Androidmanifest.xml` file.
   - The `open` is the attribute `android:host` in tag `<data>` in `Androidmanifest.xml` file.
   - The variable `params` is data stringtify by `qs.stringify()` to send to this app you need.
 
