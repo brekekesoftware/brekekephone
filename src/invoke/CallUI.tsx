@@ -2,11 +2,9 @@ import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import { mdiBookOpenBlank, mdiHistory } from '../assets/icons'
-import { RnIcon } from '../components/RnIcon'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { getCallStore } from '../stores/callStore'
-import { intl, intlDebug } from '../stores/intl'
+import { intl } from '../stores/intl'
 import { RNInvokeState } from '../stores/RNInvokeStore'
 import { InCallUI } from './InCallUI'
 import { InComingCallUI } from './InComingCallUI'
@@ -91,7 +89,7 @@ export const CallUI = observer(() => {
 
   const invokeToApp = async () => {
     try {
-      await Linking.openURL('brekeke_invoke_dev://open')
+      await Linking.openURL('brekekephonedevinvokeexample://open')
     } catch (e) {
       console.log('#Duy Phan console', e)
     }

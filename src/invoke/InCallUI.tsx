@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { useState } from 'react'
-import { Linking, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import {
   mdiMicrophone,
@@ -10,16 +10,11 @@ import {
   mdiVolumeMute,
 } from '../assets/icons'
 import { ButtonIcon } from '../components/ButtonIcon'
-import { RnIcon } from '../components/RnIcon'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { v } from '../components/variables'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { RNInvokeState } from '../stores/RNInvokeStore'
 import { Duration } from '../stores/timerStore'
 import { InvokeGradient } from './InvokeGradient'
-import { KeyPadInvoke } from './KeyPadInvoke'
 
 const css = StyleSheet.create({
   container: {

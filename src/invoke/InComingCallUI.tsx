@@ -1,6 +1,5 @@
-import qs from 'qs'
 import { useState } from 'react'
-import { Linking, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import {
   mdiMicrophone,

@@ -306,7 +306,7 @@ export const App = observer(() => {
         </AnimatedSize>
       )}
 
-      {!RNInvokeState.isHaveInvoke && <CallNotify />}
+      {!RNInvokeState.isInvokeExample && <CallNotify />}
       <CallBar />
       <CallVideos />
       <CallVoices />
@@ -315,8 +315,8 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
-        {RNInvokeState.isHaveInvoke && <CallUI />}
-        {!RNInvokeState.isHaveInvoke && <RenderAllCalls />}
+        {RNInvokeState.isInvokeExample && <CallUI />}
+        {!RNInvokeState.isInvokeExample && <RenderAllCalls />}
         {cp && <PageCustomPageView id={cp.id} />}
         <RnPickerRoot />
         <PhonebookAddItem />

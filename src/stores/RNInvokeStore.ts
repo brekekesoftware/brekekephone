@@ -1,12 +1,12 @@
 import { action, observable } from 'mobx'
 
 class RNInvokeStore {
-  @observable isHaveInvoke = false
+  @observable isInvokeExample = false
   @observable callTo = ''
   @observable timeNow = 0
 
   @action updateStateInvoke = (flag: boolean) => {
-    this.isHaveInvoke = flag
+    this.isInvokeExample = flag
   }
 
   @action updateCallTo = (number: string) => {
