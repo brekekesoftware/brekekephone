@@ -302,7 +302,7 @@ export class AuthStore {
       return false
     }
 
-    updateParamsWithInvoke(urlParams)
+    await updateParamsWithInvoke(urlParams)
 
     //
     const a = await accountStore.find({

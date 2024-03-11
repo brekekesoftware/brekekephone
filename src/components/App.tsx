@@ -109,7 +109,7 @@ const initApp = async () => {
     }
     const upr = await getUrlParams()
     if (upr) {
-      updateParamsWithInvoke(upr)
+      await updateParamsWithInvoke(upr)
     }
 
     s.resetFailureState()
@@ -307,7 +307,7 @@ export const App = observer(() => {
       )}
 
       {!RNInvokeState.isInvokeExample && <CallNotify />}
-      <CallBar />
+      {!RNInvokeState.isInvokeExample && <CallBar />}
       <CallVideos />
       <CallVoices />
       <ChatGroupInvite />
@@ -315,7 +315,9 @@ export const App = observer(() => {
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
-        {RNInvokeState.isInvokeExample && <CallUI />}
+        {RNInvokeState.isInvokeExample && accountStore.appInitDone && (
+          <CallUI />
+        )}
         {!RNInvokeState.isInvokeExample && <RenderAllCalls />}
         {cp && <PageCustomPageView id={cp.id} />}
         <RnPickerRoot />
