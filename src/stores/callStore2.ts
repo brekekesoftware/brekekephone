@@ -295,6 +295,7 @@ export class CallStore {
           e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
         )
       }
+
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
         BrekekeUtils.setTalkingAvatar(
           e.callkeepUuid,
@@ -302,6 +303,7 @@ export class CallStore {
           e.partyImageSize === 'large',
         )
       }
+
       if (
         e.incoming &&
         e.callkeepUuid &&
@@ -331,6 +333,7 @@ export class CallStore {
           const talkingImageUrl = res?.image_url || c.talkingImageUrl
           const partyName = res?.display_name || c.partyName
           const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
+
           Object.assign(c, {
             partyImageUrl,
             talkingImageUrl,
@@ -339,6 +342,11 @@ export class CallStore {
             phoneappliAvatar: res?.image_url,
             phoneappliUsername: res?.display_name,
           })
+          BrekekeUtils.setTalkingAvatar(
+            c.callkeepUuid,
+            c.talkingImageUrl,
+            c.partyImageSize === 'large',
+          )
         })
     }
 

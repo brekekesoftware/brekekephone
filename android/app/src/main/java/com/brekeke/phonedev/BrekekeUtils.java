@@ -100,6 +100,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
+  public static boolean phoneappliEnabled = false;
 
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
@@ -623,6 +624,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+  @ReactMethod
+  public void setPhoneappliEnabled(Boolean isEnabled) {
+    BrekekeUtils.phoneappliEnabled = isEnabled;
+  }
 
   @ReactMethod
   public void insertCallLog(String number, int type) {

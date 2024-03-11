@@ -13,6 +13,7 @@ import {
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import {
   Account,
@@ -161,6 +162,7 @@ export class AuthStore {
       return true
     }
     this.signedInId = a.id
+    BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
     }
@@ -306,7 +308,7 @@ export class AuthStore {
       this.alreadyHandleDeepLinkMakeCall = false
       clearUrlParams()
     }
-    // handle deep link: make call
+    // handle deep link: make call from phoneappli app
     if (number) {
       // prevent double start call and check list account
       if (this.alreadyHandleDeepLinkMakeCall || !accountStore.accounts.length) {
@@ -379,16 +381,16 @@ export class AuthStore {
       return true
     }
 
-    if (!tenant || !user) {
-      return false
-    }
-
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||
       sip.phone?.getSessionCount() ||
       getCallStore().calls.length
     ) {
+      return false
+    }
+
+    if (!tenant || !user) {
       return false
     }
 
