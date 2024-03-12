@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { RNInvokeState } from '../stores/RNInvokeStore'
@@ -77,6 +78,14 @@ const css = StyleSheet.create({
 
 export type TScreen = 'keypad' | 'incall' | 'incoming'
 
+export const invokeToApp = async () => {
+  try {
+    await Linking.openURL('brekekephonedevinvokeexample://open')
+  } catch (e) {
+    console.log('#Duy Phan console', e)
+  }
+}
+
 export const CallUI = observer(() => {
   const refTxtSelection = useRef({ start: 0, end: 0 })
   const refCallPrevLength = useRef(0)
@@ -87,17 +96,11 @@ export const CallUI = observer(() => {
   const callStore = getCallStore()
   const callLength = callStore.calls.length
 
-  const invokeToApp = async () => {
-    try {
-      await Linking.openURL('brekekephonedevinvokeexample://open')
-    } catch (e) {
-      console.log('#Duy Phan console', e)
-    }
-  }
-
   useEffect(() => {
     if (callTo) {
-      callStore.startCall(callTo)
+      waitSip().then(() => {
+        callStore.startCall(callTo)
+      })
       setScreen('incall')
       return
     }

@@ -11,9 +11,11 @@ import {
 } from '../assets/icons'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { v } from '../components/variables'
-import { getAuthStore } from '../stores/authStore'
+import { getAuthStore, waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { Duration } from '../stores/timerStore'
+import { waitTimeout } from '../utils/waitTimeout'
+import { invokeToApp } from './CallUI'
 import { InvokeGradient } from './InvokeGradient'
 
 const css = StyleSheet.create({
@@ -154,8 +156,17 @@ export const InCallUI = observer(
 
     const handlePressCall = async () => {
       try {
-        infoCall.hangupWithUnhold()
-        // onBackToCall()
+        let c = getCallStore().calls[0]
+        if (!c) {
+          await waitSip()
+          await waitTimeout(1000)
+        }
+        c = getCallStore().calls[0]
+        if (!c) {
+          invokeToApp()
+          return
+        }
+        c.hangupWithUnhold()
       } catch (e) {
         console.log('#Duy Phan console', e)
       }

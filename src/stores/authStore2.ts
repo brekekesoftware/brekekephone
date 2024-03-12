@@ -302,8 +302,6 @@ export class AuthStore {
       return false
     }
 
-    await updateParamsWithInvoke(urlParams)
-
     //
     const a = await accountStore.find({
       pbxUsername: user,
@@ -338,6 +336,9 @@ export class AuthStore {
       } else {
         Nav().goToPageAccountUpdate({ id: a.id })
       }
+
+      // need to call this last so the account should be added
+      await updateParamsWithInvoke(urlParams)
       return true
     }
     //
