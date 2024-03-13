@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 
 import {
   isCustomPageUrlBuilt,
@@ -140,6 +140,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
               this.setState({
                 webviewLoading: false,
                 webviewError:
+                  e &&
                   'code' in e.nativeEvent &&
                   typeof e.nativeEvent.code === 'number',
               })

@@ -773,11 +773,21 @@ export const pbx = new PBX()
 // use url builder instead for safe url encoding
 
 const _buildCustomPageUrl = async (url: string) => {
+  // for case url don't need pbx token
+  const ca = getAuthStore().getCurrentAccount()
+  if (isCustomPageUrlBuilt(url)) {
+    return url
+      .replace(/#lang#/i, intlStore.locale)
+      .replace(/#tenant#'/i, ca.pbxTenant)
+      .replace(/#user#/i, ca.pbxUsername)
+      .replace(/#from-number#/i, '0')
+  }
+
   const { token } = await pbx.getPbxToken()
   if (!token) {
     return url
   }
-  const ca = getAuthStore().getCurrentAccount()
+
   return url
     .replace(/#lang#/i, intlStore.locale)
     .replace(/#pbx-token#/i, token)
@@ -804,14 +814,18 @@ export const rebuildCustomPageUrl = (url: string) =>
 
 const _addCustomPageUrlNonce = (url: string) => {
   // for refresh page by change from-number value
-  const hasNonce = /#from-number#/i.test(url) || /&from-number=/.test(url)
+  const hasNonce =
+    /#from-number#/i.test(url) ||
+    /&from-number=/.test(url) ||
+    /\?from-number=/.test(url)
+  const separator = url.includes('?') ? '&' : '?'
   if (!hasNonce) {
-    return url + '&from-number=#from-number#'
+    return url + `${separator}from-number=#from-number#`
   }
   return url
 }
 export const rebuildCustomPageUrlNonce = (url: string) =>
-  url.replace(/&from-number=([0-9]+)/, `&from-number=${random(1, 1000, false)}`)
+  url.replace(/from-number=([0-9]+)/, `from-number=${random(1, 1000, false)}`)
 
 export const _parseListCustomPage = () => {
   const as = getAuthStore()
@@ -819,6 +833,7 @@ export const _parseListCustomPage = () => {
   if (!c) {
     return
   }
+
   const results: PbxCustomPage[] = []
   Object.keys(c).forEach(k => {
     if (!k.startsWith('webphone.custompage')) {
@@ -832,6 +847,7 @@ export const _parseListCustomPage = () => {
     let url = c[`${id}.url`]
     if (!validator.isURL(url)) {
       // ignore if not url
+      console.log(`Custompage debug: ${url} is not valid url`)
       return
     }
     url = _addCustomPageUrlNonce(url)
