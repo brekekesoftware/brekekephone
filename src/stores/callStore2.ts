@@ -266,6 +266,7 @@ export class CallStore {
         delete p.videoSessionId
         delete p.remoteVideoEnabled
         delete p.remoteVideoStreamObject
+        delete p.localVideoStreamObject
       }
       if (!e.answered && p.answered) {
         e.answerCallKeep()
@@ -281,6 +282,7 @@ export class CallStore {
         BrekekeUtils.setRemoteVideoStreamUrl(
           e.callkeepUuid,
           e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
+          e.localVideoStreamObject ? e.localVideoStreamObject.toURL() : '',
         )
       }
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {

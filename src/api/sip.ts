@@ -230,6 +230,7 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
+        localVideoStreamObject: session.localVideoStreamObject,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
@@ -241,6 +242,7 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        localVideoStreamObject: null,
       })
     })
 
