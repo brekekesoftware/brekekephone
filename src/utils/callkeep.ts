@@ -243,6 +243,11 @@ export const setupCallKeepEvents = async () => {
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
+    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
+    // with auto answer available, should be update UI after answer
+    if (c && c.answered) {
+      BrekekeUtils.onCallConnected(uuid)
+    }
     cs.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
   })
