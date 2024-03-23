@@ -365,7 +365,7 @@ PODS:
     - React-Core
   - react-native-netinfo (9.4.1):
     - React-Core
-  - react-native-notifications (4.3.5):
+  - react-native-notifications (5.1.0):
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
@@ -793,7 +793,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-image-picker: db60857e03d63721f19b6f4027de20429ddd9cba
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
-  react-native-notifications: 504143d59f9628c3b0c22fd0ccf34b65b9182d01
+  react-native-notifications: 4601a5a8db4ced6ae7cfc43b44d35fe437ac50c4
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
@@ -835,4 +835,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0ffa11e411d6388890572797d2b08a99130f74d5
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

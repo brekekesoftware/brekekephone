@@ -7,6 +7,8 @@ import { waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { RNInvokeState } from '../stores/RNInvokeStore'
+import { AccountForm } from './AccountForm'
+import { AccountInfo } from './AccountInfo'
 import { InCallUI } from './InCallUI'
 import { InComingCallUI } from './InComingCallUI'
 import { KeyPadInvoke } from './KeyPadInvoke'
@@ -76,7 +78,12 @@ const css = StyleSheet.create({
   },
 })
 
-export type TScreen = 'keypad' | 'incall' | 'incoming'
+export type TScreen =
+  | 'keypad'
+  | 'incall'
+  | 'incoming'
+  | 'account'
+  | 'account-info'
 
 export const invokeToApp = async () => {
   try {
@@ -90,7 +97,7 @@ export const CallUI = observer(() => {
   const refTxtSelection = useRef({ start: 0, end: 0 })
   const refCallPrevLength = useRef(0)
   const [phone, setPhone] = useState('')
-  const [screen, setScreen] = useState<TScreen>('keypad')
+  const [screen, setScreen] = useState<TScreen>('account')
 
   const { callTo, timeNow } = RNInvokeState
   const callStore = getCallStore()
@@ -104,7 +111,7 @@ export const CallUI = observer(() => {
       setScreen('incall')
       return
     }
-    setScreen('keypad')
+    setScreen('account-info')
     setPhone('')
   }, [timeNow])
 
@@ -145,6 +152,14 @@ export const CallUI = observer(() => {
 
   if (screen === 'incall') {
     return <InCallUI onBackToCall={() => setScreen('keypad')} />
+  }
+
+  if (screen === 'account') {
+    return <AccountForm onSave={() => setScreen('account-info')} />
+  }
+
+  if (screen === 'account-info') {
+    return <AccountInfo linkToUpdateAccount={() => setScreen('account')} />
   }
 
   return (

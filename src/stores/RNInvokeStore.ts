@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 
 class RNInvokeStore {
-  @observable isInvokeExample = false
+  @observable isInvokeExample = true
   @observable callTo = ''
   @observable timeNow = 0
 
