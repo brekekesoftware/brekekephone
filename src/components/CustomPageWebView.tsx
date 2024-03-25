@@ -7,6 +7,7 @@ import WebView, {
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
+import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const css = StyleSheet.create({
   image: {
@@ -107,35 +108,15 @@ export const CustomPageWebView = ({
   )
 }
 
-//ref: https://gomakethings.com/a-native-javascript-equivalent-of-jquerys-ready-method/
-const onLoadJs =
-  Platform.OS === 'ios'
-    ? `
-  window.addEventListener('load', function() {
-    addTitleListener();
-    sendJsonToRn({ loading: false, title: document.title});
-  });
-`
-    : `var ready = function ( fn ) {
-  if ( typeof fn !== 'function' ) return;
-  if ( document.readyState === 'complete'  ) {
-    return fn();
-  }
-  // Otherwise, wait until document is loaded
-  document.addEventListener( 'DOMContentLoaded', fn, false );
-};
-
-ready(function() {
-  addTitleListener();
-  sendJsonToRn({ loading: false, title: document.title});
-});
-`
 const js = `
   function sendJsonToRn(json) {
     window.ReactNativeWebView.postMessage(JSON.stringify(json));
   }
-  sendJsonToRn({ loading: true, title: document.title });
-  ${onLoadJs}
+  sendJsonToRn({
+    loading: true,
+    title: document.title,
+  });
+  ${webviewInjectSendJsonToRnOnLoad(true)}
   // https://stackoverflow.com/a/29540461
   function addTitleListener() {
     var titleDomNode = document.querySelector('title');

@@ -12,6 +12,7 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 import noPhoto from '../assets/no_photo.png'
 import { buildWebViewSource } from '../config'
 import { checkImageUrl } from '../utils/checkImageUrl'
+import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
@@ -41,36 +42,18 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
-//ref: https://gomakethings.com/a-native-javascript-equivalent-of-jquerys-ready-method/
-const onLoadJs =
-  Platform.OS === 'ios'
-    ? `
-  window.addEventListener('load', function() {
-    sendJsonToRn({loaded: true});
-  });
-`
-    : `var ready = function ( fn ) {
-  if ( typeof fn !== 'function' ) return;
-  if ( document.readyState === 'complete'  ) {
-    return fn();
-  }
-  // Otherwise, wait until document is loaded
-  document.addEventListener( 'DOMContentLoaded', fn, false );
-};
-ready(function() {
-  sendJsonToRn({loaded: true});
-});
-`
-const configViewPort = `
-const meta = document.createElement('meta'); 
-meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); 
-meta.setAttribute('name', 'viewport'); 
-document.getElementsByTagName('head')[0].appendChild(meta);
 
+const js = `
+// set meta data
+const meta = document.createElement('meta');
+meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
+meta.setAttribute('name', 'viewport');
+document.getElementsByTagName('head')[0].appendChild(meta);
+// send data to rn to stop loading
 function sendJsonToRn(json) {
   window.ReactNativeWebView.postMessage(JSON.stringify(json));
 }
-${onLoadJs}
+${webviewInjectSendJsonToRnOnLoad()}
 `
 enum StatusImage {
   loading = 0,
@@ -98,7 +81,6 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
         return
       }
       const json = JSON.parse(data)
-
       if (!json) {
         return
       }
@@ -146,7 +128,7 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
       {!uri ? null : !isImageUrl ? (
         <WebView
           source={buildWebViewSource(uri)}
-          injectedJavaScript={configViewPort}
+          injectedJavaScript={js}
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}
