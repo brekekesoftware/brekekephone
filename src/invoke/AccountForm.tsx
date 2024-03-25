@@ -3,7 +3,11 @@ import { useRef } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ItemType } from 'react-native-dropdown-picker'
 
-import { Account, accountStore } from '../stores/accountStore'
+import {
+  Account,
+  accountStore,
+  saveLastSignedInId,
+} from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { Input } from './Input'
 import { InvokeGradient } from './InvokeGradient'
@@ -56,15 +60,20 @@ export const AccountForm = observer(({ onSave }: { onSave(): void }) => {
     return { data, isSuccess }
   }
 
-  const save = () => {
+  const signOut = async () => {
+    await saveLastSignedInId(false)
+    getAuthStore().signOutWithoutSaving()
+  }
+
+  const save = async () => {
     const result = validate()
     if (!result.isSuccess) {
       return
     }
-    getAuthStore().signOut()
+    await signOut()
+    onSave()
     accountStore.upsertAccount(result.data)
     getAuthStore().signIn(result.data)
-    onSave()
   }
 
   const dataForm = formArr.map(item => ({

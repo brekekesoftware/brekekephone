@@ -296,6 +296,7 @@ export class AuthStore {
     if (!urlParams) {
       return false
     }
+    await updateParamsWithInvoke(urlParams)
     //
     const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
     if (!tenant || !user) {
@@ -337,8 +338,6 @@ export class AuthStore {
         Nav().goToPageAccountUpdate({ id: a.id })
       }
 
-      // need to call this last so the account should be added
-      await updateParamsWithInvoke(urlParams)
       return true
     }
     //

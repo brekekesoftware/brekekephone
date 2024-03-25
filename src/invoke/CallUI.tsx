@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { accountStore } from '../stores/accountStore'
 import { waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
@@ -97,13 +98,17 @@ export const CallUI = observer(() => {
   const refTxtSelection = useRef({ start: 0, end: 0 })
   const refCallPrevLength = useRef(0)
   const [phone, setPhone] = useState('')
-  const [screen, setScreen] = useState<TScreen>('account')
+  const [screen, setScreen] = useState<TScreen>('account-info')
 
   const { callTo, timeNow } = RNInvokeState
   const callStore = getCallStore()
   const callLength = callStore.calls.length
 
   useEffect(() => {
+    if (!accountStore.accounts.length) {
+      setScreen('account-info')
+      return
+    }
     if (callTo) {
       waitSip().then(() => {
         callStore.startCall(callTo)
@@ -111,8 +116,11 @@ export const CallUI = observer(() => {
       setScreen('incall')
       return
     }
-    setScreen('account-info')
-    setPhone('')
+    if (timeNow) {
+      setScreen('keypad')
+      setPhone('')
+      return
+    }
   }, [timeNow])
 
   useEffect(() => {
