@@ -138,15 +138,15 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        const authStore = getAuthStore()
-        const currentAccount = authStore.getCurrentAccount()
-        if (s.ucRequired && !currentAccount?.ucEnabled) {
+        const as = getAuthStore()
+        const ca = as.getCurrentAccount()
+        if (s.ucRequired && !ca?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
 
         // handle link to phoneappli app
-        if (authStore.phoneappliEnabled()) {
+        if (as.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
             openLinkSafely(URLSchemes.phoneappli.USERS)
             return

@@ -106,15 +106,15 @@ const initApp = async () => {
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
-    const h = await s.handleUrlParams()
+    if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
+      return
+    }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
     // https://github.com/facebook/react-native-website/issues/273
     if (Platform.OS !== 'ios') {
       return
     }
-    if (!checkHasCallOrWakeFromPN() && !h) {
-      await autoLogin()
-    }
+    await autoLogin()
   })
 
   NetInfo.addEventListener(({ isConnected }) => {

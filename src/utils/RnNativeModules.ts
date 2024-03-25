@@ -38,6 +38,7 @@ type TBrekekeUtils = {
   hasIncomingCallActivity(uuid: string): Promise<boolean>
   insertCallLog(number: string, type: CallLogType): void
   setPhoneappliEnabled(enabled: boolean): void
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -90,6 +91,7 @@ const Polyfill: TBrekekeUtils = {
   hasIncomingCallActivity: () => Promise.resolve(false),
   insertCallLog: () => undefined,
   setPhoneappliEnabled: () => undefined,
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

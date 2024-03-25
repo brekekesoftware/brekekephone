@@ -36,7 +36,7 @@ export const getTabs = (tab: string) => {
     subMenus.push({
       key: 'phonebook',
       label: intl`PHONEBOOK`,
-      navFnKey: (() => {}) as any,
+      navFnKey: {} as any,
     })
   }
 
@@ -58,12 +58,11 @@ export const getTabs = (tab: string) => {
       (s: SubMenu) => s,
     ) as Menu['subMenusMap']
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
-
     m.subMenus.forEach(s => {
       s.navFn = action(() => {
         const name = Object.keys(s.navFnKey)[0]
         // handle link to phoneappli app
-        if (s.key === 'phonebook') {
+        if (!name || s.key === 'phonebook') {
           openLinkSafely(URLSchemes.phoneappli.USERS)
           return
         }

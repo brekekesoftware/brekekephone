@@ -171,13 +171,11 @@ export type PbxPal = {
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
   ): void
-
   getPhoneAppliContact(
     p: PbxGetPhoneappliContactParam,
     resolve: (res: PbxPhoneappliContact) => void,
     reject: ErrorHandler,
   ): void
-
   setContact(
     p: PbxContact,
     resolve: (res: PbxContact) => void,

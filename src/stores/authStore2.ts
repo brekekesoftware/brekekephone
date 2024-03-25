@@ -177,7 +177,7 @@ export class AuthStore {
     await this.signIn(a, true)
     return true
   }
-  autoSignInFistAccount = async () => {
+  autoSignInFirstAccount = async () => {
     const a = accountStore.accounts?.[0]
     if (!a) {
       return false
@@ -294,20 +294,18 @@ export class AuthStore {
   }
 
   alreadyHandleDeepLinkMakeCall = false
+  clearUrlParams = () => {
+    this.alreadyHandleDeepLinkMakeCall = false
+    clearUrlParams()
+  }
+
   handleUrlParams = async () => {
     const urlParams = await getUrlParams()
-
     if (!urlParams) {
       return false
     }
-    //
     const { _wn, host, phone_idx, port, tenant, user, password, number } =
       urlParams
-    // clean up url params
-    const cleanUpUrlParams = () => {
-      this.alreadyHandleDeepLinkMakeCall = false
-      clearUrlParams()
-    }
     // handle deep link: make call from phoneappli app
     if (number) {
       // prevent double start call and check list account
@@ -316,7 +314,6 @@ export class AuthStore {
       }
       this.alreadyHandleDeepLinkMakeCall = true
       const auth = getAuthStore()
-
       // checking user login
       const isUserLoginValid = port && tenant && user && host
       if (isUserLoginValid) {
@@ -333,9 +330,9 @@ export class AuthStore {
           }
           const signed = ac
             ? await this.signIn(ac, true)
-            : await auth.autoSignInFistAccount()
+            : await auth.autoSignInFirstAccount()
           if (!signed) {
-            cleanUpUrlParams()
+            this.clearUrlParams()
             return true
           }
         }
@@ -348,21 +345,19 @@ export class AuthStore {
           if (this.signedInId) {
             this.signOut()
           }
-          const success = await auth.autoSignInFistAccount()
+          const success = await auth.autoSignInFirstAccount()
           if (!success) {
-            cleanUpUrlParams()
+            this.clearUrlParams()
             return true
           }
         }
       }
-
       // checking phoneappli is enabled
       if (!auth.phoneappliEnabled()) {
-        cleanUpUrlParams()
+        this.clearUrlParams()
         return true
       }
       await waitSip()
-
       // handle transfer call from deep link
       const cs = RnStacker.stacks[RnStacker.stacks.length - 1]
       if (
@@ -371,16 +366,15 @@ export class AuthStore {
           cs.name === 'PageCallTransferDial')
       ) {
         getCallStore().getOngoingCall()?.transferAttended(number)
-        cleanUpUrlParams()
+        this.clearUrlParams()
         return true
       }
-
       // handle start call
       getCallStore().startCall(number)
-      cleanUpUrlParams()
+      this.clearUrlParams()
       return true
     }
-
+    //
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||
@@ -389,18 +383,16 @@ export class AuthStore {
     ) {
       return false
     }
-
     if (!tenant || !user) {
       return false
     }
-
     const a = await accountStore.find({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
       pbxPort: port,
     })
-
+    //
     let phoneIdx = parseInt(phone_idx)
     if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {
       phoneIdx = 4
