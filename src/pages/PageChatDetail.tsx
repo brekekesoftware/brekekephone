@@ -19,6 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
+import { waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
@@ -58,6 +59,7 @@ export class PageChatDetail extends Component<{
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
   }
+
   state = {
     loadingRecent: false,
     loadingMore: false,
@@ -70,13 +72,31 @@ export class PageChatDetail extends Component<{
     emojiTurnOn: false,
     blobVideo: undefined,
   }
+
   numberOfChatsPerLoadMore = numberOfChatsPerLoad
   edittingTextEmoji = ''
   editingTextReplace = false
 
   componentDidMount() {
-    this.loadRecent()
+    this.componentDidMountAsync()
+  }
+  componentDidMountAsync = async () => {
     const { buddy: id } = this.props
+    this.setState({ loadingRecent: true })
+    await waitUc()
+    await uc
+      .getBuddyChats(id, { max: numberOfChatsPerLoad })
+      .then(chats => {
+        chatStore.pushMessages(id, chats)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to get recent chats`,
+          err,
+        })
+      })
+    this.setState({ loadingRecent: false })
     uc.readUnreadChats(id)
     chatStore.updateThreadConfig(id, false, {
       isUnread: false,
@@ -304,26 +324,6 @@ export class PageChatDetail extends Component<{
       return this.me
     }
     return contactStore.getUcUserById(creator) || {}
-  }
-  loadRecent = () => {
-    this.setState({ loadingRecent: true })
-    const { buddy: id } = this.props
-    uc.getBuddyChats(id, {
-      max: numberOfChatsPerLoad,
-    })
-      .then(chats => {
-        chatStore.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get recent chats`,
-          err,
-        })
-      })
-      .then(() => {
-        this.setState({ loadingRecent: false })
-      })
   }
 
   loadMore = () => {

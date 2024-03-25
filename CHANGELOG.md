@@ -1,3 +1,20 @@
+#### 2.14.1
+
+- Android implement set BrekekePhone as the default OS dial (not possible on ios)
+
+#### 2.13.7
+
+- Fix and adapt UC chat push notification according to server change
+
+#### 2.13.6
+
+- Improve page custom pbx user settings: update title display and loading state
+- Improve avatar should not show loading indefinitely
+
+#### 2.13.5
+
+- Fix it should not stuck on call screen if very quickly answer edge case multiple calls (issue 820)
+
 #### 2.13.4
 
 - Fix it should not crash if very quickly answer edge case multiple calls (issue 814)

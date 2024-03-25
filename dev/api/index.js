@@ -6,9 +6,13 @@ const app = express()
 app.use(cors())
 
 const root = '/var/www/upload/'
+const invoke = '/var/www/upload/invoke'
 
 app.get('/dev-api/builds', (req, res) => {
   res.json(fs.readdirSync(root))
+})
+app.get('/dev-api/invoke-builds', (req, res) => {
+  res.json(fs.readdirSync(invoke))
 })
 
 app.get('/dev-api/plist/:version', (req, res, next) => {
@@ -21,6 +25,8 @@ app.get('/dev-api/plist/:version', (req, res, next) => {
   const v = version.replace('dev', '')
   res.end(plist(d, v))
 })
+
+// TODO /dev-api/invoke-plist/:version
 
 app.listen(3030, () => console.log('listening on port 3030'))
 

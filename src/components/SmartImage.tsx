@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
+import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import noPhoto from '../assets/no_photo.png'
 import { buildWebViewSource } from '../config'
@@ -34,28 +35,79 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
-const configViewPort =
-  "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); "
+const configViewPort = `
+const meta = document.createElement('meta'); 
+meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); 
+meta.setAttribute('name', 'viewport'); 
+document.getElementsByTagName('head')[0].appendChild(meta);
 
+function sendJsonToRn(json) {
+  window.ReactNativeWebView.postMessage(JSON.stringify(json));
+}
+
+window.addEventListener('load', function() {
+    sendJsonToRn({loaded: true});
+});
+
+`
+enum StatusImage {
+  loading = 0,
+  loaded = 1,
+  error = 2,
+}
 export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
-  const [statusImageLoading, setStatusImageLoading] = useState(0)
+  const [statusImageLoading, setStatusImageLoading] = useState(
+    StatusImage.loading,
+  )
+  const cUrl = useRef(uri)
   useEffect(() => {
     setStatusImageLoading(0)
     console.log(`SmartImage url=${uri}`)
   }, [uri])
 
   const onMessage = (event: WebViewMessageEvent) => {
-    setStatusImageLoading(1)
+    try {
+      // For sure just update load page 1 time
+      if (statusImageLoading === StatusImage.loaded) {
+        return
+      }
+      const data = event?.nativeEvent?.data
+      if (!data) {
+        return
+      }
+      const json = JSON.parse(data)
+
+      if (!json) {
+        return
+      }
+      if (typeof json.loaded === 'boolean' && json.loaded === true) {
+        setStatusImageLoading(StatusImage.loaded)
+      }
+    } catch (err) {
+      return
+    }
+  }
+  // For case Webview load  live stream camera url:
+  // onLoadEnd, onLoad do not fire
+  // We should be check url same or not to update Loading status
+  const onLoadStart = (e: WebViewNavigationEvent) => {
+    const cPageUrl = e?.nativeEvent?.url
+    if (!cPageUrl || cPageUrl === cUrl.current) {
+      return
+    }
+    cUrl.current = cPageUrl
+    setStatusImageLoading(StatusImage.loading)
   }
   const onLoadEnd = () => {
-    setStatusImageLoading(1)
+    setStatusImageLoading(StatusImage.loaded)
   }
   const onImageLoadError = () => {
-    setStatusImageLoading(2)
+    setStatusImageLoading(StatusImage.error)
   }
   const onImageLoad = () => {
-    setStatusImageLoading(1)
+    setStatusImageLoading(StatusImage.loaded)
   }
+
   const isImageUrl = checkImageUrl(uri)
 
   return (
@@ -73,7 +125,7 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
           injectedJavaScript={configViewPort}
           style={[css.image, css.full]}
           bounces={false}
-          startInLoadingState={true}
+          onLoadStart={onLoadStart}
           onMessage={onMessage}
           onLoadEnd={onLoadEnd}
           originWhitelist={['*']}
@@ -89,7 +141,7 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
           resizeMode='cover'
         />
       )}
-      {statusImageLoading === 2 && isImageUrl && (
+      {statusImageLoading === StatusImage.error && isImageUrl && (
         <Image
           source={noPhotoImg}
           style={[css.imageError, css.full]}

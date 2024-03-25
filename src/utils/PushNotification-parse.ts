@@ -12,9 +12,14 @@ import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
+  // Chat message
+  'google.message_id',
   'title',
   'threadId',
   'isGroupChat',
+  'senderUserId',
+  'confId',
+  'senderUserName',
   'alert',
   'body',
   'message',
@@ -183,6 +188,7 @@ export const parse = async (
   isLocal = false,
 ) => {
   const n = parseNotificationData(raw)
+
   if (!raw || !n) {
     return
   }
@@ -229,53 +235,47 @@ export const parse = async (
     return
   }
 
-  isLocal = Boolean(
+  const isChatMessage = Boolean(
     isLocal ||
       raw.my_custom_data ||
       raw.is_local_notification ||
       n.my_custom_data ||
-      n.is_local_notification,
+      n.is_local_notification ||
+      !n.isCall,
   )
-  // handle uc chat local notification
-  if (isLocal) {
-    console.log(
-      'SIP PN debug: PushNotification-parse: local notification UC chat',
-    )
-    // this can still happens:
-    // user enable UC and login, receive UC chat PN but do nothing
-    // then they logout and disable UC, then press the local presented PN
-    if (!acc.ucEnabled) {
-      navIndex('goToPageSettingsCurrentAccount')
-      return
-    }
-    if (!n.threadId) {
-      navIndex('goToPageChatRecents')
-      return
-    }
-    nav.customPageIndex = nav.goToPageChatRecents
-    await waitTimeout()
-    if (n.isGroupChat) {
-      chatStore.handleMoveToChatGroupDetail(n.threadId)
-      return
-    }
-    nav.goToPageChatDetail({ buddy: n.threadId })
-    return
-  }
-
   // handle uc chat notification on press
   // currently server is sending PN as not-data-only
   // if the app is killed, the PN will show up instantly without triggering this code
-  if (!n.isCall) {
-    console.log('SIP PN debug: PushNotification-parse: n.isCall=false')
-    // app currently active and we already logged-in above
-    if (AppState.currentState === 'active') {
+  if (isChatMessage) {
+    const appState = AppState.currentState
+    const senderId = n?.senderUserId || n.threadId
+    const confId = n?.confId || n.threadId
+    const isGroupChat = n.isGroupChat
+    console.log(
+      `SIP PN debug: PushNotification-parse: isChatMessage=true appState=${appState} senderId=${senderId} confId=${confId} isGroupChat=${isGroupChat}`,
+    )
+    if (!acc.ucEnabled) {
       return
     }
-    if (!acc.ucEnabled) {
-      navIndex('goToPageSettingsCurrentAccount')
-    } else {
-      navIndex('goToPageChatRecents')
-    }
+    // if (AppState.currentState !== 'active') {
+    //   return
+    // }
+    // if (!senderId && !confId) {
+    //   navIndex('goToPageChatRecents')
+    //   return
+    // }
+    // if ((isGroupChat || !senderId) && confId) {
+    //   nav.customPageIndex = nav.goToPageChatRecents
+    //   waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
+    //   return
+    // }
+    // if (senderId) {
+    //   nav.customPageIndex = nav.goToPageChatRecents
+    //   waitTimeout().then(() => nav.goToPageChatDetail({ buddy: senderId }))
+    //   return
+    // }
+    void chatStore
+    navIndex('goToPageChatRecents')
     return
   }
 
@@ -322,6 +322,9 @@ export const parse = async (
 }
 
 export type ParsedPn = {
+  message_id: string
+  confId: string
+  senderUserId: string
   id: string
   title: string
   body: string

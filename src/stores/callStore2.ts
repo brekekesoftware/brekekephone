@@ -118,7 +118,7 @@ export class CallStore {
       const count = sip.phone?.getSessionCount()
       if (!count) {
         console.log(
-          `SIP PN debug: new notification: phone.getSessionCount()=${count} | call destroyWebRTC()`,
+          `SIP PN debug: new notification: getSessionCount=${count} | call destroyWebRTC()`,
         )
         as.sipState = 'stopped'
         sip.destroyWebRTC()
