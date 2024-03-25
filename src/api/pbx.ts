@@ -17,11 +17,10 @@ import { toBoolean } from '../utils/string'
 import {
   addFromNumberNonce,
   hasPbxTokenTobeRepalced,
-  pbxTokenTobeReplacedRe,
   replaceFromNumberUsingParam,
+  replacePbxToken,
   replacePbxTokenUsingSessParam,
   replaceUrlWithoutPbxToken,
-  sessParamRe,
 } from './customPage'
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
@@ -830,7 +829,7 @@ export const buildCustomPageUrl = async (url: string) => {
     return url
   }
   const r = await pbx.getPbxToken()
-  return r?.token ? url.replace(pbxTokenTobeReplacedRe, r.token) : url
+  return r?.token ? replacePbxToken(url, r.token) : url
 }
 
 export const rebuildCustomPageUrlNonce = (url: string) =>

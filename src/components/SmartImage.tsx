@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  ActivityIndicator,
-  Image,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 

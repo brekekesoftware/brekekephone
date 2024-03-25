@@ -2,17 +2,20 @@
 // should not use replace string in url
 // use url builder instead for safe url encoding
 
-export const pbxTokenTobeReplacedRe = /#pbx-token#/i
-export const langTobeReplacedRe = /#lang#/i
-export const tenantTobeReplacedRe = /#tenant#/i
-export const userTobeReplacedRe = /#user#/i
-export const fromNumberTobeReplacedRe = /#from-number#/i
+const pbxTokenTobeReplacedRe = /#pbx-token#/i
+const langTobeReplacedRe = /#lang#/i
+const tenantTobeReplacedRe = /#tenant#/i
+const userTobeReplacedRe = /#user#/i
+const fromNumberTobeReplacedRe = /#from-number#/i
 
-export const sessParamRe = /([&?]sess=)[^&]+/i
+export const replacePbxToken = (url: string, token: string) =>
+  url.replace(pbxTokenTobeReplacedRe, token)
+
+const sessParamRe = /([&?]sess=)[^&]+/i
 export const replacePbxTokenUsingSessParam = (url: string, token: string) =>
   url.replace(sessParamRe, `$1${token}`)
 
-export const fromNumberParamRe = /([&?]from-number=)[^&]+/i
+const fromNumberParamRe = /([&?]from-number=)[^&]+/i
 export const addFromNumberNonce = (url: string) => {
   if (fromNumberParamRe.test(url)) {
     return url
