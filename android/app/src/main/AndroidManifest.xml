@@ -130,7 +130,7 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="brekekephonedev" android:host="open" />
+        <data android:scheme="brekekeexphonedev" android:host="open" />
       </intent-filter>
     </activity>
     <!-- call history -->

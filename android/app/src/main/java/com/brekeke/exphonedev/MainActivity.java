@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.exphonedev;
 
 import android.content.Intent;
 import android.os.Bundle;
