@@ -85,16 +85,6 @@ export class PageCallRecents extends Component {
           }}
           value={contactStore.callSearchRecents}
         />
-        <Field
-          isGroup
-          label={intl`VOICEMAIL (${getCallStore().newVoicemailCount})`}
-        />
-        <UserItem
-          iconFuncs={[() => getCallStore().startCall('8')]}
-          icons={[mdiPhone]}
-          name={intl`Voicemail`}
-          isVoicemail
-        />
         <Field isGroup label={intl`RECENT CALLS (${calls.length})`} />
         {calls.map((c, i) => (
           <UserItem

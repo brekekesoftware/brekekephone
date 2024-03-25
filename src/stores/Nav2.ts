@@ -29,6 +29,7 @@ import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageSettingsCurrentAccount } from '../pages/PageSettingsCurrentAccount'
 import { PageSettingsDebug } from '../pages/PageSettingsDebug'
 import { PageSettingsOther } from '../pages/PageSettingsOther'
+import { PageVoicemail } from '../pages/PageVoicemail'
 import { PageWebChat } from '../pages/PageWebChat'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { getAuthStore } from './authStore'
@@ -87,6 +88,15 @@ export class Nav2 {
   backToPageCallRecents = RnStacker.createBackTo<
     ComponentProps<typeof PageCallRecents>
   >({ PageCallRecents }, true)
+
+  goToPageVoicemail = RnStacker.createGoTo<
+    ComponentProps<typeof PageVoicemail>
+  >({ PageVoicemail }, true)
+
+  backToPageVoicemail = RnStacker.createBackTo<
+    ComponentProps<typeof PageVoicemail>
+  >({ PageVoicemail }, true)
+
   goToPageCallParks = RnStacker.createGoTo<
     ComponentProps<typeof PageCallParks>
   >({ PageCallParks }, true)

@@ -1,6 +1,11 @@
 import Url from 'url-parse'
 
+import { getAuthStore } from '../stores/authStore'
+
 export const checkImageUrl = (url: string) => {
+  if (getAuthStore().phoneappliEnabled()) {
+    return true
+  }
   url = url.toLowerCase()
   const u = new Url(url)
   return (

@@ -93,6 +93,7 @@ Brekeke.pbx.getPalPrototype = function () {
     'getPhonebooks',
     'getContactList',
     'getContact',
+    'getPhoneAppliContact',
     'setContact',
     'getPnApplicationInfo',
     'createSessionToken',

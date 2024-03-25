@@ -6,7 +6,23 @@ import { parse, UrlParams } from './deeplink-parse'
 
 let alreadyHandleFirstOpen = false
 let urlParams: Promise<UrlParams | null> | UrlParams | null = null
+export const URLSchemes = {
+  phoneappli: {
+    USERS: 'pa-rtk://directory?type=users',
+    HISTORY_CALLED: 'pa-rtk://history?type=called',
+  },
+}
 
+export const openLinkSafely = async (url: string) => {
+  if (!url) {
+    return
+  }
+  try {
+    await Linking.openURL(url)
+  } catch (err) {
+    console.error(`Linking.openURL ${url} error: `, err)
+  }
+}
 export const getUrlParams = async () => {
   if (alreadyHandleFirstOpen) {
     return urlParams
@@ -32,4 +48,7 @@ export const getUrlParams = async () => {
   })
   urlParams = Linking.getInitialURL().then(parse)
   return urlParams
+}
+export const clearUrlParams = () => {
+  urlParams = null
 }
