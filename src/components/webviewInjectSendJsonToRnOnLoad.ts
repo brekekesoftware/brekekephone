@@ -4,11 +4,7 @@ export const webviewInjectSendJsonToRnOnLoad = (title?: boolean) =>
   Platform.OS === 'ios'
     ? `
 window.addEventListener('load', function() {
-  addTitleListener();
-  sendJsonToRn({
-    loading: false,
-    ${title ? 'title: document.title,' : ''}
-  });
+  sendJsonToRn({ loading: false });
 });
 `
     : // event load doesnt work on android webview
@@ -24,10 +20,6 @@ var ready = function (fn) {
   document.addEventListener('DOMContentLoaded', fn, false);
 };
 ready(function() {
-  addTitleListener();
-  sendJsonToRn({
-    loading: false,
-    ${title ? 'title: document.title,' : ''}
-  });
+  sendJsonToRn({ loading: false });
 });
 `
