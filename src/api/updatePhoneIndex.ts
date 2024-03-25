@@ -29,6 +29,7 @@ export const updatePhoneIndex = async (
   // upsert account info with properties phoneappli.enable
   const as = getAuthStore()
   if (p.id === as.getCurrentAccount().id) {
+    as.userExtensionProperties = extProps
     const d = await as.getCurrentDataAsync()
     d.phoneappliEnabled = extProps.phoneappli
     accountStore.updateAccountData(d)
@@ -46,7 +47,6 @@ export const updatePhoneIndex = async (
       )
       return
     }
-
     await api.client.call_pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
@@ -56,10 +56,6 @@ export const updatePhoneIndex = async (
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
-
-    if (p === getAuthStore().getCurrentAccount()) {
-      getAuthStore().userExtensionProperties = extProps
-    }
   }
 
   if (phoneTypeCorrect && phoneIdCorrect) {
