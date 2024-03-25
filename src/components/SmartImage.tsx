@@ -6,6 +6,7 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 import noPhoto from '../assets/no_photo.png'
 import { buildWebViewSource } from '../config'
 import { checkImageUrl } from '../utils/checkImageUrl'
+import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
@@ -35,20 +36,18 @@ const css = StyleSheet.create({
     height: '100%',
   },
 })
-const configViewPort = `
-const meta = document.createElement('meta'); 
-meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0'); 
-meta.setAttribute('name', 'viewport'); 
-document.getElementsByTagName('head')[0].appendChild(meta);
 
+const js = `
+// set meta data config viewport
+const meta = document.createElement('meta');
+meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
+meta.setAttribute('name', 'viewport');
+document.getElementsByTagName('head')[0].appendChild(meta);
+// send data to rn to stop loading
 function sendJsonToRn(json) {
   window.ReactNativeWebView.postMessage(JSON.stringify(json));
 }
-
-window.addEventListener('load', function() {
-    sendJsonToRn({loaded: true});
-});
-
+${webviewInjectSendJsonToRnOnLoad()}
 `
 enum StatusImage {
   loading = 0,
@@ -76,7 +75,6 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
         return
       }
       const json = JSON.parse(data)
-
       if (!json) {
         return
       }
@@ -107,7 +105,9 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
   const onImageLoad = () => {
     setStatusImageLoading(StatusImage.loaded)
   }
-
+  const onHttpError = () => {
+    setStatusImageLoading(StatusImage.loaded)
+  }
   const isImageUrl = checkImageUrl(uri)
 
   return (
@@ -122,12 +122,13 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
       {!uri ? null : !isImageUrl ? (
         <WebView
           source={buildWebViewSource(uri)}
-          injectedJavaScript={configViewPort}
+          injectedJavaScript={js}
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}
           onMessage={onMessage}
           onLoadEnd={onLoadEnd}
+          onHttpError={onHttpError}
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
