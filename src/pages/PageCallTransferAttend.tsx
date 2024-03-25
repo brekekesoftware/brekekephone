@@ -125,7 +125,7 @@ export class PageCallTransferAttend extends Component {
         username: rt?.display_name,
       }
       this.setState({ phoneappliSource, phoneappliTarget })
-    } catch (error) {
+    } catch (err) {
       return
     }
   }

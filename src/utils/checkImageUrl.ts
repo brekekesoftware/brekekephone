@@ -2,7 +2,7 @@ import Url from 'url-parse'
 
 import { getAuthStore } from '../stores/authStore'
 
-export const checkImageUrl = async (url: string) => {
+export const checkImageUrl = (url: string) => {
   if (getAuthStore().phoneappliEnabled()) {
     return true
   }

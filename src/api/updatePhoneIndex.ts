@@ -1,4 +1,3 @@
-import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -27,11 +26,9 @@ export const updatePhoneIndex = async (
   }
 
   // upsert account info with properties phoneappli.enable
-  if (p === getAuthStore().getCurrentAccount()) {
-    accountStore.upsertAccount({
-      id: p.id,
-      phoneappliEnabled: extProps.phoneappli,
-    })
+  const as = getAuthStore()
+  if (p.id === as.getCurrentAccount().id) {
+    as.userExtensionProperties = extProps
   }
 
   const phone = extProps.phones[phoneIndex - 1]

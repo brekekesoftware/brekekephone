@@ -480,7 +480,7 @@ export class PBX extends EventEmitter {
         tel,
       })
       return res
-    } catch (error) {
+    } catch (err) {
       return {}
     }
   }

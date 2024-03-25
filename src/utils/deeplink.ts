@@ -19,8 +19,8 @@ export const openLinkSafely = async (url: string) => {
   }
   try {
     await Linking.openURL(url)
-  } catch (error) {
-    console.log(`Open ${url} get error: ${error}`)
+  } catch (err) {
+    console.error(`Linking.openURL ${url} error: `, err)
   }
 }
 export const getUrlParams = async () => {
