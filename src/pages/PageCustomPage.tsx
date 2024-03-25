@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { buildCustomPageUrl, isCustomPageUrlBuilt } from '../api/pbx'
+import { buildCustomPageUrl } from '../api/pbx'
 import { getAuthStore } from '../stores/authStore'
 
 @observer
@@ -13,9 +13,7 @@ export class PageCustomPage extends Component<{ id: string }> {
     if (!cp) {
       return
     }
-    if (isCustomPageUrlBuilt(cp.url)) {
-      return
-    }
+
     const url = await buildCustomPageUrl(cp.url)
     as.updateCustomPage({ ...cp, url })
     as.customPageLoadings[cp.id] = true
