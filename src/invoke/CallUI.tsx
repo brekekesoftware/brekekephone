@@ -163,7 +163,7 @@ export const CallUI = observer(() => {
   }
 
   if (screen === 'account') {
-    return <AccountForm onSave={() => setScreen('account-info')} />
+    return <AccountForm onBack={() => setScreen('account-info')} />
   }
 
   if (screen === 'account-info') {

@@ -1,8 +1,16 @@
 import { observer } from 'mobx-react'
 import { useRef } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { ItemType } from 'react-native-dropdown-picker'
 
+import { mdiKeyboardBackspace } from '../assets/icons'
+import { ButtonIcon } from '../components/ButtonIcon'
 import {
   Account,
   accountStore,
@@ -42,10 +50,10 @@ const dropdownItems: ItemType<any>[] = [
   { label: 'Phone 3', value: '3' },
   { label: 'Phone 4', value: '4' },
 ]
-export const AccountForm = observer(({ onSave }: { onSave(): void }) => {
+export const AccountForm = observer(({ onBack }: { onBack(): void }) => {
   const refs = useRef<any[]>([])
   const ids = accountStore.accounts.map(a => a.id).filter(id => id)
-  const account = accountStore.accountsMap[ids[0]]
+  const account = ids[0] ? { ...accountStore.accountsMap[ids[0]] } : undefined
 
   const validate = () => {
     const data: Account = account ?? accountStore.genEmptyAccount()
@@ -67,11 +75,12 @@ export const AccountForm = observer(({ onSave }: { onSave(): void }) => {
 
   const save = async () => {
     const result = validate()
+    console.log('#Duy Phan console result', result)
     if (!result.isSuccess) {
       return
     }
     await signOut()
-    onSave()
+    onBack()
     accountStore.upsertAccount(result.data)
     getAuthStore().signIn(result.data)
   }
@@ -82,33 +91,53 @@ export const AccountForm = observer(({ onSave }: { onSave(): void }) => {
   }))
   return (
     <InvokeGradient>
-      <View style={styles.container}>
-        <Text style={styles.title}>Account</Text>
-
-        <View style={styles.main}>
-          {dataForm.map(item => (
-            <Input
-              title={item.name}
-              ref={el => (refs.current[item.id] = el)}
-              key={item.id.toString()}
-              k={item.key}
-              type={item.key === 'pbxPhoneIndex' ? 'dropdown' : undefined}
-              secureTextEntry={item.key === 'pbxPassword'}
-              items={dropdownItems}
-              isRequired={item.isRequired}
-              keyboardType={item.key === 'pbxPort' ? 'numeric' : undefined}
-              errMessage={item.errMessage}
-              value={item.value}
+      <ScrollView
+        keyboardShouldPersistTaps='always'
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <ButtonIcon
+              path={mdiKeyboardBackspace}
+              color='white'
+              size={28}
+              noborder
+              style={styles.btnBack}
+              onPress={onBack}
             />
-          ))}
-        </View>
+            <View style={styles.titleView}>
+              <Text style={styles.title}>
+                {account ? 'Edit Account' : 'Create Account'}
+              </Text>
+            </View>
+          </View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.button} onPress={save}>
-            <Text>Save</Text>
-          </TouchableOpacity>
+          <View style={styles.main}>
+            {dataForm.map(item => (
+              <Input
+                title={item.name}
+                ref={el => (refs.current[item.id] = el)}
+                key={item.id.toString()}
+                k={item.key}
+                type={item.key === 'pbxPhoneIndex' ? 'dropdown' : undefined}
+                secureTextEntry={item.key === 'pbxPassword'}
+                items={dropdownItems}
+                isRequired={item.isRequired}
+                keyboardType={item.key === 'pbxPort' ? 'numeric' : undefined}
+                errMessage={item.errMessage}
+                value={item.value}
+              />
+            ))}
+          </View>
+
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.button} onPress={save}>
+              <Text>Save</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+        <View style={{ height: 15 }}></View>
+      </ScrollView>
     </InvokeGradient>
   )
 })
@@ -128,6 +157,7 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 10,
   },
+  titleView: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   button: {
     width: 100,
     backgroundColor: 'rgb(237, 228, 181)',
@@ -136,9 +166,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 45,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    position: 'relative',
+  },
   footer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 10,
   },
+  btnBack: { position: 'absolute', left: 5 },
 })

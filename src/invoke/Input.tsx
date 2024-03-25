@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   error: {
-    color: 'red',
+    color: 'yellow',
     fontSize: 12,
     fontStyle: 'italic',
   },
