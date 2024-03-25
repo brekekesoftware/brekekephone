@@ -208,7 +208,7 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
   } catch (error) {
     return intl`The call from ${
       c.partyName || c.partyNumber
-    } is answered by someone}`
+    } is answered by someone else`
   }
 }
 
