@@ -31,7 +31,6 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>brekekeappphonedev</string>
           <string>brekekephonedev</string>
         </array>
       </dict>
