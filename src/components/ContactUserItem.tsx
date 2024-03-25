@@ -126,6 +126,7 @@ export const UserItem: FC<
     isSelected?: boolean
     parkNumber?: string
     phonebook?: string
+    reason?: string
     onSelect?: () => void
   }>
 > = observer(p0 => {
@@ -155,6 +156,7 @@ export const UserItem: FC<
     isSelected,
     parkNumber,
     phonebook,
+    reason,
     onSelect,
     ...p
   } = p0
@@ -283,7 +285,9 @@ export const UserItem: FC<
                 style={css.CallIcon}
               />
               <RnText normal small style={css.CallCreatedAt}>
-                {isVoicemail ? intl`Voicemail` : intl`at ${created}`}
+                {isVoicemail
+                  ? intl`Voicemail`
+                  : intl`${reason}${reason ? ' ' : ''}at ${created}`}
               </RnText>
             </View>
           )}

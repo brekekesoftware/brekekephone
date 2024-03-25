@@ -12,6 +12,7 @@
   - Improve it should not log in if PN is received without user tapping
   - Improve it should navigate to screen chat detail instead of screen chat recents when user tapping on a UC chat notification
 - Implement PhoneAppli linking
+- Show information when an incoming call is canceled in certain cases
 
 #### 2.13.7
 

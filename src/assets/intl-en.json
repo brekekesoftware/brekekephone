@@ -221,6 +221,9 @@
   "Take a new video",
   "Tap the below button to create one",
   "The account password is empty",
+  "The call from {{$0}} is answered by someone else",
+  "The call from {{$0}} is answered by {{$1}}",
+  "The call from {{$0}} is {{$1}}",
   "There is already an outgoing call",
   "There is no account created",
   "There's currently no message in this thread",
@@ -245,6 +248,7 @@
   "Users",
   "Users, {{$0}} total",
   "VIDEO",
+  "VOICEMAIL",
   "VOICEMAIL ({{$0}})",
   "Voicemail",
   "Voicemail and recent calls",
@@ -258,7 +262,7 @@
   "You have rejected this group or it has been deleted",
   "Your park numbers",
   "Your phonebook contacts",
-  "at {{$0}}",
+  "answered by {{$0}}",
   "label",
   "park number",
   "{{$0}} accounts in total",
@@ -267,5 +271,6 @@
   "{{$0}} other call is in background",
   "{{$0}} other calls are in background",
   "{{$0}} total",
-  "{{$0}}/{{$1}} online"
+  "{{$0}}/{{$1}} online",
+  "{{$0}}{{$1}}at {{$2}}"
 ]

@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
+import { pbx } from '../api/pbx'
 import { getPartyName } from '../stores/contactStore'
 import { permForCallLog } from '../utils/permissions'
 import { ParsedPn } from '../utils/PushNotification-parse'
@@ -16,6 +17,47 @@ import { getCallStore } from './callStore'
 import { intl } from './intl'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
+export const parseReasonCancelCall = (reason?: string) => {
+  if (!reason) {
+    return
+  }
+
+  const m = reason.match(/"([^"]+)"/i)
+  if (!m) {
+    return
+  }
+  return m[1]
+}
+export const getUserInfoFromReasons = (reason?: string | false) => {
+  if (!reason) {
+    return
+  }
+  // When *** has ( and ),  the string in those parentheses is the phone number.
+  // When *** does not have ( and ), then the entiere string is the phone number.
+  let m = reason.match(/call completed by (.*?)\((.*?)\)/i)
+  if (!m) {
+    m = reason.match(/call completed by (.+)/i)
+  }
+  if (!m) {
+    return
+  }
+  return {
+    name: m[2] ? m[1].trim() : '',
+    phoneNumber: m[2]?.trim() || m[1]?.trim(),
+  }
+}
+export const getReasonCancelCall = (ms?: {
+  name: string
+  phoneNumber: string
+}) => {
+  if (!ms) {
+    return
+  }
+  return intl`answered by ${
+    ms.name || getPartyName(ms.phoneNumber) || ms.phoneNumber
+  }`
+}
+
 export const addCallHistory = async (c: Call | ParsedPn) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
 
@@ -39,8 +81,19 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     return
   }
 
+  const ms =
+    isTypeCall &&
+    parseReasonCancelCall(c?.rawSession?.incomingMessage?.getHeader('Reason'))
+
+  // don't save and show pn with cancel header include 'call completed elsewhere'
+  if (ms && ms.toLowerCase().includes('call completed elsewhere')) {
+    return
+  }
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
+  const answeredBy = getUserInfoFromReasons(ms)
+  const reason = getReasonCancelCall(answeredBy)
+
   const info = isTypeCall
     ? {
         id,
@@ -51,6 +104,8 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
+        reason,
+        answeredBy,
       }
     : {
         id,
@@ -68,6 +123,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
   // do not show notification if rejected by callee
   const m = getCallStore().calleeRejectedMap
   const calleeRejected = m[c.callkeepUuid] || m[pnId]
+
   if (!calleeRejected) {
     presentNotification(info)
   }
@@ -82,6 +138,9 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
     await waitTimeout()
   }
   if (!as.getCurrentAccount()) {
+    return
+  }
+  if (as.phoneappliEnabled()) {
     return
   }
   as.pushRecentCall(info)
@@ -99,6 +158,8 @@ export type CallHistoryInfo = {
   partyNumber: string
   duration: number
   isAboutToHangup: boolean
+  reason?: string
+  answeredBy?: { name: string; phoneNumber: string }
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
@@ -123,7 +184,35 @@ const addToCallLog = async (c: CallHistoryInfo) => {
   BrekekeUtils.insertCallLog(partyNumber || partyName, type)
 }
 
-const presentNotification = (c: CallHistoryInfo) => {
+const getBodyForNotification = async (c: CallHistoryInfo) => {
+  if (!c.reason || !c.answeredBy) {
+    return c.partyName || c.partyNumber
+  }
+
+  const auth = getAuthStore()
+  if (!auth.phoneappliEnabled()) {
+    return intl`The call from ${c.partyName || c.partyNumber} is ${c.reason}`
+  }
+
+  const { name, phoneNumber } = c.answeredBy
+  const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+  try {
+    const rs = await pbx.getPhoneappliContact(
+      pbxTenant,
+      pbxUsername,
+      phoneNumber,
+    )
+    return intl`The call from ${c.partyName || c.partyNumber} is answered by ${
+      rs?.display_name || name || phoneNumber
+    }`
+  } catch (error) {
+    return intl`The call from ${
+      c.partyName || c.partyNumber
+    } is answered by someone else`
+  }
+}
+
+const presentNotification = async (c: CallHistoryInfo) => {
   if (Platform.OS === 'web') {
     return
   }
@@ -131,7 +220,8 @@ const presentNotification = (c: CallHistoryInfo) => {
     return
   }
   const title = intl`Missed call`
-  const body = c.partyName || c.partyNumber
+  const body = await getBodyForNotification(c)
+
   if (Platform.OS === 'android') {
     Notifications.postLocalNotification({
       payload: {
