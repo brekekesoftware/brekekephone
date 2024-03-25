@@ -68,6 +68,7 @@ export type AccountData = {
   palParams?: { [k: string]: string }
   userAgent?: string
   pnExpires?: string
+  phoneappliEnabled?: boolean
 }
 
 class AccountStore {
