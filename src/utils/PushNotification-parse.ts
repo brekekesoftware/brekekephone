@@ -262,7 +262,6 @@ export const parse = async (
     if (!acc.ucEnabled) {
       return
     }
-
     if (!senderId && !confId) {
       navIndex('goToPageChatRecents')
       return
