@@ -3,8 +3,10 @@
 - Android implement set BrekekePhone as the default OS dial (not possible on ios)
 - Implement webphone.phonebook.personal.editable
 - Improve and fix custom page url:
-  - Fix it should load if url doesnt include #pbx-token#
   - Fix android it should stop loading correctly in webview (custom page or avatar) in some cases
+  - Fix it should load custom page with only param from-number
+  - Fix it should reload custom page if url doesnt include #pbx-token#
+  - Minor fix css overlap header in custom page
 
 #### 2.13.7
 

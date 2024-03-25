@@ -38,7 +38,7 @@ const css = StyleSheet.create({
 })
 
 const js = `
-// set meta data
+// set meta data config viewport
 const meta = document.createElement('meta');
 meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
 meta.setAttribute('name', 'viewport');
