@@ -7,6 +7,7 @@ import WebView, {
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
+import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const css = StyleSheet.create({
   image: {
@@ -53,7 +54,7 @@ export const CustomPageWebView = ({
     return null
   }
   const nLoading = useRef(false)
-  const cUrl = useRef(url)
+  const cUrl = useRef('')
   const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
     const cPageUrl = e?.nativeEvent?.url
     if (!cPageUrl || cPageUrl === cUrl.current) {
@@ -111,11 +112,11 @@ const js = `
   function sendJsonToRn(json) {
     window.ReactNativeWebView.postMessage(JSON.stringify(json));
   }
-  sendJsonToRn({ loading: true, title: document.title });
-  window.addEventListener('load', function() {
-    addTitleListener();
-    sendJsonToRn({ loading: false, title: document.title});
+  sendJsonToRn({
+    loading: true,
+    title: document.title,
   });
+  ${webviewInjectSendJsonToRnOnLoad(true)}
   // https://stackoverflow.com/a/29540461
   function addTitleListener() {
     var titleDomNode = document.querySelector('title');
