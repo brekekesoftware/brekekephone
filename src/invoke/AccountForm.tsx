@@ -17,6 +17,11 @@ import {
   saveLastSignedInId,
 } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
+import {
+  permForCall,
+  permNotifications,
+  permReadPhoneNumber,
+} from '../utils/permissions'
 import { Input } from './Input'
 import { InvokeGradient } from './InvokeGradient'
 
@@ -75,8 +80,16 @@ export const AccountForm = observer(({ onBack }: { onBack(): void }) => {
 
   const save = async () => {
     const result = validate()
-    console.log('#Duy Phan console result', result)
     if (!result.isSuccess) {
+      return
+    }
+    if (!(await permReadPhoneNumber())) {
+      return
+    }
+    if (account?.pushNotificationEnabled && !(await permNotifications())) {
+      return
+    }
+    if (!(await permForCall())) {
       return
     }
     await signOut()

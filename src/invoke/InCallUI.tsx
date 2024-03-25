@@ -176,32 +176,6 @@ export const InCallUI = observer(
       <InvokeGradient>
         <View style={css.container}>
           <View style={css.content}>
-            {/* <View style={css.left}>
-              <View style={{ height: 130 }}></View>
-              <View style={css.keypad}>
-                <KeyPadInvoke
-                  onPressNumber={() => {}}
-                  showKeyboard={() => {}}
-                  isHideBackspace
-                />
-              </View>
-              <InvokeGradient
-                colors={[
-                  'rgb(228,126,123)',
-                  'rgb(242,38,32)',
-                  'rgb(215,46,39)',
-                ]}
-                style={css.callBtn}
-                locations={[0, 0.5, 0.6]}
-              >
-                <RnTouchableOpacity
-                  onPress={handlePressCall}
-                  style={css.callBtn}
-                >
-                  <Text style={css.endCallText}>{intl`Cutting`}</Text>
-                </RnTouchableOpacity>
-              </InvokeGradient>
-            </View> */}
             <View style={css.right}>
               <View style={css.infoCall}>
                 <View style={css.info}>

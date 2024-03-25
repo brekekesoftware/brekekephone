@@ -125,6 +125,7 @@ export const CallUI = observer(() => {
 
   useEffect(() => {
     if (refCallPrevLength.current && !callLength && screen === 'incall') {
+      setScreen('account-info')
       invokeToApp()
     }
     refCallPrevLength.current = callLength

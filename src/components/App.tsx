@@ -107,10 +107,10 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
-    const upr = await getUrlParams()
-    if (upr) {
-      await updateParamsWithInvoke(upr)
-    }
+    // const upr = await getUrlParams()
+    // if (upr) {
+    //   await updateParamsWithInvoke(upr)
+    // }
 
     s.resetFailureState()
     cs.onCallKeepAction()
