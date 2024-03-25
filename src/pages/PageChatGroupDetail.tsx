@@ -21,7 +21,7 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/RnText'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { v } from '../components/variables'
-import { waitUc } from '../stores/authStore'
+import { waitPbx, waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import {
   ChatFile,
@@ -90,6 +90,7 @@ export class PageChatGroupDetail extends Component<{
   componentDidMountAsync = async () => {
     const { groupId } = this.props
     this.setState({ loadingRecent: true })
+    await waitPbx()
     await waitUc()
     await uc
       .getGroupChats(groupId, {
