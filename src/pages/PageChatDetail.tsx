@@ -19,7 +19,7 @@ import { ChatInput } from '../components/FooterChatInput'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
-import { waitUc } from '../stores/authStore'
+import { waitPbx, waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
@@ -83,6 +83,7 @@ export class PageChatDetail extends Component<{
   componentDidMountAsync = async () => {
     const { buddy: id } = this.props
     this.setState({ loadingRecent: true })
+    await waitPbx()
     await waitUc()
     await uc
       .getBuddyChats(id, { max: numberOfChatsPerLoad })

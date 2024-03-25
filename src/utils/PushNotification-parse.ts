@@ -186,10 +186,15 @@ const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 export const parse = async (
   raw?: { [k: string]: unknown },
   isLocal = false,
+  isClickAction = false,
 ) => {
   const n = parseNotificationData(raw)
 
   if (!raw || !n) {
+    return
+  }
+  // received PN chat but don't click item notification
+  if (!n.isCall && !isClickAction) {
     return
   }
 
@@ -216,7 +221,7 @@ export const parse = async (
 
   console.log('SIP PN debug: call signInByNotification')
   const as = getAuthStore()
-  as.signInByNotification(n)
+  await as.signInByNotification(n)
 
   const nav = Nav()
   const navIndex = async (k: keyof typeof nav, params?: any) => {
@@ -257,25 +262,20 @@ export const parse = async (
     if (!acc.ucEnabled) {
       return
     }
-    // if (AppState.currentState !== 'active') {
-    //   return
-    // }
-    // if (!senderId && !confId) {
-    //   navIndex('goToPageChatRecents')
-    //   return
-    // }
-    // if ((isGroupChat || !senderId) && confId) {
-    //   nav.customPageIndex = nav.goToPageChatRecents
-    //   waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
-    //   return
-    // }
-    // if (senderId) {
-    //   nav.customPageIndex = nav.goToPageChatRecents
-    //   waitTimeout().then(() => nav.goToPageChatDetail({ buddy: senderId }))
-    //   return
-    // }
-    void chatStore
-    navIndex('goToPageChatRecents')
+    if (!senderId && !confId) {
+      navIndex('goToPageChatRecents')
+      return
+    }
+    if ((isGroupChat || !senderId) && confId) {
+      nav.customPageIndex = nav.goToPageChatRecents
+      waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
+      return
+    }
+    if (senderId) {
+      nav.customPageIndex = nav.goToPageChatRecents
+      waitTimeout().then(() => nav.goToPageChatDetail({ buddy: senderId }))
+      return
+    }
     return
   }
 

@@ -7,6 +7,10 @@
   - Fix it should load custom page with only param from-number
   - Fix it should reload custom page if url doesnt include #pbx-token#
   - Minor fix css overlap header in custom page
+- Improve and fix UC chat notification:
+  - Fix it should load recent chats when open the app by tapping on a notification (issue 827)
+  - Improve it should not log in if PN is received without user tapping
+  - Improve it should navigate to screen chat detail instead of screen chat recents when user tapping on a UC chat notification
 
 #### 2.13.7
 
