@@ -227,6 +227,7 @@ export type PbxGetProductInfoRes = {
   'webphone.useragent': string
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
+  'webphone.phonebook.personal.editable': string
   version: string
 }
 export type PbxGetProductInfoParam = {
