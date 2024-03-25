@@ -4,10 +4,12 @@ import { observer } from 'mobx-react'
 import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
+import { getAuthStore } from '../stores/authStore'
 import { contactStore, ItemPBForm, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
+import { toBooleanFalsy } from '../utils/string'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
 import { Layout } from './Layout'
@@ -54,8 +56,11 @@ export const ContactsCreateForm: FC<{
     isFocus: false,
     maxLength: 100,
   }
+  const c = getAuthStore().pbxConfig
   const lang = props.updatingPhonebook?.info?.$lang || intlStore.locale
-  const disabled = props.updatingPhonebook?.shared
+  const disabled =
+    props.updatingPhonebook?.shared ||
+    toBooleanFalsy(c?.['webphone.phonebook.personal.editable'])
   const defaultObj = {
     phonebook: props.updatingPhonebook?.phonebook || '',
     $lang: lang,
