@@ -100,9 +100,18 @@ const initApp = async () => {
   })
 
   AppState.addEventListener('change', async () => {
+    // clean up UC when app is inactive
+    if (
+      AppState.currentState === 'inactive' ||
+      AppState.currentState === 'background'
+    ) {
+      authUC.dispose()
+    }
     if (AppState.currentState !== 'active') {
       return
     }
+    // auto login UC when app is active
+    authUC.authWithCheck()
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
