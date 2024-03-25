@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 
+import { isCustomPageUrlBuilt } from '../api/customPage'
 import {
-  isCustomPageUrlBuilt,
-  rebuildCustomPageUrl,
   rebuildCustomPageUrlNonce,
+  rebuildCustomPageUrlPbxToken,
 } from '../api/pbx'
 import { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
@@ -54,7 +54,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
     if (!cp) {
       return
     }
-    const url = await rebuildCustomPageUrl(cp.url)
+    const url = await rebuildCustomPageUrlPbxToken(cp.url)
     as.updateCustomPage({ ...cp, url })
   }
 
