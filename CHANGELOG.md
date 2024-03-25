@@ -11,6 +11,7 @@
   - Fix it should load recent chats when open the app by tapping on a notification (issue 827)
   - Improve it should not log in if PN is received without user tapping
   - Improve it should navigate to screen chat detail instead of screen chat recents when user tapping on a UC chat notification
+- Implement PhoneAppli linking
 
 #### 2.13.7
 

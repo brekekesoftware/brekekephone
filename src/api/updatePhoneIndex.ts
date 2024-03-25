@@ -24,12 +24,18 @@ export const updatePhoneIndex = async (
     console.error('updatePhoneIndex.setExtensionProperties: extProps undefined')
     return null
   }
+
+  // upsert account info with properties phoneappli.enable
+  const as = getAuthStore()
+  if (p.id === as.getCurrentAccount().id) {
+    as.userExtensionProperties = extProps
+  }
+
   const phone = extProps.phones[phoneIndex - 1]
   const phoneTypeCorrect = phone.type === 'Web Phone'
   const { pbxTenant, pbxUsername } = p
   const expectedPhoneId = `${pbxTenant}_${pbxUsername}_phone${phoneIndex}_webphone`
   const phoneIdCorrect = phone.id === expectedPhoneId
-  //
   const setExtensionProperties = async () => {
     if (!api.client) {
       console.error(
@@ -37,6 +43,7 @@ export const updatePhoneIndex = async (
       )
       return
     }
+
     await api.client.call_pal('setExtensionProperties', {
       tenant: pbxTenant,
       extension: pbxUsername,
@@ -46,11 +53,12 @@ export const updatePhoneIndex = async (
         [`p${phoneIndex}_ptype`]: phone.type,
       },
     })
+
     if (p === getAuthStore().getCurrentAccount()) {
       getAuthStore().userExtensionProperties = extProps
     }
   }
-  //
+
   if (phoneTypeCorrect && phoneIdCorrect) {
     // do nothing
   } else if (phoneTypeCorrect && !phoneIdCorrect) {

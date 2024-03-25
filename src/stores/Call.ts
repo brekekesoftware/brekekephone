@@ -28,7 +28,6 @@ export class Call {
   @observable partyImageUrl = ''
   @observable partyImageSize = ''
   @observable talkingImageUrl = ''
-  /** @deprecated use below getDisplayName instead */
   @observable partyName = ''
   @observable pbxTenant = ''
   @observable pbxRoomId = ''
@@ -36,10 +35,11 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
-
+  phoneappliUsername = ''
+  phoneappliAvatar = ''
   getDisplayName = () =>
-    getPartyName(this.partyNumber) ||
     this.partyName ||
+    getPartyName(this.partyNumber) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
