@@ -1,3 +1,8 @@
+#### 2.14.1
+
+- Android implement set BrekekePhone as the default OS dial (not possible on ios)
+- Implement webphone.phonebook.personal.editable
+
 #### 2.13.7
 
 - Fix and adapt UC chat push notification according to server change
