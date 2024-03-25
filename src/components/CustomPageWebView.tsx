@@ -109,25 +109,32 @@ export const CustomPageWebView = ({
 }
 
 const js = `
-  function sendJsonToRn(json) {
-    window.ReactNativeWebView.postMessage(JSON.stringify(json));
+// https://stackoverflow.com/a/29540461
+function addTitleListener() {
+  var titleDomNode = document.querySelector('title');
+  if (!titleDomNode) {
+    // TODO handle if html has no title
+    return false;
   }
-  sendJsonToRn({
-    loading: true,
-    title: document.title,
-  });
-  ${webviewInjectSendJsonToRnOnLoad(true)}
-  // https://stackoverflow.com/a/29540461
-  function addTitleListener() {
-    var titleDomNode = document.querySelector('title');
-    if (!titleDomNode) {
-      // TODO handle if html has no title
-      return false;
-    }
-    var observer = new MutationObserver(function() {
-      sendJsonToRn({ title: document.title });
-    });
-    observer.observe(titleDomNode, { subtree: true, characterData: true, childList: true });
+  if (document.__alreadyObserving) {
     return true;
   }
+  var observer = new MutationObserver(function() {
+    sendJsonToRn({ title: document.title });
+  });
+  observer.observe(titleDomNode, { subtree: true, characterData: true, childList: true });
+  document.__alreadyObserving = true;
+  return true;
+}
+// send data to rn to stop loading and with title
+function sendJsonToRn(json) {
+  json.title = document.title;
+  window.ReactNativeWebView.postMessage(JSON.stringify(json));
+  addTitleListener();
+}
+${webviewInjectSendJsonToRnOnLoad(true)}
+sendJsonToRn({
+  loading: true,
+  title: document.title,
+});
 `
