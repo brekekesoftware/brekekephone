@@ -486,7 +486,7 @@ export class AuthStore {
     await this.signIn(acc)
   }
   phoneappliEnabled = () =>
-    this.userExtensionProperties?.phoneappli && Platform.OS !== 'web'
+    getAuthStore().getCurrentData()?.phoneappliEnabled && Platform.OS !== 'web'
   userExtensionProperties: null | {
     id: string
     name: string
