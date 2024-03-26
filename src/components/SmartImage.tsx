@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
@@ -47,6 +53,7 @@ document.getElementsByTagName('head')[0].appendChild(meta);
 function sendJsonToRn(json) {
   window.ReactNativeWebView.postMessage(JSON.stringify(json));
 }
+
 ${webviewInjectSendJsonToRnOnLoad()}
 `
 enum StatusImage {
@@ -78,7 +85,7 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
       if (!json) {
         return
       }
-      if (typeof json.loaded === 'boolean' && json.loaded === true) {
+      if (typeof json.loading === 'boolean' && json.loading === false) {
         setStatusImageLoading(StatusImage.loaded)
       }
     } catch (err) {
@@ -123,6 +130,9 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
         <WebView
           source={buildWebViewSource(uri)}
           injectedJavaScript={js}
+          injectedJavaScriptBeforeContentLoaded={
+            Platform.OS === 'android' ? js : ''
+          }
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}
