@@ -1,5 +1,6 @@
 import './callkeep'
 
+import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
 import {
   Notification,
@@ -8,6 +9,7 @@ import {
   RegistrationError,
 } from 'react-native-notifications'
 
+import { chatStore } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { permNotifications } from './permissions'
@@ -39,6 +41,7 @@ const onFcmToken = async (t: string) => {
 const onNotification = async (
   n0: { [k: string]: unknown },
   initApp: Function,
+  isClickAction?: boolean,
 ) => {
   try {
     await initApp()
@@ -48,7 +51,7 @@ const onNotification = async (
         ns.forEach(n => onNotification(n, initApp)),
       )
     }
-    await parse(n0)
+    await parse(n0, false, isClickAction)
   } catch (err) {
     console.error('PushNotification.android.ts onNotification error:', err)
   }
@@ -125,7 +128,7 @@ export const PushNotification = {
       events.registerNotificationOpened(
         (n: Notification, completion: Function, action: any) => {
           const payload = n.payload?.payload || n.payload
-          onNotification(payload, initApp)
+          onNotification(payload, initApp, true)
         },
       )
 
@@ -137,7 +140,7 @@ export const PushNotification = {
       // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
         const payload = n?.payload?.payload || n?.payload
-        onNotification(payload, initApp)
+        onNotification(payload, initApp, true)
       })
     } catch (err) {
       RnAlert.error({
@@ -168,9 +171,33 @@ const getInitialNotifications = async () => {
     return []
   }
   try {
-    return (JSON.parse(n) as string[]).map(
-      s => JSON.parse(s) as { [k: string]: unknown },
-    )
+    const ns = JSON.parse(n) as string[]
+    if (isEmpty(ns)) {
+      return []
+    }
+    // handle push local notification for chat message
+    ns.forEach(i => {
+      const payload = JSON.parse(i) as { [k: string]: string | undefined }
+      // check notification type chat message
+      if (
+        isEmpty(payload) ||
+        payload?.event !== 'message' ||
+        payload?.title ||
+        payload?.body
+      ) {
+        return
+      }
+      const senderId = payload?.senderUserId
+      const confId = payload?.confId
+      chatStore.pushChatNotification(
+        '',
+        payload?.message || '',
+        senderId || confId,
+        !senderId,
+      )
+    })
+
+    return ns.map(s => JSON.parse(s) as { [k: string]: unknown })
   } catch (err) {
     console.error(`getInitialNotifications n=${n} error:`, err)
     return []

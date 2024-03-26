@@ -14,6 +14,14 @@ import { intlStore } from '../stores/intlStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
+import {
+  addFromNumberNonce,
+  hasPbxTokenTobeRepalced,
+  replaceFromNumberUsingParam,
+  replacePbxToken,
+  replacePbxTokenUsingSessParam,
+  replaceUrlWithoutPbxToken,
+} from './customPage'
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
 
@@ -384,6 +392,7 @@ export class PBX extends EventEmitter {
         'p4_ptype',
         'pnumber',
         'language',
+        'phoneappli.enable',
       ],
     })
 
@@ -416,6 +425,7 @@ export class PBX extends EventEmitter {
       name: userName,
       phones,
       language: lang,
+      phoneappli: toBoolean(res?.[7]),
     }
   }
 
@@ -455,6 +465,24 @@ export class PBX extends EventEmitter {
     }
     const res = await this.client.call_pal('getPhonebooks')
     return res?.filter(item => !item.shared) || []
+  }
+  getPhoneappliContact = async (tenant: string, user: string, tel: string) => {
+    if (this.isMainInstance) {
+      await waitPbx()
+    }
+    if (!this.client) {
+      return
+    }
+    try {
+      const res = await this.client.call_pal('getPhoneAppliContact', {
+        tenant,
+        user,
+        tel,
+      })
+      return res
+    } catch (err) {
+      return {}
+    }
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
@@ -505,14 +533,14 @@ export class PBX extends EventEmitter {
     })
   }
 
-  getPbxToken = async () => {
+  getPbxToken = async (): Promise<{ token: string } | undefined> => {
     if (this.isMainInstance) {
       await waitPbx()
     }
     if (!this.client) {
       return
     }
-    const res = await this.client.call_pal('getToken')
+    const res = await this.client.call_pal('getToken').catch(() => undefined)
     return res
   }
 
@@ -768,52 +796,11 @@ export class PBX extends EventEmitter {
 
 export const pbx = new PBX()
 
-// TODO
-// should not use replace string in url
-// use url builder instead for safe url encoding
+// ----------------------------------------------------------------------------
+// custom page url utils
+// need to place them here to avoid circular dependencies
 
-const _buildCustomPageUrl = async (url: string) => {
-  const { token } = await pbx.getPbxToken()
-  if (!token) {
-    return url
-  }
-  const ca = getAuthStore().getCurrentAccount()
-  return url
-    .replace(/#lang#/i, intlStore.locale)
-    .replace(/#pbx-token#/i, token)
-    .replace(/#tenant#'/i, ca.pbxTenant)
-    .replace(/#user#/i, ca.pbxUsername)
-    .replace(/#from-number#/i, '0')
-}
-export const buildCustomPageUrl = (url: string) =>
-  _buildCustomPageUrl(url).catch(() => url)
-
-export const isCustomPageUrlBuilt = (url: string) => !/#pbx-token#/i.test(url)
-
-const _rebuildCustomPageUrl = async (url: string) => {
-  const { token } = await pbx.getPbxToken()
-  if (!token) {
-    return url
-  }
-  url = url.replace(/&sess=[^&]+/, `&sess=${token}`)
-  url = rebuildCustomPageUrlNonce(url)
-  return url
-}
-export const rebuildCustomPageUrl = (url: string) =>
-  _rebuildCustomPageUrl(url).catch(() => url)
-
-const _addCustomPageUrlNonce = (url: string) => {
-  // for refresh page by change from-number value
-  const hasNonce = /#from-number#/i.test(url) || /&from-number=/.test(url)
-  if (!hasNonce) {
-    return url + '&from-number=#from-number#'
-  }
-  return url
-}
-export const rebuildCustomPageUrlNonce = (url: string) =>
-  url.replace(/&from-number=([0-9]+)/, `&from-number=${random(1, 1000, false)}`)
-
-export const _parseListCustomPage = () => {
+const _parseListCustomPage = () => {
   const as = getAuthStore()
   const c = as.pbxConfig
   if (!c) {
@@ -832,9 +819,10 @@ export const _parseListCustomPage = () => {
     let url = c[`${id}.url`]
     if (!validator.isURL(url)) {
       // ignore if not url
+      console.log(`CustomPage debug: ${url} is not valid url`)
       return
     }
-    url = _addCustomPageUrlNonce(url)
+    url = addFromNumberNonce(url)
     const title = c[`${id}.title`] || intl`PBX user settings`
     const pos = c[`${id}.pos`] || 'setting,right,1'
     const incoming = c[`${id}.incoming`]
@@ -847,4 +835,28 @@ export const _parseListCustomPage = () => {
     })
   })
   as.listCustomPage = results
+}
+
+export const buildCustomPageUrl = async (url: string) => {
+  const ca = getAuthStore().getCurrentAccount()
+  url = replaceUrlWithoutPbxToken(
+    url,
+    intlStore.locale,
+    ca.pbxTenant,
+    ca.pbxUsername,
+  )
+  if (!hasPbxTokenTobeRepalced(url)) {
+    return url
+  }
+  const r = await pbx.getPbxToken()
+  return r?.token ? replacePbxToken(url, r.token) : url
+}
+
+export const rebuildCustomPageUrlNonce = (url: string) =>
+  replaceFromNumberUsingParam(url, random(1, 1000000, false))
+
+export const rebuildCustomPageUrlPbxToken = async (url: string) => {
+  url = rebuildCustomPageUrlNonce(url)
+  const r = await pbx.getPbxToken()
+  return r?.token ? replacePbxTokenUsingSessParam(url, r.token) : url
 }

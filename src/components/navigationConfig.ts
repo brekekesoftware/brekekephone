@@ -11,6 +11,7 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
+import { openLinkSafely, URLSchemes } from '../utils/deeplink'
 
 export type Menu = {
   key: string
@@ -111,8 +112,13 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           label: intl`PARKS`,
           navFnKey: 'goToPageCallParks',
         },
+        {
+          key: 'voicemail',
+          label: intl`VOICEMAIL`,
+          navFnKey: 'goToPageVoicemail',
+        },
       ],
-      defaultSubMenuKey: 'recents',
+      defaultSubMenuKey: 'keypad',
     },
     {
       key: 'settings',
@@ -121,6 +127,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
       defaultSubMenuKey: 'account',
     },
   ] as Menu[]
+
   //
   arr.forEach((m, i) => {
     m.subMenusMap = arrToMap(
@@ -131,9 +138,26 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        if (s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled) {
+        const as = getAuthStore()
+        const ca = as.getCurrentAccount()
+        if (s.ucRequired && !ca?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
+        }
+
+        // handle link to phoneappli app
+        if (as.phoneappliEnabled()) {
+          if (s.navFnKey === 'goToPageContactPhonebook') {
+            openLinkSafely(URLSchemes.phoneappli.USERS)
+            return
+          }
+          if (
+            s.navFnKey === 'goToPageCallRecents' ||
+            s.navFnKey === 'backToPageCallRecents'
+          ) {
+            openLinkSafely(URLSchemes.phoneappli.HISTORY_CALLED)
+            return
+          }
         }
         // @ts-ignore
         Nav()[s.navFnKey]({ id: s.key })

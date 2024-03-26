@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import WebView, {
   WebViewMessageEvent,
   WebViewProps,
@@ -7,6 +7,7 @@ import WebView, {
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
+import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const css = StyleSheet.create({
   image: {
@@ -53,7 +54,7 @@ export const CustomPageWebView = ({
     return null
   }
   const nLoading = useRef(false)
-  const cUrl = useRef(url)
+  const cUrl = useRef('')
   const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
     const cPageUrl = e?.nativeEvent?.url
     if (!cPageUrl || cPageUrl === cUrl.current) {
@@ -69,6 +70,7 @@ export const CustomPageWebView = ({
       if (!data) {
         return
       }
+      // check load page 1 time
       if (!nLoading.current) {
         return
       }
@@ -94,6 +96,9 @@ export const CustomPageWebView = ({
     <WebView
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
+      injectedJavaScriptBeforeContentLoaded={
+        Platform.OS === 'android' ? js : ''
+      }
       style={css.full}
       bounces={false}
       originWhitelist={['*']}
@@ -108,25 +113,32 @@ export const CustomPageWebView = ({
 }
 
 const js = `
-  function sendJsonToRn(json) {
-    window.ReactNativeWebView.postMessage(JSON.stringify(json));
+// https://stackoverflow.com/a/29540461
+function addTitleListener() {
+  var titleDomNode = document.querySelector('title');
+  if (!titleDomNode) {
+    // TODO handle if html has no title
+    return false;
   }
-  sendJsonToRn({ loading: true, title: document.title });
-  window.addEventListener('load', function() {
-    addTitleListener();
-    sendJsonToRn({ loading: false, title: document.title});
-  });
-  // https://stackoverflow.com/a/29540461
-  function addTitleListener() {
-    var titleDomNode = document.querySelector('title');
-    if (!titleDomNode) {
-      // TODO handle if html has no title
-      return false;
-    }
-    var observer = new MutationObserver(function() {
-      sendJsonToRn({ title: document.title });
-    });
-    observer.observe(titleDomNode, { subtree: true, characterData: true, childList: true });
+  if (document.__alreadyObserving) {
     return true;
   }
+  var observer = new MutationObserver(function() {
+    sendJsonToRn({ title: document.title });
+  });
+  observer.observe(titleDomNode, { subtree: true, characterData: true, childList: true });
+  document.__alreadyObserving = true;
+  return true;
+}
+// send data to rn to stop loading and with title
+function sendJsonToRn(json) {
+  json.title = document.title;
+  window.ReactNativeWebView.postMessage(JSON.stringify(json));
+  addTitleListener();
+}
+${webviewInjectSendJsonToRnOnLoad(true)}
+sendJsonToRn({
+  loading: true,
+  title: document.title,
+});
 `

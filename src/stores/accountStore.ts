@@ -50,6 +50,7 @@ export type AccountData = {
     partyName: string
     partyNumber: string
     created: string
+    reason?: string
   }[]
   recentChats: {
     id: string // thread id
@@ -67,6 +68,7 @@ export type AccountData = {
   palParams?: { [k: string]: string }
   userAgent?: string
   pnExpires?: string
+  phoneappliEnabled?: boolean
 }
 
 class AccountStore {

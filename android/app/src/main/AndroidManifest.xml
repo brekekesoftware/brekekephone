@@ -125,14 +125,43 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+      <!-- default phone call app -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.DIAL" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="tel" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.DIAL" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
       <!-- deep link -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="brekekeexphonedev" android:host="open" />
+        <data android:scheme="brekekephonedev" android:host="open" />
+        <data android:scheme="brekekephonedev" android:host="call" />
       </intent-filter>
     </activity>
+    <!-- default phone call app -->
+    <service
+      android:name=".CallService"
+      android:permission="android.permission.BIND_INCALL_SERVICE"
+      android:exported="true"
+    >
+      <meta-data
+        android:name="android.telecom.IN_CALL_SERVICE_UI"
+        android:value="true"
+      />
+
+      <intent-filter>
+        <action android:name="android.telecom.InCallService" />
+      </intent-filter>
+    </service>
     <!-- call history -->
     <!-- temporary disabled
     <receiver android:name="BrekekeOutgoingCallHandler" android:exported="true">

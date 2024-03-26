@@ -77,6 +77,17 @@ public class L {
             + " to the call.";
   }
 
+  public static String titlePermissionSetDefaultPhoneApp() {
+    return "ja".equals(l) ? "必要な権限" : "Set Default Phone App";
+  }
+
+  public static String messagePermissionSetDefaultPhoneApp() {
+    return "ja".equals(l)
+        ? "Brekeke Phoneをデフォルトの電話アプリとして設定するには、設定＞brekeke phone＞電話アプリに移動して設定してください。"
+        : "To set the Brekeke Phone app as the default phone app, please go to settings > brekeke"
+            + " phone > Phone app to configure.";
+  }
+
   public static String close() {
     return "ja".equals(l) ? "閉じる" : "Close";
   }

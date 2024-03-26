@@ -9,7 +9,9 @@ import { v } from './variables'
 
 const css = StyleSheet.create({
   Container: {
-    padding: 15,
+    paddingVertical: 15,
+    paddingLeft: 15,
+    marginRight: 25,
   },
   Title: {
     fontSize: v.fontSizeTitle,

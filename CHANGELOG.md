@@ -1,3 +1,23 @@
+#### 2.14.1
+
+- Android implement set BrekekePhone as the default OS dial (not possible on ios)
+- Implement webphone.phonebook.personal.editable
+- Improve and fix custom page url:
+  - Fix android it should stop loading correctly in webview (custom page or avatar) in some cases
+  - Fix it should load custom page with only param from-number
+  - Fix it should reload custom page if url doesnt include #pbx-token#
+  - Minor fix css overlap header in custom page
+- Improve and fix UC chat notification:
+  - Fix it should load recent chats when open the app by tapping on a notification (issue 827)
+  - Improve it should not log in if PN is received without user tapping
+  - Improve it should navigate to screen chat detail instead of screen chat recents when user tapping on a UC chat notification
+- Implement PhoneAppli linking
+- Show information when an incoming call is canceled in certain cases
+
+#### 2.13.7
+
+- Fix and adapt UC chat push notification according to server change
+
 #### 2.13.6
 
 - Improve page custom pbx user settings: update title display and loading state

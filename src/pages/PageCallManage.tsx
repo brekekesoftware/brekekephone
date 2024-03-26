@@ -200,6 +200,11 @@ const css = StyleSheet.create({
     alignItems: 'center',
   },
 })
+export const backAction = () => {
+  return getAuthStore().phoneappliEnabled()
+    ? Nav().backToPageCallKeypad()
+    : Nav().backToPageCallRecents()
+}
 
 // render all the calls in App.tsx
 // the avatars will be kept even if we navigate between views
@@ -210,13 +215,13 @@ export class RenderAllCalls extends Component {
   componentDidMount() {
     const s = getCallStore()
     if (s.inPageCallManage && !s.calls.length) {
-      Nav().backToPageCallRecents()
+      backAction()
     }
   }
   componentDidUpdate() {
     const l = getCallStore().calls.length
     if (this.prevCallsLength && !l) {
-      Nav().backToPageCallRecents()
+      backAction()
     }
     this.prevCallsLength = l
   }
@@ -228,7 +233,7 @@ export class RenderAllCalls extends Component {
         <Layout
           compact
           noScroll
-          onBack={Nav().backToPageCallRecents}
+          onBack={backAction}
           title={intl`Connecting...`}
         />
       )
@@ -388,7 +393,7 @@ class PageCallManage extends Component<{
             : undefined
         }
         noScroll
-        onBack={Nav().backToPageCallRecents}
+        onBack={backAction}
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
       >

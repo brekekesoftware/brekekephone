@@ -11,8 +11,9 @@ import {
   UcConfig,
 } from '../brekekejs'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { getUrlParams } from '../utils/deeplink'
+import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { updateParamsWithInvoke } from '../utils/updateParamsWithInvoke'
 import { waitTimeout } from '../utils/waitTimeout'
 import {
@@ -25,7 +26,7 @@ import {
 import { CallHistoryInfo } from './addCallHistory'
 import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
-import { setAuthStore } from './authStore'
+import { getAuthStore, setAuthStore, waitSip } from './authStore'
 import { authUC } from './AuthUC'
 import { Call } from './Call'
 import { getCallStore } from './callStore'
@@ -35,6 +36,7 @@ import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RnStacker } from './RnStacker'
 import { userStore } from './userStore'
 
 type ConnectionState =
@@ -161,6 +163,7 @@ export class AuthStore {
       return true
     }
     this.signedInId = a.id
+    BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
     }
@@ -169,6 +172,14 @@ export class AuthStore {
   autoSignInLast = async () => {
     const d = await getLastSignedInId()
     const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    if (!a) {
+      return false
+    }
+    await this.signIn(a, true)
+    return true
+  }
+  autoSignInFirstAccount = async () => {
+    const a = accountStore.accounts?.[0]
     if (!a) {
       return false
     }
@@ -283,7 +294,89 @@ export class AuthStore {
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
+  alreadyHandleDeepLinkMakeCall = false
+  clearUrlParams = () => {
+    this.alreadyHandleDeepLinkMakeCall = false
+    clearUrlParams()
+  }
+
   handleUrlParams = async () => {
+    const urlParams = await getUrlParams()
+    if (!urlParams) {
+      return false
+    }
+    const { _wn, host, phone_idx, port, tenant, user, password, number } =
+      urlParams
+    // handle deep link: make call from phoneappli app
+    if (number) {
+      // prevent double start call and check list account
+      if (this.alreadyHandleDeepLinkMakeCall || !accountStore.accounts.length) {
+        return true
+      }
+      this.alreadyHandleDeepLinkMakeCall = true
+      const auth = getAuthStore()
+      // checking user login
+      const isUserLoginValid = port && tenant && user && host
+      if (isUserLoginValid) {
+        const ac = await accountStore.find({
+          pbxUsername: user,
+          pbxTenant: tenant,
+          pbxHostname: host,
+          pbxPort: port,
+        })
+        // checking user is current user or not
+        if (!(this.signedInId && this.signedInId === ac?.id)) {
+          if (this.signedInId) {
+            this.signOut()
+          }
+          const signed = ac
+            ? await this.signIn(ac, true)
+            : await auth.autoSignInFirstAccount()
+          if (!signed) {
+            this.clearUrlParams()
+            return true
+          }
+        }
+      } else {
+        // checking current user is first account or user already login
+        if (
+          !this.signedInId ||
+          this.signedInId !== accountStore.accounts[0]?.id
+        ) {
+          if (this.signedInId) {
+            this.signOut()
+          }
+          const success = await auth.autoSignInFirstAccount()
+          if (!success) {
+            this.clearUrlParams()
+            return true
+          }
+        }
+      }
+      // checking phoneappli is enabled
+      if (!auth.phoneappliEnabled()) {
+        this.clearUrlParams()
+        return true
+      }
+      await waitSip()
+      // handle transfer call from deep link
+      const cs = RnStacker.stacks[RnStacker.stacks.length - 1]
+      if (
+        getCallStore().calls.length &&
+        (cs.name === 'PageCallTransferChooseUser' ||
+          cs.name === 'PageCallTransferDial')
+      ) {
+        getCallStore().getOngoingCall()?.transferAttended(number)
+        this.clearUrlParams()
+        return true
+      }
+      // handle start call
+      getCallStore().startCall(number)
+      this.clearUrlParams()
+      return true
+    }
+    //
+    // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||
       sip.phone?.getSessionCount() ||
@@ -292,29 +385,30 @@ export class AuthStore {
       return false
     }
     //
-    const urlParams = await getUrlParams()
     if (!urlParams) {
       return false
     }
     await updateParamsWithInvoke(urlParams)
     //
-    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
     if (!tenant || !user) {
       return false
     }
 
     //
+    if (!tenant || !user) {
+      return false
+    }
     const a = await accountStore.find({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
       pbxPort: port,
     })
+    //
     let phoneIdx = parseInt(phone_idx)
     if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {
       phoneIdx = 4
     }
-    //
     if (a) {
       if (!a.pbxHostname) {
         a.pbxHostname = host
@@ -404,11 +498,15 @@ export class AuthStore {
     }
     await this.signIn(acc)
   }
-
+  phoneappliEnabled = () =>
+    Platform.OS !== 'web' &&
+    (this.userExtensionProperties?.phoneappli ||
+      getAuthStore().getCurrentData()?.phoneappliEnabled)
   userExtensionProperties: null | {
     id: string
     name: string
     language: string
+    phoneappli: boolean
     phones: {
       id: string
       type: string

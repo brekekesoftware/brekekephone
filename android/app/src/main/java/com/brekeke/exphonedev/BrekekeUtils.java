@@ -56,6 +56,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
     params.putString("google.message_id", message.getMessageId());
+    params.putString("google.to", message.getTo());
     params.putDouble("google.sent_time", message.getSentTime());
     if (message.getData() != null) {
       Map<String, String> data = message.getData();
@@ -99,6 +100,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
+  public static boolean phoneappliEnabled = false;
 
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
@@ -622,6 +624,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+  @ReactMethod
+  public void setPhoneappliEnabled(Boolean isEnabled) {
+    BrekekeUtils.phoneappliEnabled = isEnabled;
+  }
 
   @ReactMethod
   public void insertCallLog(String number, int type) {

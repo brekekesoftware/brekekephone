@@ -171,6 +171,11 @@ export type PbxPal = {
     resolve: (res: PbxContact) => void,
     reject: ErrorHandler,
   ): void
+  getPhoneAppliContact(
+    p: PbxGetPhoneappliContactParam,
+    resolve: (res: PbxPhoneappliContact) => void,
+    reject: ErrorHandler,
+  ): void
   setContact(
     p: PbxContact,
     resolve: (res: PbxContact) => void,
@@ -227,6 +232,7 @@ export type PbxGetProductInfoRes = {
   'webphone.useragent': string
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
+  'webphone.phonebook.personal.editable': string
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -272,6 +278,11 @@ export type PbxGetContactListItem = {
   user?: string
 }
 
+export type PbxGetPhoneappliContactParam = {
+  tenant: string
+  user: string
+  tel: string
+}
 export type PbxGetContactParam = {
   aid: string
 }
@@ -314,6 +325,10 @@ export type PbxParkParam = {
 export type PbxBook = {
   phonebook: string
   shared?: string
+}
+export type PbxPhoneappliContact = {
+  display_name?: string
+  image_url?: string
 }
 export type PbxContact = {
   aid: string
