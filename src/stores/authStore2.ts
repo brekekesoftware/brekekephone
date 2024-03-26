@@ -384,15 +384,7 @@ export class AuthStore {
     ) {
       return false
     }
-    //
-    if (!urlParams) {
-      return false
-    }
     await updateParamsWithInvoke(urlParams)
-    //
-    if (!tenant || !user) {
-      return false
-    }
 
     //
     if (!tenant || !user) {

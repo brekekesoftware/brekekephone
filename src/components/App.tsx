@@ -45,7 +45,6 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { getUrlParams } from '../utils/deeplink'
 import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import {
   permForCall,
@@ -54,7 +53,6 @@ import {
 } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { updateParamsWithInvoke } from '../utils/updateParamsWithInvoke'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
