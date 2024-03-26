@@ -10,6 +10,13 @@ window.addEventListener('load', function() {
     : // event load doesnt work on android webview
       // need to have a jquery implementation
       `
+const allImages = document.getElementsByTagName('img');
+  if (allImages.length === 1) {
+    allImages[0].onload = function() {
+      sendJsonToRn({ loading: false });
+    };
+  }
+
 var ready = function (fn) {
   if (typeof fn !== 'function') {
     return;
