@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import WebView, {
   WebViewMessageEvent,
   WebViewProps,
@@ -70,6 +70,7 @@ export const CustomPageWebView = ({
       if (!data) {
         return
       }
+      // check load page 1 time
       if (!nLoading.current) {
         return
       }
@@ -95,6 +96,9 @@ export const CustomPageWebView = ({
     <WebView
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
+      injectedJavaScriptBeforeContentLoaded={
+        Platform.OS === 'android' ? js : ''
+      }
       style={css.full}
       bounces={false}
       originWhitelist={['*']}

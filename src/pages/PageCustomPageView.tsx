@@ -102,13 +102,16 @@ export class PageCustomPageView extends Component<{ id: string }> {
       s.name == 'PageCustomPage' &&
       RnStacker.stacks.length == 1
 
-    const loading = this.state.jsLoading || this.state.webviewLoading
+    // onLoadEnd not fire with website load image from url camera
+    // so, should be check loading like bellow
+    const loaded = !this.state.jsLoading || !this.state.webviewLoading
+
     const title = cp?.title
       ? cp.title
-      : loading
+      : !loaded
       ? intl`Loading...`
       : intl`PBX user settings`
-    const description = loading
+    const description = !loaded
       ? intl`Loading...`
       : this.state.webviewError
       ? // TODO
