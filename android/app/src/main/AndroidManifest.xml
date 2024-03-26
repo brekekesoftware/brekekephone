@@ -106,6 +106,25 @@
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
     />
+
+    <!-- Lpc -->
+    <service
+      android:name=".BrekekeLpcService"
+      android:enabled="true"
+      android:exported="true"
+    />
+
+    <receiver
+      android:name=".BrekekeBroadcastReceiver"
+      android:enabled="true"
+      android:exported="false"
+    >
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </receiver>
+
     <!-- react dev -->
     <activity
       android:name="com.facebook.react.devsupport.DevSettingsActivity"

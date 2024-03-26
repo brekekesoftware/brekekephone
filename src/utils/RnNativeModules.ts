@@ -57,6 +57,7 @@ type TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
+  startLPCAndroid(): void
 }
 
 export type TNativeModules = {
@@ -101,6 +102,7 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
+  startLPCAndroid: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

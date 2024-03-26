@@ -13,4 +13,10 @@
     <domain includeSubdomains="false">10.0.2.2</domain>
     <domain includeSubdomains="false">10.0.3.2</domain>
   </domain-config>
+  <!-- <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">Yees-MBP.lan</domain>
+        <pin-set expiration="2025-05-18">
+            <pin digest="SHA-256">XTQSZGrHFDV6KdlHsGVhixmbI/Cm2EMsz2FqE2iZoqU=</pin>
+        </pin-set>
+  </domain-config> -->
 </network-security-config>

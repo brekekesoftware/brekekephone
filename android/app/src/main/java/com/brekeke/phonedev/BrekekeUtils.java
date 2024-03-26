@@ -2,9 +2,11 @@ package com.brekeke.phonedev;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
@@ -14,12 +16,14 @@ import android.media.AudioManager.OnModeChangedListener;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.CallLog;
+import android.util.Log;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
@@ -27,6 +31,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -40,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -647,6 +653,52 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void isLocked(Promise p) {
     p.resolve(isLocked());
+  }
+
+  @ReactMethod
+  public void startLPCAndroid () {
+     if (!BrekekeLpcService.isServiceStarted) {
+       Intent intent = new Intent(ctx, BrekekeLpcService.class);
+        ctx.startForegroundService(intent);
+     }
+  }
+
+  private ServiceConnection connection = new ServiceConnection() {
+
+    @Override
+    public void onServiceConnected(ComponentName className,
+                                   IBinder service) {
+
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName arg0) {
+
+    }
+  };
+
+  @ReactMethod
+  public void enableLPC(String token,
+   String tokenVoip,
+   String username,
+   String host, int port, ReadableArray remoteSsids,
+   String localSsid,
+   String tlsKeyHash) {
+    Log.d("Lpc", "Start service Lpc called");
+    Log.d("Lpc", "isStarted " + Boolean.toString(BrekekeLpcService.isServiceStarted));
+
+    LPCModel.Settings settings = new LPCModel().new Settings(host,port, tlsKeyHash);
+    BrekekeLpcService.settings = settings;
+      Intent intent = new Intent(ctx, BrekekeLpcService.class);
+      intent.putExtra("token", token);
+      intent.putExtra("username", username);
+      intent.putExtra("host", host);
+      intent.putExtra("port", port);
+//      intent.putExtra("remoteSsids", remoteSsids);
+      intent.putExtra("localSsid", localSsid);
+      intent.putExtra("tlsKeyHash", tlsKeyHash);
+      Log.d("Lpc", "Starting the service in >=26 Mode from a BrekekeUntils");
+      ctx.bindService(intent, connection,  BrekekeLpcService.BIND_AUTO_CREATE);
   }
 
   @ReactMethod

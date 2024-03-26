@@ -51,6 +51,7 @@ import {
 } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
@@ -239,6 +240,10 @@ export const App = observer(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
     }
+  }, [])
+
+  useEffect(() => {
+    BrekekeUtils.startLPCAndroid()
   }, [])
 
   const {
