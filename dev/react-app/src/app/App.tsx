@@ -74,7 +74,7 @@ export const App = () => {
         const title = isInvoke
           ? 'Invoke Example'
           : isDev
-          ? 'Brekeke Phone Dev'
+          ? `Brekeke Phone${isPathInvoke ? ' Ex App' : ''} Dev`
           : isProd
           ? 'Brekeke Phone'
           : 'Web Phone'
