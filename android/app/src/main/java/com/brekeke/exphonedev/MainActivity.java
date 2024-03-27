@@ -81,7 +81,8 @@ public class MainActivity extends ReactActivity {
         registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> checkSetDefaultDialerResult(result.getResultCode()));
-    checkDefaultDialer();
+    /* Temporary comment this line because it looped with Android version > 12 */
+    // checkDefaultDialer();
     // handle call from other app
     handleIntent(getIntent());
   }
