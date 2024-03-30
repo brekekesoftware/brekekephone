@@ -1,3 +1,7 @@
+#### 2.14.2
+
+- Update intl local language labels
+
 #### 2.14.1
 
 - Android implement set BrekekePhone as the default OS dial (not possible on ios)
