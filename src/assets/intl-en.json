@@ -271,6 +271,5 @@
   "{{$0}} other call is in background",
   "{{$0}} other calls are in background",
   "{{$0}} total",
-  "{{$0}}/{{$1}} online",
-  "{{$0}}{{$1}}at {{$2}}"
+  "{{$0}}/{{$1}} online"
 ]

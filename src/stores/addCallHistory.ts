@@ -92,8 +92,6 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(ms)
-  const reason = getReasonCancelCall(answeredBy)
-
   const info = isTypeCall
     ? {
         id,
@@ -104,7 +102,6 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
-        reason,
         answeredBy,
       }
     : {
@@ -158,7 +155,6 @@ export type CallHistoryInfo = {
   partyNumber: string
   duration: number
   isAboutToHangup: boolean
-  reason?: string
   answeredBy?: { name: string; phoneNumber: string }
 }
 
@@ -185,13 +181,16 @@ const addToCallLog = async (c: CallHistoryInfo) => {
 }
 
 const getBodyForNotification = async (c: CallHistoryInfo) => {
-  if (!c.reason || !c.answeredBy) {
+  if (!c.answeredBy) {
     return c.partyName || c.partyNumber
   }
 
   const auth = getAuthStore()
   if (!auth.phoneappliEnabled()) {
-    return intl`The call from ${c.partyName || c.partyNumber} is ${c.reason}`
+    return (
+      intl`The call from ${c.partyName || c.partyNumber} is ${''}` +
+      getReasonCancelCall(c.answeredBy)
+    )
   }
 
   const { name, phoneNumber } = c.answeredBy

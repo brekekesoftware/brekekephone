@@ -11,6 +11,7 @@ import {
 } from '../assets/icons'
 import { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
+import { getReasonCancelCall } from '../stores/addCallHistory'
 import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -69,6 +70,7 @@ const css = StyleSheet.create({
   CallCreatedAt: {
     left: 3,
     color: v.subColor,
+    marginRight: 5,
   },
   //
   ButtonIcon: {
@@ -126,7 +128,7 @@ export const UserItem: FC<
     isSelected?: boolean
     parkNumber?: string
     phonebook?: string
-    reason?: string
+    answeredBy?: { name: string; phoneNumber: string }
     onSelect?: () => void
   }>
 > = observer(p0 => {
@@ -156,7 +158,7 @@ export const UserItem: FC<
     isSelected,
     parkNumber,
     phonebook,
-    reason,
+    answeredBy,
     onSelect,
     ...p
   } = p0
@@ -287,7 +289,8 @@ export const UserItem: FC<
               <RnText normal small style={css.CallCreatedAt}>
                 {isVoicemail
                   ? intl`Voicemail`
-                  : intl`${reason}${reason ? ' ' : ''}at ${created}`}
+                  : (answeredBy ? getReasonCancelCall(answeredBy) + ' ' : '') +
+                    `at ${created}`}
               </RnText>
             </View>
           )}
