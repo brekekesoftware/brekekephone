@@ -687,8 +687,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     Log.d("Lpc", "Start service Lpc called");
     Log.d("Lpc", "isStarted " + Boolean.toString(BrekekeLpcService.isServiceStarted));
 
-    LPCModel.Settings settings = new LPCModel().new Settings(host,port, tlsKeyHash);
-    BrekekeLpcService.settings = settings;
       Intent intent = new Intent(ctx, BrekekeLpcService.class);
       intent.putExtra("token", token);
       intent.putExtra("username", username);

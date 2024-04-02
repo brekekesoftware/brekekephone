@@ -172,6 +172,8 @@ class BrekekeLPCManager: NSObject {
     pushManager.matchSSIDs = !pushManagerSettings.remoteSsids
       .isEmpty ? pushManagerSettings.remoteSsids : pushManagerSettings
       .localSsids
+    logger
+      .log("pushManager:\(pushManager.matchSSIDs)")
     // set LTE matches (currently not using)
     if !pushManagerSettings.mobileCountryCode.isEmpty,
        !pushManagerSettings.mobileNetworkCode.isEmpty {

@@ -143,7 +143,7 @@ const syncPnTokenWithoutCatch = async (
           fn({ ...params, device_id: tvoip, voip: true }),
         ])
       }
-      // return disconnectPbx(true)
+      return disconnectPbx(true)
     }
 
     const remoteSsids =
@@ -161,6 +161,8 @@ const syncPnTokenWithoutCatch = async (
       tlsKeyHash,
       lpcPn,
       pnEnabled,
+      tvoip,
+      t,
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(
@@ -176,13 +178,13 @@ const syncPnTokenWithoutCatch = async (
     } else {
       BrekekeUtils.disableLPC()
     }
-    if (newParams) {
-      newParams.service_id = [PnServiceId.lpc]
-      if (lpcPn) {
-        newParams.service_id.push(PnServiceId.apns)
-      }
-      await pbx.pnmanage(newParams)
+
+    newParams.service_id = [PnServiceId.lpc]
+    if (lpcPn) {
+      newParams.service_id.push(PnServiceId.apns)
     }
+    await pbx.pnmanage(newParams)
+
     return disconnectPbx(true)
   } catch (err) {
     console.error('PN sync debug: catch error:', err)
@@ -219,7 +221,6 @@ const syncPnTokenForAllAccounts = () => {
     if (a.pushNotificationEnabledSynced) {
       return
     }
-    console.log('#Duy Phan console account', a)
     syncPnToken(a)
   })
 }

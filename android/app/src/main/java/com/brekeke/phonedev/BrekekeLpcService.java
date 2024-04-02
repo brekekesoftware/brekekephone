@@ -7,9 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
-import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
@@ -19,10 +17,6 @@ public class BrekekeLpcService extends Service {
   private String CHANNEL_ID = "NOTIFICATION_CHANNEL";
 
   public static boolean isServiceStarted = false;
-
-  public static PowerManager.WakeLock wl;
-
-  CountDownTimer cTimer = null;
 
   public static  LPCModel.Settings settings;
 
@@ -64,7 +58,6 @@ public class BrekekeLpcService extends Service {
   }
 
   private void createConnection(LPCModel.Settings settings) {
-    Log.d(TAG + "settings", String.valueOf(settings));
     BrekekeSSLSocket.SSLSocketAsyncTask sslSocketAsyncTask =
         new BrekekeSSLSocket().new SSLSocketAsyncTask();
     sslSocketAsyncTask.execute(settings);
@@ -79,7 +72,7 @@ public class BrekekeLpcService extends Service {
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
 
-    this.settings = new LPCModel().new Settings(host, port, tlsKeyHash);
+    this.settings = new LPCModel().new Settings(host, port, tlsKeyHash, token, username);
     this.createConnection(settings);
     return null;
   }

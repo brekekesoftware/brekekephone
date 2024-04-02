@@ -1,6 +1,8 @@
 package com.tlschannel.impl;
 
 import android.util.Log;
+
+import com.google.gson.Gson;
 import com.tlschannel.*;
 import com.tlschannel.util.Util;
 import java.io.IOException;
@@ -180,10 +182,9 @@ public class TlsChannelImpl implements ByteChannel {
       long originalDestPosition = dest.position();
       suppliedInPlain = dest;
       bytesToReturn = inPlain.nullOrEmpty() ? 0 : inPlain.buffer.position();
-      Log.d("[BrekekeLpcService]", String.valueOf(engine.getHandshakeStatus()));
 
       while (true) {
-
+        Log.d("[BrekekeLpcService] bytesToReturn", String.valueOf(bytesToReturn));
         // return bytes are soon as we have them
         if (bytesToReturn > 0) {
           if (inPlain.nullOrEmpty()) {
@@ -201,6 +202,7 @@ public class TlsChannelImpl implements ByteChannel {
           return -1;
         }
         Util.assertTrue(inPlain.nullOrEmpty());
+        Log.d("[BrekekeLpcService] first check", engine.getHandshakeStatus().toString());
         switch (engine.getHandshakeStatus()) {
           case NEED_UNWRAP:
           case NEED_WRAP:
@@ -347,11 +349,15 @@ public class TlsChannelImpl implements ByteChannel {
     Util.assertTrue(buffer.hasRemaining());
     logger.log(Level.FINEST, "Reading from channel");
     int c = readChannel.read(buffer); // IO block
-    // Log.d("[BrekekeLpcService]111", String.valueOf(StandardCharsets.UTF_8.decode(buffer)));
-    if (logger.isLoggable(Level.FINEST)) {
+     Log.d("[BrekekeLpcService] read channel", new Gson().toJson(new Object[] {c, buffer}));
+
+//     if(c > 0) {
+//       Log.d("[BrekekeLpcService] read channel", StandardCharsets.UTF_8.decode(buffer).toString());
+//     }
+//    if (logger.isLoggable(Level.FINEST)) {
       logger.log(
-          Level.FINEST, "Read from channel; response: {}, buffer: {}", new Object[] {c, buffer});
-    }
+          Level.ALL, "Read from channel; response: {}, buffer: {}", new Object[] {c, buffer});
+//    }
     if (c == -1) {
       throw new EofException();
     }
@@ -377,7 +383,6 @@ public class TlsChannelImpl implements ByteChannel {
       }
       return wrapAndWrite(source);
     } finally {
-      Log.d("[BrekekeLpcService]", "unlockkk");
       writeLock.unlock();
     }
   }
@@ -387,11 +392,13 @@ public class TlsChannelImpl implements ByteChannel {
     outEncrypted.prepare();
     try {
       while (true) {
+
         writeToChannel(); // IO block
         if (source.remaining() == 0) {
           return bytesToConsume;
         }
         SSLEngineResult result = wrapLoop(source);
+        Log.d("[BrekekeLpcService] write", result.getStatus().toString());
         if (result.getStatus() == Status.CLOSED) {
           return bytesToConsume - source.remaining();
         }
@@ -603,6 +610,7 @@ public class TlsChannelImpl implements ByteChannel {
         SSLEngineResult result = unwrapLoop();
         HandshakeStatus status = engine.getHandshakeStatus();
         if (result.bytesProduced() > 0) {
+          Log.d("[BrekekeLpcService] bytesProduced", String.valueOf(result.bytesProduced()));
           bytesToReturn = result.bytesProduced();
           return;
         }

@@ -72,7 +72,6 @@ export class PBX extends EventEmitter {
         if (typeof f !== 'function') {
           return reject(new Error(`PAL client doesn't support "${method}"`))
         }
-        console.log('#Duy Phan console client', f)
         f.call(client, params, resolve, reject)
       })
     }
