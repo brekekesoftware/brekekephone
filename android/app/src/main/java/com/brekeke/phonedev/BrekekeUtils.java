@@ -630,6 +630,19 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getRingerMode(Promise p) {
+    if (am == null) {
+      p.resolve(-1);
+    }
+    try {
+      p.resolve(am.getRingerMode());
+    } catch (Exception e) {
+      emit("debug", "getRingerMode Exception::" + e.getMessage());
+      p.resolve(-1);
+    }
+  }
+
+  @ReactMethod
   public void insertCallLog(String number, int type) {
     ContentValues values = new ContentValues();
     values.put(CallLog.Calls.NUMBER, number);
