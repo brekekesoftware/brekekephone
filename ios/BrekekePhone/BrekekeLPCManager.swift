@@ -227,8 +227,15 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       let content = UNMutableNotificationContent()
       let body = payload["body"] as! String
       let matched = body.match("from (.*?):(.*?)$")
-      content.title = matched[0][1]
-      content.body = matched[0][2]
+      if let firstMatch = matched.first,
+         let title = firstMatch.indices.contains(1) ? firstMatch[1] : nil {
+        content.title = title
+      } else if let senderUserName = payload["senderUserName"] as? String {
+        content.title = senderUserName
+      } else {
+        content.title = ""
+      }
+      content.body = body
       content.sound = .default
       content.userInfo = payload
       content.sound = UNNotificationSound.default
