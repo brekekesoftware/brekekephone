@@ -486,6 +486,7 @@ class PageCallManage extends Component<{
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
           {!c.answered && (
@@ -493,6 +494,7 @@ class PageCallManage extends Component<{
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
         </View>

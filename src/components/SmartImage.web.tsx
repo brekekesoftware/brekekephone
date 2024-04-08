@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 
 import noPhoto from '../assets/no_photo.png'
+import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
@@ -34,7 +35,11 @@ const css = StyleSheet.create({
   },
 })
 
-export const SmartImage = (p: { uri: string; style: object }) => {
+export const SmartImage = (p: {
+  uri: string
+  style: object
+  incoming: boolean
+}) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
   const [size, setSize] = useState(0)
   useEffect(() => {
@@ -51,7 +56,8 @@ export const SmartImage = (p: { uri: string; style: object }) => {
     setStatusImageLoading(1)
   }
 
-  const isImageUrl = checkImageUrl(p.uri)
+  const isImageUrl =
+    (getAuthStore().phoneappliEnabled() && !p.incoming) || checkImageUrl(p.uri)
 
   return (
     <View
