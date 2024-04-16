@@ -496,6 +496,7 @@ export class CallStore {
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
       }
+      await waitTimeout(1000)
       this.setAutoEndCallKeepTimer(uuid)
     }
     const sipCreateSession = () => {

@@ -80,20 +80,24 @@ export class AnsweredItem extends Component<{
 }
 
 // fix for web: Can't resolve 'react-native/Libraries/Image/resolveAssetSource'
-export const VideoRBT = (p: { withSDP: boolean; isLoudSpeaker: boolean }) => {
+export const VideoRBT = (p: { isPlay: boolean; isLoudSpeaker: boolean }) => {
   useEffect(() => {
-    if (!p.withSDP && !p.isLoudSpeaker) {
+    // play Local RBT without loudspeaker
+    if (p.isPlay && !p.isLoudSpeaker) {
       BrekekeUtils.playRBT()
     }
-    return () => BrekekeUtils.stopRBT()
-  }, [p.isLoudSpeaker, p.withSDP])
-  const paused =
-    (!p.withSDP && !p.isLoudSpeaker) || (p.withSDP && p.isLoudSpeaker)
+    return () => {
+      BrekekeUtils.stopRBT()
+    }
+  }, [p.isLoudSpeaker, p.isPlay])
+  // play Local RBT with loudspeaker
+  const isPlay = p.isPlay && p.isLoudSpeaker
+
   return (
     <Video
       source={require('../assets/incallmanager_ringback.mp3')}
       style={css.video}
-      paused={paused}
+      paused={!isPlay}
       repeat={true}
       ignoreSilentSwitch='ignore'
       playInBackground={true}

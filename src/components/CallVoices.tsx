@@ -17,11 +17,11 @@ export const CallVoices = observer(() => {
   const isOutgoingCallStart =
     oc && !oc.incoming && !oc.answered && oc.sessionStatus === 'progress'
 
-  //When you receive a 18x response (usually 180 or 183) with SDP,
+  // When you receive a 18x response (usually 180 or 183) with SDP,
   // you don't play the local RBT file (ring back tone) and you play the audio data in the RTP packets.
   const statusCode = oc?.rawSession?.incomingMessage?.status_code
   const playEarlyMedia =
-    statusCode && /^18[0-9]{2}$/.test(statusCode.toString()) && oc?.withSDP
+    statusCode && /^18[0-9]$/.test(statusCode.toString()) && oc?.withSDP
 
   return (
     <>
@@ -32,10 +32,10 @@ export const CallVoices = observer(() => {
           <OutgoingItem />
         ))}
       {
-        // play the local RBT
-        Platform.OS === 'ios' && isOutgoingCallStart && (
+        // play the local RBT for ios only
+        Platform.OS === 'ios' && isOutgoingCallStart && !playEarlyMedia && (
           <VideoRBT
-            withSDP={!playEarlyMedia}
+            isPlay={!playEarlyMedia}
             isLoudSpeaker={getCallStore().isLoudSpeakerEnabled}
           />
         )
