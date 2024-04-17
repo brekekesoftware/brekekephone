@@ -496,6 +496,8 @@ export class CallStore {
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
       }
+      // Fix issue: no-voice if Sip call get response 18x quickly (INVITE -> 18x: 50ms - 130ms)
+      // Make sure audio active (didDeactivateAudioSession) after startCall and before Sip call is established
       await waitTimeout(1000)
       this.setAutoEndCallKeepTimer(uuid)
     }
