@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const htmlTags = [
   'html',
   'a',
@@ -113,6 +114,8 @@ const htmlTags = [
   'video',
   'wbr',
 ]
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const removeHtmlTags = (htmlText, removeTags) => {
   const removeTagsRegex = new RegExp(
     `<(${removeTags.join('|')})\\b[^>]*>|<\\/(?:${removeTags.join(
@@ -124,5 +127,7 @@ const removeHtmlTags = (htmlText, removeTags) => {
   const cleanText = htmlText.replace(removeTagsRegex, '')
   return cleanText
 }
+// export const trimHtml = (s: string) => removeHtmlTags(s, htmlTags).trim()
 
-export const trimHtml = (s: string) => removeHtmlTags(s, htmlTags).trim()
+// Make same web UC does not trim html tag
+export const trimHtml = (s: string) => s.trim()

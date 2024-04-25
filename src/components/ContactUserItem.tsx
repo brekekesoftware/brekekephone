@@ -1,3 +1,4 @@
+import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import { FC, ReactNode } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
@@ -260,7 +261,7 @@ export const UserItem: FC<
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
               {typeof lastMessage === 'string'
-                ? trimHtml(lastMessage)
+                ? trimHtml(decode(lastMessage))
                 : lastMessage}
             </RnText>
           )}

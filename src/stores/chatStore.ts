@@ -1,4 +1,5 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
@@ -140,13 +141,15 @@ class ChatStore {
     if (Platform.OS === 'web') {
       return
     }
+    const dBody = decode(body)
+
     const id = `message-${Date.now()}`
     if (Platform.OS === 'android') {
       Notifications.postLocalNotification({
         payload: {
           id,
           title,
-          body,
+          body: dBody,
           threadId,
           isGroupChat,
           number: 0,
@@ -164,7 +167,7 @@ class ChatStore {
           is_local_notification: 'local_notification',
         },
         identifier: id,
-        body,
+        body: dBody,
         title,
         sound: 'ding.mp3',
         badge: 0,
@@ -177,7 +180,7 @@ class ChatStore {
         PushNotificationIOS.addNotificationRequest({
           id,
           title,
-          body,
+          body: dBody,
           badge,
           sound: 'ding.mp3',
           userInfo: {
@@ -186,7 +189,7 @@ class ChatStore {
               title,
               threadId,
               isGroupChat,
-              body,
+              body: dBody,
               my_custom_data: 'local_notification',
               pre_app_state: AppState.currentState,
               local_notification: true,
