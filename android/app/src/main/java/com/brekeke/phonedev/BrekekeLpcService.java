@@ -59,7 +59,7 @@ public class BrekekeLpcService extends Service {
 
   private void createConnection(LPCModel.Settings settings) {
     BrekekeSSLSocket.SSLSocketAsyncTask sslSocketAsyncTask =
-        new BrekekeSSLSocket().new SSLSocketAsyncTask();
+        new BrekekeSSLSocket().new SSLSocketAsyncTask(this);
     sslSocketAsyncTask.execute(settings);
   }
 

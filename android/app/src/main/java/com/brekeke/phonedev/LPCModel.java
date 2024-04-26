@@ -6,9 +6,9 @@ public class LPCModel {
         String uuid2;
         String deviceName;
         String appid = "com.brekeke.phonedev";
-        User(String token, String userName) {
+        User(String token, String token2, String userName) {
             this.uuid = token + "$pn-gw@" + userName;
-            this.uuid2 = token + "$pn-gw@" + userName + "@voip";
+            this.uuid2 = token2 + "$pn-gw@" + userName + "@voip";
             this.deviceName = userName;
         }
     }

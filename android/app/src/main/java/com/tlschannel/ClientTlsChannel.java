@@ -1,5 +1,7 @@
 package com.tlschannel;
 
+import android.util.Log;
+
 import com.tlschannel.impl.ByteBufferSet;
 import com.tlschannel.impl.TlsChannelImpl;
 import java.io.IOException;

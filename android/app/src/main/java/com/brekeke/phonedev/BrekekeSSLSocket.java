@@ -1,11 +1,13 @@
 package com.brekeke.phonedev;
 
 import static java.net.StandardSocketOptions.SO_KEEPALIVE;
+import static java.net.StandardSocketOptions.SO_REUSEADDR;
 import static java.net.StandardSocketOptions.SO_SNDBUF;
 import static java.net.StandardSocketOptions.TCP_NODELAY;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
@@ -76,6 +78,8 @@ public class BrekekeSSLSocket {
 
     private String TAG = "[BrekekeLpcService]";
 
+    private Context mContext;
+
     CountDownTimer cTimer = null;
 
     private String host;
@@ -91,6 +95,9 @@ public class BrekekeSSLSocket {
     private String mock =
         "Data{\"requestIdentifier\":504316054,\"payload\":{\"data\":\"eyJ1dWlkIjoiRkFBMUI2QUItNTdFMy00RUU4LUJDOTQtMzM1MTdCNUI0QkFEIiwiZGV2aWNlTmFtZSI6ImlQaG9uZSAxNSBQcm8ifQ==\",\"codingKey\":1},\"command\":\"request\"}";
 
+    private String mockLpc = "{\"uuid\": \"2c3530fc724beac098a34b9978d0894e882c7e1f6b55cf9e05d0ed30270cf508$pn-gw@nam_nam01_phone1_webphone\", \"uuid2\": \"1d18b66b28e053985e6a8c21fb3d5b39048ebd201a68daad0abc1bea84613729$pn-gw@nam_nam01_phone1_webphone@voip\", \"deviceName\": \"nam_nam01_phone1_webphone\", \"appid\": \"com.brekeke.phonedev\"}";
+
+    private String mockEx = "{\"payload\":{\"codingKey\":1,\"data\":\"eyJ1dWlkIjoiMmMzNTMwZmM3MjRiZWFjMDk4YTM0Yjk5NzhkMDg5NGU4ODJjN2UxZjZiNTVjZjllMDVkMGVkMzAyNzBjZjUwOCRwbi1nd0BuYW1fbmFtMDFfcGhvbmUxX3dlYnBob25lIiwidXVpZDIiOiIxZDE4YjY2YjI4ZTA1Mzk4NWU2YThjMjFmYjNkNWIzOTA0OGViZDIwMWE2OGRhYWQwYWJjMWJlYTg0NjEzNzI5JHBuLWd3QG5hbV9uYW0wMV9waG9uZTFfd2VicGhvbmVAdm9pcCIsImFwcGlkIjoiY29tLmJyZWtla2UucGhvbmVkZXYiLCJkZXZpY2VOYW1lIjoibmFtX25hbTAxX3Bob25lMV93ZWJwaG9uZSJ9\"},\"command\":\"request\",\"requestIdentifier\":4093394966}";
     private KeyStore trustStore;
     TrustManager[] trustAllCerts =
         new TrustManager[] {
@@ -155,7 +162,9 @@ public class BrekekeSSLSocket {
           }
         };
 
-    public SSLSocketAsyncTask() {}
+    public SSLSocketAsyncTask(Context context) {
+      mContext = context;
+    }
 
     public class CodableHelper {
       private final Gson gson = new Gson();
@@ -211,7 +220,6 @@ public class BrekekeSSLSocket {
     protected String doInBackground(LPCModel.Settings ...params) {
       Log.d(TAG, String.valueOf(params[0]).toString());
       this.settings = params[0];
-      this.user = new LPCModel().new User(settings.token, settings.userName);
       this.handleCallToServer();
       return "";
     }
@@ -224,6 +232,38 @@ public class BrekekeSSLSocket {
     @Override
     protected void onPostExecute(String result) {
       Log.d("[BrekekeLpcService]", "Received data: " + result);
+    }
+
+    public  SSLContext createTrustedSSLContext(String sha256Fingerprint) throws Exception {
+      // Convert SHA-256 fingerprint from base64 to byte array
+      byte[] sha256Bytes = android.util.Base64.decode(sha256Fingerprint, android.util.Base64.DEFAULT);
+
+      // Load certificate from file
+      CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+      InputStream raw = mContext.getResources().openRawResource(R.raw.out);
+      X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(raw);
+      raw.close();
+
+      // Calculate the SHA-256 fingerprint of the certificate
+      byte[] certFingerprint = certificate.getPublicKey().getEncoded();
+
+      // Compare the fingerprints
+      if (!MessageDigest.isEqual(sha256Bytes, certFingerprint)) {
+//        Log.d(TAG, "Certificate fingerprint does not match the provided SHA-256 fingerprint.");x
+      }
+
+      // Create a TrustManager that trusts the certificate
+      KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+      keyStore.load(null, null);
+      keyStore.setCertificateEntry("ca", certificate);
+      TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      trustManagerFactory.init(keyStore);
+
+      // Create SSLContext with the TrustManager
+      SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+      sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+
+      return sslContext;
     }
 
     public TrustManagerFactory generatePublicKey(String encodedPublicKey) {
@@ -256,35 +296,7 @@ public class BrekekeSSLSocket {
     private void handleCallToServer() {
 
       try {
-        SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
-        TrustManagerFactory tmf = this.generatePublicKey("MIIE7jCCA9agAwIBAgISBB/RWWyUkdZTjq+KcZcmViIsMA0GCSqGSIb3DQEBCwUA\n" +
-                "MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD\n" +
-                "EwJSMzAeFw0yNDAyMTkwMjI1MTBaFw0yNDA1MTkwMjI1MDlaMBwxGjAYBgNVBAMT\n" +
-                "EWRldjAxLmJyZWtla2UuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC\n" +
-                "AQEAurahZFGFiFT0Du+C5cf3aJZAbATxb0mu2GqiHa1x52GdL8WcReD4ACHcFmaG\n" +
-                "QXds9Xp6WlBdXzaD6U7jiIISriXktpClUw0m1RbmRC2tYasASYl6FI5pPymRoSgv\n" +
-                "mDLjYSogjeEjV358QBtDTL0bAOxJR5L1JFxDubGHvyAb/mv9ba39q0A6TvCFi8+0\n" +
-                "WQhFLw3pwNHRLGMnneaA2m3Q+U+z2z9Km/WGKSGM0LaOCAx6eTum3WCZsYQDXTXZ\n" +
-                "bbuVR731bKVYqYt9WDAgTo6L2iYwi+AhQAPEx+qAKwn8OA0YEaWENEFkp2JUB0z7\n" +
-                "S6nrhLP6PrgJRwG8xV9raFKnqwIDAQABo4ICEjCCAg4wDgYDVR0PAQH/BAQDAgWg\n" +
-                "MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0G\n" +
-                "A1UdDgQWBBSztRiI7iXxsEsJm13xeEUMHNmVjjAfBgNVHSMEGDAWgBQULrMXt1hW\n" +
-                "y65QCUDmH6+dixTCxjBVBggrBgEFBQcBAQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6\n" +
-                "Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEFBQcwAoYWaHR0cDovL3IzLmkubGVuY3Iu\n" +
-                "b3JnLzAcBgNVHREEFTATghFkZXYwMS5icmVrZWtlLmNvbTATBgNVHSAEDDAKMAgG\n" +
-                "BmeBDAECATCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB1AKLiv9Ye3i8vB6DWTm03\n" +
-                "p9xlQ7DGtS6i2reK+Jpt9RfYAAABjb9laIoAAAQDAEYwRAIgV40ItvTcF8rMdivo\n" +
-                "kIIqVDJ16Fdp9psoM88PXZ3Lnd0CIEGkHmmAvKNR7Yxr+GkJQqsuV20LagWGP3fy\n" +
-                "6zFEwX05AHYA7s3QZNXbGs7FXLedtM0TojKHRny87N7DUUhZRnEftZsAAAGNv2Vo\n" +
-                "SQAABAMARzBFAiBALgULFzRk/TpgrVeB5a2J1BbI4FN0iFesrkNr+E5WJAIhAKvd\n" +
-                "/3Mpep2FEhB/SsvTiwapfHsYGxaNnfHKncI8jEulMA0GCSqGSIb3DQEBCwUAA4IB\n" +
-                "AQCvUoNE/kE3XXI4J2RYJup07HgDo2G11pHefTUOPu4Dowz+YzfRpiRlu84EWezl\n" +
-                "5jcxZVxCzTez7ElZ9GHpA59o0dFMyujZqS7y6CaGpvzutKRgizN/WfCCoidqvo0u\n" +
-                "3tPxKLEw/OTHy7V8Rm2AJneby1HiMvr6hilBYwIaNGhuDCWZT+KwOEe4/DRWSGKR\n" +
-                "KD1FZ5aHKKbbZ9QaHFj4VBLIfhff5MbWwA9BQrYsyg0wOW1ozD9lsa5tXY7mdRQU\n" +
-                "d2Asebdi40oJI2b49rolp1slwd85PJlatzcw6+BJuQYBaSZD4yBvBU5BWqrYOulp\n" +
-                "9hLy7BwqysosqsMgqP6f0k7Z");
-        sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
+        SSLContext sslContext = createTrustedSSLContext("gkyJATDzkj83UgyeJZaCTCrIesUcKHrTMOpjlVTfmLc=");
         this.createChannel(sslContext);
       } catch (NoSuchAlgorithmException e) {
         e.printStackTrace();
@@ -298,6 +310,8 @@ public class BrekekeSSLSocket {
       } catch (IOException e) {
 //        throw new RuntimeException(e);
         Log.d(TAG + "IO", e.getMessage());
+      } catch (Exception e) {
+        Log.d(TAG + "Ex", e.getMessage());
       }
     }
 
@@ -314,7 +328,8 @@ public class BrekekeSSLSocket {
         rawChannel.configureBlocking(false);
         rawChannel.setOption(SO_KEEPALIVE, true);
         rawChannel.setOption(TCP_NODELAY, true);
-        rawChannel.setOption(SO_SNDBUF, 8096);
+        rawChannel.setOption(SO_REUSEADDR, true);
+        rawChannel.setOption(SO_SNDBUF, 4096);
 //        rawChannel.connect(new InetSocketAddress("Yees-mbp.lan", this.settings.port));
         rawChannel.connect(new InetSocketAddress(this.settings.host, this.settings.port));
         rawChannel.register(selector, SelectionKey.OP_CONNECT);
@@ -344,7 +359,7 @@ public class BrekekeSSLSocket {
                     if (requestBuffer.remaining() == 0) {
                       requestSent = true;
                       Log.d(TAG + "write", "remain");
-//                      rawChannel.shutdownOutput();
+                      rawChannel.shutdownOutput();
                     }
                   } else {
                     int c = tlsChannel.read(responseBuffer);
@@ -352,7 +367,7 @@ public class BrekekeSSLSocket {
                     if (c > 0) {
                       responseBuffer.flip();
                       String json =  utf8.decode(responseBuffer).toString().substring(4);
-                      Log.d(TAG + "receiver",json);
+                      Log.d(TAG + "receiver", json);
                       Wrapper wr = new CodableHelper().decode(json, Wrapper.class);
                       responseBuffer.compact();
                     }
@@ -381,11 +396,13 @@ public class BrekekeSSLSocket {
 
     private byte[] getDataParams() throws UnsupportedEncodingException {
       String uuid = UUID.randomUUID().toString();
+      String uuid2 = UUID.randomUUID().toString();
       String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
 
       Map<String, Object> map = new HashMap<>();
-      map.put("requestIdentifier", new Random().nextInt(999999999));
-      LPCModel.User u = new LPCModel().new User(this.settings.token, this.settings.userName);
+      Map<String, Object> p =  new HashMap<>();
+       map.put("requestIdentifier", new Random().nextInt(999999999));
+      LPCModel.User u = new LPCModel().new User(uuid, uuid2, this.settings.userName);
 //      map.put("payload", new Payload(new Person(deviceName, uuid)));
       map.put("payload", new Payload(u));
       map.put("command", "request");

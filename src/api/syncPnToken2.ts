@@ -95,7 +95,6 @@ const syncPnTokenWithoutCatch = async (
       username,
       device_id: t,
     }
-
     const newParams = pnmanageNew
       ? {
           ...params,
@@ -121,7 +120,6 @@ const syncPnTokenWithoutCatch = async (
 
     const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
     const tlsKeyHash = c['webphone.lpc.keyhash'] || ''
-
     // never establish plain non-tls lpc connection
     const lpcEnabled = lpcPort && tlsKeyHash
     if (lpcPort && !tlsKeyHash) {
@@ -160,9 +158,6 @@ const syncPnTokenWithoutCatch = async (
       localSsid,
       tlsKeyHash,
       lpcPn,
-      pnEnabled,
-      tvoip,
-      t,
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(
@@ -178,13 +173,11 @@ const syncPnTokenWithoutCatch = async (
     } else {
       BrekekeUtils.disableLPC()
     }
-
     newParams.service_id = [PnServiceId.lpc]
     if (lpcPn) {
       newParams.service_id.push(PnServiceId.apns)
     }
     await pbx.pnmanage(newParams)
-
     return disconnectPbx(true)
   } catch (err) {
     console.error('PN sync debug: catch error:', err)
