@@ -233,7 +233,7 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       } else if let senderUserName = payload["senderUserName"] as? String {
         content.title = senderUserName
       } else {
-        content.title = ""
+        content.title = "UC message"
       }
       content.body = body
       content.sound = .default

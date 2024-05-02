@@ -71,7 +71,6 @@ const onNotification = async (
     withCallKeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
   await initApp()
-  // when click notification isLocal is true
   await parse(withCallKeepUuid, isLocal, isLocal)
 }
 

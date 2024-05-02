@@ -236,16 +236,16 @@ public class RequestResponseSession: NetworkSession {
     }
   }
 
-//    response data:
-//      {
-//        routing:{
-//          receiver:{},
-//          sender:{}
-//        },
-//      custom:{PN chat data || PN incoming call data},
-//      message:""
-//    }
-
+  // {
+  //   routing: {
+  //     receiver: {},
+  //     sender: {},
+  //   },
+  //   /* PN data, can be chat or incoming call */
+  //   custom: {},
+  //   /* PN message */
+  //   message: "",
+  // }
   private func decode(data: Data) -> Wrapper? {
     do {
       let wrapper = try decoder.decode(Wrapper.self, from: data)
@@ -269,7 +269,7 @@ public class RequestResponseSession: NetworkSession {
             ) as? [AnyHashable: Any] {
               if var custom = json["custom"] as? [AnyHashable: Any] {
                 custom["callkeepUuid"] = UUID().uuidString.uppercased()
-                custom["body"] = json["message"] ?? ""
+                custom["body"] = json["message"] ?? "UC message"
                 msg.custom = custom
               }
             }
