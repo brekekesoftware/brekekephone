@@ -1,3 +1,8 @@
+#### 2.14.3
+
+- Fix android it should display UI correctly with auto answer (issue 851)
+- Fix it should display layout better when keyboard open in call with X-PBX-IMAGE-TALKING and long name (issue 740)
+
 #### 2.14.2
 
 - Update intl local language labels
