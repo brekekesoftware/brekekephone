@@ -1,4 +1,5 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
@@ -10,6 +11,7 @@ import { Constants } from '../brekekejs/ucclient'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { rnVibrate } from '../utils/rnVibrate'
 import { saveBlobFile } from '../utils/saveBlob'
 import { webPlayDing } from '../utils/webPlayDing'
@@ -140,6 +142,7 @@ class ChatStore {
     if (Platform.OS === 'web') {
       return
     }
+    body = decode(body)
     const id = `message-${Date.now()}`
     if (Platform.OS === 'android') {
       Notifications.postLocalNotification({
@@ -317,7 +320,7 @@ class ChatStore {
     }
   }
   @observable chatNotificationSoundRunning: boolean = false
-  private playChatNotificationSoundVibration = () => {
+  private playChatNotificationSoundVibration = async () => {
     if (Platform.OS === 'web') {
       webPlayDing()
       return
@@ -325,11 +328,30 @@ class ChatStore {
     if (this.chatNotificationSoundRunning) {
       return
     }
-    rnVibrate()
-    this.chatNotificationSoundRunning = true
-    BackgroundTimer.setTimeout(() => {
-      this.chatNotificationSoundRunning = false
-    }, 700)
+    const playSoundAndVibrate = () => {
+      rnVibrate()
+      this.chatNotificationSoundRunning = true
+      BackgroundTimer.setTimeout(() => {
+        this.chatNotificationSoundRunning = false
+      }, 700)
+    }
+    if (Platform.OS === 'ios') {
+      // ios already check by <Video> with ignoreSilentSwitch
+      playSoundAndVibrate()
+      return
+    }
+    const rm = await BrekekeUtils.getRingerMode()
+    // unknown or RINGER_MODE_SILENT
+    if (rm <= 0) {
+      return
+    }
+    // RINGER_MODE_VIBRATE
+    if (rm === 1) {
+      rnVibrate()
+      return
+    }
+    // RINGER_MODE_NORMAL
+    playSoundAndVibrate()
   }
 
   removeWebchatItem = (conf_id: string) => {
