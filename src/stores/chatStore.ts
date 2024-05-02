@@ -1,4 +1,5 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
@@ -141,6 +142,7 @@ class ChatStore {
     if (Platform.OS === 'web') {
       return
     }
+    body = decode(body)
     const id = `message-${Date.now()}`
     if (Platform.OS === 'android') {
       Notifications.postLocalNotification({
