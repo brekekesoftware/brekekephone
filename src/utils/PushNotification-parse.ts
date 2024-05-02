@@ -7,7 +7,7 @@ import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
-import { openLinkSafely, URLSchemes } from './deeplink'
+import { openLinkSafely, urls } from './deeplink'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
@@ -239,7 +239,7 @@ export const parse = async (
     )
     if (as.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
-      openLinkSafely(URLSchemes.phoneappli.HISTORY_CALLED)
+      openLinkSafely(urls.phoneappli.HISTORY_CALLED)
     } else {
       navIndex('goToPageCallRecents')
     }
