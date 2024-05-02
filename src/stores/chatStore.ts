@@ -335,25 +335,23 @@ class ChatStore {
         this.chatNotificationSoundRunning = false
       }, 700)
     }
-    if (Platform.OS === 'android') {
-      const ringerMode = await BrekekeUtils.getRingerMode()
-      // RINGER_MODE_SILENT
-      if (ringerMode === 0 || ringerMode === -1) {
-        return
-      }
-      // RINGER_MODE_VIBRATE
-      if (ringerMode === 1) {
-        rnVibrate()
-        return
-      }
-      // RINGER_MODE_NORMAL
-      if (ringerMode === 2) {
-        playSoundAndVibrate()
-      }
-    } else {
-      // Ios already check by <Video> with ignoreSilentSwitch
+    if (Platform.OS === 'ios') {
+      // ios already check by <Video> with ignoreSilentSwitch
       playSoundAndVibrate()
+      return
     }
+    const rm = await BrekekeUtils.getRingerMode()
+    // unknown or RINGER_MODE_SILENT
+    if (rm <= 0) {
+      return
+    }
+    // RINGER_MODE_VIBRATE
+    if (rm === 1) {
+      rnVibrate()
+      return
+    }
+    // RINGER_MODE_NORMAL
+    playSoundAndVibrate()
   }
 
   removeWebchatItem = (conf_id: string) => {

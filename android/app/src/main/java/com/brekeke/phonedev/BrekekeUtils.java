@@ -678,34 +678,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setPhoneappliEnabled(Boolean isEnabled) {
-    phoneappliEnabled = isEnabled;
-  }
-
-  @ReactMethod
-  public void getRingerMode(Promise p) {
-    if (am == null) {
-      p.resolve(-1);
-    }
-    try {
-      p.resolve(am.getRingerMode());
-    } catch (Exception e) {
-      emit("debug", "getRingerMode Exception::" + e.getMessage());
-      p.resolve(-1);
-    }
-  }
-
-  @ReactMethod
-  public void insertCallLog(String number, int type) {
-    ContentValues values = new ContentValues();
-    values.put(CallLog.Calls.NUMBER, number);
-    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.TYPE, type);
-    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
-    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
-  }
-
-  @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
   }
@@ -730,6 +702,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       main.moveTaskToBack(true);
     } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
+  public void hasIncomingCallActivity(String uuid, Promise p) {
+    try {
+      p.resolve(at(uuid) != null);
+    } catch (Exception e) {
+      p.resolve(false);
     }
   }
 
@@ -955,6 +936,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setPhoneappliEnabled(Boolean isEnabled) {
+    phoneappliEnabled = isEnabled;
+  }
+
+  @ReactMethod
   public void onCallConnected(String uuid) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -1004,12 +990,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void hasIncomingCallActivity(String uuid, Promise p) {
-    try {
-      p.resolve(at(uuid) != null);
-    } catch (Exception e) {
-      p.resolve(false);
+  public void getRingerMode(Promise p) {
+    if (am == null) {
+      p.resolve(-1);
     }
+    try {
+      p.resolve(am.getRingerMode());
+    } catch (Exception e) {
+      emit("debug", "getRingerMode Exception::" + e.getMessage());
+      p.resolve(-1);
+    }
+  }
+
+  @ReactMethod
+  public void insertCallLog(String number, int type) {
+    ContentValues values = new ContentValues();
+    values.put(CallLog.Calls.NUMBER, number);
+    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+    values.put(CallLog.Calls.TYPE, type);
+    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
+    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
   }
 
   @ReactMethod
