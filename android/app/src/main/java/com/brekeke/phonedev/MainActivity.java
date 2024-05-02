@@ -1,17 +1,10 @@
 package com.brekeke.phonedev;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.role.RoleManager;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telecom.TelecomManager;
 import android.view.KeyEvent;
-import android.widget.Toast;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import com.facebook.react.ReactActivity;
@@ -23,9 +16,6 @@ import io.wazo.callkeep.RNCallKeepModule;
 public class MainActivity extends ReactActivity {
   // ==========================================================================
   // set/unset BrekekeUtils.main
-  private static final int REQUEST_CODE_SET_DEFAULT_DIALER = 123;
-  private ActivityResultLauncher<Intent> startActivityForResultLauncher;
-
   @Override
   protected void onStart() {
     BrekekeUtils.main = this;
@@ -76,12 +66,11 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // handle Default Dialer app
-    startActivityForResultLauncher =
+    // handle default dialer
+    BrekekeUtils.defaultDialerLauncher =
         registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> checkSetDefaultDialerResult(result.getResultCode()));
-    checkDefaultDialer();
     // handle call from other app
     handleIntent(getIntent());
   }
@@ -156,50 +145,13 @@ public class MainActivity extends ReactActivity {
     handler.postDelayed(r, 5000);
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_CODE_SET_DEFAULT_DIALER) {
-      checkSetDefaultDialerResult(resultCode);
-    }
-  }
-
-  @SuppressLint("QueryPermissionsNeeded")
-  @TargetApi(Build.VERSION_CODES.M)
-  private void checkDefaultDialer() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-    TelecomManager telecomManager = (TelecomManager) getSystemService(TELECOM_SERVICE);
-    if (telecomManager == null) {
-      return;
-    }
-    String packageName = getPackageName();
-    boolean isAlreadyDefaultDialer = packageName.equals(telecomManager.getDefaultDialerPackage());
-    if (isAlreadyDefaultDialer) {
-      return;
-    }
-    Intent intent =
-        new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-            .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName);
-    if (intent.resolveActivity(this.getPackageManager()) == null) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      startActivityForResultLauncher.launch(intent);
-    } else {
-      RoleManager rm = this.getSystemService(RoleManager.class);
-      if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_DIALER)) {
-        startActivityForResultLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
-      }
-    }
-  }
-
   private void checkSetDefaultDialerResult(int resultCode) {
     switch (resultCode) {
       case RESULT_CANCELED:
-        Toast.makeText(this, L.messagePermissionSetDefaultPhoneApp(), Toast.LENGTH_SHORT).show();
+        BrekekeUtils.resolveDefaultDialer("Permission to set default phone app was canceled");
+        break;
+      case RESULT_OK:
+        BrekekeUtils.resolveDefaultDialer("Default dialer set successfully");
         break;
       default:
         break;

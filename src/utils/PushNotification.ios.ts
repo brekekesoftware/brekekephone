@@ -71,7 +71,7 @@ const onNotification = async (
     withCallKeepUuid.callkeepUuid = withDictionaryPayload.callkeepUuid
   }
   await initApp()
-  await parse(withCallKeepUuid, isLocal, true)
+  await parse(withCallKeepUuid, isLocal, isLocal)
 }
 
 export const PushNotification = {
