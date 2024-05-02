@@ -6,7 +6,7 @@ import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnStacker } from '../stores/RnStacker'
 import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, URLSchemes } from '../utils/deeplink'
+import { openLinkSafely, urls } from '../utils/deeplink'
 import { Menu, SubMenu } from './navigationConfig'
 
 let PageCallTransferChooseUser: ReactComponentLike
@@ -63,7 +63,7 @@ export const getTabs = (tab: string) => {
         const name = Object.keys(s.navFnKey)[0]
         // handle link to phoneappli app
         if (!name || s.key === 'phonebook') {
-          openLinkSafely(URLSchemes.phoneappli.USERS)
+          openLinkSafely(urls.phoneappli.USERS)
           return
         }
         // @ts-ignore
