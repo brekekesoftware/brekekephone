@@ -997,7 +997,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       p.resolve(am.getRingerMode());
     } catch (Exception e) {
-      emit("debug", "getRingerMode Exception::" + e.getMessage());
+      emit("debug", "getRingerMode error: " + e.getMessage());
       p.resolve(-1);
     }
   }
