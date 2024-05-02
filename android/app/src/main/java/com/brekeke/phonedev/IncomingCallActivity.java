@@ -931,7 +931,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onCallConnected() {
-
     if (!answered) {
       setCallAnswered();
     }
