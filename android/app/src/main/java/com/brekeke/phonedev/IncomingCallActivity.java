@@ -934,6 +934,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (!answered) {
       setCallAnswered();
     }
+    if (vCallManageLoading.getVisibility() == View.GONE) {
+      return;
+    }
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
