@@ -17,6 +17,7 @@ type TBrekekeUtils = {
   startRingtone(): void
   stopRingtone(): void
   backToBackground(): void
+  hasIncomingCallActivity(uuid: string): Promise<boolean>
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
@@ -33,12 +34,12 @@ type TBrekekeUtils = {
   setIsMute(uuid: string, isMute: boolean): void
   setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
+  setPhoneappliEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
-  hasIncomingCallActivity(uuid: string): Promise<boolean>
+  getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
-  setPhoneappliEnabled(enabled: boolean): void
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -71,6 +72,7 @@ const Polyfill: TBrekekeUtils = {
   startRingtone: () => undefined,
   stopRingtone: () => undefined,
   backToBackground: () => undefined,
+  hasIncomingCallActivity: () => Promise.resolve(false),
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
@@ -87,12 +89,12 @@ const Polyfill: TBrekekeUtils = {
   setIsMute: () => undefined,
   setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
+  setPhoneappliEnabled: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
-  hasIncomingCallActivity: () => Promise.resolve(false),
+  getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
-  setPhoneappliEnabled: () => undefined,
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
