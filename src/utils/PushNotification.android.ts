@@ -100,7 +100,7 @@ export const PushNotification = {
         // showBadge: true,
         // place this in android/app/src/main/res/raw/ding.mp3
         // soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // set notification channel for chat
@@ -115,7 +115,7 @@ export const PushNotification = {
         // groupName: 'My Group',
         // showBadge: true,
         soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // handle received PN
