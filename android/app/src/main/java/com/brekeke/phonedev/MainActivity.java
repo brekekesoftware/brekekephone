@@ -148,11 +148,10 @@ public class MainActivity extends ReactActivity {
   private void checkSetDefaultDialerResult(int resultCode) {
     switch (resultCode) {
       case RESULT_CANCELED:
-        BrekekeUtils.resolveCheckDefaultDialerPromise(
-            "Permission to set default phone app was canceled.");
+        BrekekeUtils.resolveDefaultDialer("Permission to set default phone app was canceled");
         break;
       case RESULT_OK:
-        BrekekeUtils.resolveCheckDefaultDialerPromise("Default dialer set successfully.");
+        BrekekeUtils.resolveDefaultDialer("Default dialer set successfully");
         break;
       default:
         break;
