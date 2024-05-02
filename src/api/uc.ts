@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3'
+import { encode } from 'html-entities'
 import { Platform } from 'react-native'
 
 import {
@@ -439,7 +440,7 @@ export class UC extends EventEmitter {
   sendBuddyChatText = (buddy: string, text: string) => {
     return new Promise((resolve, reject) =>
       this.client.sendText(
-        text,
+        encode(text),
         {
           user_id: buddy,
         },
