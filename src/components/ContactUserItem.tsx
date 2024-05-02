@@ -1,3 +1,4 @@
+import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import { FC, ReactNode } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
@@ -15,7 +16,6 @@ import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
-import { trimHtml } from '../utils/trimHtml'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { RnCheckBox } from './RnCheckbox'
@@ -260,7 +260,7 @@ export const UserItem: FC<
           {!isRecentCall && !!lastMessage && (
             <RnText normal singleLine small>
               {typeof lastMessage === 'string'
-                ? trimHtml(lastMessage)
+                ? decode(lastMessage.trim())
                 : lastMessage}
             </RnText>
           )}
