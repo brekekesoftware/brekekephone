@@ -1,3 +1,7 @@
+#### 2.14.3
+
+- Fix android it should display UI correctly with auto answer (issue 851)
+
 #### 2.14.2
 
 - Update intl local language labels
