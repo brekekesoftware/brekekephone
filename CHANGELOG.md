@@ -2,6 +2,7 @@
 
 - Fix it should display well with html characters < >
 - Fix android it should display UI correctly with auto answer (issue 851)
+- Fix android it should have single vibration on notification instead of double (issue 752)
 - Fix it should display layout better when keyboard open in call with X-PBX-IMAGE-TALKING and long name (issue 740)
 
 #### 2.14.2
