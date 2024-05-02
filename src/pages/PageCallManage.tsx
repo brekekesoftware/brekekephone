@@ -128,6 +128,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    minHeight: Dimensions.get('window').height * 0.4,
+    minWidth: Dimensions.get('window').height * 0.4,
   },
   ImageSize: {
     height: 130,
