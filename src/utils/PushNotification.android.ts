@@ -60,7 +60,7 @@ const onNotification = async (
 export const PushNotification = {
   register: async (initApp: Function) => {
     try {
-      await BrekekeUtils.waitPermDefaultPhoneApp()
+      await BrekekeUtils.checkPermissionDefaultDialer()
       await permNotifications()
       initApp()
       const hasPermissions: boolean =

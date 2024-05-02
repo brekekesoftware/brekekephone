@@ -66,12 +66,11 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // handle Default Dialer app
-    BrekekeUtils.startActivityForResultLauncher =
+    // handle default dialer
+    BrekekeUtils.defaultDialerLauncher =
         registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> checkSetDefaultDialerResult(result.getResultCode()));
-
     // handle call from other app
     handleIntent(getIntent());
   }

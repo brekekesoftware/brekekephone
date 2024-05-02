@@ -11,6 +11,7 @@ export enum CallLogType {
 
 type TBrekekeUtils = {
   // these methods only available on android
+  checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
   startRingtone(): void
@@ -38,7 +39,6 @@ type TBrekekeUtils = {
   hasIncomingCallActivity(uuid: string): Promise<boolean>
   insertCallLog(number: string, type: CallLogType): void
   setPhoneappliEnabled(enabled: boolean): void
-  waitPermDefaultPhoneApp(): Promise<string>
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -65,6 +65,7 @@ export type TNativeModules = {
 }
 
 const Polyfill: TBrekekeUtils = {
+  checkPermissionDefaultDialer: () => Promise.resolve(''),
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
   startRingtone: () => undefined,
@@ -92,7 +93,7 @@ const Polyfill: TBrekekeUtils = {
   hasIncomingCallActivity: () => Promise.resolve(false),
   insertCallLog: () => undefined,
   setPhoneappliEnabled: () => undefined,
-  waitPermDefaultPhoneApp: () => Promise.resolve(''),
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

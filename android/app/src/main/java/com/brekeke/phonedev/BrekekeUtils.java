@@ -56,7 +56,7 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
-  private static Promise checkDefaultDialerPromise;
+  public static Promise defaultDialerPromise;
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -98,7 +98,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static Activity main;
-  public static ActivityResultLauncher<Intent> startActivityForResultLauncher;
+  public static ActivityResultLauncher<Intent> defaultDialerLauncher;
   public static ReactApplicationContext ctx;
   public static KeyguardManager km;
   public static AudioManager am;
@@ -629,43 +629,41 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
   }
 
-  public static void resolveCheckDefaultDialerPromise(String result) {
-    if (checkDefaultDialerPromise != null) {
-      checkDefaultDialerPromise.resolve(result);
-      checkDefaultDialerPromise = null;
+  public static void resolveDefaultDialer(String msg) {
+    if (defaultDialerPromise != null) {
+      defaultDialerPromise.resolve(msg);
+      defaultDialerPromise = null;
     }
   }
 
   public void checkDefaultDialer() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ctx == null || main == null) {
-      BrekekeUtils.resolveCheckDefaultDialerPromise("Not supported on this version of Android.");
+      resolveDefaultDialer("Not supported on this Anrdoid version");
       return;
     }
-    TelecomManager telecomManager = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
-    if (telecomManager == null) {
-      BrekekeUtils.resolveCheckDefaultDialerPromise("TelecomManager is null.");
+    TelecomManager tm = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
+    if (tm == null) {
+      resolveDefaultDialer("TelecomManager is null");
       return;
     }
     String packageName = ctx.getPackageName();
-    boolean isAlreadyDefaultDialer = packageName.equals(telecomManager.getDefaultDialerPackage());
-    if (isAlreadyDefaultDialer) {
-      BrekekeUtils.resolveCheckDefaultDialerPromise("Already the default dialer.");
+    if (packageName.equals(tm.getDefaultDialerPackage())) {
+      resolveDefaultDialer("Already the default dialer");
       return;
     }
     Intent intent =
         new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName);
     if (intent.resolveActivity(ctx.getPackageManager()) == null) {
-      BrekekeUtils.resolveCheckDefaultDialerPromise("No activity to handle the intent.");
+      resolveDefaultDialer("No activity to handle the intent");
       return;
     }
-
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      startActivityForResultLauncher.launch(intent);
+      defaultDialerLauncher.launch(intent);
     } else {
       RoleManager rm = main.getSystemService(RoleManager.class);
       if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_DIALER)) {
-        startActivityForResultLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
+        defaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
       }
     }
   }
@@ -674,14 +672,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
 
   @ReactMethod
-  public void waitPermDefaultPhoneApp(Promise p) {
-    checkDefaultDialerPromise = p;
+  public void checkPermissionDefaultDialer(Promise p) {
+    defaultDialerPromise = p;
     checkDefaultDialer();
   }
 
   @ReactMethod
   public void setPhoneappliEnabled(Boolean isEnabled) {
-    BrekekeUtils.phoneappliEnabled = isEnabled;
+    phoneappliEnabled = isEnabled;
   }
 
   @ReactMethod
