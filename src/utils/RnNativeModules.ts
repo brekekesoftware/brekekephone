@@ -11,6 +11,7 @@ export enum CallLogType {
 
 type TBrekekeUtils = {
   // these methods only available on android
+  checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
   startRingtone(): void
@@ -64,6 +65,7 @@ export type TNativeModules = {
 }
 
 const Polyfill: TBrekekeUtils = {
+  checkPermissionDefaultDialer: () => Promise.resolve(''),
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
   startRingtone: () => undefined,
