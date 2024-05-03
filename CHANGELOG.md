@@ -1,6 +1,7 @@
 #### 2.14.3
 
 - Fix it should display well with html characters < >
+- Fix it should not display avatar twice in case PhoneAppli enabled (issue 860)
 - Fix it should navigate to PhoneAppli if enabled and tapping on a missed call notification (issue 856)
 - Fix android it should handle the case user reject permission default dialer phone app (issue 855)
 - Fix ios it should show LPC PN message for UC chat when it goes offline (issue 853)
