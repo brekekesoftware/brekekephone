@@ -11,6 +11,7 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import noPhoto from '../assets/no_photo.png'
 import { buildWebViewSource } from '../config'
+import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
@@ -61,7 +62,15 @@ enum StatusImage {
   loaded = 1,
   error = 2,
 }
-export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
+export const SmartImage = ({
+  uri,
+  style,
+  incoming,
+}: {
+  uri: string
+  style: object
+  incoming: boolean
+}) => {
   const [statusImageLoading, setStatusImageLoading] = useState(
     StatusImage.loading,
   )
@@ -115,7 +124,8 @@ export const SmartImage = ({ uri, style }: { uri: string; style: object }) => {
   const onHttpError = () => {
     setStatusImageLoading(StatusImage.loaded)
   }
-  const isImageUrl = checkImageUrl(uri)
+  const isImageUrl =
+    (getAuthStore().phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
   return (
     <View style={[css.image, style]}>
