@@ -22,8 +22,7 @@ export const CallVoices = observer(() => {
   // when receive a 18x response (usually 180 or 183) with SDP
   // don't play the local RBT, but the audio data in the RTP packets
   const code = oc?.rawSession?.incomingMessage?.status_code
-  const playEarlyMedia =
-    (code && /^18[0-9]$/.test(code.toString())) || oc?.withSDP
+  const playEarlyMedia = code && /^18[0-9]$/.test(code.toString()) && oc.withSDP
 
   return (
     <>
