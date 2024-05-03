@@ -110,7 +110,7 @@ const initApp = async () => {
       return
     }
     // reconnect UC when app is active
-    authUC.authWithCheck()
+    authUC.authWithAppActive()
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()

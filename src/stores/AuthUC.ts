@@ -32,7 +32,21 @@ class AuthUC {
     const s = getAuthStore()
     s.ucState = 'stopped'
   }
-
+  authWithAppActive = async () => {
+    const s = getAuthStore()
+    if (
+      s.getCurrentAccount()?.ucEnabled &&
+      s.signedInId &&
+      s.pbxState === 'success'
+    ) {
+      this.authWithoutCatch().catch(
+        action((err: Error) => {
+          s.ucState = 'failure'
+          console.error('Failed to connect to uc:', err)
+        }),
+      )
+    }
+  }
   @action private authWithoutCatch = async () => {
     uc.disconnect()
     const s = getAuthStore()
