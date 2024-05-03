@@ -486,7 +486,7 @@ export type Session = {
   incomingMessage?: {
     getHeader(h: string): string | undefined
     body?: object
-    status_code: number
+    status_code?: number
   }
   videoClientSessionTable: {
     [id: string]: Session
