@@ -491,14 +491,15 @@ export class CallStore {
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
-      if (Platform.OS == 'android') {
+      if (Platform.OS === 'android') {
         RNCallKeep.startCall(uuid, 'Brekeke phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
+        // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
+        // add time out to make sure audio active (didDeactivateAudioSession)
+        // before sip call established
+        await waitTimeout(1000)
       }
-      // Fix issue: no-voice if Sip call get response 18x quickly (INVITE -> 18x: 50ms - 130ms)
-      // Make sure audio active (didDeactivateAudioSession) after startCall and before Sip call is established
-      await waitTimeout(1000)
       this.setAutoEndCallKeepTimer(uuid)
     }
     const sipCreateSession = () => {
