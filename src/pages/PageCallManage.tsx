@@ -597,6 +597,7 @@ class PageCallManage extends Component<{
           {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
+              disabled={c.sessionStatus === 'dialing'}
               bgcolor={
                 getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
               }
