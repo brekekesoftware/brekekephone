@@ -100,9 +100,17 @@ const initApp = async () => {
   })
 
   AppState.addEventListener('change', async () => {
+    // disconnect UC when app is inactive
     if (AppState.currentState !== 'active') {
+      // when put app on background, UC uses websocket and cause the app fully terminated by the os
+      // thus it prevents the app to present notification
+      // TODO add timeout to better handle some cases
+      // TODO check if there is any other websocket
+      authUC.dispose()
       return
     }
+    // reconnect UC when app is active
+    authUC.authWithCheck()
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
