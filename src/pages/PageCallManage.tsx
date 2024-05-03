@@ -128,6 +128,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    minHeight: Dimensions.get('window').height * 0.4,
+    minWidth: Dimensions.get('window').height * 0.4,
   },
   ImageSize: {
     height: 130,
@@ -486,6 +488,7 @@ class PageCallManage extends Component<{
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
           {!c.answered && (
@@ -493,6 +496,7 @@ class PageCallManage extends Component<{
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
         </View>
@@ -593,6 +597,7 @@ class PageCallManage extends Component<{
           {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
+              disabled={c.sessionStatus === 'dialing'}
               bgcolor={
                 getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
               }

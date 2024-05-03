@@ -1,3 +1,17 @@
+#### 2.14.3
+
+- Fix it should display well with html characters < >
+- Fix it should play RBT correctly with 18x status code (issue 864)
+- Fix ios it should have call audio correctly with low latency response (issue 861, 863)
+- Fix it should not display avatar twice in case PhoneAppli enabled (issue 860)
+- Fix it should navigate to PhoneAppli if enabled and tapping on a missed call notification (issue 856)
+- Fix android it should handle the case user reject permission default dialer phone app (issue 855)
+- Fix ios it should show LPC PN message for UC chat when it goes offline (issue 853)
+- Fix android it should display UI correctly with auto answer (issue 851)
+- Fix android it should not play notification sound if phone is in vibration mode (issue 756)
+- Fix android it should have single vibration on notification instead of double (issue 752)
+- Fix it should display layout better when keyboard open in call with X-PBX-IMAGE-TALKING and long name (issue 740)
+
 #### 2.14.2
 
 - Update intl local language labels
