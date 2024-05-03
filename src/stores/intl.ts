@@ -14,7 +14,7 @@ const compileFn = (locale: string, k: string): CompileFn => {
   if (!fn || typeof fn !== 'function') {
     let msg = (fn as string) || k
     // https://handlebarsjs.com/guide/expressions.html#html-escaping
-    msg = msg.replaceAll('{{', '{{{').replaceAll('}}', '}}}')
+    msg = msg.replace(/\{\{/g, '{{{').replace(/\}\}/g, '}}}')
     fn = Handlebars.compile(msg)
   }
   if (i !== undefined) {
