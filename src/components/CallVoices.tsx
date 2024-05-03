@@ -4,9 +4,9 @@ import { Platform } from 'react-native'
 import { getCallStore } from '../stores/callStore'
 import {
   AnsweredItem,
+  IosRBT,
   OutgoingItem,
   OutgoingItemWithSDP,
-  VideoRBT,
 } from './CallVoicesUI'
 
 export const CallVoices = observer(() => {
@@ -23,7 +23,7 @@ export const CallVoices = observer(() => {
   // don't play the local RBT, but the audio data in the RTP packets
   const code = oc?.rawSession?.incomingMessage?.status_code
   const playEarlyMedia =
-    code && /^18[0-9]$/.test(code.toString()) && oc?.withSDP
+    (code && /^18[0-9]$/.test(code.toString())) || oc?.withSDP
 
   return (
     <>
@@ -34,7 +34,7 @@ export const CallVoices = observer(() => {
           <>
             <OutgoingItem />
             {Platform.OS === 'ios' && (
-              <VideoRBT isPlay isLoudSpeaker={cs.isLoudSpeakerEnabled} />
+              <IosRBT isLoudSpeaker={cs.isLoudSpeakerEnabled} />
             )}
           </>
         ))}
