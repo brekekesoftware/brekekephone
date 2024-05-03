@@ -1,6 +1,7 @@
 #### 2.14.3
 
 - Fix it should display well with html characters < >
+- Fix it should reconnect UC after put app in background and restart server (issue 866)
 - Fix it should play RBT correctly with 18x status code (issue 864)
 - Fix ios it should have call audio correctly with low latency response (issue 861, 863)
 - Fix it should not display avatar twice in case PhoneAppli enabled (issue 860)

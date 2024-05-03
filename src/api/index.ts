@@ -134,13 +134,8 @@ class Api {
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
-    if (!e?.reason && !e?.response) {
-      console.log('SIP PN debug: set sipState stopped')
-      s.sipState = 'stopped'
-    } else {
-      console.log('SIP PN debug: set sipState failure stopped')
-      s.sipState = 'failure'
-    }
+    console.log('SIP PN debug: set sipState failure stopped')
+    s.sipState = 'failure'
     s.sipTotalFailure += 1
     if (s.sipTotalFailure > 3) {
       s.sipPn = {}
