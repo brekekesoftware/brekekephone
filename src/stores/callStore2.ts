@@ -280,8 +280,8 @@ export class CallStore {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
 
-      // handle always show Avatar and Username when phoneappli enabled
-      if (auth.phoneappliEnabled()) {
+      // handle always show Avatar and Username when phoneappli enabled with outgoing call
+      if (auth.phoneappliEnabled() && !e.incoming) {
         Object.assign(e, {
           partyImageUrl: e.phoneappliAvatar || p.partyImageUrl,
           talkingImageUrl: e.phoneappliAvatar || p.talkingImageUrl,
@@ -324,7 +324,7 @@ export class CallStore {
     Object.assign(c, p)
 
     // get Avatar and Username of phoneappli
-    if (auth.phoneappliEnabled()) {
+    if (auth.phoneappliEnabled() && !c.incoming) {
       const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
       pbx
         .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)

@@ -626,7 +626,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void handleShowAvatarTalking() {
     destroyAvatarWebView();
-    if (BrekekeUtils.phoneappliEnabled || BrekekeUtils.isImageUrl(talkingAvatar)) {
+    if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
       Glide.with(this)
