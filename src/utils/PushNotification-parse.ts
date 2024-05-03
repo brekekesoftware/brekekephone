@@ -7,6 +7,7 @@ import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
+import { openLinkSafely, urls } from './deeplink'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
@@ -236,7 +237,12 @@ export const parse = async (
     console.log(
       'SIP PN debug: PushNotification-parse: local notification missed call',
     )
-    navIndex('goToPageCallRecents')
+    if (as.phoneappliEnabled()) {
+      navIndex('goToPageCallKeypad')
+      openLinkSafely(urls.phoneappli.HISTORY_CALLED)
+    } else {
+      navIndex('goToPageCallRecents')
+    }
     return
   }
 

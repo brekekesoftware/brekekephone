@@ -1,7 +1,10 @@
 package com.brekeke.phonedev;
 
+import static android.content.Context.TELECOM_SERVICE;
+
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +23,8 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.CallLog;
+import android.telecom.TelecomManager;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
@@ -51,6 +56,7 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
+  public static Promise defaultDialerPromise;
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -92,6 +98,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static Activity main;
+  public static ActivityResultLauncher<Intent> defaultDialerLauncher;
   public static ReactApplicationContext ctx;
   public static KeyguardManager km;
   public static AudioManager am;
@@ -622,21 +629,52 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
   }
 
-  // ==========================================================================
-  // react methods
-  @ReactMethod
-  public void setPhoneappliEnabled(Boolean isEnabled) {
-    BrekekeUtils.phoneappliEnabled = isEnabled;
+  public static void resolveDefaultDialer(String msg) {
+    if (defaultDialerPromise != null) {
+      defaultDialerPromise.resolve(msg);
+      defaultDialerPromise = null;
+    }
   }
 
+  public void checkDefaultDialer() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ctx == null || main == null) {
+      resolveDefaultDialer("Not supported on this Anrdoid version");
+      return;
+    }
+    TelecomManager tm = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
+    if (tm == null) {
+      resolveDefaultDialer("TelecomManager is null");
+      return;
+    }
+    String packageName = ctx.getPackageName();
+    if (packageName.equals(tm.getDefaultDialerPackage())) {
+      resolveDefaultDialer("Already the default dialer");
+      return;
+    }
+    Intent intent =
+        new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+            .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName);
+    if (intent.resolveActivity(ctx.getPackageManager()) == null) {
+      resolveDefaultDialer("No activity to handle the intent");
+      return;
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      defaultDialerLauncher.launch(intent);
+    } else {
+      RoleManager rm = main.getSystemService(RoleManager.class);
+      if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_DIALER)) {
+        defaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
+      }
+    }
+  }
+
+  // ==========================================================================
+  // react methods
+
   @ReactMethod
-  public void insertCallLog(String number, int type) {
-    ContentValues values = new ContentValues();
-    values.put(CallLog.Calls.NUMBER, number);
-    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.TYPE, type);
-    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
-    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+  public void checkPermissionDefaultDialer(Promise p) {
+    defaultDialerPromise = p;
+    checkDefaultDialer();
   }
 
   @ReactMethod
@@ -664,6 +702,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       main.moveTaskToBack(true);
     } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
+  public void hasIncomingCallActivity(String uuid, Promise p) {
+    try {
+      p.resolve(at(uuid) != null);
+    } catch (Exception e) {
+      p.resolve(false);
     }
   }
 
@@ -889,6 +936,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setPhoneappliEnabled(Boolean isEnabled) {
+    phoneappliEnabled = isEnabled;
+  }
+
+  @ReactMethod
   public void onCallConnected(String uuid) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -938,12 +990,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void hasIncomingCallActivity(String uuid, Promise p) {
-    try {
-      p.resolve(at(uuid) != null);
-    } catch (Exception e) {
-      p.resolve(false);
+  public void getRingerMode(Promise p) {
+    if (am == null) {
+      p.resolve(-1);
     }
+    try {
+      p.resolve(am.getRingerMode());
+    } catch (Exception e) {
+      emit("debug", "getRingerMode error: " + e.getMessage());
+      p.resolve(-1);
+    }
+  }
+
+  @ReactMethod
+  public void insertCallLog(String number, int type) {
+    ContentValues values = new ContentValues();
+    values.put(CallLog.Calls.NUMBER, number);
+    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+    values.put(CallLog.Calls.TYPE, type);
+    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
+    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
   }
 
   @ReactMethod

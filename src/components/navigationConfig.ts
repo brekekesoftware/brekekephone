@@ -11,7 +11,7 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, URLSchemes } from '../utils/deeplink'
+import { openLinkSafely, urls } from '../utils/deeplink'
 
 export type Menu = {
   key: string
@@ -148,14 +148,14 @@ const genMenus = (customPages: PbxCustomPage[]) => {
         // handle link to phoneappli app
         if (as.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
-            openLinkSafely(URLSchemes.phoneappli.USERS)
+            openLinkSafely(urls.phoneappli.USERS)
             return
           }
           if (
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
-            openLinkSafely(URLSchemes.phoneappli.HISTORY_CALLED)
+            openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
           }
         }
