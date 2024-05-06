@@ -228,6 +228,7 @@ export class AuthStore {
     userStore.clearStore()
     contactStore.clearStore()
     chatStore.clearStore()
+    this.userExtensionProperties = null
   }
 
   @action resetFailureState = () => {
