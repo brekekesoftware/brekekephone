@@ -174,13 +174,19 @@ class AccountStore {
 
   @action upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
+
     if (!a) {
       this.accounts.push(p as Account)
       this.saveAccountsToLocalStorageDebounced()
       return
     }
+
     const clonedA = { ...a } // clone before assign
-    Object.assign(a, p)
+    // reset navigation if upsert new account
+    const navUpdate = compareAccount(a, p)
+      ? null
+      : { navIndex: -1, navSubMenus: [] }
+    Object.assign(a, p, navUpdate)
     this.saveAccountsToLocalStorageDebounced()
     // check and sync pn token
     const phoneIndexChanged =
