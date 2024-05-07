@@ -492,7 +492,7 @@ export class CallStore {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
       if (Platform.OS === 'android') {
-        RNCallKeep.startCall(uuid, 'Brekeke phone', number)
+        RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
