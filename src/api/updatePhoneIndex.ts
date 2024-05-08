@@ -26,9 +26,10 @@ export const updatePhoneIndex = async (
     return null
   }
 
-  // upsert account info with properties phoneappli.enable
+  // upsert account info with properties phoneappli.enable for case user signed in
+  // should check current account id null to avoid exception on function syncPnToken
   const as = getAuthStore()
-  if (p.id === as.getCurrentAccount().id) {
+  if (p.id === as.getCurrentAccount()?.id) {
     as.userExtensionProperties = extProps
     const d = await as.getCurrentDataAsync()
     d.phoneappliEnabled = extProps.phoneappli
