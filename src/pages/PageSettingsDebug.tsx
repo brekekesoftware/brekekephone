@@ -27,7 +27,7 @@ const css = StyleSheet.create({
 
 @observer
 export class PageSettingsDebug extends Component {
-  render() {
+  render = () => {
     const isUpdateAvailable =
       Platform.OS !== 'web' &&
       compareSemVer(debugStore.remoteVersion, currentVersion) > 0
@@ -91,10 +91,10 @@ export class PageSettingsDebug extends Component {
               {debugStore.isCheckingForUpdate
                 ? intl`Checking for update...`
                 : isUpdateAvailable
-                ? intl`A new version is available: ${debugStore.remoteVersion}`
-                : intl`Brekeke Phone is up-to-date, checked ${moment(
-                    debugStore.remoteVersionLastCheck,
-                  ).fromNow()}`}
+                  ? intl`A new version is available: ${debugStore.remoteVersion}`
+                  : intl`Brekeke Phone is up-to-date, checked ${moment(
+                      debugStore.remoteVersionLastCheck,
+                    ).fromNow()}`}
             </RnText>
           </>
         )}

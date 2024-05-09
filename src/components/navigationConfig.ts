@@ -3,7 +3,7 @@ import {
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
-import { PbxCustomPage } from '../brekekejs'
+import type { PbxCustomPage } from '../brekekejs'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
@@ -29,8 +29,8 @@ export type SubMenu = {
   ucRequired?: boolean
   navFn(): void
 }
-const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
-  return customPages
+const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) =>
+  customPages
     .filter(
       c =>
         c.pos.includes('setting') &&
@@ -41,10 +41,7 @@ const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
       (a, b) =>
         parseInt(a.pos.split(',')?.[2]) - parseInt(b.pos.split(',')?.[2]),
     )
-    .map(i => {
-      return { key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }
-    })
-}
+    .map(i => ({ key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }))
 const genMenus = (customPages: PbxCustomPage[]) => {
   const settingSubMenusLeft = getSettingSubMenus(customPages, true)
   const settingSubMenusRight = getSettingSubMenus(customPages, false)

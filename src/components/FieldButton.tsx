@@ -1,11 +1,6 @@
-import { FC } from 'react'
-import {
-  Platform,
-  StyleSheet,
-  TextInputProps,
-  TouchableOpacityProps,
-  View,
-} from 'react-native'
+import type { FC } from 'react'
+import type { TextInputProps, TouchableOpacityProps } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from './Field'

@@ -1,8 +1,10 @@
-import { FC } from 'react'
-import { Platform, StyleSheet, View, ViewProps } from 'react-native'
+import type { FC } from 'react'
+import type { ViewProps } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
-import { DropdownPosition } from '../stores/RnDropdown'
-import { DropdownItem, DropdownItemProps } from './DropdownItem'
+import type { DropdownPosition } from '../stores/RnDropdown'
+import type { DropdownItemProps } from './DropdownItem'
+import { DropdownItem } from './DropdownItem'
 import { v } from './variables'
 
 type DropdownProps = {
@@ -40,17 +42,15 @@ const css = StyleSheet.create({
 export const Dropdown: FC<ViewProps & DropdownProps> = ({
   items = [],
   position = {},
-}: DropdownProps) => {
-  return (
-    <View style={[css.container, { ...position }]}>
-      {items.map((item, index) => (
-        <DropdownItem
-          key={`DropdownItem - ${index}`}
-          title={item.title}
-          onPress={item.onPress}
-          disabled={item.disabled}
-        />
-      ))}
-    </View>
-  )
-}
+}: DropdownProps) => (
+  <View style={[css.container, { ...position }]}>
+    {items.map((item, index) => (
+      <DropdownItem
+        key={`DropdownItem - ${index}`}
+        title={item.title}
+        onPress={item.onPress}
+        disabled={item.disabled}
+      />
+    ))}
+  </View>
+)

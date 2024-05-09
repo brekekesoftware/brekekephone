@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import { UcBuddy } from '../brekekejs'
+import type { UcBuddy } from '../brekekejs'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -24,7 +24,7 @@ export class PageContactGroupEdit extends Component<{
   state = {
     didMount: false,
   }
-  componentDidMount() {
+  componentDidMount = () => {
     this.props.listItem.forEach(u => {
       if (userStore.selectedUserIds[u.user_id]) {
         this.selectedUserItems[u.user_id] = u
@@ -33,39 +33,37 @@ export class PageContactGroupEdit extends Component<{
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
-  render() {
-    return (
-      <Layout
-        fabOnBack={Nav().goToPageContactEdit}
-        fabOnNext={this.create}
-        fabOnNextText={intl`SAVE`}
-        onBack={Nav().backToPageContactEdit}
-        title={intl`Add/Remove Contact`}
-      >
-        <Field
-          label={intl`GROUP NAME`}
-          value={this.props.groupName}
-          disabled={true}
+  render = () => (
+    <Layout
+      fabOnBack={Nav().goToPageContactEdit}
+      fabOnNext={this.create}
+      fabOnNextText={intl`SAVE`}
+      onBack={Nav().backToPageContactEdit}
+      title={intl`Add/Remove Contact`}
+    >
+      <Field
+        label={intl`GROUP NAME`}
+        value={this.props.groupName}
+        disabled={true}
+      />
+      <Field isGroup label={intl`Members`} disabled={true} />
+      {!this.state.didMount ? (
+        <ActivityIndicator size='large' />
+      ) : (
+        <FlatList
+          data={userStore.dataListAllUser}
+          renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+            <RenderItem
+              item={item}
+              index={index}
+              selectedUsers={this.selectedUserItems}
+            />
+          )}
+          keyExtractor={item => item.user_id}
         />
-        <Field isGroup label={intl`Members`} disabled={true} />
-        {!this.state.didMount ? (
-          <ActivityIndicator size='large' />
-        ) : (
-          <FlatList
-            data={userStore.dataListAllUser}
-            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-              <RenderItem
-                item={item}
-                index={index}
-                selectedUsers={this.selectedUserItems}
-              />
-            )}
-            keyExtractor={item => item.user_id}
-          />
-        )}
-      </Layout>
-    )
-  }
+      )}
+    </Layout>
+  )
 
   @action selectUser = (item: UcBuddy) => {
     if (this.selectedUserItems[item.user_id]) {

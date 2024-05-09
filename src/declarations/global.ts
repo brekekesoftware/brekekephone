@@ -10,12 +10,12 @@ export type TImmutable<T> = T extends
   | undefined
   ? T
   : T extends Array<infer A>
-  ? ReadonlyArray<Immutable<A>>
-  : T extends Map<infer K, infer V>
-  ? ReadonlyMap<Immutable<K>, Immutable<V>>
-  : T extends Set<infer S>
-  ? ReadonlySet<Immutable<S>>
-  : { readonly [K in keyof T]: Immutable<T[K]> }
+    ? ReadonlyArray<Immutable<A>>
+    : T extends Map<infer K, infer V>
+      ? ReadonlyMap<Immutable<K>, Immutable<V>>
+      : T extends Set<infer S>
+        ? ReadonlySet<Immutable<S>>
+        : { readonly [K in keyof T]: Immutable<T[K]> }
 
 type KeysOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T]
 export type TRequiredKeys<T> = Exclude<
