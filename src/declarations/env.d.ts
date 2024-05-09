@@ -1,5 +1,5 @@
-/* eslint-disable import/no-default-export */
-/// <reference types="react-scripts" />
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable import/no-duplicates */
 
 declare module 'jssip' {
   const m: unknown
@@ -12,21 +12,24 @@ declare module 'validatorjs/src/lang/en' {
 }
 
 declare module 'handlebars/dist/handlebars' {
-  // eslint-disable-next-line import/no-duplicates
   import m from 'handlebars'
 
   export default m
 }
 
 declare module 'helper-moment' {
-  // eslint-disable-next-line import/no-duplicates
-  import h from 'handlebars'
+  import type h from 'handlebars'
 
   const m: h.HelperDelegate
   export default m
 }
 
 declare module '*.mp3' {
+  const src: string
+  export default src
+}
+
+declare module '*.png' {
   const src: string
   export default src
 }

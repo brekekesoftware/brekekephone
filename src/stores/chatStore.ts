@@ -6,7 +6,7 @@ import { AppState, Platform } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
 import { uc } from '../api/uc'
-import { Conference } from '../brekekejs'
+import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -91,7 +91,7 @@ class ChatStore {
     const as = getAuthStore()
     const d = as.getCurrentData()
     if (!d) {
-      accountStore.findDataAsync(as.getCurrentAccount())
+      accountStore.findDataWithDefault(as.getCurrentAccount())
     }
     const l2 = filterTextOnly(
       d?.recentChats.filter(c => !idMap[c.id] && c.unread),
@@ -113,25 +113,22 @@ class ChatStore {
       k => this.getMessagesByThreadId(k)[0]?.created || -1,
     )
   }
-  getWebChatInactiveIds() {
-    return this.groups
+  getWebChatInactiveIds = () =>
+    this.groups
       .filter(
         gr =>
           gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
       )
       .map(item => item.id)
-  }
-  isWebchatJoined(conf_id: string) {
-    return this.groups
+  isWebchatJoined = (conf_id: string) =>
+    this.groups
       .filter(
         gr =>
           gr.webchat && gr.webchat.conf_status === Constants.CONF_STATUS_JOINED,
       )
       .some(w => w.id === conf_id)
-  }
-  isWebchat(conf_id: string) {
-    return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
-  }
+  isWebchat = (conf_id: string) =>
+    this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
 
   pushChatNotification = (
     title: string,
@@ -471,9 +468,7 @@ class ChatStore {
       [k: string]: ChatGroup
     }
   }
-  getGroupById = (id: string) => {
-    return this.groupsMap[id]
-  }
+  getGroupById = (id: string) => this.groupsMap[id]
 
   clearStore = () => {
     this.messagesByThreadId = {}

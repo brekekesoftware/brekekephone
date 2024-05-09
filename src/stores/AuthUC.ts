@@ -1,12 +1,14 @@
 import { debounce } from 'lodash'
-import { action, Lambda, reaction } from 'mobx'
+import type { Lambda } from 'mobx'
+import { action, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { uc } from '../api/uc'
 import { Errors } from '../brekekejs/ucclient'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getAuthStore } from './authStore'
-import { ChatMessage, chatStore } from './chatStore'
+import type { ChatMessage } from './chatStore'
+import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
@@ -15,7 +17,7 @@ import { userStore } from './userStore'
 class AuthUC {
   private clearShouldAuthReaction?: Lambda
 
-  auth() {
+  auth = () => {
     this.authWithCheck()
     uc.on('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()

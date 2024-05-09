@@ -1,4 +1,4 @@
-import Url from 'url-parse'
+import type Url from 'url-parse'
 
 import { parse } from './deeplink-parse'
 

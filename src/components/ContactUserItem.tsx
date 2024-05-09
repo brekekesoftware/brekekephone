@@ -1,6 +1,6 @@
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
-import { FC, ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
@@ -10,7 +10,7 @@ import {
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '../assets/icons'
-import { Conference } from '../brekekejs'
+import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -271,15 +271,15 @@ export const UserItem: FC<
                   incoming && !answered
                     ? v.colors.danger
                     : incoming && answered
-                    ? v.colors.primary
-                    : v.colors.warning
+                      ? v.colors.primary
+                      : v.colors.warning
                 }
                 path={
                   incoming && !answered
                     ? mdiPhoneMissed
                     : incoming && answered
-                    ? mdiPhoneIncoming
-                    : mdiPhoneOutgoing
+                      ? mdiPhoneIncoming
+                      : mdiPhoneOutgoing
                 }
                 size={14}
                 style={css.CallIcon}

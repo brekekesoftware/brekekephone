@@ -74,27 +74,27 @@ export const App = () => {
         const title = isInvoke
           ? 'Invoke Example'
           : isDev
-          ? `Brekeke Phone${isPathInvoke ? ' Ex App' : ''} Dev`
-          : isProd
-          ? 'Brekeke Phone'
-          : 'Web Phone'
+            ? `Brekeke Phone${isPathInvoke ? ' Ex App' : ''} Dev`
+            : isProd
+              ? 'Brekeke Phone'
+              : 'Web Phone'
         const url = isInvoke
           ? '/upload/invoke/invoke'
           : `/upload/${invokeSlash}brekeke_phone`
         const showExtra = isInvoke
           ? showExtraInvoke
           : isDev
-          ? showExtraDev
-          : isProd
-          ? showExtraProd
-          : showExtraWeb
+            ? showExtraDev
+            : isProd
+              ? showExtraProd
+              : showExtraWeb
         const setShowExtra = isInvoke
           ? setShowExtraInvoke
           : isDev
-          ? setShowExtraDev
-          : isProd
-          ? setShowExtraProd
-          : setShowExtraWeb
+            ? setShowExtraDev
+            : isProd
+              ? setShowExtraProd
+              : setShowExtraWeb
         return (
           <Fragment key={i}>
             <h3>{title}</h3>

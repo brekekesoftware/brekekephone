@@ -1,7 +1,7 @@
 import { decode } from 'html-entities'
 
 import { getAuthStore } from '../stores/authStore'
-import { ChatTarget } from '../stores/chatStore'
+import type { ChatTarget } from '../stores/chatStore'
 import { intl } from '../stores/intl'
 import { formatDuration } from './formatDuration'
 
@@ -34,8 +34,8 @@ export const formatChatContent = (c: {
       text = !c.creatorId
         ? intl`Call duration: ${formatDuration(o.talklen)}`
         : c.creatorId === getAuthStore().getCurrentAccount()?.pbxUsername
-        ? intl`Outgoing call, duration: ${formatDuration(o.talklen)}`
-        : intl`Incoming call, duration: ${formatDuration(o.talklen)}`
+          ? intl`Outgoing call, duration: ${formatDuration(o.talklen)}`
+          : intl`Incoming call, duration: ${formatDuration(o.talklen)}`
     } else if (o.name && o.file_id) {
       text = `${o.name} ${!o.additionals ? `-> ${o.target?.user_id}` : ''}`
     } else if (o.name && !o.file_id) {

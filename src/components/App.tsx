@@ -21,11 +21,7 @@ import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
-import {
-  accountStore,
-  getAccountUniqueId,
-  getLastSignedInId,
-} from '../stores/accountStore'
+import { accountStore, getLastSignedInId } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -84,7 +80,7 @@ const initApp = async () => {
       return
     }
     const d = await getLastSignedInId(true)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    const a = await accountStore.findByUniqueId(d.id)
     if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
       console.log('App navigated by auto signin')
       // already navigated
@@ -254,20 +250,20 @@ export const App = observer(() => {
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
     ? 'PBX'
     : sipConnectingOrFailure()
-    ? 'SIP'
-    : ucConnectingOrFailure()
-    ? 'UC'
-    : ''
+      ? 'SIP'
+      : ucConnectingOrFailure()
+        ? 'UC'
+        : ''
   const isFailure = isConnFailure()
 
   const connMessage =
     isFailure && ucLoginFromAnotherPlace
       ? intl`UC signed in from another location`
       : !serviceConnectingOrFailure
-      ? ''
-      : isFailure
-      ? intl`${serviceConnectingOrFailure} connection failed`
-      : intl`Connecting to ${serviceConnectingOrFailure}...`
+        ? ''
+        : isFailure
+          ? intl`${serviceConnectingOrFailure} connection failed`
+          : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   const cp = getAuthStore().listCustomPage[0]
 
@@ -329,5 +325,5 @@ export const App = observer(() => {
   )
 })
 
-// eslint-disable-next-line import/no-default-export
+// eslint-disable-next-line no-restricted-syntax
 export default App

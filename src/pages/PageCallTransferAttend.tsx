@@ -130,11 +130,11 @@ export class PageCallTransferAttend extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.getPhoneappliInfo()
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const oc = getCallStore().getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
@@ -150,7 +150,7 @@ export class PageCallTransferAttend extends Component {
     }
   }
 
-  render() {
+  render = () => {
     const oc = getCallStore().getOngoingCall()
     if (!oc) {
       return null

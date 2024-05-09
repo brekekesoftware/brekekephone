@@ -53,39 +53,37 @@ export class PageChatGroupInvite extends Component<{
     selectedBuddy: {} as { [k: string]: boolean },
   }
 
-  render() {
-    return (
-      <Layout onBack={this.back} title={intl`Inviting Group Member`}>
-        <View style={css.PageChatGroupInvite_Outer}>
-          <RnText style={css.PageChatGroupInvite_GroupName}>
-            {chatStore.getGroupById(this.props.groupId).name}
-          </RnText>
-          <RnTouchableOpacity
-            onPress={this.invite}
-            style={css.PageChatGroupInvite_BtnSave}
-          >
-            <RnText
-              style={css.PageChatGroupInvite_BtnText}
-            >{intl`Invite`}</RnText>
+  render = () => (
+    <Layout onBack={this.back} title={intl`Inviting Group Member`}>
+      <View style={css.PageChatGroupInvite_Outer}>
+        <RnText style={css.PageChatGroupInvite_GroupName}>
+          {chatStore.getGroupById(this.props.groupId).name}
+        </RnText>
+        <RnTouchableOpacity
+          onPress={this.invite}
+          style={css.PageChatGroupInvite_BtnSave}
+        >
+          <RnText
+            style={css.PageChatGroupInvite_BtnText}
+          >{intl`Invite`}</RnText>
+        </RnTouchableOpacity>
+        <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
+      </View>
+      <Field isGroup />
+      {contactStore.ucUsers
+        .map(u => u.id)
+        .filter(this.isNotMember)
+        .map((id, i) => (
+          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
+            <UserItem
+              key={id}
+              {...this.resolveBuddy(id)}
+              selected={this.state.selectedBuddy[id]}
+            />
           </RnTouchableOpacity>
-          <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
-        </View>
-        <Field isGroup />
-        {contactStore.ucUsers
-          .map(u => u.id)
-          .filter(this.isNotMember)
-          .map((id, i) => (
-            <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(id)}>
-              <UserItem
-                key={id}
-                {...this.resolveBuddy(id)}
-                selected={this.state.selectedBuddy[id]}
-              />
-            </RnTouchableOpacity>
-          ))}
-      </Layout>
-    )
-  }
+        ))}
+    </Layout>
+  )
 
   isNotMember = (buddy: string) =>
     !chatStore.getGroupById(this.props.groupId).members?.includes(buddy)

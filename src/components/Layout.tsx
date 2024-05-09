@@ -1,21 +1,20 @@
 import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC, ReactNode, useState } from 'react'
-import {
+import type { FC, ReactNode } from 'react'
+import { useState } from 'react'
+import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   StyleProp,
-  StyleSheet,
-  View,
   ViewStyle,
 } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { Footer } from './Footer'
 import { Header } from './Header'
-import { HeaderDropdownItem } from './HeaderDropdown'
+import type { HeaderDropdownItem } from './HeaderDropdown'
 import { Toast } from './Toast'
 import { v } from './variables'
 

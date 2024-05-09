@@ -12,7 +12,8 @@ import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { ChatMessage, chatStore } from '../stores/chatStore'
+import type { ChatMessage } from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -24,11 +25,11 @@ import { filterTextOnly } from '../utils/formatChatContent'
 export class PageContactUsers extends Component {
   displayOfflineUsers = new DelayFlag()
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
 
-  getMatchUserIds() {
+  getMatchUserIds = () => {
     const userIds = uniq([
       ...contactStore.pbxUsers.map(u => u.id),
       ...contactStore.ucUsers.map(u => u.id),
@@ -75,7 +76,7 @@ export class PageContactUsers extends Component {
     )
   }
 
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const cp = getAuthStore().getCurrentAccount()
     if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
       this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
@@ -174,7 +175,7 @@ export class PageContactUsers extends Component {
     )
   }
 
-  render() {
+  render = () => {
     const s = getAuthStore()
     const cp = s.getCurrentAccount()
     if (!cp) {

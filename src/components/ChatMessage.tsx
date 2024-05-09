@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
-import { Component, FC } from 'react'
+import type { FC } from 'react'
+import { Component } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -12,7 +13,7 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import { mdiDotsHorizontal, mdiFile } from '../assets/icons'
-import { ChatFile } from '../stores/chatStore'
+import type { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
@@ -269,7 +270,7 @@ export class Message extends Component<{
     }
   }
 
-  render() {
+  render = () => {
     const p = this.props
     const file = p.file as any as ChatFile
     const isImage =
