@@ -105,7 +105,11 @@ export class PageCallTransferAttend extends Component {
       return
     }
     try {
-      const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+      const ca = auth.getCurrentAccount()
+      if (!ca) {
+        return
+      }
+      const { pbxTenant, pbxUsername } = ca
       const rs = await pbx.getPhoneappliContact(
         pbxTenant,
         pbxUsername,

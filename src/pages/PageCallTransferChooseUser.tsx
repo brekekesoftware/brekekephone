@@ -54,8 +54,8 @@ export class PageCallTransferChooseUser extends Component {
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
   renderAllUserMode = () => {
-    const cp = getAuthStore().getCurrentAccount()
-    if (!cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return null
     }
     const datas = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
@@ -107,11 +107,11 @@ export class PageCallTransferChooseUser extends Component {
   }
   render = () => {
     const s = getAuthStore()
-    const cp = s.getCurrentAccount()
-    if (!cp) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode() || !cp.pbxLocalAllUsers
+    const isUserSelectionMode = s.isBigMode() || !ca.pbxLocalAllUsers
 
     return (
       <Layout

@@ -43,7 +43,7 @@ export class PageChatRecents extends Component {
       arr2.pop()
     }
     const d = await getAuthStore().getCurrentDataAsync()
-    if (jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
+    if (d && jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
       d.recentChats = arr2
       accountStore.saveAccountsToLocalStorageDebounced()
     }
@@ -70,9 +70,11 @@ export class PageChatRecents extends Component {
     }
 
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataWithDefault(as.getCurrentAccount())
+    if (!d && ca) {
+      // trigger async update
+      accountStore.findDataWithDefault(ca)
     }
     const recentFromStorage =
       d?.recentChats.filter(

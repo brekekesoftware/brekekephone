@@ -26,13 +26,16 @@ export const updatePhoneIndex = async (
     return null
   }
 
-  // upsert account info with properties phoneappli.enable
   const as = getAuthStore()
-  if (p.id === as.getCurrentAccount().id) {
+
+  // update current account data phoneappli.enable
+  if (p.id === as.getCurrentAccount()?.id) {
     as.userExtensionProperties = extProps
     const d = await as.getCurrentDataAsync()
-    d.phoneappliEnabled = extProps.phoneappli
-    accountStore.updateAccountData(d)
+    if (d) {
+      d.phoneappliEnabled = extProps.phoneappli
+      accountStore.updateAccountData(d)
+    }
   }
 
   const phone = extProps.phones[phoneIndex - 1]

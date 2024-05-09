@@ -324,8 +324,9 @@ export class CallStore {
     Object.assign(c, p)
 
     // get Avatar and Username of phoneappli
-    if (auth.phoneappliEnabled() && !c.incoming) {
-      const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+    const ca = auth.getCurrentAccount()
+    if (auth.phoneappliEnabled() && !c.incoming && ca) {
+      const { pbxTenant, pbxUsername } = ca
       pbx
         .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
         .then(res => {
@@ -333,7 +334,6 @@ export class CallStore {
           const talkingImageUrl = res?.image_url || c.talkingImageUrl
           const partyName = res?.display_name || c.partyName
           const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
-
           Object.assign(c, {
             partyImageUrl,
             talkingImageUrl,
@@ -369,7 +369,6 @@ export class CallStore {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
     }
-    const ca = getAuthStore().getCurrentAccount()
     if (
       Platform.OS !== 'web' &&
       c.incoming &&

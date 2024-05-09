@@ -144,7 +144,7 @@ export class SIP extends EventEmitter {
       const d = await getAuthStore().getCurrentDataAsync()
       partyName =
         partyName ||
-        d.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
+        d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')

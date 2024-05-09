@@ -38,19 +38,19 @@ class UserStore {
     this.resetCache()
     this.type = 'PbxBuddy'
     const s = getAuthStore()
-    const cp = s.getCurrentAccount()
-    if (!cp) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return
     }
     let allUsers: UcBuddy[] = []
     // get all user from pbx
     if (isAllUser) {
-      const ids = await pbx.getUsers(cp.pbxTenant)
+      const ids = await pbx.getUsers(ca.pbxTenant)
       if (!ids) {
         return
       }
       allUsers = ids
-        .filter(u => u[0] !== cp.pbxUsername)
+        .filter(u => u[0] !== ca.pbxUsername)
         .map(
           u =>
             ({
@@ -59,7 +59,7 @@ class UserStore {
               name: u[1],
               profile_image_url: '',
               group: '',
-              tenant: cp.pbxTenant,
+              tenant: ca.pbxTenant,
               block_settings: {},
               status: false,
             }) as any as UcBuddy,

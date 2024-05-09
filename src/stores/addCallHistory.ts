@@ -195,7 +195,15 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
   }
 
   const { name, phoneNumber } = c.answeredBy
-  const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+  const r = intl`The call from ${
+    c.partyName || c.partyNumber
+  } is answered by someone else`
+
+  const ca = auth.getCurrentAccount()
+  if (!ca) {
+    return r
+  }
+  const { pbxTenant, pbxUsername } = ca
   try {
     const rs = await pbx.getPhoneappliContact(
       pbxTenant,
@@ -205,10 +213,8 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
     return intl`The call from ${c.partyName || c.partyNumber} is answered by ${
       rs?.display_name || name || phoneNumber
     }`
-  } catch (error) {
-    return intl`The call from ${
-      c.partyName || c.partyNumber
-    } is answered by someone else`
+  } catch (err) {
+    return r
   }
 }
 
