@@ -3,7 +3,7 @@ import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { UcMessageLog } from '../brekekejs'
+import type { UcMessageLog } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
@@ -11,8 +11,10 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
-import { contactStore, UcUser } from '../stores/contactStore'
+import type { ChatGroup, ChatMessage } from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
+import type { UcUser } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { arrToMap } from '../utils/arrToMap'
@@ -50,7 +52,7 @@ export class PageChatRecents extends Component {
     chatStore.handleMoveToChatGroupDetail(groupId)
   }
 
-  render() {
+  render = () => {
     const webchatInactive = chatStore.groups.filter(
       gr =>
         gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
@@ -70,7 +72,7 @@ export class PageChatRecents extends Component {
     const as = getAuthStore()
     const d = as.getCurrentData()
     if (!d) {
-      accountStore.findDataAsync(as.getCurrentAccount())
+      accountStore.findDataWithDefault(as.getCurrentAccount())
     }
     const recentFromStorage =
       d?.recentChats.filter(

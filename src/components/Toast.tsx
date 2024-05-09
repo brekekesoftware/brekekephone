@@ -1,4 +1,5 @@
-import { FC, useEffect, useState } from 'react'
+import type { FC } from 'react'
+import { useEffect, useState } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
 import { RnText } from './Rn'

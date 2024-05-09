@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 
 import { AccountCreateForm } from '../components/AccountCreateForm'
-import { Account, accountStore } from '../stores/accountStore'
+import type { Account } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'

@@ -1,7 +1,8 @@
 import { get, set } from 'lodash'
-import { NativeModule, NativeModules, Platform } from 'react-native'
+import type { NativeModule } from 'react-native'
+import { NativeModules, Platform } from 'react-native'
 
-import { TCallKeepAction } from '../stores/callStore2'
+import type { TCallKeepAction } from '../stores/callStore2'
 
 export enum CallLogType {
   INCOMING_TYPE = 1,

@@ -1,9 +1,9 @@
 import { sortBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { ChatMessage } from '../stores/chatStore'
+import type { ChatMessage } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { Avatar } from './Avatar'
 import { groupByTimestamp } from './chatConfig'

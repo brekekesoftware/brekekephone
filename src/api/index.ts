@@ -1,11 +1,11 @@
 import { action } from 'mobx'
 
-import { Conference, PbxEvent, Session } from '../brekekejs'
+import type { Conference, PbxEvent, Session } from '../brekekejs'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { authUC } from '../stores/AuthUC'
-import { Call } from '../stores/Call'
+import type { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'

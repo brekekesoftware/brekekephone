@@ -1,8 +1,9 @@
 import { Linking } from 'react-native'
 
-import { compareAccount } from '../stores/accountStore'
+import { compareAccountPartial } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { parse, UrlParams } from './deeplink-parse'
+import type { UrlParams } from './deeplink-parse'
+import { parse } from './deeplink-parse'
 
 export const urls = {
   phoneappli: {
@@ -36,7 +37,7 @@ export const getUrlParams = async () => {
     if (
       !urlParams ||
       !ca ||
-      compareAccount(ca, {
+      compareAccountPartial(ca, {
         pbxHostname: urlParams.host,
         pbxPort: urlParams.port,
         pbxUsername: urlParams.user,

@@ -21,7 +21,7 @@ export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   audioRef = createRef<HTMLAudioElement>()
-  componentDidMount() {
+  componentDidMount = () => {
     if (!this.audioRef.current) {
       return
     }
@@ -34,18 +34,16 @@ export class OutgoingItemWithSDP extends Component<{
       this.audioRef.current.play()
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     this.componentDidMount()
   }
-  render() {
-    return <audio autoPlay ref={this.audioRef} muted={false} />
-  }
+  render = () => <audio autoPlay ref={this.audioRef} muted={false} />
 }
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   audioRef = createRef<HTMLAudioElement>()
-  componentDidMount() {
+  componentDidMount = () => {
     if (!this.audioRef.current) {
       return
     }
@@ -57,10 +55,8 @@ export class AnsweredItem extends Component<{
       this.audioRef.current.play()
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     this.componentDidMount()
   }
-  render() {
-    return <audio autoPlay ref={this.audioRef} muted={false} />
-  }
+  render = () => <audio autoPlay ref={this.audioRef} muted={false} />
 }

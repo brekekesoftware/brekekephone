@@ -36,7 +36,7 @@ export const onPickFileNativeError = (err: Error) => {
 export const pickFile = (cb: Function) => {
   const input = document.createElement('input')
   input.type = 'file'
-  input.onchange = function () {
+  input.onchange = () => {
     cb(input.files?.[0])
   }
   input.click()

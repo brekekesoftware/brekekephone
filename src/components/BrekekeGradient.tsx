@@ -1,8 +1,7 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
-import LinearGradient, {
-  LinearGradientProps,
-} from 'react-native-linear-gradient'
+import type { LinearGradientProps } from 'react-native-linear-gradient'
+import LinearGradient from 'react-native-linear-gradient'
 
 import { v } from './variables'
 

@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'

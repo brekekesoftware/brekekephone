@@ -8,13 +8,13 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
-import { MakeCallFn, Session } from '../brekekejs'
+import type { MakeCallFn, Session } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { TEvent } from '../utils/callkeep'
+import type { TEvent } from '../utils/callkeep'
 import { permForCall } from '../utils/permissions'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -24,7 +24,7 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
-import { CancelRecentPn } from './cancelRecentPn'
+import type { CancelRecentPn } from './cancelRecentPn'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
@@ -790,9 +790,9 @@ export class CallStore {
     }
   }
 
-  getCallInNotify = () => {
+  getCallInNotify = () =>
     // do not display our callbar if already show callkeep
-    return this.calls.find(_ => {
+    this.calls.find(_ => {
       const k = this.callkeepMap[_.callkeepUuid]
       return (
         _.incoming &&
@@ -803,7 +803,7 @@ export class CallStore {
           timerStore.now - _.createdAt > 1000)
       )
     })
-  }
+
   shouldRingInNotify = (uuid?: string) => {
     if (Platform.OS === 'web') {
       return true

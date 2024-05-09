@@ -1,15 +1,13 @@
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, FC } from 'react'
-import {
+import type { FC } from 'react'
+import { Component } from 'react'
+import type {
   GestureResponderEvent,
-  PanResponder,
   PanResponderGestureState,
   PanResponderInstance,
-  Platform,
-  StyleSheet,
-  View,
 } from 'react-native'
+import { PanResponder, Platform, StyleSheet, View } from 'react-native'
 
 import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'
@@ -64,23 +62,21 @@ class Mini extends Component<Props> {
     })
   }
 
-  render() {
-    return (
-      <View
-        ref={this.setViewRef}
-        style={[
-          css.Mini,
-          {
-            top: getCallStore().videoPositionT,
-            left: getCallStore().videoPositionL,
-          },
-        ]}
-        {...this.panResponder.panHandlers}
-      >
-        <VideoPlayer sourceObject={this.props.sourceObject} />
-      </View>
-    )
-  }
+  render = () => (
+    <View
+      ref={this.setViewRef}
+      style={[
+        css.Mini,
+        {
+          top: getCallStore().videoPositionT,
+          left: getCallStore().videoPositionL,
+        },
+      ]}
+      {...this.panResponder.panHandlers}
+    >
+      <VideoPlayer sourceObject={this.props.sourceObject} />
+    </View>
+  )
 
   setViewRef = (view: View) => {
     this.view = view
@@ -120,7 +116,7 @@ class Mini extends Component<Props> {
 class Control extends Component<{
   sourceObject: MediaStream
 }> {
-  render() {
+  render = () => {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
       getCallStore().inPageCallManage ||

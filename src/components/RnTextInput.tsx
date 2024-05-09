@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
-import { Platform, StyleSheet, TextInput, TextInputProps } from 'react-native'
+import type { TextInputProps } from 'react-native'
+import { Platform, StyleSheet, TextInput } from 'react-native'
 
 import { v } from './variables'
 

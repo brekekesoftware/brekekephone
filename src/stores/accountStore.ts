@@ -5,11 +5,11 @@ import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 
 import { SyncPnToken } from '../api/syncPnToken'
-import { UcBuddy, UcBuddyGroup } from '../brekekejs'
+import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
 import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
 import { arrToMap } from '../utils/arrToMap'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { compareSemVer } from './debugStore'
@@ -182,8 +182,8 @@ class AccountStore {
     }
 
     const clonedA = { ...a } // clone before assign
-    // reset navigation if upsert new account
-    const navUpdate = compareAccount(a, p)
+    // TODO nav should be in AccountData then we dont need to update here
+    const navUpdate = compareAccountPartial(a, p)
       ? null
       : { navIndex: -1, navSubMenus: [] }
     Object.assign(a, p, navUpdate)
@@ -191,8 +191,7 @@ class AccountStore {
     // check and sync pn token
     const phoneIndexChanged =
       p.pbxPhoneIndex && p.pbxPhoneIndex !== clonedA.pbxPhoneIndex
-    const wholeAccountChanged =
-      getAccountUniqueId(clonedA) !== getAccountUniqueId(a)
+    const wholeAccountChanged = !compareAccount(clonedA, a)
     if (phoneIndexChanged || wholeAccountChanged) {
       // delete pn token for old phone_index / account
       clonedA.pushNotificationEnabled = false
@@ -236,31 +235,39 @@ class AccountStore {
     }
   }
 
-  find = async (a: Partial<Account>) => {
+  find = async (a: AccountUnique) => {
+    await storagePromise
+    return this.accounts.find(_ => compareAccount(_, a))
+  }
+  findPartial = async (a: Partial<Account>) => {
     await storagePromise
     // this accept partial compare: only pbxUsername is required to find
     // this behavior is needed because returned data may be incompleted
     // for eg: pn data doesnt have all the fields to compare
-    return accountStore.accounts.find(_ => compareAccount(_, a))
+    return this.accounts.find(_ => compareAccountPartial(_, a))
   }
   findByPn = (n: ParsedPn) =>
-    this.find({
+    this.findPartial({
       pbxUsername: n.to,
       pbxTenant: n.tenant,
       pbxHostname: n.pbxHostname,
       pbxPort: n.pbxPort,
     })
+  findByUniqueId = async (id: string) => {
+    await storagePromise
+    return this.accounts.find(a => getAccountUniqueId(a) === id)
+  }
 
   findData = async (a?: AccountUnique) => {
     await storagePromise
     return this.findDataSync(a)
   }
+
   findDataSync = (a?: AccountUnique) => {
     if (!a || !a.pbxUsername || !a.pbxTenant || !a.pbxHostname || !a.pbxPort) {
       return
     }
-    const id = getAccountUniqueId(a)
-    return this.accountData.find(d => d.id === id)
+    return this.accountData.find(d => d.id === getAccountUniqueId(a))
   }
   findDataByPn = async (n: ParsedPn) => {
     const a = await this.findByPn(n)
@@ -270,7 +277,7 @@ class AccountStore {
     return this.findData(a)
   }
 
-  findDataAsync = async (a: AccountUnique): Promise<AccountData> => {
+  findDataWithDefault = async (a: AccountUnique): Promise<AccountData> => {
     // async to use in mobx to not trigger data change in render
     // this method will update the data if not found in storage
     const d = await this.findData(a)
@@ -312,22 +319,28 @@ export const getAccountUniqueId = (a: AccountUnique) =>
     h: a.pbxHostname,
     p: a.pbxPort,
   })
+export const compareAccount = (a: AccountUnique, b: AccountUnique) =>
+  getAccountUniqueId(a) === getAccountUniqueId(b)
 
 // compareAccount in case data is fragment
-const compareField = (p1: object, p2: object, field: keyof AccountUnique) => {
+const compareFalsishField = (
+  p1: object,
+  p2: object,
+  field: keyof AccountUnique,
+) => {
   const v1 = p1[field as keyof typeof p1]
   const v2 = p2[field as keyof typeof p2]
   return !v1 || !v2 || v1 === v2
 }
-export const compareAccount = (p1: { pbxUsername: string }, p2: object) => {
-  return (
-    p1.pbxUsername && // must have pbxUsername
-    compareField(p1, p2, 'pbxUsername') &&
-    compareField(p1, p2, 'pbxTenant') &&
-    compareField(p1, p2, 'pbxHostname') &&
-    compareField(p1, p2, 'pbxPort')
-  )
-}
+export const compareAccountPartial = (
+  p1: { pbxUsername: string },
+  p2: object,
+) =>
+  p1.pbxUsername && // must have pbxUsername
+  compareFalsishField(p1, p2, 'pbxUsername') &&
+  compareFalsishField(p1, p2, 'pbxTenant') &&
+  compareFalsishField(p1, p2, 'pbxHostname') &&
+  compareFalsishField(p1, p2, 'pbxPort')
 
 export const accountStore = new AccountStore()
 export type RecentCall = AccountData['recentCalls'][0]
