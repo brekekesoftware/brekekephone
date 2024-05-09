@@ -71,7 +71,7 @@ export class PageCallRecents extends Component {
     }))
   }
 
-  render = () => {
+  render() {
     const calls = this.getMatchedCalls()
     return (
       <Layout

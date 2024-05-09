@@ -6,7 +6,7 @@ import { CallVideosUI } from './CallVideosUI'
 
 @observer
 export class CallVideos extends Component {
-  render = () => {
+  render() {
     const oc = getCallStore().getOngoingCall()
     return (
       <CallVideosUI

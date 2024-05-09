@@ -37,7 +37,9 @@ export class OutgoingItemWithSDP extends Component<{
   componentDidUpdate = () => {
     this.componentDidMount()
   }
-  render = () => <audio autoPlay ref={this.audioRef} muted={false} />
+  render() {
+    return <audio autoPlay ref={this.audioRef} muted={false} />
+  }
 }
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
@@ -58,5 +60,7 @@ export class AnsweredItem extends Component<{
   componentDidUpdate = () => {
     this.componentDidMount()
   }
-  render = () => <audio autoPlay ref={this.audioRef} muted={false} />
+  render() {
+    return <audio autoPlay ref={this.audioRef} muted={false} />
+  }
 }

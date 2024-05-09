@@ -191,7 +191,7 @@ export class PageContactPhonebook extends Component {
     contactStore.isDeleteState = false
     contactStore.selectedContactIds = {}
   }
-  render = () => {
+  render() {
     const phonebooks = contactStore.phoneBooks
     const map = {} as { [k: string]: Phonebook[] }
     phonebooks.forEach(u => {

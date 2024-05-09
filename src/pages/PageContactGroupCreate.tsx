@@ -28,37 +28,39 @@ export class PageContactGroupCreate extends Component {
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
-  render = () => (
-    <Layout
-      fabOnBack={Nav().goToPageContactEdit}
-      fabOnNext={this.create}
-      fabOnNextText={intl`CREATE`}
-      onBack={Nav().backToPageContactEdit}
-      title={intl`New Group`}
-    >
-      <Field
-        label={intl`GROUP NAME`}
-        onValueChange={this.setName}
-        value={this.state.name}
-      />
-      <Field isGroup label={intl`Members`} />
-      {!this.state.didMount ? (
-        <ActivityIndicator style={css.loadingIcon} size='large' />
-      ) : (
-        <FlatList
-          data={userStore.dataListAllUser}
-          renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-            <RenderItem
-              item={item}
-              index={index}
-              selectedUsers={this.selectedUserItems}
-            />
-          )}
-          keyExtractor={item => item.user_id}
+  render() {
+    return (
+      <Layout
+        fabOnBack={Nav().goToPageContactEdit}
+        fabOnNext={this.create}
+        fabOnNextText={intl`CREATE`}
+        onBack={Nav().backToPageContactEdit}
+        title={intl`New Group`}
+      >
+        <Field
+          label={intl`GROUP NAME`}
+          onValueChange={this.setName}
+          value={this.state.name}
         />
-      )}
-    </Layout>
-  )
+        <Field isGroup label={intl`Members`} />
+        {!this.state.didMount ? (
+          <ActivityIndicator style={css.loadingIcon} size='large' />
+        ) : (
+          <FlatList
+            data={userStore.dataListAllUser}
+            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+              <RenderItem
+                item={item}
+                index={index}
+                selectedUsers={this.selectedUserItems}
+              />
+            )}
+            keyExtractor={item => item.user_id}
+          />
+        )}
+      </Layout>
+    )
+  }
 
   setName = (name: string) =>
     this.setState({

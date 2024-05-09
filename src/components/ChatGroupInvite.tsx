@@ -132,8 +132,8 @@ export class ChatGroupInvite extends Component {
     })
   }
 
-  render = () =>
-    chatStore.groups
+  render() {
+    return chatStore.groups
       .filter(gr => !gr.webchat && !gr.jointed)
       .map(gr => gr.id)
       .map(group => (
@@ -146,6 +146,7 @@ export class ChatGroupInvite extends Component {
           loading={this.loading}
         />
       ))
+  }
 }
 
 @observer
@@ -258,7 +259,7 @@ export class UnreadChatNoti extends Component {
     this.clear()
   }
 
-  render = () => {
+  render() {
     Object.values(chatStore.threadConfig).forEach(c => {
       Object.values(c).forEach(v2 => {
         void v2

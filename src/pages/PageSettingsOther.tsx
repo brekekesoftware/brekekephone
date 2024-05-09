@@ -50,7 +50,7 @@ export class PageSettingsOther extends Component {
         })
       })
   }
-  render = () => {
+  render() {
     const as = getAuthStore()
     const ca = as.getCurrentAccount()
     return (

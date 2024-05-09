@@ -134,7 +134,7 @@ export class PageChatGroupDetail extends Component<{
       text={this.state.editingText}
     />
   )
-  render = () => {
+  render() {
     const id = this.props.groupId
     const gr = chatStore.getGroupById(id)
     const { allMessagesLoaded } = chatStore.getThreadConfig(id)

@@ -28,7 +28,9 @@ export class IncomingItem extends Component {
       IncallManager.stopRingtone()
     }
   }
-  render = () => null
+  render() {
+    return null
+  }
 }
 
 export class OutgoingItem extends Component {
@@ -46,7 +48,9 @@ export class OutgoingItem extends Component {
       IncallManager.stopRingback()
     }
   }
-  render = () => null
+  render() {
+    return null
+  }
 }
 export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
@@ -57,7 +61,9 @@ export class OutgoingItemWithSDP extends Component<{
       sip.enableMedia(ongoingCallId)
     }
   }
-  render = () => null
+  render() {
+    return null
+  }
 }
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
@@ -68,7 +74,9 @@ export class AnsweredItem extends Component<{
       sip.enableMedia(oc.id)
     }
   }
-  render = () => null
+  render() {
+    return null
+  }
 }
 
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {

@@ -62,21 +62,23 @@ class Mini extends Component<Props> {
     })
   }
 
-  render = () => (
-    <View
-      ref={this.setViewRef}
-      style={[
-        css.Mini,
-        {
-          top: getCallStore().videoPositionT,
-          left: getCallStore().videoPositionL,
-        },
-      ]}
-      {...this.panResponder.panHandlers}
-    >
-      <VideoPlayer sourceObject={this.props.sourceObject} />
-    </View>
-  )
+  render() {
+    return (
+      <View
+        ref={this.setViewRef}
+        style={[
+          css.Mini,
+          {
+            top: getCallStore().videoPositionT,
+            left: getCallStore().videoPositionL,
+          },
+        ]}
+        {...this.panResponder.panHandlers}
+      >
+        <VideoPlayer sourceObject={this.props.sourceObject} />
+      </View>
+    )
+  }
 
   setViewRef = (view: View) => {
     this.view = view
@@ -116,7 +118,7 @@ class Mini extends Component<Props> {
 class Control extends Component<{
   sourceObject: MediaStream
 }> {
-  render = () => {
+  render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
       getCallStore().inPageCallManage ||

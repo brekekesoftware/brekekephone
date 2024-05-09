@@ -133,7 +133,7 @@ export class PageChatDetail extends Component<{
     />
   )
 
-  render = () => {
+  render() {
     const { buddy: id } = this.props
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state

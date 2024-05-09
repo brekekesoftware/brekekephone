@@ -175,7 +175,7 @@ export class PageContactUsers extends Component {
     )
   }
 
-  render = () => {
+  render() {
     const s = getAuthStore()
     const ca = s.getCurrentAccount()
     if (!ca) {

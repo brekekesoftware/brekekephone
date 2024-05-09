@@ -19,5 +19,7 @@ export class PageCustomPage extends Component<{ id: string }> {
     as.customPageLoadings[cp.id] = true
   }
 
-  render = () => null
+  render() {
+    return null
+  }
 }

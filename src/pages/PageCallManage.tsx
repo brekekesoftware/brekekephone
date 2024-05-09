@@ -227,7 +227,7 @@ export class RenderAllCalls extends Component {
     this.prevCallsLength = l
   }
 
-  render = () => {
+  render() {
     const s = getCallStore()
     if (s.inPageCallManage && !s.calls.length) {
       return (
@@ -723,12 +723,14 @@ class PageCallManage extends Component<{
     )
   }
 
-  render = () => (
-    <BrekekeGradient
-      white={this.props.call.localVideoEnabled}
-      style={this.isVisible() ? undefined : css.hidden}
-    >
-      {this.renderLayout()}
-    </BrekekeGradient>
-  )
+  render() {
+    return (
+      <BrekekeGradient
+        white={this.props.call.localVideoEnabled}
+        style={this.isVisible() ? undefined : css.hidden}
+      >
+        {this.renderLayout()}
+      </BrekekeGradient>
+    )
+  }
 }

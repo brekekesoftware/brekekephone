@@ -16,18 +16,20 @@ import { RnAlert } from '../stores/RnAlert'
 export class PagePhonebookUpdate extends Component<{
   contact: Phonebook
 }> {
-  render = () => (
-    <ContactsCreateForm
-      onBack={Nav().backToPageContactPhonebook}
-      onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
-        if (pbx.client && getAuthStore().pbxState === 'success') {
-          this.save(p, hasUnsavedChanges)
-        }
-      }}
-      title={intl`Update Phonebook`}
-      updatingPhonebook={this.props.contact}
-    />
-  )
+  render() {
+    return (
+      <ContactsCreateForm
+        onBack={Nav().backToPageContactPhonebook}
+        onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
+          if (pbx.client && getAuthStore().pbxState === 'success') {
+            this.save(p, hasUnsavedChanges)
+          }
+        }}
+        title={intl`Update Phonebook`}
+        updatingPhonebook={this.props.contact}
+      />
+    )
+  }
 
   @action save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
     if (!hasUnsavedChanges) {
