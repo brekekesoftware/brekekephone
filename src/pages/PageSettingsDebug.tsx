@@ -27,7 +27,7 @@ const css = StyleSheet.create({
 
 @observer
 export class PageSettingsDebug extends Component {
-  render = () => {
+  render() {
     const isUpdateAvailable =
       Platform.OS !== 'web' &&
       compareSemVer(debugStore.remoteVersion, currentVersion) > 0

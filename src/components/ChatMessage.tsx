@@ -270,7 +270,7 @@ export class Message extends Component<{
     }
   }
 
-  render = () => {
+  render() {
     const p = this.props
     const file = p.file as any as ChatFile
     const isImage =

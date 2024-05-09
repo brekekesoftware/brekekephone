@@ -22,31 +22,33 @@ export class PageChatGroupCreate extends Component {
     members: [],
   }
 
-  render = () => (
-    <Layout
-      fabOnBack={Nav().goToPageChatRecents}
-      fabOnNext={this.create}
-      fabOnNextText={intl`CREATE`}
-      onBack={Nav().backToPageChatRecents}
-      title={intl`New Group`}
-    >
-      <Field
-        label={intl`GROUP NAME`}
-        onValueChange={this.setName}
-        value={this.state.name}
-      />
-      <Field isGroup label={intl`Members`} />
-      {contactStore.ucUsers.map((u, i) => (
-        <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(u.id)}>
-          <UserItem
-            key={u.id}
-            {...u}
-            selected={this.state.members.includes(u.id)}
-          />
-        </RnTouchableOpacity>
-      ))}
-    </Layout>
-  )
+  render() {
+    return (
+      <Layout
+        fabOnBack={Nav().goToPageChatRecents}
+        fabOnNext={this.create}
+        fabOnNextText={intl`CREATE`}
+        onBack={Nav().backToPageChatRecents}
+        title={intl`New Group`}
+      >
+        <Field
+          label={intl`GROUP NAME`}
+          onValueChange={this.setName}
+          value={this.state.name}
+        />
+        <Field isGroup label={intl`Members`} />
+        {contactStore.ucUsers.map((u, i) => (
+          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(u.id)}>
+            <UserItem
+              key={u.id}
+              {...u}
+              selected={this.state.members.includes(u.id)}
+            />
+          </RnTouchableOpacity>
+        ))}
+      </Layout>
+    )
+  }
 
   setName = (name: string) => {
     this.setState({

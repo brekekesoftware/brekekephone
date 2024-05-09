@@ -33,37 +33,39 @@ export class PageContactGroupEdit extends Component<{
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
-  render = () => (
-    <Layout
-      fabOnBack={Nav().goToPageContactEdit}
-      fabOnNext={this.create}
-      fabOnNextText={intl`SAVE`}
-      onBack={Nav().backToPageContactEdit}
-      title={intl`Add/Remove Contact`}
-    >
-      <Field
-        label={intl`GROUP NAME`}
-        value={this.props.groupName}
-        disabled={true}
-      />
-      <Field isGroup label={intl`Members`} disabled={true} />
-      {!this.state.didMount ? (
-        <ActivityIndicator size='large' />
-      ) : (
-        <FlatList
-          data={userStore.dataListAllUser}
-          renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-            <RenderItem
-              item={item}
-              index={index}
-              selectedUsers={this.selectedUserItems}
-            />
-          )}
-          keyExtractor={item => item.user_id}
+  render() {
+    return (
+      <Layout
+        fabOnBack={Nav().goToPageContactEdit}
+        fabOnNext={this.create}
+        fabOnNextText={intl`SAVE`}
+        onBack={Nav().backToPageContactEdit}
+        title={intl`Add/Remove Contact`}
+      >
+        <Field
+          label={intl`GROUP NAME`}
+          value={this.props.groupName}
+          disabled={true}
         />
-      )}
-    </Layout>
-  )
+        <Field isGroup label={intl`Members`} disabled={true} />
+        {!this.state.didMount ? (
+          <ActivityIndicator size='large' />
+        ) : (
+          <FlatList
+            data={userStore.dataListAllUser}
+            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+              <RenderItem
+                item={item}
+                index={index}
+                selectedUsers={this.selectedUserItems}
+              />
+            )}
+            keyExtractor={item => item.user_id}
+          />
+        )}
+      </Layout>
+    )
+  }
 
   @action selectUser = (item: UcBuddy) => {
     if (this.selectedUserItems[item.user_id]) {

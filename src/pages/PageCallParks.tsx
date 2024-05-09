@@ -48,7 +48,7 @@ export class PageCallParks extends Component<{
       : getCallStore().startCall(p || '')
   }
 
-  render = () => {
+  render() {
     const ca = getAuthStore().getCurrentAccount()
     if (!ca) {
       return null

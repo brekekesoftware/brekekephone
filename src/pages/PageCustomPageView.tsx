@@ -58,7 +58,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
     as.updateCustomPage({ ...cp, url })
   }
 
-  render = () => {
+  render() {
     const {
       props: { id },
     } = this

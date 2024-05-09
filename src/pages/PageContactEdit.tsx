@@ -157,7 +157,7 @@ export class PageContactEdit extends Component {
       this.view?.scrollTo({ y: 0, animated: true })
     }, 1000)
 
-  render = () => {
+  render() {
     const {
       buddyMax,
       dataListAllUser,

@@ -53,7 +53,9 @@ export class DidMountTimer extends Component<any> {
       BackgroundTimer.clearTimeout(this.didMountTimer)
     }
   }
-  render = () => (this.didMount ? this.props.children : null)
+  render() {
+    return this.didMount ? this.props.children : null
+  }
 }
 
 export const CallNotify = observer(() => {

@@ -105,7 +105,7 @@ export class PageCallTransferChooseUser extends Component {
       />
     )
   }
-  render = () => {
+  render() {
     const s = getAuthStore()
     const ca = s.getCurrentAccount()
     if (!ca) {

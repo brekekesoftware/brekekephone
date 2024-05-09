@@ -53,7 +53,7 @@ export class PageCallDtmfKeypad extends Component {
     })
   }
 
-  render = () => {
+  render() {
     const oc = getCallStore().getOngoingCall()
     return (
       <Layout

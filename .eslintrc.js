@@ -71,7 +71,7 @@ module.exports = {
 
     // must use arrow functions
     'prefer-arrow/prefer-arrow-functions': [
-      1,
+      0,
       {
         disallowPrototype: true,
         singleReturnOnly: false,

@@ -35,54 +35,56 @@ export class PageCallKeypad extends Component {
     getCallStore().startCall(this.txt)
   }
 
-  render = () => (
-    <Layout
-      description={intl`Keypad dial manually`}
-      fabOnNext={RnKeyboard.isKeyboardShowing ? this.callVoice : undefined}
-      fabOnNextText={intl`DIAL`}
-      menu='call'
-      subMenu='keypad'
-      title={intl`Keypad`}
-    >
-      <ShowNumber
-        refInput={this.txtRef}
-        selectionChange={(
-          e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-        ) => {
-          Object.assign(this.txtSelection, {
-            start: e.nativeEvent.selection.end,
-            end: e.nativeEvent.selection.end,
-          })
-        }}
-        setTarget={(v: string) => {
-          this.txt = v
-        }}
-        value={this.txt}
-      />
-      {!RnKeyboard.isKeyboardShowing && (
-        <KeyPad
-          callVoice={this.callVoice}
-          onPressNumber={v => {
-            const { end, start } = this.txtSelection
-            let min = Math.min(start, end)
-            const max = Math.max(start, end)
-            const isDelete = v === ''
-            if (isDelete) {
-              if (start === end && start) {
-                min = min - 1
-              }
-            }
-            // update text to trigger render
-            const t = this.txt
-            this.txt = t.substring(0, min) + v + t.substring(max)
-            //
-            const p = min + (isDelete ? 0 : 1)
-            this.txtSelection.start = p
-            this.txtSelection.end = p
+  render() {
+    return (
+      <Layout
+        description={intl`Keypad dial manually`}
+        fabOnNext={RnKeyboard.isKeyboardShowing ? this.callVoice : undefined}
+        fabOnNextText={intl`DIAL`}
+        menu='call'
+        subMenu='keypad'
+        title={intl`Keypad`}
+      >
+        <ShowNumber
+          refInput={this.txtRef}
+          selectionChange={(
+            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+          ) => {
+            Object.assign(this.txtSelection, {
+              start: e.nativeEvent.selection.end,
+              end: e.nativeEvent.selection.end,
+            })
           }}
-          showKeyboard={this.showKeyboard}
+          setTarget={(v: string) => {
+            this.txt = v
+          }}
+          value={this.txt}
         />
-      )}
-    </Layout>
-  )
+        {!RnKeyboard.isKeyboardShowing && (
+          <KeyPad
+            callVoice={this.callVoice}
+            onPressNumber={v => {
+              const { end, start } = this.txtSelection
+              let min = Math.min(start, end)
+              const max = Math.max(start, end)
+              const isDelete = v === ''
+              if (isDelete) {
+                if (start === end && start) {
+                  min = min - 1
+                }
+              }
+              // update text to trigger render
+              const t = this.txt
+              this.txt = t.substring(0, min) + v + t.substring(max)
+              //
+              const p = min + (isDelete ? 0 : 1)
+              this.txtSelection.start = p
+              this.txtSelection.end = p
+            }}
+            showKeyboard={this.showKeyboard}
+          />
+        )}
+      </Layout>
+    )
+  }
 }

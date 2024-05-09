@@ -154,7 +154,7 @@ export class PageCallTransferAttend extends Component {
     }
   }
 
-  render = () => {
+  render() {
     const oc = getCallStore().getOngoingCall()
     if (!oc) {
       return null

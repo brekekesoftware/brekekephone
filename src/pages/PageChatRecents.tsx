@@ -52,7 +52,7 @@ export class PageChatRecents extends Component {
     chatStore.handleMoveToChatGroupDetail(groupId)
   }
 
-  render = () => {
+  render() {
     const webchatInactive = chatStore.groups.filter(
       gr =>
         gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
