@@ -50,9 +50,11 @@ export class PageCallRecents extends Component {
   }
   getMatchedCalls = () => {
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataWithDefault(as.getCurrentAccount())
+    if (!d && ca) {
+      // trigger async update
+      accountStore.findDataWithDefault(ca)
     }
     const calls = d?.recentCalls.filter(this.isMatchUser) || []
     // backward compatibility to remove invalid items from the previous versions

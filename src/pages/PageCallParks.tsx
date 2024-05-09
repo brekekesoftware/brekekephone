@@ -49,15 +49,15 @@ export class PageCallParks extends Component<{
   }
 
   render = () => {
-    const cp = getAuthStore().getCurrentAccount()
-    if (!cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return null
     }
 
     const arr =
-      cp.parks?.map((p, i) => ({
+      ca.parks?.map((p, i) => ({
         park: p,
-        name: cp.parkNames?.[i] || '',
+        name: ca.parkNames?.[i] || '',
       })) || []
     const parks = uniqBy(arr, 'park')
 

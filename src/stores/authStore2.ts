@@ -109,10 +109,12 @@ export class AuthStore {
 
   @observable signedInId = ''
   getCurrentAccount = () =>
-    accountStore.accounts.find(a => a.id === this.signedInId) as Account
+    accountStore.accounts.find(a => a.id === this.signedInId)
   getCurrentData = () => accountStore.findDataSync(this.getCurrentAccount())
-  getCurrentDataAsync = () =>
-    accountStore.findDataWithDefault(this.getCurrentAccount())
+  getCurrentDataAsync = () => {
+    const ca = this.getCurrentAccount()
+    return ca && accountStore.findDataWithDefault(ca)
+  }
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
@@ -246,6 +248,9 @@ export class AuthStore {
 
   pushRecentCall = async (call: CallHistoryInfo) => {
     const d = await this.getCurrentDataAsync()
+    if (!d) {
+      return
+    }
     d.recentCalls = [call, ...d.recentCalls]
     if (d.recentCalls.length > 20) {
       d.recentCalls.pop()
@@ -257,7 +262,7 @@ export class AuthStore {
     fragment: Pick<Call, 'partyNumber' | 'partyName'>,
   ) => {
     const d = await this.getCurrentDataAsync()
-    if (!d.recentCalls?.length) {
+    if (!d?.recentCalls?.length) {
       return
     }
     d.recentCalls
@@ -271,6 +276,9 @@ export class AuthStore {
     users: (UcBuddy | UcBuddyGroup)[]
   }) => {
     const d = await this.getCurrentDataAsync()
+    if (!d) {
+      return
+    }
     d.pbxBuddyList = pbxBuddyList
     accountStore.saveAccountsToLocalStorageDebounced()
   }

@@ -89,9 +89,10 @@ class ChatStore {
       }) as any,
     ).length
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataWithDefault(as.getCurrentAccount())
+    if (!d && ca) {
+      accountStore.findDataWithDefault(ca)
     }
     const l2 = filterTextOnly(
       d?.recentChats.filter(c => !idMap[c.id] && c.unread),
@@ -295,8 +296,10 @@ class ChatStore {
         dismissText: false,
       })
       const d = await as.getCurrentDataAsync()
-      d.recentChats = d.recentChats.filter(c => c.id !== groupId)
-      accountStore.saveAccountsToLocalStorageDebounced()
+      if (d) {
+        d.recentChats = d.recentChats.filter(c => c.id !== groupId)
+        accountStore.saveAccountsToLocalStorageDebounced()
+      }
     } else if (status === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
         title: name,
