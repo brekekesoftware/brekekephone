@@ -1,6 +1,6 @@
 import { action, observable } from 'mobx'
-import { ReactComponentLike } from 'prop-types'
-import { SyntheticEvent } from 'react'
+import type { ReactComponentLike } from 'prop-types'
+import type { SyntheticEvent } from 'react'
 
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { getCallStore } from './callStore'
@@ -9,8 +9,8 @@ import { RnKeyboard } from './RnKeyboard'
 export type StackerFn<T> = keyof T extends never
   ? () => void
   : RequiredKeys<T> extends never
-  ? (props?: T) => void
-  : (props: T) => void
+    ? (props?: T) => void
+    : (props: T) => void
 
 export type RnStack = {
   isRoot?: boolean

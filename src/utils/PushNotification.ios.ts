@@ -1,8 +1,7 @@
 import './callkeep'
 
-import PushNotificationIOS, {
-  PushNotification as PN,
-} from '@react-native-community/push-notification-ios'
+import type { PushNotification as PN } from '@react-native-community/push-notification-ios'
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import Voip from 'react-native-voip-push-notification'
 
 import { parse } from './PushNotification-parse'
@@ -112,12 +111,8 @@ export const PushNotification = {
     onNotification(n0, initApp, true)
   },
 
-  getToken: () => {
-    return apnsToken
-  },
-  getVoipToken: () => {
-    return voipToken
-  },
+  getToken: () => apnsToken,
+  getVoipToken: () => voipToken,
   resetBadgeNumber: () => {
     PushNotificationIOS.setApplicationIconBadgeNumber(0)
   },

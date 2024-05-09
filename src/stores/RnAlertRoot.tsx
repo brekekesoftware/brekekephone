@@ -1,13 +1,14 @@
 import { flow } from 'lodash'
 import { observer } from 'mobx-react'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { useAnimationOnDidMount } from '../utils/animation'
 import { intl } from './intl'
-import { ErrorRnAlert2, PromptRnAlert, RnAlert } from './RnAlert'
+import type { ErrorRnAlert2, PromptRnAlert } from './RnAlert'
+import { RnAlert } from './RnAlert'
 
 const css = StyleSheet.create({
   RootRnAlert: {

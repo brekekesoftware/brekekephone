@@ -1,6 +1,7 @@
 import { darken } from 'polished'
-import { FC } from 'react'
-import { StyleSheet, View, ViewProps } from 'react-native'
+import type { FC } from 'react'
+import type { ViewProps } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { v } from './variables'
 

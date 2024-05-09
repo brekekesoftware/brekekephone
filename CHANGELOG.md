@@ -1,3 +1,8 @@
+#### 2.14.4
+
+- Fix it should reset PhoneAppli getProductInfo if logout (issue 868)
+- Fix it should reset navigation PhoneAppli if update account to a new one (issue 867)
+
 #### 2.14.3
 
 - Fix it should display well with html characters < >

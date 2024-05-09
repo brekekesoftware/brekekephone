@@ -6,7 +6,8 @@ import { Component } from 'react'
 import { pbx } from '../api/pbx'
 import { ContactsCreateForm } from '../components/ContactCreateForm'
 import { getAuthStore } from '../stores/authStore'
-import { ContactInfo, contactStore, Phonebook } from '../stores/contactStore'
+import type { ContactInfo, Phonebook } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -15,20 +16,18 @@ import { RnAlert } from '../stores/RnAlert'
 export class PagePhonebookUpdate extends Component<{
   contact: Phonebook
 }> {
-  render() {
-    return (
-      <ContactsCreateForm
-        onBack={Nav().backToPageContactPhonebook}
-        onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
-          if (pbx.client && getAuthStore().pbxState === 'success') {
-            this.save(p, hasUnsavedChanges)
-          }
-        }}
-        title={intl`Update Phonebook`}
-        updatingPhonebook={this.props.contact}
-      />
-    )
-  }
+  render = () => (
+    <ContactsCreateForm
+      onBack={Nav().backToPageContactPhonebook}
+      onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
+        if (pbx.client && getAuthStore().pbxState === 'success') {
+          this.save(p, hasUnsavedChanges)
+        }
+      }}
+      title={intl`Update Phonebook`}
+      updatingPhonebook={this.props.contact}
+    />
+  )
 
   @action save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
     if (!hasUnsavedChanges) {

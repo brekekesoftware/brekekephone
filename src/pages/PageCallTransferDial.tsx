@@ -1,7 +1,7 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
-import {
+import type {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
@@ -20,10 +20,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 @observer
 export class PageCallTransferDial extends Component {
   prevId?: string
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const cs = getCallStore()
     if (this.prevId && this.prevId !== cs.ongoingCallId) {
       Nav().backToPageCallManage()
@@ -60,59 +60,57 @@ export class PageCallTransferDial extends Component {
     getCallStore().getOngoingCall()?.transferAttended(this.txt)
   }
 
-  render() {
-    return (
-      <Layout
-        description={intl`Select target to start transfer`}
-        onBack={Nav().backToPageCallManage}
-        menu='call_transfer'
-        subMenu='external_number'
-        isTab
-        title={intl`Transfer`}
-      >
-        <ShowNumber
-          refInput={this.txtRef}
-          selectionChange={(
-            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-          ) => {
-            Object.assign(this.txtSelection, {
-              start: e.nativeEvent.selection.end,
-              end: e.nativeEvent.selection.end,
-            })
-          }}
-          setTarget={(v: string) => {
-            this.txt = v
-          }}
-          value={this.txt}
-        />
-        {!RnKeyboard.isKeyboardShowing && (
-          <KeyPad
-            callVoice={this.transferBlind}
-            callVoiceForward={this.transferAttended}
-            onPressNumber={v => {
-              // TODO create new component with PageCallDtmfKeypad
-              // to avoid duplicated code
-              const { end, start } = this.txtSelection
-              let min = Math.min(start, end)
-              const max = Math.max(start, end)
-              const isDelete = v === ''
-              if (isDelete) {
-                if (start === end && start) {
-                  min = min - 1
-                }
+  render = () => (
+    <Layout
+      description={intl`Select target to start transfer`}
+      onBack={Nav().backToPageCallManage}
+      menu='call_transfer'
+      subMenu='external_number'
+      isTab
+      title={intl`Transfer`}
+    >
+      <ShowNumber
+        refInput={this.txtRef}
+        selectionChange={(
+          e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+        ) => {
+          Object.assign(this.txtSelection, {
+            start: e.nativeEvent.selection.end,
+            end: e.nativeEvent.selection.end,
+          })
+        }}
+        setTarget={(v: string) => {
+          this.txt = v
+        }}
+        value={this.txt}
+      />
+      {!RnKeyboard.isKeyboardShowing && (
+        <KeyPad
+          callVoice={this.transferBlind}
+          callVoiceForward={this.transferAttended}
+          onPressNumber={v => {
+            // TODO create new component with PageCallDtmfKeypad
+            // to avoid duplicated code
+            const { end, start } = this.txtSelection
+            let min = Math.min(start, end)
+            const max = Math.max(start, end)
+            const isDelete = v === ''
+            if (isDelete) {
+              if (start === end && start) {
+                min = min - 1
               }
-              const t = this.txt
-              this.txt = t.substring(0, min) + v + t.substring(max)
-              const position = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = position
-              this.txtSelection.end = position
-            }}
-            showKeyboard={this.showKeyboard}
-          />
-        )}
-      </Layout>
-    )
-  }
+            }
+            const t = this.txt
+            this.txt = t.substring(0, min) + v + t.substring(max)
+            const position = min + (isDelete ? 0 : 1)
+            this.txtSelection.start = position
+            this.txtSelection.end = position
+          }}
+          showKeyboard={this.showKeyboard}
+        />
+      )}
+    </Layout>
+  )
 }
 
 setPageCallTransferDial(PageCallTransferDial)

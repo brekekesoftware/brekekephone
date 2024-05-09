@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import type { ScrollView } from 'react-native'
 import {
   ActivityIndicator,
-  ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -12,7 +12,7 @@ import { uc } from '../api/uc'
 import { mdiFolderPlus } from '../assets/icons'
 import { ContactList } from '../components/ContactList'
 import { ContactSectionList } from '../components/ContactSectionList'
-import { DropdownItemProps } from '../components/DropdownItem'
+import type { DropdownItemProps } from '../components/DropdownItem'
 import { Layout } from '../components/Layout'
 import { RnIcon } from '../components/RnIcon'
 import { RnText } from '../components/RnText'
@@ -65,40 +65,38 @@ export class PageContactEdit extends Component {
     }
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
-  getDDOptions = (ddIndex: number): DropdownItemProps[] => {
-    return [
-      {
-        title: intl`Add/Remove user`,
-        onPress: () => this.onAddRemoveUser(ddIndex),
-        disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
+  getDDOptions = (ddIndex: number): DropdownItemProps[] => [
+    {
+      title: intl`Add/Remove user`,
+      onPress: () => this.onAddRemoveUser(ddIndex),
+      disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
+    },
+    {
+      title: intl`Check all`,
+      onPress: (e?: MouseEvent) => {
+        e?.stopPropagation?.()
+        this.onCheckAll(ddIndex)
       },
-      {
-        title: intl`Check all`,
-        onPress: (e?: MouseEvent) => {
-          e?.stopPropagation?.()
-          this.onCheckAll(ddIndex)
-        },
-        disabled:
-          userStore.isSelectedAddAllUser ||
-          !userStore.dataGroupAllUser[ddIndex]?.data?.length,
+      disabled:
+        userStore.isSelectedAddAllUser ||
+        !userStore.dataGroupAllUser[ddIndex]?.data?.length,
+    },
+    {
+      title: intl`Uncheck all`,
+      onPress: (e?: MouseEvent) => {
+        e?.stopPropagation?.()
+        this.onUncheckAll(ddIndex)
       },
-      {
-        title: intl`Uncheck all`,
-        onPress: (e?: MouseEvent) => {
-          e?.stopPropagation?.()
-          this.onUncheckAll(ddIndex)
-        },
-        disabled:
-          userStore.isSelectedAddAllUser ||
-          !userStore.dataGroupAllUser[ddIndex]?.data?.length,
-      },
-      {
-        title: intl`Remove group`,
-        onPress: () => this.onRemoveGroup(ddIndex),
-        disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
-      },
-    ]
-  }
+      disabled:
+        userStore.isSelectedAddAllUser ||
+        !userStore.dataGroupAllUser[ddIndex]?.data?.length,
+    },
+    {
+      title: intl`Remove group`,
+      onPress: () => this.onRemoveGroup(ddIndex),
+      disabled: userStore.dataGroupAllUser.length - 1 === ddIndex,
+    },
+  ]
 
   onAddRemoveUser = (ddIndex: number) => {
     RnDropdown.close()
@@ -159,7 +157,7 @@ export class PageContactEdit extends Component {
       this.view?.scrollTo({ y: 0, animated: true })
     }, 1000)
 
-  render() {
+  render = () => {
     const {
       buddyMax,
       dataListAllUser,

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 
-import { ChatGroup } from '../stores/chatStore'
+import type { ChatGroup } from '../stores/chatStore'
 import { WebchatItem } from './WebchatItem'
 
 export const ListWebchats: FC<{

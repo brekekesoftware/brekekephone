@@ -17,7 +17,8 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { getCallStore } from '../stores/callStore'
-import { contactStore, Phonebook } from '../stores/contactStore'
+import type { Phonebook } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -32,7 +33,7 @@ const css = StyleSheet.create({
 
 @observer
 export class PageContactPhonebook extends Component {
-  componentDidMount() {
+  componentDidMount = () => {
     contactStore.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!pbx.client) {
@@ -42,7 +43,7 @@ export class PageContactPhonebook extends Component {
       BackgroundTimer.clearInterval(id)
     }, 1000)
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (contactStore.isDeleteState) {
       contactStore.isDeleteState = false
       contactStore.selectedContactIds = {}
@@ -190,7 +191,7 @@ export class PageContactPhonebook extends Component {
     contactStore.isDeleteState = false
     contactStore.selectedContactIds = {}
   }
-  render() {
+  render = () => {
     const phonebooks = contactStore.phoneBooks
     const map = {} as { [k: string]: Phonebook[] }
     phonebooks.forEach(u => {

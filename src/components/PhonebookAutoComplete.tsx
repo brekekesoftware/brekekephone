@@ -1,15 +1,16 @@
-import { FC, useEffect, useState } from 'react'
+import type { FC } from 'react'
+import { useEffect, useState } from 'react'
+import type { TouchableOpacityProps } from 'react-native'
 import {
   Dimensions,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacityProps,
   View,
 } from 'react-native'
 
-import { PbxBook } from '../brekekejs'
+import type { PbxBook } from '../brekekejs'
 import { contactStore } from '../stores/contactStore'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
@@ -103,10 +104,10 @@ export const PhonebookAutoComplete: FC<
     if (!value) {
       return [...contactStore.pbxBooks]
     }
-    const result = contactStore.pbxBooks.filter(item => {
+    const result = contactStore.pbxBooks.filter(item =>
       // make same web search
-      return item.phonebook.toLowerCase().startsWith(value.toLowerCase())
-    })
+      item.phonebook.toLowerCase().startsWith(value.toLowerCase()),
+    )
     if (
       !result.length ||
       (result.length === 1 && value === result[0].phonebook)

@@ -1,9 +1,10 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { Platform, View } from 'react-native'
 
-import { Account, accountStore } from '../stores/accountStore'
+import type { Account } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { debugStore } from '../stores/debugStore'
 import { intl, intlDebug } from '../stores/intl'

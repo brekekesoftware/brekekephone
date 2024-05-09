@@ -21,13 +21,13 @@ import { userStore } from '../stores/userStore'
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
   @observable txtSearch: string = ''
-  componentDidMount() {
+  componentDidMount = () => {
     if (!contactStore.pbxUsers.length) {
       contactStore.getPbxUsers()
     }
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const oc = getCallStore().getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
@@ -105,7 +105,7 @@ export class PageCallTransferChooseUser extends Component {
       />
     )
   }
-  render() {
+  render = () => {
     const s = getAuthStore()
     const cp = s.getCurrentAccount()
     if (!cp) {

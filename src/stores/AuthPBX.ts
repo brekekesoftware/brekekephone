@@ -1,5 +1,6 @@
 import { debounce } from 'lodash'
-import { action, Lambda, reaction } from 'mobx'
+import type { Lambda } from 'mobx'
+import { action, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { waitTimeout } from '../utils/waitTimeout'

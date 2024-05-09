@@ -11,10 +11,10 @@ const formatErrors = (...errs: Error[]) => {
     !e
       ? `${e}`
       : e.message
-      ? e.message
-      : typeof e === 'object'
-      ? CircularJSON.stringify(e)
-      : `${e}`,
+        ? e.message
+        : typeof e === 'object'
+          ? CircularJSON.stringify(e)
+          : `${e}`,
   )
   let tpl = msgs.shift() || ''
   // remove %c on web from the debug lib
@@ -46,6 +46,10 @@ const formatErrors = (...errs: Error[]) => {
   }
   // rn 0.65 warning
   if (msg.indexOf('`new NativeEventEmitter()` was called') >= 0) {
+    return
+  }
+  // mobx warning
+  if (msg.indexOf('Attempt to read an array index (0)') >= 0) {
     return
   }
   return msg
@@ -82,10 +86,8 @@ const captureConsoleOutput = () => {
   )
   Object.entries(customConsoleObject).forEach(([k, v]) => {
     Object.defineProperty(console, k, {
-      get() {
-        return v
-      },
-      set() {
+      get: () => v,
+      set: () => {
         // prevent set to keep using our functions
       },
     })
