@@ -14,23 +14,21 @@ const css = StyleSheet.create({
   },
 })
 export class IncomingItem extends Component {
-  async componentDidMount() {
+  componentDidMount = () => {
     if (Platform.OS === 'android') {
       BrekekeUtils.startRingtone()
     } else {
       IncallManager.startRingtone('_BUNDLE_')
     }
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (Platform.OS === 'android') {
       BrekekeUtils.stopRingtone()
     } else {
       IncallManager.stopRingtone()
     }
   }
-  render() {
-    return null
-  }
+  render = () => null
 }
 
 export class OutgoingItem extends Component {
@@ -43,14 +41,12 @@ export class OutgoingItem extends Component {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (Platform.OS === 'android') {
       IncallManager.stopRingback()
     }
   }
-  render() {
-    return null
-  }
+  render = () => null
 }
 export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
@@ -61,9 +57,7 @@ export class OutgoingItemWithSDP extends Component<{
       sip.enableMedia(ongoingCallId)
     }
   }
-  render() {
-    return null
-  }
+  render = () => null
 }
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
@@ -74,9 +68,7 @@ export class AnsweredItem extends Component<{
       sip.enableMedia(oc.id)
     }
   }
-  render() {
-    return null
-  }
+  render = () => null
 }
 
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {

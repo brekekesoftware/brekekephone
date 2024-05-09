@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
-import { FC, useCallback } from 'react'
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import type { FC } from 'react'
+import { useCallback } from 'react'
+import type { ViewStyle } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { chatStore } from '../stores/chatStore'
 import { css as fcss } from './FooterNavigation'
@@ -48,17 +50,15 @@ export const Navigation: FC<{
   const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
 
   const renderIconNotices = useCallback(
-    (totalNotice: number, style?: ViewStyle) => {
-      return (
-        <View style={fcss.UnreadOuter}>
-          <View style={[fcss.Unread, css.Unread, style]}>
-            <RnText style={fcss.UnreadText} bold white center>
-              {totalNotice}
-            </RnText>
-          </View>
+    (totalNotice: number, style?: ViewStyle) => (
+      <View style={fcss.UnreadOuter}>
+        <View style={[fcss.Unread, css.Unread, style]}>
+          <RnText style={fcss.UnreadText} bold white center>
+            {totalNotice}
+          </RnText>
         </View>
-      )
-    },
+      </View>
+    ),
     [],
   )
 

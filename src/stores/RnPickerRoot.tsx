@@ -6,7 +6,8 @@ import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { useAnimationOnDidMount } from '../utils/animation'
 import { intl } from './intl'
-import { RnPicker, RnPickerOption } from './RnPicker'
+import type { RnPickerOption } from './RnPicker'
+import { RnPicker } from './RnPicker'
 
 const css = StyleSheet.create({
   RnPicker: {

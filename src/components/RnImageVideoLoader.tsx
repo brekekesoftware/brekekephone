@@ -1,4 +1,6 @@
-import { FC, useCallback, useState } from 'react'
+import type { FC } from 'react'
+import { useCallback, useState } from 'react'
+import type { ViewProps } from 'react-native'
 import {
   ActivityIndicator,
   Dimensions,
@@ -6,7 +8,6 @@ import {
   Platform,
   StyleSheet,
   View,
-  ViewProps,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
@@ -19,7 +20,7 @@ import {
   mdiImageBrokenVariant,
   mdiPlayCircleOutline,
 } from '../assets/icons'
-import { ChatFile } from '../stores/chatStore'
+import type { ChatFile } from '../stores/chatStore'
 import { RnIcon } from './RnIcon'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
@@ -171,15 +172,14 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )
     }
   }
-  const renderView = () => {
-    return fileType === 'image' ? (
+  const renderView = () =>
+    fileType === 'image' ? (
       <RnTouchableOpacity onPress={onShowImage}>
         <FastImage source={{ uri: convertUri(url) }} style={css.image} />
       </RnTouchableOpacity>
     ) : (
       renderVideo()
     )
-  }
   const onRequestClose = () => {
     setIsVisible(false)
   }

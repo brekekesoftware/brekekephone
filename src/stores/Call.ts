@@ -3,11 +3,11 @@ import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
-import { Session, SessionStatus } from '../brekekejs'
+import type { Session, SessionStatus } from '../brekekejs'
 import { getPartyName } from '../stores/contactStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
-import { CallStore } from './callStore2'
+import type { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -289,11 +289,10 @@ export class Call {
     })
   }
 
-  @action park = (number: string) => {
-    return pbx
+  @action park = (number: string) =>
+    pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onParkFailure)
-  }
   private onParkFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to park the call`,

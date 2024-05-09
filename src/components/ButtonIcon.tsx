@@ -1,12 +1,7 @@
-import { FC, useState } from 'react'
-import {
-  ActivityIndicator,
-  Platform,
-  StyleSheet,
-  TouchableOpacityProps,
-  View,
-  ViewProps,
-} from 'react-native'
+import type { FC } from 'react'
+import { useState } from 'react'
+import type { TouchableOpacityProps, ViewProps } from 'react-native'
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { BackgroundTimer } from '../utils/BackgroundTimer'

@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { RnText } from '../components/Rn'
-import { TRnTextProps } from '../components/RnText'
+import type { TRnTextProps } from '../components/RnText'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { formatDuration } from '../utils/formatDuration'
 

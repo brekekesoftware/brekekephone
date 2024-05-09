@@ -2,13 +2,14 @@ import { flow, get } from 'lodash'
 import { observer } from 'mobx-react'
 import { Fragment } from 'react'
 import { Platform } from 'react-native'
-import Validator, { Rules } from 'validatorjs'
+import type { Rules } from 'validatorjs'
+import Validator from 'validatorjs'
 
-import { PbxBook } from '../brekekejs'
+import type { PbxBook } from '../brekekejs'
 import { Field } from '../components/Field'
 import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
 import { arrToMap } from './arrToMap'
-import { CreatedStore } from './createStore'
+import type { CreatedStore } from './createStore'
 import { useStore } from './useStore'
 
 const noop = () => {}

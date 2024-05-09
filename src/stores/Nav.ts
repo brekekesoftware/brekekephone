@@ -1,4 +1,4 @@
-import { Nav2 } from './Nav2'
+import type { Nav2 } from './Nav2'
 
 // fix ciruclar dependencies
 let nav: Nav2

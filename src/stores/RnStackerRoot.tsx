@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
-import { ReactComponentLike } from 'prop-types'
-import { FC } from 'react'
+import type { ReactComponentLike } from 'prop-types'
+import type { FC } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
 import { v } from '../components/variables'

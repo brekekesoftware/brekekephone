@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiCloseCircle } from '../assets/icons'
-import { ChatFile } from '../stores/chatStore'
+import type { ChatFile } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { formatBytes } from '../utils/formatBytes'

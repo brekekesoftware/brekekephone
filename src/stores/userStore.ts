@@ -1,10 +1,10 @@
 import { cloneDeep } from 'lodash'
 import { action, observable } from 'mobx'
-import { SectionListData } from 'react-native'
+import type { SectionListData } from 'react-native'
 
 import { pbx } from '../api/pbx'
 import { isUcBuddy, uc } from '../api/uc'
-import { UcBuddy, UcBuddyGroup } from '../brekekejs'
+import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
 import { accountStore } from './accountStore'
 import { getAuthStore, waitPbx, waitUc } from './authStore'
 import { contactStore } from './contactStore'
@@ -51,18 +51,19 @@ class UserStore {
       }
       allUsers = ids
         .filter(u => u[0] !== cp.pbxUsername)
-        .map(u => {
-          return {
-            disabledBuddy: false,
-            user_id: u[0],
-            name: u[1],
-            profile_image_url: '',
-            group: '',
-            tenant: cp.pbxTenant,
-            block_settings: {},
-            status: false,
-          } as any as UcBuddy
-        })
+        .map(
+          u =>
+            ({
+              disabledBuddy: false,
+              user_id: u[0],
+              name: u[1],
+              profile_image_url: '',
+              group: '',
+              tenant: cp.pbxTenant,
+              block_settings: {},
+              status: false,
+            }) as any as UcBuddy,
+        )
     }
 
     // get from local
@@ -127,9 +128,8 @@ class UserStore {
     )
   }
 
-  @action getBuddyById = (buddy_id: string) => {
-    return this.dataListAllUser.find(item => item.user_id === buddy_id)
-  }
+  @action getBuddyById = (buddy_id: string) =>
+    this.dataListAllUser.find(item => item.user_id === buddy_id)
 
   @action filterDataUserGroup = (
     dataGroupUser: (UcBuddy | UcBuddyGroup)[],
@@ -341,9 +341,7 @@ class UserStore {
     })
 
     const newGroupContact: GroupUserSectionListData = {
-      data: Object.keys(selectedUsers).map(key => {
-        return selectedUsers[key]
-      }),
+      data: Object.keys(selectedUsers).map(key => selectedUsers[key]),
       title: groupName,
     }
 
@@ -379,9 +377,7 @@ class UserStore {
     this.dataGroupAllUser.forEach((group, index) => {
       if (group.title === groupName) {
         this.dataGroupAllUser[index].data = Object.keys(selectedUserItems).map(
-          key => {
-            return selectedUserItems[key]
-          },
+          key => selectedUserItems[key],
         )
       } else {
         this.dataGroupAllUser[index].data = group.data.filter(

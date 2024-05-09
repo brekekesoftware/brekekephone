@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import { UcBuddy } from '../brekekejs'
+import type { UcBuddy } from '../brekekejs'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -24,43 +24,41 @@ export class PageContactGroupCreate extends Component {
     name: '',
     didMount: false,
   }
-  componentDidMount() {
+  componentDidMount = () => {
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
-  render() {
-    return (
-      <Layout
-        fabOnBack={Nav().goToPageContactEdit}
-        fabOnNext={this.create}
-        fabOnNextText={intl`CREATE`}
-        onBack={Nav().backToPageContactEdit}
-        title={intl`New Group`}
-      >
-        <Field
-          label={intl`GROUP NAME`}
-          onValueChange={this.setName}
-          value={this.state.name}
+  render = () => (
+    <Layout
+      fabOnBack={Nav().goToPageContactEdit}
+      fabOnNext={this.create}
+      fabOnNextText={intl`CREATE`}
+      onBack={Nav().backToPageContactEdit}
+      title={intl`New Group`}
+    >
+      <Field
+        label={intl`GROUP NAME`}
+        onValueChange={this.setName}
+        value={this.state.name}
+      />
+      <Field isGroup label={intl`Members`} />
+      {!this.state.didMount ? (
+        <ActivityIndicator style={css.loadingIcon} size='large' />
+      ) : (
+        <FlatList
+          data={userStore.dataListAllUser}
+          renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+            <RenderItem
+              item={item}
+              index={index}
+              selectedUsers={this.selectedUserItems}
+            />
+          )}
+          keyExtractor={item => item.user_id}
         />
-        <Field isGroup label={intl`Members`} />
-        {!this.state.didMount ? (
-          <ActivityIndicator style={css.loadingIcon} size='large' />
-        ) : (
-          <FlatList
-            data={userStore.dataListAllUser}
-            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-              <RenderItem
-                item={item}
-                index={index}
-                selectedUsers={this.selectedUserItems}
-              />
-            )}
-            keyExtractor={item => item.user_id}
-          />
-        )}
-      </Layout>
-    )
-  }
+      )}
+    </Layout>
+  )
 
   setName = (name: string) =>
     this.setState({

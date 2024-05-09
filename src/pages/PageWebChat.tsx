@@ -11,7 +11,7 @@ import { Nav } from '../stores/Nav'
 
 @observer
 export class PageWebChat extends Component {
-  render() {
+  render = () => {
     const arr = chatStore.groups.filter(group => group.webchat)
     return (
       <Layout

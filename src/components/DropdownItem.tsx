@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { RnText } from './RnText'
@@ -24,14 +24,12 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   title,
   onPress,
   disabled = false,
-}: DropdownItemProps) => {
-  return (
-    <RnTouchableOpacity
-      onPress={onPress}
-      style={css.container}
-      disabled={disabled}
-    >
-      <RnText style={disabled && css.disableText}>{title}</RnText>
-    </RnTouchableOpacity>
-  )
-}
+}: DropdownItemProps) => (
+  <RnTouchableOpacity
+    onPress={onPress}
+    style={css.container}
+    disabled={disabled}
+  >
+    <RnText style={disabled && css.disableText}>{title}</RnText>
+  </RnTouchableOpacity>
+)

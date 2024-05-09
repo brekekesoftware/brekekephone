@@ -1,9 +1,11 @@
-import { FC, useState } from 'react'
+import type { FC } from 'react'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { BackBtn } from './HeaderBackBtn'
 import { CreateBtn } from './HeaderCreateBtn'
-import { Dropdown, DropdownBtn, HeaderDropdownItem } from './HeaderDropdown'
+import type { HeaderDropdownItem } from './HeaderDropdown'
+import { Dropdown, DropdownBtn } from './HeaderDropdown'
 import { Navigation } from './HeaderNavigation'
 import { Title } from './HeaderTitle'
 import { v } from './variables'

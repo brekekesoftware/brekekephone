@@ -18,7 +18,7 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
   }
-  componentDidMount() {
+  componentDidMount = () => {
     const me = uc.me()
     this.setState({
       status: me.status,
@@ -50,7 +50,7 @@ export class PageSettingsOther extends Component {
         })
       })
   }
-  render() {
+  render = () => {
     const as = getAuthStore()
     const cp = as.getCurrentAccount()
     return (

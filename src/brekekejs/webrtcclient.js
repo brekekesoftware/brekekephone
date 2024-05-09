@@ -226,18 +226,18 @@ if (!Brekeke.WebrtcClient) {
     })()
       ? Event
       : typeof Event !== 'undefined' &&
-        typeof document !== 'undefined' &&
-        document.createEvent
-      ? function (type) {
-          // for ie
-          var event = document.createEvent('Event')
-          event.initEvent(type, false, false)
-          return event
-        }
-      : function (type) {
-          // for event-target-shim
-          this.type = type
-        }
+          typeof document !== 'undefined' &&
+          document.createEvent
+        ? function (type) {
+            // for ie
+            var event = document.createEvent('Event')
+            event.initEvent(type, false, false)
+            return event
+          }
+        : function (type) {
+            // for event-target-shim
+            this.type = type
+          }
     var addsOntrack =
       typeof window === 'object' &&
       window.RTCPeerConnection &&
@@ -533,14 +533,14 @@ if (!Brekeke.WebrtcClient) {
         typeof configuration.register === 'boolean'
           ? configuration.register
           : typeof defaultConfiguration.register === 'boolean'
-          ? defaultConfiguration.register
-          : true
+            ? defaultConfiguration.register
+            : true
       this._socketKeepAlive =
         typeof configuration.socketKeepAlive === 'number'
           ? configuration.socketKeepAlive
           : typeof defaultConfiguration.socketKeepAlive === 'number'
-          ? defaultConfiguration.socketKeepAlive
-          : 0
+            ? defaultConfiguration.socketKeepAlive
+            : 0
 
       // instantiate JsSIP.UA
       configurations = []
@@ -571,8 +571,8 @@ if (!Brekeke.WebrtcClient) {
             typeof configuration.register_expires === 'number'
               ? configuration.register_expires
               : typeof defaultConfiguration.register_expires === 'number'
-              ? defaultConfiguration.register_expires
-              : 1296000,
+                ? defaultConfiguration.register_expires
+                : 1296000,
           registrar_server: string(
             configuration.registrar_server ||
               defaultConfiguration.registrar_server,
@@ -581,8 +581,8 @@ if (!Brekeke.WebrtcClient) {
             typeof configuration.no_answer_timeout === 'number'
               ? configuration.no_answer_timeout
               : typeof defaultConfiguration.no_answer_timeout === 'number'
-              ? defaultConfiguration.no_answer_timeout
-              : 3600,
+                ? defaultConfiguration.no_answer_timeout
+                : 3600,
           use_preloaded_route: Boolean(
             typeof configuration.use_preloaded_route !== 'undefined'
               ? configuration.use_preloaded_route
@@ -592,16 +592,16 @@ if (!Brekeke.WebrtcClient) {
             typeof configuration.connection_recovery_min_interval === 'number'
               ? configuration.connection_recovery_min_interval
               : typeof defaultConfiguration.connection_recovery_min_interval ===
-                'number'
-              ? defaultConfiguration.connection_recovery_min_interval
-              : 2,
+                  'number'
+                ? defaultConfiguration.connection_recovery_min_interval
+                : 2,
           connection_recovery_max_interval:
             typeof configuration.connection_recovery_max_interval === 'number'
               ? configuration.connection_recovery_max_interval
               : typeof defaultConfiguration.connection_recovery_max_interval ===
-                'number'
-              ? defaultConfiguration.connection_recovery_max_interval
-              : 30,
+                  'number'
+                ? defaultConfiguration.connection_recovery_max_interval
+                : 30,
           user_agent: userAgent,
           contact_uri: new JsSIP.URI(
             'sip',
@@ -4248,8 +4248,8 @@ if (!Brekeke.WebrtcClient) {
           return m1.phone_id < m2.phone_id
             ? -1
             : m1.phone_id > m2.phone_id
-            ? 1
-            : 0
+              ? 1
+              : 0
         }),
         me,
       }
@@ -4859,15 +4859,15 @@ if (!Brekeke.WebrtcClient) {
             trace: true,
           }
         : !withStackTrace
-        ? {
-            fatal: true,
-            error: true,
-            warn: true,
-            info: false,
-            debug: false,
-            trace: true,
-          }
-        : withStackTrace
+          ? {
+              fatal: true,
+              error: true,
+              warn: true,
+              info: false,
+              debug: false,
+              trace: true,
+            }
+          : withStackTrace
     this._stackTraceHeaderLength = -2
 
     // trial logging to initialize stackTraceHeaderLength

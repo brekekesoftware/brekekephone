@@ -29,9 +29,7 @@ export const getCameraSourceId = async (isFront: boolean) => {
       )
       return value
     })
-    .then(i => {
-      return i?.deviceId || undefined
-    })
+    .then(i => i?.deviceId || undefined)
     .catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to get front camera information`,

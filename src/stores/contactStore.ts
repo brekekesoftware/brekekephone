@@ -2,7 +2,7 @@ import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
 import { pbx } from '../api/pbx'
-import { ItemPhonebook, PbxBook } from '../brekekejs'
+import type { ItemPhonebook, PbxBook } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { getAuthStore, waitPbx } from './authStore'
 import { intlDebug } from './intl'
@@ -145,13 +145,10 @@ class ContactStore {
   @action dismissPicker = () => {
     this.showPickerItem = null
   }
-  getManagerContact = (lang?: string) => {
-    return window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
-  }
-  getItemPhonebook = (lang?: string) => {
-    return window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
-      ?.item
-  }
+  getManagerContact = (lang?: string) =>
+    window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
+  getItemPhonebook = (lang?: string) =>
+    window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)?.item
 
   getManageItems = (lang?: string) => {
     const items = window.Brekeke.Phonebook.getManager(
@@ -160,16 +157,14 @@ class ContactStore {
     if (!items || !items.length) {
       return []
     }
-    const newItems = items.map(i => {
-      return {
-        ...i,
-        name: i.id,
-        disabled: undefined,
-        label: i.id.startsWith('$') ? i.caption : i.id,
-        keyboardType: i.type === 'phone' ? 'numeric' : 'default',
-        maxLength: 50,
-      }
-    }) as any as ItemPBForm[]
+    const newItems = items.map(i => ({
+      ...i,
+      name: i.id,
+      disabled: undefined,
+      label: i.id.startsWith('$') ? i.caption : i.id,
+      keyboardType: i.type === 'phone' ? 'numeric' : 'default',
+      maxLength: 50,
+    })) as any as ItemPBForm[]
     return newItems
   }
 
@@ -278,9 +273,7 @@ class ContactStore {
       [k: string]: UcUser
     }
   }
-  getUcUserById = (id: string) => {
-    return this.ucUsersMap[id]
-  }
+  getUcUserById = (id: string) => this.ucUsersMap[id]
 
   @observable phoneBooks: Phonebook[] = []
   @observable pbxBooks: PbxBook[] = []
@@ -357,9 +350,7 @@ class ContactStore {
     const parks = uniqBy(arr, 'park')
     return parks.find(p => p.park === parkNumber)?.name
   }
-  getPhonebookById = (id: string) => {
-    return this.phoneBooksMap[id]
-  }
+  getPhonebookById = (id: string) => this.phoneBooksMap[id]
 
   clearStore = () => {
     this.phoneBooks = []

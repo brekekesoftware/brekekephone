@@ -7,7 +7,7 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { getPartyName } from '../stores/contactStore'
 import { permForCallLog } from '../utils/permissions'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
@@ -179,8 +179,8 @@ const addToCallLog = async (c: CallHistoryInfo) => {
     incoming && !answered
       ? CallLogType.MISSED_TYPE
       : incoming && answered
-      ? CallLogType.INCOMING_TYPE
-      : CallLogType.OUTGOING_TYPE
+        ? CallLogType.INCOMING_TYPE
+        : CallLogType.OUTGOING_TYPE
   BrekekeUtils.insertCallLog(partyNumber || partyName, type)
 }
 

@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 
-import { CreatedStore, createStore } from './createStore'
+import type { CreatedStore } from './createStore'
+import { createStore } from './createStore'
 
 export const useStore = (mixin?: Function) => {
   const r = useRef<CreatedStore>()

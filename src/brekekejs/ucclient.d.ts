@@ -1,4 +1,4 @@
-import { UcChatClient, UcConstants, UcErrors, UcLogger } from '.'
+import type { UcChatClient, UcConstants, UcErrors, UcLogger } from '.'
 
 // need to set = null to fix issue with babel cli build
 // this will not have any effect since we are in .d.ts

@@ -1,11 +1,12 @@
 import jsonStableStringify from 'json-stable-stringify'
 import { cloneDeep } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'
-import { contactStore, ItemPBForm, Phonebook } from '../stores/contactStore'
+import type { ItemPBForm, Phonebook } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
@@ -108,11 +109,8 @@ export const ContactsCreateForm: FC<{
       phonebook: { ...defaultObj },
       fields: getFields() as ItemPBForm[],
     },
-    hasUnsavedChanges: () => {
-      return !(
-        jsonStableStringify($.phonebook) === jsonStableStringify(defaultObj)
-      )
-    },
+    hasUnsavedChanges: () =>
+      !(jsonStableStringify($.phonebook) === jsonStableStringify(defaultObj)),
 
     onBackBtnPress: () => {
       if (!$.hasUnsavedChanges()) {

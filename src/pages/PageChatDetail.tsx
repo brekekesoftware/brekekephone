@@ -1,15 +1,13 @@
 import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import {
+import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Platform,
   ScrollView,
-  StyleSheet,
   TextInputSelectionChangeEventData,
-  View,
 } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
 import { uc } from '../api/uc'
@@ -21,7 +19,8 @@ import { RnText, RnTouchableOpacity } from '../components/Rn'
 import { v } from '../components/variables'
 import { waitPbx, waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { ChatFile, ChatMessage, chatStore } from '../stores/chatStore'
+import type { ChatFile, ChatMessage } from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -77,7 +76,7 @@ export class PageChatDetail extends Component<{
   edittingTextEmoji = ''
   editingTextReplace = false
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidMountAsync()
   }
   componentDidMountAsync = async () => {
@@ -103,7 +102,7 @@ export class PageChatDetail extends Component<{
       isUnread: false,
     })
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const { buddy: id } = this.props
     if (chatStore.getThreadConfig(id).isUnread) {
       chatStore.updateThreadConfig(id, false, {
@@ -111,7 +110,7 @@ export class PageChatDetail extends Component<{
       })
     }
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (Platform.OS === 'web') {
       const { topic_id } = this.state
       if (topic_id) {
@@ -119,24 +118,22 @@ export class PageChatDetail extends Component<{
       }
     }
   }
-  renderChatInput = () => {
-    return (
-      <ChatInput
-        onEmojiTurnOn={() =>
-          this.setState({ emojiTurnOn: !this.state.emojiTurnOn }, () => {
-            this.view?.scrollToEnd()
-          })
-        }
-        onSelectionChange={this.onSelectionChange}
-        onTextChange={this.setEditingText}
-        onTextSubmit={this.submitEditingText}
-        openFileRnPicker={() => pickFile(this.sendFile)}
-        text={this.state.editingText}
-      />
-    )
-  }
+  renderChatInput = () => (
+    <ChatInput
+      onEmojiTurnOn={() =>
+        this.setState({ emojiTurnOn: !this.state.emojiTurnOn }, () => {
+          this.view?.scrollToEnd()
+        })
+      }
+      onSelectionChange={this.onSelectionChange}
+      onTextChange={this.setEditingText}
+      onTextSubmit={this.submitEditingText}
+      openFileRnPicker={() => pickFile(this.sendFile)}
+      text={this.state.editingText}
+    />
+  )
 
-  render() {
+  render = () => {
     const { buddy: id } = this.props
     const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state

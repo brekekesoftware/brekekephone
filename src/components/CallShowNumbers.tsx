@@ -1,12 +1,10 @@
-import { FC, RefObject } from 'react'
-import {
-  Keyboard,
+import type { FC, RefObject } from 'react'
+import type {
   NativeSyntheticEvent,
-  StyleSheet,
   TextInput,
   TextInputSelectionChangeEventData,
-  View,
 } from 'react-native'
+import { Keyboard, StyleSheet, View } from 'react-native'
 
 import { intl } from '../stores/intl'
 import { RnTextInput } from './Rn'

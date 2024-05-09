@@ -3,7 +3,7 @@ import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
 import { sip } from '../api/sip'
-import {
+import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
   UcBuddy,
@@ -12,22 +12,22 @@ import {
 } from '../brekekejs'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
-import { ParsedPn, SipPn } from '../utils/PushNotification-parse'
+import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
+import type { Account } from './accountStore'
 import {
-  Account,
   accountStore,
   getAccountUniqueId,
   getLastSignedInId,
   saveLastSignedInId,
 } from './accountStore'
-import { CallHistoryInfo } from './addCallHistory'
+import type { CallHistoryInfo } from './addCallHistory'
 import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, setAuthStore, waitSip } from './authStore'
 import { authUC } from './AuthUC'
-import { Call } from './Call'
+import type { Call } from './Call'
 import { getCallStore } from './callStore'
 import { chatStore } from './chatStore'
 import { contactStore } from './contactStore'
@@ -58,76 +58,61 @@ export class AuthStore {
   @observable ucTotalFailure = 0
   @observable ucLoginFromAnotherPlace = false
 
-  pbxShouldAuth = () => {
-    return (
-      this.getCurrentAccount() &&
-      this.pbxState !== 'waiting' &&
-      // do not auth pbx if sip token is provided in case of PN
-      // wait until sip login success or failure
-      (!this.sipPn.sipAuth ||
-        this.sipState === 'success' ||
-        this.sipState === 'failure') &&
-      (this.pbxState === 'stopped' ||
-        (this.pbxState === 'failure' &&
-          // !this.pbxTotalFailure &&
-          RnAppState.currentState === 'active'))
-    )
-  }
-  pbxConnectingOrFailure = () => {
-    return ['waiting', 'connecting', 'failure'].some(s => s === this.pbxState)
-  }
+  pbxShouldAuth = () =>
+    this.getCurrentAccount() &&
+    this.pbxState !== 'waiting' &&
+    // do not auth pbx if sip token is provided in case of PN
+    // wait until sip login success or failure
+    (!this.sipPn.sipAuth ||
+      this.sipState === 'success' ||
+      this.sipState === 'failure') &&
+    (this.pbxState === 'stopped' ||
+      (this.pbxState === 'failure' &&
+        // !this.pbxTotalFailure &&
+        RnAppState.currentState === 'active'))
+  pbxConnectingOrFailure = () =>
+    ['waiting', 'connecting', 'failure'].some(s => s === this.pbxState)
 
-  sipShouldAuth = () => {
-    return (
-      this.sipState !== 'waiting' &&
-      this.sipState !== 'connecting' &&
-      this.sipState !== 'success' &&
-      ((this.signedInId && this.sipPn.sipAuth) ||
-        (this.pbxState === 'success' &&
-          (this.sipState === 'stopped' ||
-            (this.sipState === 'failure' &&
-              // !this.sipTotalFailure &&
-              RnAppState.currentState === 'active'))))
-    )
-  }
-  sipConnectingOrFailure = () => {
-    return ['waiting', 'connecting', 'failure'].some(s => s === this.sipState)
-  }
+  sipShouldAuth = () =>
+    this.sipState !== 'waiting' &&
+    this.sipState !== 'connecting' &&
+    this.sipState !== 'success' &&
+    ((this.signedInId && this.sipPn.sipAuth) ||
+      (this.pbxState === 'success' &&
+        (this.sipState === 'stopped' ||
+          (this.sipState === 'failure' &&
+            // !this.sipTotalFailure &&
+            RnAppState.currentState === 'active'))))
+  sipConnectingOrFailure = () =>
+    ['waiting', 'connecting', 'failure'].some(s => s === this.sipState)
 
-  ucShouldAuth = () => {
-    return (
-      this.getCurrentAccount()?.ucEnabled &&
-      !this.ucLoginFromAnotherPlace &&
-      !this.isSignInByNotification &&
-      this.pbxState === 'success' &&
-      this.ucState !== 'waiting' &&
-      (this.ucState === 'stopped' ||
-        (this.ucState === 'failure' &&
-          // !this.ucTotalFailure &&
-          RnAppState.currentState === 'active'))
-    )
-  }
-  ucConnectingOrFailure = () => {
-    return (
-      this.getCurrentAccount()?.ucEnabled &&
-      ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
-    )
-  }
+  ucShouldAuth = () =>
+    this.getCurrentAccount()?.ucEnabled &&
+    !this.ucLoginFromAnotherPlace &&
+    !this.isSignInByNotification &&
+    this.pbxState === 'success' &&
+    this.ucState !== 'waiting' &&
+    (this.ucState === 'stopped' ||
+      (this.ucState === 'failure' &&
+        // !this.ucTotalFailure &&
+        RnAppState.currentState === 'active'))
+  ucConnectingOrFailure = () =>
+    this.getCurrentAccount()?.ucEnabled &&
+    ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
-  isConnFailure = () => {
-    return [
+  isConnFailure = () =>
+    [
       this.pbxState,
       this.sipState,
       this.getCurrentAccount()?.ucEnabled && this.ucState,
     ].some(s => s === 'failure')
-  }
 
   @observable signedInId = ''
   getCurrentAccount = () =>
     accountStore.accounts.find(a => a.id === this.signedInId) as Account
   getCurrentData = () => accountStore.findDataSync(this.getCurrentAccount())
   getCurrentDataAsync = () =>
-    accountStore.findDataAsync(this.getCurrentAccount())
+    accountStore.findDataWithDefault(this.getCurrentAccount())
 
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
@@ -135,9 +120,7 @@ export class AuthStore {
 
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
-  getCustomPageById = (id: string) => {
-    return this.listCustomPage.find(i => i.id == id)
-  }
+  getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)
   updateCustomPage = (cp: PbxCustomPage) => {
     const found = this.listCustomPage.find(p => p.id === cp.id)
     if (!found) {
@@ -145,15 +128,13 @@ export class AuthStore {
     }
     Object.assign(found, cp)
   }
-  isBigMode() {
-    return this.pbxConfig?.['webphone.allusers'] === 'false'
-  }
+  isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
 
   signIn = async (a?: Account, autoSignIn?: boolean) => {
     if (!a) {
       return false
     }
-    const d = await accountStore.findDataAsync(a)
+    const d = await accountStore.findDataWithDefault(a)
     if (!a.pbxPassword && !d.accessToken) {
       Nav().goToPageAccountUpdate({ id: a.id })
       RnAlert.error({
@@ -170,7 +151,7 @@ export class AuthStore {
   }
   autoSignInLast = async () => {
     const d = await getLastSignedInId()
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    const a = await accountStore.findByUniqueId(d.id)
     if (!a) {
       return false
     }
@@ -306,6 +287,12 @@ export class AuthStore {
     }
     const { _wn, host, phone_idx, port, tenant, user, password, number } =
       urlParams
+    const a = await accountStore.findPartial({
+      pbxUsername: user,
+      pbxTenant: tenant,
+      pbxHostname: host,
+      pbxPort: port,
+    })
     // handle deep link: make call from phoneappli app
     if (number) {
       // prevent double start call and check list account
@@ -317,19 +304,13 @@ export class AuthStore {
       // checking user login
       const isUserLoginValid = port && tenant && user && host
       if (isUserLoginValid) {
-        const ac = await accountStore.find({
-          pbxUsername: user,
-          pbxTenant: tenant,
-          pbxHostname: host,
-          pbxPort: port,
-        })
         // checking user is current user or not
-        if (!(this.signedInId && this.signedInId === ac?.id)) {
+        if (!(this.signedInId && this.signedInId === a?.id)) {
           if (this.signedInId) {
             this.signOut()
           }
-          const signed = ac
-            ? await this.signIn(ac, true)
+          const signed = a
+            ? await this.signIn(a, true)
             : await auth.autoSignInFirstAccount()
           if (!signed) {
             this.clearUrlParams()
@@ -386,12 +367,6 @@ export class AuthStore {
     if (!tenant || !user) {
       return false
     }
-    const a = await accountStore.find({
-      pbxUsername: user,
-      pbxTenant: tenant,
-      pbxHostname: host,
-      pbxPort: port,
-    })
     //
     let phoneIdx = parseInt(phone_idx)
     if (!phoneIdx || phoneIdx <= 0 || phoneIdx > 4) {
@@ -408,7 +383,7 @@ export class AuthStore {
         a.pbxPassword = password
       }
       a.pbxPhoneIndex = `${phoneIdx}`
-      const d = await accountStore.findDataAsync(a)
+      const d = await accountStore.findDataWithDefault(a)
       if (_wn) {
         d.accessToken = _wn
       }
@@ -431,7 +406,7 @@ export class AuthStore {
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
-    const d = await accountStore.findDataAsync(newA)
+    const d = await accountStore.findDataWithDefault(newA)
     //
     accountStore.upsertAccount(newA)
     if (newA.pbxPassword || d.accessToken) {

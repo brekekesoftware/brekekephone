@@ -1,6 +1,6 @@
 import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 

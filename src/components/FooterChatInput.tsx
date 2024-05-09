@@ -1,10 +1,9 @@
-import { FC } from 'react'
-import {
+import type { FC } from 'react'
+import type {
   NativeSyntheticEvent,
-  StyleSheet,
   TextInputSelectionChangeEventData,
-  View,
 } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '../assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from './Rn'

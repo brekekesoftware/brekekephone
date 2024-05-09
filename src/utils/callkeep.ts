@@ -1,5 +1,6 @@
 import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
-import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
+import type { EventsPayload } from 'react-native-callkeep'
+import RNCallKeep from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
 import { bundleIdentifier } from '../config'

@@ -3,12 +3,13 @@ import { random } from 'lodash'
 import { Platform } from 'react-native'
 import validator from 'validator'
 
-import { Pbx, PbxCustomPage, PbxEvent } from '../brekekejs'
+import type { Pbx, PbxCustomPage, PbxEvent } from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
-import { Account, accountStore } from '../stores/accountStore'
+import type { Account } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore, waitPbx } from '../stores/authStore'
-import { PbxUser, Phonebook } from '../stores/contactStore'
+import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -23,7 +24,8 @@ import {
   replaceUrlWithoutPbxToken,
 } from './customPage'
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
-import { PnCommand, PnParams, PnParamsNew, PnServiceId } from './pnConfig'
+import type { PnParams, PnParamsNew } from './pnConfig'
+import { PnCommand, PnServiceId } from './pnConfig'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -42,7 +44,7 @@ export class PBX extends EventEmitter {
       return true
     }
 
-    const d = await accountStore.findDataAsync(a)
+    const d = await accountStore.findDataWithDefault(a)
     const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
@@ -66,15 +68,14 @@ export class PBX extends EventEmitter {
     this.client = client
 
     client.debugLevel = 2
-    client.call_pal = (method: keyof Pbx, params?: object) => {
-      return new Promise((resolve, reject) => {
+    client.call_pal = (method: keyof Pbx, params?: object) =>
+      new Promise((resolve, reject) => {
         const f = client[method] as Function
         if (typeof f !== 'function') {
           return reject(new Error(`PAL client doesn't support "${method}"`))
         }
         f.call(client, params, resolve, reject)
       })
-    }
 
     // emit to embed api
     if (!window._BrekekePhoneWebRoot) {
@@ -748,50 +749,44 @@ export class PBX extends EventEmitter {
     return true
   }
 
-  setWebPnToken = async (d: PnParams) => {
-    return this.pnmanage({
+  setWebPnToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.web,
     })
-  }
-  removeWebPnToken = async (d: PnParams) => {
-    return this.pnmanage({
+  removeWebPnToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.remove,
       service_id: PnServiceId.web,
     })
-  }
 
-  setFcmPnToken = async (d: PnParams) => {
-    return this.pnmanage({
+  setFcmPnToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.fcm,
     })
-  }
-  removeFcmPnToken = async (d: PnParams) => {
-    return this.pnmanage({
+  removeFcmPnToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.remove,
       service_id: PnServiceId.fcm,
     })
-  }
 
-  setApnsToken = async (d: PnParams) => {
-    return this.pnmanage({
+  setApnsToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.set,
       service_id: PnServiceId.apns,
     })
-  }
-  removeApnsToken = async (d: PnParams) => {
-    return this.pnmanage({
+  removeApnsToken = async (d: PnParams) =>
+    this.pnmanage({
       ...d,
       command: PnCommand.remove,
       service_id: PnServiceId.apns,
     })
-  }
 }
 
 export const pbx = new PBX()

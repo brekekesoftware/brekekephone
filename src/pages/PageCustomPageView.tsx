@@ -7,7 +7,7 @@ import {
   rebuildCustomPageUrlNonce,
   rebuildCustomPageUrlPbxToken,
 } from '../api/pbx'
-import { PbxCustomPage } from '../brekekejs'
+import type { PbxCustomPage } from '../brekekejs'
 import { CustomPageWebView } from '../components/CustomPageWebView'
 import { Layout } from '../components/Layout'
 import { getAuthStore } from '../stores/authStore'
@@ -58,7 +58,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
     as.updateCustomPage({ ...cp, url })
   }
 
-  render() {
+  render = () => {
     const {
       props: { id },
     } = this
@@ -109,14 +109,14 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const title = cp?.title
       ? cp.title
       : !loaded
-      ? intl`Loading...`
-      : intl`PBX user settings`
+        ? intl`Loading...`
+        : intl`PBX user settings`
     const description = !loaded
       ? intl`Loading...`
       : this.state.webviewError
-      ? // TODO
-        ''
-      : ''
+        ? // TODO
+          ''
+        : ''
 
     return (
       <Layout

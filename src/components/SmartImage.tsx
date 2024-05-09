@@ -6,10 +6,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import WebView, { WebViewMessageEvent } from 'react-native-webview'
-import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
+import type { WebViewMessageEvent } from 'react-native-webview'
+import WebView from 'react-native-webview'
+import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import noPhoto from '../assets/no_photo.png'
+
 import { buildWebViewSource } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'

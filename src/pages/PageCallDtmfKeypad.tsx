@@ -1,7 +1,7 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
-import {
+import type {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
@@ -20,10 +20,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 @observer
 export class PageCallDtmfKeypad extends Component {
   prevId?: string
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const oc = getCallStore().getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
@@ -53,7 +53,7 @@ export class PageCallDtmfKeypad extends Component {
     })
   }
 
-  render() {
+  render = () => {
     const oc = getCallStore().getOngoingCall()
     return (
       <Layout

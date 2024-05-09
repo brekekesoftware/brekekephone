@@ -1,5 +1,5 @@
+import type { JSExceptionHandler } from 'react-native-exception-handler'
 import {
-  JSExceptionHandler,
   setJSExceptionHandler,
   setNativeExceptionHandler,
 } from 'react-native-exception-handler'

@@ -16,10 +16,10 @@ export class PageCallParks extends Component<{
   callParks2: boolean
 }> {
   prevId?: string
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     if (!this.props.callParks2) {
       return
     }
@@ -48,7 +48,7 @@ export class PageCallParks extends Component<{
       : getCallStore().startCall(p || '')
   }
 
-  render() {
+  render = () => {
     const cp = getAuthStore().getCurrentAccount()
     if (!cp) {
       return null

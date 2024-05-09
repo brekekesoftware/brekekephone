@@ -1,10 +1,8 @@
 import { useRef } from 'react'
 import { Platform, StyleSheet } from 'react-native'
-import WebView, {
-  WebViewMessageEvent,
-  WebViewProps,
-} from 'react-native-webview'
-import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
+import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
+import WebView from 'react-native-webview'
+import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import { buildWebViewSource } from '../config'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'

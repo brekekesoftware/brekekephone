@@ -39,7 +39,7 @@ const css = StyleSheet.create({
 export class DidMountTimer extends Component<any> {
   private didMountTimer = 0
   @observable didMount = false
-  componentDidMount() {
+  componentDidMount = () => {
     this.didMountTimer = BackgroundTimer.setTimeout(
       action(() => {
         this.didMountTimer = 0
@@ -48,14 +48,12 @@ export class DidMountTimer extends Component<any> {
       1000,
     )
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (this.didMountTimer) {
       BackgroundTimer.clearTimeout(this.didMountTimer)
     }
   }
-  render() {
-    return this.didMount ? this.props.children : null
-  }
+  render = () => (this.didMount ? this.props.children : null)
 }
 
 export const CallNotify = observer(() => {

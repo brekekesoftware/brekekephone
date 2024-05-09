@@ -2,16 +2,17 @@ import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
-import { CallOptions, Session, Sip } from '../brekekejs'
+import type { CallOptions, Session, Sip } from '../brekekejs'
 import { currentVersion } from '../components/variables'
 import { embedApi } from '../embed/embedApi'
-import { accountStore, AccountUnique } from '../stores/accountStore'
+import type { AccountUnique } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { Call, CallConfig } from '../stores/Call'
+import type { Call, CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getCameraSourceIds } from './getCameraSourceId'
@@ -363,15 +364,11 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => {
-    return this.phone?.setWithVideo(sessionId, true)
-  }
-  disableVideo = (sessionId: string) => {
-    return this.phone?.setWithVideo(sessionId, false)
-  }
-  setMuted = (muted: boolean, sessionId: string) => {
-    return this.phone?.setMuted({ main: muted }, sessionId)
-  }
+  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
+  disableVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(sessionId, false)
+  setMuted = (muted: boolean, sessionId: string) =>
+    this.phone?.setMuted({ main: muted }, sessionId)
   switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {

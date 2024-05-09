@@ -1,7 +1,8 @@
 import { Platform } from 'react-native'
 import { getCurrentWifiSSID } from 'react-native-wifi-reborn'
 
-import { Account, accountStore } from '../stores/accountStore'
+import type { Account } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { compareSemVer } from '../stores/debugStore'
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'

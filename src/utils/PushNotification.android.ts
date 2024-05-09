@@ -2,12 +2,12 @@ import './callkeep'
 
 import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
-import {
+import type {
   Notification,
-  Notifications,
   Registered,
   RegistrationError,
 } from 'react-native-notifications'
+import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
@@ -151,9 +151,7 @@ export const PushNotification = {
     }
   },
 
-  getToken: () => {
-    return fcmToken
-  },
+  getToken: () => fcmToken,
   resetBadgeNumber: () => {
     // TODO
   },
@@ -161,10 +159,12 @@ export const PushNotification = {
 
 // TODO
 // { callUUID, handle, name }
-AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => () => {
-  // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
-  return Promise.resolve(undefined)
-})
+AppRegistry.registerHeadlessTask(
+  'RNCallKeepBackgroundMessage',
+  () => () =>
+    // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
+    Promise.resolve(undefined),
+)
 
 const getInitialNotifications = async () => {
   const n = await BrekekeUtils.getInitialNotifications()
