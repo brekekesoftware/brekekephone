@@ -58,18 +58,18 @@ class Api {
     authSIP.authWithCheck()
     await waitSip()
     await pbx.getConfig()
-    const cp = s.getCurrentAccount()
-    if (!cp) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return
     }
     contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
-    if (cp.pbxLocalAllUsers === undefined) {
-      cp.pbxLocalAllUsers = true
+    if (ca.pbxLocalAllUsers === undefined) {
+      ca.pbxLocalAllUsers = true
     }
-    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
-      if (cp.ucEnabled) {
+    if (s.isBigMode() || !ca.pbxLocalAllUsers) {
+      if (ca.ucEnabled) {
         userStore.loadUcBuddyList()
       } else {
         userStore.loadPbxBuddyList()
@@ -81,7 +81,7 @@ class Api {
       return
     }
     SyncPnToken()
-      .sync(cp)
+      .sync(ca)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {

@@ -77,14 +77,14 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate = () => {
-    const cp = getAuthStore().getCurrentAccount()
-    if (this.displayOfflineUsers.enabled !== cp?.displayOfflineUsers) {
-      this.displayOfflineUsers.setEnabled(cp?.displayOfflineUsers)
+    const ca = getAuthStore().getCurrentAccount()
+    if (this.displayOfflineUsers.enabled !== ca?.displayOfflineUsers) {
+      this.displayOfflineUsers.setEnabled(ca?.displayOfflineUsers)
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
-    const cp = getAuthStore().getCurrentAccount()
-    if (!cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return ''
     }
     if (!isUserSelectionMode) {
@@ -93,7 +93,7 @@ export class PageContactUsers extends Component {
         i => i.status && i.status !== 'offline',
       )
       let desc = intl`Users, ${allUsers.length} total`
-      if (allUsers.length && cp.ucEnabled) {
+      if (allUsers.length && ca.ucEnabled) {
         desc = desc.replace(
           intl`${allUsers.length} total`,
           intl`${onlineUsers.length}/${allUsers.length} online`,
@@ -103,13 +103,13 @@ export class PageContactUsers extends Component {
     } else {
       const searchTxt = contactStore.usersSearchTerm.toLowerCase()
       const isShowOfflineUser =
-        !cp.ucEnabled || this.displayOfflineUsers.enabled
+        !ca.ucEnabled || this.displayOfflineUsers.enabled
       const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
         searchTxt,
         isShowOfflineUser,
       )
       let desc = intl`Users, ${totalContact} total`
-      if (cp.ucEnabled) {
+      if (ca.ucEnabled) {
         desc = desc.replace(
           intl`${totalContact} total`,
           intl`${totalOnlineContact}/${totalContact} online`,
@@ -127,15 +127,15 @@ export class PageContactUsers extends Component {
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {
-    const cp = getAuthStore().getCurrentAccount()
-    if (!cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return null
     }
     const allUsers = this.getMatchUserIds().map(this.resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = (typeof allUsers)[0]
     const displayUsers =
-      !this.displayOfflineUsers.enabled && cp.ucEnabled ? onlineUsers : allUsers
+      !this.displayOfflineUsers.enabled && ca.ucEnabled ? onlineUsers : allUsers
     const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
       u.name = u.name || u.id || ''
@@ -177,11 +177,11 @@ export class PageContactUsers extends Component {
 
   render = () => {
     const s = getAuthStore()
-    const cp = s.getCurrentAccount()
-    if (!cp) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode() || !cp.pbxLocalAllUsers
+    const isUserSelectionMode = s.isBigMode() || !ca.pbxLocalAllUsers
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
@@ -215,7 +215,7 @@ export class PageContactUsers extends Component {
               })
             }}
             type='Switch'
-            value={cp.displayOfflineUsers}
+            value={ca.displayOfflineUsers}
           />
         )}
         {isUserSelectionMode

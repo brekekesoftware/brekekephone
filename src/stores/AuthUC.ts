@@ -93,8 +93,11 @@ class AuthUC {
   @action private loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
     const s = getAuthStore()
-    const cp = s.getCurrentAccount()
-    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
+      return
+    }
+    if (s.isBigMode() || !ca.pbxLocalAllUsers) {
       userStore.loadUcBuddyList()
     }
     const users = uc.getUsers()

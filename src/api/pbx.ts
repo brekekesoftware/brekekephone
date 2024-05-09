@@ -319,10 +319,12 @@ export class PBX extends EventEmitter {
     _parseListCustomPage()
 
     const d = await as.getCurrentDataAsync()
-    d.palParams = parsePalParams(as.pbxConfig)
-    d.userAgent = as.pbxConfig['webphone.useragent']
-    d.pnExpires = as.pbxConfig['webphone.pn_expires']
-    accountStore.updateAccountData(d)
+    if (d) {
+      d.palParams = parsePalParams(as.pbxConfig)
+      d.userAgent = as.pbxConfig['webphone.useragent']
+      d.pnExpires = as.pbxConfig['webphone.pn_expires']
+      accountStore.updateAccountData(d)
+    }
 
     return as.pbxConfig
   }
@@ -358,12 +360,12 @@ export class PBX extends EventEmitter {
     if (this.isMainInstance) {
       await waitPbx()
     }
-    const cp = getAuthStore().getCurrentAccount()
-    if (!this.client || !cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!this.client || !ca) {
       return
     }
     const res = await this.client.call_pal('getExtensionProperties', {
-      tenant: cp.pbxTenant,
+      tenant: ca.pbxTenant,
       extension: ids,
       property_names: ['name'],
     })
@@ -834,6 +836,9 @@ const _parseListCustomPage = () => {
 
 export const buildCustomPageUrl = async (url: string) => {
   const ca = getAuthStore().getCurrentAccount()
+  if (!ca) {
+    return url
+  }
   url = replaceUrlWithoutPbxToken(
     url,
     intlStore.locale,

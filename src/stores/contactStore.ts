@@ -338,14 +338,14 @@ class ContactStore {
     if (!parkNumber) {
       return
     }
-    const cp = getAuthStore().getCurrentAccount()
-    if (!cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!ca) {
       return
     }
     const arr =
-      cp.parks?.map((p, i) => ({
+      ca.parks?.map((p, i) => ({
         park: p,
-        name: cp.parkNames?.[i] || '',
+        name: ca.parkNames?.[i] || '',
       })) || []
     const parks = uniqBy(arr, 'park')
     return parks.find(p => p.park === parkNumber)?.name
