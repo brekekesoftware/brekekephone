@@ -51,6 +51,11 @@ import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const height = Dimensions.get('window').height
+const width = Dimensions.get('window').width
+const minSizeH = height * 0.3
+const minSizeW = width * 0.8
+const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
+
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
@@ -128,8 +133,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    minHeight: Dimensions.get('window').height * 0.4,
-    minWidth: Dimensions.get('window').height * 0.4,
+    minHeight: minSizeImageWrapper,
+    minWidth: minSizeImageWrapper,
   },
   ImageSize: {
     height: 130,
