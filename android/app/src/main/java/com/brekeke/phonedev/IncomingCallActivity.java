@@ -1085,6 +1085,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public TimerTask timerTask;
 
   public void startTimer(long answeredAt) {
+    // make sure timer task execute one time
+    if (timerTask != null) {
+      return;
+    }
     timerTask =
         new TimerTask() {
           @Override
