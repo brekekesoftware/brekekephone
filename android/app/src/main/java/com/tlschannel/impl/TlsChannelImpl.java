@@ -31,7 +31,7 @@ public class TlsChannelImpl implements ByteChannel {
 
   private static final Logger logger = Logger.getLogger(TlsChannelImpl.class.getName());
 
-  public static final int buffersInitialSize = 4096;
+  public static final int buffersInitialSize = 8096;
 
   /** Official TLS max data size is 2^14 = 16k. Use 1024 more to account for the overhead */
   public static final int maxTlsPacketSize = 17 * 1024;
@@ -356,7 +356,7 @@ public class TlsChannelImpl implements ByteChannel {
 //     }
 //    if (logger.isLoggable(Level.FINEST)) {
       logger.log(
-          Level.ALL, "Read from channel; response: {}, buffer: {}", new Object[] {c, buffer});
+          Level.INFO, "Read from channel; response: {}, buffer: {}", new Object[] {c, buffer});
 //    }
     if (c == -1) {
       throw new EofException();
@@ -412,6 +412,9 @@ public class TlsChannelImpl implements ByteChannel {
   private SSLEngineResult wrapLoop(ByteBufferSet source) throws SSLException {
     while (true) {
       SSLEngineResult result = callEngineWrap(source);
+      Log.d("[BrekekeLpcService]1", result.getStatus().toString());
+      Log.d("[BrekekeLpcService]2", String.valueOf(source.length));
+      Log.d("[BrekekeLpcService]3", String.valueOf(result.bytesProduced()) + ' ' + String.valueOf(result.bytesConsumed()));
       switch (result.getStatus()) {
         case OK:
         case CLOSED:
@@ -430,13 +433,19 @@ public class TlsChannelImpl implements ByteChannel {
     try {
       SSLEngineResult result =
           engine.wrap(source.array, source.offset, source.length, outEncrypted.buffer);
-      if (logger.isLoggable(Level.FINEST)) {
+      if (logger.isLoggable(Level.INFO)) {
         logger.log(
-            Level.FINEST,
+            Level.INFO,
             "engine.wrap() result: [{0}]; engine status: {1}; srcBuffer: {2}, outEncrypted: {3}",
             new Object[] {
               Util.resultToString(result), result.getHandshakeStatus(), source, outEncrypted
             });
+        logger.log(
+                Level.INFO,
+                "engine.wrap() result: [{0}]",
+                new Object[] {
+                        Util.resultToString(result)
+                });
       }
       return result;
     } catch (SSLException e) {

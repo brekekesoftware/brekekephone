@@ -94,8 +94,9 @@ public class BrekekeSSLSocket {
 
     private String mock =
         "Data{\"requestIdentifier\":504316054,\"payload\":{\"data\":\"eyJ1dWlkIjoiRkFBMUI2QUItNTdFMy00RUU4LUJDOTQtMzM1MTdCNUI0QkFEIiwiZGV2aWNlTmFtZSI6ImlQaG9uZSAxNSBQcm8ifQ==\",\"codingKey\":1},\"command\":\"request\"}";
+    private String mockBre = "Data{\"payload\":{\"codingKey\":1,\"data\":\"eyJ1dWlkIjoiMmMzNTMwZmM3MjRiZWFjMDk4YTM0Yjk5NzhkMDg5NGU4ODJjN2UxZjZiNTVjZjllMDVkMGVkMzAyNzBjZjUwOCRwbi1nd0BuYW1fbmFtMDNfcGhvbmUzX3dlYnBob25lIiwidXVpZDIiOiIxZDE4YjY2YjI4ZTA1Mzk4NWU2YThjMjFmYjNkNWIzOTA0OGViZDIwMWE2OGRhYWQwYWJjMWJlYTg0NjEzNzI5JHBuLWd3QG5hbV9uYW0wM19waG9uZTNfd2VicGhvbmVAdm9pcCIsImFwcGlkIjoiY29tLmJyZWtla2UucGhvbmVkZXYiLCJkZXZpY2VOYW1lIjoibmFtX25hbTAzX3Bob25lM193ZWJwaG9uZSJ9\"},\"command\":\"request\",\"requestIdentifier\":4127205467}";
 
-    private String mockLpc = "{\"uuid\": \"2c3530fc724beac098a34b9978d0894e882c7e1f6b55cf9e05d0ed30270cf508$pn-gw@nam_nam01_phone1_webphone\", \"uuid2\": \"1d18b66b28e053985e6a8c21fb3d5b39048ebd201a68daad0abc1bea84613729$pn-gw@nam_nam01_phone1_webphone@voip\", \"deviceName\": \"nam_nam01_phone1_webphone\", \"appid\": \"com.brekeke.phonedev\"}";
+    private String mockLpc = "{\"uuid\":\"805b2b98d51ce3a3d6dc540ec38e6d7d7b155889f4da9975c1f96c2c69a71b98cc6f5b74492ad167e3d990701e0960dd8b189a47af5d8f970d68f6f1b9f984628fa5fbb058c709e463e311980328981a$pn-gw@nam_nam03_phone3_webphone\",\"uuid2\":\"808c693431851a40c8f93c46aeb2d6c9c2840112194c8af1d47ed2644704eeb7fc14b79247776fced5f731183e5a8235f94e5421559e8935e09acbe3aeabdcd55e5ea65a8ae5685cf3201a78073b426d$pn-gw@nam_nam03_phone3_webphone@voip\",\"deviceName\":\"nam_nam03_phone3_webphone\",\"appid\":\"com.brekeke.phonedev\"}";
 
     private String mockEx = "{\"payload\":{\"codingKey\":1,\"data\":\"eyJ1dWlkIjoiMmMzNTMwZmM3MjRiZWFjMDk4YTM0Yjk5NzhkMDg5NGU4ODJjN2UxZjZiNTVjZjllMDVkMGVkMzAyNzBjZjUwOCRwbi1nd0BuYW1fbmFtMDFfcGhvbmUxX3dlYnBob25lIiwidXVpZDIiOiIxZDE4YjY2YjI4ZTA1Mzk4NWU2YThjMjFmYjNkNWIzOTA0OGViZDIwMWE2OGRhYWQwYWJjMWJlYTg0NjEzNzI5JHBuLWd3QG5hbV9uYW0wMV9waG9uZTFfd2VicGhvbmVAdm9pcCIsImFwcGlkIjoiY29tLmJyZWtla2UucGhvbmVkZXYiLCJkZXZpY2VOYW1lIjoibmFtX25hbTAxX3Bob25lMV93ZWJwaG9uZSJ9\"},\"command\":\"request\",\"requestIdentifier\":4093394966}";
     private KeyStore trustStore;
@@ -196,10 +197,16 @@ public class BrekekeSSLSocket {
 
       public Payload(Object data) {
         Log.d(TAG + "data", new CodableHelper().encode(data));
-        this.data =
+//        this.data =
+//            new String(
+//                Base64.encode(
+//                    (new CodableHelper().encode(data)).getBytes(StandardCharsets.UTF_8),
+//                    Base64.NO_WRAP));
+
+                this.data =
             new String(
                 Base64.encode(
-                    (new CodableHelper().encode(data)).getBytes(StandardCharsets.UTF_8),
+                        mockLpc.getBytes(StandardCharsets.UTF_8),
                     Base64.NO_WRAP));
 
         Log.d(TAG + "data", this.data);
@@ -318,8 +325,8 @@ public class BrekekeSSLSocket {
     public void createChannel(SSLContext sslContext) throws IOException, GeneralSecurityException {
 
       byte[] data = getDataParams();
-      ByteBuffer requestBuffer = ByteBuffer.wrap(data);
-      ByteBuffer responseBuffer = ByteBuffer.allocateDirect(1024);
+      ByteBuffer requestBuffer = ByteBuffer.wrap(mockBre.getBytes("utf-8"), 0, mockBre.getBytes("utf-8").length);
+      ByteBuffer responseBuffer = ByteBuffer.allocateDirect(8096);
       boolean requestSent = false;
 
       Selector selector = Selector.open();
@@ -328,8 +335,8 @@ public class BrekekeSSLSocket {
         rawChannel.configureBlocking(false);
         rawChannel.setOption(SO_KEEPALIVE, true);
         rawChannel.setOption(TCP_NODELAY, true);
-        rawChannel.setOption(SO_REUSEADDR, true);
-        rawChannel.setOption(SO_SNDBUF, 4096);
+//        rawChannel.setOption(SO_REUSEADDR, true);
+//        rawChannel.setOption(SO_SNDBUF, 8096);
 //        rawChannel.connect(new InetSocketAddress("Yees-mbp.lan", this.settings.port));
         rawChannel.connect(new InetSocketAddress(this.settings.host, this.settings.port));
         rawChannel.register(selector, SelectionKey.OP_CONNECT);
@@ -402,7 +409,7 @@ public class BrekekeSSLSocket {
       Map<String, Object> map = new HashMap<>();
       Map<String, Object> p =  new HashMap<>();
        map.put("requestIdentifier", new Random().nextInt(999999999));
-      LPCModel.User u = new LPCModel().new User(uuid, uuid2, this.settings.userName);
+      LPCModel.User u = new LPCModel().new User(this.settings.token, this.settings.token, this.settings.userName);
 //      map.put("payload", new Payload(new Person(deviceName, uuid)));
       map.put("payload", new Payload(u));
       map.put("command", "request");

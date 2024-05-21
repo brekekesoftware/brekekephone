@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import NetworkExtension
 import UserNotifications
+import OSLog
 
 class BrekekeLPCExtension: NEAppPushProvider {
   private let channel = BaseChannel(
@@ -21,6 +22,8 @@ class BrekekeLPCExtension: NEAppPushProvider {
     super.init()
 
     logger.log("Initialized")
+    
+    os_log("Duy Phann")
 
     // observe notification channel connection state for logging purposes
     channel.statePublisher
@@ -73,9 +76,11 @@ class BrekekeLPCExtension: NEAppPushProvider {
         }
 
         self.logger.log("settingsPublisher::start::user \(settings)")
+       
         let user = User(uuid: settings.user.uuid,
                         uuid2: settings.user.uuid2,
                         deviceName: settings.user.deviceName)
+        print("Userrrr \(user)")
         self.channel.setConnectionDetail(
           host: settings.pushManagerSettings.host,
           port: settings.pushManagerSettings.port,

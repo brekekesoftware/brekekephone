@@ -72,6 +72,8 @@ public class BrekekeLpcService extends Service {
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
 
+    Log.d(TAG + "token", token);
+
     this.settings = new LPCModel().new Settings(host, port, tlsKeyHash, token, username);
     this.createConnection(settings);
     return null;

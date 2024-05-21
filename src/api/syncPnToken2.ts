@@ -158,6 +158,8 @@ const syncPnTokenWithoutCatch = async (
       localSsid,
       tlsKeyHash,
       lpcPn,
+      t,
+      tvoip,
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(

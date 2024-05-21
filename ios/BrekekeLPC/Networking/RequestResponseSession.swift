@@ -168,12 +168,15 @@ public class RequestResponseSession: NetworkSession {
 
       do {
         let payload = try self.keyCoder.encode(value: message)
+      
         let wrapper = Wrapper(
           command: .request,
           requestIdentifier: id,
           payload: payload
         )
         let encodedWrapper = try self.encoder.encode(wrapper)
+        let str = String(data: encodedWrapper, encoding: .utf8)
+        self.logger.log("StrEncode \(str)")
 
         self.send(data: encodedWrapper)
       } catch {
