@@ -2,12 +2,12 @@ import './callkeep'
 
 import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
-import {
+import type {
   Notification,
-  Notifications,
   Registered,
   RegistrationError,
 } from 'react-native-notifications'
+import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
 import { intlDebug } from '../stores/intl'
@@ -60,6 +60,7 @@ const onNotification = async (
 export const PushNotification = {
   register: async (initApp: Function) => {
     try {
+      await BrekekeUtils.checkPermissionDefaultDialer()
       await permNotifications()
       initApp()
       const hasPermissions: boolean =
@@ -99,7 +100,7 @@ export const PushNotification = {
         // showBadge: true,
         // place this in android/app/src/main/res/raw/ding.mp3
         // soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // set notification channel for chat
@@ -114,7 +115,7 @@ export const PushNotification = {
         // groupName: 'My Group',
         // showBadge: true,
         soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // handle received PN
@@ -150,9 +151,7 @@ export const PushNotification = {
     }
   },
 
-  getToken: () => {
-    return fcmToken
-  },
+  getToken: () => fcmToken,
   resetBadgeNumber: () => {
     // TODO
   },
@@ -160,10 +159,12 @@ export const PushNotification = {
 
 // TODO
 // { callUUID, handle, name }
-AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => () => {
-  // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
-  return Promise.resolve(undefined)
-})
+AppRegistry.registerHeadlessTask(
+  'RNCallKeepBackgroundMessage',
+  () => () =>
+    // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
+    Promise.resolve(undefined),
+)
 
 const getInitialNotifications = async () => {
   const n = await BrekekeUtils.getInitialNotifications()

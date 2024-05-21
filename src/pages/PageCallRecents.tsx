@@ -1,13 +1,15 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
-import { AppState, NativeEventSubscription, Platform } from 'react-native'
+import type { NativeEventSubscription } from 'react-native'
+import { AppState, Platform } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { accountStore, RecentCall } from '../stores/accountStore'
+import type { RecentCall } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
@@ -48,9 +50,11 @@ export class PageCallRecents extends Component {
   }
   getMatchedCalls = () => {
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataAsync(as.getCurrentAccount())
+    if (!d && ca) {
+      // trigger async update
+      accountStore.findDataWithDefault(ca)
     }
     const calls = d?.recentCalls.filter(this.isMatchUser) || []
     // backward compatibility to remove invalid items from the previous versions

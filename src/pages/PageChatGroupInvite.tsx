@@ -86,7 +86,6 @@ export class PageChatGroupInvite extends Component<{
       </Layout>
     )
   }
-
   isNotMember = (buddy: string) =>
     !chatStore.getGroupById(this.props.groupId).members?.includes(buddy)
   resolveBuddy = (buddy: string) => contactStore.getUcUserById(buddy)

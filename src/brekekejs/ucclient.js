@@ -10986,15 +10986,15 @@ Logger = function (level, func, withStackTrace) {
           trace: true,
         }
       : !withStackTrace
-      ? {
-          fatal: true,
-          error: true,
-          warn: true,
-          info: false,
-          debug: false,
-          trace: true,
-        }
-      : withStackTrace
+        ? {
+            fatal: true,
+            error: true,
+            warn: true,
+            info: false,
+            debug: false,
+            trace: true,
+          }
+        : withStackTrace
   this._stackTraceHeaderLength = -2
 
   // trial logging to initialize stackTraceHeaderLength

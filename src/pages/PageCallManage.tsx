@@ -1,11 +1,11 @@
 import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import type { NativeEventSubscription } from 'react-native'
 import {
   ActivityIndicator,
   AppState,
   Dimensions,
-  NativeEventSubscription,
   Platform,
   StyleSheet,
   View,
@@ -41,7 +41,7 @@ import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
-import { Call, CallConfigKey } from '../stores/Call'
+import type { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -128,6 +128,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    minHeight: Dimensions.get('window').height * 0.4,
+    minWidth: Dimensions.get('window').height * 0.4,
   },
   ImageSize: {
     height: 130,
@@ -200,11 +202,10 @@ const css = StyleSheet.create({
     alignItems: 'center',
   },
 })
-export const backAction = () => {
-  return getAuthStore().phoneappliEnabled()
+export const backAction = () =>
+  getAuthStore().phoneappliEnabled()
     ? Nav().backToPageCallKeypad()
     : Nav().backToPageCallRecents()
-}
 
 // render all the calls in App.tsx
 // the avatars will be kept even if we navigate between views
@@ -212,13 +213,13 @@ export const backAction = () => {
 export class RenderAllCalls extends Component {
   prevCallsLength = getCallStore().calls.length
 
-  componentDidMount() {
+  componentDidMount = () => {
     const s = getCallStore()
     if (s.inPageCallManage && !s.calls.length) {
       backAction()
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const l = getCallStore().calls.length
     if (this.prevCallsLength && !l) {
       backAction()
@@ -252,7 +253,7 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  componentDidMount() {
+  componentDidMount = () => {
     this.checkJavaPn()
     this.componentDidUpdate()
     this.appStateSubscription = AppState.addEventListener(
@@ -260,11 +261,11 @@ class PageCallManage extends Component<{
       this.onAppStateChange,
     )
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     this.hideButtonsIfVideo()
     this.openJavaPnOnVisible()
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     getCallStore().onCallKeepAction()
     this.appStateSubscription?.remove()
     const { call: c } = this.props
@@ -486,6 +487,7 @@ class PageCallManage extends Component<{
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
           {!c.answered && (
@@ -493,6 +495,7 @@ class PageCallManage extends Component<{
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
         </View>
@@ -593,6 +596,7 @@ class PageCallManage extends Component<{
           {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
+              disabled={c.sessionStatus === 'dialing'}
               bgcolor={
                 getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
               }

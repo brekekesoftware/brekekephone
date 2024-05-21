@@ -3,7 +3,7 @@ import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { UcMessageLog } from '../brekekejs'
+import type { UcMessageLog } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { ListUsers } from '../components/ChatListUsers'
 import { Field } from '../components/Field'
@@ -11,8 +11,10 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { ChatGroup, ChatMessage, chatStore } from '../stores/chatStore'
-import { contactStore, UcUser } from '../stores/contactStore'
+import type { ChatGroup, ChatMessage } from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
+import type { UcUser } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { arrToMap } from '../utils/arrToMap'
@@ -41,7 +43,7 @@ export class PageChatRecents extends Component {
       arr2.pop()
     }
     const d = await getAuthStore().getCurrentDataAsync()
-    if (jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
+    if (d && jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
       d.recentChats = arr2
       accountStore.saveAccountsToLocalStorageDebounced()
     }
@@ -68,9 +70,11 @@ export class PageChatRecents extends Component {
     }
 
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataAsync(as.getCurrentAccount())
+    if (!d && ca) {
+      // trigger async update
+      accountStore.findDataWithDefault(ca)
     }
     const recentFromStorage =
       d?.recentChats.filter(

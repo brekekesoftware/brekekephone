@@ -67,6 +67,7 @@
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
       android:autoRemoveFromRecents="true"
+      android:windowSoftInputMode="adjustPan"
     />
     <activity
       android:name=".ExitActivity"

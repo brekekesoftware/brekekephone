@@ -10,10 +10,10 @@ export const arrToMap = <
   [k: string]: K extends undefined
     ? boolean
     : K extends Function
-    ? V
-    : K extends keyof T
-    ? T[K]
-    : never
+      ? V
+      : K extends keyof T
+        ? T[K]
+        : never
 } => {
   const map = {}
   const a = Array.isArray(arr) ? arr : Array.from(arr)
@@ -24,8 +24,8 @@ export const arrToMap = <
       typeof value === 'function'
         ? value(item, index)
         : value
-        ? item[String(value)]
-        : true
+          ? item[String(value)]
+          : true
     map[String(k)] = v
   })
   return map

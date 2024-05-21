@@ -1,14 +1,16 @@
 // main entry for the create-react-app web bundle
 
 import qs from 'qs'
-import { ReactElement, useState } from 'react'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
-import Url from 'url-parse'
+import type Url from 'url-parse'
 
 import brand from '../assets/brand.png'
-import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import logo from '../assets/logo.png'
+
+import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
 import { bundleIdentifier } from '../config'
 import { getWebRootIdProps, webRootId } from '../embed/polyfill'
 import { intl } from '../stores/intl'
@@ -142,5 +144,5 @@ export const App = () => {
   )
 }
 
-// eslint-disable-next-line import/no-default-export
+// eslint-disable-next-line no-restricted-syntax
 export default App

@@ -1,7 +1,8 @@
 import { get, set } from 'lodash'
-import { NativeModule, NativeModules, Platform } from 'react-native'
+import type { NativeModule } from 'react-native'
+import { NativeModules, Platform } from 'react-native'
 
-import { TCallKeepAction } from '../stores/callStore2'
+import type { TCallKeepAction } from '../stores/callStore2'
 
 export enum CallLogType {
   INCOMING_TYPE = 1,
@@ -11,11 +12,13 @@ export enum CallLogType {
 
 type TBrekekeUtils = {
   // these methods only available on android
+  checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
   startRingtone(): void
   stopRingtone(): void
   backToBackground(): void
+  hasIncomingCallActivity(uuid: string): Promise<boolean>
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
@@ -32,12 +35,12 @@ type TBrekekeUtils = {
   setIsMute(uuid: string, isMute: boolean): void
   setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
+  setPhoneappliEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
-  hasIncomingCallActivity(uuid: string): Promise<boolean>
+  getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
-  setPhoneappliEnabled(enabled: boolean): void
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -65,11 +68,13 @@ export type TNativeModules = {
 }
 
 const Polyfill: TBrekekeUtils = {
+  checkPermissionDefaultDialer: () => Promise.resolve(''),
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
   startRingtone: () => undefined,
   stopRingtone: () => undefined,
   backToBackground: () => undefined,
+  hasIncomingCallActivity: () => Promise.resolve(false),
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
@@ -86,12 +91,12 @@ const Polyfill: TBrekekeUtils = {
   setIsMute: () => undefined,
   setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
+  setPhoneappliEnabled: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
-  hasIncomingCallActivity: () => Promise.resolve(false),
+  getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
-  setPhoneappliEnabled: () => undefined,
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,

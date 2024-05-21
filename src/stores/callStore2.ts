@@ -8,13 +8,13 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
-import { MakeCallFn, Session } from '../brekekejs'
+import type { MakeCallFn, Session } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { TEvent } from '../utils/callkeep'
+import type { TEvent } from '../utils/callkeep'
 import { permForCall } from '../utils/permissions'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
@@ -24,7 +24,7 @@ import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
-import { CancelRecentPn } from './cancelRecentPn'
+import type { CancelRecentPn } from './cancelRecentPn'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
@@ -280,8 +280,8 @@ export class CallStore {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
 
-      // handle always show Avatar and Username when phoneappli enabled
-      if (auth.phoneappliEnabled()) {
+      // handle always show Avatar and Username when phoneappli enabled with outgoing call
+      if (auth.phoneappliEnabled() && !e.incoming) {
         Object.assign(e, {
           partyImageUrl: e.phoneappliAvatar || p.partyImageUrl,
           talkingImageUrl: e.phoneappliAvatar || p.talkingImageUrl,
@@ -324,8 +324,9 @@ export class CallStore {
     Object.assign(c, p)
 
     // get Avatar and Username of phoneappli
-    if (auth.phoneappliEnabled()) {
-      const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+    const ca = auth.getCurrentAccount()
+    if (auth.phoneappliEnabled() && !c.incoming && ca) {
+      const { pbxTenant, pbxUsername } = ca
       pbx
         .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
         .then(res => {
@@ -333,7 +334,6 @@ export class CallStore {
           const talkingImageUrl = res?.image_url || c.talkingImageUrl
           const partyName = res?.display_name || c.partyName
           const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
-
           Object.assign(c, {
             partyImageUrl,
             talkingImageUrl,
@@ -369,7 +369,6 @@ export class CallStore {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
     }
-    const ca = getAuthStore().getCurrentAccount()
     if (
       Platform.OS !== 'web' &&
       c.incoming &&
@@ -491,10 +490,14 @@ export class CallStore {
     if (Platform.OS !== 'web') {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
-      if (Platform.OS == 'android') {
-        RNCallKeep.startCall(uuid, 'Brekeke phone', number)
+      if (Platform.OS === 'android') {
+        RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
+        // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
+        // add time out to make sure audio active (didDeactivateAudioSession)
+        // before sip call established
+        await waitTimeout(1000)
       }
       this.setAutoEndCallKeepTimer(uuid)
     }
@@ -786,9 +789,9 @@ export class CallStore {
     }
   }
 
-  getCallInNotify = () => {
+  getCallInNotify = () =>
     // do not display our callbar if already show callkeep
-    return this.calls.find(_ => {
+    this.calls.find(_ => {
       const k = this.callkeepMap[_.callkeepUuid]
       return (
         _.incoming &&
@@ -799,7 +802,7 @@ export class CallStore {
           timerStore.now - _.createdAt > 1000)
       )
     })
-  }
+
   shouldRingInNotify = (uuid?: string) => {
     if (Platform.OS === 'web') {
       return true

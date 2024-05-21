@@ -64,8 +64,8 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    versionCode 214001
-    versionName "2.14.1"
+    versionCode 214004
+    versionName "2.14.4"
   }
 
   signingConfigs {

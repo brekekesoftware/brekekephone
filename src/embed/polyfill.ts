@@ -8,11 +8,10 @@ declare global {
 }
 
 export const webRootId = '__brekeke_phone_web_root'
-export const getWebRootIdProps = () => {
-  return Platform.OS === 'web' && !window._BrekekePhoneWebRoot
+export const getWebRootIdProps = () =>
+  Platform.OS === 'web' && !window._BrekekePhoneWebRoot
     ? { id: webRootId }
     : undefined
-}
 
 if (Platform.OS === 'web') {
   window._BrekekePhoneWebRoot = document.getElementById(webRootId)

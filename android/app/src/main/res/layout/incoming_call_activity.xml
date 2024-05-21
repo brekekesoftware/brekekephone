@@ -39,6 +39,8 @@
         android:textSize="20dp"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end"
       />
     </LinearLayout>
     <!-- view_webrtc_video -->
@@ -131,6 +133,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:maxLines="2"
+            android:ellipsize="end"
             android:paddingHorizontal="20dp"
             android:text="Caller Name"
             android:textColor="@color/white"
@@ -250,6 +253,9 @@
               android:textColor="@color/white"
               android:textSize="22dp"
               android:textStyle="bold"
+              android:maxLines="2"
+              android:ellipsize="end"
+              android:paddingHorizontal="20dp"
             />
             <TextView
               android:id="@+id/txt_count_timer"

@@ -1,5 +1,6 @@
 import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
-import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
+import type { EventsPayload } from 'react-native-callkeep'
+import RNCallKeep from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
 import { bundleIdentifier } from '../config'
@@ -243,6 +244,10 @@ export const setupCallKeepEvents = async () => {
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', (uuid: string) => {
+    // should update the native android UI here to fix a case with auto answer
+    if (cs.calls.find(_ => _.callkeepUuid === uuid)?.answered) {
+      BrekekeUtils.onCallConnected(uuid)
+    }
     cs.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
   })

@@ -12,7 +12,10 @@ const compileFn = (locale: string, k: string): CompileFn => {
   const i = enLabelsMapIndex[k as keyof typeof enLabelsMapIndex]
   let fn = arr[i] as any as CompileFn
   if (!fn || typeof fn !== 'function') {
-    fn = Handlebars.compile(fn || k)
+    let msg = (fn as string) || k
+    // https://handlebarsjs.com/guide/expressions.html#html-escaping
+    msg = msg.replace(/\{\{/g, '{{{').replace(/\}\}/g, '}}}')
+    fn = Handlebars.compile(msg)
   }
   if (i !== undefined) {
     arr[i] = fn as any as string

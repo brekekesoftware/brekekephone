@@ -1,5 +1,5 @@
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { AuthStore } from './authStore2'
+import type { AuthStore } from './authStore2'
 
 // circular dep
 let authStore: AuthStore

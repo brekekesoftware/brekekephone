@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
-import { Component, FC } from 'react'
+import type { FC } from 'react'
+import { Component } from 'react'
 import {
   Clipboard,
   Dimensions,
@@ -12,12 +13,11 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import { mdiDotsHorizontal, mdiFile } from '../assets/icons'
-import { ChatFile } from '../stores/chatStore'
+import type { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { RnPicker } from '../stores/RnPicker'
 import { formatChatContent } from '../utils/formatChatContent'
-import { trimHtml } from '../utils/trimHtml'
 import { ItemImageVideoChat } from './ItemImageVideoChat'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
@@ -288,7 +288,7 @@ export class Message extends Component<{
               onLongPress={this.onLinkLongPress}
             >
               <RnText style={!isTextOnly && css.Message__call}>
-                {trimHtml(text)}
+                {text.trim()}
               </RnText>
             </Hyperlink>
           </TextContainer>

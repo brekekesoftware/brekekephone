@@ -1,7 +1,7 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
-import {
+import type {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
@@ -20,10 +20,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 @observer
 export class PageCallTransferDial extends Component {
   prevId?: string
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const cs = getCallStore()
     if (this.prevId && this.prevId !== cs.ongoingCallId) {
       Nav().backToPageCallManage()

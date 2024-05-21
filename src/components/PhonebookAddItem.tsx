@@ -9,11 +9,8 @@ import {
   View,
 } from 'react-native'
 
-import {
-  contactStore,
-  ItemPBForm,
-  PickerItemOption,
-} from '../stores/contactStore'
+import type { ItemPBForm, PickerItemOption } from '../stores/contactStore'
+import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { useAnimationOnDidMount } from '../utils/animation'
 import { RnText, RnTextInput, RnTouchableOpacity } from './Rn'
@@ -148,17 +145,15 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
     updateValue(item.label.trim())
     updateItems([])
   }
-  const renderItem = (item: ItemPBForm, index: number) => {
-    return (
-      <RnTouchableOpacity
-        key={index}
-        style={css.itemPb}
-        onPress={() => onPressItem(item)}
-      >
-        <RnText style={css.txtPb}>{item.label}</RnText>
-      </RnTouchableOpacity>
-    )
-  }
+  const renderItem = (item: ItemPBForm, index: number) => (
+    <RnTouchableOpacity
+      key={index}
+      style={css.itemPb}
+      onPress={() => onPressItem(item)}
+    >
+      <RnText style={css.txtPb}>{item.label}</RnText>
+    </RnTouchableOpacity>
+  )
   return (
     <View style={[StyleSheet.absoluteFill, css.RnPicker]}>
       <Animated.View

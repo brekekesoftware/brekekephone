@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 

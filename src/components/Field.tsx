@@ -1,16 +1,19 @@
 import { flow, omit } from 'lodash'
 import { observer } from 'mobx-react'
-import { ReactElementLike } from 'prop-types'
-import { FC, useRef } from 'react'
+import type { ReactElementLike } from 'prop-types'
+import type { FC } from 'react'
+import { useRef } from 'react'
+import type {
+  TextInputProps,
+  TouchableOpacityProps,
+  ViewProps,
+} from 'react-native'
 import {
   ActivityIndicator,
   Keyboard,
   Platform,
   StyleSheet,
-  TextInputProps,
-  TouchableOpacityProps,
   View,
-  ViewProps,
 } from 'react-native'
 
 import {

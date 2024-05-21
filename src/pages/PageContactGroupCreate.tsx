@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import { UcBuddy } from '../brekekejs'
+import type { UcBuddy } from '../brekekejs'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -24,7 +24,7 @@ export class PageContactGroupCreate extends Component {
     name: '',
     didMount: false,
   }
-  componentDidMount() {
+  componentDidMount = () => {
     BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
   }
 
