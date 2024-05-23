@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '../api/customPage'
 import {
+  buildCustomPageUrl,
   rebuildCustomPageUrlNonce,
   rebuildCustomPageUrlPbxToken,
 } from '../api/pbx'
@@ -54,6 +55,14 @@ export class PageCustomPageView extends Component<{ id: string }> {
     if (!cp) {
       return
     }
+
+    // It should be checked whether the URL is built or not
+    if (!isCustomPageUrlBuilt(cp.url)) {
+      const url = await buildCustomPageUrl(cp.url)
+      as.updateCustomPage({ ...cp, url })
+      return
+    }
+
     const url = await rebuildCustomPageUrlPbxToken(cp.url)
     as.updateCustomPage({ ...cp, url })
   }
