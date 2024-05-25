@@ -3786,12 +3786,14 @@ if (!Brekeke.WebrtcClient) {
           )
 
           // answer
-          session.answeringStarted = true
-          setTimeout(
-            by(this, this._doAnswer, [
+
+          // answer
+          setTimeout(() => {
+            session.answeringStarted = true
+            this._doAnswer(
               sessionId,
               options,
-              data.session,
+              session.rtcSession,
               null,
               false,
               by(this, this._answerFailed, [
@@ -3802,9 +3804,28 @@ if (!Brekeke.WebrtcClient) {
                   client: 'main',
                 },
               ]),
-            ]),
-            0,
-          )
+            )
+          }, 500)
+
+          // session.answeringStarted = true
+          // setTimeout(
+          //   by(this, this._doAnswer, [
+          //     sessionId,
+          //     options,
+          //     data.session,
+          //     null,
+          //     false,
+          //     by(this, this._answerFailed, [
+          //       {
+          //         sessionId,
+          //         target: null,
+          //         options,
+          //         client: 'main',
+          //       },
+          //     ]),
+          //   ]),
+          //   0,
+          // )
         }
       }
 
