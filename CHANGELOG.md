@@ -1,3 +1,9 @@
+#### 2.14.5
+
+- Fix android it should display PhoneAppli image correctly during 3PCC calls with auto-answer (issue 878)
+- Fix it should not cut off hang up button in small screen (issue 877, 889)
+- Fix ios it should make call correctly when invoke app immediately from PhoneAppli (issue 876)
+
 #### 2.14.4
 
 - Fix it should not show duplicated PN when changing phone index (issue 873)

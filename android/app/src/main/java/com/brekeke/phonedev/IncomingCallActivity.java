@@ -934,10 +934,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void onCallConnected() {
     if (!answered) {
       setCallAnswered();
-    }
-    if (vCallManageLoading.getVisibility() == View.GONE) {
       return;
     }
+
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
@@ -1081,6 +1080,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public TimerTask timerTask;
 
   public void startTimer(long answeredAt) {
+    if (timerTask != null) {
+      return;
+    }
     timerTask =
         new TimerTask() {
           @Override
