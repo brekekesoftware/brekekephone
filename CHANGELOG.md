@@ -1,7 +1,8 @@
 #### 2.14.5
 
 - Fix it should display well custom page when pbx reconnect (issue 885)
-- Fix android it should display PhoneAppli image correctly during 3PCC calls with auto-answer (issue 878)
+- Fix android it should not have oneway voice with auto answer (issue 879)
+- Fix android it should display PhoneAppli image correctly during 3PCC calls with auto answer (issue 878)
 - Fix it should not cut off hang up button in small screen (issue 877, 889)
 - Fix ios it should make call correctly when invoke app immediately from PhoneAppli (issue 876)
 - Fix android it should display well ringing image with PhoneAppli (issue 875)

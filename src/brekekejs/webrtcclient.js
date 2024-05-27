@@ -3553,7 +3553,7 @@ if (!Brekeke.WebrtcClient) {
       this._user = ''
       this._videoClientUser = ''
     },
-    _ua_newRTCSession(e) {
+    async _ua_newRTCSession(e) {
       var audio = false
       var data
       var options
@@ -3784,6 +3784,9 @@ if (!Brekeke.WebrtcClient) {
               ';' +
               session.exInfo,
           )
+
+          // wait timeout for audio recording service on android
+          await new Promise(r => setTimeout(r, 500))
 
           // answer
           session.answeringStarted = true
