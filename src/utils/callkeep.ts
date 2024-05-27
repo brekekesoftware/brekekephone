@@ -247,6 +247,8 @@ export const setupCallKeepEvents = async () => {
     // should update the native android UI here to fix a case with auto answer
     const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
     if (c) {
+      BrekekeUtils.onCallConnected(uuid)
+      // with auto answer, talkingAvatar takes too long to update
       BrekekeUtils.setTalkingAvatar(
         uuid,
         c.talkingImageUrl,
