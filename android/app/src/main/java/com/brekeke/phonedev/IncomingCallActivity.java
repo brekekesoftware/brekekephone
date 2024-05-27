@@ -927,7 +927,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
     vNavHeader.setVisibility(View.VISIBLE);
-    // Should be clean up Webview avatar incoming call
     destroyAvatarWebView();
   }
 
