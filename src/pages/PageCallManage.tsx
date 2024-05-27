@@ -50,10 +50,9 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
-const height = Dimensions.get('window').height
-const width = Dimensions.get('window').width
-const minSizeH = height * 0.3
-const minSizeW = width * 0.8
+const { width, height } = Dimensions.get('window')
+const minSizeH = height * 0.4
+const minSizeW = width * 0.9
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 const css = StyleSheet.create({
@@ -81,9 +80,6 @@ const css = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-  Btns: {
-    marginTop: 10,
-  },
   BtnFuncCalls: {
     marginBottom: 10,
   },
@@ -105,10 +101,6 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Hangup: {
-    // position: 'absolute',
-    // bottom: 40,
-    // left: 0,
-    // right: 0,
     marginBottom: 40,
   },
   Hangup_incoming: {
@@ -536,11 +528,10 @@ class PageCallManage extends Component<{
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
-    const incoming = c.incoming && !c.answered
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={[css.Btns, { marginTop: !incoming ? 30 : 0 }]}
+        style={{ marginTop: isHideButtons ? 30 : 0 }}
       >
         {n > 0 && (
           <FieldButton
