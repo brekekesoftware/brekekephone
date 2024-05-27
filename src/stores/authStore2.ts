@@ -363,7 +363,7 @@ export class AuthStore {
 
       // make sure audio engine active before start call
       // https://stackoverflow.com/a/60572329/25021683
-      if (Platform.OS !== 'ios') {
+      if (Platform.OS === 'ios') {
         await waitForActiveAppState()
         await waitTimeout(100)
       }
