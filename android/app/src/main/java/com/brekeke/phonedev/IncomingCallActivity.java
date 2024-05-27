@@ -625,7 +625,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
-    destroyAvatarWebView();
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
@@ -928,15 +927,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
     vNavHeader.setVisibility(View.VISIBLE);
+    destroyAvatarWebView();
   }
 
   public void onCallConnected() {
     if (!answered) {
       setCallAnswered();
-    }
-    if (vCallManageLoading.getVisibility() == View.GONE) {
       return;
     }
+
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
@@ -1080,6 +1079,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public TimerTask timerTask;
 
   public void startTimer(long answeredAt) {
+    if (timerTask != null) {
+      return;
+    }
     timerTask =
         new TimerTask() {
           @Override
