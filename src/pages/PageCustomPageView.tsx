@@ -56,7 +56,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
       return
     }
 
-    // It should be checked whether the URL is built or not
+    // should check if the url is not built in case pbx reconnect
     if (!isCustomPageUrlBuilt(cp.url)) {
       const url = await buildCustomPageUrl(cp.url)
       as.updateCustomPage({ ...cp, url })
