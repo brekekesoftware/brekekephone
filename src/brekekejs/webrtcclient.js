@@ -3553,7 +3553,7 @@ if (!Brekeke.WebrtcClient) {
       this._user = ''
       this._videoClientUser = ''
     },
-    _ua_newRTCSession(e) {
+    async _ua_newRTCSession(e) {
       var audio = false
       var data
       var options
@@ -3785,15 +3785,16 @@ if (!Brekeke.WebrtcClient) {
               session.exInfo,
           )
 
-          // answer
+          // wait timeout for audio recording service on android
+          await new Promise(r => setTimeout(r, 500))
 
           // answer
-          setTimeout(() => {
-            session.answeringStarted = true
-            this._doAnswer(
+          session.answeringStarted = true
+          setTimeout(
+            by(this, this._doAnswer, [
               sessionId,
               options,
-              session.rtcSession,
+              data.session,
               null,
               false,
               by(this, this._answerFailed, [
@@ -3804,28 +3805,9 @@ if (!Brekeke.WebrtcClient) {
                   client: 'main',
                 },
               ]),
-            )
-          }, 500)
-
-          // session.answeringStarted = true
-          // setTimeout(
-          //   by(this, this._doAnswer, [
-          //     sessionId,
-          //     options,
-          //     data.session,
-          //     null,
-          //     false,
-          //     by(this, this._answerFailed, [
-          //       {
-          //         sessionId,
-          //         target: null,
-          //         options,
-          //         client: 'main',
-          //       },
-          //     ]),
-          //   ]),
-          //   0,
-          // )
+            ]),
+            0,
+          )
         }
       }
 
