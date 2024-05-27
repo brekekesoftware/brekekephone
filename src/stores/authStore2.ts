@@ -360,10 +360,13 @@ export class AuthStore {
         this.clearUrlParams()
         return true
       }
+
       // make sure audio engine active before start call
-      // ref: https://stackoverflow.com/a/60572329/25021683
-      await waitForActiveAppState()
-      await waitTimeout(100)
+      // https://stackoverflow.com/a/60572329/25021683
+      if (Platform.OS !== 'ios') {
+        await waitForActiveAppState()
+        await waitTimeout(100)
+      }
 
       // handle start call
       getCallStore().startCall(number)

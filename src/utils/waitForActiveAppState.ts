@@ -1,15 +1,22 @@
 import { AppState } from 'react-native'
 
+import { BackgroundTimer } from './BackgroundTimer'
+
 export const waitForActiveAppState = () =>
-  new Promise<void>(resolve => {
+  new Promise<boolean>(resolve => {
     if (AppState.currentState === 'active') {
-      return resolve()
+      return resolve(true)
     }
-    const handleAppStateChange = nextAppState => {
-      if (nextAppState === 'active') {
-        resolve()
-        appState.remove()
+    const id = BackgroundTimer.setTimeout(() => {
+      resolve(false)
+      l.remove()
+    }, 1000)
+    const l = AppState.addEventListener('change', state => {
+      if (state !== 'active') {
+        return
       }
-    }
-    const appState = AppState.addEventListener('change', handleAppStateChange)
+      resolve(true)
+      l.remove()
+      BackgroundTimer.clearTimeout(id)
+    })
   })
