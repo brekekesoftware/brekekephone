@@ -14,6 +14,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitForActiveAppState } from '../utils/waitForActiveAppState'
 import { waitTimeout } from '../utils/waitTimeout'
 import type { Account } from './accountStore'
 import {
@@ -359,6 +360,14 @@ export class AuthStore {
         this.clearUrlParams()
         return true
       }
+
+      // make sure audio engine active before start call
+      // https://stackoverflow.com/a/60572329/25021683
+      if (Platform.OS !== 'ios') {
+        await waitForActiveAppState()
+        await waitTimeout(100)
+      }
+
       // handle start call
       getCallStore().startCall(number)
       this.clearUrlParams()

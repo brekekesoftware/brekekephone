@@ -1,3 +1,7 @@
+#### 2.14.5
+
+- Fix ios it should make call correctly when invoke app immediately from PhoneAppli (issue 876)
+
 #### 2.14.4
 
 - Fix it should not show duplicated PN when changing phone index (issue 873)
