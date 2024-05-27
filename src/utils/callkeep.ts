@@ -243,17 +243,20 @@ export const setupCallKeepEvents = async () => {
 
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
-  eventEmitter.addListener('answerCall', (uuid: string) => {
+  eventEmitter.addListener('answerCall', async (uuid: string) => {
     // should update the native android UI here to fix a case with auto answer
     const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
     if (c) {
+      if (Platform.OS === 'android') {
+        // with auto answer, talkingAvatar takes too long to update
+        BrekekeUtils.setTalkingAvatar(
+          uuid,
+          c.talkingImageUrl,
+          c.partyImageSize === 'large',
+        )
+        await waitTimeout(17)
+      }
       BrekekeUtils.onCallConnected(uuid)
-      // with auto answer, talkingAvatar takes too long to update
-      BrekekeUtils.setTalkingAvatar(
-        uuid,
-        c.talkingImageUrl,
-        c.partyImageSize === 'large',
-      )
     }
     cs.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
