@@ -53,6 +53,7 @@ import { AnimatedSize } from './AnimatedSize'
 import { CallBar } from './CallBar'
 import { CallNotify } from './CallNotify'
 import { CallVideos } from './CallVideos'
+import { CallVideosCarousel } from './CallVideosCarousel'
 import { CallVoices } from './CallVoices'
 import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
 import { PhonebookAddItem } from './PhonebookAddItem'
@@ -299,6 +300,7 @@ export const App = observer(() => {
       <CallVoices />
       <ChatGroupInvite />
       <UnreadChatNoti />
+      <CallVideosCarousel />
 
       <View style={css.App_Inner}>
         <RnStackerRoot />
