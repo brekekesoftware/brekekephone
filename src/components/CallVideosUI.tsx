@@ -117,6 +117,7 @@ class Mini extends Component<Props> {
 @observer
 class Control extends Component<{
   sourceObject: MediaStream
+  sourceArray: MediaStream[]
 }> {
   render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]

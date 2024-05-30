@@ -147,6 +147,8 @@ export class SIP extends EventEmitter {
         d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       //
+
+      console.log('#Duy Phan console ev', ev.localVideoStreamObject)
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
         rawSession: ev,
@@ -157,6 +159,7 @@ export class SIP extends EventEmitter {
         partyName,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
+        localStreamObject: ev.localVideoStreamObject,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
@@ -231,6 +234,10 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
+        // Duy Phan temp
+        remoteVideoStreamArray: videoSession.remoteStreamArray,
+        localStreamObject: session.localVideoStreamObject,
+        videoStreamActive: videoSession.remoteStreamArray[0],
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
@@ -242,6 +249,10 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        // Duy Phan temp
+        remoteVideoStreamArray: [],
+        localStreamObject: null,
+        videoStreamActive: null,
       })
     })
 

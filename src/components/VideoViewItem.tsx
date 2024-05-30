@@ -5,11 +5,11 @@ import { RnIcon } from './RnIcon'
 import { VideoPlayer } from './VideoPlayer'
 
 type VideoViewItemProps = {
-  sourceObject: MediaStream
+  sourceObject: MediaStream | null
   active?: boolean
   showSwitchCamera?: boolean
   onSwitchCamera?(): void
-  onSelect?(): void
+  onSelect?(item: MediaStream | null): void
   view: { width: number; height: number }
 }
 
@@ -27,7 +27,10 @@ export const VideoViewItem = ({
       active ? styles.active : undefined,
     ]}
   >
-    <TouchableOpacity style={styles.touchable} onPress={() => onSelect?.()}>
+    <TouchableOpacity
+      style={styles.touchable}
+      onPress={() => onSelect?.(sourceObject)}
+    >
       <VideoPlayer sourceObject={sourceObject} />
     </TouchableOpacity>
     {showSwitchCamera && (
@@ -51,11 +54,8 @@ export const VideoViewItem = ({
 
 const styles = StyleSheet.create({
   container: {
-    // width: 86,
-    // height: 152,
     borderRadius: 4,
     position: 'relative',
-    backgroundColor: 'wheat',
   },
   active: {
     borderColor: '#4cc5de',
@@ -70,9 +70,10 @@ const styles = StyleSheet.create({
     height: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
   },
   touchable: {
     flex: 1,
+    borderRadius: 4,
+    overflow: 'hidden',
   },
 })

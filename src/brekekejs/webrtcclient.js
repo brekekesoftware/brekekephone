@@ -1965,6 +1965,8 @@ if (!Brekeke.WebrtcClient) {
       var videoClientSession
       var videoClientSessionId
       var videoClientSessionTable
+      // Duy Phan temp
+      var remoteStreamArray
 
       sessionId = string(sessionId) || this._getLatestSessionId()
       session = this._sessionTable[sessionId]
@@ -2010,6 +2012,9 @@ if (!Brekeke.WebrtcClient) {
                   remoteVideoStreamObject =
                     (this._sessionRemoteStreamsTable[videoClientSessionId] ||
                       [])[0] || null
+                  // Duy Phan temp
+                  remoteStreamArray =
+                    this._sessionRemoteStreamsTable[videoClientSessionId] || []
                 } catch (e) {
                   remoteVideoStreamObject = null
                 }
@@ -2019,6 +2024,7 @@ if (!Brekeke.WebrtcClient) {
                   ),
                   remoteStreamObject: remoteVideoStreamObject,
                   rtcSession: videoClientSession.rtcSession,
+                  remoteStreamArray: remoteStreamArray,
                 }
                 if (this._sessionLocalMediaTable[videoClientSessionId]) {
                   if (

@@ -140,6 +140,9 @@ export class Call {
   }
 
   @observable remoteVideoStreamObject: MediaStream | null = null
+  @observable localStreamObject: MediaStream | null = null
+  @observable remoteVideoStreamArray: MediaStream[] = []
+  @observable videoStreamActive: MediaStream | null = null
   voiceStreamObject: MediaStream | null = null
 
   @observable muted = false

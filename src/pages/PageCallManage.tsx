@@ -33,6 +33,7 @@ import {
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { IncomingItemWithTimer } from '../components/CallNotify'
+import { CallVideosCarousel } from '../components/CallVideosCarousel'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
@@ -70,7 +71,7 @@ const css = StyleSheet.create({
   },
   Video: {
     position: 'absolute',
-    top: 40, // header compact height
+    top: 0, // header compact height
     bottom: 0,
     left: 0,
     right: 0,
@@ -121,12 +122,12 @@ const css = StyleSheet.create({
     paddingRight: 50,
   },
   Image_wrapper: {
-    marginHorizontal: 15,
+    marginHorizontal: 25,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    minHeight: minSizeImageWrapper,
-    minWidth: minSizeImageWrapper,
+    // minHeight: minSizeImageWrapper,
+    // minWidth: minSizeImageWrapper,
   },
   ImageSize: {
     height: 130,
@@ -166,6 +167,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     marginTop: 10,
+    flex: 1,
   },
   viewHangupBtn: {
     marginBottom: 10,
@@ -454,12 +456,13 @@ class PageCallManage extends Component<{
         </View>
         <View style={css.Video_Space} />
         <View style={css.Video}>
-          <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
+          {/* <VideoPlayer sourceObject={c.remoteVideoStreamObject} /> */}
+          <CallVideosCarousel call={c} />
         </View>
-        <RnTouchableOpacity
+        {/* <RnTouchableOpacity
           onPress={this.toggleButtons}
           style={StyleSheet.absoluteFill}
-        />
+        /> */}
       </>
     )
   }
@@ -475,11 +478,11 @@ class PageCallManage extends Component<{
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
-      <View style={[css.Image_wrapper, { flex: 1 }]}>
-        <View
+      <View style={[css.Image_wrapper]}>
+        {/* <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
-        >
-          {c.answered && (
+        > */}
+        {/* {c.answered && (
             <SmartImage
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
@@ -494,8 +497,8 @@ class PageCallManage extends Component<{
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}
             />
-          )}
-        </View>
+          )} */}
+        {/* </View> */}
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
@@ -531,7 +534,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={{ marginTop: isHideButtons ? 30 : 0 }}
+        style={{ marginTop: isHideButtons ? 30 : 0, flex: 1 }}
       >
         {n > 0 && (
           <FieldButton
