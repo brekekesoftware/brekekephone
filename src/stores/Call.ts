@@ -118,6 +118,11 @@ export class Call {
     sip.hangupSession(this.id)
   }
 
+  // to use in embed api and hang up special transfer case
+  hangup = () => {
+    sip.hangupSession(this.id)
+  }
+
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   @observable remoteVideoEnabled = false
