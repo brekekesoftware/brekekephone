@@ -433,12 +433,15 @@ const parseCanceledPnIds = (data?: string) => {
   console.log(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
   return msg.split(/\n/g).map(s => {
     const lowers = s.toLowerCase()
-    return lowers.replace(/\s+/g, '').includes(',canceled')
-      ? {
-          pnId: s.match(/(\w+)\W*INVITE/)?.[1],
-          completedElseWhere: lowers.includes('call completed elsewhere'),
-        }
-      : undefined
+    if (!lowers.replace(/\s+/g, '').includes(',canceled')) {
+      return undefined
+    }
+    const match = lowers.match(/Call completed by ([^"]+)/i)
+    return {
+      pnId: s.match(/(\w+)\W*INVITE/)?.[1],
+      completedElseWhere: lowers.includes('call completed elsewhere'),
+      completedBy: match ? match[0] : undefined,
+    }
   })
 }
 

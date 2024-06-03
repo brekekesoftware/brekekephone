@@ -6,4 +6,5 @@ export const cancelRecentPn = (n?: CancelRecentPn) =>
 export type CancelRecentPn = {
   pnId?: string
   completedElseWhere?: boolean
+  completedBy?: string
 }
