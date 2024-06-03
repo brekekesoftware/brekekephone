@@ -686,9 +686,11 @@ export class CallStore {
     {
       setAction = true,
       completedElseWhere,
+      completedBy,
     }: {
       setAction?: boolean
       completedElseWhere?: boolean
+      completedBy?: string
     } = {},
   ) => {
     if (!uuid) {
@@ -707,7 +709,7 @@ export class CallStore {
       !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id) &&
       !completedElseWhere
     ) {
-      addCallHistory(pnData)
+      addCallHistory(pnData, completedBy)
     }
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
@@ -839,6 +841,7 @@ export class CallStore {
     if (uuid) {
       this.endCallKeep(uuid, {
         completedElseWhere: n.completedElseWhere,
+        completedBy: n.completedBy,
       })
     }
   }
