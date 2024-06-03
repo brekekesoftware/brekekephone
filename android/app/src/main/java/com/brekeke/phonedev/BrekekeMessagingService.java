@@ -11,7 +11,6 @@ import org.json.JSONArray;
 
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static String TAG = "BrekekeMessagingService";
-  private static boolean alreadyGetInitialNotifications = false;
   private static ArrayList<String> initialNotifications = null;
 
   public static void getInitialNotifications(Promise promise) {
