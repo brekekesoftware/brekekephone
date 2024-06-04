@@ -2062,6 +2062,10 @@ if (!Brekeke.WebrtcClient) {
           remoteWithVideo = true
         }
       }
+      console.log(
+        '#Duy Phan console remoteUserOptionsTable',
+        Object.keys(videoClientSessionTable),
+      )
 
       return {
         sessionId: session.sessionId,
@@ -4608,7 +4612,10 @@ if (!Brekeke.WebrtcClient) {
       var index
       var stream
 
+      console.log('#Duy Phan console streams', e.streams)
+
       stream = e.streams && e.streams[0]
+      console.log('#Duy Phan console stream', stream)
       if (stream) {
         if (this._sessionRemoteStreamsTable[sessionId]) {
           index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream)
@@ -4749,6 +4756,7 @@ if (!Brekeke.WebrtcClient) {
       var stream
 
       stream = e.streams && e.streams[0]
+      console.log('#Duy Phan console 12', stream)
       if (stream) {
         if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
           if (this._sessionTable[sessionId]) {

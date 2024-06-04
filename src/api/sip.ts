@@ -227,17 +227,16 @@ export class SIP extends EventEmitter {
         return
       }
       const session = phone.getSession(ev.sessionId)
-      const videoSession =
-        session.videoClientSessionTable[ev.videoClientSessionId]
+      const videoSession = session.videoClientSessionTable[
+        ev.videoClientSessionId
+      ] as any
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
-        // Duy Phan temp
-        remoteVideoStreamArray: videoSession.remoteStreamArray,
         localStreamObject: session.localVideoStreamObject,
-        videoStreamActive: videoSession.remoteStreamArray[0],
+        videoClientSessionTable: session.videoClientSessionTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
@@ -249,10 +248,6 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
-        // Duy Phan temp
-        remoteVideoStreamArray: [],
-        localStreamObject: null,
-        videoStreamActive: null,
       })
     })
 

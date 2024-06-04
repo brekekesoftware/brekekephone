@@ -1,3 +1,5 @@
+import { observer } from 'mobx-react'
+import { Component } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 import { mdiCameraRolate } from '../assets/icons'
@@ -13,44 +15,54 @@ type VideoViewItemProps = {
   view: { width: number; height: number }
 }
 
-export const VideoViewItem = ({
-  sourceObject,
-  active = false,
-  onSwitchCamera,
-  showSwitchCamera = false,
-  view,
-  onSelect,
-}: VideoViewItemProps) => (
-  <View
-    style={[
-      { ...styles.container, width: view.width, height: view.height },
-      active ? styles.active : undefined,
-    ]}
-  >
-    <TouchableOpacity
-      style={styles.touchable}
-      onPress={() => onSelect?.(sourceObject)}
-    >
-      <VideoPlayer sourceObject={sourceObject} />
-    </TouchableOpacity>
-    {showSwitchCamera && (
+@observer
+export class VideoViewItem extends Component<VideoViewItemProps, any> {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    const {
+      sourceObject,
+      active = false,
+      onSwitchCamera,
+      showSwitchCamera = false,
+      view,
+      onSelect,
+    } = this.props
+    return (
       <View
-        style={{
-          ...styles.switchCameraView,
-          top: view.height * 0.4,
-          left: view.width / 2 - 20,
-        }}
+        style={[
+          { ...styles.container, width: view.width, height: view.height },
+          active ? styles.active : undefined,
+        ]}
       >
         <TouchableOpacity
-          onPress={() => onSwitchCamera?.()}
-          style={styles.switchCameraBtn}
+          style={styles.touchable}
+          onPress={() => onSelect?.(sourceObject)}
         >
-          <RnIcon path={mdiCameraRolate} color='white' />
+          <VideoPlayer sourceObject={sourceObject} />
         </TouchableOpacity>
+        {showSwitchCamera && (
+          <View
+            style={{
+              ...styles.switchCameraView,
+              top: view.height * 0.4,
+              left: view.width / 2 - 15,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => onSwitchCamera?.()}
+              style={styles.switchCameraBtn}
+            >
+              <RnIcon path={mdiCameraRolate} color='white' />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-    )}
-  </View>
-)
+    )
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

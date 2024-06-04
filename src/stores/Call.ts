@@ -141,9 +141,13 @@ export class Call {
 
   @observable remoteVideoStreamObject: MediaStream | null = null
   @observable localStreamObject: MediaStream | null = null
-  @observable remoteVideoStreamArray: MediaStream[] = []
-  @observable videoStreamActive: MediaStream | null = null
+  @observable videoClientSessionTable: any[] = []
+  @observable videoStreamActive: string | null = null
   voiceStreamObject: MediaStream | null = null
+
+  @action updatevideoStreamActive = id => {
+    this.videoStreamActive = id
+  }
 
   @observable muted = false
   @action toggleMuted = () => {

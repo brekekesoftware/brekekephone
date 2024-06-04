@@ -40,7 +40,6 @@ import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
-import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
 import type { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
@@ -456,7 +455,6 @@ class PageCallManage extends Component<{
         </View>
         <View style={css.Video_Space} />
         <View style={css.Video}>
-          {/* <VideoPlayer sourceObject={c.remoteVideoStreamObject} /> */}
           <CallVideosCarousel call={c} />
         </View>
         {/* <RnTouchableOpacity
