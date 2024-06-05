@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
 import type { Call } from '../stores/Call'
@@ -21,6 +21,12 @@ export const CallVideosCarousel = observer(
     },
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
+
+    useEffect(() => {
+      if (!videoStreamActive) {
+        updatevideoStreamActive(Object.keys(videoClientSessionTable)?.[0])
+      }
+    }, [Object.keys(videoClientSessionTable).length > 0])
 
     const orientation = useOrientation()
     const isPortrait = orientation === EOrientation.Portrait

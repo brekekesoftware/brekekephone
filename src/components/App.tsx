@@ -296,7 +296,7 @@ export const App = observer(() => {
 
       <CallNotify />
       <CallBar />
-      {/* <CallVideos /> */}
+      <CallVideos />
       <CallVoices />
       <ChatGroupInvite />
       <UnreadChatNoti />
