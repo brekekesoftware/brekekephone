@@ -40,6 +40,7 @@ export const CallVideosCarousel = observer(
           sourceObject={
             videoClientSessionTable[videoStreamActive ?? '']?.remoteStreamObject
           }
+          zOrder={0}
         />
         <View
           style={{
@@ -60,15 +61,13 @@ export const CallVideosCarousel = observer(
               sourceObject={localStreamObject}
               view={{ width: finalWidth, height: finalHeight }}
               showSwitchCamera
-              active
-              // active
             />
             {Object.keys(videoClientSessionTable).map(item => (
               <VideoViewItem
                 sourceObject={
                   videoClientSessionTable[item].remoteStreamObject ?? null
                 }
-                active={item === videoStreamActive ?? true}
+                active={item === videoStreamActive}
                 key={item}
                 view={{ width: finalWidth, height: finalHeight }}
                 onSelect={() => handleScroll(item)}

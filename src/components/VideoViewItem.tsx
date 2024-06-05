@@ -41,7 +41,7 @@ export class VideoViewItem extends Component<VideoViewItemProps, any> {
           style={styles.touchable}
           onPress={() => onSelect?.(sourceObject)}
         >
-          <VideoPlayer sourceObject={sourceObject} />
+          <VideoPlayer sourceObject={sourceObject} zOrder={1} />
         </TouchableOpacity>
         {showSwitchCamera && (
           <View

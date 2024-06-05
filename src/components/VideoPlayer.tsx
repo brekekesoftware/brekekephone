@@ -16,12 +16,13 @@ declare global {
 }
 
 export const VideoPlayer = observer(
-  (p: { sourceObject?: MediaStream | null }) =>
+  (p: { sourceObject?: MediaStream | null; zOrder?: number }) =>
     p.sourceObject ? (
       <RTCView
         streamURL={p.sourceObject.toURL()}
         style={css.video}
         objectFit='cover'
+        zOrder={p.zOrder}
       />
     ) : (
       <ActivityIndicator style={css.video} />

@@ -483,7 +483,6 @@ export type Session = {
   remoteWithVideo: boolean
   remoteStreamObject: MediaStream
   // Duy Phan temp
-  remoteStreamArray: MediaStream[]
   localStreamObject: MediaStream
   localVideoStreamObject: MediaStream
   incomingMessage?: {
