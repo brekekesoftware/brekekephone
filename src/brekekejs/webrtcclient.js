@@ -2058,7 +2058,7 @@ if (!Brekeke.WebrtcClient) {
       }
       console.log(
         '#Duy Phan console remoteUserOptionsTable',
-        Object.keys(videoClientSessionTable),
+        remoteUserOptionsTable,
       )
 
       return {

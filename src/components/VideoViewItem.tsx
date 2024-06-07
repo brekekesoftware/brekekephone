@@ -13,6 +13,7 @@ type VideoViewItemProps = {
   onSwitchCamera?(): void
   onSelect?(item: MediaStream | null): void
   view: { width: number; height: number }
+  enabled?: boolean
 }
 
 @observer
@@ -29,11 +30,17 @@ export class VideoViewItem extends Component<VideoViewItemProps, any> {
       showSwitchCamera = false,
       view,
       onSelect,
+      enabled = false,
     } = this.props
     return (
       <View
         style={[
-          { ...styles.container, width: view.width, height: view.height },
+          {
+            ...styles.container,
+            width: view.width,
+            height: view.height,
+            backgroundColor: enabled ? 'transparent' : 'black',
+          },
           active ? styles.active : undefined,
         ]}
       >
@@ -41,7 +48,10 @@ export class VideoViewItem extends Component<VideoViewItemProps, any> {
           style={styles.touchable}
           onPress={() => onSelect?.(sourceObject)}
         >
-          <VideoPlayer sourceObject={sourceObject} zOrder={1} />
+          <VideoPlayer
+            sourceObject={enabled ? sourceObject : null}
+            zOrder={1}
+          />
         </TouchableOpacity>
         {showSwitchCamera && (
           <View

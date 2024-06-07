@@ -160,6 +160,7 @@ export class SIP extends EventEmitter {
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
         localStreamObject: ev.localVideoStreamObject,
+        remoteUserOptionsTable: ev.remoteUserOptionsTable,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
@@ -227,16 +228,18 @@ export class SIP extends EventEmitter {
         return
       }
       const session = phone.getSession(ev.sessionId)
-      const videoSession = session.videoClientSessionTable[
-        ev.videoClientSessionId
-      ] as any
+      const videoSession =
+        session.videoClientSessionTable[ev.videoClientSessionId]
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
         localStreamObject: session.localVideoStreamObject,
-        videoClientSessionTable: session.videoClientSessionTable,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
@@ -352,6 +355,10 @@ export class SIP extends EventEmitter {
     session?.remoteStreamObject?.getTracks().forEach(track => {
       track.enabled = true
     })
+  }
+
+  sendInfoWithVideo = (sessionId: string, withVideo: boolean) => {
+    this.phone?._sendInfoXUaEx(sessionId, false, withVideo, 0)
   }
   sendDTMF = async (p: {
     signal: string

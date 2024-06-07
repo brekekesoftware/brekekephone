@@ -429,7 +429,7 @@ class PageCallManage extends Component<{
     }
     return (
       <>
-        {c.localVideoEnabled && this.renderVideo()}
+        {this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
@@ -722,10 +722,7 @@ class PageCallManage extends Component<{
 
   render() {
     return (
-      <BrekekeGradient
-        white={this.props.call.localVideoEnabled}
-        style={this.isVisible() ? undefined : css.hidden}
-      >
+      <BrekekeGradient white style={this.isVisible() ? undefined : css.hidden}>
         {this.renderLayout()}
       </BrekekeGradient>
     )

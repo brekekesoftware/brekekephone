@@ -379,6 +379,12 @@ export type Sip = {
   ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
+  _sendInfoXUaEx: (
+    sessionId: string,
+    echo: boolean,
+    withVideo,
+    delay: number,
+  ) => void
 
   _ua?: {
     _transport?: {
@@ -505,6 +511,7 @@ export type Session = {
   }
   remoteUserOptionsTable: null
   analyzer: null
+  user: string
 }
 export type VideoSession = {
   sessionId: string

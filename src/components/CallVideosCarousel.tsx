@@ -16,36 +16,43 @@ export const CallVideosCarousel = observer(
     call: {
       localStreamObject,
       videoStreamActive,
-      updatevideoStreamActive,
+      updateVideoStreamActive,
       videoClientSessionTable,
+      toggleLocalVideo,
+      remoteUserOptionsTable,
     },
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
 
     useEffect(() => {
       if (!videoStreamActive) {
-        updatevideoStreamActive(Object.keys(videoClientSessionTable)?.[0])
+        updateVideoStreamActive(videoClientSessionTable[0])
       }
-    }, [Object.keys(videoClientSessionTable).length > 0])
+    }, [videoClientSessionTable.length > 0])
 
     const orientation = useOrientation()
     const isPortrait = orientation === EOrientation.Portrait
     const width = Dimensions.get('window').width
     const finalHeight = isPortrait ? 182 : 86
     const finalWidth = Math.floor(width / (isPortrait ? 3.5 : 4) - 16)
-    console.log('#Duy Phan console', finalWidth, finalHeight)
+    console.log(
+      '#Duy Phan console remoteUserOptionsTable',
+      remoteUserOptionsTable,
+    )
+    console.log(
+      '#Duy Phan console remoteUserOptionsTable',
+      videoClientSessionTable,
+    )
 
     const handleScroll = item => {
-      updatevideoStreamActive(item)
+      updateVideoStreamActive(item)
       // refScroll.current?.scrollTo({ x: width * item, y: 0, animated: true })
     }
 
     return (
       <View style={styles.container}>
         <VideoPlayer
-          sourceObject={
-            videoClientSessionTable[videoStreamActive ?? '']?.remoteStreamObject
-          }
+          sourceObject={videoStreamActive?.remoteStreamObject}
           zOrder={0}
         />
         <View
@@ -67,14 +74,14 @@ export const CallVideosCarousel = observer(
               sourceObject={localStreamObject}
               view={{ width: finalWidth, height: finalHeight }}
               showSwitchCamera
+              onSwitchCamera={() => toggleLocalVideo(false)}
             />
-            {Object.keys(videoClientSessionTable).map(item => (
+            {videoClientSessionTable.map(item => (
               <VideoViewItem
-                sourceObject={
-                  videoClientSessionTable[item].remoteStreamObject ?? null
-                }
-                active={item === videoStreamActive}
-                key={item}
+                sourceObject={item.remoteStreamObject}
+                active={item.vId === videoStreamActive?.vId}
+                enabled={remoteUserOptionsTable[item.user]?.withVideo ?? false}
+                key={item.vId}
                 view={{ width: finalWidth, height: finalHeight }}
                 onSelect={() => handleScroll(item)}
               />
