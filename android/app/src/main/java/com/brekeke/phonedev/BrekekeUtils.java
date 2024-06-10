@@ -297,6 +297,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     String callerName = displayName; // redeclare as final to put in nested class
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
+    boolean isAutoAnswer = toBoolean(data.get("x_autoanswer"));
+
     RNCallKeepModule.registerPhoneAccount(appCtx);
     Runnable onShowIncomingCallUi =
         new Runnable() {
@@ -320,6 +322,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
+            i.putExtra("autoAnswer", isAutoAnswer);
             c.startActivity(i);
           }
         };
@@ -682,6 +685,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         defaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
       }
     }
+  }
+  public static boolean toBoolean(String s) {
+    if (s != null) {
+      return s.equals("on") || s.equals("true") || s.equals("1") || Boolean.parseBoolean(s);
+    }
+    return false;
   }
 
   // perm Ignoring Battery Optimization
