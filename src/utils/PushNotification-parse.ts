@@ -240,7 +240,6 @@ export const parse = async (
     )
     if (as.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
-      // Reset badge number
       if (Platform.OS === 'ios') {
         PushNotification.resetBadgeNumber()
       }

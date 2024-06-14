@@ -1,3 +1,7 @@
+#### 2.14.6
+
+- Fix ios it should clear badge number when tapping on PN or navigate to call history with PhoneAppli
+
 #### 2.14.5
 
 - Fix it should display well custom page when pbx reconnect (issue 885)
