@@ -14,7 +14,7 @@ import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
-import { PushNotification } from '../utils/PushNotification.ios'
+import { PushNotification } from '../utils/PushNotification'
 
 @observer
 export class PageCallRecents extends Component {
