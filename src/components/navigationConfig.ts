@@ -1,3 +1,5 @@
+import { Platform } from 'react-native'
+
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -12,6 +14,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
 import { openLinkSafely, urls } from '../utils/deeplink'
+import { PushNotification } from '../utils/PushNotification.ios'
 
 export type Menu = {
   key: string
@@ -152,6 +155,10 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
+            // Reset badge number
+            if (Platform.OS === 'ios') {
+              PushNotification.resetBadgeNumber()
+            }
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
           }

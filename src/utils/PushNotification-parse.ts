@@ -8,6 +8,7 @@ import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
 import { openLinkSafely, urls } from './deeplink'
+import { PushNotification } from './PushNotification.ios'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
@@ -239,6 +240,10 @@ export const parse = async (
     )
     if (as.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
+      // Reset badge number
+      if (Platform.OS === 'ios') {
+        PushNotification.resetBadgeNumber()
+      }
       openLinkSafely(urls.phoneappli.HISTORY_CALLED)
     } else {
       navIndex('goToPageCallRecents')
