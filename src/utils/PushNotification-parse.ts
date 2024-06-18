@@ -238,7 +238,8 @@ export const parse = async (
     console.log(
       'SIP PN debug: PushNotification-parse: local notification missed call',
     )
-    if (as.phoneappliEnabled()) {
+
+    if (as.userExtensionProperties && as.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
       if (Platform.OS === 'ios') {
         PushNotification.resetBadgeNumber()

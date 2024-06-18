@@ -1,8 +1,13 @@
+import { Platform } from 'react-native'
+
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { RnStacker } from '../stores/RnStacker'
+import { openLinkSafely, urls } from '../utils/deeplink'
+import { PushNotification } from '../utils/PushNotification'
 import { pbx } from './pbx'
 
 export const updatePhoneIndex = async (
@@ -32,9 +37,20 @@ export const updatePhoneIndex = async (
   if (p.id === as.getCurrentAccount()?.id) {
     as.userExtensionProperties = extProps
     const d = await as.getCurrentDataAsync()
+    const paEnabled = extProps.phoneappli
     if (d) {
-      d.phoneappliEnabled = extProps.phoneappli
+      d.phoneappliEnabled = paEnabled
       accountStore.updateAccountData(d)
+    }
+    // Open Phone Appli app when phoneappli.enable is true and on PageCallRecents
+    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+    if (paEnabled && s.name === 'PageCallRecents') {
+      Nav().customPageIndex = Nav().goToPageCallKeypad
+      Nav().goToPageCallKeypad()
+      if (Platform.OS === 'ios') {
+        PushNotification.resetBadgeNumber()
+      }
+      openLinkSafely(urls.phoneappli.HISTORY_CALLED)
     }
   }
 
