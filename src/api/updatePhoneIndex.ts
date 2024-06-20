@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { accountStore } from '../stores/accountStore'
+import { Account, accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -9,6 +9,51 @@ import { RnStacker } from '../stores/RnStacker'
 import { openLinkSafely, urls } from '../utils/deeplink'
 import { PushNotification } from '../utils/PushNotification'
 import { pbx } from './pbx'
+
+export const updatePhoneAppli = async () => {
+  const p = getAuthStore().getCurrentAccount()
+  if (!p) {
+    return
+  }
+
+  const extProps = await pbx.getPbxPropertiesForCurrentUser(
+    p.pbxTenant,
+    p.pbxUsername,
+  )
+
+  if (!extProps) {
+    console.error('updatePhoneAppli.setExtensionProperties: extProps undefined')
+    return
+  }
+
+  handlePhoneAppli(extProps)
+}
+export const handlePhoneAppli = async extProps => {
+  if (!extProps) {
+    console.error('handlePhoneAppli.setExtensionProperties: extProps undefined')
+    return
+  }
+
+  const as = getAuthStore()
+  as.userExtensionProperties = extProps
+  const d = await as.getCurrentDataAsync()
+  const paEnabled = extProps.phoneappli
+  if (d) {
+    d.phoneappliEnabled = paEnabled
+    accountStore.updateAccountData(d)
+  }
+
+  // Open Phone Appli app when phoneappli.enable is true and on PageCallRecents
+  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+  if (paEnabled && s.name === 'PageCallRecents') {
+    Nav().customPageIndex = Nav().goToPageCallKeypad
+    Nav().goToPageCallKeypad()
+    if (Platform.OS === 'ios') {
+      PushNotification.resetBadgeNumber()
+    }
+    openLinkSafely(urls.phoneappli.HISTORY_CALLED)
+  }
+}
 
 export const updatePhoneIndex = async (
   p = getAuthStore().getCurrentAccount(),
@@ -32,26 +77,9 @@ export const updatePhoneIndex = async (
   }
 
   const as = getAuthStore()
-
   // update current account data phoneappli.enable
   if (p.id === as.getCurrentAccount()?.id) {
-    as.userExtensionProperties = extProps
-    const d = await as.getCurrentDataAsync()
-    const paEnabled = extProps.phoneappli
-    if (d) {
-      d.phoneappliEnabled = paEnabled
-      accountStore.updateAccountData(d)
-    }
-    // Open Phone Appli app when phoneappli.enable is true and on PageCallRecents
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
-    if (paEnabled && s.name === 'PageCallRecents') {
-      Nav().customPageIndex = Nav().goToPageCallKeypad
-      Nav().goToPageCallKeypad()
-      if (Platform.OS === 'ios') {
-        PushNotification.resetBadgeNumber()
-      }
-      openLinkSafely(urls.phoneappli.HISTORY_CALLED)
-    }
+    handlePhoneAppli(extProps)
   }
 
   const phone = extProps.phones[phoneIndex - 1]
