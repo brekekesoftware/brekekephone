@@ -1,3 +1,7 @@
+#### 2.14.7
+
+- Fix it should be able to open Brekeke Phone with PhoneAppli disabled/enabled on pbx
+
 #### 2.14.6
 
 - Fix ios it should clear badge number when tapping on PN or navigate to call history with PhoneAppli
