@@ -17,6 +17,7 @@ import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
 import { uc } from './uc'
+import { updatePhoneAppli } from './updatePhoneIndex'
 
 class Api {
   constructor() {
@@ -62,6 +63,11 @@ class Api {
     if (!ca) {
       return
     }
+
+    if (!getAuthStore().userExtensionProperties) {
+      updatePhoneAppli()
+    }
+
     contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
