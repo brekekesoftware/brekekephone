@@ -22,6 +22,10 @@ import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
 import { accountStore, getLastSignedInId } from '../stores/accountStore'
+import {
+  isFirstRunFromLocalStorage,
+  saveFirstRunToLocalStorage,
+} from '../stores/appStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -39,11 +43,11 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import {
+  checkPermForCall,
+  permDisableBatteryOptimization,
   permForCall,
-  permForCallLog,
-  permReadPhoneNumber,
+  permOverlayPermission,
 } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
@@ -75,7 +79,7 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
-    if (!(await permReadPhoneNumber())) {
+    if (!(await checkPermForCall())) {
       nav.goToPageAccountSignIn()
       return
     }
@@ -132,13 +136,19 @@ const initApp = async () => {
       webPromptPermission()
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    if (Platform.OS === 'android') {
+    if (!(await isFirstRunFromLocalStorage())) {
       await permForCall()
-      // temporary disabled
-      // await permForCallLog()
-      void permForCallLog
-    } else {
-      getAudioVideoPermission()
+      if (Platform.OS === 'android') {
+        // Brekeke app will hang if use new promise without set timeout
+        setTimeout(async () => {
+          await permDisableBatteryOptimization()
+          await permOverlayPermission()
+        }, 500)
+        // temporary disabled
+        // await permForCallLog()
+        // void permForCallLog()
+      }
+      saveFirstRunToLocalStorage()
     }
   }
 
