@@ -17,9 +17,11 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import {
+  checkPermForCall,
+  permDisableBatteryOptimization,
   permForCall,
   permNotifications,
-  permReadPhoneNumber,
+  permOverlayPermission,
 } from '../utils/permissions'
 import { Field } from './Field'
 import { FooterActions } from './FooterActions'
@@ -59,7 +61,7 @@ export const AccountSignInItem: FC<{
 }> = observer(props => {
   if (props.empty) {
     const onPressCreateAccount = async () => {
-      if (!(await permReadPhoneNumber())) {
+      if (!(await permForCall())) {
         return
       }
       Nav().goToPageAccountCreate()
@@ -87,14 +89,15 @@ export const AccountSignInItem: FC<{
   }
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
   const onPressSignIn = async () => {
-    if (!(await permReadPhoneNumber())) {
+    if (!(await permForCall())) {
       return
     }
     if (a.pushNotificationEnabled && !(await permNotifications())) {
       return
     }
-    if (!(await permForCall())) {
-      return
+    if (Platform.OS === 'android') {
+      await permDisableBatteryOptimization()
+      await permOverlayPermission()
     }
     getAuthStore().signIn(a)
     if (Platform.OS !== 'web') {
@@ -103,7 +106,10 @@ export const AccountSignInItem: FC<{
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
-    if (e && !(await permNotifications())) {
+    if (
+      e &&
+      (!(await checkPermForCall(true)) || !(await permNotifications()))
+    ) {
       return
     }
     accountStore.upsertAccount({
