@@ -66,16 +66,17 @@ export const PushNotification = {
       const hasPermissions: boolean =
         await Notifications.isRegisteredForRemoteNotifications()
 
-      if (!hasPermissions) {
-        throw new Error("Don't have Permissions")
-      }
-
       Notifications.registerRemoteNotifications()
 
       const events = Notifications.events()
       events.registerRemoteNotificationsRegistered((e: Registered) => {
         onFcmToken(e.deviceToken)
       })
+
+      // We should be able to get FCM token without permission request
+      if (!hasPermissions) {
+        throw new Error("Don't have Permissions")
+      }
 
       events.registerRemoteNotificationsRegistrationFailed(
         (e: RegistrationError) => {
@@ -137,6 +138,7 @@ export const PushNotification = {
         const payload = n.payload?.payload || n.payload
         onNotification(payload, initApp)
       })
+
       // if the app was launched by a push notification
       // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {

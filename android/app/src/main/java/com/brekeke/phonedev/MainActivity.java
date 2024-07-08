@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.KeyEvent;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -29,6 +27,9 @@ public class MainActivity extends ReactActivity {
     super.onResume();
     // call history
     // temporary disabled
+    BrekekeUtils.resolveIgnoreBattery(
+        BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this));
+    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this));
     if (true) {
       return;
     }
@@ -68,11 +69,6 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // handle request permission Battery optimization
-    BrekekeUtils.disabledBatteryLauncher =
-        registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> handleIgnoreBatteryResult(result.getResultCode()));
 
     // handle default dialer
     BrekekeUtils.defaultDialerLauncher =
@@ -151,10 +147,6 @@ public class MainActivity extends ReactActivity {
         };
     Handler handler = new android.os.Handler();
     handler.postDelayed(r, 5000);
-  }
-
-  private void handleIgnoreBatteryResult(int resultCode) {
-    BrekekeUtils.resolveIgnoreBattery(resultCode);
   }
 
   private void checkSetDefaultDialerResult(int resultCode) {

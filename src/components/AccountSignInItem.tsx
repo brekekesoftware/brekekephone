@@ -16,13 +16,7 @@ import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
-import {
-  checkPermForCall,
-  permDisableBatteryOptimization,
-  permForCall,
-  permNotifications,
-  permOverlayPermission,
-} from '../utils/permissions'
+import { checkPermForCall, permForCall } from '../utils/permissions'
 import { Field } from './Field'
 import { FooterActions } from './FooterActions'
 import { RnText, RnTouchableOpacity } from './Rn'
@@ -88,16 +82,10 @@ export const AccountSignInItem: FC<{
     return null
   }
   const isLoading = accountStore.pnSyncLoadingMap[props.id]
+
   const onPressSignIn = async () => {
-    if (!(await permForCall())) {
+    if (!(await permForCall(a.pushNotificationEnabled))) {
       return
-    }
-    if (a.pushNotificationEnabled && !(await permNotifications())) {
-      return
-    }
-    if (Platform.OS === 'android') {
-      await permDisableBatteryOptimization()
-      await permOverlayPermission()
     }
     getAuthStore().signIn(a)
     if (Platform.OS !== 'web') {
@@ -106,10 +94,7 @@ export const AccountSignInItem: FC<{
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
-    if (
-      e &&
-      (!(await checkPermForCall(true)) || !(await permNotifications()))
-    ) {
+    if (e && !(await checkPermForCall(true, true))) {
       return
     }
     accountStore.upsertAccount({

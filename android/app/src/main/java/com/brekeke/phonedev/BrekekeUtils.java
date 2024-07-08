@@ -26,7 +26,6 @@ import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
-import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -61,6 +60,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
+  public static Promise overlayScreenPromise;
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -103,8 +103,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
-  public static ActivityResultLauncher<Intent> disabledBatteryLauncher;
-
   public static int REQUEST_CODE_FOR_DEFAULT_PHONE_APP = 10001;
   public static int REQUEST_CODE_FOR_IGNORE_BATTERY_OPTIMIZATIONS = 10002;
   public static ReactApplicationContext ctx;
@@ -644,13 +642,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public static void resolveIgnoreBattery(int result) {
-    if (disableBatteryOptimizationPromise != null) {
-      disableBatteryOptimizationPromise.resolve(result);
-      disableBatteryOptimizationPromise = null;
-    }
-  }
-
   public void checkDefaultDialer() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ctx == null || main == null) {
       resolveDefaultDialer("Not supported on this Anrdoid version");
@@ -683,25 +674,51 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public static boolean isBatteryOptimizationPermissionGranted(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+  // Ignoring Battery Optimization permission
+  public static boolean isIgnoringBatteryOptimizationPermissionGranted(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;
     }
     PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
   }
 
-  public static boolean isOverlayPermissionGranted(Context context) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return true;
+  public static void resolveIgnoreBattery(boolean result) {
+    if (disableBatteryOptimizationPromise != null) {
+      disableBatteryOptimizationPromise.resolve(result);
+      disableBatteryOptimizationPromise = null;
     }
-    return Settings.canDrawOverlays(ctx);
   }
 
   public static void requestDisableBatteryOptimization() {
     Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
     intent.setData(Uri.parse("package:" + ctx.getPackageName()));
-    disabledBatteryLauncher.launch(intent);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(intent);
+  }
+
+  // Overlay screen permission
+  public static boolean isOverlayPermissionGranted(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return true;
+    }
+    return Settings.canDrawOverlays(context);
+  }
+
+  public static void requestOverlayScreenOptimization() {
+    Intent intent =
+        new Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+            Uri.parse("package:" + ctx.getPackageName()));
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(intent);
+  }
+
+  public static void resolveOverlayScreen(boolean result) {
+    if (overlayScreenPromise != null) {
+      overlayScreenPromise.resolve(result);
+      overlayScreenPromise = null;
+    }
   }
 
   // ==========================================================================
@@ -713,8 +730,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public boolean isDisableBatteryOptimizationGranted() {
-    return !this.isBatteryOptimizationPermissionGranted(ctx);
+  public void isDisableBatteryOptimizationGranted(Promise p) {
+    p.resolve(isIgnoringBatteryOptimizationPermissionGranted(ctx));
   }
 
   @ReactMethod
@@ -724,13 +741,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void perOverlay() {
-    Intent intent =
-        new Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:" + ctx.getPackageName()));
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    ctx.startActivity(intent);
+  public void perOverlay(Promise p) {
+    overlayScreenPromise = p;
+    requestOverlayScreenOptimization();
   }
 
   @ReactMethod

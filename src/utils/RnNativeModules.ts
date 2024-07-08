@@ -42,9 +42,9 @@ type TBrekekeUtils = {
   getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
   isOverlayPermissionGranted(): Promise<boolean>
-  isDisableBatteryOptimizationGranted(): boolean
-  perDisableBatteryOptimization(): Promise<number>
-  perOverlay(): void
+  isDisableBatteryOptimizationGranted(): Promise<boolean>
+  perDisableBatteryOptimization(): Promise<boolean>
+  perOverlay(): Promise<boolean>
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -100,9 +100,9 @@ const Polyfill: TBrekekeUtils = {
   getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
   isOverlayPermissionGranted: () => Promise.resolve(false),
-  isDisableBatteryOptimizationGranted: () => false,
-  perDisableBatteryOptimization: () => Promise.resolve(0),
-  perOverlay: () => undefined,
+  isDisableBatteryOptimizationGranted: () => Promise.resolve(false),
+  perDisableBatteryOptimization: () => Promise.resolve(false),
+  perOverlay: () => Promise.resolve(false),
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

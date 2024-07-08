@@ -43,12 +43,7 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import {
-  checkPermForCall,
-  permDisableBatteryOptimization,
-  permForCall,
-  permOverlayPermission,
-} from '../utils/permissions'
+import { checkPermForCall, permForCall } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -103,6 +98,10 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
+    if (!(await checkPermForCall())) {
+      s.signOut()
+      return
+    }
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
@@ -137,13 +136,12 @@ const initApp = async () => {
     }
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     if (!(await isFirstRunFromLocalStorage())) {
-      await permForCall()
+      // Brekeke app will hang if use new promise without set timeout
+      setTimeout(async () => {
+        await permForCall()
+      }, 1000)
+
       if (Platform.OS === 'android') {
-        // Brekeke app will hang if use new promise without set timeout
-        setTimeout(async () => {
-          await permDisableBatteryOptimization()
-          await permOverlayPermission()
-        }, 500)
         // temporary disabled
         // await permForCallLog()
         // void permForCallLog()

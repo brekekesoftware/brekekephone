@@ -1,6 +1,7 @@
 import { Platform } from 'react-native'
 import {
   checkMultiple,
+  checkNotifications,
   openSettings,
   PERMISSIONS,
   request,
@@ -12,38 +13,76 @@ import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
 
-export const checkPermForCallIos = async (isShowDialog = false) => {
+export const checkPermForCallIos = async (
+  isShowDialog = false,
+  isNotifyPermNeeded = false,
+) => {
   const rIos = await checkMultiple([
     PERMISSIONS.IOS.CAMERA,
     PERMISSIONS.IOS.MICROPHONE,
   ])
-  const micro = rIos[PERMISSIONS.IOS.MICROPHONE]
-  const cam = rIos[PERMISSIONS.IOS.CAMERA]
+  let rNotify = true
+  if (isNotifyPermNeeded) {
+    rNotify = await isNotifications()
+  }
+  const rMicro = rIos[PERMISSIONS.IOS.MICROPHONE]
+  const rCam = rIos[PERMISSIONS.IOS.CAMERA]
   console.log('Permission debug checkPermForCallIos ', {
-    micro,
-    cam,
+    rMicro,
+    rCam,
     isShowDialog,
+    isNotifyPermNeeded,
   })
-  if (micro === 'granted' && cam === 'granted') {
+  if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
   if (!isShowDialog) {
     return false
   }
   RnAlert.prompt({
-    title: intl`Allow access permissions`,
+    title: '',
     message: intl`You do not have permission as follows
-${micro !== 'granted' ? '- Microphone \n' : ''}${cam !== 'granted' ? '- Camera\n' : ''}Please grant access permission in the app settings of the device.
-    `,
+${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
   })
   return false
 }
-export const checkPermForCallAndroid = async (isShowDialog = false) => {
+
+export const showMessagePermForCall = async (
+  rBattery,
+  rOverlay,
+  rCallPhone,
+  rReadPhone,
+  rCam,
+  rRecord,
+  rBluetooth,
+  rNotify,
+) => {
+  RnAlert.prompt({
+    title: '',
+    message: intl`You do not have permission as follows
+${!rBattery ? intl`- Disable Battery Optimization` + '\n' : ''}${!rOverlay ? intl`- Display over other apps` + '\n' : ''}${rCallPhone !== 'granted' && rReadPhone !== 'granted' ? intl`- Phone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${rRecord !== 'granted' ? intl`- Microphone` + '\n' : ''}${rBluetooth !== 'granted' ? intl`- Nearby devices` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
+    onConfirm: openSettings,
+    confirmText: intl`Settings`,
+    dismissText: intl`Cancel`,
+  })
+}
+export const checkPermForCallAndroid = async (
+  isShowDialog = false,
+  isNotifyPermNeeded = false,
+) => {
   if (Platform.OS !== 'android' || Platform.Version < 23) {
     return true
+  }
+
+  const rBattery = await BrekekeUtils.isDisableBatteryOptimizationGranted()
+  const rOverlay = await BrekekeUtils.isOverlayPermissionGranted()
+
+  let rNotify = true
+  if (isNotifyPermNeeded) {
+    rNotify = await isNotifications()
   }
   const r = await checkMultiple([
     PERMISSIONS.ANDROID.CALL_PHONE,
@@ -52,49 +91,66 @@ export const checkPermForCallAndroid = async (isShowDialog = false) => {
     PERMISSIONS.ANDROID.CAMERA,
     PERMISSIONS.ANDROID.READ_PHONE_NUMBERS,
   ])
-  const bluetooth =
+  const rBluetooth =
     Platform.Version < 31 ? 'granted' : r[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]
-  const record = r[PERMISSIONS.ANDROID.RECORD_AUDIO]
-  const cam = r[PERMISSIONS.ANDROID.CAMERA]
-  const readPhone = r[PERMISSIONS.ANDROID.READ_PHONE_NUMBERS]
-  const callPhone = r[PERMISSIONS.ANDROID.CALL_PHONE]
+  const rRecord = r[PERMISSIONS.ANDROID.RECORD_AUDIO]
+  const rCam = r[PERMISSIONS.ANDROID.CAMERA]
+  const rReadPhone = r[PERMISSIONS.ANDROID.READ_PHONE_NUMBERS]
+  const rCallPhone = r[PERMISSIONS.ANDROID.CALL_PHONE]
   console.log('Permission debug checkPermForCallAndroid ', {
-    readPhone,
-    callPhone,
-    bluetooth,
-    record,
-    cam,
+    rReadPhone,
+    rCallPhone,
+    rBluetooth,
+    rRecord,
+    rCam,
     isShowDialog,
+    rNotify,
   })
   //
   if (
-    bluetooth === 'granted' &&
-    record === 'granted' &&
-    cam === 'granted' &&
-    readPhone === 'granted' &&
-    callPhone === 'granted'
+    rBluetooth === 'granted' &&
+    rRecord === 'granted' &&
+    rCam === 'granted' &&
+    rReadPhone === 'granted' &&
+    rCallPhone === 'granted' &&
+    rBattery &&
+    rOverlay &&
+    rNotify
   ) {
     return true
   }
   if (!isShowDialog) {
     return false
   }
-  RnAlert.prompt({
-    title: intl`Allow access permissions`,
-    message: intl`You do not have permission as follows
-${callPhone !== 'granted' && readPhone !== 'granted' ? '- Phone \n' : ''}${cam !== 'granted' ? '- Camera \n' : ''}${record !== 'granted' ? '- Microphone \n' : ''}${bluetooth !== 'granted' ? '- Bluetooth\n' : ''}Please grant access permission in the app settings of the device.
-    `,
-    onConfirm: openSettings,
-    confirmText: intl`Settings`,
-    dismissText: intl`Cancel`,
-  })
+  showMessagePermForCall(
+    rBattery,
+    rOverlay,
+    rCallPhone,
+    rReadPhone,
+    rCam,
+    rRecord,
+    rBluetooth,
+    rNotify,
+  )
   return false
 }
-export const checkPermForCall = async (isShowDialog = false) => {
+export const checkPermForCall = async (
+  isShowDialog = false,
+  isNotifyPermNeeded = false,
+) => {
   if (Platform.OS === 'ios') {
-    return await checkPermForCallIos(isShowDialog)
+    return await checkPermForCallIos(isShowDialog, isNotifyPermNeeded)
   }
-  return await checkPermForCallAndroid(isShowDialog)
+  return await checkPermForCallAndroid(isShowDialog, isNotifyPermNeeded)
+}
+
+const isNotifications = async () => {
+  const { status: r } = await checkNotifications()
+  console.log('Permission debug checkNotifications ', r)
+  if (r === 'granted') {
+    return true
+  }
+  return false
 }
 export const permNotifications = async () => {
   if (Platform.OS === 'android' && Platform.Version < 33) {
@@ -105,48 +161,62 @@ export const permNotifications = async () => {
   if (r === 'granted') {
     return true
   }
-  if (r !== 'blocked') {
-    return false
-  }
-  RnAlert.prompt({
-    title: 'Allow access Notifications',
-    message: intl`Please provide the required permissions from settings`,
-    onConfirm: openSettings,
-    confirmText: intl`OK`,
-    dismissText: intl`Cancel`,
-  })
   return false
 }
 
 export const permDisableBatteryOptimization = async () => {
-  if (!BrekekeUtils.isDisableBatteryOptimizationGranted()) {
-    console.log('Permission debug permDisableBatteryOptimization')
-    await BrekekeUtils.perDisableBatteryOptimization()
+  if (await BrekekeUtils.isDisableBatteryOptimizationGranted()) {
+    return true
   }
+  console.log('Permission debug permDisableBatteryOptimization')
+  return await new Promise<void | boolean>(resolve => {
+    RnAlert.prompt({
+      title: '',
+      message: intl`To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed.`,
+      onConfirm: async () => {
+        const r = await BrekekeUtils.perDisableBatteryOptimization()
+        resolve(r)
+      },
+      onDismiss: () => resolve(false),
+      confirmText: intl`OK`,
+      dismissText: intl`Cancel`,
+    })
+  })
 }
 export const permOverlayPermission = async () => {
-  if (!(await BrekekeUtils.isOverlayPermissionGranted())) {
-    return await new Promise<void>(resolve => {
-      console.log('Permission debug permOverlayPermission')
-      RnAlert.prompt({
-        title: intl`Overlay Permission`,
-        message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.`,
-        onConfirm: () => {
-          resolve()
-          BrekekeUtils.perOverlay()
-        },
-        onDismiss: resolve,
-        confirmText: intl`OK`,
-        dismissText: intl`Cancel`,
-      })
-    })
+  if (await BrekekeUtils.isOverlayPermissionGranted()) {
+    return true
   }
+  return await new Promise<void | boolean>(resolve => {
+    console.log('Permission debug permOverlayPermission')
+    RnAlert.prompt({
+      title: '',
+      message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.`,
+      onConfirm: async () => {
+        const r = await BrekekeUtils.perOverlay()
+        resolve(r)
+      },
+      onDismiss: () => resolve(false),
+      confirmText: intl`OK`,
+      dismissText: intl`Cancel`,
+    })
+  })
 }
 
-export const permForCallAndroid = async () => {
+export const permForCallAndroid = async (isNotifyPermNeeded = false) => {
   if (Platform.OS !== 'android' || Platform.Version < 23) {
     return true
   }
+
+  const rBattery = await permDisableBatteryOptimization()
+
+  const rOverlay = await permOverlayPermission()
+
+  let rNotify = true
+  if (isNotifyPermNeeded) {
+    rNotify = await permNotifications()
+  }
+
   const r = await requestMultiple([
     PERMISSIONS.ANDROID.CALL_PHONE,
     PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
@@ -154,56 +224,68 @@ export const permForCallAndroid = async () => {
     PERMISSIONS.ANDROID.CAMERA,
     PERMISSIONS.ANDROID.READ_PHONE_NUMBERS,
   ])
-  const bluetooth =
+
+  const rBluetooth =
     Platform.Version < 31 ? 'granted' : r[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]
-  const record = r[PERMISSIONS.ANDROID.RECORD_AUDIO]
-  const cam = r[PERMISSIONS.ANDROID.CAMERA]
-  const readPhone = r[PERMISSIONS.ANDROID.READ_PHONE_NUMBERS]
-  const callPhone = r[PERMISSIONS.ANDROID.CALL_PHONE]
+  const rRecord = r[PERMISSIONS.ANDROID.RECORD_AUDIO]
+  const rCam = r[PERMISSIONS.ANDROID.CAMERA]
+  const rReadPhone = r[PERMISSIONS.ANDROID.READ_PHONE_NUMBERS]
+  const rCallPhone = r[PERMISSIONS.ANDROID.CALL_PHONE]
   console.log('Permission debug permForCallAndroid', {
-    record,
-    cam,
-    readPhone,
-    callPhone,
-    bluetooth,
+    rRecord,
+    rCam,
+    rReadPhone,
+    rCallPhone,
+    rBluetooth,
+    rBattery,
+    rOverlay,
+    rNotify,
   })
   if (
-    bluetooth === 'granted' &&
-    record === 'granted' &&
-    cam === 'granted' &&
-    readPhone === 'granted' &&
-    callPhone === 'granted'
+    rBluetooth === 'granted' &&
+    rRecord === 'granted' &&
+    rCam === 'granted' &&
+    rReadPhone === 'granted' &&
+    rCallPhone === 'granted' &&
+    rBattery &&
+    rOverlay &&
+    rNotify
   ) {
     return true
   }
-  if (
-    bluetooth === 'blocked' ||
-    record === 'blocked' ||
-    cam === 'blocked' ||
-    readPhone === 'blocked' ||
-    callPhone === 'blocked'
-  ) {
-    await checkPermForCall(true)
-  }
+
+  showMessagePermForCall(
+    rBattery,
+    rOverlay,
+    rCallPhone,
+    rReadPhone,
+    rCam,
+    rRecord,
+    rBluetooth,
+    rNotify,
+  )
+
   return false
 }
-export const permForCallIos = async () => {
-  const micro = await request(PERMISSIONS.IOS.MICROPHONE)
-  const cam = await request(PERMISSIONS.IOS.CAMERA)
-  console.log('Permission debug permForCallIos ', { micro, cam })
-  if (micro === 'granted' && cam === 'granted') {
+export const permForCallIos = async (isNotifyPermNeeded = false) => {
+  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
+  const rCam = await request(PERMISSIONS.IOS.CAMERA)
+  let rNotify = true
+  if (isNotifyPermNeeded) {
+    rNotify = await permNotifications()
+  }
+  console.log('Permission debug permForCallIos ', { rMicro, rCam, rNotify })
+  if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
-  if (micro === 'blocked' || cam === 'blocked') {
-    await checkPermForCall(true)
-  }
+  await checkPermForCall(true, true)
   return false
 }
-export const permForCall = async () => {
+export const permForCall = async (isNotifyPermNeeded = false) => {
   if (Platform.OS === 'ios') {
-    return await permForCallIos()
+    return await permForCallIos(isNotifyPermNeeded)
   }
-  return await permForCallAndroid()
+  return await permForCallAndroid(isNotifyPermNeeded)
 }
 
 export const permForCallLog = async () => {

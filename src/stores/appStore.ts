@@ -1,15 +1,13 @@
 import { RnAsyncStorage } from '../components/Rn'
-import { intlDebug } from './intl'
-import { RnAlert } from './RnAlert'
 
 export const saveFirstRunToLocalStorage = async () => {
   try {
     await RnAsyncStorage.setItem('_first_run', 'true')
   } catch (err) {
-    RnAlert.error({
-      message: intlDebug`Failed to save Brekeke Phone first run to local storage`,
-      err: err as Error,
-    })
+    console.error(
+      'Failed to save Brekeke Phone first run to local storage ' +
+        JSON.stringify(err),
+    )
   }
 }
 export const isFirstRunFromLocalStorage = async () => {
@@ -17,10 +15,10 @@ export const isFirstRunFromLocalStorage = async () => {
     const isFirstRun = await RnAsyncStorage.getItem('_first_run')
     return !!isFirstRun
   } catch (err) {
-    RnAlert.error({
-      message: intlDebug`Failed to read Brekeke Phone first run from local storage`,
-      err: err as Error,
-    })
+    console.error(
+      'Failed to read Brekeke Phone first run from local storage ' +
+        JSON.stringify(err),
+    )
     return false
   }
 }
