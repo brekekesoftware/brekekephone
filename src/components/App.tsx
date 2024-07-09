@@ -142,16 +142,21 @@ const initApp = async () => {
     if (window._BrekekePhoneWebRoot) {
       webPromptPermission()
     }
-  } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
+    // with ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // https://github.com/facebook/react-native-website/issues/273
+  } else if (
+    (AppState.currentState === 'active' ||
+      AppState.currentState === 'unknown') &&
+    !hasCallOrWakeFromPN
+  ) {
     if (!(await isFirstRunFromLocalStorage())) {
       // Brekeke app will hang if use new promise without set timeout
+      permForCall()
       if (Platform.OS === 'android') {
         // temporary disabled
         // await permForCallLog()
         // void permForCallLog()
-        waitTimeout(500)
       }
-      await permForCall()
       saveFirstRunToLocalStorage()
     }
   }
