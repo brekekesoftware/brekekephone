@@ -13,7 +13,18 @@ import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
 
-export const checkPermForCallIos = async (
+const showMessagePermForCallIos = async (rMicro, rCam, rNotify) => {
+  RnAlert.prompt({
+    title: '',
+    message: intl`You do not have permission as follows
+${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
+    onConfirm: openSettings,
+    confirmText: intl`Settings`,
+    dismissText: intl`Cancel`,
+  })
+}
+
+const checkPermForCallIos = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
 ) => {
@@ -30,6 +41,7 @@ export const checkPermForCallIos = async (
   console.log('Permission debug checkPermForCallIos ', {
     rMicro,
     rCam,
+    rNotify,
     isShowDialog,
     isNotifyPermNeeded,
   })
@@ -39,18 +51,11 @@ export const checkPermForCallIos = async (
   if (!isShowDialog) {
     return false
   }
-  RnAlert.prompt({
-    title: '',
-    message: intl`You do not have permission as follows
-${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
-    onConfirm: openSettings,
-    confirmText: intl`Settings`,
-    dismissText: intl`Cancel`,
-  })
+  showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
 
-export const showMessagePermForCall = async (
+const showMessagePermForCallAndroid = async (
   rBattery,
   rOverlay,
   rCallPhone,
@@ -69,7 +74,7 @@ ${!rBattery ? intl`- Disable Battery Optimization` + '\n' : ''}${!rOverlay ? int
     dismissText: intl`Cancel`,
   })
 }
-export const checkPermForCallAndroid = async (
+const checkPermForCallAndroid = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
 ) => {
@@ -122,7 +127,7 @@ export const checkPermForCallAndroid = async (
   if (!isShowDialog) {
     return false
   }
-  showMessagePermForCall(
+  showMessagePermForCallAndroid(
     rBattery,
     rOverlay,
     rCallPhone,
@@ -164,7 +169,7 @@ export const permNotifications = async () => {
   return false
 }
 
-export const permDisableBatteryOptimization = async () => {
+const permDisableBatteryOptimization = async () => {
   if (await BrekekeUtils.isDisableBatteryOptimizationGranted()) {
     return true
   }
@@ -183,7 +188,7 @@ export const permDisableBatteryOptimization = async () => {
     })
   })
 }
-export const permOverlayPermission = async () => {
+const permOverlayPermission = async () => {
   if (await BrekekeUtils.isOverlayPermissionGranted()) {
     return true
   }
@@ -203,7 +208,7 @@ export const permOverlayPermission = async () => {
   })
 }
 
-export const permForCallAndroid = async (isNotifyPermNeeded = false) => {
+const permForCallAndroid = async (isNotifyPermNeeded = false) => {
   if (Platform.OS !== 'android' || Platform.Version < 23) {
     return true
   }
@@ -254,7 +259,7 @@ export const permForCallAndroid = async (isNotifyPermNeeded = false) => {
     return true
   }
 
-  showMessagePermForCall(
+  showMessagePermForCallAndroid(
     rBattery,
     rOverlay,
     rCallPhone,
@@ -267,18 +272,19 @@ export const permForCallAndroid = async (isNotifyPermNeeded = false) => {
 
   return false
 }
-export const permForCallIos = async (isNotifyPermNeeded = false) => {
-  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
-  const rCam = await request(PERMISSIONS.IOS.CAMERA)
+const permForCallIos = async (isNotifyPermNeeded = false) => {
   let rNotify = true
   if (isNotifyPermNeeded) {
     rNotify = await permNotifications()
   }
+  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
+  const rCam = await request(PERMISSIONS.IOS.CAMERA)
+
   console.log('Permission debug permForCallIos ', { rMicro, rCam, rNotify })
   if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
-  await checkPermForCall(true, true)
+  showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
 export const permForCall = async (isNotifyPermNeeded = false) => {

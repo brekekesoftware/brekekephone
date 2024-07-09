@@ -39,6 +39,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
+import { RnStacker } from '../stores/RnStacker'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
@@ -84,6 +85,12 @@ const initApp = async () => {
       console.log('App navigated by auto signin')
       // already navigated
     } else {
+      // skip move to page index if there is no account
+      const screen = RnStacker.stacks[RnStacker.stacks.length - 1]
+      const ca = accountStore.accounts.length
+      if (!ca && screen && screen.name === 'PageAccountCreate') {
+        return
+      }
       nav.goToPageIndex()
     }
   }
@@ -98,14 +105,15 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
-    if (!(await checkPermForCall())) {
-      s.signOut()
-      return
-    }
+
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
+      return
+    }
+    if (!hasCallOrWakeFromPN && s.signedInId && !(await checkPermForCall())) {
+      s.signOut()
       return
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
@@ -137,15 +145,13 @@ const initApp = async () => {
   } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
     if (!(await isFirstRunFromLocalStorage())) {
       // Brekeke app will hang if use new promise without set timeout
-      setTimeout(async () => {
-        await permForCall()
-      }, 1000)
-
       if (Platform.OS === 'android') {
         // temporary disabled
         // await permForCallLog()
         // void permForCallLog()
+        waitTimeout(500)
       }
+      await permForCall()
       saveFirstRunToLocalStorage()
     }
   }
