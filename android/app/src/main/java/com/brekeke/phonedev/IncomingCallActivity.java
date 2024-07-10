@@ -723,6 +723,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             && bluetooth == PackageManager.PERMISSION_GRANTED) {
           handleClickAnswerCall();
         } else {
+          showRequestPermissions();
           String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
           debug("PERMISSIONS_REQUEST_CODE " + detail);
         }
