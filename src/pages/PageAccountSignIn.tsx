@@ -76,7 +76,7 @@ export const PageAccountSignIn = observer(() => {
   const ids = accountStore.accounts.map(a => a.id).filter(id => id)
   const l = ids.length
   const createAccount = async () => {
-    if (!(await permForCall())) {
+    if (!(await permForCall(true))) {
       return
     }
     Nav().goToPageAccountCreate()

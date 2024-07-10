@@ -112,7 +112,14 @@ const initApp = async () => {
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
       return
     }
-    if (!hasCallOrWakeFromPN && s.signedInId && !(await checkPermForCall())) {
+    if (
+      !hasCallOrWakeFromPN &&
+      s.signedInId &&
+      !(await checkPermForCall(
+        false,
+        s.getCurrentAccount()?.pushNotificationEnabled,
+      ))
+    ) {
       s.signOut()
       return
     }
@@ -150,8 +157,8 @@ const initApp = async () => {
     !hasCallOrWakeFromPN
   ) {
     if (!(await isFirstRunFromLocalStorage())) {
-      // TODO: Brekeke app will hang if use await at this time
-      permForCall()
+      // TODO: Brekeke app will hang if use await for permForCall at this time on Android
+      permForCall(true)
       if (Platform.OS === 'android') {
         // temporary disabled
         // await permForCallLog()

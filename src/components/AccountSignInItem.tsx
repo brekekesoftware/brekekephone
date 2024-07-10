@@ -55,7 +55,7 @@ export const AccountSignInItem: FC<{
 }> = observer(props => {
   if (props.empty) {
     const onPressCreateAccount = async () => {
-      if (!(await permForCall())) {
+      if (!(await permForCall(true))) {
         return
       }
       Nav().goToPageAccountCreate()
