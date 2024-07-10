@@ -150,7 +150,7 @@ const initApp = async () => {
     !hasCallOrWakeFromPN
   ) {
     if (!(await isFirstRunFromLocalStorage())) {
-      // Brekeke app will hang if use new promise without set timeout
+      // TODO: Brekeke app will hang if use await at this time
       permForCall()
       if (Platform.OS === 'android') {
         // temporary disabled
