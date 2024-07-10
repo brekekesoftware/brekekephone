@@ -273,18 +273,20 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
   return false
 }
 const permForCallIos = async (isNotifyPermNeeded = false) => {
+  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
+  const rCam = await request(PERMISSIONS.IOS.CAMERA)
   let rNotify = true
   if (isNotifyPermNeeded) {
     rNotify = await permNotifications()
   }
-  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
-  const rCam = await request(PERMISSIONS.IOS.CAMERA)
-
   console.log('Permission debug permForCallIos ', { rMicro, rCam, rNotify })
   if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
-  showMessagePermForCallIos(rMicro, rCam, rNotify)
+  // requestNotifications always return 'denied' on IOS. So, we will use checkPermForCallIos to make sure it's 'granted' or not.
+  // https://forums.developer.apple.com/forums/thread/725619
+  checkPermForCallIos(true, isNotifyPermNeeded)
+  // showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
 export const permForCall = async (isNotifyPermNeeded = false) => {
