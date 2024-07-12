@@ -273,12 +273,12 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
   return false
 }
 const permForCallIos = async (isNotifyPermNeeded = false) => {
-  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
-  const rCam = await request(PERMISSIONS.IOS.CAMERA)
   let rNotify = true
   if (isNotifyPermNeeded) {
     rNotify = await permNotifications()
   }
+  const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
+  const rCam = await request(PERMISSIONS.IOS.CAMERA)
   console.log('Permission debug permForCallIos ', { rMicro, rCam, rNotify })
   if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
