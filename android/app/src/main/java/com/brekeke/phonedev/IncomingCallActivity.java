@@ -664,7 +664,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle(L.titlePermissionMicroCamera());
     builder.setMessage(L.messagePermissionMicroCamera());
-
+    builder.setCancelable(false);
     builder.setPositiveButton(
         L.close(),
         new DialogInterface.OnClickListener() {
@@ -707,26 +707,34 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return false;
   }
 
+  public void handleResultPermForCall(@NonNull int[] r) {
+    if (r != null && r.length >= 3) {
+      int bluetooth = PackageManager.PERMISSION_GRANTED;
+      // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+      if (VERSION.SDK_INT >= VERSION_CODES.S) {
+        bluetooth = r[2];
+      }
+      if (r[0] == PackageManager.PERMISSION_GRANTED
+          && r[1] == PackageManager.PERMISSION_GRANTED
+          && bluetooth == PackageManager.PERMISSION_GRANTED) {
+        handleClickAnswerCall();
+      } else {
+        showRequestPermissions();
+        String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
+        debug("PERMISSIONS_REQUEST_CODE " + detail);
+      }
+    } else {
+      // Handle the case doesn't have enough elements
+    }
+  }
+
   @Override
   public void onRequestPermissionsResult(
       int code, @NonNull String[] permissions, @NonNull int[] r) {
     super.onRequestPermissionsResult(code, permissions, r);
-    int bluetooth = PackageManager.PERMISSION_GRANTED;
-    // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
-    if (VERSION.SDK_INT >= VERSION_CODES.S) {
-      bluetooth = r[2];
-    }
     switch (code) {
       case PERMISSIONS_REQUEST_CODE:
-        if (r[0] == PackageManager.PERMISSION_GRANTED
-            && r[1] == PackageManager.PERMISSION_GRANTED
-            && bluetooth == PackageManager.PERMISSION_GRANTED) {
-          handleClickAnswerCall();
-        } else {
-          showRequestPermissions();
-          String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
-          debug("PERMISSIONS_REQUEST_CODE " + detail);
-        }
+        handleResultPermForCall(r);
         break;
     }
   }
