@@ -1,4 +1,10 @@
-import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
+import {
+  AppState,
+  Keyboard,
+  NativeEventEmitter,
+  Platform,
+  ToastAndroid,
+} from 'react-native'
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 
@@ -312,14 +318,23 @@ export const setupCallKeepEvents = async () => {
     }
     cs.onSelectBackgroundCall(c)
   })
-  eventEmitter.addListener('makeCall', async (phoneNumber: string) => {
-    if (!(await getAuthStore().autoSignInLast())) {
-      return
+  eventEmitter.addListener('phonePermission', async () => {
+    if (AppState.currentState === 'active') {
+      ToastAndroid.show(
+        intl`Incoming call blocked. Please allow phone permission in settings to receive calls`,
+        ToastAndroid.LONG,
+      )
     }
-    await waitSip()
-    getCallStore().startCall(phoneNumber)
   })
   // other utils
+  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
+    if (!RnStacker.stacks.length) {
+      nav.goToPageIndex()
+    } else {
+      RnStacker.stacks = [RnStacker.stacks[0]]
+    }
+    cs.inPageCallManage = undefined
+  })
   eventEmitter.addListener('onBackPressed', onBackPressed)
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
     if (!RnStacker.stacks.length) {

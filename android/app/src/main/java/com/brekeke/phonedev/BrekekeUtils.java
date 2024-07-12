@@ -1,7 +1,9 @@
 package com.brekeke.phonedev;
 
 import static android.content.Context.TELECOM_SERVICE;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
+import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.role.RoleManager;
@@ -28,7 +30,6 @@ import android.provider.Settings;
 import android.telecom.TelecomManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -338,6 +339,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
+
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false);
   }
 
@@ -627,9 +629,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  public static boolean checkReadPhonePermission(Context ctx) {
+    if (checkSelfPermission(ctx, permission.READ_PHONE_NUMBERS)
+        == PackageManager.PERMISSION_GRANTED) {
+      return true;
+    }
+    return false;
+  }
+
   public static boolean checkNotificationPermission(Context ctx) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-      return ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+      return checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
     }
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();

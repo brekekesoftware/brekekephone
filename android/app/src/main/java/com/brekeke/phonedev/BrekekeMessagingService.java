@@ -32,6 +32,11 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     if (!BrekekeUtils.checkNotificationPermission(this)) {
+
+      return;
+    }
+    if (!!BrekekeUtils.checkReadPhonePermission(this)) {
+      BrekekeUtils.emit("phonePermission", "");
       return;
     }
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
