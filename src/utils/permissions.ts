@@ -259,6 +259,10 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
     return true
   }
 
+  if (!rBattery || !rOverlay) {
+    return false
+  }
+
   showMessagePermForCallAndroid(
     rBattery,
     rOverlay,

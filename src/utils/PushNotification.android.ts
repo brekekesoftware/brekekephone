@@ -10,8 +10,6 @@ import type {
 import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
-import { intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
 import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
@@ -146,10 +144,10 @@ export const PushNotification = {
         onNotification(payload, initApp, true)
       })
     } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to initialize push notification`,
-        err: err as Error,
-      })
+      console.error(
+        'PushNotification register error: Failed to initialize push notification',
+        err,
+      )
     }
   },
 
