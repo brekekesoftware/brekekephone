@@ -10,6 +10,7 @@ import type {
 import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
+import { intl } from '../stores/intl'
 import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
@@ -73,7 +74,7 @@ export const PushNotification = {
 
       // We should be able to get FCM token without permission request
       if (!hasPermissions) {
-        throw new Error("Don't have Permissions")
+        throw new Error(intl`Don't have Permissions`)
       }
 
       events.registerRemoteNotificationsRegistrationFailed(

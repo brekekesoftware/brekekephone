@@ -232,7 +232,7 @@ export const getSubMenus = (menu: string) => {
   const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
-      unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
+      unexpectedErr: new Error(intl`Can not find sub menus for ${menu}`),
     })
     return []
   }
