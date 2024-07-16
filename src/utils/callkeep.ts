@@ -326,7 +326,7 @@ export const setupCallKeepEvents = async () => {
       ToastAndroid.showWithGravity(
         intl`Incoming call blocked. Please allow phone permission in settings to receive calls`,
         ToastAndroid.LONG,
-        ToastAndroid.TOP,
+        ToastAndroid.BOTTOM,
       )
     }
   })
