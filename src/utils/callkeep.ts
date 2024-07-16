@@ -318,11 +318,15 @@ export const setupCallKeepEvents = async () => {
     }
     cs.onSelectBackgroundCall(c)
   })
-  eventEmitter.addListener('phonePermission', async () => {
+  eventEmitter.addListener('phonePermission', () => {
+    console.log(
+      'CallKeep debug: phonePermission::currentState::' + AppState.currentState,
+    )
     if (AppState.currentState === 'active') {
-      ToastAndroid.show(
+      ToastAndroid.showWithGravity(
         intl`Incoming call blocked. Please allow phone permission in settings to receive calls`,
         ToastAndroid.LONG,
+        ToastAndroid.TOP,
       )
     }
   })
