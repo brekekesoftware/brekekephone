@@ -60,7 +60,7 @@ type TBrekekeUtils = {
     tlsKeyHash: string,
   ): void
   disableLPC(): void
-
+  checkLocalNetworkPrivacy(): Promise<boolean>
   // these methods available on both
   systemUptimeMs(): Promise<number>
 }
@@ -112,6 +112,7 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
+  checkLocalNetworkPrivacy: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

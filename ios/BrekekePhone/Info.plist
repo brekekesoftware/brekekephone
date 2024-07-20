@@ -4,11 +4,7 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>
-      Brekeke Phone requires access to your local network in order to
-      activate the Local Push Connectivity extension
-    </string>
+	
 	<key>CFBundleDisplayName</key>
 	<string>Brekeke Phone Dev</string>
 	<key>CFBundleExecutable</key>
@@ -67,6 +63,16 @@
 	<string>To get network SSID for LPC</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>To get network SSID for LPC</string>
+  <key>NSLocalNetworkUsageDescription</key>
+	<string>
+      Brekeke Phone requires access to your local network in order to
+      activate the Local Push Connectivity extension
+    </string>
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_bonjour._tcp</string>
+    <string>_lnp._tcp.</string>
+  </array>
 	<key>UIAppFonts</key>
 	<array/>
 	<key>UIBackgroundModes</key>
