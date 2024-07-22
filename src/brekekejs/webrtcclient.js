@@ -2739,7 +2739,7 @@ if (!Brekeke.WebrtcClient) {
       mustUpdateRemoteUserOptions = false
       myMemberIndex = -1
       for (i = 0; i < members.length; i++) {
-        if (this._videoClientUser !== members[i].phone_id) {
+        if (this._videoClientUser < members[i].phone_id) {
           // make call only from earlier id
           if (
             members[i].talker_hold !== 'h' &&
