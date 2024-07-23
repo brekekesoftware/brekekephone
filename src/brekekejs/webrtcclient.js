@@ -3966,6 +3966,9 @@ if (!Brekeke.WebrtcClient) {
         )
         setTimeout(by(this, this._terminateRtcSession, [data.session]), 0)
 
+        // clear trying video call
+        this._clearTryingVideoCallTarget(member.phone_id)
+
         // try video call (earlier id -> later id)
         setTimeout(by(this, this._tryVideoCall, [sessionId]), 0)
       } else if (sessionId && rid && member) {
