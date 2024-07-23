@@ -81,7 +81,7 @@ export class Call {
     // Should be hangup call if user don't allow permissions for call before answering
     // Note: App is forced to restart when you change the privacy settings.
     // https://stackoverflow.com/a/31707642/25021683
-    if (Platform.OS === 'ios' && !(await checkPermForCall(true, false))) {
+    if (Platform.OS === 'ios' && !(await checkPermForCall(true, false, true))) {
       this.hangupWithUnhold()
       return
     }

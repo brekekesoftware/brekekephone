@@ -472,7 +472,7 @@ export class CallStore {
   }
   private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
-    if (!(await permForCall())) {
+    if (!(await permForCall(false, true))) {
       return
     }
     if (
