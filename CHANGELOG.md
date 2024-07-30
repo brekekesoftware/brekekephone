@@ -1,3 +1,7 @@
+#### 2.14.10
+
+- Implement runtime permissions request
+
 #### 2.14.7
 
 - Fix it should be able to open Brekeke Phone with PhoneAppli disabled/enabled on pbx

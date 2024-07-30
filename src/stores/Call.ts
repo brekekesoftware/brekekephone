@@ -1,10 +1,12 @@
 import { action, observable } from 'mobx'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
 import { getPartyName } from '../stores/contactStore'
+import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import type { CallStore } from './callStore2'
@@ -56,7 +58,7 @@ export class Call {
   callkeepAlreadyRejected = false
 
   @action
-  answer = (
+  answer = async (
     options?: { ignoreNav?: boolean },
     videoOptions?: object,
     exInfo?: object,
@@ -76,6 +78,13 @@ export class Call {
       videoOptions,
       exInfo,
     )
+    // should hangup call if user don't allow permissions for call before answering
+    // app will be forced to restart when you change the privacy settings
+    // https://stackoverflow.com/a/31707642/25021683
+    if (Platform.OS === 'ios' && !(await checkPermForCall(true, false))) {
+      this.hangupWithUnhold()
+      return
+    }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
