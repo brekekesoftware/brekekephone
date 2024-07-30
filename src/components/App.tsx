@@ -157,13 +157,8 @@ const initApp = async () => {
     !hasCallOrWakeFromPN
   ) {
     if (!(await isFirstRunFromLocalStorage())) {
-      // TODO: Brekeke app will hang if use await for permForCall at this time on Android
+      // TODO: app will hang up if use await here
       permForCall(true)
-      if (Platform.OS === 'android') {
-        // temporary disabled
-        // await permForCallLog()
-        // void permForCallLog()
-      }
       saveFirstRunToLocalStorage()
     }
   }

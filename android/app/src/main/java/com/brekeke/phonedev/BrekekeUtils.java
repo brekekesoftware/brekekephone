@@ -684,7 +684,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  // Ignoring Battery Optimization permission
+  // perm Ignoring Battery Optimization
   public static boolean isIgnoringBatteryOptimizationPermissionGranted(Context context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;
@@ -745,13 +745,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void perDisableBatteryOptimization(Promise p) {
+  public void permDisableBatteryOptimization(Promise p) {
     disableBatteryOptimizationPromise = p;
     requestDisableBatteryOptimization();
   }
 
   @ReactMethod
-  public void perOverlay(Promise p) {
+  public void permOverlay(Promise p) {
     overlayScreenPromise = p;
     requestOverlayScreenOptimization();
   }

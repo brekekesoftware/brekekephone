@@ -724,7 +724,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         debug("PERMISSIONS_REQUEST_CODE " + detail);
       }
     } else {
-      // Handle the case doesn't have enough elements
+      // handle the case doesn't have enough elements
     }
   }
 

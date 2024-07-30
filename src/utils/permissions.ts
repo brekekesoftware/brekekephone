@@ -13,11 +13,19 @@ import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
 
-const showMessagePermForCallIos = async (rMicro, rCam, rNotify) => {
+const showMessagePermForCallIos = async (
+  rMicro: string,
+  rCam: string,
+  rNotify: boolean,
+) => {
+  const msgMicro = rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''
+  const msgCam = rCam !== 'granted' ? intl`- Camera` + '\n' : ''
+  const msgNotify = !rNotify ? intl`- Notifications` + '\n' : ''
+
   RnAlert.prompt({
     title: '',
     message: intl`You do not have permission as follows
-${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
+${msgMicro}${msgCam}${msgNotify}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -56,24 +64,39 @@ const checkPermForCallIos = async (
 }
 
 const showMessagePermForCallAndroid = async (
-  rBattery,
-  rOverlay,
-  rCallPhone,
-  rReadPhone,
-  rCam,
-  rRecord,
-  rBluetooth,
-  rNotify,
+  rBattery: boolean,
+  rOverlay: boolean,
+  rCallPhone: string,
+  rReadPhone: string,
+  rCam: string,
+  rRecord: string,
+  rBluetooth: string,
+  rNotify: boolean,
 ) => {
+  const msgBattery = !rBattery
+    ? intl`- Disable Battery Optimization` + '\n'
+    : ''
+  const msgOverlay = !rOverlay ? intl`- Display over other apps` + '\n' : ''
+  const msgCallPhone =
+    rCallPhone !== 'granted' && rReadPhone !== 'granted'
+      ? intl`- Phone` + '\n'
+      : ''
+  const msgCam = rCam !== 'granted' ? intl`- Camera` + '\n' : ''
+  const msgRecord = rRecord !== 'granted' ? intl`- Microphone` + '\n' : ''
+  const msgBluetooth =
+    rBluetooth !== 'granted' ? intl`- Nearby devices` + '\n' : ''
+  const msgNotify = !rNotify ? intl`- Notifications` + '\n' : ''
+
   RnAlert.prompt({
     title: '',
     message: intl`You do not have permission as follows
-${!rBattery ? intl`- Disable Battery Optimization` + '\n' : ''}${!rOverlay ? intl`- Display over other apps` + '\n' : ''}${rCallPhone !== 'granted' && rReadPhone !== 'granted' ? intl`- Phone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${rRecord !== 'granted' ? intl`- Microphone` + '\n' : ''}${rBluetooth !== 'granted' ? intl`- Nearby devices` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
+${msgBattery}${msgOverlay}${msgCallPhone}${msgCam}${msgRecord}${msgBluetooth}${msgNotify}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
   })
 }
+
 const checkPermForCallAndroid = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
@@ -139,6 +162,7 @@ const checkPermForCallAndroid = async (
   )
   return false
 }
+
 export const checkPermForCall = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
@@ -157,6 +181,7 @@ const isNotifications = async () => {
   }
   return false
 }
+
 export const permNotifications = async () => {
   if (Platform.OS === 'android' && Platform.Version < 33) {
     return true
@@ -179,7 +204,7 @@ const permDisableBatteryOptimization = async () => {
       title: '',
       message: intl`To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed.`,
       onConfirm: async () => {
-        const r = await BrekekeUtils.perDisableBatteryOptimization()
+        const r = await BrekekeUtils.permDisableBatteryOptimization()
         resolve(r)
       },
       onDismiss: () => resolve(false),
@@ -188,6 +213,7 @@ const permDisableBatteryOptimization = async () => {
     })
   })
 }
+
 const permOverlayPermission = async () => {
   if (await BrekekeUtils.isOverlayPermissionGranted()) {
     return true
@@ -198,7 +224,7 @@ const permOverlayPermission = async () => {
       title: '',
       message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.`,
       onConfirm: async () => {
-        const r = await BrekekeUtils.perOverlay()
+        const r = await BrekekeUtils.permOverlay()
         resolve(r)
       },
       onDismiss: () => resolve(false),
@@ -276,6 +302,7 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
 
   return false
 }
+
 const permForCallIos = async (isNotifyPermNeeded = false) => {
   let rNotify = true
   if (isNotifyPermNeeded) {
@@ -287,12 +314,13 @@ const permForCallIos = async (isNotifyPermNeeded = false) => {
   if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
-  // requestNotifications always return 'denied' on IOS. So, we will use checkPermForCallIos to make sure it's 'granted' or not.
+  // requestNotifications always return 'denied' on ios. So, we will use checkPermForCallIos to make sure it's 'granted' or not.
   // https://forums.developer.apple.com/forums/thread/725619
   checkPermForCallIos(true, isNotifyPermNeeded)
   // showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
+
 export const permForCall = async (isNotifyPermNeeded = false) => {
   if (Platform.OS === 'ios') {
     return await permForCallIos(isNotifyPermNeeded)

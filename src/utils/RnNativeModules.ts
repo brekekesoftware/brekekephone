@@ -43,8 +43,9 @@ type TBrekekeUtils = {
   insertCallLog(number: string, type: CallLogType): void
   isOverlayPermissionGranted(): Promise<boolean>
   isDisableBatteryOptimizationGranted(): Promise<boolean>
-  perDisableBatteryOptimization(): Promise<boolean>
-  perOverlay(): Promise<boolean>
+  permDisableBatteryOptimization(): Promise<boolean>
+  permOverlay(): Promise<boolean>
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -101,8 +102,9 @@ const Polyfill: TBrekekeUtils = {
   insertCallLog: () => undefined,
   isOverlayPermissionGranted: () => Promise.resolve(false),
   isDisableBatteryOptimizationGranted: () => Promise.resolve(false),
-  perDisableBatteryOptimization: () => Promise.resolve(false),
-  perOverlay: () => Promise.resolve(false),
+  permDisableBatteryOptimization: () => Promise.resolve(false),
+  permOverlay: () => Promise.resolve(false),
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

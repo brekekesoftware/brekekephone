@@ -72,14 +72,14 @@ export const PushNotification = {
         onFcmToken(e.deviceToken)
       })
 
-      // We should be able to get FCM token without permission request
+      // we should be able to get fcm token without permission request
       if (!hasPermissions) {
         throw new Error(intl`Don't have Permissions`)
       }
 
       events.registerRemoteNotificationsRegistrationFailed(
         (e: RegistrationError) => {
-          console.error('Failed to register  remote notification', e)
+          console.error('Failed to register remote notification', e)
         },
       )
 

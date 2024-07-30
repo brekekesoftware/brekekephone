@@ -320,7 +320,7 @@ export const setupCallKeepEvents = async () => {
   })
   eventEmitter.addListener('phonePermission', () => {
     console.log(
-      'CallKeep debug: phonePermission::currentState::' + AppState.currentState,
+      'CallKeep debug: phonePermission currentState' + AppState.currentState,
     )
     if (AppState.currentState === 'active') {
       ToastAndroid.showWithGravity(
