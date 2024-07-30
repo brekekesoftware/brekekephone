@@ -22,13 +22,12 @@ import { Nav } from '../stores/Nav'
 export const css = StyleSheet.create({
   Outer: {
     alignItems: 'center',
-    width: '100%',
     backgroundColor: 'white',
   },
   Inner: {
     width: '70%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
     alignContent: 'center',
