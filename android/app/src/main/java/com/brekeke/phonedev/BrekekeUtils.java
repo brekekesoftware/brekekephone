@@ -1,7 +1,9 @@
 package com.brekeke.phonedev;
 
 import static android.content.Context.TELECOM_SERVICE;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
+import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.role.RoleManager;
@@ -15,6 +17,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnCommunicationDeviceChangedListener;
 import android.media.AudioManager.OnModeChangedListener;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -23,10 +26,10 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.CallLog;
+import android.provider.Settings;
 import android.telecom.TelecomManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -57,6 +60,8 @@ import org.json.JSONObject;
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
+  public static Promise disableBatteryOptimizationPromise;
+  public static Promise overlayScreenPromise;
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -99,6 +104,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
+  public static int REQUEST_CODE_FOR_DEFAULT_PHONE_APP = 10001;
+  public static int REQUEST_CODE_FOR_IGNORE_BATTERY_OPTIMIZATIONS = 10002;
   public static ReactApplicationContext ctx;
   public static KeyguardManager km;
   public static AudioManager am;
@@ -332,6 +339,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
+
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false);
   }
 
@@ -621,9 +629,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  public static boolean checkReadPhonePermission(Context ctx) {
+    if (checkSelfPermission(ctx, permission.READ_PHONE_NUMBERS)
+        == PackageManager.PERMISSION_GRANTED) {
+      return true;
+    }
+    return false;
+  }
+
   public static boolean checkNotificationPermission(Context ctx) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-      return ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+      return checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
     }
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
@@ -668,8 +684,77 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  // perm Ignoring Battery Optimization
+  public static boolean isIgnoringBatteryOptimizationPermissionGranted(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return true;
+    }
+    PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+  }
+
+  public static void resolveIgnoreBattery(boolean result) {
+    if (disableBatteryOptimizationPromise != null) {
+      disableBatteryOptimizationPromise.resolve(result);
+      disableBatteryOptimizationPromise = null;
+    }
+  }
+
+  public static void requestDisableBatteryOptimization() {
+    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+    intent.setData(Uri.parse("package:" + ctx.getPackageName()));
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(intent);
+  }
+
+  // Overlay screen permission
+  public static boolean isOverlayPermissionGranted(Context context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return true;
+    }
+    return Settings.canDrawOverlays(context);
+  }
+
+  public static void requestOverlayScreenOptimization() {
+    Intent intent =
+        new Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+            Uri.parse("package:" + ctx.getPackageName()));
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(intent);
+  }
+
+  public static void resolveOverlayScreen(boolean result) {
+    if (overlayScreenPromise != null) {
+      overlayScreenPromise.resolve(result);
+      overlayScreenPromise = null;
+    }
+  }
+
   // ==========================================================================
   // react methods
+
+  @ReactMethod
+  public void isOverlayPermissionGranted(Promise p) {
+    p.resolve(this.isOverlayPermissionGranted(ctx));
+  }
+
+  @ReactMethod
+  public void isDisableBatteryOptimizationGranted(Promise p) {
+    p.resolve(isIgnoringBatteryOptimizationPermissionGranted(ctx));
+  }
+
+  @ReactMethod
+  public void permDisableBatteryOptimization(Promise p) {
+    disableBatteryOptimizationPromise = p;
+    requestDisableBatteryOptimization();
+  }
+
+  @ReactMethod
+  public void permOverlay(Promise p) {
+    overlayScreenPromise = p;
+    requestOverlayScreenOptimization();
+  }
 
   @ReactMethod
   public void checkPermissionDefaultDialer(Promise p) {

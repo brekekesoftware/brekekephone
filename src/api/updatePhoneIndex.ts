@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { Account, accountStore } from '../stores/accountStore'
+import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'

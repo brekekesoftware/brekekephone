@@ -146,7 +146,7 @@ const RnAlertR = ({
           },
         ]}
       >
-        <RnText subTitle>{props.title}</RnText>
+        {!!props.title && <RnText subTitle>{props.title}</RnText>}
         {props.message}
         <View style={css.RootRnAlert_Btns}>
           {props.dismissText && (

@@ -10,8 +10,7 @@ import type {
 import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
-import { intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { intl } from '../stores/intl'
 import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
@@ -66,10 +65,6 @@ export const PushNotification = {
       const hasPermissions: boolean =
         await Notifications.isRegisteredForRemoteNotifications()
 
-      if (!hasPermissions) {
-        throw new Error("Don't have Permissions")
-      }
-
       Notifications.registerRemoteNotifications()
 
       const events = Notifications.events()
@@ -77,9 +72,14 @@ export const PushNotification = {
         onFcmToken(e.deviceToken)
       })
 
+      // we should be able to get fcm token without permission request
+      if (!hasPermissions) {
+        throw new Error(intl`Don't have Permissions`)
+      }
+
       events.registerRemoteNotificationsRegistrationFailed(
         (e: RegistrationError) => {
-          console.error('Failed to register  remote notification', e)
+          console.error('Failed to register remote notification', e)
         },
       )
 
@@ -137,6 +137,7 @@ export const PushNotification = {
         const payload = n.payload?.payload || n.payload
         onNotification(payload, initApp)
       })
+
       // if the app was launched by a push notification
       // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
@@ -144,10 +145,10 @@ export const PushNotification = {
         onNotification(payload, initApp, true)
       })
     } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to initialize push notification`,
-        err: err as Error,
-      })
+      console.error(
+        'PushNotification register error: Failed to initialize push notification',
+        err,
+      )
     }
   },
 

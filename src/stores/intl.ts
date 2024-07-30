@@ -26,7 +26,7 @@ const compileFn = (locale: string, k: string): CompileFn => {
 const intl0 = (k: string, data: unknown) => compileFn(intlStore.locale, k)(data)
 const intlDebug0 = (k: string, data: unknown) => ({
   label: intl0(k, data),
-  en: compileFn('en', k)(data),
+  en: compileFn(intlStore.locale, k)(data),
 })
 
 export interface IntlDebug {

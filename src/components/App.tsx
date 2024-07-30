@@ -22,6 +22,10 @@ import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
 import { accountStore, getLastSignedInId } from '../stores/accountStore'
+import {
+  isFirstRunFromLocalStorage,
+  saveFirstRunToLocalStorage,
+} from '../stores/appStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -35,16 +39,12 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
+import { RnStacker } from '../stores/RnStacker'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
-import {
-  permForCall,
-  permForCallLog,
-  permReadPhoneNumber,
-} from '../utils/permissions'
+import { checkPermForCall, permForCall } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -75,7 +75,7 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
-    if (!(await permReadPhoneNumber())) {
+    if (!(await checkPermForCall())) {
       nav.goToPageAccountSignIn()
       return
     }
@@ -85,6 +85,12 @@ const initApp = async () => {
       console.log('App navigated by auto signin')
       // already navigated
     } else {
+      // skip move to page index if there is no account
+      const screen = RnStacker.stacks[RnStacker.stacks.length - 1]
+      const ca = accountStore.accounts.length
+      if (!ca && screen && screen.name === 'PageAccountCreate') {
+        return
+      }
       nav.goToPageIndex()
     }
   }
@@ -99,10 +105,22 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
+
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
+      return
+    }
+    if (
+      !hasCallOrWakeFromPN &&
+      s.signedInId &&
+      !(await checkPermForCall(
+        false,
+        s.getCurrentAccount()?.pushNotificationEnabled,
+      ))
+    ) {
+      s.signOut()
       return
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
@@ -131,14 +149,17 @@ const initApp = async () => {
     if (window._BrekekePhoneWebRoot) {
       webPromptPermission()
     }
-  } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    if (Platform.OS === 'android') {
-      await permForCall()
-      // temporary disabled
-      // await permForCallLog()
-      void permForCallLog
-    } else {
-      getAudioVideoPermission()
+    // with ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // https://github.com/facebook/react-native-website/issues/273
+  } else if (
+    (AppState.currentState === 'active' ||
+      AppState.currentState === 'unknown') &&
+    !hasCallOrWakeFromPN
+  ) {
+    if (!(await isFirstRunFromLocalStorage())) {
+      // TODO: app will hang up if use await here
+      permForCall(true)
+      saveFirstRunToLocalStorage()
     }
   }
 

@@ -66,7 +66,7 @@ format-java:
 	make -Bs ls | \
 	xargs google-java-format -i;
 format-xml:
-	export EXT="xml|storyboard|xcscheme|xcworkspacedata|plist|entitlements" && \
+	export EXT="xml|storyboard|xcscheme|xcworkspacedata" && \
 	make -Bs ls | \
 	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --log-level=error --write;
 imagemin:
