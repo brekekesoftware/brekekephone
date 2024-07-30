@@ -15,6 +15,7 @@ import { accountStore } from '../stores/accountStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
+import { permForCall } from '../utils/permissions'
 
 const css = StyleSheet.create({
   PageAccountSignIn_ListServers: {
@@ -74,12 +75,18 @@ const css = StyleSheet.create({
 export const PageAccountSignIn = observer(() => {
   const ids = accountStore.accounts.map(a => a.id).filter(id => id)
   const l = ids.length
+  const createAccount = async () => {
+    if (!(await permForCall(true))) {
+      return
+    }
+    Nav().goToPageAccountCreate()
+  }
   return (
     <BrekekeGradient>
       <Layout
         description={intl`${l} accounts in total`}
         noScroll
-        onCreate={!!l ? Nav().goToPageAccountCreate : undefined}
+        onCreate={!!l ? createAccount : undefined}
         title={intl`Accounts`}
         transparent
       >
