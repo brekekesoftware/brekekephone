@@ -32,12 +32,8 @@ ${!rLocalNetwork ? intl`- Local Network` + '\n' : ''}${rMicro !== 'granted' ? in
 const checkPermForCallIos = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
-  ignoreLocalNetwork = false,
 ) => {
-  let rLocalNetwork = true
-  if (!ignoreLocalNetwork) {
-    rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
-  }
+  const rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
   const rIos = await checkMultiple([
     PERMISSIONS.IOS.CAMERA,
     PERMISSIONS.IOS.MICROPHONE,
@@ -154,14 +150,9 @@ const checkPermForCallAndroid = async (
 export const checkPermForCall = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
-  ignoreLocalNetwork = false,
 ) => {
   if (Platform.OS === 'ios') {
-    return await checkPermForCallIos(
-      isShowDialog,
-      isNotifyPermNeeded,
-      ignoreLocalNetwork,
-    )
+    return await checkPermForCallIos(isShowDialog, isNotifyPermNeeded)
   }
   return await checkPermForCallAndroid(isShowDialog, isNotifyPermNeeded)
 }
@@ -293,17 +284,10 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
 
   return false
 }
-const permForCallIos = async (
-  isNotifyPermNeeded = false,
-  ignoreLocalNetwork = false,
-) => {
+const permForCallIos = async (isNotifyPermNeeded = false) => {
   let rNotify = true
   if (isNotifyPermNeeded) {
     rNotify = await permNotifications()
-  }
-  let rLocalNetwork = true
-  if (!ignoreLocalNetwork) {
-    rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
   }
   const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
   const rCam = await request(PERMISSIONS.IOS.CAMERA)
@@ -312,7 +296,7 @@ const permForCallIos = async (
   if (isNotifyPermNeeded) {
     rNotify = await isNotifications()
   }
-
+  const rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
   console.log('Permission debug permForCallIos ', {
     rMicro,
     rCam,
@@ -326,12 +310,9 @@ const permForCallIos = async (
   showMessagePermForCallIos(rMicro, rCam, rNotify, rLocalNetwork)
   return false
 }
-export const permForCall = async (
-  isNotifyPermNeeded = false,
-  ignoreLocalNetwork = false,
-) => {
+export const permForCall = async (isNotifyPermNeeded = false) => {
   if (Platform.OS === 'ios') {
-    return await permForCallIos(isNotifyPermNeeded, ignoreLocalNetwork)
+    return await permForCallIos(isNotifyPermNeeded)
   }
   return await permForCallAndroid(isNotifyPermNeeded)
 }
