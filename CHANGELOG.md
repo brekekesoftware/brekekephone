@@ -1,6 +1,7 @@
 #### 2.14.10
 
 - Implement runtime permissions request
+- Fix webphone can not load video in firefox nightly
 
 #### 2.14.7
 
