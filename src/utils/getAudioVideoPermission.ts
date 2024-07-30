@@ -10,10 +10,9 @@ export const getAudioVideoPermission = () => {
   }
   let p: Promise<MediaStream>
   if (navigator.mediaDevices?.getUserMedia) {
-    // New syntax
     p = navigator.mediaDevices.getUserMedia({ audio: true, video: true })
   } else {
-    // Old syntax
+    // legacy old api compatible in rn
     // @ts-ignore
     p = window.navigator.getUserMedia(
       { audio: true, video: true },
