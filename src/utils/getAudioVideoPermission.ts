@@ -8,12 +8,19 @@ export const getAudioVideoPermission = () => {
   const eb = (err: MediaStreamError) => {
     /* TODO */
   }
-  // @ts-ignore
-  const p = window.navigator.getUserMedia(
-    { audio: true, video: true },
-    cb,
-    eb,
-  ) as any as Promise<MediaStream>
+  let p: Promise<MediaStream>
+  if (navigator.mediaDevices?.getUserMedia) {
+    p = navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+  } else {
+    // legacy old api compatible in rn
+    // @ts-ignore
+    p = window.navigator.getUserMedia(
+      { audio: true, video: true },
+      cb,
+      eb,
+    ) as any as Promise<MediaStream>
+  }
+
   if (p?.then) {
     p.then(cb).catch(eb)
   }
