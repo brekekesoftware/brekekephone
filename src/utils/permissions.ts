@@ -13,16 +13,11 @@ import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
 
-const showMessagePermForCallIos = async (
-  rMicro,
-  rCam,
-  rNotify,
-  rLocalNetwork,
-) => {
+const showMessagePermForCallIos = async (rMicro, rCam, rNotify) => {
   RnAlert.prompt({
     title: '',
     message: intl`You do not have permission as follows
-${!rLocalNetwork ? intl`- Local Network` + '\n' : ''}${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
+${rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''}${rCam !== 'granted' ? intl`- Camera` + '\n' : ''}${!rNotify ? intl`- Notifications` + '\n' : ''}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -33,7 +28,6 @@ const checkPermForCallIos = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
 ) => {
-  const rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
   const rIos = await checkMultiple([
     PERMISSIONS.IOS.CAMERA,
     PERMISSIONS.IOS.MICROPHONE,
@@ -44,22 +38,20 @@ const checkPermForCallIos = async (
   }
   const rMicro = rIos[PERMISSIONS.IOS.MICROPHONE]
   const rCam = rIos[PERMISSIONS.IOS.CAMERA]
-
   console.log('Permission debug checkPermForCallIos ', {
-    rLocalNetwork,
     rMicro,
     rCam,
     rNotify,
     isShowDialog,
     isNotifyPermNeeded,
   })
-  if (rMicro === 'granted' && rCam === 'granted' && rNotify && rLocalNetwork) {
+  if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
   if (!isShowDialog) {
     return false
   }
-  showMessagePermForCallIos(rMicro, rCam, rNotify, rLocalNetwork)
+  showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
 
@@ -291,23 +283,14 @@ const permForCallIos = async (isNotifyPermNeeded = false) => {
   }
   const rMicro = await request(PERMISSIONS.IOS.MICROPHONE)
   const rCam = await request(PERMISSIONS.IOS.CAMERA)
-  // requestNotifications always return 'denied' on IOS. So, we will use checkPermForCallIos to make sure it's 'granted' or not.
-  // https://forums.developer.apple.com/forums/thread/725619
-  if (isNotifyPermNeeded) {
-    rNotify = await isNotifications()
-  }
-  const rLocalNetwork = await BrekekeUtils.checkLocalNetworkPrivacy()
-  console.log('Permission debug permForCallIos ', {
-    rMicro,
-    rCam,
-    rNotify,
-    rLocalNetwork,
-  })
-  if (rMicro === 'granted' && rCam === 'granted' && rNotify && rLocalNetwork) {
+  console.log('Permission debug permForCallIos ', { rMicro, rCam, rNotify })
+  if (rMicro === 'granted' && rCam === 'granted' && rNotify) {
     return true
   }
-  // checkPermForCallIos(true, isNotifyPermNeeded)
-  showMessagePermForCallIos(rMicro, rCam, rNotify, rLocalNetwork)
+  // requestNotifications always return 'denied' on IOS. So, we will use checkPermForCallIos to make sure it's 'granted' or not.
+  // https://forums.developer.apple.com/forums/thread/725619
+  checkPermForCallIos(true, isNotifyPermNeeded)
+  // showMessagePermForCallIos(rMicro, rCam, rNotify)
   return false
 }
 export const permForCall = async (isNotifyPermNeeded = false) => {

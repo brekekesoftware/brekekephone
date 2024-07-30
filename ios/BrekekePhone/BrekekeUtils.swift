@@ -3,7 +3,6 @@ import AVFoundation
 import AVKit
 import Combine
 import Foundation
-import NetworkExtension
 import UIKit
 import WebRTC
 
@@ -13,35 +12,13 @@ public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
-  var networkAuthorization: ObservableLocalNetworkAuthorization
 
   override init() {
     audio = nil
     audioSession = AVAudioSession.sharedInstance()
     rtcAudioSession = RTCAudioSession.sharedInstance()
     rtcAudioSession.useManualAudio = true
-    networkAuthorization = ObservableLocalNetworkAuthorization()
     print("BrekekeUtils.init(): initialized")
-  }
-
-  @objc func checkLocalNetworkPrivacy(
-    _ resolve: @escaping RCTPromiseResolveBlock,
-    rejecter _: @escaping RCTPromiseRejectBlock
-  ) {
-    networkAuthorization.start()
-    let timeout = 0.7
-    DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [self] in
-      print(
-        "BrekekeUtils::Local network authorization status: \(networkAuthorization.status)"
-      )
-      if networkAuthorization.status == ObservableLocalNetworkAuthorization
-        .Status.granted {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-      networkAuthorization.shutdown()
-    }
   }
 
   @objc
