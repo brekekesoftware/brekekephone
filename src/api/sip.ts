@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
+import { isEmpty } from 'lodash'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
@@ -148,6 +149,7 @@ export class SIP extends EventEmitter {
         partyNumber
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
+
       const patch: Partial<Call> = {
         rawSession: ev,
         id: ev.sessionId,
@@ -200,6 +202,23 @@ export class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
+
+    phone.addEventListener('remoteUserOptionsChanged', async ev => {
+      if (!ev) {
+        return
+      }
+      // hack to fix issue: videoClientSessionCreated not fired if user has phone_id < remote user phone_id
+      if (
+        ev.remoteWithVideo &&
+        isEmpty(ev.videoClientSessionTable) &&
+        ev.withVideo &&
+        ev.rtcSession.direction !== 'incoming'
+      ) {
+        this.disableVideo(ev.sessionId)
+        this.enableVideo(ev.sessionId)
+      }
+    })
+
     phone.addEventListener('sessionCreated', async ev => {
       if (!ev) {
         return
@@ -211,6 +230,7 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+      console.error('thangnt::sessionStatusChanged', ev)
       if (ev.sessionStatus === 'terminated') {
         this.emit('session-stopped', ev)
         return
@@ -237,12 +257,16 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+      console.error('thangnt::videoClientSessionEnded', ev)
+
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
       })
+      // this.disableVideo(ev.sessionId)
+      // this.enableVideo(ev.sessionId)
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
