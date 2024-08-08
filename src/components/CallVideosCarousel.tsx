@@ -4,11 +4,14 @@ import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
 import type { Call } from '../stores/Call'
 import { EOrientation, useOrientation } from '../utils/useOrientation'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { VideoPlayer } from './VideoPlayer'
 import { VideoViewItem } from './VideoViewItem'
 
 type CallVideoCarouselProps = {
   call: Call
+  showButtonsInVideoCall: boolean
+  onButtonsInVideo(): void
 }
 
 export const CallVideosCarousel = observer(
@@ -21,6 +24,8 @@ export const CallVideosCarousel = observer(
       toggleLocalVideo,
       remoteUserOptionsTable,
     },
+    showButtonsInVideoCall,
+    onButtonsInVideo,
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
 
@@ -37,10 +42,6 @@ export const CallVideosCarousel = observer(
     const finalWidth = Math.floor(width / (isPortrait ? 3.5 : 4) - 16)
     console.log(
       '#Duy Phan console remoteUserOptionsTable',
-      remoteUserOptionsTable,
-    )
-    console.log(
-      '#Duy Phan console remoteUserOptionsTable',
       videoClientSessionTable,
     )
 
@@ -50,45 +51,54 @@ export const CallVideosCarousel = observer(
     }
 
     return (
-      <View style={styles.container}>
+      <RnTouchableOpacity
+        style={styles.container}
+        onPress={showButtonsInVideoCall ? undefined : onButtonsInVideo}
+        activeOpacity={1}
+      >
+        {!!localStreamObject && (
+          <View
+            style={{
+              zIndex: 200,
+              position: 'absolute',
+              bottom: 0,
+              height: 'auto',
+              backgroundColor: 'transparent',
+            }}
+          >
+            <ScrollView
+              horizontal
+              style={styles.scrollView}
+              contentContainerStyle={styles.contentScrollView}
+              showsHorizontalScrollIndicator={false}
+              ref={refScroll}
+            >
+              <VideoViewItem
+                sourceObject={localStreamObject}
+                view={{ width: finalWidth, height: finalHeight }}
+                showSwitchCamera
+                onSwitchCamera={() => toggleLocalVideo(false)}
+              />
+              {videoClientSessionTable.map(item => (
+                <VideoViewItem
+                  sourceObject={item.remoteStreamObject}
+                  active={item.vId === videoStreamActive?.vId}
+                  enabled={
+                    remoteUserOptionsTable[item.user]?.withVideo ?? false
+                  }
+                  key={item.vId}
+                  view={{ width: finalWidth, height: finalHeight }}
+                  onSelect={() => handleScroll(item)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
         <VideoPlayer
           sourceObject={videoStreamActive?.remoteStreamObject}
           zOrder={0}
         />
-        <View
-          style={{
-            zIndex: 99,
-            position: 'absolute',
-            bottom: 0,
-            height: 'auto',
-          }}
-        >
-          <ScrollView
-            horizontal
-            style={styles.scrollView}
-            contentContainerStyle={styles.contentScrollView}
-            showsHorizontalScrollIndicator={false}
-            ref={refScroll}
-          >
-            <VideoViewItem
-              sourceObject={localStreamObject}
-              view={{ width: finalWidth, height: finalHeight }}
-              showSwitchCamera
-              onSwitchCamera={() => toggleLocalVideo(false)}
-            />
-            {videoClientSessionTable.map(item => (
-              <VideoViewItem
-                sourceObject={item.remoteStreamObject}
-                active={item.vId === videoStreamActive?.vId}
-                enabled={remoteUserOptionsTable[item.user]?.withVideo ?? false}
-                key={item.vId}
-                view={{ width: finalWidth, height: finalHeight }}
-                onSelect={() => handleScroll(item)}
-              />
-            ))}
-          </ScrollView>
-        </View>
-      </View>
+      </RnTouchableOpacity>
     )
   },
 )

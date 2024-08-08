@@ -30,7 +30,7 @@ export class VideoViewItem extends Component<VideoViewItemProps, any> {
       showSwitchCamera = false,
       view,
       onSelect,
-      enabled = false,
+      enabled = true,
     } = this.props
     return (
       <View
@@ -40,6 +40,7 @@ export class VideoViewItem extends Component<VideoViewItemProps, any> {
             width: view.width,
             height: view.height,
             backgroundColor: enabled ? 'transparent' : 'black',
+            zIndex: 300,
           },
           active ? styles.active : undefined,
         ]}
@@ -78,6 +79,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
     position: 'relative',
+    overflow: 'hidden',
   },
   active: {
     borderColor: '#4cc5de',
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     flex: 1,
-    borderRadius: 4,
-    overflow: 'hidden',
+    // borderRadius: 10,
+    // overflow: 'hidden',
   },
 })

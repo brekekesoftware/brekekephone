@@ -74,7 +74,7 @@ const css = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'black',
+    // backgroundColor: 'black',
   },
   Video_Space: {
     flex: 1,
@@ -279,6 +279,7 @@ class PageCallManage extends Component<{
   @observable private showButtonsInVideoCall = true
   private alreadySetShowButtonsInVideoCall = false
   @action private toggleButtons = () => {
+    console.log('#Duy Phan console toggle')
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
   }
   @action private hideButtonsIfVideo = () => {
@@ -397,11 +398,12 @@ class PageCallManage extends Component<{
         transparent={!c.transferring}
       >
         <View
-          style={
-            this.props.call.localVideoEnabled || c.localVideoEnabled
-              ? css.vContainerVideo
-              : css.vContainer
-          }
+          // style={
+          //   this.props.call.localVideoEnabled || c.localVideoEnabled
+          //     ? css.vContainerVideo
+          //     : css.vContainer
+          // }
+          style={css.vContainerVideo}
         >
           {this.renderCall()}
         </View>
@@ -454,13 +456,25 @@ class PageCallManage extends Component<{
           />
         </View>
         <View style={css.Video_Space} />
-        <View style={css.Video}>
-          <CallVideosCarousel call={c} />
-        </View>
-        {/* <RnTouchableOpacity
+        {c.localVideoEnabled && (
+          <View
+            style={[
+              css.Video,
+              { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
+            ]}
+          >
+            <CallVideosCarousel
+              call={c}
+              showButtonsInVideoCall={this.showButtonsInVideoCall}
+              onButtonsInVideo={this.toggleButtons}
+            />
+          </View>
+        )}
+        <RnTouchableOpacity
           onPress={this.toggleButtons}
+          // style={[StyleSheet.absoluteFill, {zIndex: this.showButtonsInVideoCall ? 115 : 105 }]}
           style={StyleSheet.absoluteFill}
-        /> */}
+        />
       </>
     )
   }
@@ -477,10 +491,10 @@ class PageCallManage extends Component<{
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
       <View style={[css.Image_wrapper]}>
-        {/* <View
+        <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
-        > */}
-        {/* {c.answered && (
+        >
+          {c.answered && (
             <SmartImage
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
@@ -495,8 +509,8 @@ class PageCallManage extends Component<{
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}
             />
-          )} */}
-        {/* </View> */}
+          )}
+        </View>
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
@@ -519,7 +533,7 @@ class PageCallManage extends Component<{
   private renderBtns = () => {
     const { call: c } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
-    if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
+    if (!this.showButtonsInVideoCall) {
       return null
     }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
@@ -677,7 +691,8 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
+    const isHangupBtnHidden =
+      (incoming && this.isBtnHidden('hangup')) || !this.showButtonsInVideoCall
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (
@@ -722,7 +737,10 @@ class PageCallManage extends Component<{
 
   render() {
     return (
-      <BrekekeGradient white style={this.isVisible() ? undefined : css.hidden}>
+      <BrekekeGradient
+        white={this.props.call.localVideoEnabled}
+        style={this.isVisible() ? undefined : css.hidden}
+      >
         {this.renderLayout()}
       </BrekekeGradient>
     )

@@ -227,6 +227,10 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+      console.log(
+        '#Duy Phan console e.videoClientSessionId',
+        ev.videoClientSessionId,
+      )
       const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
@@ -246,11 +250,20 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+      console.log(
+        '#Duy Phan console ev.videoClientSessionIdEnded',
+        ev.videoClientSessionId,
+      )
+      const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        localStreamObject: session.localVideoStreamObject,
       })
     })
 
