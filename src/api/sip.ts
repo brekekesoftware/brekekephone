@@ -148,7 +148,6 @@ export class SIP extends EventEmitter {
         partyNumber
       //
 
-      console.log('#Duy Phan console ev', ev.localVideoStreamObject)
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
         rawSession: ev,
@@ -227,13 +226,15 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.log(
-        '#Duy Phan console e.videoClientSessionId',
-        ev.videoClientSessionId,
-      )
+
       const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
+      console.log(
+        '#Duy Phan console',
+        Object.keys(session.videoClientSessionTable),
+      )
+      console.log('#Duy Phan console', videoSession.remoteStreamObject)
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
@@ -250,10 +251,7 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.log(
-        '#Duy Phan console ev.videoClientSessionIdEnded',
-        ev.videoClientSessionId,
-      )
+
       const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,

@@ -30,20 +30,19 @@ export const CallVideosCarousel = observer(
     const refScroll = useRef<ScrollView>(null)
 
     useEffect(() => {
-      if (!videoStreamActive) {
+      if (videoClientSessionTable.length && !videoStreamActive) {
         updateVideoStreamActive(videoClientSessionTable[0])
       }
-    }, [videoClientSessionTable.length > 0])
+      if (!videoClientSessionTable.length) {
+        updateVideoStreamActive(null)
+      }
+    }, [videoClientSessionTable.length, videoStreamActive])
 
     const orientation = useOrientation()
     const isPortrait = orientation === EOrientation.Portrait
     const width = Dimensions.get('window').width
     const finalHeight = isPortrait ? 182 : 86
     const finalWidth = Math.floor(width / (isPortrait ? 3.5 : 4) - 16)
-    console.log(
-      '#Duy Phan console remoteUserOptionsTable',
-      videoClientSessionTable,
-    )
 
     const handleScroll = item => {
       updateVideoStreamActive(item)
@@ -83,9 +82,6 @@ export const CallVideosCarousel = observer(
                 <VideoViewItem
                   sourceObject={item.remoteStreamObject}
                   active={item.vId === videoStreamActive?.vId}
-                  enabled={
-                    remoteUserOptionsTable[item.user]?.withVideo ?? false
-                  }
                   key={item.vId}
                   view={{ width: finalWidth, height: finalHeight }}
                   onSelect={() => handleScroll(item)}

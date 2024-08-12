@@ -74,7 +74,7 @@ const css = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    // backgroundColor: 'black',
+    backgroundColor: 'black',
   },
   Video_Space: {
     flex: 1,
@@ -125,8 +125,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    // minHeight: minSizeImageWrapper,
-    // minWidth: minSizeImageWrapper,
+    minHeight: minSizeImageWrapper,
+    minWidth: minSizeImageWrapper,
   },
   ImageSize: {
     height: 130,
@@ -279,7 +279,6 @@ class PageCallManage extends Component<{
   @observable private showButtonsInVideoCall = true
   private alreadySetShowButtonsInVideoCall = false
   @action private toggleButtons = () => {
-    console.log('#Duy Phan console toggle')
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
   }
   @action private hideButtonsIfVideo = () => {

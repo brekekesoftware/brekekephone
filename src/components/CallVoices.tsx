@@ -23,7 +23,6 @@ export const CallVoices = observer(() => {
   // don't play the local RBT, but the audio data in the RTP packets
   const code = oc?.rawSession?.incomingMessage?.status_code
   const playEarlyMedia = code && /^18[0-9]$/.test(code.toString()) && oc.withSDP
-  console.log('#Duy Phan console isOutgoingProgress', isOutgoingProgress)
 
   return (
     <>
