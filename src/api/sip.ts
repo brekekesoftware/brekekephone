@@ -393,7 +393,14 @@ export class SIP extends EventEmitter {
     this.phone?.setWithVideo(sessionId, false)
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
-  switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
+
+  setMutedCamera = (muted: boolean, sessionId: string) =>
+    this.phone?.setMuted({ videoClient: muted }, sessionId)
+  switchCamera = async (
+    sessionId: string,
+    vId: string,
+    isFrontCamera: boolean,
+  ) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
       return
@@ -409,22 +416,49 @@ export class SIP extends EventEmitter {
     const cameras = this.cameraIds.map(s => s.deviceId)
     this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
-    const videoOptions = {
-      call: {
-        mediaConstraints: sipCreateMediaConstraints(
-          this.currentCamera,
-          isFrontCamera,
-        ),
+    // const videoOptions = {
+    //   call: {
+    //     mediaConstraints: sipCreateMediaConstraints(
+    //       this.currentCamera,
+    //       isFrontCamera,
+    //     ),
+    //   },
+    //   answer: {
+    //     mediaConstraints: sipCreateMediaConstraints(
+    //       this.currentCamera,
+    //       isFrontCamera,
+    //     ),
+    //   },
+    // }
+
+    const mc = sipCreateMediaConstraints(this.currentCamera, isFrontCamera)
+
+    const session: any = this.phone.getSession(sessionId)
+    const videoSession = session.videoClientSessionTable[vId]
+
+    const currentAudioSender = videoSession.rtcSession.connection.getSenders()
+
+    this.phone?._getUserMedia(
+      mc,
+      false,
+      stream => {
+        const sender = currentAudioSender.find(s => s.track.kind === 'video')
+
+        sender.replaceTrack(stream.getVideoTracks()[0])
+        this.emit('session-updated', {
+          id: sessionId,
+          videoSessionId: vId,
+          localStreamObject: stream,
+        })
       },
-      answer: {
-        mediaConstraints: sipCreateMediaConstraints(
-          this.currentCamera,
-          isFrontCamera,
-        ),
-      },
-    }
-    this.phone?.setWithVideo(sessionId, false, videoOptions)
-    this.phone?.setWithVideo(sessionId, true, videoOptions)
+      err => console.log('#Duy Phan console err', err),
+      50,
+    )
+
+    // 4. add new stream to connection
+
+    // this.phone?.setWithVideo(sessionId, false, videoOptions)
+    // this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
 }
 

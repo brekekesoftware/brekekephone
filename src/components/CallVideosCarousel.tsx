@@ -23,6 +23,7 @@ export const CallVideosCarousel = observer(
       videoClientSessionTable,
       toggleLocalVideo,
       remoteUserOptionsTable,
+      toggleMutedCamera,
     },
     showButtonsInVideoCall,
     onButtonsInVideo,
@@ -76,7 +77,7 @@ export const CallVideosCarousel = observer(
                 sourceObject={localStreamObject}
                 view={{ width: finalWidth, height: finalHeight }}
                 showSwitchCamera
-                onSwitchCamera={() => toggleLocalVideo(false)}
+                onSwitchCamera={() => toggleMutedCamera()}
               />
               {videoClientSessionTable.map(item => (
                 <VideoViewItem

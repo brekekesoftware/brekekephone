@@ -371,7 +371,10 @@ export type Sip = {
   makeCall: MakeCallFn
   answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
-  setMuted(options: { main: boolean }, sessionId: string): void
+  setMuted(
+    options: { main?: boolean; videoClient?: boolean },
+    sessionId: string,
+  ): void
   setWithVideo(
     sessionId: string,
     withVideo?: boolean,

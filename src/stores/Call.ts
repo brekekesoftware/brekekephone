@@ -135,7 +135,7 @@ export class Call {
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
-    sip.switchCamera(this.id, this.isFrontCamera)
+    sip.switchCamera(this.id, this.videoSessionId, this.isFrontCamera)
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
@@ -159,6 +159,7 @@ export class Call {
   }
 
   @observable muted = false
+  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -166,6 +167,11 @@ export class Call {
       BrekekeUtils.setIsMute(this.callkeepUuid, this.muted)
     }
     return sip.setMuted(this.muted, this.id)
+  }
+
+  @action toggleMutedCamera = () => {
+    this.mutedVideo = !this.mutedVideo
+    sip.setMutedCamera(this.mutedVideo, this.id)
   }
 
   @observable recording = false
