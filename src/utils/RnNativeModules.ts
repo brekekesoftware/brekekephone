@@ -47,6 +47,7 @@ type TBrekekeUtils = {
   permOverlay(): Promise<boolean>
 
   // these methods only available on ios
+  setProximityMonitoring(enabled: boolean): void
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
   stopRBT(): void
@@ -106,6 +107,7 @@ const Polyfill: TBrekekeUtils = {
   permOverlay: () => Promise.resolve(false),
 
   // these methods only available on ios
+  setProximityMonitoring: () => undefined,
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,

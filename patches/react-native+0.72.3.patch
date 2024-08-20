@@ -1,0 +1,57 @@
+diff --git a/node_modules/react-native/React/CoreModules/RCTTiming.mm b/node_modules/react-native/React/CoreModules/RCTTiming.mm
+index 13d0d57..b79a576 100644
+--- a/node_modules/react-native/React/CoreModules/RCTTiming.mm
++++ b/node_modules/react-native/React/CoreModules/RCTTiming.mm
+@@ -127,7 +127,22 @@ - (void)setup
+ {
+   _paused = YES;
+   _timers = [NSMutableDictionary new];
+-  _inBackground = NO;
++  
++   
++    _inBackground = NO;
++    RCTExecuteOnMainQueue(^{
++      if (!self->_inBackground &&
++          ([RCTSharedApplication() applicationState] == UIApplicationStateBackground ||
++           [UIDevice currentDevice].proximityState)) {
++        [self appDidMoveToBackground];
++      }
++    });
++    
++    
++    [[NSNotificationCenter defaultCenter] addObserver:self
++                                             selector:@selector(proximityChanged)
++                                             name:UIDeviceProximityStateDidChangeNotification
++                                             object:nil];
+     
+   for (NSString *name in @[
+          UIApplicationWillResignActiveNotification,
+@@ -146,8 +161,12 @@ - (void)setup
+                                                  name:name
+                                                object:nil];
+   }
++
++  
+ }
+ 
++
++
+ - (void)dealloc
+ {
+   [_sleepTimer invalidate];
+@@ -182,6 +201,15 @@ - (void)appDidMoveToForeground
+   [self startTimers];
+ }
+ 
++- (void)proximityChanged
++{
++  BOOL isClose = [UIDevice currentDevice].proximityState;
++  if (isClose) {
++    [self appDidMoveToBackground];
++  } else {
++    [self appDidMoveToForeground];
++  }
++}
+ - (void)stopTimers
+ {
+   if (_inBackground) {

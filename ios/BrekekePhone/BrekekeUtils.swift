@@ -28,7 +28,17 @@ public class BrekekeUtils: NSObject {
     } else {
       rtcAudioSession.audioSessionDidDeactivate(audioSession)
     }
+
     rtcAudioSession.isAudioEnabled = enabled
+  }
+
+  @objc
+  func setProximityMonitoring(_ enabled: Bool) {
+    DispatchQueue.main.async {
+      if UIDevice.current.isProximityMonitoringEnabled != enabled {
+        UIDevice.current.isProximityMonitoringEnabled = enabled
+      }
+    }
   }
 
   @objc
