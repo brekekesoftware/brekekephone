@@ -222,7 +222,9 @@ const presentNotification = async (c: CallHistoryInfo) => {
   if (Platform.OS === 'web') {
     return
   }
-  if (c.answered || !c.incoming || c.isAboutToHangup) {
+  // If two users answer a call at the same time, the system will automatically end the call for the second user to join.
+  // The second user will receive a reason: "Call completed by ..."
+  if ((c.answered && !c.reason) || !c.incoming || c.isAboutToHangup) {
     return
   }
   const title = intl`Missed call`
