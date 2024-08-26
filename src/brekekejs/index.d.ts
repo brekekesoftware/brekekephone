@@ -388,6 +388,13 @@ export type Sip = {
     withVideo,
     delay: number,
   ) => void
+  _getUserMedia: (
+    constraints: any,
+    screenCapture: boolean,
+    successCallback: (stream: MediaStream) => void,
+    errorCallback: (err: string) => void,
+    count: number,
+  ) => void
 
   _ua?: {
     _transport?: {

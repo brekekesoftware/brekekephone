@@ -23,8 +23,9 @@ const css = StyleSheet.create({
 export const BackBtn: FC<{
   compact: boolean
   onPress(): void
+  color?: string
 }> = p => {
-  const { compact, onPress } = p
+  const { compact, onPress, color } = p
   const cssInnerA = useAnimation(compact, {
     height: [70, 40],
     paddingVertical: [20, 5],
@@ -32,7 +33,7 @@ export const BackBtn: FC<{
   return (
     <RnTouchableOpacity onPress={onPress} style={css.BackBtn}>
       <Animated.View style={[css.Inner, cssInnerA]}>
-        <RnIcon path={mdiKeyboardBackspace} />
+        <RnIcon path={mdiKeyboardBackspace} color={color} size={28} />
       </Animated.View>
     </RnTouchableOpacity>
   )

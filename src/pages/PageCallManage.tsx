@@ -14,8 +14,7 @@ import {
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
-  mdiCameraFrontVariant,
-  mdiCameraRearVariant,
+  mdiCameraRolate,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -23,9 +22,9 @@ import {
   mdiPhone,
   mdiPhoneHangup,
   mdiPlayCircle,
-  mdiRecord,
-  mdiRecordCircle,
+  mdiRecordCall,
   mdiVideo,
+  mdiVideoCamera,
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
@@ -36,7 +35,7 @@ import { IncomingItemWithTimer } from '../components/CallNotify'
 import { CallVideosCarousel } from '../components/CallVideosCarousel'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/Rn'
+import { RnIcon, RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
@@ -58,8 +57,8 @@ const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
-    top: 10, // header compact height
-    right: 10,
+    top: 25, // header compact height
+    right: 45,
     zIndex: 100,
   },
   cameraStyle: {
@@ -77,8 +76,9 @@ const css = StyleSheet.create({
     backgroundColor: 'black',
   },
   Video_Space: {
-    flex: 1,
-    alignSelf: 'stretch',
+    // flex: 1,
+    // alignSelf: 'stretch',
+    height: 70,
   },
   BtnFuncCalls: {
     marginBottom: 10,
@@ -199,6 +199,15 @@ const css = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  Duration: {
+    width: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#4cc5de',
+    borderRadius: 4,
+    padding: 2,
+  },
+  DurationText: { fontSize: 12, lineHeight: 14, letterSpacing: 1.35 },
 })
 export const backAction = () =>
   getAuthStore().phoneappliEnabled()
@@ -378,7 +387,7 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <Layout
-        compact
+        // compact
         dropdown={
           c.localVideoEnabled && !c.transferring
             ? [
@@ -393,8 +402,17 @@ class PageCallManage extends Component<{
         }
         noScroll
         onBack={backAction}
-        title={c.getDisplayName() || intl`Connecting...`}
-        transparent={!c.transferring}
+        // title={c.getDisplayName() || intl`Connecting...`}
+        transparent
+        colorIcon='white'
+        rightItems={
+          <RnTouchableOpacity
+            style={css.BtnSwitchCamera}
+            onPress={c.toggleSwitchCamera}
+          >
+            <RnIcon path={mdiCameraRolate} color='white' size={28} />
+          </RnTouchableOpacity>
+        }
       >
         <View
           // style={
@@ -431,6 +449,7 @@ class PageCallManage extends Component<{
     return (
       <>
         {this.renderVideo()}
+        {this.renderInfo()}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
@@ -443,17 +462,6 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <>
-        <View style={css.cameraStyle}>
-          <ButtonIcon
-            color='white'
-            noborder
-            onPress={c.toggleSwitchCamera}
-            path={
-              c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant
-            }
-            size={40}
-          />
-        </View>
         <View style={css.Video_Space} />
         {c.localVideoEnabled && (
           <View
@@ -483,13 +491,24 @@ class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
-      (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+      !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
+
     return (
-      <View style={[css.Image_wrapper]}>
+      <View
+        style={[
+          isShowAvatar
+            ? css.Image_wrapper
+            : {
+                ...css.Image_wrapper,
+                minWidth: '100%',
+                minHeight: height * 0.1,
+              },
+        ]}
+      >
         <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
         >
@@ -511,18 +530,32 @@ class PageCallManage extends Component<{
           )}
         </View>
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
-          <RnText title white center numberOfLines={2}>
-            {`${c.getDisplayName()}`}
-          </RnText>
-          {c.answered && (
-            <Duration subTitle white center>
-              {c.answeredAt}
-            </Duration>
-          )}
           {incoming && (
             <RnText bold white center>
               {intl`Incoming Call`}
             </RnText>
+          )}
+        </View>
+      </View>
+    )
+  }
+
+  private renderInfo = () => {
+    const { call: c } = this.props
+    return (
+      <View
+        style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 18 }}
+      >
+        <View>
+          <RnText title white center numberOfLines={2} style={{ fontSize: 24 }}>
+            {`${c.getDisplayName()}`}
+          </RnText>
+          {c.answered && (
+            <View style={css.Duration}>
+              <Duration white center style={css.DurationText}>
+                {c.answeredAt}
+              </Duration>
+            </View>
           )}
         </View>
       </View>
@@ -538,7 +571,7 @@ class PageCallManage extends Component<{
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
     const activeColor = c.localVideoEnabled
       ? v.colors.primary
-      : v.colors.warning
+      : v.colors.greyIcon
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
@@ -569,10 +602,12 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
+              style={{ justifyContent: 'center', alignItems: 'center' }}
               onPress={Nav().goToPageCallTransferChooseUser}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
+              viewBox='0 0 32 32'
             />
           )}
           {!this.isBtnHidden('park') && (
@@ -586,6 +621,7 @@ class PageCallManage extends Component<{
               onPress={Nav().goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
+              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -598,8 +634,9 @@ class PageCallManage extends Component<{
               name={intl`VIDEO`}
               noborder
               onPress={c.toggleVideo}
-              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+              path={c.localVideoEnabled ? mdiVideoCamera : mdiVideoOff}
               size={40}
+              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -642,12 +679,13 @@ class PageCallManage extends Component<{
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
-              color={c.recording ? 'white' : 'black'}
+              color={c.recording ? '#FF4526' : 'black'}
               name={intl`RECORD`}
               noborder
               onPress={c.toggleRecording}
-              path={c.recording ? mdiRecordCircle : mdiRecord}
+              path={mdiRecordCall}
               size={40}
+              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -661,6 +699,7 @@ class PageCallManage extends Component<{
               noborder
               onPress={Nav().goToPageCallDtmfKeypad}
               path={mdiDialpad}
+              viewBox='0 0 32 32'
               size={40}
               textcolor='white'
             />
@@ -675,6 +714,7 @@ class PageCallManage extends Component<{
               noborder
               onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
+              // viewBox={c.holding ? '0 0 24 24' : '0 0 32 32'}
               size={40}
               msLoading={1000}
               textcolor='white'
