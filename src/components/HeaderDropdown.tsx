@@ -94,11 +94,12 @@ export const Dropdown: FC<{
   )
 }
 
-export const DropdownBtn: FC<{ onPress(): void; colorIcon?: string }> = ({
+export const DropdownBtn: FC<{ onPress(): void; colorIcon?: string; height?: number }> = ({
   onPress,
   colorIcon,
+  height
 }) => (
-  <RnTouchableOpacity onPress={onPress} style={css.Btn}>
+  <RnTouchableOpacity onPress={onPress} style={{...css.Btn, height}}>
     <RnIcon path={mdiDotsVertical} color={colorIcon} />
   </RnTouchableOpacity>
 )

@@ -57,9 +57,14 @@ const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
-    top: 25, // header compact height
+    top: 0, // header compact height
     right: 45,
+    height: 70,
     zIndex: 100,
+    width: 50,
+    paddingHorizontal: 0,
+    paddingVertical: 20,
+    borderRadius: 0,
   },
   cameraStyle: {
     position: 'absolute',
@@ -199,15 +204,26 @@ const css = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  Duration: {
-    width: 70,
+  SubInfo: {
+    minWidth: 70,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#4cc5de',
     borderRadius: 4,
     padding: 2,
   },
-  DurationText: { fontSize: 12, lineHeight: 14, letterSpacing: 1.35 },
+  Duration: {
+    backgroundColor: '#4cc5de',
+  },
+  OnHold: {
+    backgroundColor: '#88888980'
+  },
+  VCalling: {
+    backgroundColor: '#74bf53'
+  },
+  DurationText: { fontSize: 10, lineHeight: 14, letterSpacing: 1.35 },
+  OnHoldText: {
+    fontSize: 9
+  }
 })
 export const backAction = () =>
   getAuthStore().phoneappliEnabled()
@@ -391,13 +407,13 @@ class PageCallManage extends Component<{
         dropdown={
           c.localVideoEnabled && !c.transferring
             ? [
-                {
-                  label: this.showButtonsInVideoCall
-                    ? intl`Hide call menu buttons`
-                    : intl`Show call menu buttons`,
-                  onPress: this.toggleButtons,
-                },
-              ]
+              {
+                label: this.showButtonsInVideoCall
+                  ? intl`Hide call menu buttons`
+                  : intl`Show call menu buttons`,
+                onPress: this.toggleButtons,
+              },
+            ]
             : undefined
         }
         noScroll
@@ -406,13 +422,16 @@ class PageCallManage extends Component<{
         transparent
         colorIcon='white'
         rightItems={
-          <RnTouchableOpacity
+          c.localVideoEnabled ? <RnTouchableOpacity
             style={css.BtnSwitchCamera}
             onPress={c.toggleSwitchCamera}
+            activeOpacity={0.5}
           >
             <RnIcon path={mdiCameraRolate} color='white' size={28} />
-          </RnTouchableOpacity>
+          </RnTouchableOpacity> : undefined
         }
+        sizeIconBack={30}
+        heightDropdown={75}
       >
         <View
           // style={
@@ -464,24 +483,27 @@ class PageCallManage extends Component<{
       <>
         <View style={css.Video_Space} />
         {c.localVideoEnabled && (
-          <View
-            style={[
-              css.Video,
-              { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
-            ]}
-          >
-            <CallVideosCarousel
-              call={c}
-              showButtonsInVideoCall={this.showButtonsInVideoCall}
-              onButtonsInVideo={this.toggleButtons}
+          <>
+            <View
+              style={[
+                css.Video,
+                { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
+              ]}
+            >
+              <CallVideosCarousel
+                call={c}
+                showButtonsInVideoCall={this.showButtonsInVideoCall}
+                onButtonsInVideo={this.toggleButtons}
+              />
+            </View>
+            <RnTouchableOpacity
+              onPress={this.toggleButtons}
+              activeOpacity={0}
+              style={[StyleSheet.absoluteFill, { opacity: 0.5, backgroundColor: '#111111' }]}
             />
-          </View>
+          </>
         )}
-        <RnTouchableOpacity
-          onPress={this.toggleButtons}
-          // style={[StyleSheet.absoluteFill, {zIndex: this.showButtonsInVideoCall ? 115 : 105 }]}
-          style={StyleSheet.absoluteFill}
-        />
+
       </>
     )
   }
@@ -494,7 +516,7 @@ class PageCallManage extends Component<{
       !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
-      : { flex: 1 }
+      : { flex: 1, paddingTop: 20 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
 
     return (
@@ -503,10 +525,10 @@ class PageCallManage extends Component<{
           isShowAvatar
             ? css.Image_wrapper
             : {
-                ...css.Image_wrapper,
-                minWidth: '100%',
-                minHeight: height * 0.1,
-              },
+              ...css.Image_wrapper,
+              minWidth: '100%',
+              minHeight: height * 0.1,
+            },
         ]}
       >
         <View
@@ -546,18 +568,25 @@ class PageCallManage extends Component<{
       <View
         style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 18 }}
       >
-        <View>
-          <RnText title white center numberOfLines={2} style={{ fontSize: 24 }}>
-            {`${c.getDisplayName()}`}
-          </RnText>
-          {c.answered && (
-            <View style={css.Duration}>
-              <Duration white center style={css.DurationText}>
-                {c.answeredAt}
-              </Duration>
-            </View>
-          )}
-        </View>
+        <RnText title white center bold numberOfLines={2} style={{ fontSize: 24, lineHeight: 27, marginBottom: 6 }}>
+          {`${c.getDisplayName()}`}
+        </RnText>
+        {c.answered && (
+          !c.holding ? <View style={[css.SubInfo, css.Duration]}>
+            <Duration white center style={css.DurationText}>
+              {c.answeredAt}
+            </Duration>
+          </View> : <View style={[css.SubInfo, css.OnHold]}>
+            <RnText white center style={[css.DurationText]}>ON HOLD</RnText>
+          </View>
+        )}
+        {!c.answered && c.localVideoEnabled && <View style={[css.SubInfo, css.VCalling]}>
+          <RnText white center style={[css.DurationText]}>VIDEO CALLING</RnText>
+        </View>}
+        {!c.answered && !c.localVideoEnabled && <View style={[css.SubInfo, css.VCalling]}>
+          <RnText white center style={[css.DurationText]}>VOICE CALLING</RnText>
+        </View>}
+
       </View>
     )
   }
@@ -578,7 +607,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={{ marginTop: isHideButtons ? 30 : 0, flex: 1 }}
+        style={{ marginTop: isHideButtons ? 30 : 0, flex: 3 }}
       >
         {n > 0 && (
           <FieldButton
@@ -734,42 +763,34 @@ class PageCallManage extends Component<{
       (incoming && this.isBtnHidden('hangup')) || !this.showButtonsInVideoCall
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
-        {c.holding ? (
-          <View style={css.txtHold}>
-            <RnText small white center>
-              {intl`CALL IS ON HOLD`}
-            </RnText>
-          </View>
-        ) : (
-          <View style={css.viewHangupBtn}>
-            {incoming && this.isVisible() && <IncomingItemWithTimer />}
-            {incoming && (
-              <ButtonIcon
-                bgcolor={v.colors.primary}
-                color='white'
-                noborder
-                onPress={() => c.answer({ ignoreNav: true })}
-                path={mdiPhone}
-                size={40}
-                textcolor='white'
-              />
-            )}
-            {incoming && (
-              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
-            )}
-            {!isHangupBtnHidden && (
-              <ButtonIcon
-                bgcolor={v.colors.danger}
-                color='white'
-                noborder
-                onPress={c.hangupWithUnhold}
-                path={mdiPhoneHangup}
-                size={40}
-                textcolor='white'
-              />
-            )}
-          </View>
-        )}
+        <View style={css.viewHangupBtn}>
+          {incoming && this.isVisible() && <IncomingItemWithTimer />}
+          {incoming && (
+            <ButtonIcon
+              bgcolor={v.colors.primary}
+              color='white'
+              noborder
+              onPress={() => c.answer({ ignoreNav: true })}
+              path={mdiPhone}
+              size={40}
+              textcolor='white'
+            />
+          )}
+          {incoming && (
+            <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+          )}
+          {!isHangupBtnHidden && (
+            <ButtonIcon
+              bgcolor={v.colors.danger}
+              color='white'
+              noborder
+              onPress={c.hangupWithUnhold}
+              path={mdiPhoneHangup}
+              size={40}
+              textcolor='white'
+            />
+          )}
+        </View>
       </View>
     )
   }

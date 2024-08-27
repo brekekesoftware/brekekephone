@@ -24,6 +24,7 @@ export const BackBtn: FC<{
   compact: boolean
   onPress(): void
   color?: string
+  sizeIconBack?: number
 }> = p => {
   const { compact, onPress, color } = p
   const cssInnerA = useAnimation(compact, {
@@ -33,7 +34,7 @@ export const BackBtn: FC<{
   return (
     <RnTouchableOpacity onPress={onPress} style={css.BackBtn}>
       <Animated.View style={[css.Inner, cssInnerA]}>
-        <RnIcon path={mdiKeyboardBackspace} color={color} size={28} />
+        <RnIcon path={mdiKeyboardBackspace} color={color} size={p.sizeIconBack} />
       </Animated.View>
     </RnTouchableOpacity>
   )

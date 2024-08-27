@@ -21,9 +21,8 @@ export const CallVideosCarousel = observer(
       videoStreamActive,
       updateVideoStreamActive,
       videoClientSessionTable,
-      toggleLocalVideo,
-      remoteUserOptionsTable,
-      toggleMutedCamera,
+      toggleSwitchCamera,
+      isFrontCamera
     },
     showButtonsInVideoCall,
     onButtonsInVideo,
@@ -47,7 +46,6 @@ export const CallVideosCarousel = observer(
 
     const handleScroll = item => {
       updateVideoStreamActive(item)
-      // refScroll.current?.scrollTo({ x: width * item, y: 0, animated: true })
     }
 
     return (
@@ -77,7 +75,8 @@ export const CallVideosCarousel = observer(
                 sourceObject={localStreamObject}
                 view={{ width: finalWidth, height: finalHeight }}
                 showSwitchCamera
-                onSwitchCamera={() => toggleMutedCamera()}
+                onSwitchCamera={() => toggleSwitchCamera()}
+                isFrontCamera={isFrontCamera}
               />
               {videoClientSessionTable.map(item => (
                 <VideoViewItem
