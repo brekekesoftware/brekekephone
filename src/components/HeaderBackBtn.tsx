@@ -34,7 +34,11 @@ export const BackBtn: FC<{
   return (
     <RnTouchableOpacity onPress={onPress} style={css.BackBtn}>
       <Animated.View style={[css.Inner, cssInnerA]}>
-        <RnIcon path={mdiKeyboardBackspace} color={color} size={p.sizeIconBack} />
+        <RnIcon
+          path={mdiKeyboardBackspace}
+          color={color}
+          size={p.sizeIconBack}
+        />
       </Animated.View>
     </RnTouchableOpacity>
   )

@@ -63,7 +63,7 @@ export const Header: FC<
     colorIcon,
     rightItems,
     sizeIconBack,
-    heightDropdown
+    heightDropdown,
   } = p
   const [dropdownActive, setDropdownActive] = useState(false)
   return (

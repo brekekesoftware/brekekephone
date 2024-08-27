@@ -1,6 +1,12 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import { Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 import { mdiCameraRolate } from '../assets/icons'
 import { RnIcon } from './RnIcon'
@@ -26,7 +32,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     view,
     onSelect,
     enabled = true,
-    isFrontCamera
+    isFrontCamera,
   } = props
 
   const [spinValue] = useState(new Animated.Value(0))
@@ -34,35 +40,30 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg']
+    outputRange: ['0deg', '180deg'],
   })
 
   useEffect(() => {
     if (showSwitchCamera && !refFirstTime.current) {
-      !isFrontCamera ? Animated.timing(
-          spinValue,
-          {
+      !isFrontCamera
+        ? Animated.timing(spinValue, {
             toValue: 1,
             duration: 500,
             easing: Easing.linear,
-            useNativeDriver: true
-          }
-        ).start() : Animated.timing(
-          spinValue,
-          {
+            useNativeDriver: true,
+          }).start()
+        : Animated.timing(spinValue, {
             toValue: 0,
             duration: 500,
             easing: Easing.linear,
-            useNativeDriver: true
-          }
-        ).start()
+            useNativeDriver: true,
+          }).start()
     }
   }, [isFrontCamera])
 
   useEffect(() => {
     refFirstTime.current = false
-  },[])
-
+  }, [])
 
   return (
     <View
@@ -109,7 +110,6 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     </View>
   )
 })
-
 
 const styles = StyleSheet.create({
   container: {

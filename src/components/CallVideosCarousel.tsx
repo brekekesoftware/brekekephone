@@ -22,7 +22,7 @@ export const CallVideosCarousel = observer(
       updateVideoStreamActive,
       videoClientSessionTable,
       toggleSwitchCamera,
-      isFrontCamera
+      isFrontCamera,
     },
     showButtonsInVideoCall,
     onButtonsInVideo,

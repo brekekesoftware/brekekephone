@@ -215,15 +215,15 @@ const css = StyleSheet.create({
     backgroundColor: '#4cc5de',
   },
   OnHold: {
-    backgroundColor: '#88888980'
+    backgroundColor: '#88888980',
   },
   VCalling: {
-    backgroundColor: '#74bf53'
+    backgroundColor: '#74bf53',
   },
   DurationText: { fontSize: 10, lineHeight: 14, letterSpacing: 1.35 },
   OnHoldText: {
-    fontSize: 9
-  }
+    fontSize: 9,
+  },
 })
 export const backAction = () =>
   getAuthStore().phoneappliEnabled()
@@ -407,13 +407,13 @@ class PageCallManage extends Component<{
         dropdown={
           c.localVideoEnabled && !c.transferring
             ? [
-              {
-                label: this.showButtonsInVideoCall
-                  ? intl`Hide call menu buttons`
-                  : intl`Show call menu buttons`,
-                onPress: this.toggleButtons,
-              },
-            ]
+                {
+                  label: this.showButtonsInVideoCall
+                    ? intl`Hide call menu buttons`
+                    : intl`Show call menu buttons`,
+                  onPress: this.toggleButtons,
+                },
+              ]
             : undefined
         }
         noScroll
@@ -422,13 +422,15 @@ class PageCallManage extends Component<{
         transparent
         colorIcon='white'
         rightItems={
-          c.localVideoEnabled ? <RnTouchableOpacity
-            style={css.BtnSwitchCamera}
-            onPress={c.toggleSwitchCamera}
-            activeOpacity={0.5}
-          >
-            <RnIcon path={mdiCameraRolate} color='white' size={28} />
-          </RnTouchableOpacity> : undefined
+          c.localVideoEnabled ? (
+            <RnTouchableOpacity
+              style={css.BtnSwitchCamera}
+              onPress={c.toggleSwitchCamera}
+              activeOpacity={0.5}
+            >
+              <RnIcon path={mdiCameraRolate} color='white' size={28} />
+            </RnTouchableOpacity>
+          ) : undefined
         }
         sizeIconBack={30}
         heightDropdown={75}
@@ -499,11 +501,13 @@ class PageCallManage extends Component<{
             <RnTouchableOpacity
               onPress={this.toggleButtons}
               activeOpacity={0}
-              style={[StyleSheet.absoluteFill, { opacity: 0.5, backgroundColor: '#111111' }]}
+              style={[
+                StyleSheet.absoluteFill,
+                { opacity: 0.5, backgroundColor: '#111111' },
+              ]}
             />
           </>
         )}
-
       </>
     )
   }
@@ -525,10 +529,10 @@ class PageCallManage extends Component<{
           isShowAvatar
             ? css.Image_wrapper
             : {
-              ...css.Image_wrapper,
-              minWidth: '100%',
-              minHeight: height * 0.1,
-            },
+                ...css.Image_wrapper,
+                minWidth: '100%',
+                minHeight: height * 0.1,
+              },
         ]}
       >
         <View
@@ -568,25 +572,44 @@ class PageCallManage extends Component<{
       <View
         style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 18 }}
       >
-        <RnText title white center bold numberOfLines={2} style={{ fontSize: 24, lineHeight: 27, marginBottom: 6 }}>
+        <RnText
+          title
+          white
+          center
+          bold
+          numberOfLines={2}
+          style={{ fontSize: 24, lineHeight: 27, marginBottom: 6 }}
+        >
           {`${c.getDisplayName()}`}
         </RnText>
-        {c.answered && (
-          !c.holding ? <View style={[css.SubInfo, css.Duration]}>
-            <Duration white center style={css.DurationText}>
-              {c.answeredAt}
-            </Duration>
-          </View> : <View style={[css.SubInfo, css.OnHold]}>
-            <RnText white center style={[css.DurationText]}>ON HOLD</RnText>
+        {c.answered &&
+          (!c.holding ? (
+            <View style={[css.SubInfo, css.Duration]}>
+              <Duration white center style={css.DurationText}>
+                {c.answeredAt}
+              </Duration>
+            </View>
+          ) : (
+            <View style={[css.SubInfo, css.OnHold]}>
+              <RnText white center style={[css.DurationText]}>
+                ON HOLD
+              </RnText>
+            </View>
+          ))}
+        {!c.answered && c.localVideoEnabled && (
+          <View style={[css.SubInfo, css.VCalling]}>
+            <RnText white center style={[css.DurationText]}>
+              VIDEO CALLING
+            </RnText>
           </View>
         )}
-        {!c.answered && c.localVideoEnabled && <View style={[css.SubInfo, css.VCalling]}>
-          <RnText white center style={[css.DurationText]}>VIDEO CALLING</RnText>
-        </View>}
-        {!c.answered && !c.localVideoEnabled && <View style={[css.SubInfo, css.VCalling]}>
-          <RnText white center style={[css.DurationText]}>VOICE CALLING</RnText>
-        </View>}
-
+        {!c.answered && !c.localVideoEnabled && (
+          <View style={[css.SubInfo, css.VCalling]}>
+            <RnText white center style={[css.DurationText]}>
+              VOICE CALLING
+            </RnText>
+          </View>
+        )}
       </View>
     )
   }
@@ -776,9 +799,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {incoming && (
-            <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
-          )}
+          {incoming && <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />}
           {!isHangupBtnHidden && (
             <ButtonIcon
               bgcolor={v.colors.danger}
