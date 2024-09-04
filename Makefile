@@ -113,16 +113,16 @@ web:
 	ssh bre "cd /var/www && sudo rm -rf phone && unzip /var/www/upload/brekeke_phone$$V.zip && sudo mv brekeke_phone$$V phone" && \
 	make -Bs chmod;
 
-dev01:
+dev:
 	make -Bs chmod && \
-	cd dev/react-app && yarn --ignore-engines && yarn build && \
+	cd dev01/react-app && yarn --ignore-engines && yarn build && \
 	mv build dev-react-app && zip -vr dev-react-app.zip dev-react-app && \
 	scp dev-react-app.zip bre:/var/www && \
 	rm -rf dev-react-app* && \
 	ssh bre "cd /var/www && sudo rm -rf dev-react-app && unzip dev-react-app.zip && sudo rm -f dev-react-app.zip" && \
 	cd ../api && yarn --ignore-engines && \
 	scp index.js package.json yarn.lock bre:/var/www/dev-api && \
-	ssh bre "cd /var/www/dev-api && yarn --ignore-engines && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" && \
+	ssh bre "cd /var/www/dev-api && source ~/.nvm/nvm.sh && yarn --ignore-engines && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" && \
 	scp nginx.conf bre:/etc/nginx/conf.d/dev01.conf && \
 	ssh bre "sudo nginx -t && sudo service nginx restart" && \
 	cd ../.. && make -Bs chmod;
@@ -131,7 +131,7 @@ chmod:
 	ssh bre "sudo chmod -R a+rwX /var/www";
 
 ssl:
-	bash dev/renewssl.sh;
+	bash dev01/renewssl.sh;
 
 keyhash1:
 	ssh bre "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64";

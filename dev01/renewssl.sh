@@ -1,7 +1,7 @@
 ssh bre "
   sudo service nginx stop &&
   echo \"=== nginx stopped\" &&
-  ./certbot-auto renew --no-bootstrap --no-random-sleep-on-renew &&
+  sudo certbot renew --no-bootstrap --no-random-sleep-on-renew &&
   echo \"=== certbot renewed\" &&
   sudo service nginx start;
   echo \"=== nginx started\" &&
