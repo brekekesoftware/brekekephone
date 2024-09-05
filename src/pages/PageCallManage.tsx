@@ -23,7 +23,6 @@ import {
   mdiPhoneHangup,
   mdiPlayCircle,
   mdiRecordCall,
-  mdiVideo,
   mdiVideoCamera,
   mdiVideoOff,
   mdiVolumeHigh,
