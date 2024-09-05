@@ -210,6 +210,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     padding: 2,
+    overflow: 'hidden',
   },
   Duration: {
     backgroundColor: '#4cc5de',
@@ -221,6 +222,8 @@ const css = StyleSheet.create({
     backgroundColor: '#74bf53',
   },
   DurationText: { fontSize: 10, lineHeight: 14, letterSpacing: 1.35 },
+  AlignCenter: { alignItems: 'center' },
+  AlignStart: { alignItems: 'flex-start' },
   OnHoldText: {
     fontSize: 9,
   },
@@ -584,8 +587,14 @@ class PageCallManage extends Component<{
         </RnText>
         {c.answered &&
           (!c.holding ? (
-            <View style={[css.SubInfo, css.Duration]}>
-              <Duration white center style={css.DurationText}>
+            <View
+              style={[
+                css.SubInfo,
+                c.localVideoEnabled ? css.Duration : undefined,
+                c.localVideoEnabled ? css.AlignCenter : css.AlignStart,
+              ]}
+            >
+              <Duration white center style={[css.DurationText]}>
                 {c.answeredAt}
               </Duration>
             </View>

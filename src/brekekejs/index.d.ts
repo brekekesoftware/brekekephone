@@ -382,18 +382,12 @@ export type Sip = {
   ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
-  _sendInfoXUaEx: (
-    sessionId: string,
-    echo: boolean,
-    withVideo,
-    delay: number,
-  ) => void
   _getUserMedia: (
     constraints: any,
     screenCapture: boolean,
     successCallback: (stream: MediaStream) => void,
     errorCallback: (err: string) => void,
-    count: number,
+    count?: number,
   ) => void
 
   _ua?: {
@@ -498,7 +492,6 @@ export type Session = {
   withVideo: boolean
   remoteWithVideo: boolean
   remoteStreamObject: MediaStream
-  // Duy Phan temp
   localStreamObject: MediaStream
   localVideoStreamObject: MediaStream
   incomingMessage?: {
@@ -521,7 +514,6 @@ export type Session = {
   }
   remoteUserOptionsTable: null
   analyzer: null
-  user: string
 }
 export type VideoSession = {
   sessionId: string

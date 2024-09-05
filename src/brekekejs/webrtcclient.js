@@ -4606,7 +4606,6 @@ if (!Brekeke.WebrtcClient) {
       var stream
 
       stream = e.streams && e.streams[0]
-
       if (stream) {
         if (this._sessionRemoteStreamsTable[sessionId]) {
           index = this._sessionRemoteStreamsTable[sessionId].indexOf(stream)
@@ -4747,7 +4746,6 @@ if (!Brekeke.WebrtcClient) {
       var stream
 
       stream = e.streams && e.streams[0]
-
       if (stream) {
         if (this._sessionRemoteStreamsTable[videoClientSessionId]) {
           if (this._sessionTable[sessionId]) {

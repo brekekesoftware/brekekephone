@@ -320,7 +320,6 @@ export const App = observer(() => {
       <CallVoices />
       <ChatGroupInvite />
       <UnreadChatNoti />
-      {/* <CallVideosCarousel /> */}
 
       <View style={css.App_Inner}>
         <RnStackerRoot />

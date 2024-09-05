@@ -78,7 +78,9 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         active ? styles.active : undefined,
       ]}
     >
-      <Animated.View style={{ transform: [{ rotateY: spin }], flex: 1 }}>
+      <Animated.View
+        style={{ transform: [{ rotateY: spin }], flex: 1, overflow: 'hidden' }}
+      >
         <TouchableOpacity
           style={styles.touchable}
           onPress={() => {
@@ -116,6 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     position: 'relative',
     overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
   active: {
     borderColor: '#4cc5de',
@@ -133,5 +136,6 @@ const styles = StyleSheet.create({
   },
   touchable: {
     flex: 1,
+    overflow: 'hidden',
   },
 })

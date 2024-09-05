@@ -157,19 +157,10 @@ export class Call {
   @observable localStreamObject: MediaStream | null = null
   @observable videoClientSessionTable: Array<Session & { vId: string }> = []
   @observable videoStreamActive: (Session & { vId: string }) | null = null
-  @observable remoteUserOptionsTable: any
   voiceStreamObject: MediaStream | null = null
 
   @action updateVideoStreamActive = id => {
     this.videoStreamActive = id
-  }
-
-  @action toggleLocalVideo = (enable: boolean) => {
-    // this.localStreamObject?.getTracks?.().forEach?.(track => {
-    //   track.enabled = !this.localVideoEnabled
-    // })
-    sip.sendInfoWithVideo(this.id, !this.localVideoEnabled)
-    this.localVideoEnabled = !this.localVideoEnabled
   }
 
   @observable muted = false
