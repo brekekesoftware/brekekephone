@@ -145,6 +145,27 @@ export class AuthStore {
       })
       return true
     }
+
+    // handle replace navSubMenus when login to make sure app will not auto open Phone Appli app
+    if (
+      a.navSubMenus?.length &&
+      a.navSubMenus.some(item => item === 'recents' || item === 'phonebook')
+    ) {
+      const updatedNavSubMenus = a.navSubMenus.map(item => {
+        if (item === 'recents') {
+          return 'keypad'
+        } else if (item === 'phonebook') {
+          return 'users'
+        } else {
+          return item
+        }
+      })
+      await accountStore.upsertAccount({
+        id: a.id,
+        navSubMenus: updatedNavSubMenus,
+      })
+    }
+
     this.signedInId = a.id
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
@@ -363,7 +384,7 @@ export class AuthStore {
 
       // make sure audio engine active before start call
       // https://stackoverflow.com/a/60572329/25021683
-      if (Platform.OS !== 'ios') {
+      if (Platform.OS === 'ios') {
         await waitForActiveAppState()
         await waitTimeout(100)
       }

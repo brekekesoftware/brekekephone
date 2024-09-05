@@ -27,6 +27,9 @@ public class MainActivity extends ReactActivity {
     super.onResume();
     // call history
     // temporary disabled
+    BrekekeUtils.resolveIgnoreBattery(
+        BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this));
+    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this));
     if (true) {
       return;
     }
@@ -66,6 +69,7 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     // handle default dialer
     BrekekeUtils.defaultDialerLauncher =
         registerForActivityResult(

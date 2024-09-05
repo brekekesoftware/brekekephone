@@ -1,3 +1,5 @@
+import { Platform } from 'react-native'
+
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -12,6 +14,7 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
 import { openLinkSafely, urls } from '../utils/deeplink'
+import { PushNotification } from '../utils/PushNotification'
 
 export type Menu = {
   key: string
@@ -152,6 +155,9 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
+            if (Platform.OS === 'ios') {
+              PushNotification.resetBadgeNumber()
+            }
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
           }
@@ -226,7 +232,7 @@ export const getSubMenus = (menu: string) => {
   const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
-      unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
+      unexpectedErr: new Error(intl`Can not find sub menus for ${menu}`),
     })
     return []
   }
