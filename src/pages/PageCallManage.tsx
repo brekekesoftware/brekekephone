@@ -226,6 +226,7 @@ const css = StyleSheet.create({
   OnHoldText: {
     fontSize: 9,
   },
+  MainInfo: { width: '100%', alignItems: 'flex-start', paddingLeft: 16 },
 })
 export const backAction = () =>
   getAuthStore().phoneappliEnabled()
@@ -405,7 +406,6 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <Layout
-        // compact
         dropdown={
           c.localVideoEnabled && !c.transferring
             ? [
@@ -420,7 +420,6 @@ class PageCallManage extends Component<{
         }
         noScroll
         onBack={backAction}
-        // title={c.getDisplayName() || intl`Connecting...`}
         transparent
         colorIcon='white'
         rightItems={
@@ -571,9 +570,7 @@ class PageCallManage extends Component<{
   private renderInfo = () => {
     const { call: c } = this.props
     return (
-      <View
-        style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 18 }}
-      >
+      <View style={css.MainInfo}>
         <RnText
           title
           white

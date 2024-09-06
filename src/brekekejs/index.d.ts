@@ -383,7 +383,7 @@ export type Sip = {
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
   _getUserMedia: (
-    constraints: any,
+    constraints: MediaStreamConstraints,
     screenCapture: boolean,
     successCallback: (stream: MediaStream) => void,
     errorCallback: (err: string) => void,

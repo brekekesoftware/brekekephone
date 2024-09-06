@@ -229,7 +229,7 @@ export class SIP extends EventEmitter {
       const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
-      console.log('#Duy Phan console', videoSession.remoteStreamObject)
+
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
@@ -442,7 +442,7 @@ export class SIP extends EventEmitter {
           localStreamObject: stream,
         })
       },
-      err => console.log('#Duy Phan console err', err),
+      err => console.log('console userMedia err', err),
     )
 
     // 4. add new stream to connection
