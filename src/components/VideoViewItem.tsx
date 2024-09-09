@@ -66,33 +66,28 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
   }, [])
 
   return (
-    <View
+    <Animated.View
       style={[
+        styles.container,
+        active ? styles.active : undefined,
         {
-          ...styles.container,
+          transform: [{ rotateY: spin }],
           width: view.width,
           height: view.height,
-          backgroundColor: enabled ? 'transparent' : 'black',
-          zIndex: 300,
         },
-        active ? styles.active : undefined,
       ]}
     >
-      <Animated.View
-        style={{ transform: [{ rotateY: spin }], flex: 1, overflow: 'hidden' }}
+      <TouchableOpacity
+        style={styles.touchable}
+        onPress={() => onSelect?.(sourceObject)}
       >
-        <TouchableOpacity
-          style={styles.touchable}
-          onPress={() => {
-            onSelect?.(sourceObject)
-          }}
-        >
-          <VideoPlayer
-            sourceObject={enabled ? sourceObject : null}
-            zOrder={1}
-          />
-        </TouchableOpacity>
-      </Animated.View>
+        <VideoPlayer
+          sourceObject={enabled ? sourceObject : null}
+          zOrder={1}
+          // style={{width: view.width - 4.5, height: view.height - 4.5}}
+        />
+      </TouchableOpacity>
+
       {showSwitchCamera && (
         <View
           style={{
@@ -109,20 +104,21 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </Animated.View>
   )
 })
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 4,
     position: 'relative',
+    borderRadius: 6,
     overflow: 'hidden',
-    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   active: {
     borderColor: '#4cc5de',
-    borderWidth: 4,
+    borderWidth: 2,
   },
   switchCameraView: {
     position: 'absolute',
@@ -136,6 +132,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     flex: 1,
-    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
   },
 })

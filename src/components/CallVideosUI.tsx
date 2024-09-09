@@ -135,10 +135,10 @@ class Control extends Component<{
 export const CallVideosUI: FC<{
   callIds: string[]
   resolveCall: Function
-}> = p => (
+}> = observer(p => (
   <>
     {p.callIds.map(id => (
       <Control key={id} {...p.resolveCall(id)} />
     ))}
   </>
-)
+))

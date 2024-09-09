@@ -21,7 +21,10 @@ export class CallVideos extends Component {
     )
   }
 
-  resolveCall = () => ({
-    sourceObject: getCallStore().getOngoingCall()?.remoteVideoStreamObject,
-  })
+  resolveCall() {
+    return {
+      sourceObject:
+        getCallStore().getOngoingCall()?.videoStreamActive?.remoteStreamObject,
+    }
+  }
 }

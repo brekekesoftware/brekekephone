@@ -49,11 +49,17 @@ export const CallVideosCarousel = observer(
     }
 
     return (
-      <RnTouchableOpacity
-        style={styles.container}
-        onPress={showButtonsInVideoCall ? undefined : onButtonsInVideo}
-        activeOpacity={1}
-      >
+      <>
+        <RnTouchableOpacity
+          style={styles.container}
+          onPress={showButtonsInVideoCall ? undefined : onButtonsInVideo}
+          activeOpacity={1}
+        >
+          <VideoPlayer
+            sourceObject={videoStreamActive?.remoteStreamObject}
+            zOrder={0}
+          />
+        </RnTouchableOpacity>
         {!!localStreamObject && (
           <View
             style={{
@@ -61,15 +67,16 @@ export const CallVideosCarousel = observer(
               position: 'absolute',
               bottom: 0,
               height: 'auto',
-              backgroundColor: 'transparent',
+              width: '100%',
             }}
           >
             <ScrollView
               horizontal
               style={styles.scrollView}
-              contentContainerStyle={styles.contentScrollView}
+              contentContainerStyle={[styles.contentScrollView]}
               showsHorizontalScrollIndicator={false}
               ref={refScroll}
+              overScrollMode='never'
             >
               <VideoViewItem
                 sourceObject={localStreamObject}
@@ -88,13 +95,10 @@ export const CallVideosCarousel = observer(
                 />
               ))}
             </ScrollView>
+            <View style={{ flex: 0.95 }}></View>
           </View>
         )}
-        <VideoPlayer
-          sourceObject={videoStreamActive?.remoteStreamObject}
-          zOrder={0}
-        />
-      </RnTouchableOpacity>
+      </>
     )
   },
 )
@@ -106,6 +110,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     height: 'auto',
+    flexGrow: 0.05,
   },
   contentScrollView: { gap: 16, height: 200, padding: 16 },
 })
