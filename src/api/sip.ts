@@ -424,7 +424,7 @@ export class SIP extends EventEmitter {
 
     const mc = sipCreateMediaConstraints(this.currentCamera, isFrontCamera)
 
-    const session: any = this.phone.getSession(sessionId)
+    const session = this.phone.getSession(sessionId)
     const videoSession = session.videoClientSessionTable[vId]
 
     const currentAudioSender = videoSession.rtcSession.connection.getSenders()
@@ -433,7 +433,11 @@ export class SIP extends EventEmitter {
       mc,
       false,
       stream => {
-        const sender = currentAudioSender.find(s => s.track.kind === 'video')
+        console.log('#Duy Phan console stream', stream)
+        const sender = currentAudioSender.find(s => s?.track?.kind === 'video')
+        if (!sender) {
+          return
+        }
 
         sender.replaceTrack(stream.getVideoTracks()[0])
         this.emit('session-updated', {

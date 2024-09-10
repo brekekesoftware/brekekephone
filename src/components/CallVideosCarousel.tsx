@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     height: 'auto',
-    flexGrow: 0.05,
   },
   contentScrollView: { gap: 16, height: 200, padding: 16 },
 })

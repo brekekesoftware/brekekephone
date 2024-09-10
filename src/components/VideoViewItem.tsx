@@ -66,28 +66,27 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
   }, [])
 
   return (
-    <Animated.View
+    <View
       style={[
         styles.container,
         active ? styles.active : undefined,
         {
-          transform: [{ rotateY: spin }],
           width: view.width,
           height: view.height,
         },
       ]}
     >
-      <TouchableOpacity
-        style={styles.touchable}
-        onPress={() => onSelect?.(sourceObject)}
-      >
-        <VideoPlayer
-          sourceObject={enabled ? sourceObject : null}
-          zOrder={1}
-          // style={{width: view.width - 4.5, height: view.height - 4.5}}
-        />
-      </TouchableOpacity>
-
+      <Animated.View style={{ transform: [{ rotateY: spin }], flex: 1 }}>
+        <TouchableOpacity
+          style={styles.touchable}
+          onPress={() => onSelect?.(sourceObject)}
+        >
+          <VideoPlayer
+            sourceObject={enabled ? sourceObject : null}
+            zOrder={1}
+          />
+        </TouchableOpacity>
+      </Animated.View>
       {showSwitchCamera && (
         <View
           style={{
@@ -104,7 +103,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
           </TouchableOpacity>
         </View>
       )}
-    </Animated.View>
+    </View>
   )
 })
 
