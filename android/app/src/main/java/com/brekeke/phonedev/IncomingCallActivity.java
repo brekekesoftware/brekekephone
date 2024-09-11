@@ -191,7 +191,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
-    vNavHeader.setBackgroundColor(Color.TRANSPARENT);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -209,7 +208,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndCall = (Button) findViewById(R.id.btn_end_call);
     btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
     btnBack = (Button) findViewById(R.id.btn_back);
-    btnBack.setBackgroundColor(Color.TRANSPARENT);
 
     btnBack.setOnClickListener(this);
     btnAnswer.setOnClickListener(this);
