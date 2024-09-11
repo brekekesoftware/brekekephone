@@ -174,11 +174,6 @@ export class Call {
     return sip.setMuted(this.muted, this.id)
   }
 
-  @action toggleMutedCamera = () => {
-    this.mutedVideo = !this.mutedVideo
-    sip.setMutedCamera(this.mutedVideo, this.id)
-  }
-
   @observable recording = false
   @action updateRecordingStatus = (status: boolean) => {
     this.recording = status

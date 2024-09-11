@@ -382,13 +382,6 @@ export type Sip = {
   ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
-  _getUserMedia: (
-    constraints: MediaStreamConstraints,
-    screenCapture: boolean,
-    successCallback: (stream: MediaStream) => void,
-    errorCallback: (err: string) => void,
-    count?: number,
-  ) => void
 
   _ua?: {
     _transport?: {
