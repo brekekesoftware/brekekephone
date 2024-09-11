@@ -407,52 +407,25 @@ export class SIP extends EventEmitter {
     const cameras = this.cameraIds.map(s => s.deviceId)
     this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
-    // const videoOptions = {
-    //   call: {
-    //     mediaConstraints: sipCreateMediaConstraints(
-    //       this.currentCamera,
-    //       isFrontCamera,
-    //     ),
-    //   },
-    //   answer: {
-    //     mediaConstraints: sipCreateMediaConstraints(
-    //       this.currentCamera,
-    //       isFrontCamera,
-    //     ),
-    //   },
-    // }
-
-    const mc = sipCreateMediaConstraints(this.currentCamera, isFrontCamera)
-
-    const session = this.phone.getSession(sessionId)
-    const videoSession = session.videoClientSessionTable[vId]
-
-    const currentAudioSender = videoSession.rtcSession.connection.getSenders()
-
-    this.phone?._getUserMedia(
-      mc,
-      false,
-      stream => {
-        console.log('#Duy Phan console stream', stream)
-        const sender = currentAudioSender.find(s => s?.track?.kind === 'video')
-        if (!sender) {
-          return
-        }
-
-        sender.replaceTrack(stream.getVideoTracks()[0])
-        this.emit('session-updated', {
-          id: sessionId,
-          videoSessionId: vId,
-          localStreamObject: stream,
-        })
+    const videoOptions = {
+      call: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentCamera,
+          isFrontCamera,
+        ),
       },
-      err => console.log('console userMedia err', err),
-    )
+      answer: {
+        mediaConstraints: sipCreateMediaConstraints(
+          this.currentCamera,
+          isFrontCamera,
+        ),
+      },
+    }
 
     // 4. add new stream to connection
 
-    // this.phone?.setWithVideo(sessionId, false, videoOptions)
-    // this.phone?.setWithVideo(sessionId, true, videoOptions)
+    this.phone?.setWithVideo(sessionId, false, videoOptions)
+    this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
 }
 

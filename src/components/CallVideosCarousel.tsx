@@ -63,11 +63,8 @@ export const CallVideosCarousel = observer(
         {!!localStreamObject && (
           <View
             style={{
-              zIndex: 200,
-              position: 'absolute',
-              bottom: 0,
-              height: 'auto',
-              width: '100%',
+              ...styles.streams,
+              bottom: isPortrait ? 0 : 100,
             }}
           >
             <ScrollView
@@ -84,6 +81,7 @@ export const CallVideosCarousel = observer(
                 showSwitchCamera
                 onSwitchCamera={() => toggleSwitchCamera()}
                 isFrontCamera={isFrontCamera}
+                isPortrait={isPortrait}
               />
               {videoClientSessionTable.map(item => (
                 <VideoViewItem
@@ -95,7 +93,6 @@ export const CallVideosCarousel = observer(
                 />
               ))}
             </ScrollView>
-            <View style={{ flex: 0.95 }}></View>
           </View>
         )}
       </>
@@ -112,4 +109,10 @@ const styles = StyleSheet.create({
     height: 'auto',
   },
   contentScrollView: { gap: 16, height: 200, padding: 16 },
+  streams: {
+    zIndex: 200,
+    position: 'absolute',
+    height: 'auto',
+    width: '100%',
+  },
 })

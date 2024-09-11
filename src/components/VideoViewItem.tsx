@@ -21,6 +21,7 @@ type VideoViewItemProps = {
   view: { width: number; height: number }
   enabled?: boolean
   isFrontCamera?: boolean
+  isPortrait?: boolean
 }
 
 export const VideoViewItem = observer((props: VideoViewItemProps) => {
@@ -33,6 +34,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     onSelect,
     enabled = true,
     isFrontCamera,
+    isPortrait,
   } = props
 
   const [spinValue] = useState(new Animated.Value(0))
@@ -91,7 +93,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         <View
           style={{
             ...styles.switchCameraView,
-            top: view.height * 0.4,
+            top: view.height * (isPortrait ? 0.4 : 0.3),
             left: view.width / 2 - 15,
           }}
         >
