@@ -481,7 +481,6 @@ export type Session = {
     }
     direction: 'outgoing' | 'incoming'
     terminate(): void
-    connection: RTCPeerConnection
   }
   withVideo: boolean
   remoteWithVideo: boolean

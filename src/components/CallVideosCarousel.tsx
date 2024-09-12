@@ -30,7 +30,12 @@ export const CallVideosCarousel = observer(
     const refScroll = useRef<ScrollView>(null)
 
     useEffect(() => {
-      if (videoClientSessionTable.length && !videoStreamActive) {
+      if (
+        (videoClientSessionTable.length && !videoStreamActive) ||
+        !videoClientSessionTable.find(
+          item => item.vId === videoStreamActive?.vId,
+        )
+      ) {
         updateVideoStreamActive(videoClientSessionTable[0])
       }
       if (!videoClientSessionTable.length) {
