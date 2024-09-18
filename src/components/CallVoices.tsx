@@ -16,7 +16,7 @@ export const CallVoices = observer(() => {
   void cs.calls.map(_ => _.callkeepUuid)
 
   const oc = cs.getOngoingCall()
-  const isOutgoing =  oc && !oc.incoming && !oc.answered
+  const isOutgoing = oc && !oc.incoming && !oc.answered
   const isOutgoingProgress = isOutgoing && oc.sessionStatus === 'progress'
 
   // when receive a 18x response (usually 180 or 183) with SDP
@@ -27,7 +27,7 @@ export const CallVoices = observer(() => {
   return (
     <>
       {isOutgoing &&
-        (isOutgoingProgress && playEarlyMedia && oc.earlyMedia? (
+        (isOutgoingProgress && playEarlyMedia && oc.earlyMedia ? (
           <OutgoingItemWithSDP earlyMedia={oc.earlyMedia} />
         ) : (
           <>
