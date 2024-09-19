@@ -183,8 +183,12 @@ export const parseNotificationData = (raw?: object) => {
 }
 
 const isNoU = (v: unknown) => v === null || v === undefined
-const androidAlreadyProccessedPn: { [k: string]: boolean } = {}
+let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
+export const resetCallActionMapAndroidProcessedPn = () => {
+  getCallStore().callkeepActionMap = {}
+  androidAlreadyProccessedPn = {}
+}
 export const parse = async (
   raw?: { [k: string]: unknown },
   isLocal = false,
@@ -304,6 +308,7 @@ export const parse = async (
     console.log(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
+    return
   }
   const cs = getCallStore()
 
