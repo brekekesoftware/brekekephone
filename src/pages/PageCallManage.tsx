@@ -84,7 +84,7 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
   },
   BtnFuncCalls: {
-    marginBottom: 10,
+    marginBottom: 20,
   },
   Btns_Hidden: {
     opacity: 0,
@@ -555,6 +555,8 @@ class PageCallManage extends Component<{
 
   private renderInfo = () => {
     const { call: c } = this.props
+    const isShowAvatar =
+    !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     return (
       <>
         <View style={{ height: 70 }}></View>
@@ -605,7 +607,7 @@ class PageCallManage extends Component<{
             </View>
           )}
         </View>
-        <View style={css.Video_Space} />
+        {!isShowAvatar &&<View style={css.Video_Space} />}
       </>
     )
   }

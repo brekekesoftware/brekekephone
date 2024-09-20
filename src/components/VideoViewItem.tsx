@@ -78,7 +78,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         },
       ]}
     >
-      <Animated.View style={{ transform: [{ rotateY: spin }], flex: 1 }}>
+      <View style={{flex: 1 }}>
         <TouchableOpacity
           style={styles.touchable}
           onPress={() => onSelect?.(sourceObject)}
@@ -88,7 +88,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
             zOrder={1}
           />
         </TouchableOpacity>
-      </Animated.View>
+      </View>
       {showSwitchCamera && (
         <View
           style={{
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   active: {
     borderColor: '#4cc5de',
-    borderWidth: 2,
+    borderWidth: 4,
   },
   switchCameraView: {
     position: 'absolute',

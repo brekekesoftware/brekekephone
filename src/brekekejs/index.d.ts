@@ -427,6 +427,7 @@ export type SipConstructorOptions = {
       answer: {
         mediaConstraints: MediaStreamConstraints
       }
+      shareStream?: boolean
     }
   }
   configuration?: Partial<SipConfiguration>

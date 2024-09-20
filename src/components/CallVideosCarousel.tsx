@@ -28,7 +28,7 @@ export const CallVideosCarousel = observer(
     onButtonsInVideo,
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
-
+    
     useEffect(() => {
       if (
         (videoClientSessionTable.length && !videoStreamActive) ||
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 'auto',
   },
-  contentScrollView: { gap: 16, height: 200, padding: 16 },
+  contentScrollView: { gap: 16, padding: 16 },
   streams: {
     zIndex: 200,
     position: 'absolute',

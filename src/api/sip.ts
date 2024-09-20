@@ -158,7 +158,6 @@ export class SIP extends EventEmitter {
         partyName,
         remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
-        localStreamObject: ev.localVideoStreamObject,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
@@ -420,6 +419,7 @@ export class SIP extends EventEmitter {
           isFrontCamera,
         ),
       },
+      shareStream: true
     }
 
     // 4. add new stream to connection
@@ -522,6 +522,7 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
         answer: {
           mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
+        shareStream: true
       },
     },
     dtmfSendPal,
