@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import type { StyleProp, ViewStyle } from 'react-native'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
 const css = StyleSheet.create({
@@ -21,6 +21,7 @@ export const VideoPlayer = observer(
     sourceObject?: MediaStream | null
     zOrder?: number
     style?: StyleProp<ViewStyle>
+    isShowLoading?: boolean
   }) =>
     p.sourceObject ? (
       <RTCView
@@ -29,7 +30,9 @@ export const VideoPlayer = observer(
         objectFit='cover'
         zOrder={p.zOrder}
       />
-    ) : (
+    ) : p.isShowLoading ? (
       <ActivityIndicator style={css.video} />
+    ) : (
+      <View style={css.video} />
     ),
 )

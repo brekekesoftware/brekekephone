@@ -238,6 +238,7 @@ export class SIP extends EventEmitter {
         videoClientSessionTable: Object.entries(
           session.videoClientSessionTable,
         ).map(([key, value]) => ({ ...value, vId: key })),
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
@@ -255,11 +256,19 @@ export class SIP extends EventEmitter {
           session.videoClientSessionTable,
         ).map(([key, value]) => ({ ...value, vId: key })),
         localStreamObject: session.localVideoStreamObject,
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
       console.error('sip.phone.rtcErrorOccurred:', ev)
+    })
+
+    phone.addEventListener('remoteUserOptionsChanged', ev => {
+      this.emit('session-updated', {
+        id: ev.sessionId,
+        remoteUserOptionsTable: ev.remoteUserOptionsTable,
+      })
     })
 
     return phone
@@ -378,9 +387,20 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
+  enableVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      undefined,
+      JSON.stringify({ enableVideo: true }),
+    )
   disableVideo = (sessionId: string) =>
-    this.phone?.setWithVideo(sessionId, false)
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      undefined,
+      JSON.stringify({ enableVideo: false }),
+    )
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
 
@@ -388,7 +408,7 @@ export class SIP extends EventEmitter {
     this.phone?.setMuted({ videoClient: muted }, sessionId)
   switchCamera = async (
     sessionId: string,
-    vId: string,
+    mutedVideo: boolean,
     isFrontCamera: boolean,
   ) => {
     // alert(this.currentFrontCamera)
@@ -425,7 +445,12 @@ export class SIP extends EventEmitter {
     // 4. add new stream to connection
 
     this.phone?.setWithVideo(sessionId, false, videoOptions)
-    this.phone?.setWithVideo(sessionId, true, videoOptions)
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      videoOptions,
+      JSON.stringify({ enableVideo: !mutedVideo }),
+    )
   }
 }
 

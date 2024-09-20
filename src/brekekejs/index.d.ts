@@ -379,6 +379,7 @@ export type Sip = {
     sessionId: string,
     withVideo?: boolean,
     videoOptions?: VideoOptions,
+    exInfo?: string,
   ): void
   sendDTMF(dtmf: string, sessionId: string): void
   getPhoneStatus(): string
@@ -401,7 +402,7 @@ export type MakeCallFn = (
   options?: object,
   videoEnabled?: boolean,
   videoOptions?: object,
-  exInfo?: object,
+  exInfo?: string,
 ) => void
 
 export type VideoOptions = {
@@ -462,6 +463,7 @@ export type SipEventMap = {
   videoClientSessionCreated: VideoSession
   videoClientSessionEnded: VideoSession
   rtcErrorOccurred: Error
+  remoteUserOptionsChanged: Session
 }
 export type PhoneStatusChangedEvent = {
   phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
@@ -508,6 +510,7 @@ export type Session = {
   }
   remoteUserOptionsTable: null
   analyzer: null
+  user: string
 }
 export type VideoSession = {
   sessionId: string

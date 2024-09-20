@@ -218,7 +218,7 @@ const css = StyleSheet.create({
   VCalling: {
     backgroundColor: '#74bf53',
   },
-  DurationText: { fontSize: 10, lineHeight: 14, letterSpacing: 1.35 },
+  DurationText: { fontSize: 9, lineHeight: 14, letterSpacing: 1.35 },
   AlignCenter: { alignItems: 'center' },
   AlignStart: { alignItems: 'flex-start' },
   OnHoldText: {
@@ -559,7 +559,7 @@ class PageCallManage extends Component<{
       !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     return (
       <>
-        <View style={{ height: 70 }}></View>
+        <View style={{ height: 60 }}></View>
         <View style={css.MainInfo}>
           <RnText
             title
@@ -615,9 +615,9 @@ class PageCallManage extends Component<{
   private renderBtns = () => {
     const { call: c } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
-    if (!this.showButtonsInVideoCall) {
-      return null
-    }
+    // if (!this.showButtonsInVideoCall) {
+    //   return null
+    // }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
     const activeColor = c.localVideoEnabled
       ? v.colors.primary
@@ -690,7 +690,11 @@ class PageCallManage extends Component<{
               name={intl`VIDEO`}
               noborder
               onPress={c.toggleVideo}
-              path={c.localVideoEnabled ? mdiVideoCamera : mdiVideoOff}
+              path={
+                c.localVideoEnabled && !c.mutedVideo
+                  ? mdiVideoCamera
+                  : mdiVideoOff
+              }
               size={40}
               viewBox='0 0 32 32'
               textcolor='white'

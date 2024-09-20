@@ -23,6 +23,8 @@ export const CallVideosCarousel = observer(
       videoClientSessionTable,
       toggleSwitchCamera,
       isFrontCamera,
+      remoteUserOptionsTable,
+      mutedVideo,
     },
     showButtonsInVideoCall,
     onButtonsInVideo,
@@ -53,6 +55,12 @@ export const CallVideosCarousel = observer(
       updateVideoStreamActive(item)
     }
 
+    const checkEnable = item => {
+      const info = remoteUserOptionsTable?.[item?.user]?.exInfo ?? '{}'
+      const exInfo = JSON.parse(info)
+      return exInfo.enableVideo
+    }
+
     return (
       <>
         <RnTouchableOpacity
@@ -61,7 +69,12 @@ export const CallVideosCarousel = observer(
           activeOpacity={1}
         >
           <VideoPlayer
-            sourceObject={videoStreamActive?.remoteStreamObject}
+            sourceObject={
+              checkEnable(videoStreamActive)
+                ? videoStreamActive?.remoteStreamObject
+                : null
+            }
+            isShowLoading
             zOrder={0}
           />
         </RnTouchableOpacity>
@@ -87,6 +100,7 @@ export const CallVideosCarousel = observer(
                 onSwitchCamera={() => toggleSwitchCamera()}
                 isFrontCamera={isFrontCamera}
                 isPortrait={isPortrait}
+                enabled={!mutedVideo}
               />
               {videoClientSessionTable.map(item => (
                 <VideoViewItem
@@ -95,6 +109,7 @@ export const CallVideosCarousel = observer(
                   key={item.vId}
                   view={{ width: finalWidth, height: finalHeight }}
                   onSelect={() => handleScroll(item)}
+                  enabled={checkEnable(item)}
                 />
               ))}
             </ScrollView>

@@ -76,7 +76,9 @@ export class Call {
       options,
       this.remoteVideoEnabled,
       videoOptions,
-      exInfo,
+      this.remoteVideoEnabled
+        ? JSON.stringify({ enableVideo: true })
+        : undefined,
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
@@ -142,14 +144,20 @@ export class Call {
       return
     }
     if (this.localVideoEnabled) {
-      sip.disableVideo(this.id)
+      this.mutedVideo = !this.mutedVideo
+      if (this.mutedVideo) {
+        sip.disableVideo(this.id)
+      } else {
+        sip.enableVideo(this.id)
+      }
     } else {
       sip.enableVideo(this.id)
+      this.mutedVideo = false
     }
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
-    sip.switchCamera(this.id, this.videoSessionId, this.isFrontCamera)
+    sip.switchCamera(this.id, this.mutedVideo, this.isFrontCamera)
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
@@ -157,6 +165,12 @@ export class Call {
   @observable localStreamObject: MediaStream | null = null
   @observable videoClientSessionTable: Array<Session & { vId: string }> = []
   @observable videoStreamActive: (Session & { vId: string }) | null = null
+  @observable remoteUserOptionsTable: {
+    [key: string]: {
+      withVideo: boolean
+      exInfo: string
+    }
+  } = {}
   voiceStreamObject: MediaStream | null = null
 
   @action updateVideoStreamActive = id => {

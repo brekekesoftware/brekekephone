@@ -576,7 +576,14 @@ export class CallStore {
       500,
     )
   }
-  startVideoCall = (number: string) => this.startCall(number, undefined, true)
+  startVideoCall = (number: string) =>
+    this.startCall(
+      number,
+      undefined,
+      true,
+      undefined,
+      JSON.stringify({ enableVideo: true }),
+    )
 
   updateBackgroundCalls = () => {
     // auto hold background calls
