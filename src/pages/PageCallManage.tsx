@@ -556,7 +556,7 @@ class PageCallManage extends Component<{
   private renderInfo = () => {
     const { call: c } = this.props
     const isShowAvatar =
-    !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+      !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     return (
       <>
         <View style={{ height: 70 }}></View>
@@ -607,7 +607,7 @@ class PageCallManage extends Component<{
             </View>
           )}
         </View>
-        {!isShowAvatar &&<View style={css.Video_Space} />}
+        {!isShowAvatar && <View style={css.Video_Space} />}
       </>
     )
   }

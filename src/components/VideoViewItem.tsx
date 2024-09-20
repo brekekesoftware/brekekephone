@@ -78,7 +78,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         },
       ]}
     >
-      <View style={{flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <TouchableOpacity
           style={styles.touchable}
           onPress={() => onSelect?.(sourceObject)}

@@ -419,7 +419,7 @@ export class SIP extends EventEmitter {
           isFrontCamera,
         ),
       },
-      shareStream: true
+      shareStream: true,
     }
 
     // 4. add new stream to connection
@@ -522,7 +522,7 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
         answer: {
           mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
-        shareStream: true
+        shareStream: true,
       },
     },
     dtmfSendPal,

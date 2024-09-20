@@ -28,7 +28,7 @@ export const CallVideosCarousel = observer(
     onButtonsInVideo,
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
-    
+
     useEffect(() => {
       if (
         (videoClientSessionTable.length && !videoStreamActive) ||
