@@ -57,7 +57,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnMute,
       vBtnRecord,
       vBtnDTMF,
-      vBtnHold;
+      vBtnHold,
+      vNavInfo;
   public WebRTCView vWebrtcVideo;
   public ProgressBar videoLoading;
   public View vCardAvatar, vCardAvatarTalking;
@@ -152,6 +153,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     imgAvatarLoadingProgress.start();
 
     vNavHeader = (LinearLayout) findViewById(R.id.view_nav_header);
+    vNavInfo = (LinearLayout) findViewById(R.id.view_nav_info);
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
@@ -191,6 +193,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
+    vNavHeader.setBackgroundColor(Color.TRANSPARENT);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -208,6 +211,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndCall = (Button) findViewById(R.id.btn_end_call);
     btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
     btnBack = (Button) findViewById(R.id.btn_back);
+    btnBack.setBackgroundColor(Color.TRANSPARENT);
 
     btnBack.setOnClickListener(this);
     btnAnswer.setOnClickListener(this);
@@ -225,7 +229,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSwitchCamera.setOnClickListener(this);
     btnSwitchCamera.setSelected(true); // default front camera
 
-    txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
     txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
     txtConnecting = (TextView) findViewById(R.id.txt_connecting);
@@ -239,11 +243,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
-    txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
-    txtCallerNameHeader.setText(callerName);
 
     updateLabels();
     updateHeader();
@@ -707,7 +709,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return false;
   }
 
-  public void handleResultPermForCall(@NonNull int[] r) {
+    public void handleResultPermForCall(@NonNull int[] r) {
     if (r != null && r.length >= 3) {
       int bluetooth = PackageManager.PERMISSION_GRANTED;
       // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
@@ -936,6 +938,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
     vNavHeader.setVisibility(View.VISIBLE);
+    vNavInfo.setVisibility(View.VISIBLE);
     destroyAvatarWebView();
   }
 
@@ -1008,6 +1011,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+    txtDurationCall.setVisibility(holding ? View.GONE : View.VISIBLE);
   }
 
   public void setBtnMuteSelected(boolean isMute) {

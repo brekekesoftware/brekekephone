@@ -19,8 +19,8 @@
       android:id="@+id/view_nav_header"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/white"
       android:visibility="gone"
+      android:paddingTop="12dp"
     >
       <Button
         android:id="@+id/btn_back"
@@ -31,18 +31,103 @@
         android:drawableLeft="@drawable/ic_back"
         android:outlineProvider="none"
       />
+      <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+      />
+      <Button
+        android:id="@+id/btn_switch_camera"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="24dp"
+        android:background="@android:color/transparent"
+        android:drawableLeft="@drawable/btn_switch_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+      />
+    </LinearLayout>
+    <LinearLayout
+      android:id="@+id/view_nav_info"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:paddingTop="12dp"
+      android:orientation="vertical"
+    >
       <TextView
-        android:id="@+id/txt_caller_name_header"
+        android:id="@+id/txt_header_caller_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Caller Name"
         android:textSize="20dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:maxLines="1"
         android:ellipsize="end"
+        android:paddingLeft="16dp"
+      />
+
+      <TextView
+        android:id="@+id/txt_count_timer"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:textSize="9dp"
+        android:textColor="@color/white"
+        android:maxLines="1"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_timer_call"
+        android:gravity="center"
+        android:visibility="visible"
+      />
+
+      <TextView
+        android:id="@+id/txt_call_is_on_hold"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="ON HOLD"
+        android:textSize="9dp"
+        android:textColor="@color/white"
+        android:maxLines="1"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_hold_call"
+        android:gravity="center"
+        android:visibility="gone"
+      />
+
+      <TextView
+        android:id="@+id/txt_video_calling"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="VIDEO CALLING"
+        android:textSize="9dp"
+        android:textColor="@color/white"
+        android:maxLines="1"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_status_calling"
+        android:gravity="center"
+        android:visibility="gone"
+      />
+
+      <TextView
+        android:id="@+id/txt_voice_calling"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="VOICE CALLING"
+        android:textSize="9dp"
+        android:textColor="@color/white"
+        android:maxLines="1"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_status_calling"
+        android:gravity="center"
+        android:visibility="gone"
       />
     </LinearLayout>
+
     <!-- view_webrtc_video -->
     <RelativeLayout
       android:layout_width="match_parent"
@@ -89,31 +174,33 @@
             <LinearLayout
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_marginBottom="20dp"
               android:layout_alignParentBottom="true"
               android:layout_centerInParent="true"
+              android:layout_marginBottom="20dp"
             >
               <Button
                 android:id="@+id/btn_answer"
                 android:layout_width="65dp"
                 android:layout_height="65dp"
-                android:paddingTop="39dp"
-                android:paddingLeft="13dp"
                 android:background="@drawable/btn_answer"
                 android:drawableLeft="@drawable/ic_answer"
+                android:paddingLeft="13dp"
+                android:paddingTop="39dp"
               />
+
               <Button
                 android:id="@+id/btn_reject"
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:layout_marginLeft="200dp"
-                android:paddingTop="39dp"
-                android:paddingLeft="13dp"
                 android:background="@drawable/btn_reject"
                 android:drawableLeft="@drawable/ic_reject"
+                android:paddingLeft="13dp"
+                android:paddingTop="39dp"
                 android:visibility="visible"
               />
             </LinearLayout>
+
             <TextView
               android:id="@+id/txt_incoming_call"
               android:layout_width="match_parent"
@@ -237,38 +324,6 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
         >
-          <LinearLayout
-            android:id="@+id/view_time"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/btn_unlock"
-          >
-            <TextView
-              android:id="@+id/txt_header_caller_name"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:text="Caller Name"
-              android:textColor="@color/white"
-              android:textSize="22dp"
-              android:textStyle="bold"
-              android:maxLines="2"
-              android:ellipsize="end"
-              android:paddingHorizontal="20dp"
-            />
-            <TextView
-              android:id="@+id/txt_count_timer"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:paddingBottom="10dp"
-              android:text="00:00"
-              android:textColor="@color/white"
-              android:textSize="22dp"
-              android:textStyle="bold"
-            />
-          </LinearLayout>
           <Button
             android:id="@+id/btn_unlock"
             android:visibility="visible"
@@ -286,17 +341,6 @@
             app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-          />
-          <Button
-            android:id="@+id/btn_switch_camera"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:paddingTop="40dp"
-            android:background="@android:color/transparent"
-            android:drawableLeft="@drawable/btn_switch_camera"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
           />
           <LinearLayout
             android:id="@+id/view_call_manage_controls"
@@ -328,20 +372,20 @@
                   android:id="@+id/btn_transfer"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
-                  android:paddingTop="39dp"
-                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_transfer"
+                  android:paddingLeft="12dp"
                 />
+
                 <TextView
                   android:id="@+id/txt_transfer_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="TRANSFER"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn park-->
@@ -359,20 +403,20 @@
                   android:id="@+id/btn_park"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
-                  android:paddingTop="39dp"
-                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_park"
+                  android:paddingLeft="12dp"
                 />
+
                 <TextView
                   android:id="@+id/txt_park_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="PARK"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn video-->
@@ -392,15 +436,16 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_video"
                 />
+
                 <TextView
                   android:id="@+id/txt_video_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="VIDEO"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn speaker-->
@@ -420,23 +465,25 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_speaker"
                 />
+
                 <TextView
                   android:id="@+id/txt_speaker_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="SPEAKER"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_marginTop="5dp"
               android:layout_gravity="center"
+              android:layout_marginTop="5dp"
             >
               <!-- btn mute-->
               <LinearLayout
@@ -455,9 +502,9 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_mute"
                 />
+
                 <TextView
                   android:id="@+id/txt_mute_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
@@ -465,6 +512,7 @@
                   android:textAlignment="center"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn record-->
@@ -484,15 +532,16 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_record"
                 />
+
                 <TextView
                   android:id="@+id/txt_record_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="RECORD"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn dtmf-->
@@ -510,20 +559,20 @@
                   android:id="@+id/btn_dtmf"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
-                  android:paddingTop="39dp"
-                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_dtmf"
+                  android:paddingLeft="12dp"
                 />
+
                 <TextView
                   android:id="@+id/txt_dtmf_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="KEYPAD"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn hold-->
@@ -543,18 +592,20 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_hold"
                 />
+
                 <TextView
                   android:id="@+id/txt_hold_btn"
-                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="HOLD"
                   android:textColor="@color/white"
                   android:textSize="14dp"
+                  android:textStyle="bold"
                 />
               </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
               android:id="@+id/ln_flex1"
               android:layout_width="wrap_content"
@@ -563,6 +614,7 @@
               android:visibility="gone"
             />
           </LinearLayout>
+
           <RelativeLayout
             android:id="@+id/view_call_manage_loading"
             android:layout_width="wrap_content"
@@ -580,9 +632,9 @@
               android:indeterminate="true"
               android:indeterminateTint="@color/white"
             />
+
             <TextView
               android:id="@+id/txt_connecting"
-              android:textStyle="normal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginTop="60dp"
@@ -590,8 +642,10 @@
               android:text="Connecting..."
               android:textColor="@color/white"
               android:textSize="20dp"
+              android:textStyle="normal"
             />
           </RelativeLayout>
+
           <RelativeLayout
             android:id="@+id/view_button_end"
             android:layout_width="wrap_content"
@@ -605,31 +659,21 @@
               android:id="@+id/btn_end_call"
               android:layout_width="65dp"
               android:layout_height="65dp"
-              android:paddingTop="39dp"
-              android:paddingLeft="13dp"
               android:background="@drawable/btn_reject"
               android:drawableLeft="@drawable/ic_reject"
-            />
-            <TextView
-              android:id="@+id/txt_call_is_on_hold"
-              android:textStyle="bold"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="20dp"
-              android:gravity="center"
-              android:text="CALL IS ON HOLD"
-              android:textColor="@color/white"
-              android:textSize="20dp"
-              android:visibility="gone"
+              android:paddingLeft="13dp"
+              android:paddingTop="39dp"
             />
           </RelativeLayout>
+
           <androidx.cardview.widget.CardView
             android:id="@+id/card_avatar_talking"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="center"
+            android:visibility="gone"
             app:cardCornerRadius="0dp"
             app:cardPreventCornerOverlap="true"
             app:layout_constraintBottom_toTopOf="@+id/view_time"
@@ -637,7 +681,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
           >
             <ImageView
               android:id="@+id/avatar_talking"
@@ -646,6 +689,7 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
+
             <RelativeLayout
               android:id="@+id/rl_taking_loading"
               android:layout_width="match_parent"
@@ -664,6 +708,7 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
+
             <WebView
               android:id="@+id/avatar_talking_html"
               android:layout_width="match_parent"
