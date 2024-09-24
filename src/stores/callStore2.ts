@@ -235,6 +235,27 @@ export class CallStore {
       IncallManager.start()
     }
   }
+
+  onHandleStreamsJava = (c: Call) => {
+    const l = c.videoClientSessionTable
+    if (!c.videoStreamActive && l.length) {
+      BrekekeUtils.setStreamActive(c.callkeepUuid, {
+        vId: l[0].vId,
+        streamUrl: l[0].remoteStreamObject.toURL(),
+      })
+    }
+    if (c.localStreamObject) {
+      BrekekeUtils.setLocalStream(c.callkeepUuid, c.localStreamObject.toURL())
+    }
+    BrekekeUtils.setRemoteStreams(
+      c.callkeepUuid,
+      l.map(item => ({
+        vId: item.vId,
+        streamUrl: item.remoteStreamObject.toURL(),
+      })),
+    )
+  }
+
   @action private upsertCall = (
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -290,10 +311,7 @@ export class CallStore {
         })
       }
       if (e.incoming && e.callkeepUuid) {
-        BrekekeUtils.setRemoteVideoStreamUrl(
-          e.callkeepUuid,
-          e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
-        )
+        this.onHandleStreamsJava(e)
       }
 
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {

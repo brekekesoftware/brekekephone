@@ -64,6 +64,12 @@ type TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
+  setRemoteStreams: (
+    uuid: string,
+    streams: Array<{ vId: string; streamUrl: string }>,
+  ) => void
+  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  setLocalStream: (uuid: string, streamUrl: string) => void
 }
 
 export type TNativeModules = {
@@ -114,6 +120,9 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
+  setRemoteStreams: () => undefined,
+  setStreamActive: () => undefined,
+  setLocalStream: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

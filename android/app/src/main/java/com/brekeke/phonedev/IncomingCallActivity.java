@@ -6,8 +6,10 @@ import android.app.KeyguardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build.VERSION;
@@ -25,17 +27,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
@@ -47,7 +56,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCallManageLoading,
       vHeaderIncomingCall,
       vWebViewAvatarLoading,
-      vWebViewAvatarTalkingLoading;
+      vWebViewAvatarTalkingLoading,
+
+    vRemoteStream;
   public LinearLayout vNavHeader,
       vCallManageControls,
       vBtnTransfer,
@@ -60,6 +71,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnHold,
       vNavInfo;
   public WebRTCView vWebrtcVideo;
+
+  public LinearLayout vScrollViewStreams;
+
+  public String activeStreamId = "";
+  public int localStreamId = 0;
   public ProgressBar videoLoading;
   public View vCardAvatar, vCardAvatarTalking;
   public ImageView imgAvatar, imgAvatarTalking;
@@ -166,6 +182,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebViewAvatarLoading = (RelativeLayout) findViewById(R.id.rl_webview_loading);
     vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
+    vScrollViewStreams = (LinearLayout) findViewById((R.id.scroll_view_streams));
+    vRemoteStream = (RelativeLayout) findViewById(R.id.view_remote_streams);
 
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
@@ -456,6 +474,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     vWebrtcVideo.setObjectFit("cover");
+    vWebrtcVideo.setZOrder(0);
     vWebrtc.addView(vWebrtcVideo);
     vWebrtc.setVisibility(View.VISIBLE);
   }
@@ -491,6 +510,69 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         hideCallManageControls();
       }
     }
+  }
+
+  private LinearLayout createStreamItem (String streamUrl, boolean isActive) {
+    WebRTCView rV = new WebRTCView(BrekekeUtils.ctx);
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    int width = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
+
+    LinearLayout lV = new LinearLayout(BrekekeUtils.ctx);
+    Resources res = getResources();
+    if (isActive) {
+      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+      lV.setBackground(drawable);
+    } else {
+      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
+      lV.setBackground(drawable);
+    }
+
+    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+            width, vRemoteStream.getLayoutParams().height - 32);
+    lV.setLayoutParams(lp);
+
+    lV.addView(rV);
+    rV.setLayoutParams(
+            lp);
+    lp.setMargins(0, 0, 10, 0);
+    rV.setObjectFit("cover");
+    rV.setZOrder(1);
+    rV.setStreamURL(streamUrl);
+
+    return lV;
+  }
+
+  public void setRemoteStreams(ReadableArray streams) {
+    for (int i = 0; i < streams.size(); i++) {
+      ReadableMap streamItem = streams.getMap(i);
+      String vId = streamItem.getString("vId");
+      String streamUrl = streamItem.getString("streamUrl");
+      LinearLayout v = this.createStreamItem(streamUrl, false);
+      vScrollViewStreams.addView(v);
+    }
+    vRemoteStream.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
+  }
+
+  public void setStreamActive(ReadableMap stream) {
+    String vId = stream.getString("vId");
+    String streamUrl = stream.getString("streamUrl");
+    this.activeStreamId = vId;
+    setRemoteVideoStreamUrl(streamUrl);
+  }
+
+  public void setLocalStream(String streamUrl) {
+    if(this.localStreamId != 0) {
+      View existView = findViewById(this.localStreamId);
+      if(existView != null) {
+        vScrollViewStreams.removeView(existView);
+      }
+    }
+
+    LinearLayout v = this.createStreamItem(streamUrl, false);
+    this.localStreamId = View.generateViewId();
+    v.setId(localStreamId);
+    vScrollViewStreams.addView(v);
   }
 
   public void onBtnSwitchCamera(View v) {

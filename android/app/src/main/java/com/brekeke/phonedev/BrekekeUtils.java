@@ -35,6 +35,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -48,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -1104,5 +1107,38 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
       p.resolve(-1d);
     }
+  }
+
+  @ReactMethod
+  public void setRemoteStreams(String uuid, ReadableArray streams) {
+     UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+             at(uuid).setRemoteStreams(streams);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setStreamActive(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                at(uuid).setStreamActive(stream);
+              }
+            });
+  }
+
+  @ReactMethod
+  public void setLocalStream(String uuid, String streamUrl) {
+    UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                at(uuid).setLocalStream(streamUrl);
+              }
+            });
   }
 }
