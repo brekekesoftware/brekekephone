@@ -56,7 +56,8 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
-    authSIP.authWithCheck()
+    // Should make sure reaction will be exist
+    authSIP.auth()
     await waitSip()
     await pbx.getConfig()
     const ca = s.getCurrentAccount()
