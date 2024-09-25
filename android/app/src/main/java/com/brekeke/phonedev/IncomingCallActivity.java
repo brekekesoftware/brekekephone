@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -513,34 +514,38 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   }
 
   private LinearLayout createStreamItem (String streamUrl, boolean isActive) {
-    WebRTCView rV = new WebRTCView(BrekekeUtils.ctx);
+    WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
     int width = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
 
-    LinearLayout lV = new LinearLayout(BrekekeUtils.ctx);
+    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    ln.setClipChildren(true);
+    ln.setClipToOutline(true);
+    ln.setClipToPadding(true);
     Resources res = getResources();
     if (isActive) {
       Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-      lV.setBackground(drawable);
+      ln.setBackground(drawable);
     } else {
       Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
-      lV.setBackground(drawable);
+      ln.setBackground(drawable);
     }
 
     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-            width, vRemoteStream.getLayoutParams().height - 32);
-    lV.setLayoutParams(lp);
+            width, vRemoteStream.getLayoutParams().height);
+    ln.setLayoutParams(lp);
 
-    lV.addView(rV);
-    rV.setLayoutParams(
-            lp);
-    lp.setMargins(0, 0, 10, 0);
-    rV.setObjectFit("cover");
-    rV.setZOrder(1);
-    rV.setStreamURL(streamUrl);
+     lp.setMargins(0, 0, 16, 0);
+    ln.setPadding(6, 8, 6, 8);
+    rtcView.setZOrder(1);
+    rtcView.setObjectFit("cover");
 
-    return lV;
+    ln.addView(rtcView);
+    rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+    rtcView.setStreamURL(streamUrl);
+
+    return ln;
   }
 
   public void setRemoteStreams(ReadableArray streams) {
@@ -595,14 +600,24 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void showCallManageControls() {
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
+
+//    vRemoteStream.bringChildToFront(vCallManageControls);
+   vRemoteStream.bringChildToFront(vCallManage);
+    vCallManage.bringToFront();
+//    vCallManageControls.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
+    btnEndCall.setVisibility(View.VISIBLE);
+
     updateBtnUnlockLabel();
   }
 
   public void hideCallManageControls() {
     isCallManageControlsHidden = true;
     vCallManageControls.setVisibility(View.GONE);
+    vCallManage.bringChildToFront(vRemoteStream);
+    vRemoteStream.bringToFront();
     btnUnlock.setVisibility(View.GONE);
+    btnEndCall.setVisibility(View.GONE);
   }
 
   // vIncomingCall

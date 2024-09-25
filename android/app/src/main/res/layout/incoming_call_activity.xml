@@ -317,7 +317,7 @@
       <RelativeLayout  
         android:id="@+id/view_remote_streams"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="220dp"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
         >
@@ -325,7 +325,7 @@
         <ScrollView 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
+        android:orientation="horizontal"
       >
             <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent" android:orientation="horizontal"   android:id="@+id/scroll_view_streams">
