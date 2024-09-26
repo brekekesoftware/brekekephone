@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -627,12 +628,23 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     if(isExist) {
       StreamData d = arrayStreams.get(vId);
       LinearLayout l = findViewById(d.id);
+      if(activeStreamId.equals(vId)) {
+        if(arrayStreams.size() > 0) {
+          View l2 = vScrollViewStreams.getChildAt(vScrollViewStreams.indexOfChild(l) - 1);
+          Resources res = getResources();
+          Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+          l2.setBackground(drawable);
+          activeStreamId = "";
+        }
+      }
      vScrollViewStreams.removeView(l);
      this.arrayStreams.remove(vId);
+
     }
     if(arrayStreams.size() == 0) {
       vRemoteStream.setVisibility(View.GONE);
     }
+
   }
 
   public void setStreamActive(ReadableMap stream) {
