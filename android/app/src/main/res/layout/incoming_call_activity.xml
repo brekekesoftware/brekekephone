@@ -322,16 +322,19 @@
         android:visibility="gone"
         >
         
+        <HorizontalScrollView    android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <ScrollView 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
       >
             <LinearLayout android:layout_width="match_parent"
-        android:layout_height="match_parent" android:orientation="horizontal"   android:id="@+id/scroll_view_streams">
+        android:layout_height="wrap_content" android:orientation="horizontal"   android:id="@+id/scroll_view_streams" android:paddingBottom="16dp">
 
             </LinearLayout>
         </ScrollView>
+        </HorizontalScrollView>
       </RelativeLayout>
       <RelativeLayout
         android:id="@+id/view_call_manage"

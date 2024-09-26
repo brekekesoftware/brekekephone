@@ -1141,4 +1141,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               }
             });
   }
+
+  @ReactMethod
+  public void addStreamToView(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                at(uuid).addStreamToView(stream);
+              }
+            });
+  }
+
+  @ReactMethod
+  public void removeStreamFromView(String uuid, String vId) {
+    UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                at(uuid).removeStreamFromView(vId);
+              }
+            });
+  }
 }

@@ -70,6 +70,8 @@ type TBrekekeUtils = {
   ) => void
   setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
   setLocalStream: (uuid: string, streamUrl: string) => void
+  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  removeStreamFromView: (uuid: string, vId: string) => void
 }
 
 export type TNativeModules = {
@@ -123,6 +125,8 @@ const Polyfill: TBrekekeUtils = {
   setRemoteStreams: () => undefined,
   setStreamActive: () => undefined,
   setLocalStream: () => undefined,
+  addStreamToView: () => undefined,
+  removeStreamFromView: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

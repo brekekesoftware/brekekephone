@@ -16,6 +16,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
@@ -74,6 +75,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public WebRTCView vWebrtcVideo;
 
   public LinearLayout vScrollViewStreams;
+
+  public ArrayMap <String, StreamData> arrayStreams = new ArrayMap() ;
 
   public String activeStreamId = "";
   public int localStreamId = 0;
@@ -503,7 +506,9 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       btnSwitchCamera.setVisibility(View.GONE);
       updateDisplayVideo(isVideoCall);
     } else {
-      initWebrtcVideo();
+      if(vWebrtc.getVisibility() == View.GONE) {
+        initWebrtcVideo();
+      }
       btnSwitchCamera.setVisibility(View.VISIBLE);
       vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
@@ -559,9 +564,85 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vRemoteStream.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
   }
 
+  class StreamData {
+    String vId;
+
+    String streamUrl;
+
+    int id;
+
+    StreamData(int id, String vId, String streamUrl) {
+      this.id = id;
+      this.streamUrl = streamUrl;
+      this.vId = vId;
+    }
+
+  }
+
+  public void addStreamToView(ReadableMap stream) {
+    String vId = stream.getString("vId");
+    String streamUrl = stream.getString("streamUrl");
+
+    if(vId != "") {
+      boolean isExist =  arrayStreams.containsKey(vId);
+      if(!isExist) {
+        int id = View.generateViewId();
+        StreamData sData = new StreamData(id, vId, streamUrl);
+        arrayStreams.put(vId, sData);
+        LinearLayout v = createStreamItem(streamUrl, false);
+        v.setId(id);
+        v.setTag(vId);
+        v.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            String tag = (String) v.getTag();
+            StreamData sDNew = arrayStreams.get(tag);
+            if(activeStreamId == "") {
+              Resources res = getResources();
+              Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+              v.setBackground(drawable);
+              updateStreamActive(sDNew.vId, sDNew.streamUrl);
+            } else {
+              StreamData sD = arrayStreams.get(activeStreamId);
+              Resources res = getResources();
+              LinearLayout l = findViewById(sD.id);
+              Drawable drawable1 = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
+              l.setBackground(drawable1);
+              Drawable drawable2 = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+              v.setBackground(drawable2);
+              updateStreamActive(sDNew.vId, sDNew.streamUrl);
+            }
+          }
+        });
+        vScrollViewStreams.addView(v);
+      }
+    }
+    if(arrayStreams.size() > 0 && localStreamId != 0) {
+      vRemoteStream.setVisibility(View.VISIBLE);
+    }
+  }
+
+  public void removeStreamFromView(String vId) {
+    boolean isExist =  arrayStreams.containsKey(vId);
+    if(isExist) {
+      StreamData d = arrayStreams.get(vId);
+      LinearLayout l = findViewById(d.id);
+     vScrollViewStreams.removeView(l);
+     this.arrayStreams.remove(vId);
+    }
+    if(arrayStreams.size() == 0) {
+      vRemoteStream.setVisibility(View.GONE);
+    }
+  }
+
   public void setStreamActive(ReadableMap stream) {
     String vId = stream.getString("vId");
     String streamUrl = stream.getString("streamUrl");
+    this.activeStreamId = vId;
+    setRemoteVideoStreamUrl(streamUrl);
+  }
+
+  public void updateStreamActive(String vId, String streamUrl) {
     this.activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
   }
@@ -600,11 +681,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void showCallManageControls() {
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
-
-//    vRemoteStream.bringChildToFront(vCallManageControls);
-   vRemoteStream.bringChildToFront(vCallManage);
+    vRemoteStream.bringChildToFront(vCallManage);
     vCallManage.bringToFront();
-//    vCallManageControls.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
 
@@ -1021,6 +1099,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       case R.id.btn_switch_camera:
         onBtnSwitchCamera(v);
         break;
+
       default:
         break;
     }
