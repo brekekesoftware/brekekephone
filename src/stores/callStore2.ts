@@ -336,7 +336,23 @@ export class CallStore {
         e.callkeepUuid &&
         typeof e.localVideoEnabled === 'boolean'
       ) {
-        BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
+        BrekekeUtils.setIsVideoCall(
+          e.callkeepUuid,
+          !!e.localVideoEnabled,
+          e.mutedVideo,
+        )
+      }
+
+      if (e.incoming && e.callkeepUuid) {
+        const options = e.videoClientSessionTable.map(item => {
+          const info = e.remoteUserOptionsTable?.[item?.user]?.exInfo ?? '{}'
+          const exInfo = JSON.parse(info)
+          return {
+            vId: item.vId,
+            enableVideo: exInfo.enableVideo,
+          }
+        })
+        BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
 
       // emit to embed api

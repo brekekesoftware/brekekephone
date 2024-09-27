@@ -81,6 +81,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public String activeStreamId = "";
   public int localStreamId = 0;
+
+  public String localStreamUrl = "";
   public ProgressBar videoLoading;
   public View vCardAvatar, vCardAvatarTalking;
   public ImageView imgAvatar, imgAvatarTalking;
@@ -120,7 +122,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       paused = false,
       answered = false,
       isLarge = false,
-      isVideoCall = false;
+      isVideoCall = false,
+
+      isMuted = false;
 
   public JSONObject pbxConfig;
   public JSONObject callConfig;
@@ -507,7 +511,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       btnSwitchCamera.setVisibility(View.GONE);
       updateDisplayVideo(isVideoCall);
     } else {
-      if(vWebrtc.getVisibility() == View.GONE) {
+      if(vWebrtcVideo == null || vWebrtc.getVisibility() == View.GONE) {
         initWebrtcVideo();
       }
       btnSwitchCamera.setVisibility(View.VISIBLE);
@@ -542,7 +546,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, vRemoteStream.getLayoutParams().height);
     ln.setLayoutParams(lp);
 
-     lp.setMargins(0, 0, 16, 0);
+    lp.setMargins(16, 0,0 , 0);
     ln.setPadding(6, 8, 6, 8);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
@@ -611,7 +615,12 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
               l.setBackground(drawable1);
               Drawable drawable2 = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
               v.setBackground(drawable2);
-              updateStreamActive(sDNew.vId, sDNew.streamUrl);
+              if(((LinearLayout) v).getChildAt(0) != null) {
+                updateStreamActive(sDNew.vId, sDNew.streamUrl);
+              } else {
+                updateStreamActive(sDNew.vId,"");
+              }
+
             }
           }
         });
@@ -620,26 +629,39 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
     if(arrayStreams.size() > 0 && localStreamId != 0) {
       vRemoteStream.setVisibility(View.VISIBLE);
+      if(activeStreamId == "") {
+         StreamData s = arrayStreams.valueAt(0);
+        updateStreamActive(s.vId, s.streamUrl);
+        Resources res = getResources();
+        LinearLayout l = findViewById(s.id);
+        Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+        l.setBackground(drawable);
+      }
+
     }
   }
 
   public void removeStreamFromView(String vId) {
+
     boolean isExist =  arrayStreams.containsKey(vId);
     if(isExist) {
       StreamData d = arrayStreams.get(vId);
       LinearLayout l = findViewById(d.id);
-      if(activeStreamId.equals(vId)) {
-        if(arrayStreams.size() > 0) {
-          View l2 = vScrollViewStreams.getChildAt(vScrollViewStreams.indexOfChild(l) - 1);
-          Resources res = getResources();
-          Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-          l2.setBackground(drawable);
-          activeStreamId = "";
+      if(l != null) {
+        if(activeStreamId.equals(vId)) {
+          if(arrayStreams.size() > 0) {
+            View l2 = vScrollViewStreams.getChildAt(0);
+            if(l2 != null) {
+              Resources res = getResources();
+              Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
+              l2.setBackground(drawable);
+              activeStreamId = "";
+            }
+          }
         }
+        vScrollViewStreams.removeView(l);
+        arrayStreams.remove(vId);
       }
-     vScrollViewStreams.removeView(l);
-     this.arrayStreams.remove(vId);
-
     }
     if(arrayStreams.size() == 0) {
       vRemoteStream.setVisibility(View.GONE);
@@ -660,7 +682,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   }
 
   public void setLocalStream(String streamUrl) {
-    if(this.localStreamId != 0) {
+    if(localStreamId != 0) {
       View existView = findViewById(this.localStreamId);
       if(existView != null) {
         vScrollViewStreams.removeView(existView);
@@ -668,7 +690,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
 
     LinearLayout v = this.createStreamItem(streamUrl, false);
-    this.localStreamId = View.generateViewId();
+    localStreamId = View.generateViewId();
+    localStreamUrl = streamUrl;
     v.setId(localStreamId);
     vScrollViewStreams.addView(v);
   }
@@ -1187,10 +1210,67 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
   }
 
-  public void setBtnVideoSelected(boolean _isVideoCall) {
-    if (isVideoCall != _isVideoCall) {
+  public void setBtnVideoSelected(boolean _isVideoCall, boolean _isMuted) {
+    if (isVideoCall != _isVideoCall || isMuted != _isMuted) {
       isVideoCall = _isVideoCall;
-      btnVideo.setSelected(_isVideoCall);
+      isMuted = _isMuted;
+      btnVideo.setSelected(_isVideoCall && !_isMuted);
+      checkVideoLocalEnable();
+    }
+  }
+
+  public void checkVideoLocalEnable() {
+    if(this.localStreamId != 0) {
+      LinearLayout existView = findViewById(this.localStreamId);
+      if(existView != null) {
+        if(isVideoCall && isMuted) {
+          existView.removeViewAt(0);
+        } else {
+          WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
+          rtcView.setZOrder(1);
+          rtcView.setObjectFit("cover");
+          existView.addView(rtcView);
+          rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+          rtcView.setStreamURL(localStreamUrl);
+        }
+      }
+    }
+  }
+
+  public void setOptionsRemoteStream(ReadableArray arr) {
+    for (int i = 0; i < arr.size(); i++) {
+      ReadableMap streamItem = arr.getMap(i);
+      String vId = streamItem.getString("vId");
+      boolean enableVideo = streamItem.getBoolean("enableVideo");
+
+      StreamData sD = arrayStreams.get(vId);
+
+      if(sD != null) {
+        LinearLayout l = findViewById(sD.id);
+        if(l != null) {
+          if (enableVideo == true) {
+            if (l.getChildAt(0) == null) {
+              WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
+              rtcView.setZOrder(1);
+              rtcView.setObjectFit("cover");
+              l.addView(rtcView);
+              rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+              rtcView.setStreamURL(sD.streamUrl);
+            }
+            if(sD.vId == activeStreamId) {
+              setRemoteVideoStreamUrl(sD.streamUrl);
+            }
+          } else {
+            if(l.getChildAt(0) != null) {
+              l.removeViewAt(0);
+            }
+
+            if(sD.vId == activeStreamId) {
+                setRemoteVideoStreamUrl("");
+            }
+          }
+        }
+      }
     }
   }
 

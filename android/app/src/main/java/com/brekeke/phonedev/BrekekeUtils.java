@@ -28,6 +28,8 @@ import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
+import android.util.Log;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.facebook.react.bridge.Arguments;
@@ -915,13 +917,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsVideoCall(String uuid, boolean isVideoCall) {
+  public void setIsVideoCall(String uuid, boolean isVideoCall, boolean isMuted) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setBtnVideoSelected(isVideoCall);
+              at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
             } catch (Exception e) {
             }
           }
@@ -1137,7 +1139,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             new Runnable() {
               @Override
               public void run() {
-                at(uuid).setLocalStream(streamUrl);
+                IncomingCallActivity a = at(uuid);
+                if(a != null) {
+                  at(uuid).setLocalStream(streamUrl);
+                }
               }
             });
   }
@@ -1148,7 +1153,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             new Runnable() {
               @Override
               public void run() {
-                at(uuid).addStreamToView(stream);
+                IncomingCallActivity a = at(uuid);
+                if(a != null) {
+                  at(uuid).addStreamToView(stream);
+                }
               }
             });
   }
@@ -1159,7 +1167,23 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             new Runnable() {
               @Override
               public void run() {
-                at(uuid).removeStreamFromView(vId);
+                IncomingCallActivity a = at(uuid);
+                if(a != null) {
+                  a.removeStreamFromView(vId);
+                }
+              }
+            });
+  }
+  @ReactMethod
+  public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
+    UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                IncomingCallActivity a = at(uuid);
+                if(a != null) {
+                  at(uuid).setOptionsRemoteStream(arr);
+                }
               }
             });
   }

@@ -320,17 +320,18 @@
         android:layout_height="220dp"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
+        android:layout_marginBottom="16dp"
         >
         
         <HorizontalScrollView    android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
         <ScrollView 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
       >
             <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:orientation="horizontal"   android:id="@+id/scroll_view_streams" android:paddingBottom="16dp">
+        android:layout_height="wrap_content" android:orientation="horizontal"   android:id="@+id/scroll_view_streams">
 
             </LinearLayout>
         </ScrollView>
