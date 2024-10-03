@@ -30,7 +30,10 @@ const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
   const acc = await accountStore.findByPn(n)
   const k = n.id || jsonStableStringify(n)
-  if (!alreadyRemovePnTokenViaSip[k] && !acc) {
+  console.log(`SIP PN debug: checkAndRemovePnTokenViaSip  accUserName::${acc?.pbxUsername} alreadyRemovePnTokenViaSip[${k}]::${alreadyRemovePnTokenViaSip[k]}
+    autoAnswer=${n.sipPn.autoAnswer} isCall=${n.isCall} callkeepUuid=${n.callkeepUuid} `)
+  const ignoreAutoAnswerIos = Platform.OS === 'ios' && n.sipPn.autoAnswer
+  if (!alreadyRemovePnTokenViaSip[k] && (ignoreAutoAnswerIos || !acc)) {
     alreadyRemovePnTokenViaSip[k] = true
     removePnTokenViaSip(n)
   }
@@ -41,6 +44,10 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
   const s = getCallStore()
   if (n.callkeepUuid) {
     s.onCallKeepEndCall(n.callkeepUuid)
+  }
+  if (n.sipPn.autoAnswer) {
+    console.log('checkAndRemovePnTokenViaSip debug: remove autoAnswer call')
+    return
   }
   if (!n.sipPn.sipAuth) {
     console.log(
