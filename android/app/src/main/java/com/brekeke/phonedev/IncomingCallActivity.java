@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -504,6 +505,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   }
 
   public void setRemoteVideoStreamUrl(String url) {
+    Log.d("Duy Phan", "url" + url);
     if (url == null || url.isEmpty()) {
       if (vWebrtcVideo == null) {
         return;
@@ -530,9 +532,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     int width = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
 
     LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
-    ln.setClipChildren(true);
-    ln.setClipToOutline(true);
-    ln.setClipToPadding(true);
     Resources res = getResources();
     if (isActive) {
       Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
@@ -541,19 +540,32 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
       ln.setBackground(drawable);
     }
-
+    float factor = displayMetrics.density;
     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-            width, vRemoteStream.getLayoutParams().height);
+            width, (int) (182 * factor));
     ln.setLayoutParams(lp);
 
-    lp.setMargins(16, 0,0 , 0);
-    ln.setPadding(6, 8, 6, 8);
+    lp.setMargins((int) (16 *factor) , 0,0 , 0);
+    ln.setPadding(8, 8, 8, 8);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
+    rtcView.setStreamURL(streamUrl);
+
+//    LinearLayout parentLayout = new LinearLayout(BrekekeUtils.ctx);
+//    parentLayout.addView(rtcView);
+//    parentLayout.setClipChildren(true);
+//    parentLayout.setClipToPadding(true);
+//    parentLayout.setClipToOutline(true);
 
     ln.addView(rtcView);
-    rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-    rtcView.setStreamURL(streamUrl);
+    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//    lp2.setMargins(8, 8, 8, 8);
+
+    rtcView.setLayoutParams(lp2);
+//    parentLayout.setLayoutParams(lp2);
+    ln.setClipChildren(true);
+    ln.setClipToPadding(true);
+    ln.setClipToOutline(true);
 
     return ln;
   }
@@ -752,8 +764,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
     constraintSet.connect(
         R.id.view_call_manage_controls,
-        ConstraintSet.BOTTOM,
-        R.id.view_button_end,
+        ConstraintSet.TOP,  R.id.btn_unlock,
         ConstraintSet.TOP,
         isLargeDevice ? flexValue / 2 : 30);
     constraintSet.connect(
@@ -1012,8 +1023,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
 
   public void onBtnVideoClick(View v) {
     BrekekeUtils.emit("video", uuid);
-    updateDisplayVideo(!isVideoCall);
-    updateUILayoutManagerCall(!isVideoCall);
+//    updateDisplayVideo(!isVideoCall);
+    updateUILayoutManagerCall(!isVideoCall && !isMuted);
   }
 
   public void onBtnSpeakerClick(View v) {
@@ -1178,8 +1189,12 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.clear(R.id.view_call_manage_controls, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+
+    constraintSet.connect(
+            R.id.view_call_manage_controls, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 30);
     constraintSet.applyTo(constraintLayout);
   }
 
@@ -1189,6 +1204,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
+    constraintSet.clear(R.id.view_call_manage_controls, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock,
         ConstraintSet.BOTTOM,
@@ -1208,6 +1224,18 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     } else {
       enableAvatarTalking();
     }
+  }
+
+  private void changePositionViewControls() {
+    ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) vCallManageControls.getLayoutParams();
+      if(isVideoCall) {
+        layoutParams.bottomToBottom = vNavHeader.getId();
+        layoutParams.bottomToTop = -1;
+      } else {
+        layoutParams.bottomToTop = btnEndCall.getId();
+        layoutParams.bottomToBottom = -1;
+      }
+    vCallManageControls.setLayoutParams(layoutParams);
   }
 
   public void setBtnVideoSelected(boolean _isVideoCall, boolean _isMuted) {
@@ -1257,7 +1285,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
               rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
               rtcView.setStreamURL(sD.streamUrl);
             }
-            if(sD.vId == activeStreamId) {
+            if(sD.vId.equals(activeStreamId)) {
               setRemoteVideoStreamUrl(sD.streamUrl);
             }
           } else {
@@ -1265,7 +1293,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
               l.removeViewAt(0);
             }
 
-            if(sD.vId == activeStreamId) {
+            if(sD.vId.equals(activeStreamId)) {
                 setRemoteVideoStreamUrl("");
             }
           }

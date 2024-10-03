@@ -344,14 +344,25 @@ export class CallStore {
       }
 
       if (e.incoming && e.callkeepUuid) {
-        const options = e.videoClientSessionTable.map(item => {
-          const info = e.remoteUserOptionsTable?.[item?.user]?.exInfo ?? '{}'
-          const exInfo = JSON.parse(info)
-          return {
-            vId: item.vId,
-            enableVideo: exInfo.enableVideo,
-          }
-        })
+        const options = Object.entries(e.remoteUserOptionsTable).map(
+          ([key, v]) => {
+            const itemExisted = e.videoClientSessionTable.find(
+              item => item.user === key,
+            )
+            if (itemExisted) {
+              const info = v?.exInfo ?? '{}'
+              const exInfo = JSON.parse(info)
+              return {
+                vId: itemExisted.vId,
+                enableVideo: exInfo.enableVideo,
+              }
+            }
+            return {
+              vId: '',
+              enableVideo: false,
+            }
+          },
+        )
         BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
 

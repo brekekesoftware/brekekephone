@@ -317,14 +317,14 @@
       <RelativeLayout  
         android:id="@+id/view_remote_streams"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
         android:layout_marginBottom="16dp"
         >
         
         <HorizontalScrollView    android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
         <ScrollView 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
