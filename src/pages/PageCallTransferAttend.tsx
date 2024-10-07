@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
@@ -23,15 +23,30 @@ export const css = StyleSheet.create({
   Outer: {
     alignItems: 'center',
     backgroundColor: 'white',
+    ...Platform.select({
+      web: {
+        width: '100%',
+      },
+    }),
   },
   Inner: {
     width: '70%',
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
     alignContent: 'center',
     marginBottom: 30,
+    ...Platform.select({
+      web: {
+        // browser justify content center doesnt work as react native
+        maxWidth: 400,
+        minWidth: 250,
+        justifyContent: 'space-between',
+      },
+      default: {
+        justifyContent: 'center',
+      },
+    }),
   },
   Inner__info: {
     maxWidth: 'auto',
