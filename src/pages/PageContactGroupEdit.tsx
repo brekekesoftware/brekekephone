@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import { UcBuddy } from '../brekekejs'
+import type { UcBuddy } from '../brekekejs'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
@@ -24,7 +24,7 @@ export class PageContactGroupEdit extends Component<{
   state = {
     didMount: false,
   }
-  componentDidMount() {
+  componentDidMount = () => {
     this.props.listItem.forEach(u => {
       if (userStore.selectedUserIds[u.user_id]) {
         this.selectedUserItems[u.user_id] = u

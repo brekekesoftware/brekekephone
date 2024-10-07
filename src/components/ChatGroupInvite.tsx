@@ -1,7 +1,8 @@
 import { sortBy } from 'lodash'
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, FC } from 'react'
+import type { FC } from 'react'
+import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
@@ -57,37 +58,35 @@ const Notify: FC<{
   reject: Function
   accept: Function
   loading: boolean
-}> = observer(p => {
-  return (
-    <View style={css.Notify}>
-      {!!p.type && (
-        <>
-          <View style={css.Notify_Info}>
-            <RnText bold>{p.name}</RnText>
-            <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
-          </View>
-          <ButtonIcon
-            bdcolor={v.colors.danger}
-            color={v.colors.danger}
-            onPress={() => p.reject(p.id)}
-            path={mdiClose}
-            size={20}
-            style={css.Notify_Btn_reject}
-          />
-          <ButtonIcon
-            bdcolor={v.colors.primary}
-            color={v.colors.primary}
-            onPress={() => p.accept(p.id)}
-            path={mdiCheck}
-            size={20}
-            style={css.Notify_Btn_accept}
-            disabled={p.loading}
-          />
-        </>
-      )}
-    </View>
-  )
-})
+}> = observer(p => (
+  <View style={css.Notify}>
+    {!!p.type && (
+      <>
+        <View style={css.Notify_Info}>
+          <RnText bold>{p.name}</RnText>
+          <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
+        </View>
+        <ButtonIcon
+          bdcolor={v.colors.danger}
+          color={v.colors.danger}
+          onPress={() => p.reject(p.id)}
+          path={mdiClose}
+          size={20}
+          style={css.Notify_Btn_reject}
+        />
+        <ButtonIcon
+          bdcolor={v.colors.primary}
+          color={v.colors.primary}
+          onPress={() => p.accept(p.id)}
+          path={mdiCheck}
+          size={20}
+          style={css.Notify_Btn_accept}
+          disabled={p.loading}
+        />
+      </>
+    )}
+  </View>
+))
 
 @observer
 export class ChatGroupInvite extends Component {
@@ -164,11 +163,11 @@ export class UnreadChatNoti extends Component {
   prevLastMessageId = ''
   prevUnreadChatTimeoutId = 0
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.updateLatestUnreadChat()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     this.updateLatestUnreadChat()
   }
 
@@ -256,7 +255,7 @@ export class UnreadChatNoti extends Component {
       : Nav().goToPageChatDetail({ buddy: id })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     this.clear()
   }
 

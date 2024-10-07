@@ -2,16 +2,15 @@ import './callkeep'
 
 import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
-import {
+import type {
   Notification,
-  Notifications,
   Registered,
   RegistrationError,
 } from 'react-native-notifications'
+import { Notifications } from 'react-native-notifications'
 
 import { chatStore } from '../stores/chatStore'
-import { intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { intl } from '../stores/intl'
 import { permNotifications } from './permissions'
 import { parse } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
@@ -60,14 +59,11 @@ const onNotification = async (
 export const PushNotification = {
   register: async (initApp: Function) => {
     try {
+      await BrekekeUtils.checkPermissionDefaultDialer()
       await permNotifications()
       initApp()
       const hasPermissions: boolean =
         await Notifications.isRegisteredForRemoteNotifications()
-
-      if (!hasPermissions) {
-        throw new Error("Don't have Permissions")
-      }
 
       Notifications.registerRemoteNotifications()
 
@@ -76,9 +72,14 @@ export const PushNotification = {
         onFcmToken(e.deviceToken)
       })
 
+      // we should be able to get fcm token without permission request
+      if (!hasPermissions) {
+        throw new Error(intl`Don't have Permissions`)
+      }
+
       events.registerRemoteNotificationsRegistrationFailed(
         (e: RegistrationError) => {
-          console.error('Failed to register  remote notification', e)
+          console.error('Failed to register remote notification', e)
         },
       )
 
@@ -99,7 +100,7 @@ export const PushNotification = {
         // showBadge: true,
         // place this in android/app/src/main/res/raw/ding.mp3
         // soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // set notification channel for chat
@@ -114,7 +115,7 @@ export const PushNotification = {
         // groupName: 'My Group',
         // showBadge: true,
         soundFile: 'ding.mp3',
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+        vibrationPattern: [200, 1000],
       })
 
       // handle received PN
@@ -136,6 +137,7 @@ export const PushNotification = {
         const payload = n.payload?.payload || n.payload
         onNotification(payload, initApp)
       })
+
       // if the app was launched by a push notification
       // this promise resolves to an object of type Notification
       await Notifications.getInitialNotification().then(n => {
@@ -143,16 +145,14 @@ export const PushNotification = {
         onNotification(payload, initApp, true)
       })
     } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to initialize push notification`,
-        err: err as Error,
-      })
+      console.error(
+        'PushNotification register error: Failed to initialize push notification',
+        err,
+      )
     }
   },
 
-  getToken: () => {
-    return fcmToken
-  },
+  getToken: () => fcmToken,
   resetBadgeNumber: () => {
     // TODO
   },
@@ -160,10 +160,12 @@ export const PushNotification = {
 
 // TODO
 // { callUUID, handle, name }
-AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => () => {
-  // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
-  return Promise.resolve(undefined)
-})
+AppRegistry.registerHeadlessTask(
+  'RNCallKeepBackgroundMessage',
+  () => () =>
+    // https://github.com/react-native-webrtc/react-native-callkeep/blob/master/docs/android-installation.md
+    Promise.resolve(undefined),
+)
 
 const getInitialNotifications = async () => {
   const n = await BrekekeUtils.getInitialNotifications()

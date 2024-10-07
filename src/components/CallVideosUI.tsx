@@ -1,15 +1,13 @@
 import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, FC } from 'react'
-import {
+import type { FC } from 'react'
+import { Component } from 'react'
+import type {
   GestureResponderEvent,
-  PanResponder,
   PanResponderGestureState,
   PanResponderInstance,
-  Platform,
-  StyleSheet,
-  View,
 } from 'react-native'
+import { PanResponder, Platform, StyleSheet, View } from 'react-native'
 
 import { getCallStore } from '../stores/callStore'
 import { Nav } from '../stores/Nav'

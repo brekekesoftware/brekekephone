@@ -1,5 +1,12 @@
-import { AppState, Keyboard, NativeEventEmitter, Platform } from 'react-native'
-import RNCallKeep, { EventsPayload } from 'react-native-callkeep'
+import {
+  AppState,
+  Keyboard,
+  NativeEventEmitter,
+  Platform,
+  ToastAndroid,
+} from 'react-native'
+import type { EventsPayload } from 'react-native-callkeep'
+import RNCallKeep from 'react-native-callkeep'
 
 import { sip } from '../api/sip'
 import { bundleIdentifier } from '../config'
@@ -11,7 +18,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { parseNotificationData } from './PushNotification-parse'
+import { parse, parseNotificationData } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -83,6 +90,9 @@ export type TEventDidLoad = {
   data: unknown
 }
 
+// events from our custom BrekekeUtils module
+const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+
 export const setupCallKeepEvents = async () => {
   if (Platform.OS === 'web') {
     return
@@ -93,6 +103,10 @@ export const setupCallKeepEvents = async () => {
   const didLoadWithEvents = (e: EventsPayload['didLoadWithEvents']) => {
     e.forEach(_ => didLoadWithEventsHandlers[_.name]?.(_.data))
   }
+
+  eventEmitter.addListener('lpcIncomingCall', async (v: string) => {
+    await parse(JSON.parse(v))
+  })
   const answerCall = (e: EventsPayload['answerCall']) => {
     const uuid = e.callUUID.toUpperCase()
     if (Platform.OS === 'android') {
@@ -122,6 +136,7 @@ export const setupCallKeepEvents = async () => {
     if (Platform.OS === 'android') {
       return
     }
+
     const n = parseNotificationData(e.payload)
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
@@ -240,9 +255,22 @@ export const setupCallKeepEvents = async () => {
     await waitTimeout(t)
   }
 
-  // events from our custom BrekekeUtils module
-  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
-  eventEmitter.addListener('answerCall', (uuid: string) => {
+  eventEmitter.addListener('answerCall', async (uuid: string) => {
+    // should update the native android UI here to fix a case with auto answer
+    const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
+    if (c) {
+      if (Platform.OS === 'android') {
+        // with auto answer, talkingAvatar takes too long to update
+        BrekekeUtils.setTalkingAvatar(
+          uuid,
+          c.talkingImageUrl,
+          c.partyImageSize === 'large',
+        )
+        await waitTimeout(17)
+      }
+
+      BrekekeUtils.onCallConnected(uuid)
+    }
     cs.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
   })
@@ -297,14 +325,27 @@ export const setupCallKeepEvents = async () => {
     }
     cs.onSelectBackgroundCall(c)
   })
-  eventEmitter.addListener('makeCall', async (phoneNumber: string) => {
-    if (!(await getAuthStore().autoSignInLast())) {
-      return
+  eventEmitter.addListener('phonePermission', () => {
+    console.log(
+      'CallKeep debug: phonePermission currentState' + AppState.currentState,
+    )
+    if (AppState.currentState === 'active') {
+      ToastAndroid.showWithGravity(
+        intl`Incoming call blocked. Please allow phone permission in settings to receive calls`,
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      )
     }
-    await waitSip()
-    getCallStore().startCall(phoneNumber)
   })
   // other utils
+  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
+    if (!RnStacker.stacks.length) {
+      nav.goToPageIndex()
+    } else {
+      RnStacker.stacks = [RnStacker.stacks[0]]
+    }
+    cs.inPageCallManage = undefined
+  })
   eventEmitter.addListener('onBackPressed', onBackPressed)
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
     if (!RnStacker.stacks.length) {

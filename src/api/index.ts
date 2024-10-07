@@ -1,11 +1,11 @@
 import { action } from 'mobx'
 
-import { Conference, PbxEvent, Session } from '../brekekejs'
+import type { Conference, PbxEvent, Session } from '../brekekejs'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { authUC } from '../stores/AuthUC'
-import { Call } from '../stores/Call'
+import type { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
@@ -17,6 +17,7 @@ import { pbx } from './pbx'
 import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
 import { uc } from './uc'
+import { updatePhoneAppli } from './updatePhoneIndex'
 
 class Api {
   constructor() {
@@ -58,18 +59,23 @@ class Api {
     authSIP.authWithCheck()
     await waitSip()
     await pbx.getConfig()
-    const cp = s.getCurrentAccount()
-    if (!cp) {
+    const ca = s.getCurrentAccount()
+    if (!ca) {
       return
     }
+
+    if (!getAuthStore().userExtensionProperties) {
+      updatePhoneAppli()
+    }
+
     contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
-    if (cp.pbxLocalAllUsers === undefined) {
-      cp.pbxLocalAllUsers = true
+    if (ca.pbxLocalAllUsers === undefined) {
+      ca.pbxLocalAllUsers = true
     }
-    if (s.isBigMode() || !cp.pbxLocalAllUsers) {
-      if (cp.ucEnabled) {
+    if (s.isBigMode() || !ca.pbxLocalAllUsers) {
+      if (ca.ucEnabled) {
         userStore.loadUcBuddyList()
       } else {
         userStore.loadPbxBuddyList()
@@ -81,7 +87,7 @@ class Api {
       return
     }
     SyncPnToken()
-      .sync(cp)
+      .sync(ca)
       .then(() => SyncPnToken().syncForAllAccounts())
   }
   onPBXConnectionStopped = () => {
@@ -134,13 +140,8 @@ class Api {
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
-    if (!e?.reason && !e?.response) {
-      console.log('SIP PN debug: set sipState stopped')
-      s.sipState = 'stopped'
-    } else {
-      console.log('SIP PN debug: set sipState failure stopped')
-      s.sipState = 'failure'
-    }
+    console.log('SIP PN debug: set sipState failure stopped')
+    s.sipState = 'failure'
     s.sipTotalFailure += 1
     if (s.sipTotalFailure > 3) {
       s.sipPn = {}

@@ -1,5 +1,6 @@
 package com.brekeke.phonedev;
 
+// labels for multi langues
 public class L {
   public static String l = null;
 
@@ -74,18 +75,11 @@ public class L {
     return "ja".equals(l)
         ? "Brekeke Phone がマイク、カメラ、および通話を続行するためのその他の権限にアクセスできるようにします。"
         : "Allow Brekeke Phone to access the microphone, camera, and other permissions to continue"
-            + " to the call.";
+            + " the call.";
   }
 
   public static String titlePermissionSetDefaultPhoneApp() {
     return "ja".equals(l) ? "必要な権限" : "Set Default Phone App";
-  }
-
-  public static String messagePermissionSetDefaultPhoneApp() {
-    return "ja".equals(l)
-        ? "Brekeke Phoneをデフォルトの電話アプリとして設定するには、設定＞brekeke phone＞電話アプリに移動して設定してください。"
-        : "To set the Brekeke Phone app as the default phone app, please go to settings > brekeke"
-            + " phone > Phone app to configure.";
   }
 
   public static String close() {

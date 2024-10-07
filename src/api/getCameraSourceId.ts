@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 
-import { intlDebug } from '../stores/intl'
+import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 
 declare global {
@@ -14,7 +14,7 @@ export const getCameraSourceId = async (isFront: boolean) => {
   if (!mediaDevices) {
     RnAlert.error({
       unexpectedErr: new Error(
-        'Can not access mediaDevices, check if your connection is https secured',
+        intl`Can not access media devices, check if your connection is https secured`,
       ),
     })
     return undefined
@@ -29,9 +29,7 @@ export const getCameraSourceId = async (isFront: boolean) => {
       )
       return value
     })
-    .then(i => {
-      return i?.deviceId || undefined
-    })
+    .then(i => i?.deviceId || undefined)
     .catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to get front camera information`,
@@ -45,7 +43,7 @@ export const getCameraSourceIds = async () => {
   if (!mediaDevices) {
     RnAlert.error({
       unexpectedErr: new Error(
-        'Can not access mediaDevices, check if your connection is https secured',
+        intl`Can not access media devices, check if your connection is https secured`,
       ),
     })
     return []

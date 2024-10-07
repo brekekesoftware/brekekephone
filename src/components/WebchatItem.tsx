@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react'
-import { FC, useCallback } from 'react'
+import type { FC } from 'react'
+import { useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiClose } from '../assets/icons'
-import { Conference } from '../brekekejs'
+import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { chatStore } from '../stores/chatStore'
 import { intl } from '../stores/intl'
@@ -137,9 +138,10 @@ export const WebchatItem: FC<{
         style={[css.Text, css.TextMessage]}
         // numberOfLines={5}
       >
-        {textDisplay.map((text, i, { length }) => {
-          return `${text.text}${i === length - 1 ? '' : '\n'}`
-        })}
+        {textDisplay.map(
+          (text, i, { length }) =>
+            `${text.text}${i === length - 1 ? '' : '\n'}`,
+        )}
       </RnText>
       {isDisplayClose && (
         <RnTouchableOpacity onPress={closePress}>

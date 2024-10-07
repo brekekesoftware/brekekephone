@@ -1,7 +1,7 @@
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
-import {
+import type {
   NativeSyntheticEvent,
   TextInput,
   TextInputSelectionChangeEventData,
@@ -20,10 +20,10 @@ import { RnKeyboard } from '../stores/RnKeyboard'
 @observer
 export class PageCallDtmfKeypad extends Component {
   prevId?: string
-  componentDidMount() {
+  componentDidMount = () => {
     this.componentDidUpdate()
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const oc = getCallStore().getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
       Nav().backToPageCallManage()
@@ -41,14 +41,14 @@ export class PageCallDtmfKeypad extends Component {
 
   sendKey = (key: string) => {
     const oc = getCallStore().getOngoingCall()
-    const cp = getAuthStore().getCurrentAccount()
-    if (!oc || !cp) {
+    const ca = getAuthStore().getCurrentAccount()
+    if (!oc || !ca) {
       return
     }
     sip.sendDTMF({
       signal: key,
       sessionId: oc.id,
-      tenant: oc.pbxTenant || cp.pbxTenant,
+      tenant: oc.pbxTenant || ca.pbxTenant,
       talkerId: oc.pbxTalkerId || oc.partyNumber,
     })
   }

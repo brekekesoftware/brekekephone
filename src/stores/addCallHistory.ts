@@ -7,7 +7,7 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { getPartyName } from '../stores/contactStore'
 import { permForCallLog } from '../utils/permissions'
-import { ParsedPn } from '../utils/PushNotification-parse'
+import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
@@ -179,8 +179,8 @@ const addToCallLog = async (c: CallHistoryInfo) => {
     incoming && !answered
       ? CallLogType.MISSED_TYPE
       : incoming && answered
-      ? CallLogType.INCOMING_TYPE
-      : CallLogType.OUTGOING_TYPE
+        ? CallLogType.INCOMING_TYPE
+        : CallLogType.OUTGOING_TYPE
   BrekekeUtils.insertCallLog(partyNumber || partyName, type)
 }
 
@@ -195,7 +195,15 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
   }
 
   const { name, phoneNumber } = c.answeredBy
-  const { pbxTenant, pbxUsername } = auth.getCurrentAccount()
+  const r = intl`The call from ${
+    c.partyName || c.partyNumber
+  } is answered by someone else`
+
+  const ca = auth.getCurrentAccount()
+  if (!ca) {
+    return r
+  }
+  const { pbxTenant, pbxUsername } = ca
   try {
     const rs = await pbx.getPhoneappliContact(
       pbxTenant,
@@ -205,10 +213,8 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
     return intl`The call from ${c.partyName || c.partyNumber} is answered by ${
       rs?.display_name || name || phoneNumber
     }`
-  } catch (error) {
-    return intl`The call from ${
-      c.partyName || c.partyNumber
-    } is answered by someone else`
+  } catch (err) {
+    return r
   }
 }
 

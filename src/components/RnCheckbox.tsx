@@ -1,5 +1,6 @@
-import { FC } from 'react'
-import { StyleSheet, ViewProps } from 'react-native'
+import type { FC } from 'react'
+import type { ViewProps } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 import { mdiCheck } from '../assets/icons'
 import { RnIcon } from './RnIcon'
@@ -24,15 +25,13 @@ export const RnCheckBox: FC<
     onPress(): void
     disabled: boolean
   }
-> = ({ isSelected, onPress, disabled, style, ...p }) => {
-  return (
-    <RnTouchableOpacity
-      {...p}
-      onPress={onPress}
-      style={[css.CheckBoxBtn, isSelected && css.CheckBox__selected, style]}
-      disabled={disabled}
-    >
-      {isSelected && <RnIcon path={mdiCheck} color='white' />}
-    </RnTouchableOpacity>
-  )
-}
+> = ({ isSelected, onPress, disabled, style, ...p }) => (
+  <RnTouchableOpacity
+    {...p}
+    onPress={onPress}
+    style={[css.CheckBoxBtn, isSelected && css.CheckBox__selected, style]}
+    disabled={disabled}
+  >
+    {isSelected && <RnIcon path={mdiCheck} color='white' />}
+  </RnTouchableOpacity>
+)

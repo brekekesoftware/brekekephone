@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { getAuthStore } from '../stores/authStore'

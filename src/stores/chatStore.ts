@@ -1,15 +1,17 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
 import { uc } from '../api/uc'
-import { Conference } from '../brekekejs'
+import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { rnVibrate } from '../utils/rnVibrate'
 import { saveBlobFile } from '../utils/saveBlob'
 import { webPlayDing } from '../utils/webPlayDing'
@@ -87,9 +89,10 @@ class ChatStore {
       }) as any,
     ).length
     const as = getAuthStore()
+    const ca = as.getCurrentAccount()
     const d = as.getCurrentData()
-    if (!d) {
-      accountStore.findDataAsync(as.getCurrentAccount())
+    if (!d && ca) {
+      accountStore.findDataWithDefault(ca)
     }
     const l2 = filterTextOnly(
       d?.recentChats.filter(c => !idMap[c.id] && c.unread),
@@ -111,25 +114,22 @@ class ChatStore {
       k => this.getMessagesByThreadId(k)[0]?.created || -1,
     )
   }
-  getWebChatInactiveIds() {
-    return this.groups
+  getWebChatInactiveIds = () =>
+    this.groups
       .filter(
         gr =>
           gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
       )
       .map(item => item.id)
-  }
-  isWebchatJoined(conf_id: string) {
-    return this.groups
+  isWebchatJoined = (conf_id: string) =>
+    this.groups
       .filter(
         gr =>
           gr.webchat && gr.webchat.conf_status === Constants.CONF_STATUS_JOINED,
       )
       .some(w => w.id === conf_id)
-  }
-  isWebchat(conf_id: string) {
-    return this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
-  }
+  isWebchat = (conf_id: string) =>
+    this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
 
   pushChatNotification = (
     title: string,
@@ -140,6 +140,7 @@ class ChatStore {
     if (Platform.OS === 'web') {
       return
     }
+    body = decode(body)
     const id = `message-${Date.now()}`
     if (Platform.OS === 'android') {
       Notifications.postLocalNotification({
@@ -295,8 +296,10 @@ class ChatStore {
         dismissText: false,
       })
       const d = await as.getCurrentDataAsync()
-      d.recentChats = d.recentChats.filter(c => c.id !== groupId)
-      accountStore.saveAccountsToLocalStorageDebounced()
+      if (d) {
+        d.recentChats = d.recentChats.filter(c => c.id !== groupId)
+        accountStore.saveAccountsToLocalStorageDebounced()
+      }
     } else if (status === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
         title: name,
@@ -317,7 +320,7 @@ class ChatStore {
     }
   }
   @observable chatNotificationSoundRunning: boolean = false
-  private playChatNotificationSoundVibration = () => {
+  private playChatNotificationSoundVibration = async () => {
     if (Platform.OS === 'web') {
       webPlayDing()
       return
@@ -325,11 +328,30 @@ class ChatStore {
     if (this.chatNotificationSoundRunning) {
       return
     }
-    rnVibrate()
-    this.chatNotificationSoundRunning = true
-    BackgroundTimer.setTimeout(() => {
-      this.chatNotificationSoundRunning = false
-    }, 700)
+    const playSoundAndVibrate = () => {
+      rnVibrate()
+      this.chatNotificationSoundRunning = true
+      BackgroundTimer.setTimeout(() => {
+        this.chatNotificationSoundRunning = false
+      }, 700)
+    }
+    if (Platform.OS === 'ios') {
+      // ios already check by <Video> with ignoreSilentSwitch
+      playSoundAndVibrate()
+      return
+    }
+    const rm = await BrekekeUtils.getRingerMode()
+    // unknown or RINGER_MODE_SILENT
+    if (rm <= 0) {
+      return
+    }
+    // RINGER_MODE_VIBRATE
+    if (rm === 1) {
+      rnVibrate()
+      return
+    }
+    // RINGER_MODE_NORMAL
+    playSoundAndVibrate()
   }
 
   removeWebchatItem = (conf_id: string) => {
@@ -449,9 +471,7 @@ class ChatStore {
       [k: string]: ChatGroup
     }
   }
-  getGroupById = (id: string) => {
-    return this.groupsMap[id]
-  }
+  getGroupById = (id: string) => this.groupsMap[id]
 
   clearStore = () => {
     this.messagesByThreadId = {}

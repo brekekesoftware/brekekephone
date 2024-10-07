@@ -40,6 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
 
+// incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc,
       vIncomingCall,
@@ -625,8 +626,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
-    destroyAvatarWebView();
-    if (BrekekeUtils.phoneappliEnabled || BrekekeUtils.isImageUrl(talkingAvatar)) {
+    if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
       Glide.with(this)
@@ -665,7 +665,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle(L.titlePermissionMicroCamera());
     builder.setMessage(L.messagePermissionMicroCamera());
-
+    builder.setCancelable(false);
     builder.setPositiveButton(
         L.close(),
         new DialogInterface.OnClickListener() {
@@ -708,25 +708,34 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     return false;
   }
 
+  public void handleResultPermForCall(@NonNull int[] r) {
+    if (r != null && r.length >= 3) {
+      int bluetooth = PackageManager.PERMISSION_GRANTED;
+      // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+      if (VERSION.SDK_INT >= VERSION_CODES.S) {
+        bluetooth = r[2];
+      }
+      if (r[0] == PackageManager.PERMISSION_GRANTED
+          && r[1] == PackageManager.PERMISSION_GRANTED
+          && bluetooth == PackageManager.PERMISSION_GRANTED) {
+        handleClickAnswerCall();
+      } else {
+        showRequestPermissions();
+        String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
+        debug("PERMISSIONS_REQUEST_CODE " + detail);
+      }
+    } else {
+      // handle the case doesn't have enough elements
+    }
+  }
+
   @Override
   public void onRequestPermissionsResult(
       int code, @NonNull String[] permissions, @NonNull int[] r) {
     super.onRequestPermissionsResult(code, permissions, r);
-    int bluetooth = PackageManager.PERMISSION_GRANTED;
-    // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
-    if (VERSION.SDK_INT >= VERSION_CODES.S) {
-      bluetooth = r[2];
-    }
     switch (code) {
       case PERMISSIONS_REQUEST_CODE:
-        if (r[0] == PackageManager.PERMISSION_GRANTED
-            && r[1] == PackageManager.PERMISSION_GRANTED
-            && bluetooth == PackageManager.PERMISSION_GRANTED) {
-          handleClickAnswerCall();
-        } else {
-          String detail = "audio=" + r[0] + " camera=" + r[1] + " bluetooth=" + bluetooth;
-          debug("PERMISSIONS_REQUEST_CODE " + detail);
-        }
+        handleResultPermForCall(r);
         break;
     }
   }
@@ -739,9 +748,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
+
     if (answered) {
       return;
     }
+
     if (checkAndRequestPermissions()) {
       handleClickAnswerCall();
     }
@@ -870,14 +881,15 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_back:
         onRequestUnlock(v);
         break;
-        // vIncomingCall
+      // vIncomingCall
       case R.id.btn_answer:
         onBtnAnswerClick(v);
+
         break;
       case R.id.btn_reject:
         onBtnRejectClick(v);
         break;
-        // vCallManage
+      // vCallManage
       case R.id.view_call_manage:
         onViewCallManageClick(v);
         break;
@@ -928,12 +940,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
     vNavHeader.setVisibility(View.VISIBLE);
+    destroyAvatarWebView();
   }
 
   public void onCallConnected() {
     if (!answered) {
+
       setCallAnswered();
+      return;
     }
+
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
@@ -943,6 +959,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCardAvatarTalking.setVisibility(View.VISIBLE);
     }
     vCallManageControls.setVisibility(View.VISIBLE);
+
     updateLayoutManagerCallLoaded();
   }
 
@@ -1077,6 +1094,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public TimerTask timerTask;
 
   public void startTimer(long answeredAt) {
+    if (timerTask != null) {
+      return;
+    }
     timerTask =
         new TimerTask() {
           @Override

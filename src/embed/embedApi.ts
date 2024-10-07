@@ -2,12 +2,9 @@ import EventEmitter from 'eventemitter3'
 import { unmountComponentAtNode } from 'react-dom'
 
 import { parsePalParams } from '../api/parseParamsWithPrefix'
-import { MakeCallFn } from '../brekekejs'
-import {
-  Account,
-  accountStore,
-  getAccountUniqueId,
-} from '../stores/accountStore'
+import type { MakeCallFn } from '../brekekejs'
+import type { Account } from '../stores/accountStore'
+import { accountStore, getAccountUniqueId } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { arrToMap } from '../utils/arrToMap'
@@ -23,7 +20,7 @@ export type EmbedSignInOptions = {
 } & { [k: string]: string }
 
 export class EmbedApi extends EventEmitter {
-  /**==========================================================================
+  /** ==========================================================================
    * public properties/methods
    */
 
@@ -51,7 +48,7 @@ export class EmbedApi extends EventEmitter {
     }
   }
 
-  /**==========================================================================
+  /** ==========================================================================
    * private properties/methods
    */
 

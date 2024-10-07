@@ -1,9 +1,11 @@
+import { Platform } from 'react-native'
+
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
-import { PbxCustomPage } from '../brekekejs'
+import type { PbxCustomPage } from '../brekekejs'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
@@ -11,7 +13,8 @@ import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, URLSchemes } from '../utils/deeplink'
+import { openLinkSafely, urls } from '../utils/deeplink'
+import { PushNotification } from '../utils/PushNotification'
 
 export type Menu = {
   key: string
@@ -29,8 +32,8 @@ export type SubMenu = {
   ucRequired?: boolean
   navFn(): void
 }
-const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
-  return customPages
+const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) =>
+  customPages
     .filter(
       c =>
         c.pos.includes('setting') &&
@@ -41,10 +44,7 @@ const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) => {
       (a, b) =>
         parseInt(a.pos.split(',')?.[2]) - parseInt(b.pos.split(',')?.[2]),
     )
-    .map(i => {
-      return { key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }
-    })
-}
+    .map(i => ({ key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }))
 const genMenus = (customPages: PbxCustomPage[]) => {
   const settingSubMenusLeft = getSettingSubMenus(customPages, true)
   const settingSubMenusRight = getSettingSubMenus(customPages, false)
@@ -148,14 +148,17 @@ const genMenus = (customPages: PbxCustomPage[]) => {
         // handle link to phoneappli app
         if (as.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
-            openLinkSafely(URLSchemes.phoneappli.USERS)
+            openLinkSafely(urls.phoneappli.USERS)
             return
           }
           if (
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
-            openLinkSafely(URLSchemes.phoneappli.HISTORY_CALLED)
+            if (Platform.OS === 'ios') {
+              PushNotification.resetBadgeNumber()
+            }
+            openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
           }
         }
@@ -229,7 +232,7 @@ export const getSubMenus = (menu: string) => {
   const m = arr.find(_ => _.key === menu)
   if (!m) {
     RnAlert.error({
-      unexpectedErr: new Error(`Can not find sub menus for ${menu}`),
+      unexpectedErr: new Error(intl`Can not find sub menus for ${menu}`),
     })
     return []
   }

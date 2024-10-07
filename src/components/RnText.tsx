@@ -1,6 +1,8 @@
 import { pickBy } from 'lodash'
-import { FC, forwardRef } from 'react'
-import { Animated, StyleSheet, Text, TextProps } from 'react-native'
+import type { FC } from 'react'
+import { forwardRef } from 'react'
+import type { TextProps } from 'react-native'
+import { Animated, StyleSheet, Text } from 'react-native'
 
 import { v } from './variables'
 

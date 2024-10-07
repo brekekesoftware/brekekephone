@@ -1,5 +1,5 @@
 import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { AuthStore } from './authStore2'
+import type { AuthStore } from './authStore2'
 
 // circular dep
 let authStore: AuthStore
@@ -10,6 +10,7 @@ export const getAuthStore = () => authStore
 
 export const reconnectAndWaitSip = async () => {
   authStore.reconnectSip()
+
   await waitSip()
 }
 

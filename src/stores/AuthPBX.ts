@@ -1,5 +1,6 @@
 import { debounce } from 'lodash'
-import { action, Lambda, reaction } from 'mobx'
+import type { Lambda } from 'mobx'
+import { action, reaction } from 'mobx'
 
 import { pbx } from '../api/pbx'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -40,11 +41,15 @@ class AuthPBX {
         return
       }
     }
+    const ca = s.getCurrentAccount()
+    if (!ca) {
+      return
+    }
     console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
     pbx.disconnect()
     s.pbxState = 'connecting'
     pbx
-      .connect(s.getCurrentAccount())
+      .connect(ca)
       .then(connected => {
         if (!connected) {
           throw new Error('PBX login connection timed out')

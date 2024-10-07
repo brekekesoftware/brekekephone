@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 import { uc } from '../api/uc'
-import { ChatMessage } from '../stores/chatStore'
+import type { ChatMessage } from '../stores/chatStore'
 import { intl } from '../stores/intl'
 
 export const numberOfChatsPerLoad = 20
@@ -66,8 +66,8 @@ export const formatDateSemantic = (d0: number | string) => {
   return date === today
     ? intl`Today`
     : date === yesterday
-    ? intl`Yesterday`
-    : date
+      ? intl`Yesterday`
+      : date
 }
 
 export const formatDateTimeSemantic = (str: number | string) => {

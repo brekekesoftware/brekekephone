@@ -21,11 +21,11 @@ import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
+import { accountStore, getLastSignedInId } from '../stores/accountStore'
 import {
-  accountStore,
-  getAccountUniqueId,
-  getLastSignedInId,
-} from '../stores/accountStore'
+  isFirstRunFromLocalStorage,
+  saveFirstRunToLocalStorage,
+} from '../stores/appStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore } from '../stores/authStore'
@@ -39,18 +39,15 @@ import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { RnAlertRoot } from '../stores/RnAlertRoot'
 import { RnPickerRoot } from '../stores/RnPickerRoot'
+import { RnStacker } from '../stores/RnStacker'
 import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
-import {
-  permForCall,
-  permForCallLog,
-  permReadPhoneNumber,
-} from '../utils/permissions'
+import { checkPermForCall, permForCall } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
@@ -79,16 +76,22 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
-    if (!(await permReadPhoneNumber())) {
+    if (!(await checkPermForCall())) {
       nav.goToPageAccountSignIn()
       return
     }
     const d = await getLastSignedInId(true)
-    const a = accountStore.accounts.find(_ => getAccountUniqueId(_) === d.id)
+    const a = await accountStore.findByUniqueId(d.id)
     if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
       console.log('App navigated by auto signin')
       // already navigated
     } else {
+      // skip move to page index if there is no account
+      const screen = RnStacker.stacks[RnStacker.stacks.length - 1]
+      const ca = accountStore.accounts.length
+      if (!ca && screen && screen.name === 'PageAccountCreate') {
+        return
+      }
       nav.goToPageIndex()
     }
   }
@@ -103,10 +106,22 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
+
     s.resetFailureState()
     cs.onCallKeepAction()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
+      return
+    }
+    if (
+      !hasCallOrWakeFromPN &&
+      s.signedInId &&
+      !(await checkPermForCall(
+        false,
+        s.getCurrentAccount()?.pushNotificationEnabled,
+      ))
+    ) {
+      s.signOut()
       return
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
@@ -125,6 +140,7 @@ const initApp = async () => {
     if (!isConnected) {
       return
     }
+
     s.resetFailureState()
     authPBX.auth()
     authSIP.auth()
@@ -135,14 +151,17 @@ const initApp = async () => {
     if (window._BrekekePhoneWebRoot) {
       webPromptPermission()
     }
-  } else if (AppState.currentState === 'active' && !hasCallOrWakeFromPN) {
-    if (Platform.OS === 'android') {
-      await permForCall()
-      // temporary disabled
-      // await permForCallLog()
-      void permForCallLog
-    } else {
-      getAudioVideoPermission()
+    // with ios when wakekup app, currentState will be 'unknown' first then 'active'
+    // https://github.com/facebook/react-native-website/issues/273
+  } else if (
+    (AppState.currentState === 'active' ||
+      AppState.currentState === 'unknown') &&
+    !hasCallOrWakeFromPN
+  ) {
+    if (!(await isFirstRunFromLocalStorage())) {
+      // TODO: app will hang up if use await here
+      permForCall(true)
+      saveFirstRunToLocalStorage()
     }
   }
 
@@ -241,6 +260,10 @@ export const App = observer(() => {
     }
   }, [])
 
+  useEffect(() => {
+    BrekekeUtils.startLPCAndroid()
+  }, [])
+
   const {
     isConnFailure,
     pbxConnectingOrFailure,
@@ -254,20 +277,20 @@ export const App = observer(() => {
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
     ? 'PBX'
     : sipConnectingOrFailure()
-    ? 'SIP'
-    : ucConnectingOrFailure()
-    ? 'UC'
-    : ''
+      ? 'SIP'
+      : ucConnectingOrFailure()
+        ? 'UC'
+        : ''
   const isFailure = isConnFailure()
 
   const connMessage =
     isFailure && ucLoginFromAnotherPlace
       ? intl`UC signed in from another location`
       : !serviceConnectingOrFailure
-      ? ''
-      : isFailure
-      ? intl`${serviceConnectingOrFailure} connection failed`
-      : intl`Connecting to ${serviceConnectingOrFailure}...`
+        ? ''
+        : isFailure
+          ? intl`${serviceConnectingOrFailure} connection failed`
+          : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   const cp = getAuthStore().listCustomPage[0]
 
@@ -329,5 +352,5 @@ export const App = observer(() => {
   )
 })
 
-// eslint-disable-next-line import/no-default-export
+// eslint-disable-next-line no-restricted-syntax
 export default App

@@ -1,13 +1,15 @@
 import { action, observable } from 'mobx'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
-import { Session, SessionStatus } from '../brekekejs'
+import type { Session, SessionStatus } from '../brekekejs'
 import { getPartyName } from '../stores/contactStore'
+import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
-import { CallStore } from './callStore2'
+import type { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
@@ -56,7 +58,7 @@ export class Call {
   callkeepAlreadyRejected = false
 
   @action
-  answer = (
+  answer = async (
     options?: { ignoreNav?: boolean },
     videoOptions?: object,
     exInfo?: object,
@@ -76,6 +78,14 @@ export class Call {
       videoOptions,
       exInfo,
     )
+
+    // should hangup call if user don't allow permissions for call before answering
+    // app will be forced to restart when you change the privacy settings
+    // https://stackoverflow.com/a/31707642/25021683
+    if (Platform.OS === 'ios' && !(await checkPermForCall(true, false))) {
+      this.hangupWithUnhold()
+      return
+    }
     if (!ignoreNav) {
       Nav().goToPageCallManage()
     }
@@ -115,6 +125,11 @@ export class Call {
       )
       await waitTimeout()
     }
+    sip.hangupSession(this.id)
+  }
+
+  // to use in embed api and hang up special transfer case
+  hangup = () => {
     sip.hangupSession(this.id)
   }
 
@@ -289,11 +304,10 @@ export class Call {
     })
   }
 
-  @action park = (number: string) => {
-    return pbx
+  @action park = (number: string) =>
+    pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onParkFailure)
-  }
   private onParkFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to park the call`,

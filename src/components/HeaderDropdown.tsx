@@ -1,5 +1,5 @@
 import { transparentize } from 'polished'
-import { FC } from 'react'
+import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { mdiDotsVertical } from '../assets/icons'

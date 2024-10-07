@@ -20,8 +20,8 @@ const actionSheetHandlers = [
           r.didCancel
             ? resolve(null)
             : r.errorMessage
-            ? reject(r.errorMessage)
-            : resolve(r.assets?.[0]),
+              ? reject(r.errorMessage)
+              : resolve(r.assets?.[0]),
       )
     }),
   () =>
@@ -35,8 +35,8 @@ const actionSheetHandlers = [
           r.didCancel
             ? resolve(null)
             : r.errorMessage
-            ? reject(r.errorMessage)
-            : resolve(r.assets?.[0]),
+              ? reject(r.errorMessage)
+              : resolve(r.assets?.[0]),
       )
     }),
   () =>
@@ -51,8 +51,8 @@ const actionSheetHandlers = [
           r.didCancel
             ? resolve(null)
             : r.errorMessage
-            ? reject(r.errorMessage)
-            : resolve(r.assets?.[0]),
+              ? reject(r.errorMessage)
+              : resolve(r.assets?.[0]),
       )
     }),
   () =>

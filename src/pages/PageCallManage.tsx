@@ -1,11 +1,11 @@
 import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import type { NativeEventSubscription } from 'react-native'
 import {
   ActivityIndicator,
   AppState,
   Dimensions,
-  NativeEventSubscription,
   Platform,
   StyleSheet,
   View,
@@ -41,7 +41,7 @@ import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
-import { Call, CallConfigKey } from '../stores/Call'
+import type { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -50,7 +50,11 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
-const height = Dimensions.get('window').height
+const { width, height } = Dimensions.get('window')
+const minSizeH = height * 0.4
+const minSizeW = width * 0.9
+const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
+
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
@@ -76,9 +80,6 @@ const css = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-  Btns: {
-    marginTop: 10,
-  },
   BtnFuncCalls: {
     marginBottom: 10,
   },
@@ -100,10 +101,6 @@ const css = StyleSheet.create({
     flex: 1,
   },
   Hangup: {
-    // position: 'absolute',
-    // bottom: 40,
-    // left: 0,
-    // right: 0,
     marginBottom: 40,
   },
   Hangup_incoming: {
@@ -128,6 +125,8 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    minHeight: minSizeImageWrapper,
+    minWidth: minSizeImageWrapper,
   },
   ImageSize: {
     height: 130,
@@ -200,11 +199,10 @@ const css = StyleSheet.create({
     alignItems: 'center',
   },
 })
-export const backAction = () => {
-  return getAuthStore().phoneappliEnabled()
+export const backAction = () =>
+  getAuthStore().phoneappliEnabled()
     ? Nav().backToPageCallKeypad()
     : Nav().backToPageCallRecents()
-}
 
 // render all the calls in App.tsx
 // the avatars will be kept even if we navigate between views
@@ -212,13 +210,13 @@ export const backAction = () => {
 export class RenderAllCalls extends Component {
   prevCallsLength = getCallStore().calls.length
 
-  componentDidMount() {
+  componentDidMount = () => {
     const s = getCallStore()
     if (s.inPageCallManage && !s.calls.length) {
       backAction()
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     const l = getCallStore().calls.length
     if (this.prevCallsLength && !l) {
       backAction()
@@ -252,7 +250,7 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  componentDidMount() {
+  componentDidMount = () => {
     this.checkJavaPn()
     this.componentDidUpdate()
     this.appStateSubscription = AppState.addEventListener(
@@ -260,11 +258,11 @@ class PageCallManage extends Component<{
       this.onAppStateChange,
     )
   }
-  componentDidUpdate() {
+  componentDidUpdate = () => {
     this.hideButtonsIfVideo()
     this.openJavaPnOnVisible()
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     getCallStore().onCallKeepAction()
     this.appStateSubscription?.remove()
     const { call: c } = this.props
@@ -486,6 +484,7 @@ class PageCallManage extends Component<{
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
           {!c.answered && (
@@ -493,6 +492,7 @@ class PageCallManage extends Component<{
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
+              incoming={c.incoming}
             />
           )}
         </View>
@@ -528,11 +528,10 @@ class PageCallManage extends Component<{
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
-    const incoming = c.incoming && !c.answered
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={[css.Btns, { marginTop: !incoming ? 30 : 0 }]}
+        style={{ marginTop: isHideButtons ? 30 : 0 }}
       >
         {n > 0 && (
           <FieldButton
@@ -593,6 +592,7 @@ class PageCallManage extends Component<{
           {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
+              disabled={c.sessionStatus === 'dialing'}
               bgcolor={
                 getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
               }

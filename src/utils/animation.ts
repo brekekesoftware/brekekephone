@@ -11,11 +11,11 @@ type AnimationProps = {
   [k: string]: any // []
 }
 
-export function useAnimation<T extends AnimationProps>(
+export const useAnimation = <T extends AnimationProps>(
   enabled: boolean,
   props: T,
   options?: Animated.TimingAnimationConfig,
-) {
+) => {
   const r = useRef<Animated.Value>()
   if (!r.current) {
     r.current = new Animated.Value(0)

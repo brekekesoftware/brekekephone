@@ -1,13 +1,14 @@
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
-import { FC, Fragment, MutableRefObject, useEffect, useRef } from 'react'
+import type { FC, MutableRefObject } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
+import type { ViewProps } from 'react-native'
 import {
   Platform,
   SectionList,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-  ViewProps,
 } from 'react-native'
 
 import {
@@ -18,18 +19,21 @@ import {
   mdiPhoneForward,
   mdiVideo,
 } from '../assets/icons'
-import { UcBuddy } from '../brekekejs'
+import type { UcBuddy } from '../brekekejs'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
-import { ChatMessage, chatStore } from '../stores/chatStore'
+import type { ChatMessage } from '../stores/chatStore'
+import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
-import { DropdownPosition, RnDropdown } from '../stores/RnDropdown'
-import { GroupUserSectionListData, userStore } from '../stores/userStore'
+import type { DropdownPosition } from '../stores/RnDropdown'
+import { RnDropdown } from '../stores/RnDropdown'
+import type { GroupUserSectionListData } from '../stores/userStore'
+import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
 import { UserItem } from './ContactUserItem'
 import { Dropdown } from './Dropdown'
-import { DropdownItemProps } from './DropdownItem'
+import type { DropdownItemProps } from './DropdownItem'
 import { RnIcon } from './RnIcon'
 import { RnText } from './RnText'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
@@ -135,7 +139,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
 
     const { openedIndex, positions } = RnDropdown
 
-    const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) //p.sectionListData
+    const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) // p.sectionListData
 
     return (
       <Fragment>

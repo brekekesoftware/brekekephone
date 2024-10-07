@@ -1,12 +1,11 @@
 import { Linking } from 'react-native'
 
-import { compareAccount } from '../stores/accountStore'
+import { compareAccountPartial } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { parse, UrlParams } from './deeplink-parse'
+import type { UrlParams } from './deeplink-parse'
+import { parse } from './deeplink-parse'
 
-let alreadyHandleFirstOpen = false
-let urlParams: Promise<UrlParams | null> | UrlParams | null = null
-export const URLSchemes = {
+export const urls = {
   phoneappli: {
     USERS: 'pa-rtk://directory?type=users',
     HISTORY_CALLED: 'pa-rtk://history?type=called',
@@ -23,6 +22,9 @@ export const openLinkSafely = async (url: string) => {
     console.error(`Linking.openURL ${url} error: `, err)
   }
 }
+
+let alreadyHandleFirstOpen = false
+let urlParams: Promise<UrlParams | null> | UrlParams | null = null
 export const getUrlParams = async () => {
   if (alreadyHandleFirstOpen) {
     return urlParams
@@ -35,7 +37,7 @@ export const getUrlParams = async () => {
     if (
       !urlParams ||
       !ca ||
-      compareAccount(ca, {
+      compareAccountPartial(ca, {
         pbxHostname: urlParams.host,
         pbxPort: urlParams.port,
         pbxUsername: urlParams.user,
