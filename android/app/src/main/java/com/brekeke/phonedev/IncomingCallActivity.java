@@ -884,14 +884,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_back:
         onRequestUnlock(v);
         break;
-        // vIncomingCall
+      // vIncomingCall
       case R.id.btn_answer:
         onBtnAnswerClick(v);
         break;
       case R.id.btn_reject:
         onBtnRejectClick(v);
         break;
-        // vCallManage
+      // vCallManage
       case R.id.view_call_manage:
         onViewCallManageClick(v);
         break;
