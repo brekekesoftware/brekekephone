@@ -813,15 +813,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void hasIncomingCallActivity(String uuid, Promise p) {
-    try {
-      p.resolve(at(uuid) != null);
-    } catch (Exception e) {
-      p.resolve(false);
-    }
-  }
-
-  @ReactMethod
   public void getIncomingCallPendingUserAction(String uuid, Promise p) {
     p.resolve(userActions.get(uuid));
   }
