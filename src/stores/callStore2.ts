@@ -71,12 +71,12 @@ export class CallStore {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
-      BackgroundTimer.setTimeout(() => {
-        if (Platform.OS === 'ios') {
-          RNCallKeep.answerIncomingCall(uuid)
-        }
-        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-      }, 2000)
+      // on android already answer in native java activity
+      // on ios, QA suggest to reject the call?
+      // TODO
+      if (Platform.OS === 'ios') {
+        // TODO
+      }
     }
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
