@@ -268,7 +268,6 @@ export const setupCallKeepEvents = async () => {
         )
         await waitTimeout(17)
       }
-
       BrekekeUtils.onCallConnected(uuid)
     }
     cs.onCallKeepAnswerCall(uuid.toUpperCase())

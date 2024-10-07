@@ -34,7 +34,6 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -366,6 +365,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
+
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false);
   }
 
@@ -665,7 +665,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static boolean checkNotificationPermission(Context ctx) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-      return ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+      return checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
     }
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
@@ -801,6 +801,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void startRingtone() {
     staticStartRingtone();
+  }
+
+  @ReactMethod
+  public void hasIncomingCallActivity(String uuid, Promise p) {
+    try {
+      p.resolve(at(uuid) != null);
+    } catch (Exception e) {
+      p.resolve(false);
+    }
   }
 
   @ReactMethod

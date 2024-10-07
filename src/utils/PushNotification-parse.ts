@@ -248,7 +248,6 @@ export const parse = async (
     } else {
       navIndex('goToPageCallRecents')
     }
-
     return
   }
 

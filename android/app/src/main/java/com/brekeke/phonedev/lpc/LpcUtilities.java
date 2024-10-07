@@ -43,6 +43,7 @@ public class LpcUtilities {
       new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {}
+
         @Override
         public void onServiceDisconnected(ComponentName arg0) {}
       };
