@@ -185,10 +185,13 @@ export const parseNotificationData = (raw?: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
+// after pbx server reset, call id (number) on the server side will be reset to 1, 2, 3...
+// if the cache contain those ids previously, the new calls will be rejected
 export const resetProcessedPn = () => {
   getCallStore().callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
 }
+
 export const parse = async (
   raw?: { [k: string]: unknown },
   isLocal = false,
