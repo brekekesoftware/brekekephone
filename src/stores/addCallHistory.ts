@@ -32,8 +32,8 @@ export const getUserInfoFromReasons = (reason?: string | false) => {
   if (!reason) {
     return
   }
-  // When *** has ( and ),  the string in those parentheses is the phone number.
-  // When *** does not have ( and ), then the entiere string is the phone number.
+  // when *** has ( and ),  the string in those parentheses is the phone number.
+  // when *** does not have ( and ), then the entiere string is the phone number.
   let m = reason.match(/call completed by (.*?)\((.*?)\)/i)
   if (!m) {
     m = reason.match(/call completed by (.+)/i)
@@ -109,6 +109,7 @@ export const addCallHistory = async (
         isAboutToHangup: c.isAboutToHangup,
         reason,
         answeredBy,
+        completedBy,
       }
     : {
         id,
@@ -120,6 +121,7 @@ export const addCallHistory = async (
         duration: 0,
         reason,
         answeredBy,
+        completedBy,
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
         isAboutToHangup: false,
@@ -165,6 +167,7 @@ export type CallHistoryInfo = {
   isAboutToHangup: boolean
   reason?: string
   answeredBy?: { name: string; phoneNumber: string }
+  completedBy?: string
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
@@ -227,7 +230,11 @@ const presentNotification = async (c: CallHistoryInfo) => {
   if (Platform.OS === 'web') {
     return
   }
-  if (c.answered || !c.incoming || c.isAboutToHangup) {
+  // if two users answer a call at the same time, the system will automatically end the call for the second user to join
+  // the second user will receive a reason: "Call completed by ..."
+  // --> c.answered = true, c.completedBy = "..." -> show noti
+  const shouldPresent = c.answered && c.completedBy
+  if ((c.answered || !c.incoming || c.isAboutToHangup) && !shouldPresent) {
     return
   }
   const title = intl`Missed call`
