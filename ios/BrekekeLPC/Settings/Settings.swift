@@ -16,6 +16,8 @@ public struct Settings: Codable, Equatable {
   }
 
   static var bundleIdentifier = "com.brekeke.phonedev"
+  static var lpcBundleIdentifier = "group.com.brekeke.lpcdev"
+
   var pushManagerSettings = PushManagerSettings()
   var token: String
   var tokenVoip: String

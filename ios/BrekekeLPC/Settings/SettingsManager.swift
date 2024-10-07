@@ -19,7 +19,7 @@ class SettingsManager: NSObject {
   private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
   private static let settingsKey = "settings"
   private static let userDefaults =
-    UserDefaults(suiteName: "group.com.brekeke.lpc")!
+    UserDefaults(suiteName: Settings.lpcBundleIdentifier)!
   private let settingsSubject: CurrentValueSubject<Settings, Never>
   private static let logger = Logger(
     prependString: "SettingsManager",

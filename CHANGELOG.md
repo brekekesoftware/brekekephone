@@ -1,3 +1,8 @@
+#### 2.15.1
+
+- Fix it should show "answered by <ext>" in call history (issue 862)
+- Fix ios it should not connect lpc multiple (issue 853, 881)
+
 #### 2.14.10
 
 - Implement runtime permissions request
