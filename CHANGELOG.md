@@ -4,6 +4,7 @@
 - Fix it should not reload custom page after reconnect internet/server (issue 793)
 - Fix it should show "answered by <ext>" in call history (issue 862)
 - Fix ios it should not connect lpc multiple (issue 853, 881)
+- Fix ios it should keep the call when screen is off by proximity sensor for 90 seconds (issue 891)
 - Fix it should be touchable to toggle buttons in video calls (issue 897)
 - Fix android it should answer call immediately with x_autoanswer (issue 908)
 - Fix it should load video when turning it on from a voice call (issue 934)
