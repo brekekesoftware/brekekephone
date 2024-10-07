@@ -60,7 +60,7 @@ class AuthUC {
       }),
     )
   }
-  authWithCheck = async () => {
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.ucShouldAuth()) {
       return
