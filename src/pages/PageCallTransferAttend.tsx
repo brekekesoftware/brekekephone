@@ -38,6 +38,7 @@ export const css = StyleSheet.create({
     marginBottom: 30,
     ...Platform.select({
       web: {
+        // browser justify content center doesnt work as react native
         maxWidth: 400,
         minWidth: 250,
         justifyContent: 'space-between',
