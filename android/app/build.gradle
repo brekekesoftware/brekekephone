@@ -95,13 +95,13 @@ android {
 dependencies {
   implementation("com.facebook.react:react-android")
   implementation(jscFlavor)
-  // for fix issue: java.lang.SecurityException: One of RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
-  //https://medium.com/@siddhantshelake/fixing-broadcastreceiver-crashes-and-metro-server-issues-in-android-14-3b7d05939a43
-  implementation 'org.jetbrains:annotations:16.0.2'
+  // java.lang.SecurityException: One of RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
+  // https://medium.com/@siddhantshelake/fixing-broadcastreceiver-crashes-and-metro-server-issues-in-android-14-3b7d05939a43
+  implementation("org.jetbrains:annotations:16.0.2")
 
   // react-native-notfication
   implementation platform("com.google.firebase:firebase-bom:32.1.0")
-  implementation "com.google.firebase:firebase-messaging"
+  implementation("com.google.firebase:firebase-messaging")
 
   // custom lib to display avatar in PN screen
   implementation("androidx.constraintlayout:constraintlayout:2.1.3")
