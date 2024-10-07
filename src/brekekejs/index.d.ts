@@ -455,6 +455,7 @@ export type SipEventMap = {
   phoneStatusChanged: PhoneStatusChangedEvent
   sessionCreated: Session
   sessionStatusChanged: Session
+  remoteUserOptionsChanged: Session
   videoClientSessionCreated: VideoSession
   videoClientSessionEnded: VideoSession
   rtcErrorOccurred: Error
