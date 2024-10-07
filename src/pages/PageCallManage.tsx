@@ -152,6 +152,7 @@ const css = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 101,
   },
   hidden: {
     position: 'absolute',
