@@ -318,8 +318,8 @@ export class PBX extends EventEmitter {
     const as = getAuthStore()
     as.pbxConfig = config
 
-    // The custom page only load at the first time the tab is shown after you log in
-    // even after re-connected it, don't refresh it again
+    // the custom page only load at the first time the tab is shown after you log in
+    //    even after re-connected it, don't refresh it again
     const urlCustomPage = as.listCustomPage?.[0]?.url
     if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
       _parseListCustomPage()
