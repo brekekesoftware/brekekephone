@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -505,7 +506,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   }
 
   public void setRemoteVideoStreamUrl(String url) {
-    Log.d("Duy Phan", "url" + url);
     if (url == null || url.isEmpty()) {
       if (vWebrtcVideo == null) {
         return;
@@ -556,9 +556,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
 //    lp2.setMargins(8, 8, 8, 8);
 
     rtcView.setLayoutParams(lp2);
-    ln.setClipChildren(true);
-    ln.setClipToPadding(true);
-    ln.setClipToOutline(true);
+    ln.setClipChildren(false);
+    ln.setClipToPadding(false);
 
     return ln;
   }
@@ -583,18 +582,20 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, (int) (182 * factor));
     ln.setLayoutParams(lp);
     lp.setMargins((int) (16 *factor) , 0,0 , 0);
-    ln.setPadding(8, 8, 8, 8);
+//    ln.setPadding(8, 8, 8, 8);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
-    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     rtcView.setLayoutParams(lp2);
 
     rl.addView(rtcView);
+    rl.setGravity(Gravity.CENTER);
+//    rl.setClipChildren(true);
+//    rl.setClipToPadding(false);
 
     ln.setClipChildren(true);
     ln.setClipToPadding(true);
-    ln.setClipToOutline(true);
 
     return ln;
   }
@@ -670,6 +671,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
     if(arrayStreams.size() > 0 && localStreamId != 0) {
       vRemoteStream.setVisibility(View.VISIBLE);
+      btnSwitchCamera.setVisibility(View.VISIBLE);
       if(activeStreamId == "") {
          StreamData s = arrayStreams.valueAt(0);
         updateStreamActive(s.vId, s.streamUrl);
@@ -776,8 +778,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void showCallManageControls() {
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
-    vRemoteStream.bringChildToFront(vCallManage);
     vCallManage.bringToFront();
+    vNavHeader.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
 
@@ -787,7 +789,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void hideCallManageControls() {
     isCallManageControlsHidden = true;
     vCallManageControls.setVisibility(View.GONE);
-    vCallManage.bringChildToFront(vRemoteStream);
     vRemoteStream.bringToFront();
     btnUnlock.setVisibility(View.GONE);
     btnEndCall.setVisibility(View.GONE);
@@ -1359,6 +1360,10 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
     txtDurationCall.setVisibility(holding ? View.GONE : View.VISIBLE);
+    if(isVideoCall) {
+      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE );
+      vWebrtcVideo.setVisibility(holding ? View.GONE : View.VISIBLE);
+    }
   }
 
   public void setBtnMuteSelected(boolean isMute) {
