@@ -123,7 +123,7 @@ export class CallStore {
         )
         as.sipState = 'stopped'
         sip.destroyWebRTC()
-        authSIP.authWithCheck()
+        authSIP.auth()
       }
     }
   }

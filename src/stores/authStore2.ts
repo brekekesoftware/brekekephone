@@ -244,8 +244,7 @@ export class AuthStore {
   @action reconnectPbx = () => {
     this.resetFailureState()
     this.pbxState = 'stopped'
-    // mobx observe not call automatically?
-    authPBX.authWithCheck()
+    authPBX.auth()
   }
   @action reconnectSip = () => {
     const count = sip.phone?.getSessionCount()
@@ -258,14 +257,12 @@ export class AuthStore {
     console.log('SIP PN debug: set sipState stopped reconnect')
     this.resetFailureState()
     this.sipState = 'stopped'
-    // mobx observe not call automatically?
-    authSIP.authWithCheck()
+    authSIP.auth()
   }
   @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
     this.resetFailureState()
     this.ucLoginFromAnotherPlace = false
-    // mobx observe not call automatically?
-    authUC.authWithCheck()
+    authUC.auth()
   }
 
   pushRecentCall = async (call: CallHistoryInfo) => {
