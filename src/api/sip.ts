@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
+import { isEmpty } from 'lodash'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
@@ -245,6 +246,28 @@ export class SIP extends EventEmitter {
       })
     })
 
+    phone.addEventListener('remoteUserOptionsChanged', async ev => {
+      if (!ev) {
+        return
+      }
+      // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
+      //    reproduce:
+      //      - caller make video call to callee
+      //      - callee answer with video
+      //      - callee disable video, then enable again
+      //      - issue: -> caller show loading, callee black remote video
+      // the issue is because of webrtclient.js but we can not modify it
+      if (
+        ev.remoteWithVideo &&
+        isEmpty(ev.videoClientSessionTable) &&
+        ev.withVideo &&
+        ev.rtcSession.direction !== 'incoming'
+      ) {
+        this.disableVideo(ev.sessionId)
+        this.enableVideo(ev.sessionId)
+      }
+    })
+
     phone.addEventListener('rtcErrorOccurred', ev => {
       console.error('sip.phone.rtcErrorOccurred:', ev)
     })
@@ -433,12 +456,14 @@ const parseCanceledPnIds = (data?: string) => {
   console.log(`parseCanceledPnIds: msg.length=${msg.length} l=${l}`)
   return msg.split(/\n/g).map(s => {
     const lowers = s.toLowerCase()
-    return lowers.replace(/\s+/g, '').includes(',canceled')
-      ? {
-          pnId: s.match(/(\w+)\W*INVITE/)?.[1],
-          completedElseWhere: lowers.includes('call completed elsewhere'),
-        }
-      : undefined
+    if (!lowers.replace(/\s+/g, '').includes(',canceled')) {
+      return undefined
+    }
+    return {
+      pnId: s.match(/(\w+)\W*INVITE/)?.[1],
+      completedElseWhere: lowers.includes('call completed elsewhere'),
+      completedBy: lowers.match(/call completed by ([^"]+)/)?.[0],
+    }
   })
 }
 
