@@ -149,7 +149,6 @@ export class SIP extends EventEmitter {
         partyNumber
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
-
       const patch: Partial<Call> = {
         rawSession: ev,
         id: ev.sessionId,
@@ -202,23 +201,6 @@ export class SIP extends EventEmitter {
     // incomingMessage: null
     // remoteUserOptionsTable: {}
     // analyser: null
-
-    phone.addEventListener('remoteUserOptionsChanged', async ev => {
-      if (!ev) {
-        return
-      }
-      // hack to fix issue: videoClientSessionCreated not fired if user has phone_id < remote user phone_id
-      if (
-        ev.remoteWithVideo &&
-        isEmpty(ev.videoClientSessionTable) &&
-        ev.withVideo &&
-        ev.rtcSession.direction !== 'incoming'
-      ) {
-        this.disableVideo(ev.sessionId)
-        this.enableVideo(ev.sessionId)
-      }
-    })
-
     phone.addEventListener('sessionCreated', async ev => {
       if (!ev) {
         return
@@ -230,7 +212,6 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-
       if (ev.sessionStatus === 'terminated') {
         this.emit('session-stopped', ev)
         return
@@ -257,13 +238,34 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
       })
+    })
+
+    phone.addEventListener('remoteUserOptionsChanged', async ev => {
+      if (!ev) {
+        return
+      }
+      // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
+      //    reproduce:
+      //      - caller make video call to callee
+      //      - callee answer with video
+      //      - callee disable video, then enable again
+      //      - issue: -> caller show loading, callee black remote video
+      // the issue is because of webrtclient.js but we can not modify it
+      if (
+        ev.remoteWithVideo &&
+        isEmpty(ev.videoClientSessionTable) &&
+        ev.withVideo &&
+        ev.rtcSession.direction !== 'incoming'
+      ) {
+        this.disableVideo(ev.sessionId)
+        this.enableVideo(ev.sessionId)
+      }
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
