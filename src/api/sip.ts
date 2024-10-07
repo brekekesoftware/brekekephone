@@ -230,7 +230,7 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.error('thangnt::sessionStatusChanged', ev)
+
       if (ev.sessionStatus === 'terminated') {
         this.emit('session-stopped', ev)
         return
@@ -257,7 +257,6 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      console.error('thangnt::videoClientSessionEnded', ev)
 
       this.emit('session-updated', {
         id: ev.sessionId,
@@ -265,8 +264,6 @@ export class SIP extends EventEmitter {
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
       })
-      // this.disableVideo(ev.sessionId)
-      // this.enableVideo(ev.sessionId)
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
