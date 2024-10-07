@@ -99,7 +99,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false,
-      autoAnswer= false;
+      autoAnswer = false;
 
   public JSONObject pbxConfig;
   public JSONObject callConfig;
@@ -126,6 +126,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     avatar = b.getString("avatar");
     avatarSize = b.getString("avatarSize");
     autoAnswer = b.getBoolean("autoAnswer");
+
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
       forceFinish();
@@ -144,9 +145,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
-    if(!autoAnswer){
+    if (!autoAnswer) {
       BrekekeUtils.staticStartRingtone();
     }
+
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
     imgAvatarLoadingProgress.setCenterRadius(30f);
@@ -248,9 +250,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerNameHeader.setText(callerName);
 
     updateLabels();
-    if(autoAnswer){
+    if (autoAnswer) {
       handleClickAnswerCall();
-    }else{
+    } else {
       updateHeader();
     }
     updateCallConfig();
