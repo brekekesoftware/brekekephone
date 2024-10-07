@@ -7,15 +7,14 @@ import android.telecom.InCallService;
 import android.telecom.TelecomManager;
 
 public class CallService extends InCallService {
-
   @Override
   public void onCallAdded(Call call) {
     super.onCallAdded(call);
     call.registerCallback(callCallback);
-    // We can start our call Activity here
+    // we can start our call Activity here
     try {
       if (call.getDetails().getHandlePresentation() == TelecomManager.PRESENTATION_ALLOWED) {
-        // This is an outgoing call
+        // this is an outgoing call
         String number = call.getDetails().getHandle().getSchemeSpecificPart();
         if (number == null) {
           return;
@@ -26,7 +25,7 @@ public class CallService extends InCallService {
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         startActivity(intent);
       } else {
-        // Todo with incoming call
+        // todo with incoming call
       }
     } catch (Exception e) {
 

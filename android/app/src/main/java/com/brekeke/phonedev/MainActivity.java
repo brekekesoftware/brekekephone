@@ -14,6 +14,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import io.wazo.callkeep.RNCallKeepModule;
 
 public class MainActivity extends ReactActivity {
+
   // ==========================================================================
   // set/unset BrekekeUtils.main
   @Override
@@ -25,6 +26,14 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    // check "Displaying popup windows while running in the background" to start activity from
+    // background
+    if (!XiaomiUtilities.isCustomPermissionGranted(this) && XiaomiUtilities.isMIUI()) {
+      Intent xiaomiIntent = XiaomiUtilities.getPermissionManagerIntent(this);
+      xiaomiIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+      this.startActivity(xiaomiIntent);
+    }
+
     // call history
     // temporary disabled
     BrekekeUtils.resolveIgnoreBattery(
@@ -55,6 +64,16 @@ public class MainActivity extends ReactActivity {
         };
     Handler handler = new android.os.Handler();
     handler.postDelayed(r, 5000);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
   }
 
   @Override
@@ -116,6 +135,7 @@ public class MainActivity extends ReactActivity {
     super.onNewIntent(intent);
     setIntent(intent);
     // handle call from other app
+    handleIntent(intent);
     handleIntent(intent);
   }
 

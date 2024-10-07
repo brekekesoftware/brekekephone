@@ -2,13 +2,13 @@ package com.brekeke.phonedev;
 
 import android.util.Log;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService;
 import java.util.ArrayList;
 import org.json.JSONArray;
 
+// custom push notification
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static String TAG = "BrekekeMessagingService";
   private static ArrayList<String> initialNotifications = null;
@@ -52,11 +52,6 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
 
     super.onMessageReceived(remoteMessage);
 
-    // construct and load our normal React JS code bundle
-    ReactInstanceManager rim =
-        ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground();
-    }
+    LpcUtilities.createReactContextInBackground((ReactApplication) this.getApplication());
   }
 }

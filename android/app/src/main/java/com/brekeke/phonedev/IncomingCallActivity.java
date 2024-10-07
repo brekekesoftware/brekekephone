@@ -40,6 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
 
+// incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   public RelativeLayout vWebrtc,
       vIncomingCall,
@@ -755,9 +756,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnAnswerClick(View v) {
+
     if (answered) {
       return;
     }
+
     if (checkAndRequestPermissions()) {
       handleClickAnswerCall();
     }
@@ -889,6 +892,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       // vIncomingCall
       case R.id.btn_answer:
         onBtnAnswerClick(v);
+
         break;
       case R.id.btn_reject:
         onBtnRejectClick(v);
@@ -949,6 +953,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onCallConnected() {
     if (!answered) {
+
       setCallAnswered();
       return;
     }
@@ -962,6 +967,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCardAvatarTalking.setVisibility(View.VISIBLE);
     }
     vCallManageControls.setVisibility(View.VISIBLE);
+
     updateLayoutManagerCallLoaded();
   }
 

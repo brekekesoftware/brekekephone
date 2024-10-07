@@ -6,6 +6,8 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -28,13 +30,16 @@ import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
+import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -104,8 +109,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
-  public static int REQUEST_CODE_FOR_DEFAULT_PHONE_APP = 10001;
-  public static int REQUEST_CODE_FOR_IGNORE_BATTERY_OPTIMIZATIONS = 10002;
   public static ReactApplicationContext ctx;
   public static KeyguardManager km;
   public static AudioManager am;
@@ -278,6 +281,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
+    JSONObject object = new JSONObject(data);
+    Log.d("[BrekekeLpcService]", object.toString());
     //
     // check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
@@ -316,7 +321,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             if (activitiesSize == 1) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
-            Intent i = new Intent(c, IncomingCallActivity.class);
+            Intent i = new Intent(appCtx, IncomingCallActivity.class);
+            boolean check = LpcUtilities.checkAppInBackground();
+
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
@@ -324,6 +331,23 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
             c.startActivity(i);
+
+            if (check) {
+              i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+              PendingIntent pendingIntent =
+                  PendingIntent.getActivity(appCtx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+              NotificationCompat.Builder builder =
+                  new NotificationCompat.Builder(appCtx, "CALL_CHANNEL_ID")
+                      .setSmallIcon(R.drawable.exo_notification_small_icon)
+                      .setContentTitle("Incoming call")
+                      .setPriority(NotificationCompat.PRIORITY_HIGH)
+                      .setCategory(NotificationCompat.CATEGORY_CALL)
+                      .setFullScreenIntent(pendingIntent, true);
+
+              NotificationManager notificationManager =
+                  (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
+              notificationManager.notify(123, builder.build());
+            }
           }
         };
     Runnable onReject =
@@ -340,6 +364,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         || activitiesSize > 0) {
       onShowIncomingCallUi.run();
     }
+
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
 
@@ -788,19 +813,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void stopRingtone() {
-    staticStopRingtone();
-  }
-
-  @ReactMethod
-  public void backToBackground() {
-    try {
-      main.moveTaskToBack(true);
-    } catch (Exception e) {
-    }
-  }
-
-  @ReactMethod
   public void hasIncomingCallActivity(String uuid, Promise p) {
     try {
       p.resolve(at(uuid) != null);
@@ -1113,6 +1125,57 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       p.resolve((double) SystemClock.elapsedRealtime());
     } catch (Exception e) {
       p.resolve(-1d);
+    }
+  }
+
+  @ReactMethod
+  public void startLPCAndroid() {
+    if (!BrekekeLpcService.isServiceStarted) {
+      Intent intent = new Intent(ctx, BrekekeLpcService.class);
+      ctx.startForegroundService(intent);
+    }
+  }
+
+  // react method for lpc
+
+  @ReactMethod
+  public void enableLPC(
+      String token,
+      String tokenVoip,
+      String username,
+      String host,
+      int port,
+      ReadableArray remoteSsids,
+      String localSsid,
+      String tlsKeyHash) {
+    Intent i =
+        LpcUtilities.putConfigToIntent(
+            host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
+
+    ctx.bindService(i, LpcUtilities.connection, BrekekeLpcService.BIND_AUTO_CREATE);
+  }
+
+  @ReactMethod
+  public void disableLPC() {
+    try {
+      if (BrekekeLpcService.isServiceStarted) {
+        ctx.unbindService(LpcUtilities.connection);
+      }
+    } catch (Exception e) {
+      Log.d("[BrekekeLpcService]", "disableLPC: " + e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void stopRingtone() {
+    staticStopRingtone();
+  }
+
+  @ReactMethod
+  public void backToBackground() {
+    try {
+      main.moveTaskToBack(true);
+    } catch (Exception e) {
     }
   }
 }

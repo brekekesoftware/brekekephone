@@ -248,6 +248,7 @@ export class AuthStore {
   }
   @action reconnectSip = () => {
     const count = sip.phone?.getSessionCount()
+
     if (count) {
       console.log(
         `SIP PN debug: can not reconnect sip due to ongoing sessions getSessionCount=${count} sipState=${this.sipState}`,

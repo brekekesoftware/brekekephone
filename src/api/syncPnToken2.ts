@@ -116,7 +116,8 @@ const syncPnTokenWithoutCatch = async (
         const fn = pnEnabled ? pbx.setFcmPnToken : pbx.removeFcmPnToken
         await Promise.all([fn(params), fn({ ...params, voip: true })])
       }
-      return disconnectPbx(true)
+      // return here if not used lpc
+      // return disconnectPbx(true)
     }
 
     const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
@@ -159,6 +160,8 @@ const syncPnTokenWithoutCatch = async (
       localSsid,
       tlsKeyHash,
       lpcPn,
+      t,
+      tvoip,
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(

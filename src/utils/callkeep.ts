@@ -18,7 +18,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { parseNotificationData } from './PushNotification-parse'
+import { parse, parseNotificationData } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -90,6 +90,9 @@ export type TEventDidLoad = {
   data: unknown
 }
 
+// events from our custom BrekekeUtils module
+const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+
 export const setupCallKeepEvents = async () => {
   if (Platform.OS === 'web') {
     return
@@ -100,6 +103,10 @@ export const setupCallKeepEvents = async () => {
   const didLoadWithEvents = (e: EventsPayload['didLoadWithEvents']) => {
     e.forEach(_ => didLoadWithEventsHandlers[_.name]?.(_.data))
   }
+
+  eventEmitter.addListener('lpcIncomingCall', async (v: string) => {
+    await parse(JSON.parse(v))
+  })
   const answerCall = (e: EventsPayload['answerCall']) => {
     const uuid = e.callUUID.toUpperCase()
     if (Platform.OS === 'android') {
@@ -129,6 +136,7 @@ export const setupCallKeepEvents = async () => {
     if (Platform.OS === 'android') {
       return
     }
+
     const n = parseNotificationData(e.payload)
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
@@ -247,8 +255,6 @@ export const setupCallKeepEvents = async () => {
     await waitTimeout(t)
   }
 
-  // events from our custom BrekekeUtils module
-  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
   eventEmitter.addListener('answerCall', async (uuid: string) => {
     // should update the native android UI here to fix a case with auto answer
     const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
