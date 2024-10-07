@@ -9,6 +9,7 @@
 - Fix it should show "answered by <ext>" when users of group answer simultaneously (issue 887)
 - Fix ios it should keep the call when screen is off by proximity sensor for 90 seconds (issue 891)
 - Fix it should be touchable to toggle buttons in video calls (issue 897)
+- Fix ios remove all auto answer code because of not supported (issue 902)
 - Fix android it should answer call immediately with x_autoanswer (issue 908)
 - Fix it should answer incoming PN call after reconnecting due to PBX restart (issue 909)
 - Fix it should display call duration correctly after manually allow Notification permissions (issue 918)
