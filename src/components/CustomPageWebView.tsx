@@ -106,6 +106,7 @@ export const CustomPageWebView = ({
       onLoadStart={onLoadStartForLoading}
       onLoadEnd={onLoadEnd}
       onError={onError}
+      cacheEnabled={true}
     />
   )
 }
