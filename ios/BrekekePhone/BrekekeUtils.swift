@@ -28,7 +28,6 @@ public class BrekekeUtils: NSObject {
     } else {
       rtcAudioSession.audioSessionDidDeactivate(audioSession)
     }
-
     rtcAudioSession.isAudioEnabled = enabled
   }
 

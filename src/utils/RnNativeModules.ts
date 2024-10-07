@@ -47,7 +47,6 @@ type TBrekekeUtils = {
   permOverlay(): Promise<boolean>
 
   // these methods only available on ios
-  setProximityMonitoring(enabled: boolean): void
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
   stopRBT(): void
@@ -62,6 +61,7 @@ type TBrekekeUtils = {
     tlsKeyHash: string,
   ): void
   disableLPC(): void
+  setProximityMonitoring(enabled: boolean): void
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
@@ -107,12 +107,12 @@ const Polyfill: TBrekekeUtils = {
   permOverlay: () => Promise.resolve(false),
 
   // these methods only available on ios
-  setProximityMonitoring: () => undefined,
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
   enableLPC: () => undefined,
   disableLPC: () => undefined,
+  setProximityMonitoring: () => undefined,
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
