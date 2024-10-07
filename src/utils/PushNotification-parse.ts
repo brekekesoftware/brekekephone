@@ -185,7 +185,7 @@ export const parseNotificationData = (raw?: object) => {
 const isNoU = (v: unknown) => v === null || v === undefined
 let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 
-export const resetCallActionMapAndroidProcessedPn = () => {
+export const resetProcessedPn = () => {
   getCallStore().callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
 }
@@ -305,7 +305,7 @@ export const parse = async (
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen
   if (!n.callkeepUuid) {
-    console.log(
+    console.error(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
     return

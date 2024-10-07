@@ -12,7 +12,7 @@ import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
-import { resetCallActionMapAndroidProcessedPn } from '../utils/PushNotification-parse'
+import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { pbx } from './pbx'
 import { sip } from './sip'
@@ -142,7 +142,7 @@ class Api {
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
     console.log('SIP PN debug: set sipState failure stopped')
-    resetCallActionMapAndroidProcessedPn()
+    resetProcessedPn()
     s.sipState = 'failure'
     s.sipTotalFailure += 1
     if (s.sipTotalFailure > 3) {
