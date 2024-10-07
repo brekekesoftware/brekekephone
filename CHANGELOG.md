@@ -2,6 +2,7 @@
 
 - Fix it should show "answered by <ext>" in call history (issue 862)
 - Fix ios it should not connect lpc multiple (issue 853, 881)
+- Fix it should be touchable to toggle buttons in video calls (issue 897)
 
 #### 2.14.10
 
