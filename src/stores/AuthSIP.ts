@@ -131,7 +131,7 @@ class AuthSIP {
     await this.authPnWithoutCatch(pn)
   }
 
-  authWithCheck = async () => {
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
     if (isSipPnExpired(s.sipPn)) {
       s.sipPn = {}
