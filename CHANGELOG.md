@@ -1,5 +1,6 @@
 #### 2.15.1
 
+- Upgrade android target sdk 34 to update with Google policy
 - Implement push notification timestamp
 - Fix it should not reload custom page after reconnect internet/server (issue 793)
 - Fix it should show "answered by <ext>" in call history (issue 862)
