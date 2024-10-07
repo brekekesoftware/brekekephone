@@ -14,6 +14,7 @@ import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import type { ParsedPn } from '../utils/PushNotification-parse'
+import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { waitTimeout } from '../utils/waitTimeout'
 import { getCameraSourceIds } from './getCameraSourceId'
@@ -277,6 +278,7 @@ export class SIP extends EventEmitter {
 
   connect = async (o: SipLoginOption, a: AccountUnique) => {
     console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
+    resetProcessedPn()
     this.phone?._removeEventListenerPhoneStatusChange?.()
     this.stopWebRTC()
     const phone = await this.init(o)
