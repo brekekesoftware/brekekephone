@@ -436,11 +436,10 @@ const parseCanceledPnIds = (data?: string) => {
     if (!lowers.replace(/\s+/g, '').includes(',canceled')) {
       return undefined
     }
-    const match = lowers.match(/Call completed by ([^"]+)/i)
     return {
       pnId: s.match(/(\w+)\W*INVITE/)?.[1],
       completedElseWhere: lowers.includes('call completed elsewhere'),
-      completedBy: match ? match[0] : undefined,
+      completedBy: lowers.match(/call completed by ([^"]+)/)?.[0],
     }
   })
 }
