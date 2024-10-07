@@ -61,6 +61,7 @@ type TBrekekeUtils = {
     tlsKeyHash: string,
   ): void
   disableLPC(): void
+  setProximityMonitoring(enabled: boolean): void
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
@@ -111,6 +112,7 @@ const Polyfill: TBrekekeUtils = {
   stopRBT: () => undefined,
   enableLPC: () => undefined,
   disableLPC: () => undefined,
+  setProximityMonitoring: () => undefined,
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),

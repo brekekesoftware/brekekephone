@@ -16,6 +16,7 @@ RCT_EXTERN_METHOD(enableLPC
 RCT_EXTERN_METHOD(disableLPC)
 RCT_EXTERN_METHOD(playRBT)
 RCT_EXTERN_METHOD(stopRBT)
+RCT_EXTERN_METHOD(setProximityMonitoring : (BOOL)enabled)
 RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)

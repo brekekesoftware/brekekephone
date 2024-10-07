@@ -494,6 +494,8 @@ export class CallStore {
         RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
+        // enable proximity monitoring for trigger proximity state to keep the call alive
+        BrekekeUtils.setProximityMonitoring(true)
         // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
         // add time out to make sure audio active (didDeactivateAudioSession)
         // before sip call established
@@ -703,6 +705,12 @@ export class CallStore {
     if (setAction) {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
+
+    // disable proximity mode if no running call
+    if (Platform.OS === 'ios' && !this.calls.length) {
+      BrekekeUtils.setProximityMonitoring(false)
+    }
+
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
