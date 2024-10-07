@@ -18,11 +18,8 @@ class SettingsManager: NSObject {
     .eraseToAnyPublisher()
   private let settingsWillWriteSubject = PassthroughSubject<Void, Never>()
   private static let settingsKey = "settings"
-  static var appGroupName = Settings
-    .bundleIdentifier == "com.brekeke.phonedev" ? "group.com.brekeke.lpcdev" :
-    "group.com.brekeke.lpc"
   private static let userDefaults =
-    UserDefaults(suiteName: appGroupName)!
+    UserDefaults(suiteName: Settings.lpcBundleIdentifier)!
   private let settingsSubject: CurrentValueSubject<Settings, Never>
   private static let logger = Logger(
     prependString: "SettingsManager",
@@ -32,8 +29,6 @@ class SettingsManager: NSObject {
   override init() {
     var settings = Self.fetch()
     SettingsManager.logger.log("settings init(): \(settings)")
-    SettingsManager.logger
-      .log("settings init()::appGroupName:: \(SettingsManager.appGroupName)")
     if settings == nil {
       settings = Settings(
         token: "",
