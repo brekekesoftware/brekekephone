@@ -11,6 +11,7 @@
 - Fix android it should answer call immediately with x_autoanswer (issue 908)
 - Fix it should display call duration correctly after manually allow Notification permissions (issue 918)
 - Fix it should load video when turning it on from a voice call (issue 934)
+- Fix it should play RBT when make call without SDP (issue 964)
 
 #### 2.14.10
 
