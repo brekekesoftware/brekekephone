@@ -58,7 +58,10 @@ export const getReasonCancelCall = (ms?: {
   }`
 }
 
-export const addCallHistory = async (c: Call | ParsedPn) => {
+export const addCallHistory = async (
+  c: Call | ParsedPn,
+  completedBy?: string,
+) => {
   const isTypeCall = c instanceof Call || 'partyNumber' in c
 
   if (isTypeCall && c.partyNumber === '8') {
@@ -91,7 +94,7 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
   }
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
-  const answeredBy = getUserInfoFromReasons(ms)
+  const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
   const reason = getReasonCancelCall(answeredBy)
 
   const info = isTypeCall
@@ -115,6 +118,8 @@ export const addCallHistory = async (c: Call | ParsedPn) => {
         partyName: getPartyName(c.from) || c.displayName || c.from,
         partyNumber: c.from,
         duration: 0,
+        reason,
+        answeredBy,
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
         isAboutToHangup: false,
