@@ -472,6 +472,11 @@ export class CallStore {
   }
   private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
+    // Make sure sip is ready before make call
+    if (getAuthStore().sipState !== 'success') {
+      return
+    }
+
     if (!(await permForCall())) {
       return
     }
