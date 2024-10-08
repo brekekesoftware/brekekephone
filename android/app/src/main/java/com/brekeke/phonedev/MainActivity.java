@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import com.brekeke.phonedev.lpc.XiaomiUtilities;
+import com.brekeke.phonedev.lpc.OtherPermUtilities;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -27,19 +27,13 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    // check "Displaying popup windows while running in the background" to start activity from
-    // background
-    if (!XiaomiUtilities.isCustomPermissionGranted(this) && XiaomiUtilities.isMIUI()) {
-      Intent xiaomiIntent = XiaomiUtilities.getPermissionManagerIntent(this);
-      xiaomiIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-      this.startActivity(xiaomiIntent);
-    }
 
     // call history
     // temporary disabled
     BrekekeUtils.resolveIgnoreBattery(
         BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this));
     BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this));
+    BrekekeUtils.resolvePermForIncomingCall(OtherPermUtilities.isOtherPermissionGranted(this));
     if (true) {
       return;
     }

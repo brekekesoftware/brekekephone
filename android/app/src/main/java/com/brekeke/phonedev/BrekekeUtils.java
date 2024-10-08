@@ -37,6 +37,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
 import com.brekeke.phonedev.lpc.LpcUtilities;
+import com.brekeke.phonedev.lpc.OtherPermUtilities;
 import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -70,9 +71,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
+  public static Promise openOtherPermSettingsPromise;
   public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
-  
+
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -733,7 +735,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
   }
 
-  public static void resolveIgnoreBattery(boolean result) {
+    public static void resolveIgnoreBattery(boolean result) {
     if (disableBatteryOptimizationPromise != null) {
       disableBatteryOptimizationPromise.resolve(result);
       disableBatteryOptimizationPromise = null;
@@ -1181,6 +1183,43 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       main.moveTaskToBack(true);
     } catch (Exception e) {
+    }
+  }
+
+  // This function handles opening the settings for the user accept permission for Incoming Call
+  // Like "Show on lock screen" and "Open new window when running in background"
+  @ReactMethod void permForIncomingCall(Promise p){
+    // check "Displaying popup windows while running in the background" to start activity from background
+
+    if(!OtherPermUtilities.isOtherPermissionGranted(ctx)) {
+      Intent i = null;
+        if (OtherPermUtilities.isMIUI()) {
+            i = OtherPermUtilities.getPermissionManagerIntent(ctx);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+        else {
+//          TODO
+//          i = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//          i.setData(Uri.parse("package:" + ctx.getPackageName()));
+
+//          Because there are no phones other than Xiaomi to test this case
+//          so we will return here
+          return;
+        }
+      openOtherPermSettingsPromise = p;
+      ctx.startActivity(i);
+    }
+  }
+
+  @ReactMethod
+  public void isOtherPermissionGranted(Promise p) {
+    p.resolve(OtherPermUtilities.isOtherPermissionGranted(ctx));
+  }
+
+  public static void resolvePermForIncomingCall(boolean result) {
+    if (openOtherPermSettingsPromise != null) {
+      openOtherPermSettingsPromise.resolve(result);
+      openOtherPermSettingsPromise = null;
     }
   }
 }
