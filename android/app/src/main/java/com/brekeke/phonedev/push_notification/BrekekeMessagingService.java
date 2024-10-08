@@ -1,6 +1,8 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.push_notification;
 
 import android.util.Log;
+import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.lpc.LpcUtilities;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
@@ -51,7 +53,6 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     }
 
     super.onMessageReceived(remoteMessage);
-
     LpcUtilities.createReactContextInBackground((ReactApplication) this.getApplication());
   }
 }

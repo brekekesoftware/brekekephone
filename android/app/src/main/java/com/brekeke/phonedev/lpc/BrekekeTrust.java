@@ -1,8 +1,9 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
+import com.brekeke.phonedev.R;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -14,12 +15,11 @@ import javax.net.ssl.*;
 
 public class BrekekeTrust {
 
-  private static final String TAG = "[BrekekeLpcService]trust";
+  private static final String TAG = "[BrekekeTrust]";
 
   static TrustManager[] trustAllCerts =
       new TrustManager[] {
         new X509TrustManager() {
-
           @Override
           public void checkClientTrusted(
               java.security.cert.X509Certificate[] chain, String authType)

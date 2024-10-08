@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.content.Intent;
 import com.facebook.react.ReactApplication;
 
 public class BrekekeBroadcastReceiver extends BroadcastReceiver {
-  private static final String TAG = "[BrekekeLpcService]";
+  private static final String TAG = "[BrekekeBroadcastReceiver]";
 
   @Override
   public void onReceive(Context ctx, Intent intent) {

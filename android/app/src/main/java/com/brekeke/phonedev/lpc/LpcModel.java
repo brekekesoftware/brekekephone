@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 public class LpcModel {
   public class User {
@@ -37,7 +37,7 @@ public class LpcModel {
 
     String userName;
 
-    Settings(String host, int port, String tlsKeyHash, String token, String userName) {
+    public Settings(String host, int port, String tlsKeyHash, String token, String userName) {
       this.host = host;
       this.port = port;
       this.tlsKeyHash = tlsKeyHash;

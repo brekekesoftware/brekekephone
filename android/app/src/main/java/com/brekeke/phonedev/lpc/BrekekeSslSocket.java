@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import static java.net.StandardSocketOptions.SO_KEEPALIVE;
 import static java.net.StandardSocketOptions.TCP_NODELAY;
@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.NetworkOnMainThreadException;
 import android.util.Base64;
 import android.util.Log;
+import com.brekeke.phonedev.BrekekeUtils;
 import com.google.gson.Gson;
 import com.tlschannel.ClientTlsChannel;
 import com.tlschannel.NeedsReadException;
@@ -35,7 +36,7 @@ import org.json.JSONObject;
 
 public class BrekekeSslSocket {
   public class SSLSocketAsyncTask extends AsyncTask<LpcModel.Settings, Void, String> {
-    private String TAG = "[BrekekeLpcService]";
+    private String TAG = "[BrekekeSslSocket]";
 
     private Context mContext;
     private boolean requestSent = false;
@@ -230,7 +231,6 @@ public class BrekekeSslSocket {
 
     // Adds 4 bytes to the size of the message
     private byte[] addSizeToMessage(String message) {
-
       byte[] jsonBytes = message.getBytes(StandardCharsets.UTF_8);
       int lengthJson = jsonBytes.length;
       ByteBuffer lengthBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);

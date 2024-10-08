@@ -15,7 +15,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-  />
+      tools:ignore="ProtectedPermissions" />
   <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
   <!-- notification on android 13 -->
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -24,7 +24,8 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
+      tools:ignore="ProtectedPermissions" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <!-- react-native-webrtc bluetooth -->
   <uses-permission
@@ -95,7 +96,7 @@
     />
 
     <service
-      android:name="BrekekeMessagingService"
+      android:name="com.brekeke.phonedev.push_notification.BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
     >
@@ -110,7 +111,7 @@
       android:foregroundServiceType="camera|microphone"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-    >
+        tools:ignore="ForegroundServicePermission">
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />
       </intent-filter>
@@ -125,13 +126,13 @@
 
     <!-- lpc -->
     <service
-      android:name=".BrekekeLpcService"
+      android:name="com.brekeke.phonedev.lpc.BrekekeLpcService"
       android:enabled="true"
       android:exported="true"
     />
-    <service android:name=".IntentService" android:enabled="true" />
+    <service android:name="com.brekeke.phonedev.lpc.IntentService" android:enabled="true" />
     <receiver
-      android:name=".BrekekeBroadcastReceiver"
+      android:name="com.brekeke.phonedev.lpc.BrekekeBroadcastReceiver"
       android:enabled="true"
       android:exported="false"
     >
@@ -185,7 +186,7 @@
     </activity>
     <!-- default phone call app -->
     <service
-      android:name=".CallService"
+      android:name="com.brekeke.phonedev.call_history.CallService"
       android:exported="true"
       android:permission="android.permission.BIND_INCALL_SERVICE"
     >

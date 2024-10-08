@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -10,7 +10,6 @@ import android.util.Log;
 import java.lang.reflect.Method;
 
 // MIUI. Redefining Android.
-// (not in the very best way I'd say)
 public class XiaomiUtilities {
   private static String TAG = "[BrekekeLpcService]";
 

@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.call_history;
 
 import android.content.Intent;
 import android.net.Uri;

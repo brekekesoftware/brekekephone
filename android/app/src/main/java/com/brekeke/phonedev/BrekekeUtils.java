@@ -34,6 +34,10 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.brekeke.phonedev.lpc.BrekekeLpcService;
+import com.brekeke.phonedev.lpc.LpcUtilities;
+import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -67,7 +71,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
   public static Promise overlayScreenPromise;
-
+  private static String TAG = "[BrekekeUtils]";
+  
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -119,7 +124,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
 
-  BrekekeUtils(ReactApplicationContext c) {
+  public BrekekeUtils(ReactApplicationContext c) {
     super(c);
     ctx = c;
     initStaticServices(c);
@@ -1151,7 +1156,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     Intent i =
         LpcUtilities.putConfigToIntent(
             host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
-
+    Log.d(TAG, "enableLPC: bind sevice");
     ctx.bindService(i, LpcUtilities.connection, BrekekeLpcService.BIND_AUTO_CREATE);
   }
 
@@ -1162,7 +1167,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         ctx.unbindService(LpcUtilities.connection);
       }
     } catch (Exception e) {
-      Log.d("[BrekekeLpcService]", "disableLPC: " + e.getMessage());
+      Log.d(TAG, "disableLPC: " + e.getMessage());
     }
   }
 

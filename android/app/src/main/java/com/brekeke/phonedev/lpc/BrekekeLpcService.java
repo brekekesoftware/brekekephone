@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.brekeke.phonedev.MainActivity;
+import com.brekeke.phonedev.R;
 import com.google.gson.Gson;
 
 public class BrekekeLpcService extends Service {
@@ -31,6 +33,7 @@ public class BrekekeLpcService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(TAG, "onStartCommand called");
+    //register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
     registerReceiver(new BrekekeBroadcastReceiver(), filter);
 
