@@ -546,7 +546,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     ln.setLayoutParams(lp);
 
     lp.setMargins((int) (16 *factor) , 0,0 , 0);
-    ln.setPadding(8, 8, 8, 8);
+    ln.setPadding(6, 6, 6, 6);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -582,7 +582,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, (int) (182 * factor));
     ln.setLayoutParams(lp);
     lp.setMargins((int) (16 *factor) , 0,0 , 0);
-//    ln.setPadding(8, 8, 8, 8);
+    rl.setPadding(6, 6, 6, 6);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -591,9 +591,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
 
     rl.addView(rtcView);
     rl.setGravity(Gravity.CENTER);
-//    rl.setClipChildren(true);
-//    rl.setClipToPadding(false);
-
     ln.setClipChildren(true);
     ln.setClipToPadding(true);
 

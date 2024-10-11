@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Dimensions } from 'react-native'
+import { Dimensions, Platform } from 'react-native'
 
 export enum EOrientation {
   Portrait = 'Portrait',
@@ -7,8 +7,11 @@ export enum EOrientation {
 }
 
 export const useOrientation = () => {
+  const w = Dimensions.get('window')
   const [orientation, setOrientation] = useState<EOrientation>(
-    EOrientation.Portrait,
+    w.width < w.height || Platform.OS === 'web'
+      ? EOrientation.Portrait
+      : EOrientation.Landscape,
   )
 
   useEffect(() => {

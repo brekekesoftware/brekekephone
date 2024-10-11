@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
 import type { Call } from '../stores/Call'
+import { convertExInfo } from '../utils/convertExInfo'
 import { EOrientation, useOrientation } from '../utils/useOrientation'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { VideoPlayer } from './VideoPlayer'
@@ -55,12 +56,6 @@ export const CallVideosCarousel = observer(
       updateVideoStreamActive(item)
     }
 
-    const checkEnable = item => {
-      const info = remoteUserOptionsTable?.[item?.user]?.exInfo ?? '{}'
-      const exInfo = JSON.parse(info)
-      return exInfo.enableVideo
-    }
-
     return (
       <>
         <RnTouchableOpacity
@@ -70,7 +65,9 @@ export const CallVideosCarousel = observer(
         >
           <VideoPlayer
             sourceObject={
-              checkEnable(videoStreamActive)
+              convertExInfo(
+                remoteUserOptionsTable?.[videoStreamActive?.user ?? '']?.exInfo,
+              )
                 ? videoStreamActive?.remoteStreamObject
                 : null
             }
@@ -79,15 +76,10 @@ export const CallVideosCarousel = observer(
           />
         </RnTouchableOpacity>
         {!!localStreamObject && (
-          <View
-            style={{
-              ...styles.streams,
-              bottom: isPortrait ? 0 : 100,
-            }}
-          >
+          <View style={styles.streams}>
             <ScrollView
               horizontal
-              style={styles.scrollView}
+              style={isPortrait ? styles.scrollView : styles.scrollViewLandcape}
               contentContainerStyle={[styles.contentScrollView]}
               showsHorizontalScrollIndicator={false}
               ref={refScroll}
@@ -109,7 +101,9 @@ export const CallVideosCarousel = observer(
                   key={item.vId}
                   view={{ width: finalWidth, height: finalHeight }}
                   onSelect={() => handleScroll(item)}
-                  enabled={checkEnable(item)}
+                  enabled={convertExInfo(
+                    remoteUserOptionsTable?.[item.user]?.exInfo,
+                  )}
                 />
               ))}
             </ScrollView>
@@ -128,11 +122,15 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 'auto',
   },
+  scrollViewLandcape: {
+    height: 300,
+  },
   contentScrollView: { gap: 16, padding: 16 },
   streams: {
-    zIndex: 200,
+    zIndex: 210,
     position: 'absolute',
     height: 'auto',
     width: '100%',
+    bottom: 0,
   },
 })

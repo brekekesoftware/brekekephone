@@ -13,6 +13,7 @@ import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
+import { convertExInfo } from '../utils/convertExInfo'
 import { permForCall } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -350,11 +351,9 @@ export class CallStore {
               item => item.user === key,
             )
             if (itemExisted) {
-              const info = v?.exInfo ?? '{}'
-              const exInfo = JSON.parse(info)
               return {
                 vId: itemExisted.vId,
-                enableVideo: exInfo.enableVideo,
+                enableVideo: convertExInfo(v.exInfo),
               }
             }
             return {
