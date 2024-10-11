@@ -49,17 +49,13 @@ export const CallVideosCarousel = observer(
     const orientation = useOrientation()
     const isPortrait = orientation === EOrientation.Portrait
     const width = Dimensions.get('window').width
+    const height = Dimensions.get('window').height
     const finalHeight = isPortrait ? 182 : 86
     const finalWidth = Math.floor(width / (isPortrait ? 3.5 : 4) - 16)
-
-    const handleScroll = item => {
-      updateVideoStreamActive(item)
-    }
-
     return (
       <>
         <RnTouchableOpacity
-          style={styles.container}
+          style={{ ...styles.container, height, maxHeight: height }}
           onPress={showButtonsInVideoCall ? undefined : onButtonsInVideo}
           activeOpacity={1}
         >
@@ -100,7 +96,7 @@ export const CallVideosCarousel = observer(
                   active={item.vId === videoStreamActive?.vId}
                   key={item.vId}
                   view={{ width: finalWidth, height: finalHeight }}
-                  onSelect={() => handleScroll(item)}
+                  onSelect={() => updateVideoStreamActive(item)}
                   enabled={convertExInfo(
                     remoteUserOptionsTable?.[item.user]?.exInfo,
                   )}
@@ -118,6 +114,8 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollView: {
     height: 'auto',

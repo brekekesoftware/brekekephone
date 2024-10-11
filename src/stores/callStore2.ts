@@ -244,7 +244,7 @@ export class CallStore {
   ) => {
     if (vId) {
       if (stream) {
-        BrekekeUtils.addStreamToView(id, { vId, streamUrl: stream?.toURL() })
+        BrekekeUtils.addStreamToView(id, { vId, streamUrl: stream.toURL() })
       } else {
         BrekekeUtils.removeStreamFromView(id, vId)
       }

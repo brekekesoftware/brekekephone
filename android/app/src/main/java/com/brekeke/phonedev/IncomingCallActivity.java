@@ -719,6 +719,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void updateStreamActive(String vId, String streamUrl) {
     this.activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
+    BrekekeUtils.emit("updateStreamActive", vId);
   }
 
   public void setLocalStream(String streamUrl) {

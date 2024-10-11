@@ -173,8 +173,13 @@ export class Call {
   } = {}
   voiceStreamObject: MediaStream | null = null
 
-  @action updateVideoStreamActive = id => {
-    this.videoStreamActive = id
+  @action updateVideoStreamActive = stream => {
+    this.videoStreamActive = stream
+  }
+
+  @action updateVideoStreamFromNative = vId => {
+    const item = this.videoClientSessionTable.find(v => v.vId === vId)
+    item && this.updateVideoStreamActive(item)
   }
 
   @observable muted = false
