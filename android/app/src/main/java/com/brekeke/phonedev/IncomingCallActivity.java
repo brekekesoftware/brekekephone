@@ -545,16 +545,14 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, (int) (182 * factor));
     ln.setLayoutParams(lp);
 
-    lp.setMargins((int) (16 *factor) , 0,0 , 0);
-    ln.setPadding(6, 6, 6, 6);
+   lp.setMargins((int) (16 *factor) , 0,0 , 0);
+   ln.setPadding(6, 6, 6, 6);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
 
     ln.addView(rtcView);
     LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//    lp2.setMargins(8, 8, 8, 8);
-
     rtcView.setLayoutParams(lp2);
     ln.setClipChildren(false);
     ln.setClipToPadding(false);
@@ -739,6 +737,12 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     Resources res = getResources();
     Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.btn_switch_camera, null);
     bt.setBackground(drawable);
+    bt.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onBtnSwitchCamera(v);
+      }
+    });
 
     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(80, 80);
     ViewGroup.LayoutParams parentLayout = v.getLayoutParams();
@@ -780,6 +784,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vNavHeader.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
+    vNavInfo.setVisibility(View.VISIBLE);
 
     updateBtnUnlockLabel();
   }
@@ -790,6 +795,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vRemoteStream.bringToFront();
     btnUnlock.setVisibility(View.GONE);
     btnEndCall.setVisibility(View.GONE);
+    vNavInfo.setVisibility(View.GONE);
   }
 
   // vIncomingCall
