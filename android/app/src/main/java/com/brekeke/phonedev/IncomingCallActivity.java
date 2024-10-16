@@ -545,18 +545,18 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, (int) (182 * factor));
     ln.setLayoutParams(lp);
 
+
    lp.setMargins((int) (16 *factor) , 0,0 , 0);
-   ln.setPadding(6, 6, 6, 6);
+   ln.setClipChildren(true);
+   ln.setClipToPadding(true);
+   ln.setPadding(9, 9, 9, 9);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
 
-    ln.addView(rtcView);
-    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    rtcView.setLayoutParams(lp2);
-    ln.setClipChildren(false);
-    ln.setClipToPadding(false);
+    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
+    ln.addView(rtcView, lp2);
     return ln;
   }
 
@@ -580,7 +580,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             width, (int) (182 * factor));
     ln.setLayoutParams(lp);
     lp.setMargins((int) (16 *factor) , 0,0 , 0);
-    rl.setPadding(6, 6, 6, 6);
+    ln.setPadding(5, 5,5,5);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -729,6 +729,11 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
 
     LinearLayout v = this.createStreamItemRelative(streamUrl);
+//    FrameLayout v = this.createStreamItemFrame(streamUrl);
+    v.setClipToOutline(true);
+    v.setClipToPadding(true);
+    v.setClipChildren(true);
+
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
 
     RelativeLayout rl = (RelativeLayout) new RelativeLayout(BrekekeUtils.ctx);
@@ -1277,24 +1282,23 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
   }
 
-  private void changePositionViewControls() {
-    ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) vCallManageControls.getLayoutParams();
-      if(isVideoCall) {
-        layoutParams.bottomToBottom = vNavHeader.getId();
-        layoutParams.bottomToTop = -1;
-      } else {
-        layoutParams.bottomToTop = btnEndCall.getId();
-        layoutParams.bottomToBottom = -1;
-      }
-    vCallManageControls.setLayoutParams(layoutParams);
-  }
-
   public void setBtnVideoSelected(boolean _isVideoCall, boolean _isMuted) {
     if (isVideoCall != _isVideoCall || isMuted != _isMuted) {
       isVideoCall = _isVideoCall;
       isMuted = _isMuted;
       btnVideo.setSelected(_isVideoCall && !_isMuted);
       checkVideoLocalEnable();
+      updateStyleTxtCall();
+    }
+  }
+
+  private void updateStyleTxtCall() {
+    if(isVideoCall) {
+      Resources res = getResources();
+      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_timer_call, null);
+      txtDurationCall.setBackground(drawable);
+      txtDurationCall.setGravity(Gravity.CENTER);
+      txtDurationCall.setPadding(2, 2, 2, 2);
     }
   }
 
@@ -1307,7 +1311,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
           if(child != null) {
             child.removeViewAt(0);
           }
-
         } else {
           WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
           rtcView.setZOrder(1);
@@ -1348,7 +1351,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             if(l.getChildAt(0) != null) {
               l.removeViewAt(0);
             }
-
             if(sD.vId.equals(activeStreamId)) {
                 setRemoteVideoStreamUrl("");
             }

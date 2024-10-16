@@ -75,7 +75,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    borderRadius: 6,
+    borderRadius: 4,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'white',

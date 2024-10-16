@@ -103,10 +103,8 @@
         android:textColor="@color/white"
         android:maxLines="1"
         android:layout_marginLeft="16dp"
-        android:padding="2dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/bg_timer_call"
-        android:gravity="center"
+        android:gravity="left"
         android:visibility="visible"
       />
 
@@ -335,7 +333,6 @@
       >
             <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content" android:orientation="horizontal"   android:id="@+id/scroll_view_streams">
-
             </LinearLayout>
         </ScrollView>
         </HorizontalScrollView>
