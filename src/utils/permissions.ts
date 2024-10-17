@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
 import {
+  check,
   checkMultiple,
   checkNotifications,
   openSettings,
@@ -7,6 +8,7 @@ import {
   request,
   requestMultiple,
   requestNotifications,
+  RESULTS,
 } from 'react-native-permissions'
 
 import { intl } from '../stores/intl'
@@ -228,7 +230,7 @@ const permOtherForIncomingCall = async () => {
   return await new Promise<void | boolean>(resolve => {
     RnAlert.prompt({
       title: '',
-      message: intl`To ensure the best user experience, the application requires the "Display on Lock Screen" and "Open new window while running in the background" permissions. Please enable these two permissions in your device settings to proceed.`,
+      message: intl`To ensure the best user experience, the application requires the "Show on Lock screen" and "Display pop-up windows while running in the background" permissions. Please enable these two permissions in your device settings to proceed.`,
       onConfirm: async () => {
         const r = await BrekekeUtils.permForIncomingCall()
         resolve(r)
@@ -238,6 +240,18 @@ const permOtherForIncomingCall = async () => {
       dismissText: intl`Cancel`,
     })
   })
+}
+
+export const permFineLocation = async () => {
+  const c = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+  if (c === RESULTS.GRANTED) {
+    return true
+  }
+  const r = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+  if (r[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION] === 'granted') {
+    return true
+  }
+  return false
 }
 
 const permOverlayPermission = async () => {

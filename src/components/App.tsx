@@ -44,10 +44,13 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { checkPermForCall, permForCall } from '../utils/permissions'
+import {
+  checkPermForCall,
+  permFineLocation,
+  permForCall,
+} from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
@@ -74,6 +77,8 @@ const initApp = async () => {
     cs.calls.length ||
     s.sipPn.sipAuth
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
+  // request access fine location to get current ssid
+  await permFineLocation()
 
   const autoLogin = async () => {
     if (!(await checkPermForCall())) {
@@ -258,10 +263,6 @@ export const App = observer(() => {
     if (Platform.OS !== 'web') {
       SplashScreen.hide()
     }
-  }, [])
-
-  useEffect(() => {
-    BrekekeUtils.startLPCAndroid()
   }, [])
 
   const {
