@@ -42,6 +42,7 @@ import org.json.JSONObject;
 
 // incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
+  public static String TAG  = "IncomingCallScreen";
   public RelativeLayout vWebrtc,
       vIncomingCall,
       vCallManage,

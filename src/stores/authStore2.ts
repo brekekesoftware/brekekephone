@@ -392,7 +392,6 @@ export class AuthStore {
       this.clearUrlParams()
       return true
     }
-    //
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||

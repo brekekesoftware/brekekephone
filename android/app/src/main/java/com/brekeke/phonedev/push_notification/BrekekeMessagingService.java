@@ -1,9 +1,13 @@
 package com.brekeke.phonedev.push_notification;
 
+import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
+
 import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.IncomingCallActivity;
 import com.brekeke.phonedev.lpc.LpcUtilities;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService;
@@ -40,8 +44,10 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       BrekekeUtils.emit("phonePermission", "");
       return;
     }
+    ReactApplication r = (ReactApplication) this.getApplication();
+    Log.d(TAG, "onMessageReceived: " + LpcUtilities.convertMapToString(remoteMessage.getData()));
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
-
+    Log.d(IncomingCallActivity.TAG, "Incoming call started by PN");
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();
     }
@@ -53,6 +59,12 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     }
 
     super.onMessageReceived(remoteMessage);
-    LpcUtilities.createReactContextInBackground((ReactApplication) this.getApplication());
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        LpcUtilities.createReactContextInBackground(r);
+      }
+    });
+
   }
 }

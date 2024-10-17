@@ -52,4 +52,16 @@ public class LpcUtilities {
     JSONObject jsonObject = new JSONObject(m);
     return jsonObject.toString();
   }
+
+  public static class LpcCallback {
+    public static callbackInterface cb;
+
+    public interface callbackInterface {
+      void getStateServer(Boolean b);
+    }
+
+    public static void setLpcCallback(callbackInterface c) {
+        cb = c;
+    }
+  }
 }

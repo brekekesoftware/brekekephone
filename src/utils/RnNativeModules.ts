@@ -64,10 +64,8 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   setProximityMonitoring(enabled: boolean): void
-
-  // these methods available on both
   systemUptimeMs(): Promise<number>
-  startLPCAndroid(): void
+  // these methods available on both
 }
 
 export type TNativeModules = {
@@ -110,7 +108,6 @@ const Polyfill: TBrekekeUtils = {
   permOverlay: () => Promise.resolve(false),
   isOtherPermissionGranted: () => Promise.resolve(false),
   permForIncomingCall: () => Promise.resolve(false),
-
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
@@ -121,7 +118,6 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
-  startLPCAndroid: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

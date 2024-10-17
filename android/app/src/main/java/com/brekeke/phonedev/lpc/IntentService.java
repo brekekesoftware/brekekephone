@@ -41,6 +41,14 @@ public class IntentService extends Service {
                 new Intent(ctx, BrekekeLpcService.class));
         ctx.startForegroundService(i);
         ctx.bindService(i, LpcUtilities.connection, BrekekeLpcService.BIND_AUTO_CREATE);
+        // Used to update the status if the server turns Lpc on and off
+        if(LpcUtilities.LpcCallback.cb == null) {
+          LpcUtilities.LpcCallback.setLpcCallback(v -> {
+            if(!v){
+              ctx.unbindService(LpcUtilities.connection);
+            }
+          });
+        }
       }
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);

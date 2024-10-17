@@ -83,14 +83,13 @@ public class BrekekeLpcService extends Service {
     String host = intent.getStringExtra("host");
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
-
     settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username);
     Gson gson = new Gson();
     LocalConfig.writeConfig(this, gson.toJson(settings));
     this.createConnection(settings);
   }
 
-  public static void stopLPCService(Context c) {
+  private static void stopLPCService(Context c) {
     if (iService != null) {
       c.stopService(iService);
     }
@@ -101,6 +100,8 @@ public class BrekekeLpcService extends Service {
     isServiceStarted = false;
     Log.d(TAG, "service destroy");
     stopForeground(true);
+    // clear local config
+    LocalConfig.writeConfig(this, "");
   }
 
   @Override

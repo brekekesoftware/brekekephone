@@ -2,7 +2,6 @@ package com.brekeke.phonedev;
 
 import static android.content.Context.TELECOM_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
-
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -34,7 +33,6 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
 import com.brekeke.phonedev.lpc.LpcUtilities;
 import com.brekeke.phonedev.lpc.OtherPermUtilities;
@@ -74,7 +72,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise openOtherPermSettingsPromise;
   public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
-
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -134,7 +131,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   private void debugAudioListener() {
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
       return;
     }
     OnModeChangedListener l1 =
@@ -673,8 +670,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static boolean checkNotificationPermission(Context ctx) {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-      return checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return checkSelfPermission(ctx, permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
     }
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
@@ -1135,16 +1132,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void startLPCAndroid() {
-    if (!BrekekeLpcService.isServiceStarted) {
-      Intent intent = new Intent(ctx, BrekekeLpcService.class);
-      ctx.startForegroundService(intent);
-    }
-  }
-
   // react method for lpc
-
   @ReactMethod
   public void enableLPC(
       String token,
@@ -1155,11 +1143,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
+
     Intent i =
-        LpcUtilities.putConfigToIntent(
-            host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
-    Log.d(TAG, "enableLPC: bind sevice");
+            LpcUtilities.putConfigToIntent(
+                    host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
+    ctx.startForegroundService(i);
     ctx.bindService(i, LpcUtilities.connection, BrekekeLpcService.BIND_AUTO_CREATE);
+    // Used to update the status if the server turns Lpc on and off
+    if(LpcUtilities.LpcCallback.cb == null) {
+      LpcUtilities.LpcCallback.setLpcCallback(v -> {
+        if(!v){
+          disableLPC();
+        }
+      });
+    }
   }
 
   @ReactMethod
@@ -1199,11 +1196,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         }
         else {
 //          TODO
-//          i = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//          i.setData(Uri.parse("package:" + ctx.getPackageName()));
-
-//          Because there are no phones other than Xiaomi to test this case
-//          so we will return here
+          p.resolve(true);
           return;
         }
       openOtherPermSettingsPromise = p;

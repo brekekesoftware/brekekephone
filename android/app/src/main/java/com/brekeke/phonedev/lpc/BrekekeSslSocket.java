@@ -9,6 +9,7 @@ import android.os.NetworkOnMainThreadException;
 import android.util.Base64;
 import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.IncomingCallActivity;
 import com.google.gson.Gson;
 import com.tlschannel.ClientTlsChannel;
 import com.tlschannel.NeedsReadException;
@@ -42,7 +43,6 @@ public class BrekekeSslSocket {
     private boolean requestSent = false;
     private LpcModel.Settings settings;
     private Charset utf8 = StandardCharsets.UTF_8;
-
     public SSLSocketAsyncTask(Context context) {
       mContext = context;
     }
@@ -125,6 +125,10 @@ public class BrekekeSslSocket {
         Log.d(TAG + "NE", e.getMessage());
       } catch (IOException e) {
         Log.d(TAG + "IO", e.getMessage());
+        if(e.getMessage().equals("Connection refused")) {
+          //stop service
+          LpcUtilities.LpcCallback.cb.getStateServer(false);
+        }
       } catch (Exception e) {
         Log.d(TAG + "Ex", e.getMessage());
       }
@@ -147,7 +151,6 @@ public class BrekekeSslSocket {
           mainloop:
           while (true) {
             selector.select();
-
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
             while (iterator.hasNext()) {
               SelectionKey key = iterator.next();
@@ -158,7 +161,6 @@ public class BrekekeSslSocket {
                 }
               } else if (key.isReadable() || key.isWritable()) {
                 try {
-
                   if (!BrekekeLpcService.isServiceStarted) {
                     rawChannel.shutdownInput();
                     rawChannel.shutdownOutput();
@@ -181,9 +183,7 @@ public class BrekekeSslSocket {
                     if (c > 0) {
                       responseBuffer.flip();
                       handleResponse(responseBuffer);
-
                       Thread.sleep(1000);
-
                     } else {
                       tlsChannel.close();
                       break mainloop;
@@ -222,6 +222,7 @@ public class BrekekeSslSocket {
             // emit message to assign callKeepUuid to call store
             String e = LpcUtilities.convertMapToString(m);
             BrekekeUtils.emit("lpcIncomingCall", e);
+            Log.d(IncomingCallActivity.TAG, "Incoming call started by Lpc");
           }
         }
       } catch (Exception e) {
