@@ -59,6 +59,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     }
 
     super.onMessageReceived(remoteMessage);
+    //fix [Crash] Android - AssertionException: Expected to run on UI thread
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
