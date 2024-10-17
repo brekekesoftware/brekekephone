@@ -10,6 +10,7 @@ export const getAuthStore = () => authStore
 
 export const reconnectAndWaitSip = async () => {
   authStore.reconnectSip()
+
   await waitSip()
 }
 

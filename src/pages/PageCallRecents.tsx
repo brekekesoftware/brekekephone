@@ -36,7 +36,7 @@ export class PageCallRecents extends Component {
   }
 
   isMatchUser = (call: RecentCall) => {
-    if (call.partyNumber.includes(contactStore.callSearchRecents)) {
+    if (call.partyNumber?.includes(contactStore.callSearchRecents)) {
       return call.id
     }
     return ''

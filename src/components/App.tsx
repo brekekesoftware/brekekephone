@@ -44,7 +44,11 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
-import { checkPermForCall, permForCall } from '../utils/permissions'
+import {
+  checkPermForCall,
+  permFineLocation,
+  permForCall,
+} from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -73,6 +77,8 @@ const initApp = async () => {
     cs.calls.length ||
     s.sipPn.sipAuth
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
+  // request access fine location to get current ssid
+  await permFineLocation()
 
   const autoLogin = async () => {
     if (!(await checkPermForCall())) {
@@ -139,6 +145,7 @@ const initApp = async () => {
     if (!isConnected) {
       return
     }
+
     s.resetFailureState()
     authPBX.auth()
     authSIP.auth()

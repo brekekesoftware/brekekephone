@@ -1,178 +1,210 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-  <uses-feature android:name="android.hardware.camera" />
-  <uses-feature android:name="android.hardware.camera.autofocus" />
-  <uses-feature android:name="android.hardware.audio.output" />
-  <uses-feature android:name="android.hardware.microphone" />
-  <uses-feature
-    android:name="android.hardware.telephony"
-    android:required="false"
-  />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission
-    android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-  />
-  <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-  <!-- for notification on android 13 -->
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-  <uses-permission android:name="android.permission.CALL_PHONE" />
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <!-- react-native-webrtc bluetooth -->
-  <uses-permission
-    android:name="android.permission.BLUETOOTH"
-    android:maxSdkVersion="30"
-  />
-  <uses-permission
-    android:name="android.permission.BLUETOOTH_ADMIN"
-    android:maxSdkVersion="30"
-  />
-  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-  <uses-permission
-    android:name="android.permission.READ_PHONE_STATE"
-    android:maxSdkVersion="29"
-  />
-  <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO" />
-  <uses-permission android:name="android.permission.REORDER_TASKS" />
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission
-    android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
-  />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-  <!-- call history -->
-  <!-- temporary disabled
-  <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
-  <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
-  -->
-  <application
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:name=".MainApplication"
-    android:networkSecurityConfig="@xml/network_security_config"
-    android:requestLegacyExternalStorage="true"
-    android:theme="@style/AppTheme"
-    android:largeHeap="true"
-  >
-    <activity
-      android:name=".IncomingCallActivity"
-      android:label="IncomingCallActivity"
-      android:launchMode="standard"
-      android:showOnLockScreen="true"
-      android:screenOrientation="sensorPortrait"
-      android:autoRemoveFromRecents="true"
-      android:windowSoftInputMode="adjustPan"
-    />
-    <activity
-      android:name=".ExitActivity"
-      android:theme="@android:style/Theme.NoDisplay"
-      android:autoRemoveFromRecents="true"
-    />
-    <!-- react-native-notifications -->
-    <meta-data
-      android:name="com.google.firebase.messaging.default_notification_icon"
-      android:resource="@mipmap/ic_launcher"
-    />
-    <meta-data
-      android:name="com.google.firebase.messaging.default_notification_channel_id"
-      android:value="default"
-    />
-    <service
-      android:name="BrekekeMessagingService"
-      android:enabled="true"
-      android:exported="true"
-    >
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
-    <!-- call keep -->
-    <service
-      android:name="io.wazo.callkeep.VoiceConnectionService"
-      android:label="Wazo"
-      android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-      android:foregroundServiceType="camera|microphone"
-      android:exported="false"
-    >
-      <intent-filter>
-        <action android:name="android.telecom.ConnectionService" />
-      </intent-filter>
-    </service>
-    <service
-      android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
-    />
-    <!-- react dev -->
-    <activity
-      android:name="com.facebook.react.devsupport.DevSettingsActivity"
-    />
-    <!-- main -->
-    <activity
-      android:name=".MainActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-      android:label="@string/app_name"
-      android:launchMode="singleTask"
-      android:theme="@style/SplashTheme"
-      android:taskAffinity=""
-      android:windowSoftInputMode="adjustResize"
-      android:exported="true"
-    >
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-      <!-- default phone call app -->
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <action android:name="android.intent.action.DIAL" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="tel" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.DIAL" />
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-      <!-- deep link -->
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="brekekephonedev" android:host="open" />
-        <data android:scheme="brekekephonedev" android:host="call" />
-      </intent-filter>
-    </activity>
-    <!-- default phone call app -->
-    <service
-      android:name=".CallService"
-      android:permission="android.permission.BIND_INCALL_SERVICE"
-      android:exported="true"
-    >
-      <meta-data
-        android:name="android.telecom.IN_CALL_SERVICE_UI"
-        android:value="true"
-      />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.audio.output" />
+    <uses-feature android:name="android.hardware.microphone" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
-      <intent-filter>
-        <action android:name="android.telecom.InCallService" />
-      </intent-filter>
-    </service>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission
+        android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <!-- notification on android 13 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.MODIFY_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- react-native-webrtc bluetooth -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission
+        android:name="android.permission.READ_PHONE_STATE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <!-- call history -->
     <!-- temporary disabled
-    <receiver android:name="BrekekeOutgoingCallHandler" android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-      </intent-filter>
-    </receiver>
-    -->
-  </application>
+      <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+      <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+      -->
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".IncomingCallActivity"
+            android:autoRemoveFromRecents="true"
+            android:exported="true"
+            android:label="IncomingCallActivity"
+            android:launchMode="standard"
+            android:screenOrientation="sensorPortrait"
+            android:showOnLockScreen="true"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ExitActivity"
+            android:autoRemoveFromRecents="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <!-- react-native-notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default" />
+
+        <service
+            android:name="com.brekeke.phonedev.push_notification.BrekekeMessagingService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="remoteMessaging"
+            tools:ignore="ForegroundServicePermission">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- call keep -->
+        <service
+            android:name="io.wazo.callkeep.VoiceConnectionService"
+            android:exported="false"
+            android:foregroundServiceType="camera|microphone"
+            android:label="Wazo"
+            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+            tools:ignore="ForegroundServicePermission">
+            <intent-filter>
+                <action android:name="android.telecom.ConnectionService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
+            android:foregroundServiceType="" />
+        <!-- react dev -->
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <!-- lpc -->
+        <service
+            android:name="com.brekeke.phonedev.lpc.BrekekeLpcService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="specialUse" />
+        <service
+            android:name="com.brekeke.phonedev.lpc.IntentService"
+            android:enabled="true" />
+
+        <receiver
+            android:name="com.brekeke.phonedev.lpc.BrekekeBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.REBOOT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- main -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/SplashTheme"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- default phone call app -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="open"
+                    android:scheme="brekekephonedev" />
+                <data
+                    android:host="call"
+                    android:scheme="brekekephonedev" />
+            </intent-filter>
+        </activity>
+        <!-- default phone call app -->
+        <service
+            android:name="com.brekeke.phonedev.call_history.CallService"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <!-- call history -->
+        <!-- temporary disabled
+            <receiver android:name="BrekekeOutgoingCallHandler" android:exported="true">
+              <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+              </intent-filter>
+            </receiver>
+            -->
+    </application>
 </manifest>
