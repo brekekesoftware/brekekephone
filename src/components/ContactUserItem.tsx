@@ -1,21 +1,27 @@
+import Clipboard from '@react-native-clipboard/clipboard'
 import { decode } from 'html-entities'
+import { isEmpty } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, Pressable, StyleSheet, View } from 'react-native'
 
+import { pbx } from '../api/pbx'
 import { uc } from '../api/uc'
 import {
   mdiAccountGroup,
+  mdiContentCopy,
   mdiPhoneIncoming,
   mdiPhoneMissed,
   mdiPhoneOutgoing,
 } from '../assets/icons'
 import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
-import { getPartyName } from '../stores/contactStore'
+import type { Phonebook } from '../stores/contactStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import { RnPicker } from '../stores/RnPicker'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { RnCheckBox } from './RnCheckbox'
@@ -116,7 +122,7 @@ export const UserItem: FC<
     partyNumber: string
     selected: boolean
     statusText: string
-    canChat: boolean
+    canTouch: boolean
     group: boolean
     partyName: string
     isVoicemail?: boolean
@@ -128,6 +134,8 @@ export const UserItem: FC<
     phonebook?: string
     reason?: string
     onSelect?: () => void
+    phonebookInfo?: Phonebook
+    onPress?: Function | undefined
   }>
 > = observer(p0 => {
   const {
@@ -147,7 +155,7 @@ export const UserItem: FC<
     partyNumber,
     selected,
     statusText,
-    canChat,
+    canTouch,
     group,
     partyName,
     isVoicemail,
@@ -158,9 +166,17 @@ export const UserItem: FC<
     phonebook,
     reason,
     onSelect,
+    phonebookInfo,
+    onPress,
     ...p
   } = p0
-  const Container = canChat ? RnTouchableOpacity : View
+
+  // Pressable for web with onLongPress
+  const Container = canTouch
+    ? Platform.OS === 'web'
+      ? Pressable
+      : RnTouchableOpacity
+    : View
 
   const isGroupAvailable = (groupId: string) => {
     const groupInfo: Conference = uc.getChatGroupInfo(groupId)
@@ -178,6 +194,9 @@ export const UserItem: FC<
     }
   }
   const onPressItem = () => {
+    if (onPress) {
+      return onPress()
+    }
     if (!partyNumber) {
       return
     }
@@ -201,10 +220,46 @@ export const UserItem: FC<
     }
   }
 
+  const onLongPressItem = async () => {
+    if (phonebookInfo && isEmpty(phonebookInfo?.info)) {
+      const pb = await pbx.getContact(phonebookInfo.id)
+      contactStore.upsertPhonebook(pb as Phonebook)
+      Object.assign(phonebookInfo, pb)
+    }
+    const number = partyNumber ?? id
+    const numbers = [
+      number,
+      phonebookInfo?.info?.$tel_home,
+      phonebookInfo?.info?.$tel_mobile,
+      phonebookInfo?.info?.$tel_work,
+    ]
+      .map((value, index) => {
+        // maybe value is '0'
+        if (value !== null && value !== undefined && value !== '') {
+          return {
+            key: index,
+            label: value,
+            icon: mdiContentCopy,
+          }
+        }
+        return undefined
+      })
+      .filter(item => item !== undefined)
+
+    if (!numbers.length) {
+      return
+    }
+    RnPicker.open({
+      options: numbers,
+      onSelect: (n: string) => Clipboard.setString(n),
+    })
+  }
+
   return (
     <Container
       style={[css.Outer, disabled && css.disableContainer]}
       onPress={onPressItem}
+      onLongPress={onLongPressItem}
     >
       <View style={[css.Inner, selected && css.Inner_selected]}>
         {group ? (
@@ -304,6 +359,7 @@ export const UserItem: FC<
             <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
+
         {!!isSelection && (
           <View style={css.CheckboxContainer}>
             <RnCheckBox
