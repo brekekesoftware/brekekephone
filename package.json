@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.0",
+    "@react-native-clipboard/clipboard": "^1.14.2",
     "@react-native-community/netinfo": "9.4.1",
     "@react-native-community/push-notification-ios": "1.11.0",
     "buffer": "6.0.3",
