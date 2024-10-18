@@ -6,6 +6,7 @@ import android.app.KeyguardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -74,7 +76,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnRecord,
       vBtnDTMF,
       vBtnHold,
-      vNavInfo;
+      vNavInfo,
+      vUnderBtnsControl;
   public WebRTCView vWebrtcVideo;
 
   public LinearLayout vScrollViewStreams;
@@ -127,6 +130,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isVideoCall = false,
 
       isMuted = false;
+
+  private int orientation;
+
+  class StreamData {
+    String vId;
+    String streamUrl;
+    int id;
+
+    StreamData(int id, String vId, String streamUrl) {
+      this.id = id;
+      this.streamUrl = streamUrl;
+      this.vId = vId;
+    }
+  }
 
   public JSONObject pbxConfig;
   public JSONObject callConfig;
@@ -275,10 +292,14 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
+    vUnderBtnsControl = (LinearLayout) findViewById(R.id.ln_under_buttons_control);
 
     updateLabels();
     updateHeader();
     updateCallConfig();
+
+    orientation = getResources().getConfiguration().orientation;
+    updateButtonsControlUIOrientation();
   }
 
   @Override
@@ -292,6 +313,55 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     debug("onPause");
     paused = true;
     super.onPause();
+  }
+
+  private void updateButtonsControlUIOrientation () {
+    if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      vCallManageControls.setOrientation(LinearLayout.HORIZONTAL);
+      LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) vUnderBtnsControl.getLayoutParams();
+      lp.topMargin = 0;
+      vUnderBtnsControl.setLayoutParams(lp);
+    } else {
+      vCallManageControls.setOrientation(LinearLayout.VERTICAL);
+      LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) vUnderBtnsControl.getLayoutParams();
+      lp.topMargin = 5;
+      vUnderBtnsControl.setLayoutParams(lp);
+    }
+  }
+
+  private void updateSizeStreamItemOrientation (LinearLayout ln) {
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    float factor = displayMetrics.density;
+    int w = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
+    int h = (int) Math.floor((orientation == Configuration.ORIENTATION_LANDSCAPE ? 86 : 182) * factor);
+    if(ln != null) {
+      LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(w, h);
+      lp.setMargins((int) (16 *factor) , 0,0 , 0);
+      ln.setClipChildren(true);
+      ln.setClipToPadding(true);
+      ln.setPadding(9, 9, 9, 9);
+      ln.setLayoutParams(lp);
+    }
+  }
+
+  private void updateStreamsUIOrientation() {
+    arrayStreams.forEach((k, v) -> {
+      LinearLayout ln = findViewById(v.id);
+      updateSizeStreamItemOrientation(ln);
+    });
+    if(localStreamId != 0) {
+      LinearLayout ln = findViewById(localStreamId);
+      updateSizeStreamItemOrientation(ln);
+    }
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    orientation = newConfig.orientation;
+    updateButtonsControlUIOrientation();
+    updateStreamsUIOrientation();
+
+    super.onConfigurationChanged(newConfig);
   }
 
   @Override
@@ -525,73 +595,47 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
   }
 
-  private LinearLayout createStreamItem (String streamUrl, boolean isActive) {
+  private WebRTCView createNewRTCView (String streamUrl) {
     WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-    int width = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
-
-    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
-    Resources res = getResources();
-    if (isActive) {
-      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-      ln.setBackground(drawable);
-    } else {
-      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
-      ln.setBackground(drawable);
-    }
-    float factor = displayMetrics.density;
-    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-            width, (int) (182 * factor));
-    ln.setLayoutParams(lp);
-
-
-   lp.setMargins((int) (16 *factor) , 0,0 , 0);
-   ln.setClipChildren(true);
-   ln.setClipToPadding(true);
-   ln.setPadding(9, 9, 9, 9);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
+    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+    rtcView.setLayoutParams(lp);
+    return rtcView;
+  }
 
-    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+  private Drawable getDrawableFromResources(int id) {
+    Resources res = getResources();
+    Drawable drawable = ResourcesCompat.getDrawable(res, id, null);
+    return drawable;
+  }
 
-    ln.addView(rtcView, lp2);
+  private void updateBgForStream(LinearLayout ln, boolean isActive) {
+    Drawable drawable = getDrawableFromResources(isActive ? R.drawable.bg_stream_video_active : R.drawable.bg_stream_video);
+    ln.setBackground(drawable);
+  }
+
+  private LinearLayout createStreamItem (String streamUrl, boolean isActive) {
+    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    updateBgForStream(ln, isActive);
+    updateSizeStreamItemOrientation(ln);
+    WebRTCView rtcView = createNewRTCView(streamUrl);
+    ln.addView(rtcView);
     return ln;
   }
 
   private LinearLayout createStreamItemRelative (String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-    int width = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
-
     LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
     RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
-
     ln.addView(rl);
-    Resources res = getResources();
-
-    Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
+    Drawable drawable = getDrawableFromResources(R.drawable.bg_stream_video);
     ln.setBackground(drawable);
-
-    float factor = displayMetrics.density;
-    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-            width, (int) (182 * factor));
-    ln.setLayoutParams(lp);
-    lp.setMargins((int) (16 *factor) , 0,0 , 0);
+    updateSizeStreamItemOrientation(ln);
     ln.setPadding(5, 5,5,5);
-    rtcView.setZOrder(1);
-    rtcView.setObjectFit("cover");
-    rtcView.setStreamURL(streamUrl);
-    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-    rtcView.setLayoutParams(lp2);
-
+    WebRTCView rtcView = createNewRTCView(streamUrl);
     rl.addView(rtcView);
     rl.setGravity(Gravity.CENTER);
-    ln.setClipChildren(true);
-    ln.setClipToPadding(true);
-
     return ln;
   }
 
@@ -604,21 +648,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       vScrollViewStreams.addView(v);
     }
     vRemoteStream.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
-  }
-
-  class StreamData {
-    String vId;
-
-    String streamUrl;
-
-    int id;
-
-    StreamData(int id, String vId, String streamUrl) {
-      this.id = id;
-      this.streamUrl = streamUrl;
-      this.vId = vId;
-    }
-
   }
 
   public void addStreamToView(ReadableMap stream) {
@@ -640,24 +669,18 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
             String tag = (String) v.getTag();
             StreamData sDNew = arrayStreams.get(tag);
             if(activeStreamId == "") {
-              Resources res = getResources();
-              Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-              v.setBackground(drawable);
+              updateBgForStream((LinearLayout) v, true);
               updateStreamActive(sDNew.vId, sDNew.streamUrl);
             } else {
               StreamData sD = arrayStreams.get(activeStreamId);
-              Resources res = getResources();
               LinearLayout l = findViewById(sD.id);
-              Drawable drawable1 = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video, null);
-              l.setBackground(drawable1);
-              Drawable drawable2 = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-              v.setBackground(drawable2);
+              updateBgForStream(l, false);
+              updateBgForStream((LinearLayout) v, true);
               if(((LinearLayout) v).getChildAt(0) != null) {
                 updateStreamActive(sDNew.vId, sDNew.streamUrl);
               } else {
                 updateStreamActive(sDNew.vId,"");
               }
-
             }
           }
         });
@@ -668,19 +691,15 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       vRemoteStream.setVisibility(View.VISIBLE);
       btnSwitchCamera.setVisibility(View.VISIBLE);
       if(activeStreamId == "") {
-         StreamData s = arrayStreams.valueAt(0);
+        StreamData s = arrayStreams.valueAt(0);
         updateStreamActive(s.vId, s.streamUrl);
-        Resources res = getResources();
         LinearLayout l = findViewById(s.id);
-        Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-        l.setBackground(drawable);
+        updateBgForStream((LinearLayout) l, true);
       }
-
     }
   }
 
   public void removeStreamFromView(String vId) {
-
     boolean isExist =  arrayStreams.containsKey(vId);
     if(isExist) {
       StreamData d = arrayStreams.get(vId);
@@ -690,9 +709,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
           if(arrayStreams.size() > 0) {
             View l2 = vScrollViewStreams.getChildAt(0);
             if(l2 != null) {
-              Resources res = getResources();
-              Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_stream_video_active, null);
-              l2.setBackground(drawable);
+              updateBgForStream((LinearLayout) l2, true);
               activeStreamId = "";
             }
           }
@@ -729,18 +746,14 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     }
 
     LinearLayout v = this.createStreamItemRelative(streamUrl);
-//    FrameLayout v = this.createStreamItemFrame(streamUrl);
     v.setClipToOutline(true);
     v.setClipToPadding(true);
     v.setClipChildren(true);
 
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-
     RelativeLayout rl = (RelativeLayout) new RelativeLayout(BrekekeUtils.ctx);
     Button bt = new Button(BrekekeUtils.ctx);
-
-    Resources res = getResources();
-    Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.btn_switch_camera, null);
+    Drawable drawable = getDrawableFromResources(R.drawable.btn_switch_camera);
     bt.setBackground(drawable);
     bt.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -751,7 +764,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
 
     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(80, 80);
     ViewGroup.LayoutParams parentLayout = v.getLayoutParams();
-    params.leftMargin = (int) ((parentLayout.width / 2) - 40) ;
+    params.leftMargin = (int) ((parentLayout.width / 2) - 40);
     params.topMargin = (int) (parentLayout.height * 0.4);
     rl.setLayoutParams(params);
     rl.addView(bt);

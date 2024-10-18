@@ -77,7 +77,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:visibility="gone"
-      android:layout_marginTop="12dp"
+      android:layout_marginTop="10dp"
       android:layout_below="@id/view_nav_header"
       android:orientation="vertical"
     >
@@ -508,6 +508,7 @@
               android:layout_height="wrap_content"
               android:layout_gravity="center"
               android:layout_marginTop="5dp"
+              android:id="@+id/ln_under_buttons_control"
             >
               <!-- btn mute-->
               <LinearLayout
