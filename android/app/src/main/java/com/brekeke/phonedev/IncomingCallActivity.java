@@ -133,6 +133,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   private int orientation;
 
+  private boolean isPortrait;
+
   class StreamData {
     String vId;
     String streamUrl;
@@ -299,6 +301,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     updateCallConfig();
 
     orientation = getResources().getConfiguration().orientation;
+    isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT;
     updateButtonsControlUIOrientation();
   }
 
@@ -829,6 +832,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
     vCardAvatarTalking.getLayoutParams().width = flexValue;
+
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
@@ -837,19 +841,19 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.view_call_manage_controls,
         ConstraintSet.TOP,  R.id.btn_unlock,
         ConstraintSet.TOP,
-        isLargeDevice ? flexValue / 2 : 30);
+            isPortrait ? isLargeDevice ? flexValue / 2 : 30 : 200);
     constraintSet.connect(
         R.id.card_avatar_talking,
         ConstraintSet.TOP,
         ConstraintSet.PARENT_ID,
         ConstraintSet.TOP,
-        (int) (flexValue / 1.1));
+            isPortrait ? (int) (flexValue / 1.1) : (flexValue / 2));
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-        isLargeDevice ? flexValue / 2 : 30);
+            isPortrait ? isLargeDevice ? flexValue / 2 : 30 : 20);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1265,7 +1269,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
 
     constraintSet.connect(
-            R.id.view_call_manage_controls, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 30);
+            R.id.view_call_manage_controls, ConstraintSet.TOP,  R.id.btn_unlock, ConstraintSet.TOP, isPortrait  ? 30 : 200);
     constraintSet.applyTo(constraintLayout);
   }
 
