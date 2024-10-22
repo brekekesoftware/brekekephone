@@ -38,7 +38,6 @@ export const ButtonIcon: FC<{
   textcolor?: string
   styleContainer?: ViewProps['style']
   msLoading?: number
-  viewBox?: string
 }> = p => {
   const [isLoading, setLoading] = useState(false)
   const onBtnPress = () => {
@@ -69,7 +68,7 @@ export const ButtonIcon: FC<{
         {isLoading ? (
           <ActivityIndicator style={{ width: size, height: size }} />
         ) : (
-          <Svg height={size} viewBox={p.viewBox ?? '0 0 24 24'} width={size}>
+          <Svg height={size} viewBox='0 0 24 24' width={size}>
             <Path d={p.path} fill={p.color || 'black'} />
           </Svg>
         )}

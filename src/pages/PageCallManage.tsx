@@ -14,7 +14,8 @@ import {
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
-  mdiCameraRolate,
+  mdiCameraFrontVariant,
+  mdiCameraRearVariant,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -427,17 +428,6 @@ class PageCallManage extends Component<{
         onBack={backAction}
         transparent
         colorIcon='white'
-        rightItems={
-          c.localVideoEnabled ? (
-            <RnTouchableOpacity
-              style={css.BtnSwitchCamera}
-              onPress={c.toggleSwitchCamera}
-              activeOpacity={0.5}
-            >
-              <RnIcon path={mdiCameraRolate} color='white' size={28} />
-            </RnTouchableOpacity>
-          ) : undefined
-        }
         sizeIconBack={30}
         heightDropdown={75}
       >
@@ -466,8 +456,7 @@ class PageCallManage extends Component<{
     }
     return (
       <>
-        {this.renderVideo()}
-        {/* {this.renderInfo()} */}
+        {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
@@ -479,30 +468,40 @@ class PageCallManage extends Component<{
   private renderVideo = () => {
     const { call: c } = this.props
     return (
-      c.localVideoEnabled && (
-        <>
-          <View
-            style={[
-              css.Video,
-              { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
-            ]}
-          >
-            <CallVideosCarousel
-              call={c}
-              showButtonsInVideoCall={this.showButtonsInVideoCall}
-              onButtonsInVideo={this.toggleButtons}
-            />
-          </View>
-          <RnTouchableOpacity
-            onPress={this.toggleButtons}
-            activeOpacity={0}
-            style={[
-              StyleSheet.absoluteFill,
-              { opacity: 0.5, backgroundColor: '#111111' },
-            ]}
+      <>
+        <View style={css.cameraStyle}>
+          <ButtonIcon
+            color='white'
+            noborder
+            onPress={c.toggleSwitchCamera}
+            path={
+              c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant
+            }
+            size={40}
           />
-        </>
-      )
+        </View>
+        <View
+          style={[
+            css.Video,
+            { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
+          ]}
+        >
+          <CallVideosCarousel
+            call={c}
+            showButtonsInVideoCall={this.showButtonsInVideoCall}
+            onButtonsInVideo={this.toggleButtons}
+          />
+        </View>
+        <RnTouchableOpacity
+          onPress={this.toggleButtons}
+          activeOpacity={0}
+          style={[
+            StyleSheet.absoluteFill,
+            { opacity: 0.5, backgroundColor: '#111111' },
+          ]}
+        />
+        <View style={css.Video_Space} />
+      </>
     )
   }
 
@@ -522,15 +521,15 @@ class PageCallManage extends Component<{
 
     return (
       <View
-        style={[
+        style={
           isShowAvatar
-            ? css.Image_wrapper
+            ? [css.Image_wrapper, { flex: 1 }]
             : {
                 ...css.Image_wrapper,
                 minWidth: '100%',
                 minHeight: height * 0.1,
-              },
-        ]}
+              }
+        }
       >
         <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
@@ -571,67 +570,6 @@ class PageCallManage extends Component<{
     )
   }
 
-  private renderInfo = () => {
-    const { call: c, orientation } = this.props
-    const isShowAvatar =
-      !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
-    return (
-      <>
-        <View style={{ height: 60 }}></View>
-        <View style={css.MainInfo}>
-          <RnText
-            title
-            white
-            center
-            bold
-            numberOfLines={2}
-            style={{ fontSize: 24, lineHeight: 27, marginBottom: 6 }}
-          >
-            {`${c.getDisplayName()}`}
-          </RnText>
-          {c.answered &&
-            (!c.holding ? (
-              <View
-                style={[
-                  css.SubInfo,
-                  c.localVideoEnabled ? css.Duration : undefined,
-                  c.localVideoEnabled ? css.AlignCenter : css.AlignStart,
-                ]}
-              >
-                <Duration white center style={[css.DurationText]}>
-                  {c.answeredAt}
-                </Duration>
-              </View>
-            ) : (
-              <View style={[css.SubInfo, css.OnHold]}>
-                <RnText white center style={[css.DurationText]}>
-                  ON HOLD
-                </RnText>
-              </View>
-            ))}
-          {!c.answered &&
-            (c.localVideoEnabled || (c.incoming && c.remoteVideoEnabled)) && (
-              <View style={[css.SubInfo, css.VCalling]}>
-                <RnText white center style={[css.DurationText]}>
-                  VIDEO CALLING
-                </RnText>
-              </View>
-            )}
-          {!c.answered && !c.localVideoEnabled && !c.remoteVideoEnabled && (
-            <View style={[css.SubInfo, css.VCalling]}>
-              <RnText white center style={[css.DurationText]}>
-                VOICE CALLING
-              </RnText>
-            </View>
-          )}
-        </View>
-        {!isShowAvatar && orientation === EOrientation.Portrait && (
-          <View style={css.Video_Space} />
-        )}
-      </>
-    )
-  }
-
   private renderBtns = () => {
     const { call: c, orientation } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
@@ -651,7 +589,10 @@ class PageCallManage extends Component<{
         style={[
           { marginTop: isHideButtons ? 30 : 0 },
           orientation === EOrientation.Landscape && { height: 100 },
-          orientation === EOrientation.Portrait && { flex: 3 },
+          orientation === EOrientation.Portrait && {
+            flex: 3,
+            backgroundColor: 'yellow',
+          },
         ]}
       >
         {n > 0 && (
