@@ -323,6 +323,10 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, p)
 
+    // Clear start call interval timer when the outgoing call is created
+    if (!c.incoming) {
+      this.clearStartCallIntervalTimer()
+    }
     // get Avatar and Username of phoneappli
     const ca = auth.getCurrentAccount()
     if (auth.phoneappliEnabled() && !c.incoming && ca) {
