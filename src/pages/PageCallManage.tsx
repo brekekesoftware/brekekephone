@@ -22,8 +22,9 @@ import {
   mdiPhone,
   mdiPhoneHangup,
   mdiPlayCircle,
-  mdiRecordCall,
-  mdiVideoCamera,
+  mdiRecord,
+  mdiRecordCircle,
+  mdiVideo,
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
@@ -466,7 +467,7 @@ class PageCallManage extends Component<{
     return (
       <>
         {this.renderVideo()}
-        {this.renderInfo()}
+        {/* {this.renderInfo()} */}
         {this.renderAvatar()}
         {this.renderBtns()}
         {this.renderHangupBtn()}
@@ -552,6 +553,14 @@ class PageCallManage extends Component<{
           )}
         </View>
         <View style={!isShowAvatar ? css.styleTextBottom : {}}>
+          <RnText title white center numberOfLines={2}>
+            {`${c.getDisplayName()}`}
+          </RnText>
+          {c.answered && (
+            <Duration subTitle white center>
+              {c.answeredAt}
+            </Duration>
+          )}
           {incoming && (
             <RnText bold white center>
               {intl`Incoming Call`}
@@ -632,7 +641,7 @@ class PageCallManage extends Component<{
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
     const activeColor = c.localVideoEnabled
       ? v.colors.primary
-      : v.colors.greyIcon
+      : v.colors.warning
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
       !c.answered
@@ -673,12 +682,10 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              style={{ justifyContent: 'center', alignItems: 'center' }}
               onPress={Nav().goToPageCallTransferChooseUser}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
-              viewBox='0 0 32 32'
             />
           )}
           {!this.isBtnHidden('park') && (
@@ -692,7 +699,6 @@ class PageCallManage extends Component<{
               onPress={Nav().goToPageCallParks2}
               path={mdiAlphaPCircle}
               size={40}
-              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -706,12 +712,9 @@ class PageCallManage extends Component<{
               noborder
               onPress={c.toggleVideo}
               path={
-                c.localVideoEnabled && !c.mutedVideo
-                  ? mdiVideoCamera
-                  : mdiVideoOff
+                c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
               }
               size={40}
-              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -754,13 +757,12 @@ class PageCallManage extends Component<{
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
-              color={c.recording ? '#FF4526' : 'black'}
+              color={c.recording ? 'white' : 'black'}
               name={intl`RECORD`}
               noborder
               onPress={c.toggleRecording}
-              path={mdiRecordCall}
+              path={c.recording ? mdiRecordCircle : mdiRecord}
               size={40}
-              viewBox='0 0 32 32'
               textcolor='white'
             />
           )}
@@ -774,7 +776,6 @@ class PageCallManage extends Component<{
               noborder
               onPress={Nav().goToPageCallDtmfKeypad}
               path={mdiDialpad}
-              viewBox='0 0 32 32'
               size={40}
               textcolor='white'
             />
@@ -816,32 +817,42 @@ class PageCallManage extends Component<{
           { marginTop: isLarge ? 10 : 40 },
         ]}
       >
-        <View style={css.viewHangupBtn}>
-          {incoming && this.isVisible() && <IncomingItemWithTimer />}
-          {incoming && (
-            <ButtonIcon
-              bgcolor={v.colors.primary}
-              color='white'
-              noborder
-              onPress={() => c.answer({ ignoreNav: true })}
-              path={mdiPhone}
-              size={40}
-              textcolor='white'
-            />
-          )}
-          {incoming && <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />}
-          {!isHangupBtnHidden && (
-            <ButtonIcon
-              bgcolor={v.colors.danger}
-              color='white'
-              noborder
-              onPress={c.hangupWithUnhold}
-              path={mdiPhoneHangup}
-              size={40}
-              textcolor='white'
-            />
-          )}
-        </View>
+        {c.holding ? (
+          <View style={css.txtHold}>
+            <RnText small white center>
+              {intl`CALL IS ON HOLD`}
+            </RnText>
+          </View>
+        ) : (
+          <View style={css.viewHangupBtn}>
+            {incoming && this.isVisible() && <IncomingItemWithTimer />}
+            {incoming && (
+              <ButtonIcon
+                bgcolor={v.colors.primary}
+                color='white'
+                noborder
+                onPress={() => c.answer({ ignoreNav: true })}
+                path={mdiPhone}
+                size={40}
+                textcolor='white'
+              />
+            )}
+            {incoming && (
+              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+            )}
+            {!isHangupBtnHidden && (
+              <ButtonIcon
+                bgcolor={v.colors.danger}
+                color='white'
+                noborder
+                onPress={c.hangupWithUnhold}
+                path={mdiPhoneHangup}
+                size={40}
+                textcolor='white'
+              />
+            )}
+          </View>
+        )}
       </View>
     )
   }
