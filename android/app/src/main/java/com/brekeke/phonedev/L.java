@@ -63,7 +63,7 @@ public class L {
   }
 
   public static String callIsOnHold() {
-    return "ja".equals(l) ? "保留中" : "ON HOLD";
+    return "ja".equals(l) ? "保留中" : "CALL IS ON HOLD";
   }
 
   public static String titlePermissionMicroCamera() {

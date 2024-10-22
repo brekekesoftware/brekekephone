@@ -131,10 +131,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
       isMuted = false;
 
-  private int orientation;
-
-  private boolean isPortrait;
-
   class StreamData {
     String vId;
     String streamUrl;
@@ -299,10 +295,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     updateLabels();
     updateHeader();
     updateCallConfig();
-
-    orientation = getResources().getConfiguration().orientation;
-    isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-    updateButtonsControlUIOrientation();
   }
 
   @Override
@@ -318,26 +310,12 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     super.onPause();
   }
 
-  private void updateButtonsControlUIOrientation () {
-    if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      vCallManageControls.setOrientation(LinearLayout.HORIZONTAL);
-      LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) vUnderBtnsControl.getLayoutParams();
-      lp.topMargin = 0;
-      vUnderBtnsControl.setLayoutParams(lp);
-    } else {
-      vCallManageControls.setOrientation(LinearLayout.VERTICAL);
-      LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) vUnderBtnsControl.getLayoutParams();
-      lp.topMargin = 5;
-      vUnderBtnsControl.setLayoutParams(lp);
-    }
-  }
-
   private void updateSizeStreamItemOrientation (LinearLayout ln) {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
     float factor = displayMetrics.density;
     int w = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
-    int h = (int) Math.floor((orientation == Configuration.ORIENTATION_LANDSCAPE ? 86 : 182) * factor);
+    int h = (int) Math.floor(182* factor);
     if(ln != null) {
       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(w, h);
       lp.setMargins((int) (16 *factor) , 0,0 , 0);
@@ -346,25 +324,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       ln.setPadding(9, 9, 9, 9);
       ln.setLayoutParams(lp);
     }
-  }
-
-  private void updateStreamsUIOrientation() {
-    arrayStreams.forEach((k, v) -> {
-      LinearLayout ln = findViewById(v.id);
-      updateSizeStreamItemOrientation(ln);
-    });
-    if(localStreamId != 0) {
-      LinearLayout ln = findViewById(localStreamId);
-      updateSizeStreamItemOrientation(ln);
-    }
-  }
-
-  public void onConfigurationChanged(Configuration newConfig) {
-    orientation = newConfig.orientation;
-    updateButtonsControlUIOrientation();
-    updateStreamsUIOrientation();
-
-    super.onConfigurationChanged(newConfig);
   }
 
   @Override
@@ -841,19 +800,19 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.view_call_manage_controls,
         ConstraintSet.TOP,  R.id.btn_unlock,
         ConstraintSet.TOP,
-            isPortrait ? isLargeDevice ? flexValue / 2 : 30 : 200);
+             isLargeDevice ? flexValue / 2 : 30);
     constraintSet.connect(
         R.id.card_avatar_talking,
         ConstraintSet.TOP,
         ConstraintSet.PARENT_ID,
         ConstraintSet.TOP,
-            isPortrait ? (int) (flexValue / 1.1) : (flexValue / 2));
+             (int) (flexValue / 1.1));
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-            isPortrait ? isLargeDevice ? flexValue / 2 : 30 : 20);
+           isLargeDevice ? flexValue / 2 : 30);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1269,7 +1228,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
 
     constraintSet.connect(
-            R.id.view_call_manage_controls, ConstraintSet.TOP,  R.id.btn_unlock, ConstraintSet.TOP, isPortrait  ? 30 : 200);
+            R.id.view_call_manage_controls, ConstraintSet.TOP,  R.id.btn_unlock, ConstraintSet.TOP, 30);
     constraintSet.applyTo(constraintLayout);
   }
 

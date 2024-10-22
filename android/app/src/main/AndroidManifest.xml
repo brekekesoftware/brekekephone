@@ -69,9 +69,9 @@
       android:label="IncomingCallActivity"
       android:launchMode="standard"
       android:showOnLockScreen="true"
+      android:screenOrientation="sensorPortrait"
       android:autoRemoveFromRecents="true"
       android:windowSoftInputMode="adjustPan"
-      android:configChanges="orientation|screenSize"
     />
     <activity
       android:name=".ExitActivity"
