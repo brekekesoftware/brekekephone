@@ -56,102 +56,16 @@
         android:drawableLeft="@drawable/ic_back"
         android:outlineProvider="none"
       />
-      <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-      />
-      <Button
-        android:id="@+id/btn_switch_camera"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="24dp"
-        android:background="@android:color/transparent"
-        android:drawableLeft="@drawable/btn_switch_camera"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-      />
-    </LinearLayout>
-    <LinearLayout
-      android:id="@+id/view_nav_info"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:visibility="gone"
-      android:layout_marginTop="10dp"
-      android:layout_below="@id/view_nav_header"
-      android:orientation="vertical"
-    >
       <TextView
-        android:id="@+id/txt_header_caller_name"
+        android:id="@+id/txt_caller_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Caller Name"
         android:textSize="20dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingLeft="16dp"
-      />
-
-      <TextView
-        android:id="@+id/txt_count_timer"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="00:00"
-        android:textSize="9dp"
-        android:textColor="@color/white"
-        android:maxLines="1"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="4dp"
-        android:gravity="left"
-        android:visibility="visible"
-      />
-
-      <TextView
-        android:id="@+id/txt_call_is_on_hold"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="ON HOLD"
-        android:textSize="9dp"
-        android:textColor="@color/white"
-        android:maxLines="1"
-        android:layout_marginLeft="16dp"
-         android:padding="2dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/bg_hold_call"
-        android:gravity="center"
-        android:visibility="gone"
-      />
-
-      <TextView
-        android:id="@+id/txt_video_calling"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="VIDEO CALLING"
-        android:textSize="9dp"
-        android:textColor="@color/white"
-        android:maxLines="1"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/bg_status_calling"
-        android:gravity="center"
-        android:visibility="gone"
-      />
-
-      <TextView
-        android:id="@+id/txt_voice_calling"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="VOICE CALLING"
-        android:textSize="9dp"
-        android:textColor="@color/white"
-        android:maxLines="1"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/bg_status_calling"
-        android:gravity="center"
-        android:visibility="gone"
       />
     </LinearLayout>
       <RelativeLayout
@@ -348,6 +262,38 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
         >
+            <LinearLayout
+            android:id="@+id/view_time"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/btn_unlock"
+          >
+            <TextView
+              android:id="@+id/txt_header_caller_name"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:text="Caller Name"
+              android:textColor="@color/white"
+              android:textSize="22dp"
+              android:textStyle="bold"
+              android:maxLines="2"
+              android:ellipsize="end"
+              android:paddingHorizontal="20dp"
+            />
+            <TextView
+              android:id="@+id/txt_count_timer"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:paddingBottom="10dp"
+              android:text="00:00"
+              android:textColor="@color/white"
+              android:textSize="22dp"
+              android:textStyle="bold"
+            />
+          </LinearLayout>
           <Button
             android:id="@+id/btn_unlock"
             android:visibility="visible"
@@ -365,6 +311,17 @@
             app:layout_constraintBottom_toTopOf="@+id/view_call_manage_controls"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+          />
+          <Button
+            android:id="@+id/btn_switch_camera"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:paddingTop="40dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/btn_switch_camera"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
           />
           <LinearLayout
             android:id="@+id/view_call_manage_controls"
@@ -396,9 +353,10 @@
                   android:id="@+id/btn_transfer"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
+                  android:paddingTop="39dp"
+                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_transfer"
-                  android:paddingLeft="12dp"
                 />
 
                 <TextView
@@ -427,9 +385,10 @@
                   android:id="@+id/btn_park"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
+                  android:paddingTop="39dp"
+                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_park"
-                  android:paddingLeft="12dp"
                 />
 
                 <TextView
@@ -584,11 +543,11 @@
                   android:id="@+id/btn_dtmf"
                   android:layout_width="65dp"
                   android:layout_height="65dp"
+                  android:paddingTop="39dp"
+                  android:paddingLeft="13dp"
                   android:background="@drawable/bg_white"
                   android:drawableLeft="@drawable/ic_dtmf"
-                  android:paddingLeft="12dp"
                 />
-
                 <TextView
                   android:id="@+id/txt_dtmf_btn"
                   android:layout_width="wrap_content"

@@ -6,7 +6,6 @@ import android.app.KeyguardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -20,7 +19,6 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,12 +27,10 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -75,9 +71,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnMute,
       vBtnRecord,
       vBtnDTMF,
-      vBtnHold,
-      vNavInfo,
-      vUnderBtnsControl;
+      vBtnHold;
   public WebRTCView vWebrtcVideo;
 
   public LinearLayout vScrollViewStreams;
@@ -195,7 +189,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     imgAvatarLoadingProgress.start();
 
     vNavHeader = (LinearLayout) findViewById(R.id.view_nav_header);
-    vNavInfo = (LinearLayout) findViewById(R.id.view_nav_info);
     vHeaderIncomingCall = (RelativeLayout) findViewById(R.id.header_incoming);
     vWebrtc = (RelativeLayout) findViewById(R.id.view_webrtc);
     vIncomingCall = (RelativeLayout) findViewById(R.id.view_incoming_call);
@@ -285,12 +278,12 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtRecordBtn = (TextView) findViewById(R.id.txt_record_btn);
     txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
-    txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
+    txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
-    vUnderBtnsControl = (LinearLayout) findViewById(R.id.ln_under_buttons_control);
+    txtCallerNameHeader.setText(callerName);
 
     updateLabels();
     updateHeader();
@@ -764,7 +757,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vNavHeader.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
-    vNavInfo.setVisibility(View.VISIBLE);
 
     updateBtnUnlockLabel();
   }
@@ -775,7 +767,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vRemoteStream.bringToFront();
     btnUnlock.setVisibility(View.GONE);
     btnEndCall.setVisibility(View.GONE);
-    vNavInfo.setVisibility(View.GONE);
   }
 
   // vIncomingCall
@@ -1194,7 +1185,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
     vNavHeader.setVisibility(View.VISIBLE);
-    vNavInfo.setVisibility(View.VISIBLE);
     destroyAvatarWebView();
   }
 
@@ -1255,6 +1245,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
   public void updateUILayoutManagerCall(boolean isVideoCall) {
     if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
+    } else {
+      enableAvatarTalking();
     }
   }
 
@@ -1264,17 +1256,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       isMuted = _isMuted;
       btnVideo.setSelected(_isVideoCall && !_isMuted);
       checkVideoLocalEnable();
-      updateStyleTxtCall();
-    }
-  }
-
-  private void updateStyleTxtCall() {
-    if(isVideoCall) {
-      Resources res = getResources();
-      Drawable drawable = ResourcesCompat.getDrawable(res, R.drawable.bg_timer_call, null);
-      txtDurationCall.setBackground(drawable);
-      txtDurationCall.setGravity(Gravity.CENTER);
-      txtDurationCall.setPadding(2, 2, 2, 2);
     }
   }
 
