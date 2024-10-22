@@ -60,14 +60,8 @@ const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 const css = StyleSheet.create({
   BtnSwitchCamera: {
     position: 'absolute',
-    top: 0, // header compact height
-    right: 45,
-    height: 70,
-    zIndex: 100,
-    width: 50,
-    paddingHorizontal: 0,
-    paddingVertical: 20,
-    borderRadius: 0,
+    top: 10, // header compact height
+    right: 10,
   },
   cameraStyle: {
     position: 'absolute',
@@ -208,30 +202,6 @@ const css = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  SubInfo: {
-    minWidth: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    padding: 2,
-    overflow: 'hidden',
-  },
-  Duration: {
-    backgroundColor: '#4cc5de',
-  },
-  OnHold: {
-    backgroundColor: '#88888980',
-  },
-  VCalling: {
-    backgroundColor: '#74bf53',
-  },
-  DurationText: { fontSize: 9, lineHeight: 14, letterSpacing: 1.35 },
-  AlignCenter: { alignItems: 'center' },
-  AlignStart: { alignItems: 'flex-start' },
-  OnHoldText: {
-    fontSize: 9,
-  },
-  MainInfo: { width: '100%', alignItems: 'flex-start', paddingLeft: 16 },
 })
 export const backAction = () =>
   getAuthStore().phoneappliEnabled()
@@ -412,6 +382,7 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <Layout
+        compact
         dropdown={
           c.localVideoEnabled && !c.transferring
             ? [
@@ -425,13 +396,19 @@ class PageCallManage extends Component<{
             : undefined
         }
         noScroll
+        title={c.getDisplayName() || intl`Connecting...`}
+        transparent={!c.transferring}
         onBack={backAction}
-        transparent
-        colorIcon='white'
-        sizeIconBack={30}
-        heightDropdown={75}
       >
-        <View style={css.vContainerVideo}>{this.renderCall()}</View>
+        <View
+          style={
+            this.props.call.localVideoEnabled || c.localVideoEnabled
+              ? css.vContainerVideo
+              : css.vContainer
+          }
+        >
+          {this.renderCall()}
+        </View>
       </Layout>
     )
   }
@@ -520,17 +497,7 @@ class PageCallManage extends Component<{
     }
 
     return (
-      <View
-        style={
-          isShowAvatar
-            ? [css.Image_wrapper, { flex: 1 }]
-            : {
-                ...css.Image_wrapper,
-                minWidth: '100%',
-                minHeight: height * 0.1,
-              }
-        }
-      >
+      <View style={[css.Image_wrapper, { flex: 1 }]}>
         <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
         >
@@ -573,9 +540,9 @@ class PageCallManage extends Component<{
   private renderBtns = () => {
     const { call: c, orientation } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
-    // if (!this.showButtonsInVideoCall) {
-    //   return null
-    // }
+    if (!this.showButtonsInVideoCall) {
+      return null
+    }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
     const activeColor = c.localVideoEnabled
       ? v.colors.primary
@@ -591,7 +558,6 @@ class PageCallManage extends Component<{
           orientation === EOrientation.Landscape && { height: 100 },
           orientation === EOrientation.Portrait && {
             flex: 3,
-            backgroundColor: 'yellow',
           },
         ]}
       >

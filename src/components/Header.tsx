@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from 'react'
+import type { FC } from 'react'
 import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -43,10 +43,6 @@ export const Header: FC<
     title: string
     transparent: boolean
     isTab?: boolean
-    colorIcon?: string
-    rightItems?: ReactNode
-    sizeIconBack?: number
-    heightDropdown?: number
   }>
 > = p => {
   const {
@@ -60,10 +56,6 @@ export const Header: FC<
     title,
     isTab,
     transparent,
-    colorIcon,
-    rightItems,
-    sizeIconBack,
-    heightDropdown,
   } = p
   const [dropdownActive, setDropdownActive] = useState(false)
   return (
@@ -83,21 +75,11 @@ export const Header: FC<
               title={title as string}
             />
             {onBack && (
-              <BackBtn
-                compact={compact as boolean}
-                onPress={onBack}
-                color={colorIcon}
-                sizeIconBack={sizeIconBack}
-              />
+              <BackBtn compact={compact as boolean} onPress={onBack} />
             )}
             {dropdown && (
-              <DropdownBtn
-                onPress={() => setDropdownActive(true)}
-                colorIcon={colorIcon}
-                height={heightDropdown}
-              />
+              <DropdownBtn onPress={() => setDropdownActive(true)} />
             )}
-            {rightItems}
           </View>
           {menu && (
             <Navigation isTab={isTab} menu={menu} subMenu={subMenu as string} />
