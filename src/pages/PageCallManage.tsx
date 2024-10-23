@@ -36,7 +36,7 @@ import { IncomingItemWithTimer } from '../components/CallNotify'
 import { CallVideosCarousel } from '../components/CallVideosCarousel'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
-import { RnIcon, RnTouchableOpacity } from '../components/Rn'
+import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
@@ -62,6 +62,7 @@ const css = StyleSheet.create({
     position: 'absolute',
     top: 10, // header compact height
     right: 10,
+    zIndex: 100,
   },
   cameraStyle: {
     position: 'absolute',
@@ -71,7 +72,7 @@ const css = StyleSheet.create({
   },
   Video: {
     position: 'absolute',
-    top: 0, // header compact height
+    top: 40, // header compact height
     bottom: 0,
     left: 0,
     right: 0,
@@ -82,7 +83,7 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
   },
   BtnFuncCalls: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   Btns_Hidden: {
     opacity: 0,
@@ -121,7 +122,7 @@ const css = StyleSheet.create({
     paddingRight: 50,
   },
   Image_wrapper: {
-    marginHorizontal: 25,
+    marginHorizontal: 15,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -166,7 +167,6 @@ const css = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     marginTop: 10,
-    flex: 1,
   },
   viewHangupBtnsLandcape: {
     flex: 1,
@@ -540,7 +540,7 @@ class PageCallManage extends Component<{
   private renderBtns = () => {
     const { call: c, orientation } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
-    if (!this.showButtonsInVideoCall) {
+    if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
@@ -556,9 +556,6 @@ class PageCallManage extends Component<{
         style={[
           { marginTop: isHideButtons ? 30 : 0 },
           orientation === EOrientation.Landscape && { height: 100 },
-          orientation === EOrientation.Portrait && {
-            flex: 3,
-          },
         ]}
       >
         {n > 0 && (
