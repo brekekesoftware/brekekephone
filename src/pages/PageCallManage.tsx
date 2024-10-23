@@ -89,6 +89,7 @@ const css = StyleSheet.create({
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
+    width: Dimensions.get('screen').width,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
@@ -390,9 +391,9 @@ class PageCallManage extends Component<{
             : undefined
         }
         noScroll
+        onBack={backAction}
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
-        onBack={backAction}
       >
         <View
           style={
@@ -451,6 +452,7 @@ class PageCallManage extends Component<{
             size={40}
           />
         </View>
+        <View style={css.Video_Space} />
         <View
           style={[
             css.Video,
@@ -471,7 +473,6 @@ class PageCallManage extends Component<{
             { opacity: 0.5, backgroundColor: '#111111' },
           ]}
         />
-        <View style={css.Video_Space} />
       </>
     )
   }
@@ -481,12 +482,11 @@ class PageCallManage extends Component<{
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
-      !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+      (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
-
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
         <View
@@ -544,7 +544,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={[{ marginTop: isHideButtons ? 30 : 0 }]}
+        style={{ marginTop: isHideButtons ? 30 : 0 }}
       >
         {n > 0 && (
           <FieldButton
@@ -559,13 +559,7 @@ class PageCallManage extends Component<{
           />
         )}
         <View style={{ paddingTop: 10 }} />
-        <View
-          style={[
-            css.Btns_Inner,
-            isHideButtons && css.Btns_Hidden,
-            { width: Dimensions.get('screen').width },
-          ]}
-        >
+        <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
           {!this.isBtnHidden('transfer') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}

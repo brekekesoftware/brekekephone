@@ -565,7 +565,6 @@
                   android:layout_height="65dp"
                   android:background="@drawable/btn_hold"
                 />
-
                 <TextView
                   android:id="@+id/txt_hold_btn"
                   android:textStyle="bold"

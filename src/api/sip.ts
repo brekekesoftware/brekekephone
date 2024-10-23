@@ -147,7 +147,6 @@ export class SIP extends EventEmitter {
         d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       //
-
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
         rawSession: ev,
@@ -224,11 +223,9 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-
       const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
-
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
@@ -245,7 +242,6 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-
       const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,
@@ -369,7 +365,6 @@ export class SIP extends EventEmitter {
       track.enabled = true
     })
   }
-
   sendDTMF = async (p: {
     signal: string
     sessionId: string
@@ -403,9 +398,6 @@ export class SIP extends EventEmitter {
     )
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
-
-  setMutedCamera = (muted: boolean, sessionId: string) =>
-    this.phone?.setMuted({ videoClient: muted }, sessionId)
   switchCamera = async (
     sessionId: string,
     mutedVideo: boolean,
@@ -441,9 +433,7 @@ export class SIP extends EventEmitter {
       },
       shareStream: true,
     }
-
     // 4. add new stream to connection
-
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(
       sessionId,
