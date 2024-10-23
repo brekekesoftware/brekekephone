@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -298,14 +299,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void updateSizeStreamItemOrientation (LinearLayout ln) {
-    DisplayMetrics displayMetrics = new DisplayMetrics();
+     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-    float factor = displayMetrics.density;
-    int w = (int) Math.floor((displayMetrics.widthPixels / 3.5 ) - 16);
-    int h = (int) Math.floor(182* factor);
+    float scale = getResources().getDisplayMetrics().density;
+    int w = (int) ((displayMetrics.widthPixels / scale) / 3.5) - 16;
+    int h = (int) Math.floor(182 * scale);
     if(ln != null) {
-      LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(w, h);
-      lp.setMargins((int) (16 *factor) , 0,0 , 0);
+      LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int) (w * scale) , h);
+      lp.setMargins((int) (16 * scale) , 0,0 , 0);
       ln.setClipChildren(true);
       ln.setClipToPadding(true);
       ln.setPadding(9, 9, 9, 9);
@@ -780,7 +781,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
     constraintSet.connect(
         R.id.view_call_manage_controls,
-        ConstraintSet.TOP,  R.id.btn_unlock,
+        ConstraintSet.BOTTOM,
+        R.id.view_button_end,
         ConstraintSet.TOP,
         isLargeDevice ? flexValue / 2 : 30);
     constraintSet.connect(
@@ -1203,12 +1205,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-    constraintSet.clear(R.id.view_call_manage_controls, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
-
-    constraintSet.connect(
-            R.id.view_call_manage_controls, ConstraintSet.TOP,  R.id.btn_unlock, ConstraintSet.TOP, 30);
     constraintSet.applyTo(constraintLayout);
   }
 
@@ -1218,7 +1216,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(constraintLayout);
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
-    constraintSet.clear(R.id.view_call_manage_controls, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock,
         ConstraintSet.BOTTOM,
