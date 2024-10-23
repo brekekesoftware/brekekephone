@@ -15,7 +15,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
   >
-      <LinearLayout
+    <LinearLayout
       android:id="@+id/view_nav_header"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -539,13 +539,13 @@
                 />
                 <TextView
                   android:id="@+id/txt_dtmf_btn"
+                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="KEYPAD"
                   android:textColor="@color/white"
                   android:textSize="14dp"
-                  android:textStyle="bold"
                 />
               </LinearLayout>
               <!-- btn hold-->
@@ -568,17 +568,16 @@
 
                 <TextView
                   android:id="@+id/txt_hold_btn"
+                  android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:paddingTop="5dp"
                   android:text="HOLD"
                   android:textColor="@color/white"
                   android:textSize="14dp"
-                  android:textStyle="bold"
                 />
               </LinearLayout>
             </LinearLayout>
-
             <LinearLayout
               android:id="@+id/ln_flex1"
               android:layout_width="wrap_content"
@@ -587,7 +586,6 @@
               android:visibility="gone"
             />
           </LinearLayout>
-
           <RelativeLayout
             android:id="@+id/view_call_manage_loading"
             android:layout_width="wrap_content"
@@ -605,9 +603,9 @@
               android:indeterminate="true"
               android:indeterminateTint="@color/white"
             />
-
             <TextView
               android:id="@+id/txt_connecting"
+              android:textStyle="normal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginTop="60dp"
@@ -615,10 +613,8 @@
               android:text="Connecting..."
               android:textColor="@color/white"
               android:textSize="20dp"
-              android:textStyle="normal"
             />
           </RelativeLayout>
-
           <RelativeLayout
             android:id="@+id/view_button_end"
             android:layout_width="wrap_content"
@@ -632,10 +628,10 @@
               android:id="@+id/btn_end_call"
               android:layout_width="65dp"
               android:layout_height="65dp"
+              android:paddingTop="39dp"
+              android:paddingLeft="13dp"
               android:background="@drawable/btn_reject"
               android:drawableLeft="@drawable/ic_reject"
-              android:paddingLeft="13dp"
-              android:paddingTop="39dp"
             />
             <TextView
               android:id="@+id/txt_call_is_on_hold"
@@ -650,15 +646,13 @@
               android:visibility="gone"
             />
           </RelativeLayout>
-
           <androidx.cardview.widget.CardView
             android:id="@+id/card_avatar_talking"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:visibility="gone"
+            android:layout_gravity="center"
             app:cardCornerRadius="0dp"
             app:cardPreventCornerOverlap="true"
             app:layout_constraintBottom_toTopOf="@+id/view_time"
@@ -666,6 +660,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
           >
             <ImageView
               android:id="@+id/avatar_talking"
@@ -674,7 +669,6 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
-
             <RelativeLayout
               android:id="@+id/rl_taking_loading"
               android:layout_width="match_parent"
@@ -693,7 +687,6 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
-
             <WebView
               android:id="@+id/avatar_talking_html"
               android:layout_width="match_parent"
