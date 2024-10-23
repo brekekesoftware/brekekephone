@@ -4,7 +4,6 @@ import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
 import type { Call } from '../stores/Call'
 import { convertExInfo } from '../utils/convertExInfo'
-import { EOrientation, useOrientation } from '../utils/useOrientation'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { VideoPlayer } from './VideoPlayer'
 import { VideoViewItem } from './VideoViewItem'
@@ -46,12 +45,10 @@ export const CallVideosCarousel = observer(
       }
     }, [videoClientSessionTable.length, videoStreamActive])
 
-    const orientation = useOrientation()
-    const isPortrait = orientation === EOrientation.Portrait
     const width = Dimensions.get('window').width
     const height = Dimensions.get('window').height
-    const finalHeight = isPortrait ? 182 : 86
-    const finalWidth = Math.floor(width / (isPortrait ? 3.5 : 4) - 16)
+    const finalHeight = 182
+    const finalWidth = Math.floor(width / 3.5 - 16)
     return (
       <>
         <RnTouchableOpacity
@@ -75,7 +72,7 @@ export const CallVideosCarousel = observer(
           <View style={styles.streams}>
             <ScrollView
               horizontal
-              style={isPortrait ? styles.scrollView : styles.scrollViewLandcape}
+              style={styles.scrollView}
               contentContainerStyle={[styles.contentScrollView]}
               showsHorizontalScrollIndicator={false}
               ref={refScroll}
@@ -87,7 +84,6 @@ export const CallVideosCarousel = observer(
                 showSwitchCamera
                 onSwitchCamera={() => toggleSwitchCamera()}
                 isFrontCamera={isFrontCamera}
-                isPortrait={isPortrait}
                 enabled={!mutedVideo}
               />
               {videoClientSessionTable.map(item => (
@@ -119,9 +115,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     height: 'auto',
-  },
-  scrollViewLandcape: {
-    height: 300,
   },
   contentScrollView: { gap: 16, padding: 16 },
   streams: {

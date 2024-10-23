@@ -47,9 +47,7 @@ import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
-import { EOrientation } from '../utils/useOrientation'
 import { waitTimeout } from '../utils/waitTimeout'
-import { withOrientation } from '../utils/withOrientation'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
 
 const { width, height } = Dimensions.get('window')
@@ -168,9 +166,6 @@ const css = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: 10,
   },
-  viewHangupBtnsLandcape: {
-    flex: 1,
-  },
   viewHangupBtn: {
     marginBottom: 10,
     justifyContent: 'center',
@@ -243,7 +238,7 @@ export class RenderAllCalls extends Component {
     return (
       <>
         {s.calls.map(c => (
-          <PageCallManageComponent key={c.id} call={c} />
+          <PageCallManage key={c.id} call={c} />
         ))}
       </>
     )
@@ -253,7 +248,6 @@ export class RenderAllCalls extends Component {
 @observer
 class PageCallManage extends Component<{
   call: Call
-  orientation: EOrientation
 }> {
   componentDidMount = () => {
     this.checkJavaPn()
@@ -483,18 +477,15 @@ class PageCallManage extends Component<{
   }
 
   private renderAvatar = () => {
-    const { call: c, orientation } = this.props
+    const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
       !!(c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
       ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
-      : { flex: 1, paddingTop: 20 }
+      : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
-    if (!isShowAvatar && orientation === EOrientation.Landscape) {
-      return null
-    }
 
     return (
       <View style={[css.Image_wrapper, { flex: 1 }]}>
@@ -538,7 +529,7 @@ class PageCallManage extends Component<{
   }
 
   private renderBtns = () => {
-    const { call: c, orientation } = this.props
+    const { call: c } = this.props
     const n = getCallStore().calls.filter(_ => _.id !== c.id).length
     if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
@@ -553,10 +544,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={[
-          { marginTop: isHideButtons ? 30 : 0 },
-          orientation === EOrientation.Landscape && { height: 100 },
-        ]}
+        style={[{ marginTop: isHideButtons ? 30 : 0 }]}
       >
         {n > 0 && (
           <FieldButton
@@ -706,21 +694,14 @@ class PageCallManage extends Component<{
   }
 
   private renderHangupBtn = () => {
-    const { call: c, orientation } = this.props
+    const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isHangupBtnHidden =
       (incoming && this.isBtnHidden('hangup')) ||
       (!this.showButtonsInVideoCall && c.answered)
     return (
-      <View
-        style={[
-          orientation === EOrientation.Portrait
-            ? css.viewHangupBtns
-            : css.viewHangupBtnsLandcape,
-          { marginTop: isLarge ? 10 : 40 },
-        ]}
-      >
+      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (
           <View style={css.txtHold}>
             <RnText small white center>
@@ -772,5 +753,3 @@ class PageCallManage extends Component<{
     )
   }
 }
-
-const PageCallManageComponent = withOrientation(PageCallManage)

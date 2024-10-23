@@ -14,7 +14,6 @@ type VideoViewItemProps = {
   view: { width: number; height: number }
   enabled?: boolean
   isFrontCamera?: boolean
-  isPortrait?: boolean
 }
 
 export const VideoViewItem = observer((props: VideoViewItemProps) => {
@@ -26,7 +25,6 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     view,
     onSelect,
     enabled = true,
-    isPortrait,
   } = props
 
   return (
@@ -56,8 +54,6 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         <View
           style={{
             ...styles.switchCameraView,
-            top: view.height * (isPortrait ? 0.4 : 0.3),
-            left: view.width / 2 - 15,
           }}
         >
           <TouchableOpacity
@@ -87,6 +83,12 @@ const styles = StyleSheet.create({
   switchCameraView: {
     position: 'absolute',
     zIndex: 1,
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   switchCameraBtn: {
     width: 28,
