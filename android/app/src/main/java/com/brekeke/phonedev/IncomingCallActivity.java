@@ -73,14 +73,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnDTMF,
       vBtnHold;
   public WebRTCView vWebrtcVideo;
-
   public LinearLayout vScrollViewStreams;
-
   public ArrayMap <String, StreamData> arrayStreams = new ArrayMap() ;
-
   public String activeStreamId = "";
   public int localStreamId = 0;
-
   public String localStreamUrl = "";
   public ProgressBar videoLoading;
   public View vCardAvatar, vCardAvatarTalking;
@@ -122,7 +118,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false,
-
       isMuted = false;
 
   class StreamData {
@@ -264,7 +259,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSwitchCamera.setOnClickListener(this);
     btnSwitchCamera.setSelected(true); // default front camera
 
-txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
+    txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
     txtIncomingCall = (TextView) findViewById(R.id.txt_incoming_call);
     txtConnecting = (TextView) findViewById(R.id.txt_connecting);
@@ -753,10 +748,8 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
     vCallManage.bringToFront();
-    vNavHeader.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
-
     updateBtnUnlockLabel();
   }
 
@@ -781,7 +774,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
     vCardAvatarTalking.getLayoutParams().width = flexValue;
-
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
@@ -790,19 +782,19 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
         R.id.view_call_manage_controls,
         ConstraintSet.TOP,  R.id.btn_unlock,
         ConstraintSet.TOP,
-             isLargeDevice ? flexValue / 2 : 30);
+        isLargeDevice ? flexValue / 2 : 30);
     constraintSet.connect(
         R.id.card_avatar_talking,
         ConstraintSet.TOP,
         ConstraintSet.PARENT_ID,
         ConstraintSet.TOP,
-             (int) (flexValue / 1.1));
+        (int) (flexValue / 1.1));
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-           isLargeDevice ? flexValue / 2 : 30);
+        isLargeDevice ? flexValue / 2 : 30);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1169,7 +1161,6 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
       case R.id.btn_switch_camera:
         onBtnSwitchCamera(v);
         break;
-
       default:
         break;
     }
