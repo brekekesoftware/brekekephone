@@ -15,35 +15,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
   >
- <!-- view_webrtc_video -->
-    <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="visible"
-    >
-      <RelativeLayout
-        android:id="@+id/view_webrtc"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black"
-        android:visibility="gone"
-      >
-        <ProgressBar
-          android:id="@+id/video_loading"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:indeterminate="true"
-          android:layout_centerInParent="true"
-          android:paddingBottom="120dp"
-          android:indeterminateTint="@color/white"
-          android:visibility="gone"
-        />
-      </RelativeLayout>
 
       <LinearLayout
       android:id="@+id/view_nav_header"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@color/white"
       android:visibility="gone"
       android:layout_marginTop="12dp"
     >
@@ -68,6 +45,31 @@
         android:ellipsize="end"
       />
     </LinearLayout>
+
+    <!-- view_webrtc_video -->
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="visible"
+    >
+      <RelativeLayout
+        android:id="@+id/view_webrtc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone"
+      >
+        <ProgressBar
+          android:id="@+id/video_loading"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:indeterminate="true"
+          android:layout_centerInParent="true"
+          android:paddingBottom="120dp"
+          android:indeterminateTint="@color/white"
+          android:visibility="gone"
+        />
+      </RelativeLayout>
       <RelativeLayout
         android:id="@+id/header_incoming"
         android:layout_width="match_parent"
@@ -647,6 +649,18 @@
               android:drawableLeft="@drawable/ic_reject"
               android:paddingLeft="13dp"
               android:paddingTop="39dp"
+            />
+            <TextView
+              android:id="@+id/txt_call_is_on_hold"
+              android:textStyle="bold"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="20dp"
+              android:gravity="center"
+              android:text="CALL IS ON HOLD"
+              android:textColor="@color/white"
+              android:textSize="20dp"
+              android:visibility="gone"
             />
           </RelativeLayout>
 

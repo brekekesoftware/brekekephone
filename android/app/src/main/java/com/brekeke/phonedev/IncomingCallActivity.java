@@ -230,7 +230,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
-    vNavHeader.setBackgroundColor(Color.TRANSPARENT);
 
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
@@ -248,7 +247,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnEndCall = (Button) findViewById(R.id.btn_end_call);
     btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
     btnBack = (Button) findViewById(R.id.btn_back);
-    btnBack.setBackgroundColor(Color.TRANSPARENT);
 
     btnBack.setOnClickListener(this);
     btnAnswer.setOnClickListener(this);
@@ -278,6 +276,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtRecordBtn = (TextView) findViewById(R.id.txt_record_btn);
     txtDtmfBtn = (TextView) findViewById(R.id.txt_dtmf_btn);
     txtHoldBtn = (TextView) findViewById(R.id.txt_hold_btn);
+    txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
     txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
 
@@ -708,7 +707,7 @@ txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
     RelativeLayout rl = (RelativeLayout) new RelativeLayout(BrekekeUtils.ctx);
     Button bt = new Button(BrekekeUtils.ctx);
-    Drawable drawable = getDrawableFromResources(R.drawable.btn_switch_camera);
+    Drawable drawable = getDrawableFromResources(R.drawable.btn_camera_rolate);
     bt.setBackground(drawable);
     bt.setOnClickListener(new View.OnClickListener() {
       @Override
