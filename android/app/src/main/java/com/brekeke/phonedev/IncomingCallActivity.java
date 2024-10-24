@@ -61,8 +61,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vHeaderIncomingCall,
       vWebViewAvatarLoading,
       vWebViewAvatarTalkingLoading,
-
-    vRemoteStream;
+      vRemoteStreams;
   public LinearLayout vNavHeader,
       vCallManageControls,
       vBtnTransfer,
@@ -198,7 +197,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
     vScrollViewStreams = (LinearLayout) findViewById((R.id.scroll_view_streams));
-    vRemoteStream = (RelativeLayout) findViewById(R.id.view_remote_streams);
+    vRemoteStreams = (RelativeLayout) findViewById(R.id.view_remote_streams);
 
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
@@ -379,7 +378,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           callConfig != null && callConfig.has(k)
               ? callConfig.getString(k).equals("false")
               : (pbxConfig != null && pbxConfig.has(k) && pbxConfig.getString(k).equals("false"));
-      if ("hangup".equals(k) && btnHold.isSelected()) {
+      if ("hangup".equals(k) &&(btnHold.isSelected() || v.getVisibility() == View.GONE)) {
         disabled = true;
       }
       v.setVisibility(disabled ? View.GONE : View.VISIBLE);
@@ -592,12 +591,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void setRemoteStreams(ReadableArray streams) {
     for (int i = 0; i < streams.size(); i++) {
       ReadableMap streamItem = streams.getMap(i);
-      String vId = streamItem.getString("vId");
       String streamUrl = streamItem.getString("streamUrl");
       LinearLayout v = this.createStreamItem(streamUrl, false);
       vScrollViewStreams.addView(v);
     }
-    vRemoteStream.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
+    vRemoteStreams.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
   }
 
   public void addStreamToView(ReadableMap stream) {
@@ -638,7 +636,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       }
     }
     if(arrayStreams.size() > 0 && localStreamId != 0) {
-      vRemoteStream.setVisibility(View.VISIBLE);
+      vRemoteStreams.setVisibility(View.VISIBLE);
       btnSwitchCamera.setVisibility(View.VISIBLE);
       if(activeStreamId == "") {
         StreamData s = arrayStreams.valueAt(0);
@@ -669,7 +667,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       }
     }
     if(arrayStreams.size() == 0) {
-      vRemoteStream.setVisibility(View.GONE);
+      vRemoteStreams.setVisibility(View.GONE);
     }
 
   }
@@ -751,15 +749,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManage.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
+    txtHeaderCallerName.setVisibility(View.VISIBLE);
+    txtDurationCall.setVisibility(View.VISIBLE);
     updateBtnUnlockLabel();
   }
 
   public void hideCallManageControls() {
     isCallManageControlsHidden = true;
     vCallManageControls.setVisibility(View.GONE);
-    vRemoteStream.bringToFront();
+    vRemoteStreams.bringToFront();
     btnUnlock.setVisibility(View.GONE);
     btnEndCall.setVisibility(View.GONE);
+    txtHeaderCallerName.setVisibility(View.GONE);
+    txtDurationCall.setVisibility(View.GONE);
   }
 
   // vIncomingCall
@@ -1309,9 +1311,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
-    txtDurationCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     if(isVideoCall) {
-      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE );
+      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE);
       vWebrtcVideo.setVisibility(holding ? View.GONE : View.VISIBLE);
     }
   }
