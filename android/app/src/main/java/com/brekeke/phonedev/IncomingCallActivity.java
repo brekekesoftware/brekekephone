@@ -298,7 +298,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private void updateSizeStreamItemOrientation (LinearLayout ln) {
-     DisplayMetrics displayMetrics = new DisplayMetrics();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
     float scale = getResources().getDisplayMetrics().density;
     int w = (int) ((displayMetrics.widthPixels / scale) / 3.5) - 16;
@@ -749,8 +749,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManage.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
     btnEndCall.setVisibility(View.VISIBLE);
-    txtHeaderCallerName.setVisibility(View.VISIBLE);
-    txtDurationCall.setVisibility(View.VISIBLE);
     updateBtnUnlockLabel();
   }
 
@@ -760,8 +758,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vRemoteStreams.bringToFront();
     btnUnlock.setVisibility(View.GONE);
     btnEndCall.setVisibility(View.GONE);
-    txtHeaderCallerName.setVisibility(View.GONE);
-    txtDurationCall.setVisibility(View.GONE);
   }
 
   // vIncomingCall

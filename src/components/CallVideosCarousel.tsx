@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
   },
   contentScrollView: { gap: 16, padding: 16 },
   streams: {
-    zIndex: 210,
     position: 'absolute',
     height: 'auto',
     width: '100%',

@@ -456,7 +456,7 @@ class PageCallManage extends Component<{
         <View
           style={[
             css.Video,
-            { zIndex: !this.showButtonsInVideoCall ? 200 : undefined },
+            { zIndex: !this.showButtonsInVideoCall ? 90 : undefined },
           ]}
         >
           <CallVideosCarousel
@@ -468,10 +468,7 @@ class PageCallManage extends Component<{
         <RnTouchableOpacity
           onPress={this.toggleButtons}
           activeOpacity={0}
-          style={[
-            StyleSheet.absoluteFill,
-            { opacity: 0.5, backgroundColor: '#111111' },
-          ]}
+          style={StyleSheet.absoluteFill}
         />
       </>
     )
@@ -509,7 +506,9 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
+        <View
+          style={[!isShowAvatar ? css.styleTextBottom : {}, { zIndex: 100 }]}
+        >
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
           </RnText>
