@@ -431,6 +431,7 @@ class PageCallManage extends Component<{
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
+        {c.localVideoEnabled && <View style={{ flex: 1 }} />}
         {this.renderHangupBtn()}
         {c.transferring ? renderTransferring() : null}
       </>
@@ -485,7 +486,7 @@ class PageCallManage extends Component<{
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
-      <View style={[css.Image_wrapper, { flex: 1 }]}>
+      <View style={[!c.localVideoEnabled && css.Image_wrapper, { flex: 1 }]}>
         <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
         >
@@ -690,9 +691,7 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isHangupBtnHidden =
-      (incoming && this.isBtnHidden('hangup')) ||
-      (!this.showButtonsInVideoCall && c.answered)
+    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (

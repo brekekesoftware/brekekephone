@@ -19,7 +19,6 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -46,9 +45,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
@@ -308,7 +304,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       lp.setMargins((int) (16 * scale) , 0,0 , 0);
       ln.setClipChildren(true);
       ln.setClipToPadding(true);
-      ln.setPadding(9, 9, 9, 9);
+      int p = (int) scale * 5 - 2;
+      ln.setPadding(p, p, p, p);
       ln.setLayoutParams(lp);
     }
   }
@@ -581,7 +578,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     Drawable drawable = getDrawableFromResources(R.drawable.bg_stream_video);
     ln.setBackground(drawable);
     updateSizeStreamItemOrientation(ln);
-    ln.setPadding(5, 5,5,5);
+    int scale = (int) getResources().getDisplayMetrics().density * 3 - 2;
+
+    ln.setPadding(scale, scale,scale,scale);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     rl.addView(rtcView);
     rl.setGravity(Gravity.CENTER);
@@ -716,10 +715,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     params.topMargin = (int) (parentLayout.height * 0.4);
     rl.setLayoutParams(params);
     rl.addView(bt);
-
     r.addView(rl, 1);
     r.bringChildToFront(rl);
-
     localStreamId = View.generateViewId();
     localStreamUrl = streamUrl;
     v.setId(localStreamId);
@@ -1205,6 +1202,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.connect(
+            R.id.view_call_manage_controls, ConstraintSet.TOP, R.id.btn_unlock, ConstraintSet.TOP, 50);
     constraintSet.applyTo(constraintLayout);
   }
 
