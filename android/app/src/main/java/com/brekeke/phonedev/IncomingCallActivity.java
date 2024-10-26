@@ -293,7 +293,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     super.onPause();
   }
 
-  private void updateSizeStreamItemOrientation (LinearLayout ln) {
+  private void updateSizeStreamItem(LinearLayout ln) {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
     float scale = getResources().getDisplayMetrics().density;
@@ -301,11 +301,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     int h = (int) Math.floor(182 * scale);
     if(ln != null) {
       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int) (w * scale) , h);
-      lp.setMargins((int) (16 * scale) , 0,0 , 0);
+      lp.setMargins((int) (16 * scale) , 0, 0 , 0);
       ln.setClipChildren(true);
       ln.setClipToPadding(true);
-      int p = (int) scale * 5 - 2;
-      ln.setPadding(p, p, p, p);
       ln.setLayoutParams(lp);
     }
   }
@@ -560,14 +558,23 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   private void updateBgForStream(LinearLayout ln, boolean isActive) {
     Drawable drawable = getDrawableFromResources(isActive ? R.drawable.bg_stream_video_active : R.drawable.bg_stream_video);
     ln.setBackground(drawable);
+    int density = (int) getResources().getDisplayMetrics().density;
+    int p;
+    if (isActive) {
+      p = density * 5 - 2;
+    } else {
+      p = density * 3 - 2;
+    }
+    ln.setPadding(p, p, p, p);
   }
 
   private LinearLayout createStreamItem (String streamUrl, boolean isActive) {
     LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
     updateBgForStream(ln, isActive);
-    updateSizeStreamItemOrientation(ln);
+    updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     ln.addView(rtcView);
+
     return ln;
   }
 
@@ -575,12 +582,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
     RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
     ln.addView(rl);
-    Drawable drawable = getDrawableFromResources(R.drawable.bg_stream_video);
-    ln.setBackground(drawable);
-    updateSizeStreamItemOrientation(ln);
-    int scale = (int) getResources().getDisplayMetrics().density * 3 - 2;
-
-    ln.setPadding(scale, scale,scale,scale);
+    updateSizeStreamItem(ln);
+    updateBgForStream(ln, false);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     rl.addView(rtcView);
     rl.setGravity(Gravity.CENTER);
@@ -602,7 +605,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     String streamUrl = stream.getString("streamUrl");
 
     if(vId != "") {
-      boolean isExist =  arrayStreams.containsKey(vId);
+      boolean isExist = arrayStreams.containsKey(vId);
       if(!isExist) {
         int id = View.generateViewId();
         StreamData sData = new StreamData(id, vId, streamUrl);
@@ -632,6 +635,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           }
         });
         vScrollViewStreams.addView(v);
+        v.setVisibility(View.GONE);
       }
     }
     if(arrayStreams.size() > 0 && localStreamId != 0) {
@@ -644,6 +648,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         updateBgForStream((LinearLayout) l, true);
       }
     }
+    if(arrayStreams.size() > 1) {
+      arrayStreams.forEach((k, v) -> {
+        LinearLayout l = findViewById(v.id);
+        if(l != null) {
+          l.setVisibility(View.VISIBLE);
+        }
+      });
+    }
   }
 
   public void removeStreamFromView(String vId) {
@@ -654,11 +666,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       if(l != null) {
         if(activeStreamId.equals(vId)) {
           if(arrayStreams.size() > 0) {
-            View l2 = vScrollViewStreams.getChildAt(0);
+            StreamData s = arrayStreams.valueAt(0);
+            LinearLayout l2 = findViewById(s.id);
             if(l2 != null) {
-              updateBgForStream((LinearLayout) l2, true);
-              activeStreamId = "";
+              updateBgForStream(l2, true);
+              updateStreamActive(s.vId, s.streamUrl);
             }
+          } else {
+            activeStreamId = "";
           }
         }
         vScrollViewStreams.removeView(l);
@@ -668,7 +683,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if(arrayStreams.size() == 0) {
       vRemoteStreams.setVisibility(View.GONE);
     }
-
+    if(arrayStreams.size() == 1) {
+      arrayStreams.forEach((k, v) -> {
+        LinearLayout l = findViewById(v.id);
+        if(l != null) {
+          l.setVisibility(View.GONE);
+        }
+      });
+    }
   }
 
   public void setStreamActive(ReadableMap stream) {
@@ -693,15 +715,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
 
     LinearLayout v = this.createStreamItemRelative(streamUrl);
-    v.setClipToOutline(true);
-    v.setClipToPadding(true);
-    v.setClipChildren(true);
-
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-    RelativeLayout rl = (RelativeLayout) new RelativeLayout(BrekekeUtils.ctx);
+    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
     Button bt = new Button(BrekekeUtils.ctx);
     Drawable drawable = getDrawableFromResources(R.drawable.btn_camera_rolate);
     bt.setBackground(drawable);
+    float scale = getResources().getDisplayMetrics().density;
     bt.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -709,10 +728,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       }
     });
 
-    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(80, 80);
-    ViewGroup.LayoutParams parentLayout = v.getLayoutParams();
-    params.leftMargin = (int) ((parentLayout.width / 2) - 40);
-    params.topMargin = (int) (parentLayout.height * 0.4);
+    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+            ((int) scale * 28,(int) scale * 28);
+    params.addRule(RelativeLayout.CENTER_VERTICAL);
+    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
     rl.setLayoutParams(params);
     rl.addView(bt);
     r.addView(rl, 1);
@@ -1036,7 +1055,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeUtils.emit("video", uuid);
-//    updateDisplayVideo(!isVideoCall);
     updateUILayoutManagerCall(!isVideoCall);
   }
 
@@ -1229,18 +1247,19 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void updateUILayoutManagerCall(boolean isVideoCall) {
     if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
-    } else {
-      enableAvatarTalking();
     }
   }
 
   public void setBtnVideoSelected(boolean _isVideoCall, boolean _isMuted) {
-    if (isVideoCall != _isVideoCall || isMuted != _isMuted) {
+    if (isVideoCall != _isVideoCall) {
       isVideoCall = _isVideoCall;
+      updateUILayoutManagerCall(isVideoCall);
+    }
+    if(isMuted != _isMuted) {
       isMuted = _isMuted;
-      btnVideo.setSelected(_isVideoCall && !_isMuted);
       checkVideoLocalEnable();
     }
+     btnVideo.setSelected(_isVideoCall && !_isMuted);
   }
 
   public void checkVideoLocalEnable() {
@@ -1253,13 +1272,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             child.removeViewAt(0);
           }
         } else {
-          WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
-          rtcView.setZOrder(1);
-          rtcView.setObjectFit("cover");
-          rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+          WebRTCView rtcView = createNewRTCView(localStreamUrl);
           child.addView(rtcView, 0);
           rtcView.bringChildToFront(existView.getChildAt(1));
-          rtcView.setStreamURL(localStreamUrl);
         }
       }
     }
@@ -1270,7 +1285,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       ReadableMap streamItem = arr.getMap(i);
       String vId = streamItem.getString("vId");
       boolean enableVideo = streamItem.getBoolean("enableVideo");
-
       StreamData sD = arrayStreams.get(vId);
 
       if(sD != null) {
@@ -1278,12 +1292,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         if(l != null) {
           if (enableVideo == true) {
             if (l.getChildAt(0) == null) {
-              WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
-              rtcView.setZOrder(1);
-              rtcView.setObjectFit("cover");
+              WebRTCView rtcView = createNewRTCView(sD.streamUrl);
               l.addView(rtcView);
-              rtcView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-              rtcView.setStreamURL(sD.streamUrl);
             }
             if(sD.vId.equals(activeStreamId)) {
               setRemoteVideoStreamUrl(sD.streamUrl);

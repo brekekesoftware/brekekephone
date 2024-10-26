@@ -86,18 +86,19 @@ export const CallVideosCarousel = observer(
                 isFrontCamera={isFrontCamera}
                 enabled={!mutedVideo}
               />
-              {videoClientSessionTable.map(item => (
-                <VideoViewItem
-                  sourceObject={item.remoteStreamObject}
-                  active={item.vId === videoStreamActive?.vId}
-                  key={item.vId}
-                  view={{ width: finalWidth, height: finalHeight }}
-                  onSelect={() => updateVideoStreamActive(item)}
-                  enabled={convertExInfo(
-                    remoteUserOptionsTable?.[item.user]?.exInfo,
-                  )}
-                />
-              ))}
+              {videoClientSessionTable.length > 1 &&
+                videoClientSessionTable.map(item => (
+                  <VideoViewItem
+                    sourceObject={item.remoteStreamObject}
+                    active={item.vId === videoStreamActive?.vId}
+                    key={item.vId}
+                    view={{ width: finalWidth, height: finalHeight }}
+                    onSelect={() => updateVideoStreamActive(item)}
+                    enabled={convertExInfo(
+                      remoteUserOptionsTable?.[item.user]?.exInfo,
+                    )}
+                  />
+                ))}
             </ScrollView>
           </View>
         )}

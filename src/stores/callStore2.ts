@@ -237,20 +237,6 @@ export class CallStore {
     }
   }
 
-  onHandleStreamsJava = (
-    id: string,
-    vId?: string,
-    stream?: MediaStream | null,
-  ) => {
-    if (vId) {
-      if (stream) {
-        BrekekeUtils.addStreamToView(id, { vId, streamUrl: stream.toURL() })
-      } else {
-        BrekekeUtils.removeStreamFromView(id, vId)
-      }
-    }
-  }
-
   @action private upsertCall = (
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -286,11 +272,16 @@ export class CallStore {
             p.localStreamObject.toURL(),
           )
         }
-        this.onHandleStreamsJava(
-          e.callkeepUuid,
-          p.videoSessionId,
-          p.remoteVideoStreamObject,
-        )
+        if (p.videoSessionId) {
+          if (p.remoteVideoStreamObject) {
+            BrekekeUtils.addStreamToView(e.callkeepUuid, {
+              vId: p.videoSessionId,
+              streamUrl: p.remoteVideoStreamObject.toURL(),
+            })
+          } else {
+            BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
+          }
+        }
       }
 
       if (
