@@ -574,13 +574,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     ln.addView(rtcView);
-
     return ln;
   }
 
   private LinearLayout createStreamItemRelative (String streamUrl) {
     LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
     RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
+    rl.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     ln.addView(rl);
     updateSizeStreamItem(ln);
     updateBgForStream(ln, false);
@@ -664,6 +664,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       StreamData d = arrayStreams.get(vId);
       LinearLayout l = findViewById(d.id);
       if(l != null) {
+        arrayStreams.remove(vId);
         if(activeStreamId.equals(vId)) {
           if(arrayStreams.size() > 0) {
             StreamData s = arrayStreams.valueAt(0);
@@ -674,10 +675,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             }
           } else {
             activeStreamId = "";
+            setRemoteVideoStreamUrl("");
           }
         }
         vScrollViewStreams.removeView(l);
-        arrayStreams.remove(vId);
       }
     }
     if(arrayStreams.size() == 0) {
@@ -727,15 +728,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         onBtnSwitchCamera(v);
       }
     });
-
-    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-            ((int) scale * 28,(int) scale * 28);
+     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+             ((int) scale * 28,(int) scale * 28);
     params.addRule(RelativeLayout.CENTER_VERTICAL);
     params.addRule(RelativeLayout.CENTER_HORIZONTAL);
     rl.setLayoutParams(params);
     rl.addView(bt);
     r.addView(rl, 1);
-    r.bringChildToFront(rl);
     localStreamId = View.generateViewId();
     localStreamUrl = streamUrl;
     v.setId(localStreamId);
@@ -1257,9 +1256,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
     if(isMuted != _isMuted) {
       isMuted = _isMuted;
-      checkVideoLocalEnable();
     }
      btnVideo.setSelected(_isVideoCall && !_isMuted);
+    checkVideoLocalEnable();
   }
 
   public void checkVideoLocalEnable() {
@@ -1267,14 +1266,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       LinearLayout existView = findViewById(this.localStreamId);
       RelativeLayout child = (RelativeLayout) existView.getChildAt(0);
       if(existView != null) {
-        if(isVideoCall && isMuted) {
-          if(child != null) {
-            child.removeViewAt(0);
-          }
-        } else {
-          WebRTCView rtcView = createNewRTCView(localStreamUrl);
-          child.addView(rtcView, 0);
-          rtcView.bringChildToFront(existView.getChildAt(1));
+        WebRTCView w = (WebRTCView) child.getChildAt(0);
+        if(child != null && w != null) {
+          w.setVisibility(isMuted ? View.GONE : View.VISIBLE);
         }
       }
     }

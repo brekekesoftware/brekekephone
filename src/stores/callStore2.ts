@@ -330,7 +330,7 @@ export class CallStore {
       ) {
         BrekekeUtils.setIsVideoCall(
           e.callkeepUuid,
-          !!e.localVideoEnabled,
+          e.localVideoEnabled,
           e.mutedVideo,
         )
       }
