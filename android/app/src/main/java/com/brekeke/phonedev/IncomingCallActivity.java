@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -278,6 +279,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateLabels();
     updateHeader();
     updateCallConfig();
+
+    HorizontalScrollView h = findViewById(R.id.horizontal_scroll_view_streams);
+    h.setHorizontalScrollBarEnabled(false);
+    h.setOverScrollMode(View.OVER_SCROLL_NEVER);
   }
 
   @Override
