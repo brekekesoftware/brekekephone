@@ -40,12 +40,14 @@ import { RnTouchableOpacity } from '../components/Rn'
 import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
+import { VideoPlayer } from '../components/VideoPlayer'
 import { getAuthStore } from '../stores/authStore'
 import type { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
+import { convertExInfo } from '../utils/convertExInfo'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
@@ -456,18 +458,25 @@ class PageCallManage extends Component<{
           />
         </View>
         <View style={css.Video_Space} />
-        <View
-          style={[
-            css.Video,
-            { zIndex: !this.showButtonsInVideoCall ? 11 : undefined },
-          ]}
-        >
-          <CallVideosCarousel
-            call={c}
-            showButtonsInVideoCall={this.showButtonsInVideoCall}
-            onButtonsInVideo={this.toggleButtons}
+        <View style={[css.Video]}>
+          <VideoPlayer
+            sourceObject={
+              convertExInfo(
+                c.remoteUserOptionsTable?.[c.videoStreamActive?.user ?? '']
+                  ?.exInfo,
+              )
+                ? c.videoStreamActive?.remoteStreamObject
+                : null
+            }
+            isShowLoading
+            zOrder={0}
           />
         </View>
+        <CallVideosCarousel
+          call={c}
+          showButtonsInVideoCall={this.showButtonsInVideoCall}
+          onButtonsInVideo={this.toggleButtons}
+        />
         <RnTouchableOpacity
           onPress={this.toggleButtons}
           activeOpacity={0}
@@ -509,9 +518,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        <View
-          style={[!isShowAvatar ? css.styleTextBottom : {}, { zIndex: 100 }]}
-        >
+        <View style={[!isShowAvatar ? css.styleTextBottom : {}]}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
           </RnText>
