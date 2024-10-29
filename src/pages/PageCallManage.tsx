@@ -459,7 +459,7 @@ class PageCallManage extends Component<{
         <View
           style={[
             css.Video,
-            { zIndex: !this.showButtonsInVideoCall ? 90 : undefined },
+            { zIndex: !this.showButtonsInVideoCall ? 11 : undefined },
           ]}
         >
           <CallVideosCarousel
@@ -693,7 +693,9 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
+    const isHangupBtnHidden =
+      (incoming && this.isBtnHidden('hangup')) ||
+      (!this.showButtonsInVideoCall && c.answered)
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (

@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
-import { isEmpty } from 'lodash'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
@@ -269,26 +268,26 @@ export class SIP extends EventEmitter {
       //      - callee disable video, then enable again
       //      - issue: -> caller show loading, callee black remote video
       // the issue is because of webrtclient.js but we can not modify it
-      if (
-        ev.remoteWithVideo &&
-        isEmpty(ev.videoClientSessionTable) &&
-        ev.withVideo &&
-        ev.rtcSession.direction !== 'incoming'
-      ) {
-        this.disableVideo(ev.sessionId)
-        this.enableVideo(ev.sessionId)
-      }
-    })
 
-    phone.addEventListener('rtcErrorOccurred', ev => {
-      console.error('sip.phone.rtcErrorOccurred:', ev)
-    })
+      /* Temp comment waiting reproduce for this case about disconnect and terminate all video  */
+      // if (
+      //   ev.remoteWithVideo &&
+      //   isEmpty(ev.videoClientSessionTable) &&
+      //   ev.withVideo &&
+      //   ev.rtcSession.direction !== 'incoming'
+      // ) {
+      //   this.disableVideo(ev.sessionId)
+      //   this.enableVideo(ev.sessionId)
+      // }
 
-    phone.addEventListener('remoteUserOptionsChanged', ev => {
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteUserOptionsTable: ev.remoteUserOptionsTable,
       })
+    })
+
+    phone.addEventListener('rtcErrorOccurred', ev => {
+      console.error('sip.phone.rtcErrorOccurred:', ev)
     })
 
     return phone
