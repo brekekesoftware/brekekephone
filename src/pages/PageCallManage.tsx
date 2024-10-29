@@ -152,6 +152,7 @@ const css = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 101,
   },
   hidden: {
     position: 'absolute',
@@ -166,6 +167,7 @@ const css = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     marginTop: 10,
+    zIndex: 100,
   },
   viewHangupBtn: {
     marginBottom: 10,
@@ -469,7 +471,7 @@ class PageCallManage extends Component<{
         <RnTouchableOpacity
           onPress={this.toggleButtons}
           activeOpacity={0}
-          style={StyleSheet.absoluteFill}
+          style={[StyleSheet.absoluteFill, { zIndex: 10 }]}
         />
       </>
     )
@@ -544,7 +546,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={{ marginTop: isHideButtons ? 30 : 0 }}
+        style={{ marginTop: isHideButtons ? 30 : 0, zIndex: 100 }}
       >
         {n > 0 && (
           <FieldButton

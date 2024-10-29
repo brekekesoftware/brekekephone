@@ -16,8 +16,8 @@ export const CallVoices = observer(() => {
   void cs.calls.map(_ => _.callkeepUuid)
 
   const oc = cs.getOngoingCall()
-  const isOutgoingProgress =
-    oc && !oc.incoming && !oc.answered && oc.sessionStatus === 'progress'
+  const isOutgoing = oc && !oc.incoming && !oc.answered
+  const isOutgoingProgress = isOutgoing && oc.sessionStatus === 'progress'
 
   // when receive a 18x response (usually 180 or 183) with SDP
   // don't play the local RBT, but the audio data in the RTP packets
@@ -26,8 +26,8 @@ export const CallVoices = observer(() => {
 
   return (
     <>
-      {isOutgoingProgress &&
-        (playEarlyMedia ? (
+      {isOutgoing &&
+        (isOutgoingProgress && playEarlyMedia && oc.earlyMedia ? (
           <OutgoingItemWithSDP earlyMedia={oc.earlyMedia} />
         ) : (
           <>

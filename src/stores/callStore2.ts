@@ -72,12 +72,12 @@ export class CallStore {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
-      BackgroundTimer.setTimeout(() => {
-        if (Platform.OS === 'ios') {
-          RNCallKeep.answerIncomingCall(uuid)
-        }
-        BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
-      }, 2000)
+      // on android already answer in native java activity
+      // on ios, QA suggest to reject the call?
+      // TODO
+      if (Platform.OS === 'ios') {
+        // TODO
+      }
     }
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
@@ -124,7 +124,7 @@ export class CallStore {
         )
         as.sipState = 'stopped'
         sip.destroyWebRTC()
-        authSIP.authWithCheck()
+        authSIP.auth()
       }
     }
   }
@@ -516,6 +516,11 @@ export class CallStore {
   }
   private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
+    // Make sure sip is ready before make call
+    if (getAuthStore().sipState !== 'success') {
+      return
+    }
+
     if (!(await permForCall())) {
       return
     }
@@ -538,6 +543,8 @@ export class CallStore {
         RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
+        // enable proximity monitoring for trigger proximity state to keep the call alive
+        BrekekeUtils.setProximityMonitoring(true)
         // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
         // add time out to make sure audio active (didDeactivateAudioSession)
         // before sip call established
@@ -737,9 +744,11 @@ export class CallStore {
     {
       setAction = true,
       completedElseWhere,
+      completedBy,
     }: {
       setAction?: boolean
       completedElseWhere?: boolean
+      completedBy?: string
     } = {},
   ) => {
     if (!uuid) {
@@ -752,13 +761,19 @@ export class CallStore {
     if (setAction) {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
+
+    // disable proximity mode if no running call
+    if (Platform.OS === 'ios' && !this.calls.length) {
+      BrekekeUtils.setProximityMonitoring(false)
+    }
+
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
       !this.calls.some(c => c.callkeepUuid === uuid || c.pnId === pnData.id) &&
       !completedElseWhere
     ) {
-      addCallHistory(pnData)
+      addCallHistory(pnData, completedBy)
     }
     delete this.callkeepMap[uuid]
     RNCallKeep.rejectCall(uuid)
@@ -890,6 +905,7 @@ export class CallStore {
     if (uuid) {
       this.endCallKeep(uuid, {
         completedElseWhere: n.completedElseWhere,
+        completedBy: n.completedBy,
       })
     }
   }

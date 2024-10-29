@@ -27,7 +27,7 @@ class AuthPBX {
     s.pbxState = 'stopped'
   }
 
-  @action authWithCheck = async () => {
+  @action private authWithCheck = async () => {
     const s = getAuthStore()
     if (!s.pbxShouldAuth()) {
       return

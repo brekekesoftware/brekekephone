@@ -12,6 +12,7 @@ import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
+import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
 import { pbx } from './pbx'
 import { sip } from './sip'
@@ -56,7 +57,7 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
-    authSIP.authWithCheck()
+    authSIP.auth()
     await waitSip()
     await pbx.getConfig()
     const ca = s.getCurrentAccount()
@@ -97,7 +98,7 @@ class Api {
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
     getAuthStore().pbxTotalFailure += 1
-    authPBX.authWithCheck()
+    authPBX.auth()
   }
   onPBXUserCalling = (ev: UserTalkerEvent) => {
     contactStore.setTalkerStatus(ev.user, ev.talker, 'calling')
@@ -141,13 +142,14 @@ class Api {
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
     const s = getAuthStore()
     console.log('SIP PN debug: set sipState failure stopped')
+    resetProcessedPn()
     s.sipState = 'failure'
     s.sipTotalFailure += 1
     if (s.sipTotalFailure > 3) {
       s.sipPn = {}
     }
     if (s.sipState === 'failure') {
-      authSIP.authWithCheck()
+      authSIP.auth()
     }
   }
   onSIPConnectionTimeout = () => {
@@ -155,7 +157,7 @@ class Api {
     getAuthStore().sipState = 'failure'
     getAuthStore().sipTotalFailure += 1
     sip.stopWebRTC()
-    authSIP.authWithCheck()
+    authSIP.auth()
   }
   onSIPSessionStarted = (c: Call) => {
     if (c.partyNumber === '8') {
@@ -179,7 +181,7 @@ class Api {
   onUCConnectionTimeout = () => {
     getAuthStore().ucState = 'failure'
     getAuthStore().ucTotalFailure += 1
-    authUC.authWithCheck()
+    authUC.auth()
   }
   onUCUserUpdated = (ev: {
     id: string

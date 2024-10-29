@@ -1,10 +1,10 @@
 buildscript {
   ext {
-    buildToolsVersion = "33.0.0"
+    buildToolsVersion = "34.0.0"
     minSdkVersion = 27
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     // https://developer.android.com/google/play/requirements/target-sdk
-    targetSdkVersion = 33
+    targetSdkVersion = 34
     ndkVersion = "23.1.7779620"
   }
   repositories {

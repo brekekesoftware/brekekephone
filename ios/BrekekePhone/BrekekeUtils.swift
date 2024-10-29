@@ -32,6 +32,15 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
+  func setProximityMonitoring(_ enabled: Bool) {
+    DispatchQueue.main.async {
+      if UIDevice.current.isProximityMonitoringEnabled != enabled {
+        UIDevice.current.isProximityMonitoringEnabled = enabled
+      }
+    }
+  }
+
+  @objc
   func enableLPC(
     _ token: String,
     tokenVoip: String,
