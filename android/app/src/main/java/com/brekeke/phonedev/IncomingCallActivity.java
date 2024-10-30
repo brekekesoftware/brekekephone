@@ -386,7 +386,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           callConfig != null && callConfig.has(k)
               ? callConfig.getString(k).equals("false")
               : (pbxConfig != null && pbxConfig.has(k) && pbxConfig.getString(k).equals("false"));
-      if ("hangup".equals(k) &&(btnHold.isSelected() || v.getVisibility() == View.GONE)) {
+      if ("hangup".equals(k) && (btnHold.isSelected() || isCallManageControlsHidden)) {
         disabled = true;
       }
       v.setVisibility(disabled ? View.GONE : View.VISIBLE);
