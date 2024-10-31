@@ -198,6 +198,10 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 
+export type PbxResourceLine = {
+  key: string
+  value: string
+}
 export type PbxCustomPage = {
   id: string
   url: string
@@ -233,6 +237,7 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
   'webphone.phonebook.personal.editable': string
+  'webphone.resource-line': string
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -398,7 +403,7 @@ export type MakeCallFn = (
   options?: object,
   videoEnabled?: boolean,
   videoOptions?: object,
-  exInfo?: object,
+  exInfo?: string,
 ) => void
 
 export type VideoOptions = {
@@ -479,6 +484,9 @@ export type Session = {
     }
     direction: 'outgoing' | 'incoming'
     terminate(): void
+    _request?: {
+      extraHeaders?: string[]
+    }
   }
   withVideo: boolean
   remoteWithVideo: boolean

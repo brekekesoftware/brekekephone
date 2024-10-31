@@ -57,6 +57,7 @@ export class PageCallRecents extends Component {
       accountStore.findDataWithDefault(ca)
     }
     const calls = d?.recentCalls.filter(this.isMatchUser) || []
+
     // backward compatibility to remove invalid items from the previous versions
     const filteredCalls = calls.filter(
       c =>
@@ -67,12 +68,15 @@ export class PageCallRecents extends Component {
     const today = moment().format('MMM D')
     return filteredCalls.map(c => ({
       ...c,
-      created: (c.created + '').replace(` - ${today}`, ''),
+      created:
+        (c.created + '').replace(` - ${today}`, '') +
+        `${as.resourceLines.length && c.line ? '  ⭞ ' + c.line : ''}`,
     }))
   }
 
   render() {
     const calls = this.getMatchedCalls()
+    const auth = getAuthStore()
     return (
       <Layout
         description={intl`Voicemail and recent calls`}
@@ -94,7 +98,13 @@ export class PageCallRecents extends Component {
           <UserItem
             iconFuncs={[
               () => getCallStore().startVideoCall(c.partyNumber),
-              () => getCallStore().startCall(c.partyNumber),
+              () =>
+                getCallStore().startCall(
+                  c.partyNumber,
+                  (auth.resourceLines.length &&
+                    c.line && { extraHeaders: [`X-PBX-RPI: ${c.line}`] }) ||
+                    undefined,
+                ),
             ]}
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}

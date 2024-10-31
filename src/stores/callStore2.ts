@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -8,6 +8,7 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
+import { mdiPhone } from '../assets/icons'
 import type { MakeCallFn, Session } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
@@ -29,6 +30,7 @@ import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RnPicker } from './RnPicker'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
 
@@ -471,6 +473,59 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
+
+  getExtraHeader = async (resourceLines, exh) => {
+    const onSelectPromise = new Promise((resolve, reject) => {
+      RnPicker.open({
+        options: resourceLines.map(l => ({
+          key: l.value,
+          label: l.key,
+          icon: mdiPhone,
+        })),
+        onSelect: (k: string) => {
+          resolve(k)
+        },
+        onDismiss: () => {
+          reject(null)
+        },
+      })
+    })
+    const selectedKey = await onSelectPromise
+    const extraHeaders = exh?.extraHeaders || []
+    const index = extraHeaders.findIndex(header =>
+      header.startsWith('X-PBX-RPI:'),
+    )
+    // for case choose "no-line"
+    if (!selectedKey) {
+      if (index !== -1) {
+        extraHeaders.splice(index, 1)
+      }
+      return extraHeaders
+    }
+    if (index !== -1) {
+      extraHeaders[index] = `X-PBX-RPI: ${selectedKey}`
+    } else {
+      extraHeaders.push(`X-PBX-RPI: ${selectedKey}`)
+    }
+    return extraHeaders
+  }
+  isLineExist = (options, resourceLines) => {
+    if (!options || !!!options.extraHeaders || isEmpty(options.extraHeaders)) {
+      return false
+    }
+    return options.extraHeaders.some(exh => {
+      const match = exh.match(/^X-PBX-RPI:(.*)$/)
+      if (match) {
+        const value = match[1].trim()
+        const isExist = resourceLines.some(
+          resourceLine => resourceLine.value === value,
+        )
+        // Call with existing line resource in record if empty options are allowed.
+        return isExist || (!isExist && resourceLines[0].key === 'no-line')
+      }
+      return false
+    })
+  }
   startCall: MakeCallFn = async (number: string, ...args) => {
     // Make sure sip is ready before make call
     if (getAuthStore().sipState !== 'success') {
@@ -488,6 +543,23 @@ export class CallStore {
         message: intlDebug`There is already an outgoing call`,
       })
       return
+    }
+
+    // check resource line
+    const auth = getAuthStore()
+    if (
+      auth.resourceLines.length > 0 &&
+      !this.isLineExist(args[0], auth.resourceLines)
+    ) {
+      try {
+        const extraHeaders = await this.getExtraHeader(
+          auth.resourceLines,
+          args[0],
+        )
+        args[0] = { ...args[0], extraHeaders }
+      } catch (error) {
+        return
+      }
     }
     // start call logic in RNCallKeep
     // adding this will help the outgoing call automatically hold on GSM call

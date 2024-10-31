@@ -17,7 +17,7 @@ import { RnAlert } from './RnAlert'
 
 export class Call {
   constructor(private store: CallStore) {}
-
+  line?: string
   rawSession?: Session
 
   @observable earlyMedia: MediaStream | null = null

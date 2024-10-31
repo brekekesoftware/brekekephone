@@ -97,6 +97,7 @@ export const addCallHistory = async (
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
   const reason = getReasonCancelCall(answeredBy)
 
+  const line = (isTypeCall && c?.line) || undefined
   const info = isTypeCall
     ? {
         id,
@@ -109,6 +110,7 @@ export const addCallHistory = async (
         isAboutToHangup: c.isAboutToHangup,
         reason,
         answeredBy,
+        line: line?.split('/')?.[0]?.trim() || line?.trim() || undefined,
       }
     : {
         id,
@@ -165,6 +167,7 @@ export type CallHistoryInfo = {
   isAboutToHangup: boolean
   reason?: string
   answeredBy?: { name: string; phoneNumber: string }
+  line?: string
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
