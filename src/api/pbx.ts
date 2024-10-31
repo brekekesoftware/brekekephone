@@ -297,8 +297,6 @@ export class PBX extends EventEmitter {
       this.connectTimeoutId = 0
     }
   }
-
-  getResourceLines = () => {}
   getConfig = async (skipWait?: boolean) => {
     if (this.isMainInstance) {
       const s = getAuthStore()
