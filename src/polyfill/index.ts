@@ -10,6 +10,15 @@ import {
   RTCSessionDescription,
 } from 'react-native-webrtc'
 
+import type { TBackgroundTimer } from '../utils/BackgroundTimer'
+import { BackgroundTimer } from '../utils/BackgroundTimer'
+
+declare global {
+  interface Window {
+    BackgroundTimer: TBackgroundTimer
+  }
+}
+
 window.URL = window.URL || {}
 // @ts-ignore
 window.URL.createObjectURL = (stream: MediaStream) => stream.toURL()
@@ -28,3 +37,8 @@ window.navigator.mediaDevices = window.navigator.mediaDevices || mediaDevices
 window.navigator.getUserMedia =
   // @ts-ignore
   window.navigator.getUserMedia || mediaDevices.getUserMedia
+
+if (!window.BackgroundTimer) {
+  // type-coverage:ignore-next-line
+  window.BackgroundTimer = BackgroundTimer
+}

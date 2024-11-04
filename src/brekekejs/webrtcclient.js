@@ -2857,7 +2857,11 @@ if (!Brekeke.WebrtcClient) {
               'debug',
               'Waiting for creating another local user media...',
             )
-            setTimeout(doCallFunc, 1000)
+            window.BackgroundTimer
+              ? window.BackgroundTimer.setTimeout(doCallFunc, 1000)
+              : setTimeout(doCallFunc, 1000)
+            // temp comment because when app background, native ActivityIncomingCall not work well with setTimeout
+            // setTimeout(doCallFunc, 1000)
             return
           }
         }
