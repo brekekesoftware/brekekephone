@@ -61,7 +61,7 @@ export class PageSettingsOther extends Component {
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress: as.resetFailureStateIncludeUcLoginFromAnotherPlace,
+                  onPress: as.resetFailureStateIncludePbxOrUc,
                 },
               ]
             : []),
