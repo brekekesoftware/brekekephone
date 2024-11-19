@@ -70,7 +70,7 @@ export class PageCallRecents extends Component {
       ...c,
       created:
         (c.created + '').replace(` - ${today}`, '') +
-        `${as.resourceLines.length && c.line ? '  ⭞ ' + c.line : ''}`,
+        `${as.resourceLines.length && c.lineValue ? '  ⭞ ' + `${c?.lineLabel ? c.lineLabel + ':' : ''} ${c.lineValue}` : ''}`,
     }))
   }
 
@@ -102,7 +102,9 @@ export class PageCallRecents extends Component {
                 getCallStore().startCall(
                   c.partyNumber,
                   (auth.resourceLines.length &&
-                    c.line && { extraHeaders: [`X-PBX-RPI: ${c.line}`] }) ||
+                    c.lineValue && {
+                      extraHeaders: [`X-PBX-RPI: ${c.lineValue}`],
+                    }) ||
                     undefined,
                 ),
             ]}

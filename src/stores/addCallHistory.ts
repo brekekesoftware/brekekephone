@@ -96,8 +96,13 @@ export const addCallHistory = async (
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
   const reason = getReasonCancelCall(answeredBy)
-
   const line = (isTypeCall && c?.line) || undefined
+  // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
+  const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
+  const lineLabel = lineValue
+    ? getAuthStore().resourceLines?.find(item => item.value === lineValue)?.key
+    : undefined
+
   const info = isTypeCall
     ? {
         id,
@@ -110,7 +115,8 @@ export const addCallHistory = async (
         isAboutToHangup: c.isAboutToHangup,
         reason,
         answeredBy,
-        line: line?.split('/')?.[0]?.trim() || line?.trim() || undefined,
+        lineValue,
+        lineLabel,
       }
     : {
         id,
@@ -167,7 +173,8 @@ export type CallHistoryInfo = {
   isAboutToHangup: boolean
   reason?: string
   answeredBy?: { name: string; phoneNumber: string }
-  line?: string
+  lineLabel?: string
+  lineValue?: string
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {

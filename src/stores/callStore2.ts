@@ -479,7 +479,7 @@ export class CallStore {
       RnPicker.open({
         options: resourceLines.map(l => ({
           key: l.value,
-          label: l.key,
+          label: !l.value ? l.key : `${l.key}: ${l.value}`,
           icon: mdiPhone,
         })),
         onSelect: (k: string) => {
