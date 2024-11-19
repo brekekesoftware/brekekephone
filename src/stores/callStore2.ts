@@ -475,11 +475,21 @@ export class CallStore {
   private callkeepUuidPending = ''
 
   getExtraHeader = async (resourceLines, exh) => {
+    const extraHeaders = exh?.extraHeaders || []
+    const index = extraHeaders.findIndex(header =>
+      header.startsWith('X-PBX-RPI:'),
+    )
+    // If it allows calling without a value ( no-line ), then make a call without a line resource.
+    if (resourceLines[0].key === 'no-line' && index !== -1) {
+      extraHeaders.splice(index, 1)
+      return extraHeaders
+    }
+
     const onSelectPromise = new Promise((resolve, reject) => {
       RnPicker.open({
         options: resourceLines.map(l => ({
           key: l.value,
-          label: !l.value ? l.key : `${l.key}: ${l.value}`,
+          label: l.key,
           icon: mdiPhone,
         })),
         onSelect: (k: string) => {
@@ -490,11 +500,9 @@ export class CallStore {
         },
       })
     })
+
     const selectedKey = await onSelectPromise
-    const extraHeaders = exh?.extraHeaders || []
-    const index = extraHeaders.findIndex(header =>
-      header.startsWith('X-PBX-RPI:'),
-    )
+
     // for case choose "no-line"
     if (!selectedKey) {
       if (index !== -1) {
@@ -520,8 +528,7 @@ export class CallStore {
         const isExist = resourceLines.some(
           resourceLine => resourceLine.value === value,
         )
-        // Call with existing line resource in record if empty options are allowed.
-        return isExist || (!isExist && resourceLines[0].key === 'no-line')
+        return isExist
       }
       return false
     })
@@ -545,7 +552,7 @@ export class CallStore {
       return
     }
 
-    // check resource line
+    // check line resource
     const auth = getAuthStore()
     if (
       auth.resourceLines.length > 0 &&
