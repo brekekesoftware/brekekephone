@@ -275,13 +275,24 @@ export class AuthStore {
   @observable rcLoading: boolean = false
   @observable rcCount: number = 0
   // recentCallsMax with default 200 and limit 1000
-  setRecentCallsMax(max: number | string) {
+  setRecentCallsMax = async (max: number | string) => {
     const numericMax = Number(max)
-    // default 200, limit 1000
+
     this.recentCallsMax =
       Number.isInteger(numericMax) && numericMax > 0
         ? Math.min(numericMax, 1000)
         : 200
+
+    // Update recentCalls if config recentCallsMax changed
+    const d = await this.getCurrentDataAsync()
+    if (!d) {
+      return
+    }
+    if (d.recentCalls.length > this.recentCallsMax) {
+      d.recentCalls.splice(this.recentCallsMax)
+      this.rcCount = d.recentCalls.length
+      accountStore.saveAccountsToLocalStorageDebounced()
+    }
   }
 
   rcFirstTimeLoadData = async () => {
@@ -346,6 +357,7 @@ export class AuthStore {
     this.cRecentCalls = [call, ...this.cRecentCalls]
     if (d.recentCalls.length > this.recentCallsMax) {
       d.recentCalls.splice(this.recentCallsMax)
+      this.cRecentCalls.splice(this.recentCallsMax)
     }
     this.rcCount = d.recentCalls.length
     accountStore.saveAccountsToLocalStorageDebounced()
