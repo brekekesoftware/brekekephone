@@ -324,7 +324,7 @@ export class CallStore {
     Object.assign(c, p)
 
     // Clear start call interval timer when the outgoing call is created
-    if (!c.incoming) {
+    if (Platform.OS === 'web' && !c.incoming) {
       this.clearStartCallIntervalTimer()
     }
     // get Avatar and Username of phoneappli
