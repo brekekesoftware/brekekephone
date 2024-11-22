@@ -81,6 +81,7 @@ export const Layout: FC<
     children: ReactNode
     style?: StyleProp<ViewStyle>
     isFullContent?: boolean
+    showAnimation?: boolean
   }>
 > = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
