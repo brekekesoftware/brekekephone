@@ -285,7 +285,7 @@ export class AuthStore {
   }
 
   rcFirstTimeLoadData = async () => {
-    if (!this.cRecentCalls.length) {
+    if (this.rcPage === 0) {
       this.rcLoading = true
       const d = this.getCurrentData()
       if (!d) {
@@ -315,12 +315,7 @@ export class AuthStore {
     this.cRecentCalls = []
     const filteredCalls =
       d?.recentCalls.filter(this.isMatchUserRecentCalls) || []
-    const calls =
-      filteredCalls.slice(
-        this.rcPerPage * this.rcPage,
-        this.rcPerPage * (this.rcPage + 1),
-      ) || []
-    this.cRecentCalls = [...this.cRecentCalls, ...calls]
+    this.cRecentCalls = filteredCalls.slice(0, this.rcPerPage)
     this.rcCount = filteredCalls.length
     this.rcLoading = false
   }

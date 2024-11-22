@@ -1,14 +1,8 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
-import type {
-  NativeEventSubscription,
-} from 'react-native'
-import {
-  AppState,
-  Platform,
-  StyleSheet,
-} from 'react-native'
+import type { NativeEventSubscription } from 'react-native'
+import { AppState, Platform, StyleSheet } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
