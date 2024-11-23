@@ -239,7 +239,7 @@ export const UserItem: FC<
       // maybe value is '0'
       if (value !== null && value !== undefined && value !== '') {
         options.push({
-          key: index,
+          key: value,
           label: value,
           icon: mdiContentCopy,
         })
