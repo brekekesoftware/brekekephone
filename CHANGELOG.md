@@ -5,6 +5,7 @@
 - Implement webphone.recents.max, default 200, max 1000
 - Implement copy phone number to clipboard
 - Fix web outgoing call should not make twice (issue 985)
+- Try fix sip reconnect and call hangup unexpectedly (issue 988)
 
 #### 2.15.1
 
