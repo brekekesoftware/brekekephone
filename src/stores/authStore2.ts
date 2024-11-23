@@ -6,6 +6,7 @@ import { sip } from '../api/sip'
 import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
+  PbxResourceLine,
   UcBuddy,
   UcBuddyGroup,
   UcConfig,
@@ -128,7 +129,6 @@ export class AuthStore {
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
-
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
   getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)
@@ -139,6 +139,9 @@ export class AuthStore {
     }
     Object.assign(found, cp)
   }
+
+  @observable resourceLines: PbxResourceLine[] = []
+
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
 
   signIn = async (a?: Account, autoSignIn?: boolean) => {
@@ -298,7 +301,7 @@ export class AuthStore {
         ? Math.min(numericMax, 1000)
         : 200
 
-    // Update recentCalls if config recentCallsMax changed
+    // update recentCalls if config recentCallsMax changed
     const d = await this.getCurrentDataAsync()
     if (!d) {
       return

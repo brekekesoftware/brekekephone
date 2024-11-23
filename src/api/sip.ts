@@ -126,7 +126,13 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
-      //
+
+      const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
+      const xPbxRpi = extraHeaders.find(header =>
+        header.startsWith('X-PBX-RPI:'),
+      )
+      const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
+
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
@@ -151,6 +157,7 @@ export class SIP extends EventEmitter {
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
+        line: line?.trim(),
         rawSession: ev,
         id: ev.sessionId,
         pnId: m?.getHeader('X-PN-ID'),

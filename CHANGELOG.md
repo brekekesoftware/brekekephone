@@ -1,5 +1,6 @@
 #### 2.15.2
 
+- Implement webphone.resource-line line selection
 - Implement notify_pal to show error when login the same phone index on another device
 - Implement webphone.recents.max, default 200, max 1000
 - Implement copy phone number to clipboard

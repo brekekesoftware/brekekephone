@@ -21,6 +21,7 @@ import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
+import type { RnPickerOption } from '../stores/RnPicker'
 import { RnPicker } from '../stores/RnPicker'
 import { Avatar } from './Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
@@ -233,24 +234,23 @@ export const UserItem: FC<
       phonebookInfo?.info?.$tel_mobile,
       phonebookInfo?.info?.$tel_work,
     ]
-      .map((value, index) => {
-        // maybe value is '0'
-        if (value !== null && value !== undefined && value !== '') {
-          return {
-            key: index,
-            label: value,
-            icon: mdiContentCopy,
-          }
-        }
-        return undefined
-      })
-      .filter(item => item !== undefined)
+    const options: RnPickerOption['options'] = []
+    numbers.forEach((value, index) => {
+      // maybe value is '0'
+      if (value !== null && value !== undefined && value !== '') {
+        options.push({
+          key: index,
+          label: value,
+          icon: mdiContentCopy,
+        })
+      }
+    })
 
-    if (!numbers.length) {
+    if (!options.length) {
       return
     }
     RnPicker.open({
-      options: numbers,
+      options,
       onSelect: (n: string) => Clipboard.setString(n),
     })
   }

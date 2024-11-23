@@ -138,9 +138,7 @@ export const ContactsCreateForm: FC<{
   const onSelectItem = (value: string) => {
     value.replace('$', '') // prevent key on manage.item in phonebook.js
     contactStore.dismissPicker()
-    const isExistField = !!$.fields.find(
-      _ => _.label === value || _.id === value,
-    )
+    const isExistField = $.fields.some(_ => _.label === value || _.id === value)
     if (isExistField) {
       return
     }

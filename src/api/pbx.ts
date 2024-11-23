@@ -3,7 +3,12 @@ import { random } from 'lodash'
 import { Platform } from 'react-native'
 import validator from 'validator'
 
-import type { Pbx, PbxCustomPage, PbxEvent } from '../brekekejs'
+import type {
+  Pbx,
+  PbxCustomPage,
+  PbxEvent,
+  PbxResourceLine,
+} from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
@@ -304,7 +309,6 @@ export class PBX extends EventEmitter {
       this.connectTimeoutId = 0
     }
   }
-
   getConfig = async (skipWait?: boolean) => {
     if (this.isMainInstance) {
       const s = getAuthStore()
@@ -337,6 +341,9 @@ export class PBX extends EventEmitter {
     if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
       _parseListCustomPage()
     }
+
+    // get resource line
+    _parseResourceLines(config['webphone.resource-line'])
 
     const d = await as.getCurrentDataAsync()
     if (d) {
@@ -812,6 +819,30 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
+
+// ----------------------------------------------------------------------------
+// parse resource line data
+const _parseResourceLines = (l: string | undefined) => {
+  const as = getAuthStore()
+  if (!l) {
+    as.resourceLines = []
+    return
+  }
+  const lines = l.split(',')
+  const resourceLines: PbxResourceLine[] =
+    lines[0] === '' ? [{ key: 'no-line', value: '' }] : []
+  lines.forEach(line => {
+    if (line.includes(':')) {
+      const [key, value] = line.split(':')
+      if (key && value) {
+        resourceLines.push({ key: key.trim(), value: value.trim() })
+      }
+    } else if (line) {
+      resourceLines.push({ key: line.trim(), value: line.trim() })
+    }
+  })
+  as.resourceLines = resourceLines
+}
 
 // ----------------------------------------------------------------------------
 // custom page url utils
