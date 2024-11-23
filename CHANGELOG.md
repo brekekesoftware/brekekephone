@@ -1,3 +1,9 @@
+#### 2.15.2
+
+- Implement webphone.recents.max, default 200, max 1000
+- Implement copy phone number to clipboard
+- Fix web outgoing call should not make twice (issue 985)
+
 #### 2.15.1
 
 - Upgrade android target sdk 34 to update with Google policy

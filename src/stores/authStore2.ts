@@ -16,7 +16,7 @@ import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitForActiveAppState } from '../utils/waitForActiveAppState'
 import { waitTimeout } from '../utils/waitTimeout'
-import type { Account } from './accountStore'
+import type { Account, RecentCall } from './accountStore'
 import {
   accountStore,
   getAccountUniqueId,
@@ -176,6 +176,7 @@ export class AuthStore {
     }
     return true
   }
+
   autoSignInLast = async () => {
     const d = await getLastSignedInId()
     const a = await accountStore.findByUniqueId(d.id)
@@ -237,6 +238,8 @@ export class AuthStore {
     contactStore.clearStore()
     chatStore.clearStore()
     this.userExtensionProperties = null
+    this.cRecentCalls = []
+    this.rcPage = 0
   }
 
   @action resetFailureState = () => {
@@ -275,15 +278,98 @@ export class AuthStore {
     }
   }
 
+  recentCallsMax: number = 200
+  @observable cRecentCalls: RecentCall[] = []
+  rcPerPage: number = 15
+  rcPage: number = 0
+  @observable rcLoading: boolean = false
+  @observable rcCount: number = 0
+  // recentCallsMax with default 200 and limit 1000
+  setRecentCallsMax = async (max: number | string) => {
+    const numericMax = Number(max)
+
+    this.recentCallsMax =
+      Number.isInteger(numericMax) && numericMax > 0
+        ? Math.min(numericMax, 1000)
+        : 200
+
+    // Update recentCalls if config recentCallsMax changed
+    const d = await this.getCurrentDataAsync()
+    if (!d) {
+      return
+    }
+    if (d.recentCalls.length > this.recentCallsMax) {
+      d.recentCalls.splice(this.recentCallsMax)
+      this.rcCount = d.recentCalls.length
+      accountStore.saveAccountsToLocalStorageDebounced()
+    }
+  }
+
+  rcFirstTimeLoadData = async () => {
+    if (this.rcPage === 0) {
+      this.rcLoading = true
+      const d = this.getCurrentData()
+      if (!d) {
+        return
+      }
+      const filteredCalls =
+        d?.recentCalls.filter(this.isMatchUserRecentCalls) || []
+      const calls = filteredCalls.slice(0, this.rcPerPage) || []
+      this.cRecentCalls = calls
+      this.rcCount = filteredCalls.length
+      this.rcLoading = false
+    }
+  }
+  isMatchUserRecentCalls = (call: RecentCall) => {
+    if (call.partyNumber.includes(contactStore.callSearchRecents)) {
+      return call.id
+    }
+    return ''
+  }
+  rcSearchRecentCall = async () => {
+    const d = this.getCurrentData()
+    if (!d) {
+      return
+    }
+    this.rcPage = 0
+    this.rcLoading = true
+    this.cRecentCalls = []
+    const filteredCalls =
+      d?.recentCalls.filter(this.isMatchUserRecentCalls) || []
+    this.cRecentCalls = filteredCalls.slice(0, this.rcPerPage)
+    this.rcCount = filteredCalls.length
+    this.rcLoading = false
+  }
+  rcLoadMore = () => {
+    this.rcLoading = true
+    const d = this.getCurrentData()
+    if (!d) {
+      return
+    }
+    this.rcPage++
+    const calls =
+      d?.recentCalls
+        .filter(this.isMatchUserRecentCalls)
+        .slice(
+          this.rcPerPage * this.rcPage,
+          this.rcPerPage * (this.rcPage + 1),
+        ) || []
+    this.cRecentCalls = [...this.cRecentCalls, ...calls]
+    this.rcLoading = false
+  }
   pushRecentCall = async (call: CallHistoryInfo) => {
     const d = await this.getCurrentDataAsync()
     if (!d) {
       return
     }
+
     d.recentCalls = [call, ...d.recentCalls]
-    if (d.recentCalls.length > 20) {
-      d.recentCalls.pop()
+    this.cRecentCalls = [call, ...this.cRecentCalls]
+    if (d.recentCalls.length > this.recentCallsMax) {
+      d.recentCalls.splice(this.recentCallsMax)
+      this.cRecentCalls.splice(this.recentCallsMax)
     }
+    this.rcCount = d.recentCalls.length
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 

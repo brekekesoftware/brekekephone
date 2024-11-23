@@ -717,7 +717,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     ctx.startActivity(intent);
   }
 
-  // Overlay screen permission
+  // overlay screen permission
   public static boolean isOverlayPermissionGranted(Context context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;

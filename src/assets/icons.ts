@@ -203,6 +203,9 @@ export var mdiRadioboxMarked =
 export var mdiMoreHoriz =
   'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'
 
+// components: Picker
+export var mdiContentCopy =
+  'M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z'
 export var mdiMenuDown = 'M7,10L12,15L17,10H7Z'
 export var mdiMenuLeft = 'M14,7L9,12L14,17V7Z'
 export var mdiMenuRight = 'M10,17L15,12L10,7V17Z'
