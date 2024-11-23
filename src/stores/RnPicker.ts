@@ -9,6 +9,7 @@ export type RnPickerOption = {
   cancelLabel?: string
   selectedKey?: string
   onSelect: Function
+  onDismiss?: Function
 }
 
 export class RnPickerStore {
@@ -18,6 +19,7 @@ export class RnPickerStore {
     this.currentRnPicker = picker
   }
   @action dismiss = () => {
+    this.currentRnPicker?.onDismiss?.()
     this.currentRnPicker = null
   }
 }
