@@ -919,17 +919,14 @@ export class CallStore {
     return extraHeaders
   }
   isLineExist = (options, resourceLines) => {
-    if (!options || !!!options.extraHeaders || isEmpty(options.extraHeaders)) {
+    if (!options || !options.extraHeaders || isEmpty(options.extraHeaders)) {
       return false
     }
-    return options.extraHeaders.some(exh => {
-      const match = exh.match(/^X-PBX-RPI:(.*)$/)
-      if (match) {
-        const value = match[1].trim()
-        const isExist = resourceLines.some(
-          resourceLine => resourceLine.value === value,
-        )
-        return isExist
+    return options.extraHeaders.some(h => {
+      const m = h.match(/^X-PBX-RPI:(.*)$/)
+      if (m) {
+        const v = m[1].trim()
+        return resourceLines.some(l => l.value === v)
       }
       return false
     })
