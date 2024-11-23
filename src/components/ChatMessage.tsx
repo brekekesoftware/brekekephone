@@ -1,18 +1,12 @@
+import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import {
-  Clipboard,
-  Dimensions,
-  Linking,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { Dimensions, Linking, Platform, StyleSheet, View } from 'react-native'
 import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
-import { mdiDotsHorizontal, mdiFile } from '../assets/icons'
+import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '../assets/icons'
 import type { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
@@ -232,7 +226,7 @@ export class Message extends Component<{
         {
           key: 0,
           label: intl`Copy message`,
-          icon: mdiDotsHorizontal,
+          icon: mdiContentCopy,
         },
         {
           key: 1,
@@ -249,7 +243,7 @@ export class Message extends Component<{
         {
           key: 0,
           label: intl`Copy message`,
-          icon: mdiDotsHorizontal,
+          icon: mdiContentCopy,
         },
         {
           key: 1,
