@@ -8,7 +8,6 @@ import { ContactSectionList } from '../components/ContactSectionList'
 import { UserItem } from '../components/ContactUserItem'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
@@ -238,22 +237,19 @@ type ItemUser = {
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => (
   // TODO move to a new component with observer
-  <RnTouchableOpacity
-    key={index}
+  <UserItem
+    iconFuncs={[
+      () => getCallStore().startVideoCall(item.id),
+      () => getCallStore().startCall(item.id),
+    ]}
+    icons={[mdiVideo, mdiPhone]}
+    lastMessage={getLastMessageChat(item.id)?.text}
+    {...item}
+    canTouch
     onPress={
       getAuthStore().getCurrentAccount()?.ucEnabled
         ? () => Nav().goToPageChatDetail({ buddy: item.id })
         : undefined
     }
-  >
-    <UserItem
-      iconFuncs={[
-        () => getCallStore().startVideoCall(item.id),
-        () => getCallStore().startCall(item.id),
-      ]}
-      icons={[mdiVideo, mdiPhone]}
-      lastMessage={getLastMessageChat(item.id)?.text}
-      {...item}
-    />
-  </RnTouchableOpacity>
+  />
 ))

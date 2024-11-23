@@ -431,6 +431,8 @@ PODS:
     - React
   - RNCAsyncStorage (1.19.0):
     - React-Core
+  - RNCClipboard (1.14.2):
+    - React-Core
   - RNCPushNotificationIOS (1.11.0):
     - React-Core
   - RNFastImage (8.6.3):
@@ -512,6 +514,7 @@ DEPENDENCIES:
   - ReactNativeIncallManager (from `../node_modules/react-native-incall-manager`)
   - RNCallKeep (from `../node_modules/react-native-callkeep`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNFS (from `../node_modules/react-native-fs`)
@@ -636,6 +639,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-callkeep"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFastImage:
@@ -711,6 +716,7 @@ SPEC CHECKSUMS:
   ReactNativeIncallManager: 2385505fa5dfdbbc78925e3b8d23b30ce0cde40e
   RNCallKeep: 7c86d916fbc6b2184a5cf47967a240928994547e
   RNCAsyncStorage: 4b98ac3c64efa4e35c1197cb0c5ca5e9f5d4c666
+  RNCClipboard: 5e503962f0719ace8f7fdfe9c60282b526305c85
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
@@ -726,4 +732,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 54c909ddd9b9f4ff22d3327bef3caed8097bad7c
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

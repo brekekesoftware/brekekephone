@@ -99,7 +99,7 @@ export class PageCallRecents extends Component {
             {...contactStore.getUcUserById(c.partyNumber)}
             icons={[mdiVideo, mdiPhone]}
             isRecentCall
-            canChat={getAuthStore().getCurrentAccount()?.ucEnabled}
+            canTouch={getAuthStore().getCurrentAccount()?.ucEnabled}
             key={i}
             {...this.getAvatar(c.partyNumber)}
             {...c}

@@ -226,26 +226,24 @@ const RenderItemUser = observer(
             />
           </RnTouchableOpacity>
         ) : !isTransferCall ? (
-          <RnTouchableOpacity
+          <UserItem
+            iconFuncs={[
+              () => getCallStore().startVideoCall(item.user_id),
+              () => getCallStore().startCall(item.user_id),
+            ]}
+            icons={[mdiVideo, mdiPhone]}
+            lastMessage={getLastMessageChat(item.user_id)?.text}
+            id={item.user_id}
+            name={item.name}
+            avatar={item.profile_image_url}
+            status={item.status}
+            canTouch
             onPress={
               getAuthStore().getCurrentAccount()?.ucEnabled
                 ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
                 : undefined
             }
-          >
-            <UserItem
-              iconFuncs={[
-                () => getCallStore().startVideoCall(item.user_id),
-                () => getCallStore().startCall(item.user_id),
-              ]}
-              icons={[mdiVideo, mdiPhone]}
-              lastMessage={getLastMessageChat(item.user_id)?.text}
-              id={item.user_id}
-              name={item.name}
-              avatar={item.profile_image_url}
-              status={item.status}
-            />
-          </RnTouchableOpacity>
+          />
         ) : (
           <UserItem
             iconFuncs={[
