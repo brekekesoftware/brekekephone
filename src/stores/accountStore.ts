@@ -51,6 +51,8 @@ export type AccountData = {
     partyNumber: string
     created: string
     reason?: string
+    lineLabel?: string
+    lineValue?: string
   }[]
   recentChats: {
     id: string // thread id
