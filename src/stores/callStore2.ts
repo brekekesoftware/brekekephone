@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -8,6 +8,7 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
+import { mdiPhone } from '../assets/icons'
 import type { MakeCallFn, Session } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
@@ -29,6 +30,7 @@ import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RnPicker } from './RnPicker'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
 
@@ -480,7 +482,6 @@ export class CallStore {
     if (getAuthStore().sipState !== 'success') {
       return
     }
-
     if (!(await permForCall())) {
       return
     }
@@ -492,6 +493,22 @@ export class CallStore {
         message: intlDebug`There is already an outgoing call`,
       })
       return
+    }
+    // check line resource
+    const auth = getAuthStore()
+    if (
+      auth.resourceLines.length > 0 &&
+      !this.isLineExist(args[0], auth.resourceLines)
+    ) {
+      try {
+        const extraHeaders = await this.getExtraHeader(
+          auth.resourceLines,
+          args[0],
+        )
+        args[0] = { ...args[0], extraHeaders }
+      } catch (error) {
+        return
+      }
     }
     // start call logic in RNCallKeep
     // adding this will help the outgoing call automatically hold on GSM call
@@ -714,12 +731,10 @@ export class CallStore {
     if (setAction) {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
-
     // disable proximity mode if no running call
     if (Platform.OS === 'ios' && !this.calls.length) {
       BrekekeUtils.setProximityMonitoring(false)
     }
-
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -861,6 +876,60 @@ export class CallStore {
         completedBy: n.completedBy,
       })
     }
+  }
+
+  getExtraHeader = async (resourceLines, exh) => {
+    const extraHeaders = exh?.extraHeaders || []
+    const index = extraHeaders.findIndex(header =>
+      header.startsWith('X-PBX-RPI:'),
+    )
+    // if it allows calling without a value `no-line`, then make a call without a line resource.
+    if (resourceLines[0].key === 'no-line' && index !== -1) {
+      extraHeaders.splice(index, 1)
+      return extraHeaders
+    }
+    // show select line picker
+    const selectedKey = await new Promise((resolve, reject) => {
+      RnPicker.open({
+        options: resourceLines.map(l => ({
+          key: l.value,
+          label: l.key,
+          icon: mdiPhone,
+        })),
+        onSelect: (k: string) => {
+          resolve(k)
+        },
+        onDismiss: () => {
+          reject(null)
+        },
+      })
+    })
+    // for case choose "no-line"
+    if (!selectedKey) {
+      if (index !== -1) {
+        extraHeaders.splice(index, 1)
+      }
+      return extraHeaders
+    }
+    if (index !== -1) {
+      extraHeaders[index] = `X-PBX-RPI: ${selectedKey}`
+    } else {
+      extraHeaders.push(`X-PBX-RPI: ${selectedKey}`)
+    }
+    return extraHeaders
+  }
+  isLineExist = (options, resourceLines) => {
+    if (!options || !options.extraHeaders || isEmpty(options.extraHeaders)) {
+      return false
+    }
+    return options.extraHeaders.some(h => {
+      const m = h.match(/^X-PBX-RPI:(.*)$/)
+      if (m) {
+        const v = m[1].trim()
+        return resourceLines.some(l => l.value === v)
+      }
+      return false
+    })
   }
 
   constructor() {
