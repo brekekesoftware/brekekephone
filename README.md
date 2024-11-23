@@ -1,7 +1,9 @@
 ### Quick access
 
-- Minimum required OS version: Android 8.1 | iOS 11
-- Recommended OS version: Android 10 and above | iOS 13 and above
+- Recommended OS version as of Nov 2024:
+
+  - [Android 13-14](https://developer.android.com/google/play/requirements/target-sdk)
+  - [iOS 17-18](https://developer.apple.com/ios/submit/)
 
 - [Custom branding build](./.doc/custom-branding.md)
 - [Network proxy setup](./.doc/network-proxy-setup.md)
