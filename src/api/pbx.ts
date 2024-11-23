@@ -57,6 +57,7 @@ export class PBX extends EventEmitter {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
       login_password: a.pbxPassword,
+      phone_idx: a.pbxPhoneIndex,
       _wn: d.accessToken,
       park: a.parks || [],
       voicemail: 'self',
@@ -66,7 +67,6 @@ export class PBX extends EventEmitter {
       callrecording: 'self',
       ...d.palParams,
       ...embedApi._palParams,
-      phone_idx: a.pbxPhoneIndex,
     })
     this.client = client
 
