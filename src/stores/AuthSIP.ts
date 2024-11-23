@@ -97,6 +97,13 @@ class AuthSIP {
     sipErrorEmitter.removeAllListeners()
     sipErrorEmitter.on('error', () => {
       console.log('SIP PN debug: got error from sipErrorEmitter')
+      const count = sip.phone?.getSessionCount()
+      if (count) {
+        console.log(
+          `SIP PN debug: can not dispose sip due to ongoing sessions getSessionCount=${count} }`,
+        )
+        return
+      }
       this.dispose()
       this.authWithCheckDebounced()
     })
