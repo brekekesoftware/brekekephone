@@ -62,6 +62,7 @@ export class AuthStore {
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
+    !this.pbxLoginFromAnotherPlace &&
     this.pbxState !== 'waiting' &&
     // do not auth pbx if sip token is provided in case of PN
     // wait until sip login success or failure
