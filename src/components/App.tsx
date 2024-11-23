@@ -288,8 +288,9 @@ export const App = observer(() => {
             ? intl`${serviceConnectingOrFailure} connection failed`
             : intl`Connecting to ${serviceConnectingOrFailure}...`
 
-  const onPressConnMessage = () =>
-    isFailure ? resetFailureStateIncludePbxOrUc : undefined
+  const onPressConnMessage = isFailure
+    ? resetFailureStateIncludePbxOrUc
+    : undefined
 
   const cp = getAuthStore().listCustomPage[0]
 
@@ -306,7 +307,7 @@ export const App = observer(() => {
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={onPressConnMessage()}
+            onPress={onPressConnMessage}
           >
             <RnText small white>
               {connMessage}
@@ -332,7 +333,7 @@ export const App = observer(() => {
         {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={onPressConnMessage()}
+            onPress={onPressConnMessage}
           />
         )}
       </View>

@@ -57,8 +57,9 @@ export class AuthStore {
   @observable sipTotalFailure = 0
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
-  @observable ucLoginFromAnotherPlace = false
+
   @observable pbxLoginFromAnotherPlace = false
+  @observable ucLoginFromAnotherPlace = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -104,6 +105,9 @@ export class AuthStore {
     ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
   isConnFailure = (): boolean => {
+    if (this.pbxLoginFromAnotherPlace || this.ucLoginFromAnotherPlace) {
+      return true
+    }
     const states = [
       this.pbxState,
       this.sipState,

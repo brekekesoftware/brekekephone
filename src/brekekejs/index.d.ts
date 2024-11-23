@@ -65,6 +65,7 @@ export type GetPalOptions = {
   tenant: string
   login_user: string
   login_password: string
+  phone_idx: string
   _wn: string
   park: string[]
   voicemail: string
@@ -73,7 +74,6 @@ export type GetPalOptions = {
   secure_login_password: boolean
   phonetype: string
   callrecording: string
-  phone_idx: string
 }
 
 /* PBX */
