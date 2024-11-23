@@ -819,6 +819,7 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
+
 // ----------------------------------------------------------------------------
 // parse resource line data
 const _parseResourceLines = (l: string | undefined) => {

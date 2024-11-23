@@ -477,72 +477,11 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
-
-  getExtraHeader = async (resourceLines, exh) => {
-    const extraHeaders = exh?.extraHeaders || []
-    const index = extraHeaders.findIndex(header =>
-      header.startsWith('X-PBX-RPI:'),
-    )
-    // if it allows calling without a value `no-line`, then make a call without a line resource.
-    if (resourceLines[0].key === 'no-line' && index !== -1) {
-      extraHeaders.splice(index, 1)
-      return extraHeaders
-    }
-
-    const onSelectPromise = new Promise((resolve, reject) => {
-      RnPicker.open({
-        options: resourceLines.map(l => ({
-          key: l.value,
-          label: l.key,
-          icon: mdiPhone,
-        })),
-        onSelect: (k: string) => {
-          resolve(k)
-        },
-        onDismiss: () => {
-          reject(null)
-        },
-      })
-    })
-
-    const selectedKey = await onSelectPromise
-
-    // for case choose "no-line"
-    if (!selectedKey) {
-      if (index !== -1) {
-        extraHeaders.splice(index, 1)
-      }
-      return extraHeaders
-    }
-    if (index !== -1) {
-      extraHeaders[index] = `X-PBX-RPI: ${selectedKey}`
-    } else {
-      extraHeaders.push(`X-PBX-RPI: ${selectedKey}`)
-    }
-    return extraHeaders
-  }
-  isLineExist = (options, resourceLines) => {
-    if (!options || !!!options.extraHeaders || isEmpty(options.extraHeaders)) {
-      return false
-    }
-    return options.extraHeaders.some(exh => {
-      const match = exh.match(/^X-PBX-RPI:(.*)$/)
-      if (match) {
-        const value = match[1].trim()
-        const isExist = resourceLines.some(
-          resourceLine => resourceLine.value === value,
-        )
-        return isExist
-      }
-      return false
-    })
-  }
   startCall: MakeCallFn = async (number: string, ...args) => {
     // make sure sip is ready before make call
     if (getAuthStore().sipState !== 'success') {
       return
     }
-
     if (!(await permForCall())) {
       return
     }
@@ -555,7 +494,6 @@ export class CallStore {
       })
       return
     }
-
     // check line resource
     const auth = getAuthStore()
     if (
@@ -793,12 +731,10 @@ export class CallStore {
     if (setAction) {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
-
     // disable proximity mode if no running call
     if (Platform.OS === 'ios' && !this.calls.length) {
       BrekekeUtils.setProximityMonitoring(false)
     }
-
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -940,6 +876,63 @@ export class CallStore {
         completedBy: n.completedBy,
       })
     }
+  }
+
+  getExtraHeader = async (resourceLines, exh) => {
+    const extraHeaders = exh?.extraHeaders || []
+    const index = extraHeaders.findIndex(header =>
+      header.startsWith('X-PBX-RPI:'),
+    )
+    // if it allows calling without a value `no-line`, then make a call without a line resource.
+    if (resourceLines[0].key === 'no-line' && index !== -1) {
+      extraHeaders.splice(index, 1)
+      return extraHeaders
+    }
+    // show select line picker
+    const selectedKey = await new Promise((resolve, reject) => {
+      RnPicker.open({
+        options: resourceLines.map(l => ({
+          key: l.value,
+          label: l.key,
+          icon: mdiPhone,
+        })),
+        onSelect: (k: string) => {
+          resolve(k)
+        },
+        onDismiss: () => {
+          reject(null)
+        },
+      })
+    })
+    // for case choose "no-line"
+    if (!selectedKey) {
+      if (index !== -1) {
+        extraHeaders.splice(index, 1)
+      }
+      return extraHeaders
+    }
+    if (index !== -1) {
+      extraHeaders[index] = `X-PBX-RPI: ${selectedKey}`
+    } else {
+      extraHeaders.push(`X-PBX-RPI: ${selectedKey}`)
+    }
+    return extraHeaders
+  }
+  isLineExist = (options, resourceLines) => {
+    if (!options || !!!options.extraHeaders || isEmpty(options.extraHeaders)) {
+      return false
+    }
+    return options.extraHeaders.some(exh => {
+      const match = exh.match(/^X-PBX-RPI:(.*)$/)
+      if (match) {
+        const value = match[1].trim()
+        const isExist = resourceLines.some(
+          resourceLine => resourceLine.value === value,
+        )
+        return isExist
+      }
+      return false
+    })
   }
 
   constructor() {
