@@ -57,10 +57,13 @@ export class AuthStore {
   @observable sipTotalFailure = 0
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
+
+  @observable pbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
+    !this.pbxLoginFromAnotherPlace &&
     this.pbxState !== 'waiting' &&
     // do not auth pbx if sip token is provided in case of PN
     // wait until sip login success or failure
@@ -101,12 +104,17 @@ export class AuthStore {
     this.getCurrentAccount()?.ucEnabled &&
     ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
-  isConnFailure = () =>
-    [
+  isConnFailure = (): boolean => {
+    if (this.pbxLoginFromAnotherPlace || this.ucLoginFromAnotherPlace) {
+      return true
+    }
+    const states = [
       this.pbxState,
       this.sipState,
-      this.getCurrentAccount()?.ucEnabled && this.ucState,
-    ].some(s => s === 'failure')
+      this.getCurrentAccount()?.ucEnabled ? this.ucState : undefined,
+    ].filter(s => !!s)
+    return !states.includes('connecting') && states.includes('failure')
+  }
 
   @observable signedInId = ''
   getCurrentAccount = () =>
@@ -226,7 +234,7 @@ export class AuthStore {
     this.sipPn = {}
     sip.stopWebRTC()
     this.ucState = 'stopped'
-    this.resetFailureStateIncludeUcLoginFromAnotherPlace()
+    this.resetFailureStateIncludePbxOrUc()
     this.pbxConfig = undefined
     this.ucConfig = undefined
     this.listCustomPage = []
@@ -262,10 +270,17 @@ export class AuthStore {
     this.sipState = 'stopped'
     authSIP.auth()
   }
-  @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
+
+  @action resetFailureStateIncludePbxOrUc = () => {
     this.resetFailureState()
-    this.ucLoginFromAnotherPlace = false
-    authUC.auth()
+    if (this.pbxLoginFromAnotherPlace) {
+      authPBX.auth()
+      this.pbxLoginFromAnotherPlace = false
+    }
+    if (this.ucLoginFromAnotherPlace) {
+      authUC.auth()
+      this.ucLoginFromAnotherPlace = false
+    }
   }
 
   recentCallsMax: number = 200

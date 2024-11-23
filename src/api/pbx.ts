@@ -8,6 +8,7 @@ import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
+import { authPBX } from '../stores/AuthPBX'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -56,6 +57,7 @@ export class PBX extends EventEmitter {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
       login_password: a.pbxPassword,
+      phone_idx: a.pbxPhoneIndex,
       _wn: d.accessToken,
       park: a.parks || [],
       voicemail: 'self',
@@ -191,6 +193,7 @@ export class PBX extends EventEmitter {
     setListenerWithEmbed('notify_callrecording', this.onCallRecording)
     setListenerWithEmbed('notify_voicemail', this.onVoicemail)
     setListenerWithEmbed('notify_status', this.onUserStatus)
+    setListenerWithEmbed('notify_pal', this.onUserLoginOtherDevices)
     // fire pending events
     pendingClose.forEach(this.onClose)
     pendingError.forEach(this.onError)
@@ -278,6 +281,15 @@ export class PBX extends EventEmitter {
     }
   }
 
+  private onUserLoginOtherDevices = (e: PbxEvent['pal']) => {
+    if (!e) {
+      return
+    }
+    if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
+      getAuthStore().pbxLoginFromAnotherPlace = true
+      authPBX.dispose()
+    }
+  }
   disconnect = () => {
     if (this.client) {
       this.client.close()
