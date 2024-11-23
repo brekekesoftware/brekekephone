@@ -318,11 +318,15 @@ export class CallStore {
       }
       return
     }
+
     //
     // construct a new call
     const c = new Call(this)
     Object.assign(c, p)
-
+    // clear start call interval timer when the outgoing call is created
+    if (Platform.OS === 'web' && !c.incoming) {
+      this.clearStartCallIntervalTimer()
+    }
     // get Avatar and Username of phoneappli
     const ca = auth.getCurrentAccount()
     if (auth.phoneappliEnabled() && !c.incoming && ca) {
@@ -472,7 +476,7 @@ export class CallStore {
   }
   private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
-    // Make sure sip is ready before make call
+    // make sure sip is ready before make call
     if (getAuthStore().sipState !== 'success') {
       return
     }

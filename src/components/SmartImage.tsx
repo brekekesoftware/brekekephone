@@ -84,7 +84,7 @@ export const SmartImage = ({
 
   const onMessage = (event: WebViewMessageEvent) => {
     try {
-      // For sure just update load page 1 time
+      // for sure just update load page 1 time
       if (statusImageLoading === StatusImage.loaded) {
         return
       }
@@ -103,9 +103,9 @@ export const SmartImage = ({
       return
     }
   }
-  // For case Webview load  live stream camera url:
+  // for case Webview load  live stream camera url:
   // onLoadEnd, onLoad do not fire
-  // We should be check url same or not to update Loading status
+  // we should be check url same or not to update loading status
   const onLoadStart = (e: WebViewNavigationEvent) => {
     const cPageUrl = e?.nativeEvent?.url
     if (!cPageUrl || cPageUrl === cUrl.current) {

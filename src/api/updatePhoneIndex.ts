@@ -43,7 +43,7 @@ export const handlePhoneAppli = async extProps => {
     accountStore.updateAccountData(d)
   }
 
-  // Open Phone Appli app when phoneappli.enable is true and on PageCallRecents
+  // open PhoneAppli app when phoneappli.enable is true and on PageCallRecents
   const s = RnStacker.stacks[RnStacker.stacks.length - 1]
   if (paEnabled && s.name === 'PageCallRecents') {
     Nav().customPageIndex = Nav().goToPageCallKeypad

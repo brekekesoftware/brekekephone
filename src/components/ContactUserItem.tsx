@@ -171,7 +171,7 @@ export const UserItem: FC<
     ...p
   } = p0
 
-  // Pressable for web with onLongPress
+  // pressable for web with onLongPress
   const Container = canTouch
     ? Platform.OS === 'web'
       ? Pressable
