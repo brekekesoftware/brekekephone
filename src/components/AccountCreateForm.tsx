@@ -136,8 +136,7 @@ export const AccountCreateForm: FC<{
                 ? [
                     {
                       label: intl`Reconnect to server`,
-                      onPress:
-                        as.resetFailureStateIncludeUcLoginFromAnotherPlace,
+                      onPress: as.resetFailureStateIncludePbxOrUc,
                     },
                   ]
                 : []),

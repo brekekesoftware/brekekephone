@@ -61,7 +61,7 @@ export class Call {
   answer = async (
     options?: { ignoreNav?: boolean },
     videoOptions?: object,
-    exInfo?: object,
+    exInfo?: string,
   ) => {
     this.holding = false
     this.answered = true

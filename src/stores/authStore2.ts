@@ -17,7 +17,7 @@ import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitForActiveAppState } from '../utils/waitForActiveAppState'
 import { waitTimeout } from '../utils/waitTimeout'
-import type { Account } from './accountStore'
+import type { Account, RecentCall } from './accountStore'
 import {
   accountStore,
   getAccountUniqueId,
@@ -58,10 +58,13 @@ export class AuthStore {
   @observable sipTotalFailure = 0
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
+
+  @observable pbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
+    !this.pbxLoginFromAnotherPlace &&
     this.pbxState !== 'waiting' &&
     // do not auth pbx if sip token is provided in case of PN
     // wait until sip login success or failure
@@ -102,12 +105,17 @@ export class AuthStore {
     this.getCurrentAccount()?.ucEnabled &&
     ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
-  isConnFailure = () =>
-    [
+  isConnFailure = (): boolean => {
+    if (this.pbxLoginFromAnotherPlace || this.ucLoginFromAnotherPlace) {
+      return true
+    }
+    const states = [
       this.pbxState,
       this.sipState,
-      this.getCurrentAccount()?.ucEnabled && this.ucState,
-    ].some(s => s === 'failure')
+      this.getCurrentAccount()?.ucEnabled ? this.ucState : undefined,
+    ].filter(s => !!s)
+    return !states.includes('connecting') && states.includes('failure')
+  }
 
   @observable signedInId = ''
   getCurrentAccount = () =>
@@ -176,6 +184,7 @@ export class AuthStore {
     }
     return true
   }
+
   autoSignInLast = async () => {
     const d = await getLastSignedInId()
     const a = await accountStore.findByUniqueId(d.id)
@@ -228,7 +237,7 @@ export class AuthStore {
     this.sipPn = {}
     sip.stopWebRTC()
     this.ucState = 'stopped'
-    this.resetFailureStateIncludeUcLoginFromAnotherPlace()
+    this.resetFailureStateIncludePbxOrUc()
     this.pbxConfig = undefined
     this.ucConfig = undefined
     this.listCustomPage = []
@@ -237,6 +246,8 @@ export class AuthStore {
     contactStore.clearStore()
     chatStore.clearStore()
     this.userExtensionProperties = null
+    this.cRecentCalls = []
+    this.rcPage = 0
   }
 
   @action resetFailureState = () => {
@@ -262,21 +273,111 @@ export class AuthStore {
     this.sipState = 'stopped'
     authSIP.auth()
   }
-  @action resetFailureStateIncludeUcLoginFromAnotherPlace = () => {
+
+  @action resetFailureStateIncludePbxOrUc = () => {
     this.resetFailureState()
-    this.ucLoginFromAnotherPlace = false
-    authUC.auth()
+    if (this.pbxLoginFromAnotherPlace) {
+      authPBX.auth()
+      this.pbxLoginFromAnotherPlace = false
+    }
+    if (this.ucLoginFromAnotherPlace) {
+      authUC.auth()
+      this.ucLoginFromAnotherPlace = false
+    }
   }
 
+  recentCallsMax: number = 200
+  @observable cRecentCalls: RecentCall[] = []
+  rcPerPage: number = 15
+  rcPage: number = 0
+  @observable rcLoading: boolean = false
+  @observable rcCount: number = 0
+  // recentCallsMax with default 200 and limit 1000
+  setRecentCallsMax = async (max: number | string) => {
+    const numericMax = Number(max)
+
+    this.recentCallsMax =
+      Number.isInteger(numericMax) && numericMax > 0
+        ? Math.min(numericMax, 1000)
+        : 200
+
+    // update recentCalls if config recentCallsMax changed
+    const d = await this.getCurrentDataAsync()
+    if (!d) {
+      return
+    }
+    if (d.recentCalls.length > this.recentCallsMax) {
+      d.recentCalls.splice(this.recentCallsMax)
+      this.rcCount = d.recentCalls.length
+      accountStore.saveAccountsToLocalStorageDebounced()
+    }
+  }
+
+  rcFirstTimeLoadData = async () => {
+    if (this.rcPage === 0) {
+      this.rcLoading = true
+      const d = this.getCurrentData()
+      if (!d) {
+        return
+      }
+      const filteredCalls =
+        d?.recentCalls.filter(this.isMatchUserRecentCalls) || []
+      const calls = filteredCalls.slice(0, this.rcPerPage) || []
+      this.cRecentCalls = calls
+      this.rcCount = filteredCalls.length
+      this.rcLoading = false
+    }
+  }
+  isMatchUserRecentCalls = (call: RecentCall) => {
+    if (call.partyNumber.includes(contactStore.callSearchRecents)) {
+      return call.id
+    }
+    return ''
+  }
+  rcSearchRecentCall = async () => {
+    const d = this.getCurrentData()
+    if (!d) {
+      return
+    }
+    this.rcPage = 0
+    this.rcLoading = true
+    this.cRecentCalls = []
+    const filteredCalls =
+      d?.recentCalls.filter(this.isMatchUserRecentCalls) || []
+    this.cRecentCalls = filteredCalls.slice(0, this.rcPerPage)
+    this.rcCount = filteredCalls.length
+    this.rcLoading = false
+  }
+  rcLoadMore = () => {
+    this.rcLoading = true
+    const d = this.getCurrentData()
+    if (!d) {
+      return
+    }
+    this.rcPage++
+    const calls =
+      d?.recentCalls
+        .filter(this.isMatchUserRecentCalls)
+        .slice(
+          this.rcPerPage * this.rcPage,
+          this.rcPerPage * (this.rcPage + 1),
+        ) || []
+    this.cRecentCalls = [...this.cRecentCalls, ...calls]
+    this.rcLoading = false
+  }
   pushRecentCall = async (call: CallHistoryInfo) => {
     const d = await this.getCurrentDataAsync()
     if (!d) {
       return
     }
+
     d.recentCalls = [call, ...d.recentCalls]
-    if (d.recentCalls.length > 20) {
-      d.recentCalls.pop()
+    this.cRecentCalls = [call, ...this.cRecentCalls]
+    if (d.recentCalls.length > this.recentCallsMax) {
+      d.recentCalls.splice(this.recentCallsMax)
+      this.cRecentCalls.splice(this.recentCallsMax)
     }
+    this.rcCount = d.recentCalls.length
     accountStore.saveAccountsToLocalStorageDebounced()
   }
 
