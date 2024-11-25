@@ -277,12 +277,12 @@ export class AuthStore {
   @action resetFailureStateIncludePbxOrUc = () => {
     this.resetFailureState()
     if (this.pbxLoginFromAnotherPlace) {
-      authPBX.auth()
       this.pbxLoginFromAnotherPlace = false
+      authPBX.auth()
     }
     if (this.ucLoginFromAnotherPlace) {
-      authUC.auth()
       this.ucLoginFromAnotherPlace = false
+      authUC.auth()
     }
   }
 
