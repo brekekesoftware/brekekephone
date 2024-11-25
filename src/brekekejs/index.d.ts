@@ -65,7 +65,7 @@ export type GetPalOptions = {
   tenant: string
   login_user: string
   login_password: string
-  phone_idx: string
+  phone_idx?: string
   _wn: string
   park: string[]
   voicemail: string
