@@ -14,6 +14,7 @@ import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitPbx } from '../stores/authStore'
 import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -44,6 +45,7 @@ export class PBX extends EventEmitter {
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
+    forSyncPnToken?: boolean,
   ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
@@ -62,7 +64,7 @@ export class PBX extends EventEmitter {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
       login_password: a.pbxPassword,
-      phone_idx: a.pbxPhoneIndex,
+      ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
       park: a.parks || [],
       voicemail: 'self',
@@ -292,6 +294,7 @@ export class PBX extends EventEmitter {
     }
     if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
       getAuthStore().pbxLoginFromAnotherPlace = true
+      authSIP.dispose()
       authPBX.dispose()
     }
   }

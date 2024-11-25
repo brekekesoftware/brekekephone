@@ -75,14 +75,22 @@ export class PageCallRecents extends Component {
         <Field isGroup label={intl`RECENT CALLS (${as.rcCount})`} />
         {calls.map((c, i) => {
           const today = moment().format('MMM D')
-          Object.assign(c, {
-            created: (c.created + '').replace(` - ${today}`, ''),
-          })
+          // display line information
+          const created =
+            (c.created + '').replace(` - ${today}`, '') +
+            `${as.resourceLines.length && c.lineValue ? '   ' + `${c?.lineLabel ? c.lineLabel + ':' : ''} ${c.lineValue}` : ''}`
+          const option =
+            (as.resourceLines.length &&
+              c.lineValue && {
+                extraHeaders: [`X-PBX-RPI: ${c.lineValue}`],
+              }) ||
+            undefined
           return (
             <UserItem
               iconFuncs={[
-                () => getCallStore().startVideoCall(c.partyNumber),
-                () => getCallStore().startCall(c.partyNumber),
+                // update extraHeaders if start call with line value
+                () => getCallStore().startCall(c.partyNumber, option, true),
+                () => getCallStore().startCall(c.partyNumber, option),
               ]}
               {...contactStore.getUcUserById(c.partyNumber)}
               icons={[mdiVideo, mdiPhone]}
@@ -91,6 +99,7 @@ export class PageCallRecents extends Component {
               key={i}
               {...this.getAvatar(c.partyNumber)}
               {...c}
+              created={created}
             />
           )
         })}

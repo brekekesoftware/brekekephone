@@ -53,7 +53,7 @@ const syncPnTokenWithoutCatch = async (
   }
 
   try {
-    const success = await pbx.connect(p)
+    const success = await pbx.connect(p, false, true)
     if (!success) {
       console.log('PN sync debug: failed to connect to pbx')
       return disconnectPbx()
