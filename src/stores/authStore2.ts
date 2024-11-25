@@ -80,6 +80,7 @@ export class AuthStore {
 
   sipShouldAuth = () =>
     this.sipState !== 'waiting' &&
+    !this.pbxLoginFromAnotherPlace &&
     this.sipState !== 'connecting' &&
     this.sipState !== 'success' &&
     ((this.signedInId && this.sipPn.sipAuth) ||
