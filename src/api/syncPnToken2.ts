@@ -36,7 +36,6 @@ const syncPnTokenWithoutCatch = async (
       p.pbxUsername
     }`,
   )
-
   const pbx = new PBX()
   pbx.isMainInstance = false
   const disconnectPbx = (success?: boolean) => {
@@ -53,7 +52,7 @@ const syncPnTokenWithoutCatch = async (
   }
 
   try {
-    const success = await pbx.connect(p)
+    const success = await pbx.connect(p, false, true)
     if (!success) {
       console.log('PN sync debug: failed to connect to pbx')
       return disconnectPbx()

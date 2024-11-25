@@ -44,6 +44,7 @@ export class PBX extends EventEmitter {
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
+    forSyncPnToken?: boolean,
   ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
@@ -62,7 +63,7 @@ export class PBX extends EventEmitter {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
       login_password: a.pbxPassword,
-      phone_idx: a.pbxPhoneIndex,
+      ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
       park: a.parks || [],
       voicemail: 'self',
