@@ -75,7 +75,7 @@ export class PageCallRecents extends Component {
         <Field isGroup label={intl`RECENT CALLS (${as.rcCount})`} />
         {calls.map((c, i) => {
           const today = moment().format('MMM D')
-          // Display line information
+          // display line information
           const created =
             (c.created + '').replace(` - ${today}`, '') +
             `${as.resourceLines.length && c.lineValue ? '   ' + `${c?.lineLabel ? c.lineLabel + ':' : ''} ${c.lineValue}` : ''}`
@@ -88,7 +88,7 @@ export class PageCallRecents extends Component {
           return (
             <UserItem
               iconFuncs={[
-                // Update extraHeaders if start call with line value
+                // update extraHeaders if start call with line value
                 () => getCallStore().startCall(c.partyNumber, option, true),
                 () => getCallStore().startCall(c.partyNumber, option),
               ]}

@@ -36,6 +36,7 @@ const syncPnTokenWithoutCatch = async (
       p.pbxUsername
     }`,
   )
+
   const pbx = new PBX()
   pbx.isMainInstance = false
   const disconnectPbx = (success?: boolean) => {
