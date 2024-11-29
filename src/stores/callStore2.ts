@@ -77,7 +77,10 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
-        // TODO
+        // Handling the case where a PN for an incoming call is received after the answer call is invoked
+        BackgroundTimer.setTimeout(() => {
+          RNCallKeep.answerIncomingCall(uuid)
+        }, 2000)
       }
     }
     checkAndRemovePnTokenViaSip(n)
