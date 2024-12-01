@@ -1,10 +1,13 @@
-import { action, observable } from 'mobx'
+import CiruclarJSON from 'circular-json'
+import type { IReactionDisposer } from 'mobx'
+import { action, autorun, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
+import { embedApi } from '../embed/embedApi'
 import { getPartyName } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -129,6 +132,7 @@ export class Call {
 
   // to use in embed api and hang up special transfer case
   hangup = () => {
+    this.isAboutToHangup = true
     sip.hangupSession(this.id)
   }
 
@@ -312,6 +316,39 @@ export class Call {
       message: intlDebug`Failed to park the call`,
       err,
     })
+  }
+
+  private _autorunEmitEmbed = false // check if autorun is already started
+  private _disposeEmitEmbed?: IReactionDisposer // dispose autorun
+  startEmitEmbed = () => {
+    if (window._BrekekePhoneWebRoot) {
+      return
+    }
+    embedApi.emit('call', this)
+    this._disposeEmitEmbed = autorun(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { store, ...c } = this // do not autorun on store
+      CiruclarJSON.stringify(c)
+      if (!this._autorunEmitEmbed) {
+        this._autorunEmitEmbed = true
+        return
+      }
+      if (this.isAboutToHangup) {
+        return
+      }
+      embedApi.emit('call_update', this)
+    })
+  }
+  disposeEmitEmbed = () => {
+    this._disposeEmitEmbed?.()
+    this._disposeEmitEmbed = undefined
+  }
+  finishEmitEmbed = () => {
+    if (window._BrekekePhoneWebRoot) {
+      return
+    }
+    this.disposeEmitEmbed()
+    embedApi.emit('call_end', this)
   }
 }
 

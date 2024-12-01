@@ -100,7 +100,7 @@ class AuthSIP {
       const count = sip.phone?.getSessionCount()
       if (count) {
         console.log(
-          `SIP PN debug: can not dispose sip due to ongoing sessions getSessionCount=${count} }`,
+          `SIP PN debug: can not dispose sip due to ongoing sessions getSessionCount=${count}`,
         )
         return
       }
