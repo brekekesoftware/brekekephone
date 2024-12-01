@@ -10,7 +10,6 @@ import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { mdiPhone } from '../assets/icons'
 import type { MakeCallFn, Session } from '../brekekejs'
-import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
@@ -314,10 +313,6 @@ export class CallStore {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
 
-      // emit to embed api
-      if (!window._BrekekePhoneWebRoot) {
-        embedApi.emit('call_update', e)
-      }
       return
     }
 
@@ -361,9 +356,7 @@ export class CallStore {
     // update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call', c)
-    }
+    c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
@@ -454,9 +447,7 @@ export class CallStore {
       IncallManager.stop()
     }
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call_end', c)
-    }
+    c.finishEmitEmbed()
   }
 
   @action onSelectBackgroundCall = async (c: Immutable<Call>) => {
