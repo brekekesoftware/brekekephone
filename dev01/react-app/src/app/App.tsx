@@ -110,7 +110,7 @@ export const App = () => {
                 >
                   <div className='version'>
                     <strong>{b.version}</strong>{' '}
-                    <LastModified url={ipa || apk || ''} />
+                    <LastModified url={isWeb ? zip : ipa || apk || ''} />
                   </div>
                   {isWeb ? (
                     <div>
