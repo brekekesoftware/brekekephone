@@ -883,8 +883,9 @@ export class CallStore {
     const index = extraHeaders.findIndex(header =>
       header.startsWith('X-PBX-RPI:'),
     )
+    const allowNoLine = resourceLines.some(l => l.value === '')
     // if it allows calling without a value `no-line`, then make a call without a line resource.
-    if (resourceLines[0].key === 'no-line' && index !== -1) {
+    if (allowNoLine && index !== -1) {
       extraHeaders.splice(index, 1)
       return extraHeaders
     }
