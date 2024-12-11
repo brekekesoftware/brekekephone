@@ -481,7 +481,7 @@ const osMap: { [k: string]: string } = {
   android: 'Android',
   web: 'Web',
 }
-const getUserAgent = async (a: ParsedPn | AccountUnique) => {
+export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
   const au = 'to' in a ? await accountStore.findByPn(a) : a
   const d = await accountStore.findData(au)
   if (d?.userAgent) {

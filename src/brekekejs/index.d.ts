@@ -245,6 +245,7 @@ export type PbxGetProductInfoRes = {
   'webphone.phonebook.personal.editable': string
   'webphone.recents.max': string
   'webphone.resource-line': string
+  'webphone.http.useragent.product': string
   version: string
 }
 export type PbxGetProductInfoParam = {

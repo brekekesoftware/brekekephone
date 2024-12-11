@@ -115,6 +115,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
+  public static String userAgentConfig = null;
 
   BrekekeUtils(ReactApplicationContext c) {
     super(c);
@@ -741,8 +742,38 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  public static boolean isUserAgentConfig() {
+    return BrekekeUtils.userAgentConfig != null && !BrekekeUtils.userAgentConfig.equals("");
+  }
+
   // ==========================================================================
   // react methods
+
+  @ReactMethod
+  public void setUserAgentConfig(String userAgentConfig) {
+    if (BrekekeUtils.userAgentConfig == null) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              try {
+                for (IncomingCallActivity a : activities) {
+                  try {
+                    a.updateUserAgentConfig(userAgentConfig);
+                  } catch (Exception e) {
+                    BrekekeUtils.emit(
+                        "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                  }
+                }
+              } catch (Exception e) {
+                BrekekeUtils.emit(
+                    "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+              }
+            }
+          });
+    }
+    BrekekeUtils.userAgentConfig = userAgentConfig;
+  }
 
   @ReactMethod
   public void isOverlayPermissionGranted(Promise p) {
