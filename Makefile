@@ -128,7 +128,7 @@ dev:
 	cd ../.. && make -Bs chmod;
 
 chmod:
-	ssh bre "sudo chmod -R a+rwX /var/www";
+	ssh bre "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
 
 ssl:
 	bash dev01/renewssl.sh;
