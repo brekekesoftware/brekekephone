@@ -10,7 +10,6 @@ import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { mdiPhone } from '../assets/icons'
 import type { MakeCallFn, Session } from '../brekekejs'
-import { embedApi } from '../embed/embedApi'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
@@ -21,6 +20,7 @@ import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
+import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
@@ -60,6 +60,10 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
+
+  // to check and reconnect pbx
+  bgAt = 0
+  fgAt = 0
 
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
@@ -116,19 +120,32 @@ export class CallStore {
     // so even if sipState is `success` but the connection has dropped
     // we just drop the connection no matter if it is alive or not
     // then construct a new connection to receive the call as quickly as possible
-    if (now - this.recentCallActivityAt > 3000) {
-      const as = getAuthStore()
-      if (as.sipState === 'connecting') {
-        return
-      }
-      const count = sip.phone?.getSessionCount()
-      if (!count) {
-        console.log(
-          `SIP PN debug: new notification: getSessionCount=${count} | call destroyWebRTC()`,
-        )
-        as.sipState = 'stopped'
-        sip.destroyWebRTC()
-        authSIP.auth()
+    const count = sip.phone?.getSessionCount()
+    if (count) {
+      return
+    }
+    const as = getAuthStore()
+    if (
+      as.sipState !== 'connecting' &&
+      now - this.recentCallActivityAt > 3000
+    ) {
+      console.log('SIP PN debug: reconnect sip on new notification')
+      as.sipState = 'stopped'
+      sip.destroyWebRTC()
+      authSIP.auth()
+    }
+    if (as.pbxState !== 'connecting') {
+      const fg = AppState.currentState === 'active'
+      const fgDiff = now - this.fgAt
+      const bgDiff = now - this.bgAt
+      console.log(
+        `PBX PN debug: try reconnect pbx on new notification fg=${fg} diff=${fg ? fgDiff : bgDiff}`,
+      )
+      // if it has just waken up less than 1s, or been bg more than 10s, then reconnect pbx
+      if ((fg && fgDiff < 1000) || (!fg && bgDiff > 10000)) {
+        as.pbxState = 'stopped'
+        authPBX.dispose()
+        authPBX.auth()
       }
     }
   }
@@ -317,10 +334,6 @@ export class CallStore {
         BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
       }
 
-      // emit to embed api
-      if (!window._BrekekePhoneWebRoot) {
-        embedApi.emit('call_update', e)
-      }
       return
     }
 
@@ -364,9 +377,7 @@ export class CallStore {
     // update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call', c)
-    }
+    c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
@@ -457,9 +468,7 @@ export class CallStore {
       IncallManager.stop()
     }
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call_end', c)
-    }
+    c.finishEmitEmbed()
   }
 
   @action onSelectBackgroundCall = async (c: Immutable<Call>) => {

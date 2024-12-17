@@ -1,3 +1,9 @@
+#### 2.15.3
+
+- Fix it should reconnect pbx on notification if it has been in background for more than 10s
+- Embed:
+  - Fix it should emit call_update correctly
+
 #### 2.15.2
 
 - Implement webphone.resource-line line selection
