@@ -12,7 +12,6 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import noPhoto from '../assets/no_photo.png'
 
-import { buildWebViewSource } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
@@ -140,7 +139,7 @@ export const SmartImage = ({
       )}
       {!uri ? null : !isImageUrl ? (
         <WebView
-          source={buildWebViewSource(uri)}
+          source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={
             Platform.OS === 'android' ? js : ''
@@ -154,6 +153,7 @@ export const SmartImage = ({
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
+          userAgent={getAuthStore().userAgentConfig}
         />
       ) : (
         <Image

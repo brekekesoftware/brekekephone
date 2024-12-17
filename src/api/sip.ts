@@ -5,6 +5,7 @@ import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
 import { currentVersion } from '../components/variables'
+import { bundleIdentifier } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -481,14 +482,14 @@ const osMap: { [k: string]: string } = {
   android: 'Android',
   web: 'Web',
 }
-const getUserAgent = async (a: ParsedPn | AccountUnique) => {
+export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
   const au = 'to' in a ? await accountStore.findByPn(a) : a
   const d = await accountStore.findData(au)
   if (d?.userAgent) {
     return d.userAgent
   }
   const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15`
+  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
 }
 
 const getWssUrl = (host?: string, port?: string) =>
