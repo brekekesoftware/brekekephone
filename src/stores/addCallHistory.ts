@@ -11,6 +11,8 @@ import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
+import { authPBX } from './AuthPBX'
+import { authSIP } from './AuthSIP'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
 import { getCallStore } from './callStore'
@@ -82,6 +84,14 @@ export const addCallHistory = async (
       'checkAndRemovePnTokenViaSip debug: do not add history account not exist',
     )
     return
+  }
+
+  if (getAuthStore().pbxLoginFromAnotherPlace) {
+    console.log(
+      'pbxLoginFromAnotherPlace debug: dispose authSIP and authPBX after call finished',
+    )
+    authSIP.dispose()
+    authPBX.dispose()
   }
 
   const ms =

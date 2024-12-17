@@ -61,6 +61,7 @@ export class AuthStore {
   @observable ucTotalFailure = 0
 
   @observable pbxLoginFromAnotherPlace = false
+  @observable showMsgPbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
 
   pbxShouldAuth = () =>
@@ -157,7 +158,6 @@ export class AuthStore {
       return
     }
     const userAgent = await getUserAgent(a)
-    // Update for native android
     BrekekeUtils.setUserAgentConfig(userAgent)
     return userAgent
   }
@@ -298,6 +298,7 @@ export class AuthStore {
     this.resetFailureState()
     if (this.pbxLoginFromAnotherPlace) {
       this.pbxLoginFromAnotherPlace = false
+      this.showMsgPbxLoginFromAnotherPlace = false
       authPBX.auth()
     }
     if (this.ucLoginFromAnotherPlace) {

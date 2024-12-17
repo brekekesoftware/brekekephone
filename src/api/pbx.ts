@@ -16,12 +16,14 @@ import { accountStore } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitPbx } from '../stores/authStore'
+import { getCallStore } from '../stores/callStore'
 import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
+import { waitTimeout } from '../utils/waitTimeout'
 import {
   addFromNumberNonce,
   hasPbxTokenTobeRepalced,
@@ -34,6 +36,8 @@ import {
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from './pnConfig'
 import { PnCommand, PnServiceId } from './pnConfig'
+import { sip } from './sip'
+import { SyncPnToken } from './syncPnToken'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -288,14 +292,30 @@ export class PBX extends EventEmitter {
     }
   }
 
-  private onUserLoginOtherDevices = (e: PbxEvent['pal']) => {
+  private onUserLoginOtherDevices = async (e: PbxEvent['pal']) => {
     if (!e) {
       return
     }
     if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
       getAuthStore().pbxLoginFromAnotherPlace = true
-      authSIP.dispose()
-      authPBX.dispose()
+      if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
+        console.log(
+          'pbxLoginFromAnotherPlace debug:  No call is in progress, disconnect SIP and PBX.',
+        )
+        const a = getAuthStore().getCurrentAccount()
+        if (a) {
+          console.log(
+            'pbxLoginFromAnotherPlace debug:  remove token for account ' +
+              a.pbxUsername,
+          )
+          await SyncPnToken().sync(a, { noUpsert: true })
+        }
+        authSIP.dispose()
+        authPBX.dispose()
+      }
+      // wait for the last device to complete syncing the token before allowing the current device to interact
+      await waitTimeout(2500)
+      getAuthStore().showMsgPbxLoginFromAnotherPlace = true
     }
   }
   disconnect = () => {
