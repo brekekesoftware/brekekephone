@@ -108,7 +108,7 @@ export class AuthStore {
     ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
   isConnFailure = (): boolean => {
-    if (this.ucLoginFromAnotherPlace) {
+    if (this.pbxLoginFromAnotherPlace || this.ucLoginFromAnotherPlace) {
       return true
     }
     const states = [
@@ -276,7 +276,7 @@ export class AuthStore {
     authSIP.auth()
   }
 
-  @action resetFailureStateIncludePbxOrUc = async () => {
+  @action resetFailureStateIncludePbxOrUc = () => {
     this.resetFailureState()
     if (this.pbxLoginFromAnotherPlace) {
       this.pbxLoginFromAnotherPlace = false

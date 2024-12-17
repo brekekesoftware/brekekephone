@@ -16,7 +16,6 @@ import { accountStore } from '../stores/accountStore'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitPbx } from '../stores/authStore'
-import { authUC } from '../stores/AuthUC'
 import { getCallStore } from '../stores/callStore'
 import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
@@ -604,7 +603,6 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    console.log('thangnt::holdTalker::client', !!this.client)
     await this.client.call_pal('hold', {
       tenant,
       tid: talker,
