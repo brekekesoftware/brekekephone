@@ -158,7 +158,6 @@ export class AuthStore {
       return
     }
     const userAgent = await getUserAgent(a)
-    // Update for native android
     BrekekeUtils.setUserAgentConfig(userAgent)
     return userAgent
   }

@@ -36,6 +36,7 @@ import {
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from './pnConfig'
 import { PnCommand, PnServiceId } from './pnConfig'
+import { sip } from './sip'
 import { SyncPnToken } from './syncPnToken'
 
 export class PBX extends EventEmitter {
@@ -297,7 +298,7 @@ export class PBX extends EventEmitter {
     }
     if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
       getAuthStore().pbxLoginFromAnotherPlace = true
-      if (!getCallStore().calls.length) {
+      if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
         console.log(
           'pbxLoginFromAnotherPlace debug:  No call is in progress, disconnect SIP and PBX.',
         )
@@ -312,7 +313,7 @@ export class PBX extends EventEmitter {
         authSIP.dispose()
         authPBX.dispose()
       }
-      // Wait for the last device to complete syncing the token before allowing the current device to interact.
+      // wait for the last device to complete syncing the token before allowing the current device to interact
       await waitTimeout(2500)
       getAuthStore().showMsgPbxLoginFromAnotherPlace = true
     }
@@ -618,7 +619,6 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-
     await this.client.call_pal('unhold', {
       tenant,
       tid: talker,

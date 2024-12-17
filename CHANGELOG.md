@@ -4,6 +4,7 @@
 - Update line selection: label for no line, remove duplicated
 - Implement webphone.http.useragent.product to inject user agent for webview avatar
 - Fix ios auto answer 3pcc (issue 980)
+- Fix improvements for notify_pal (issue 990, 991, 992)
 - Embed:
   - Fix it should emit call_update correctly
 
