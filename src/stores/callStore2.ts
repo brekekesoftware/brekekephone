@@ -20,6 +20,7 @@ import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
+import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
@@ -59,6 +60,10 @@ export class CallStore {
         !c.isAboutToHangup,
     )
   }
+
+  // to check and reconnect pbx
+  bgAt = 0
+  fgAt = 0
 
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
@@ -112,19 +117,32 @@ export class CallStore {
     // so even if sipState is `success` but the connection has dropped
     // we just drop the connection no matter if it is alive or not
     // then construct a new connection to receive the call as quickly as possible
-    if (now - this.recentCallActivityAt > 3000) {
-      const as = getAuthStore()
-      if (as.sipState === 'connecting') {
-        return
-      }
-      const count = sip.phone?.getSessionCount()
-      if (!count) {
-        console.log(
-          `SIP PN debug: new notification: getSessionCount=${count} | call destroyWebRTC()`,
-        )
-        as.sipState = 'stopped'
-        sip.destroyWebRTC()
-        authSIP.auth()
+    const count = sip.phone?.getSessionCount()
+    if (count) {
+      return
+    }
+    const as = getAuthStore()
+    if (
+      as.sipState !== 'connecting' &&
+      now - this.recentCallActivityAt > 3000
+    ) {
+      console.log('SIP PN debug: reconnect sip on new notification')
+      as.sipState = 'stopped'
+      sip.destroyWebRTC()
+      authSIP.auth()
+    }
+    if (as.pbxState !== 'connecting') {
+      const fg = AppState.currentState === 'active'
+      const fgDiff = now - this.fgAt
+      const bgDiff = now - this.bgAt
+      console.log(
+        `PBX PN debug: try reconnect pbx on new notification fg=${fg} diff=${fg ? fgDiff : bgDiff}`,
+      )
+      // if it has just waken up less than 1s, or been bg more than 10s, then reconnect pbx
+      if ((fg && fgDiff < 1000) || (!fg && bgDiff > 10000)) {
+        as.pbxState = 'stopped'
+        authPBX.dispose()
+        authPBX.auth()
       }
     }
   }
