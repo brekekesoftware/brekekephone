@@ -832,19 +832,24 @@ const _parseResourceLines = (l: string | undefined) => {
     return
   }
   const lines = l.split(',')
-  const resourceLines: PbxResourceLine[] =
-    lines[0] === '' ? [{ key: 'no-line', value: '' }] : []
+  const resourceLines: PbxResourceLine[] = []
   lines.forEach(line => {
     if (line.includes(':')) {
       const [key, value] = line.split(':')
-      if (key && value) {
+      if (key) {
         resourceLines.push({ key: key.trim(), value: value.trim() })
       }
     } else if (line) {
       resourceLines.push({ key: line.trim(), value: line.trim() })
     }
   })
-  as.resourceLines = resourceLines
+  // remove duplicate value
+  as.resourceLines = resourceLines.filter((item, index) => {
+    const nextItem = resourceLines.find(
+      (next, nextIndex) => nextIndex > index && next.value === item.value,
+    )
+    return !nextItem
+  })
 }
 
 // ----------------------------------------------------------------------------
