@@ -112,7 +112,7 @@
     "@types/validatorjs": "3.15.3",
     "@typescript-eslint/eslint-plugin": "7.8.0",
     "@typescript-eslint/parser": "6.11.0",
-    "caniuse-lite": "1.0.30001683",
+    "caniuse-lite": "1.0.30001689",
     "circular-dependency-plugin": "5.2.2",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-prefer-arrow": "1.2.3",
