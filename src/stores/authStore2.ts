@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
-import { sip } from '../api/sip'
+import { getUserAgent, sip } from '../api/sip'
 import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
@@ -15,6 +15,7 @@ import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { toBoolean } from '../utils/string'
 import { waitForActiveAppState } from '../utils/waitForActiveAppState'
 import { waitTimeout } from '../utils/waitTimeout'
 import type { Account, RecentCall } from './accountStore'
@@ -143,6 +144,24 @@ export class AuthStore {
   }
 
   @observable resourceLines: PbxResourceLine[] = []
+
+  @observable userAgentConfig: string | undefined = undefined
+
+  setUserAgentConfig = async (useragent: string | undefined) => {
+    const isEnabled = useragent === undefined || toBoolean(useragent)
+    if (!isEnabled) {
+      BrekekeUtils.setUserAgentConfig('')
+      return
+    }
+    const a = this.getCurrentAccount()
+    if (!a) {
+      return
+    }
+    const userAgent = await getUserAgent(a)
+    // Update for native android
+    BrekekeUtils.setUserAgentConfig(userAgent)
+    return userAgent
+  }
 
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
 

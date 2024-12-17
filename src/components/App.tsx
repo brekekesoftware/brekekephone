@@ -102,6 +102,13 @@ const initApp = async () => {
   })
 
   AppState.addEventListener('change', async () => {
+    // to check and reconnect pbx
+    if (AppState.currentState === 'active') {
+      cs.fgAt = Date.now()
+    } else if (AppState.currentState === 'background') {
+      cs.bgAt = Date.now()
+    }
+
     if (AppState.currentState !== 'active') {
       return
     }

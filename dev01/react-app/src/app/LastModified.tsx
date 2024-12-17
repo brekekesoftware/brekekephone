@@ -31,5 +31,5 @@ export const LastModified = ({ url }: { url: string }) => {
         setDuration('')
       })
   }, [url])
-  return duration && `(${duration} ago)`
+  return url && duration && `(${duration} ago)`
 }
