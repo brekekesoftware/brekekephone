@@ -87,6 +87,12 @@ class Api {
     if (s.isSignInByNotification) {
       return
     }
+    if (s.pbxLoginFromAnotherPlace) {
+      console.log(
+        'pbxLoginFromAnotherPlace debug: stop sync pn token when pbx login from another place',
+      )
+      return
+    }
     SyncPnToken()
       .sync(ca)
       .then(() => SyncPnToken().syncForAllAccounts())
