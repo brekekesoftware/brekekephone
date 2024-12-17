@@ -265,6 +265,7 @@ export const App = observer(() => {
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
     pbxLoginFromAnotherPlace,
+    showMsgPbxLoginFromAnotherPlace,
     signedInId,
     resetFailureStateIncludePbxOrUc,
   } = getAuthStore()
@@ -278,15 +279,17 @@ export const App = observer(() => {
         : ''
   const isFailure = isConnFailure()
   const connMessage =
-    isFailure && pbxLoginFromAnotherPlace
-      ? intl`Logged in from another location as the same phone`
-      : isFailure && ucLoginFromAnotherPlace
-        ? intl`UC signed in from another location`
-        : !serviceConnectingOrFailure
-          ? ''
-          : isFailure
-            ? intl`${serviceConnectingOrFailure} connection failed`
-            : intl`Connecting to ${serviceConnectingOrFailure}...`
+    pbxLoginFromAnotherPlace && !showMsgPbxLoginFromAnotherPlace
+      ? ''
+      : isFailure && showMsgPbxLoginFromAnotherPlace
+        ? intl`Logged in from another location as the same phone`
+        : isFailure && ucLoginFromAnotherPlace
+          ? intl`UC signed in from another location`
+          : !serviceConnectingOrFailure
+            ? ''
+            : isFailure
+              ? intl`${serviceConnectingOrFailure} connection failed`
+              : intl`Connecting to ${serviceConnectingOrFailure}...`
 
   const onPressConnMessage = isFailure
     ? resetFailureStateIncludePbxOrUc

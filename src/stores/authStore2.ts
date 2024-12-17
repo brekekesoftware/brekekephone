@@ -60,6 +60,7 @@ export class AuthStore {
   @observable ucTotalFailure = 0
 
   @observable pbxLoginFromAnotherPlace = false
+  @observable showMsgPbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
 
   pbxShouldAuth = () =>
@@ -107,7 +108,7 @@ export class AuthStore {
     ['waiting', 'connecting', 'failure'].some(s => s === this.ucState)
 
   isConnFailure = (): boolean => {
-    if (this.pbxLoginFromAnotherPlace || this.ucLoginFromAnotherPlace) {
+    if (this.ucLoginFromAnotherPlace) {
       return true
     }
     const states = [
@@ -275,10 +276,11 @@ export class AuthStore {
     authSIP.auth()
   }
 
-  @action resetFailureStateIncludePbxOrUc = () => {
+  @action resetFailureStateIncludePbxOrUc = async () => {
     this.resetFailureState()
     if (this.pbxLoginFromAnotherPlace) {
       this.pbxLoginFromAnotherPlace = false
+      this.showMsgPbxLoginFromAnotherPlace = false
       authPBX.auth()
     }
     if (this.ucLoginFromAnotherPlace) {
