@@ -336,6 +336,7 @@ export class PBX extends EventEmitter {
 
     const as = getAuthStore()
     as.pbxConfig = config
+    as.setUserAgentConfig(config['webphone.http.useragent.product'])
     as.setRecentCallsMax(config['webphone.recents.max'])
 
     // the custom page only load at the first time the tab is shown after you log in

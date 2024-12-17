@@ -176,6 +176,13 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
+            <WebView
+              android:id="@+id/avatar_html"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"
+            />
             <RelativeLayout
               android:id="@+id/rl_webview_loading"
               android:layout_width="match_parent"
@@ -194,13 +201,6 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
-            <WebView
-              android:id="@+id/avatar_html"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
-              android:gravity="center"
-            />
           </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
       </RelativeLayout>
@@ -646,6 +646,13 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
+            <WebView
+              android:id="@+id/avatar_talking_html"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"
+            />
             <RelativeLayout
               android:id="@+id/rl_taking_loading"
               android:layout_width="match_parent"
@@ -664,13 +671,6 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
-            <WebView
-              android:id="@+id/avatar_talking_html"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
-              android:gravity="center"
-            />
           </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
       </RelativeLayout>
