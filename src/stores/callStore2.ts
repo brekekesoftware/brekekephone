@@ -81,7 +81,9 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
-        // TODO
+        BackgroundTimer.setTimeout(() => {
+          RNCallKeep.answerIncomingCall(uuid)
+        }, 2000)
       }
     }
     checkAndRemovePnTokenViaSip(n)
