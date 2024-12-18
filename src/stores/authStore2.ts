@@ -159,7 +159,7 @@ export class AuthStore {
     }
     const userAgent = await getUserAgent(a)
     BrekekeUtils.setUserAgentConfig(userAgent)
-    return userAgent
+    this.userAgentConfig = userAgent
   }
 
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
