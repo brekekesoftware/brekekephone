@@ -92,6 +92,7 @@ export const addCallHistory = async (
     )
     authSIP.dispose()
     authPBX.dispose()
+    getAuthStore().showMsgPbxLoginFromAnotherPlace = true
   }
 
   const ms =

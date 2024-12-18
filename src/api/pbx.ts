@@ -312,10 +312,10 @@ export class PBX extends EventEmitter {
         }
         authSIP.dispose()
         authPBX.dispose()
+        // wait for the last device to complete syncing the token before allowing the current device to interact
+        await waitTimeout(2500)
+        getAuthStore().showMsgPbxLoginFromAnotherPlace = true
       }
-      // wait for the last device to complete syncing the token before allowing the current device to interact
-      await waitTimeout(2500)
-      getAuthStore().showMsgPbxLoginFromAnotherPlace = true
     }
   }
   disconnect = () => {
