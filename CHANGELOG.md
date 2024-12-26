@@ -1,3 +1,7 @@
+#### 2.15.4
+
+- Try fix some issues related to timeout and interval
+
 #### 2.15.3
 
 - Fix it should reconnect pbx on notification if it has been in background for more than 10s
