@@ -163,8 +163,10 @@ export class PBX extends EventEmitter {
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
+    console.log('pal debug notify_park: begin promise race')
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
+    console.log('pal debug notify_park: end promise race')
 
     const isConnected = async () => {
       const r = await Promise.race([connected, newTimeoutPromise()])
@@ -175,17 +177,26 @@ export class PBX extends EventEmitter {
     // in syncPnToken, isMainInstance = false
     // we will not proceed further in that case
     if (!this.isMainInstance) {
+      console.log('pal debug notify_park: !isMainInstance')
       return isConnected()
     }
 
     // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
+      console.log('pal debug notify_park: begin palParamUserReconnect')
       const as = getAuthStore()
       // TODO
       // any function get pbxConfig on this time may get undefined
       as.pbxConfig = undefined
+      console.log(
+        'pal debug notify_park: begin palParamUserReconnect isConnected',
+      )
       await isConnected()
+      console.log(
+        'pal debug notify_park: end palParamUserReconnect isConnected',
+      )
       await this.getConfig(true)
+      console.log('pal debug notify_park: end palParamUserReconnect getConfig')
       const newPalParamUser = as.pbxConfig?.['webphone.pal.param.user']
       if (newPalParamUser !== oldPalParamUser) {
         console.warn(
@@ -194,8 +205,10 @@ export class PBX extends EventEmitter {
         this.disconnect()
         return this.connect(a, true)
       }
+      console.log('pal debug notify_park: end palParamUserReconnect')
     }
 
+    console.log('pal debug notify_park: setListenerWithEmbed')
     // register client direct event handlers
     setListenerWithEmbed('onClose', this.onClose)
     setListenerWithEmbed('onError', this.onError)
