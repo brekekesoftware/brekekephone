@@ -1,3 +1,7 @@
+#### 2.15.5
+
+- Fix notify_park
+
 #### 2.15.4
 
 - Try fix some issues related to timeout and interval
