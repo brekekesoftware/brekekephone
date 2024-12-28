@@ -118,32 +118,6 @@ export class PBX extends EventEmitter {
     const connected = new Promise<boolean>(r => {
       resolveFn = r
     })
-    const pendingServerStatus: PbxEvent['serverStatus'][] = []
-    setListenerWithEmbed('notify_serverstatus', e => {
-      pendingServerStatus.push(e)
-      if (!e?.status) {
-        return
-      }
-      if (e.status === 'active') {
-        resolveFn?.(true)
-        resolveFn = undefined
-      } else if (e.status === 'inactive') {
-        resolveFn?.(false)
-        resolveFn = undefined
-      }
-    })
-    const pendingClose: unknown[] = []
-    setListenerWithEmbed('onClose', () => {
-      pendingClose.push()
-      resolveFn?.(false)
-      resolveFn = undefined
-    })
-    const pendingError: Error[] = []
-    setListenerWithEmbed('onError', err => {
-      pendingError.push(err)
-      resolveFn?.(false)
-      resolveFn = undefined
-    })
 
     const newTimeoutPromise = () => {
       this.clearConnectTimeoutId()
@@ -163,6 +137,57 @@ export class PBX extends EventEmitter {
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
+
+    // listeners to be added after login successfully
+    const listeners = {
+      onClose: this.onClose,
+      onError: this.onError,
+      notify_serverstatus: this.onServerStatus,
+      notify_park: this.onPark,
+      notify_callrecording: this.onCallRecording,
+      notify_voicemail: this.onVoicemail,
+      notify_status: this.onUserStatus,
+      notify_pal: this.onUserLoginOtherDevices,
+    }
+    // pending events received before login successfully
+    const pendings = Object.keys(listeners).reduce(
+      (m, k) => {
+        m[k] = []
+        return m
+      },
+      {} as { [k: string]: any[] },
+    )
+    // pending listeners before login successfully
+    const pendingOnCloseOrError = () => {
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
+    const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
+      if (!e?.status) {
+        return
+      }
+      if (e.status === 'active') {
+        resolveFn?.(true)
+        resolveFn = undefined
+      } else if (e.status === 'inactive') {
+        resolveFn?.(false)
+        resolveFn = undefined
+      }
+    }
+    const pendingListeners = {
+      onClose: pendingOnCloseOrError,
+      onError: pendingOnCloseOrError,
+      notify_serverstatus: pendingOnServerStatus,
+    }
+    // add listeners before login successfully
+    // also add the event to pendings array
+    Object.keys(listeners).forEach((k: any) => {
+      setListenerWithEmbed(k, e => {
+        pendings[k].push(e)
+        pendingListeners[k]?.(e)
+      })
+    })
+
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
 
@@ -196,19 +221,13 @@ export class PBX extends EventEmitter {
       }
     }
 
-    // register client direct event handlers
-    setListenerWithEmbed('onClose', this.onClose)
-    setListenerWithEmbed('onError', this.onError)
-    setListenerWithEmbed('notify_serverstatus', this.onServerStatus)
-    setListenerWithEmbed('notify_park', this.onPark)
-    setListenerWithEmbed('notify_callrecording', this.onCallRecording)
-    setListenerWithEmbed('notify_voicemail', this.onVoicemail)
-    setListenerWithEmbed('notify_status', this.onUserStatus)
-    setListenerWithEmbed('notify_pal', this.onUserLoginOtherDevices)
-    // fire pending events
-    pendingClose.forEach(this.onClose)
-    pendingError.forEach(this.onError)
-    pendingServerStatus.forEach(this.onServerStatus)
+    // reset state
+    getCallStore().parkNumbers = {}
+    // call listeners using pendings then set
+    Object.keys(listeners).forEach((k: any) => {
+      pendings[k].forEach(e => listeners[k](e))
+      setListenerWithEmbed(k, listeners[k])
+    })
 
     return connected
   }

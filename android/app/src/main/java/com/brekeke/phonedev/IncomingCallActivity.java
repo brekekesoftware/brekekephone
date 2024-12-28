@@ -325,7 +325,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       webViewAvatar.getSettings().setUserAgentString(userAgent);
       webViewAvatarTalking.getSettings().setUserAgentString(userAgent);
     }
-    if (webViewAvatar.getVisibility() == View.VISIBLE && avatar != null && !BrekekeUtils.isImageUrl(avatar)) {
+    if (webViewAvatar.getVisibility() == View.VISIBLE
+        && avatar != null
+        && !BrekekeUtils.isImageUrl(avatar)) {
       webViewAvatar.loadUrl(avatar);
     }
   }
