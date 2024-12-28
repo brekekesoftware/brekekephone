@@ -179,6 +179,8 @@ export class PBX extends EventEmitter {
       onError: pendingOnCloseOrError,
       notify_serverstatus: pendingOnServerStatus,
     }
+    // add listeners before login successfully
+    // also add the event to pendings array
     Object.keys(listeners).forEach((k: any) => {
       setListenerWithEmbed(k, e => {
         pendings[k].push(e)
@@ -219,7 +221,7 @@ export class PBX extends EventEmitter {
       }
     }
 
-    // call listeners using pendings
+    // call listeners using pendings then set
     Object.keys(listeners).forEach((k: any) => {
       pendings[k].forEach(e => listeners[k](e))
       setListenerWithEmbed(k, listeners[k])
