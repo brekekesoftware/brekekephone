@@ -139,7 +139,10 @@ export class PBX extends EventEmitter {
     )
 
     // reset parks
-    getCallStore().parkNumbers = {}
+    // reset parks
+    if (this.isMainInstance) {
+      getCallStore().parkNumbers = {}
+    }
     // listeners to be added after login successfully
     const listeners = {
       onClose: this.onClose,
