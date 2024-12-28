@@ -138,11 +138,6 @@ export class PBX extends EventEmitter {
       client.login(() => resolve(true), reject),
     )
 
-    // reset parks
-    // reset parks
-    if (this.isMainInstance) {
-      getCallStore().parkNumbers = {}
-    }
     // listeners to be added after login successfully
     const listeners = {
       onClose: this.onClose,
@@ -226,6 +221,8 @@ export class PBX extends EventEmitter {
       }
     }
 
+    // reset state
+    getCallStore().parkNumbers = {}
     // call listeners using pendings then set
     Object.keys(listeners).forEach((k: any) => {
       pendings[k].forEach(e => listeners[k](e))
