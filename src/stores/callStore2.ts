@@ -22,7 +22,12 @@ import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
 import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
-import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
+import {
+  getAuthStore,
+  reconnectAndWaitSip,
+  waitPbx,
+  waitSip,
+} from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
 import type { CancelRecentPn } from './cancelRecentPn'
@@ -193,13 +198,21 @@ export class CallStore {
     // in the future we need to rewrite and refactor the whole stores/actions
     if (oc) {
       const ca = getAuthStore().getCurrentAccount()
-      if (!oc.answered && (!oc.partyImageUrl || !oc.partyImageUrl?.length)) {
+      if (
+        !oc.answered &&
+        (!oc.partyImageUrl || !oc.partyImageUrl?.length) &&
+        !getAuthStore().phoneappliEnabled()
+      ) {
         oc.partyImageUrl = ca?.ucEnabled
           ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
         oc.partyImageSize = ca?.ucEnabled ? 'large' : ''
       }
-      if (oc.answered && (!oc.talkingImageUrl || !oc.talkingImageUrl.length)) {
+      if (
+        oc.answered &&
+        (!oc.talkingImageUrl || !oc.talkingImageUrl.length) &&
+        !getAuthStore().phoneappliEnabled()
+      ) {
         oc.talkingImageUrl = ca?.ucEnabled
           ? this.getOriginalUserImageUrl(oc.pbxTenant, oc.partyNumber)
           : ''
@@ -244,6 +257,56 @@ export class CallStore {
     return `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
   }
 
+  private getPhoneappliInfo = async (c: Call, ptName: string) => {
+    const auth = getAuthStore()
+    if (!auth.phoneappliEnabled() || !ptName) {
+      return
+    }
+    // For make sure pbx is ready
+    await waitPbx()
+    try {
+      const ca = auth.getCurrentAccount()
+      if (!ca) {
+        return
+      }
+      const { pbxTenant, pbxUsername } = ca
+      const defaultAvatar = ca.ucEnabled
+        ? this.getOriginalUserImageUrl(c.pbxTenant, ptName)
+        : ''
+
+      const res = await pbx.getPhoneappliContact(pbxTenant, pbxUsername, ptName)
+      const partyImageUrl = res?.image_url || c.partyImageUrl || defaultAvatar
+      const talkingImageUrl =
+        res?.image_url || c.talkingImageUrl || defaultAvatar
+      const partyName = res?.display_name || c.partyName
+      const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
+
+      const call = this.calls.find(
+        _ => _.callkeepUuid === c.callkeepUuid || _.id === c.id,
+      )
+      if (!call) {
+        return
+      }
+
+      Object.assign(call, {
+        partyImageUrl,
+        talkingImageUrl,
+        partyName,
+        partyImageSize,
+        phoneappliAvatar: res?.image_url,
+        phoneappliUsername: res?.display_name,
+      })
+
+      BrekekeUtils.setTalkingAvatar(
+        call.callkeepUuid,
+        call.talkingImageUrl,
+        call.partyImageSize === 'large',
+      )
+    } catch (err) {
+      console.error(`Failed to get phoneappli info for ${ptName}, error:`, err)
+      return
+    }
+  }
   private incallManagerStarted = false
   onCallUpsert: CallStore['upsertCall'] = c => {
     this.upsertCall(c)
@@ -347,28 +410,7 @@ export class CallStore {
     // get Avatar and Username of phoneappli
     const ca = auth.getCurrentAccount()
     if (auth.phoneappliEnabled() && !c.incoming && ca) {
-      const { pbxTenant, pbxUsername } = ca
-      pbx
-        .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
-        .then(res => {
-          const partyImageUrl = res?.image_url || c.partyImageUrl
-          const talkingImageUrl = res?.image_url || c.talkingImageUrl
-          const partyName = res?.display_name || c.partyName
-          const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
-          Object.assign(c, {
-            partyImageUrl,
-            talkingImageUrl,
-            partyName,
-            partyImageSize,
-            phoneappliAvatar: res?.image_url,
-            phoneappliUsername: res?.display_name,
-          })
-          BrekekeUtils.setTalkingAvatar(
-            c.callkeepUuid,
-            c.talkingImageUrl,
-            c.partyImageSize === 'large',
-          )
-        })
+      this.getPhoneappliInfo(c, c.partyNumber)
     }
 
     this.calls = [c, ...this.calls]
