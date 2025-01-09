@@ -69,6 +69,19 @@ class Api {
       updatePhoneAppli()
     }
 
+    // handle pending request when pbx start
+    pbx.pendingRequests.forEach(({ funcName, params, callback }) => {
+      pbx[funcName](...params)
+        .then(callback)
+        .catch(err => {
+          console.error(
+            `Pbx debug: Try to call ${funcName} more. But still get error:`,
+            err,
+          )
+        })
+    })
+    pbx.pendingRequests = []
+
     contactStore.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
