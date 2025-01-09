@@ -28,6 +28,7 @@ import { PagePhonebookCreate } from '../pages/PagePhonebookCreate'
 import { PagePhonebookUpdate } from '../pages/PagePhonebookUpdate'
 import { PageSettingsCurrentAccount } from '../pages/PageSettingsCurrentAccount'
 import { PageSettingsDebug } from '../pages/PageSettingsDebug'
+import { PageSettingsDebugFiles } from '../pages/PageSettingsDebugFiles'
 import { PageSettingsOther } from '../pages/PageSettingsOther'
 import { PageVoicemail } from '../pages/PageVoicemail'
 import { PageWebChat } from '../pages/PageWebChat'
@@ -254,6 +255,12 @@ export class Nav2 {
     ComponentProps<typeof PageSettingsDebug>
   >({ PageSettingsDebug })
 
+  goToPageSettingsDebugFiles = RnStacker.createGoTo<
+    ComponentProps<typeof PageSettingsDebugFiles>
+  >({ PageSettingsDebugFiles })
+  backToPageSettingsDebugFiles = RnStacker.createBackTo<
+    ComponentProps<typeof PageSettingsDebugFiles>
+  >({ PageSettingsDebugFiles })
   // contact
   goToPageContactEdit = RnStacker.createGoTo<
     ComponentProps<typeof PageContactEdit>
