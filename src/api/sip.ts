@@ -258,7 +258,11 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
-      // Issue #934: videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
+
+      // TODO #934 this issue has been fixed somewhere else, can not reproduce
+      // however this caused #1010, we remove it here for now
+
+      // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
       //    reproduce:
       //      - caller make video call to callee
       //      - callee answer with video
@@ -276,9 +280,8 @@ export class SIP extends EventEmitter {
       //   this.disableVideo(ev.sessionId)
       //   this.enableVideo(ev.sessionId)
       // }
-      // The above logic seems unnecessary. The bug (#934) has been fixed somewhere else.
 
-      // for Duy fixed issue video call
+      // TODO DuyP to fix issues related to video call
       // this.emit('session-updated', {
       //   id: ev.sessionId,
       //   remoteUserOptionsTable: ev.remoteUserOptionsTable,
