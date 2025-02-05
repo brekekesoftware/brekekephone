@@ -9,7 +9,7 @@ import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { mdiPhone } from '../assets/icons'
-import type { MakeCallFn, Session } from '../brekekejs'
+import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
@@ -256,6 +256,39 @@ export class CallStore {
       IncallManager.start()
     }
   }
+
+  updatePhoneAppliAvatar = (c: Call, res: PbxPhoneappliContact | undefined) => {
+    if (!c || !res) {
+      return
+    }
+
+    const partyImageUrl = res?.image_url || c.partyImageUrl
+    const talkingImageUrl = res?.image_url || c.talkingImageUrl
+    const partyName = res?.display_name || c.partyName
+    const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
+
+    // this method is called after an async operator and the call might be ended
+    const stillExist = this.calls.some(
+      _ => _.callkeepUuid === c.callkeepUuid || _.id === c.id,
+    )
+    if (!stillExist) {
+      return
+    }
+
+    Object.assign(c, {
+      partyImageUrl,
+      talkingImageUrl,
+      partyName,
+      partyImageSize,
+      phoneappliAvatar: res?.image_url,
+      phoneappliUsername: res?.display_name,
+    })
+    BrekekeUtils.setTalkingAvatar(
+      c.callkeepUuid,
+      c.talkingImageUrl,
+      c.partyImageSize === 'large',
+    )
+  }
   @action private upsertCall = (
     // partial
     p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
@@ -351,23 +384,15 @@ export class CallStore {
       pbx
         .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
         .then(res => {
-          const partyImageUrl = res?.image_url || c.partyImageUrl
-          const talkingImageUrl = res?.image_url || c.talkingImageUrl
-          const partyName = res?.display_name || c.partyName
-          const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
-          Object.assign(c, {
-            partyImageUrl,
-            talkingImageUrl,
-            partyName,
-            partyImageSize,
-            phoneappliAvatar: res?.image_url,
-            phoneappliUsername: res?.display_name,
+          this.updatePhoneAppliAvatar(c, res)
+        })
+        .catch(err => {
+          console.error('PBX debug: getPhoneappliContact error:', err)
+          pbx.pendingRequests.push({
+            funcName: 'getPhoneappliContact',
+            params: [pbxTenant, pbxUsername, c.partyNumber],
+            callback: res => this.updatePhoneAppliAvatar(c, res),
           })
-          BrekekeUtils.setTalkingAvatar(
-            c.callkeepUuid,
-            c.talkingImageUrl,
-            c.partyImageSize === 'large',
-          )
         })
     }
 
