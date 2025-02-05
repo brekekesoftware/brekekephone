@@ -38,6 +38,7 @@ export const ButtonIcon: FC<{
   textcolor?: string
   styleContainer?: ViewProps['style']
   msLoading?: number
+  loading?: boolean
 }> = p => {
   const [isLoading, setLoading] = useState(false)
   const onBtnPress = () => {
@@ -54,7 +55,7 @@ export const ButtonIcon: FC<{
   return (
     <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
-        disabled={isLoading || p.disabled}
+        disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
         style={[
           css.ButtonIcon_Btn,
@@ -65,7 +66,7 @@ export const ButtonIcon: FC<{
           { borderColor: p.bdcolor },
         ]}
       >
-        {isLoading ? (
+        {isLoading || p.loading ? (
           <ActivityIndicator style={{ width: size, height: size }} />
         ) : (
           <Svg height={size} viewBox='0 0 24 24' width={size}>

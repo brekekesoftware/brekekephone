@@ -752,6 +752,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
 
   @ReactMethod
+  public void updateRqStatus(String uuid, String name, boolean isLoading) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).updateBtnRqStatus(name, isLoading);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
   public void setUserAgentConfig(String userAgentConfig) {
     if (BrekekeUtils.userAgentConfig == null) {
       UiThreadUtil.runOnUiThread(

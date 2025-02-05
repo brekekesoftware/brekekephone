@@ -59,6 +59,7 @@ type TBrekekeUtils = {
     d: Array<{ vId: string; enableVideo: boolean }>,
   ) => void
 
+  updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -125,6 +126,7 @@ const Polyfill: TBrekekeUtils = {
   addStreamToView: () => undefined,
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
+  updateRqStatus: () => undefined,
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
