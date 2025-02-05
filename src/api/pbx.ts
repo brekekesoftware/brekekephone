@@ -46,6 +46,12 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   isMainInstance = true
 
+  pendingRequests: {
+    funcName: keyof PBX
+    params: string[]
+    callback: Function
+  }[] = []
+
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
@@ -546,16 +552,12 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    try {
-      const res = await this.client.call_pal('getPhoneAppliContact', {
-        tenant,
-        user,
-        tel,
-      })
-      return res
-    } catch (err) {
-      return {}
-    }
+    const res = await this.client.call_pal('getPhoneAppliContact', {
+      tenant,
+      user,
+      tel,
+    })
+    return res
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
