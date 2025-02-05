@@ -1,3 +1,8 @@
+#### 2.15.6
+
+- Fix it should getPhoneAppliContact properly when the pbx disconnects during a request (issue 998)
+- Fix it should reconnect pbx when in background mode (issue 1005)
+
 #### 2.15.5
 
 - Fix notify_park
