@@ -76,7 +76,11 @@ export class AuthStore {
     (this.pbxState === 'stopped' ||
       (this.pbxState === 'failure' &&
         // !this.pbxTotalFailure &&
-        RnAppState.currentState === 'active'))
+        RnAppState.currentState === 'active') ||
+      (this.pbxState === 'failure' &&
+        this.sipState === 'success' &&
+        RnAppState.currentState === 'background' &&
+        getCallStore().calls.length))
   pbxConnectingOrFailure = () =>
     ['waiting', 'connecting', 'failure'].some(s => s === this.pbxState)
 
