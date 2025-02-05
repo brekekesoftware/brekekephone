@@ -47,7 +47,7 @@ export class PBX extends EventEmitter {
   isMainInstance = true
 
   pendingRequests: {
-    funcName: string
+    funcName: keyof PBX
     params: string[]
     callback: Function
   }[] = []

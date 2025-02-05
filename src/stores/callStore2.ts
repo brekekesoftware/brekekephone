@@ -267,10 +267,11 @@ export class CallStore {
     const partyName = res?.display_name || c.partyName
     const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
 
-    const call = this.calls.find(
+    // this method is called after an async operator and the call might be ended
+    const stillExist = this.calls.some(
       _ => _.callkeepUuid === c.callkeepUuid || _.id === c.id,
     )
-    if (!call) {
+    if (!stillExist) {
       return
     }
 
@@ -386,7 +387,7 @@ export class CallStore {
           this.updatePhoneAppliAvatar(c, res)
         })
         .catch(err => {
-          console.error('Pbx debug: getPhoneappliContact error:', err)
+          console.error('PBX debug: getPhoneappliContact error:', err)
           pbx.pendingRequests.push({
             funcName: 'getPhoneappliContact',
             params: [pbxTenant, pbxUsername, c.partyNumber],
