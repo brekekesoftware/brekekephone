@@ -200,6 +200,7 @@ export class AuthStore {
     }
 
     this.signedInId = a.id
+    this.pbxConnectedAt = 0
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))

@@ -123,10 +123,12 @@ class Api {
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
     getAuthStore().pbxTotalFailure += 1
+    getAuthStore().pbxConnectedAt = 0
   }
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
     getAuthStore().pbxTotalFailure += 1
+    getAuthStore().pbxConnectedAt = 0
     authPBX.auth()
   }
   onPBXUserCalling = (ev: UserTalkerEvent) => {
