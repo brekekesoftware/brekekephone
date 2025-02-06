@@ -64,6 +64,8 @@ export class AuthStore {
   @observable showMsgPbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
 
+  @observable pbxConnectedAt = 0
+
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
     !this.pbxLoginFromAnotherPlace &&
@@ -202,6 +204,7 @@ export class AuthStore {
     }
 
     this.signedInId = a.id
+    this.pbxConnectedAt = 0
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
@@ -272,6 +275,7 @@ export class AuthStore {
     this.userExtensionProperties = null
     this.cRecentCalls = []
     this.rcPage = 0
+    this.pbxConnectedAt = 0
   }
 
   @action resetFailureState = () => {
@@ -304,6 +308,7 @@ export class AuthStore {
       this.pbxLoginFromAnotherPlace = false
       this.showMsgPbxLoginFromAnotherPlace = false
       authPBX.auth()
+      getAuthStore().pbxConnectedAt = 0
     }
     if (this.ucLoginFromAnotherPlace) {
       this.ucLoginFromAnotherPlace = false
