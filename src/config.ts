@@ -1,5 +1,6 @@
 import type { WebViewSource } from 'react-native-webview/lib/WebViewTypes'
 
+export const successConnectCheckPeriod = 600000 // 10 minutes
 export const fcmApplicationId = '22177122297'
 export const bundleIdentifier = 'com.brekeke.phonedev'
 

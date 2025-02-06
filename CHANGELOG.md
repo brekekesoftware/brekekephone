@@ -4,6 +4,8 @@
 - Fix it should reconnect pbx when in background mode (issue 1005)
 - Fix it should work properly without hanging when pressing a PN item (issue 1009)
 - Fix it should work proplery in transfer video, affected by the previous issue 934 (issue 1010)
+- Fix it should reconnect pbx after wake up from background mode in GSM internet (issue 1012)
+- Add logic to only get contacts and sync PN token after 10m from the last pbx connect
 
 #### 2.15.5
 
