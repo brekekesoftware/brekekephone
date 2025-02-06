@@ -59,24 +59,6 @@ class Api {
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
 
-    // when pbx reconnects due to timeout, we wait for successConnectCheckPeriod before
-    // attempting to syncPnToken, getPbxConfig, and getPbxUsers again
-    const now = Date.now()
-    console.log(
-      `PBX PN debug: onPBXConnectionStarted pbxConnectedAt=${s.pbxConnectedAt} ,
-      now=${now} successConnectCheckPeriod=${successConnectCheckPeriod} ,
-      now - s.pbxConnectedAt=${now - s.pbxConnectedAt} ms`,
-    )
-    if (
-      s.pbxConnectedAt &&
-      now - s.pbxConnectedAt < successConnectCheckPeriod
-    ) {
-      console.log(
-        'PBX PN debug: onPBXConnectionStarted try to skip syncPnToken, getPbxConfig, getPbxUsers',
-      )
-      return
-    }
-
     authSIP.auth()
     await waitSip()
 
@@ -107,6 +89,24 @@ class Api {
         })
     })
     pbx.pendingRequests = []
+
+    // when pbx reconnects due to timeout, we wait for successConnectCheckPeriod before
+    // attempting to syncPnToken, getPbxConfig, and getPbxUsers again
+    const now = Date.now()
+    console.log(
+      `PBX PN debug: onPBXConnectionStarted pbxConnectedAt=${s.pbxConnectedAt} ,
+      now=${now} successConnectCheckPeriod=${successConnectCheckPeriod} ,
+      now - s.pbxConnectedAt=${now - s.pbxConnectedAt} ms`,
+    )
+    if (
+      s.pbxConnectedAt &&
+      now - s.pbxConnectedAt < successConnectCheckPeriod
+    ) {
+      console.log(
+        'PBX PN debug: onPBXConnectionStarted try to skip syncPnToken, getPbxConfig, getPbxUsers',
+      )
+      return
+    }
 
     contactStore.loadContacts()
     // load list local  when pbx start
