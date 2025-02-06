@@ -1,3 +1,10 @@
+#### 2.15.6
+
+- Fix it should getPhoneAppliContact properly when the pbx disconnects during a request (issue 998)
+- Fix it should reconnect pbx when in background mode (issue 1005)
+- Fix it should work properly without hanging when pressing a PN item (issue 1009)
+- Fix it should work proplery in transfer video, affected by the previous issue 934 (issue 1010)
+
 #### 2.15.5
 
 - Fix notify_park
