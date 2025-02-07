@@ -50,7 +50,15 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }
 
-    super.onMessageReceived(remoteMessage);
+    // Build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
+    RemoteMessage newRemoteMessage =
+        new RemoteMessage.Builder(remoteMessage.getFrom())
+            .setMessageId(remoteMessage.getMessageId()) // Retain the original message ID
+            .setTtl(remoteMessage.getTtl()) // Retain the original TTL (Time-to-Live)
+            .setData(remoteMessage.getData()) // Add the updated data
+            .build();
+
+    super.onMessageReceived(newRemoteMessage);
 
     // construct and load our normal React JS code bundle
     ReactInstanceManager rim =

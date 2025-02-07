@@ -65,6 +65,7 @@ export type GetPalOptions = {
   tenant: string
   login_user: string
   login_password: string
+  phone_idx?: string
   _wn: string
   park: string[]
   voicemail: string
@@ -91,6 +92,7 @@ export type Pbx = PbxPal & {
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
   notify_callrecording?(e: PbxEvent['callRecording']): void
+  notify_pal?(e: PbxEvent['pal']): void
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal>(
     k: K,
@@ -120,6 +122,10 @@ export type PbxEvent = {
     user: string
     talker_id: string
     status: string // on or off
+  }
+  pal: {
+    code: number
+    message: string
   }
 }
 
@@ -198,6 +204,10 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 
+export type PbxResourceLine = {
+  key: string
+  value: string
+}
 export type PbxCustomPage = {
   id: string
   url: string
@@ -233,6 +243,9 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
   'webphone.phonebook.personal.editable': string
+  'webphone.recents.max': string
+  'webphone.resource-line': string
+  'webphone.http.useragent.product': string
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -485,6 +498,9 @@ export type Session = {
     }
     direction: 'outgoing' | 'incoming'
     terminate(): void
+    _request?: {
+      extraHeaders?: string[]
+    }
   }
   withVideo: boolean
   remoteWithVideo: boolean

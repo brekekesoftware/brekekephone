@@ -1,3 +1,39 @@
+#### 2.15.6
+
+- Fix it should getPhoneAppliContact properly when the pbx disconnects during a request (issue 998)
+- Fix it should reconnect pbx when in background mode (issue 1005)
+- Fix it should work properly without hanging when pressing a PN item (issue 1009)
+- Fix it should work proplery in transfer video, affected by the previous issue 934 (issue 1010)
+- Fix it should reconnect pbx after wake up from background mode in GSM internet (issue 1012)
+- Add logic to only get contacts and sync PN token after 10m from the last pbx connect
+
+#### 2.15.5
+
+- Fix notify_park
+
+#### 2.15.4
+
+- Try fix some issues related to timeout and interval
+
+#### 2.15.3
+
+- Fix it should reconnect pbx on notification if it has been in background for more than 10s
+- Update line selection: label for no line, remove duplicated
+- Implement webphone.http.useragent.product to inject user agent for webview avatar
+- Fix ios auto answer 3pcc (issue 980)
+- Fix improvements for notify_pal (issue 990, 991, 992)
+- Embed:
+  - Fix it should emit call_update correctly
+
+#### 2.15.2
+
+- Implement webphone.resource-line line selection
+- Implement notify_pal to show error when login the same phone index on another device
+- Implement webphone.recents.max, default 200, max 1000
+- Implement copy phone number to clipboard
+- Fix web outgoing call should not make twice (issue 985)
+- Try fix call hangup unexpectedly while sip reconnect with proximity sensor (issue 988)
+
 #### 2.15.1
 
 - Upgrade android target sdk 34 to update with Google policy

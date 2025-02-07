@@ -1,6 +1,7 @@
 import { action } from 'mobx'
 
 import type { Conference, PbxEvent, Session } from '../brekekejs'
+import { successConnectCheckPeriod } from '../config'
 import { authPBX } from '../stores/AuthPBX'
 import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitSip } from '../stores/authStore'
@@ -57,8 +58,10 @@ class Api {
     const s = getAuthStore()
     s.pbxState = 'success'
     s.pbxTotalFailure = 0
+
     authSIP.auth()
     await waitSip()
+
     await pbx.getConfig()
     const ca = s.getCurrentAccount()
     if (!ca) {
@@ -67,6 +70,42 @@ class Api {
 
     if (!getAuthStore().userExtensionProperties) {
       updatePhoneAppli()
+    }
+
+    // handle pending request when pbx start
+    pbx.pendingRequests.forEach(({ funcName, params, callback }) => {
+      const fn = pbx[funcName] as Function
+      if (!fn) {
+        console.error(`PBX debug: can not find method ${funcName}`)
+        return
+      }
+      fn.apply(pbx, params)
+        .then(callback)
+        .catch(err => {
+          console.error(
+            `PBX debug: try to call ${funcName} more but still get error:`,
+            err,
+          )
+        })
+    })
+    pbx.pendingRequests = []
+
+    // when pbx reconnects due to timeout, we wait for successConnectCheckPeriod before
+    // attempting to syncPnToken, getPbxConfig, and getPbxUsers again
+    const now = Date.now()
+    console.log(
+      `PBX PN debug: onPBXConnectionStarted pbxConnectedAt=${s.pbxConnectedAt} ,
+      now=${now} successConnectCheckPeriod=${successConnectCheckPeriod} ,
+      now - s.pbxConnectedAt=${now - s.pbxConnectedAt} ms`,
+    )
+    if (
+      s.pbxConnectedAt &&
+      now - s.pbxConnectedAt < successConnectCheckPeriod
+    ) {
+      console.log(
+        'PBX PN debug: onPBXConnectionStarted try to skip syncPnToken, getPbxConfig, getPbxUsers',
+      )
+      return
     }
 
     contactStore.loadContacts()
@@ -87,17 +126,27 @@ class Api {
     if (s.isSignInByNotification) {
       return
     }
+    if (s.pbxLoginFromAnotherPlace) {
+      console.log(
+        'pbxLoginFromAnotherPlace debug: stop sync pn token when pbx login from another place',
+      )
+      return
+    }
     SyncPnToken()
       .sync(ca)
       .then(() => SyncPnToken().syncForAllAccounts())
+
+    s.pbxConnectedAt = Date.now()
   }
   onPBXConnectionStopped = () => {
     getAuthStore().pbxState = 'stopped'
     getAuthStore().pbxTotalFailure += 1
+    getAuthStore().pbxConnectedAt = 0
   }
   onPBXConnectionTimeout = () => {
     getAuthStore().pbxState = 'failure'
     getAuthStore().pbxTotalFailure += 1
+    getAuthStore().pbxConnectedAt = 0
     authPBX.auth()
   }
   onPBXUserCalling = (ev: UserTalkerEvent) => {

@@ -4,6 +4,7 @@ import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
 import { currentVersion } from '../components/variables'
+import { bundleIdentifier } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -125,7 +126,13 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
-      //
+
+      const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
+      const xPbxRpi = extraHeaders.find(header =>
+        header.startsWith('X-PBX-RPI:'),
+      )
+      const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
+
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
@@ -150,6 +157,7 @@ export class SIP extends EventEmitter {
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
+        line: line?.trim(),
         rawSession: ev,
         id: ev.sessionId,
         pnId: m?.getHeader('X-PN-ID'),
@@ -261,6 +269,10 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+
+      // TODO #934 this issue has been fixed somewhere else, can not reproduce
+      // however this caused #1010, we remove it here for now
+
       // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
       //    reproduce:
       //      - caller make video call to callee
@@ -269,16 +281,18 @@ export class SIP extends EventEmitter {
       //      - issue: -> caller show loading, callee black remote video
       // the issue is because of webrtclient.js but we can not modify it
 
-      /* Temp comment waiting reproduce for this case about disconnect and terminate all video  */
       // if (
       //   ev.remoteWithVideo &&
       //   isEmpty(ev.videoClientSessionTable) &&
       //   ev.withVideo &&
-      //   ev.rtcSession.direction !== 'incoming'
+      //   ev.rtcSession.direction !== 'incoming' &&
+      //   !getCallStore().getOngoingCall()?.transferring
       // ) {
       //   this.disableVideo(ev.sessionId)
       //   this.enableVideo(ev.sessionId)
       // }
+
+      /* Duy Phan add this to handle toggle on/off video streams */
 
       this.emit('session-updated', {
         id: ev.sessionId,
@@ -513,14 +527,14 @@ const osMap: { [k: string]: string } = {
   android: 'Android',
   web: 'Web',
 }
-const getUserAgent = async (a: ParsedPn | AccountUnique) => {
+export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
   const au = 'to' in a ? await accountStore.findByPn(a) : a
   const d = await accountStore.findData(au)
   if (d?.userAgent) {
     return d.userAgent
   }
   const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15`
+  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
 }
 
 const getWssUrl = (host?: string, port?: string) =>

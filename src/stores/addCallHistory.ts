@@ -11,6 +11,8 @@ import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { accountStore } from './accountStore'
+import { authPBX } from './AuthPBX'
+import { authSIP } from './AuthSIP'
 import { getAuthStore } from './authStore'
 import { Call } from './Call'
 import { getCallStore } from './callStore'
@@ -84,6 +86,15 @@ export const addCallHistory = async (
     return
   }
 
+  if (getAuthStore().pbxLoginFromAnotherPlace) {
+    console.log(
+      'pbxLoginFromAnotherPlace debug: dispose authSIP and authPBX after call finished',
+    )
+    authSIP.dispose()
+    authPBX.dispose()
+    getAuthStore().showMsgPbxLoginFromAnotherPlace = true
+  }
+
   const ms =
     isTypeCall &&
     parseReasonCancelCall(c?.rawSession?.incomingMessage?.getHeader('Reason'))
@@ -96,6 +107,12 @@ export const addCallHistory = async (
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
   const reason = getReasonCancelCall(answeredBy)
+  const line = (isTypeCall && c?.line) || undefined
+  // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
+  const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
+  const lineLabel = lineValue
+    ? getAuthStore().resourceLines?.find(item => item.value === lineValue)?.key
+    : undefined
 
   const info = isTypeCall
     ? {
@@ -109,6 +126,8 @@ export const addCallHistory = async (
         isAboutToHangup: c.isAboutToHangup,
         reason,
         answeredBy,
+        lineValue,
+        lineLabel,
       }
     : {
         id,
@@ -165,6 +184,8 @@ export type CallHistoryInfo = {
   isAboutToHangup: boolean
   reason?: string
   answeredBy?: { name: string; phoneNumber: string }
+  lineLabel?: string
+  lineValue?: string
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {

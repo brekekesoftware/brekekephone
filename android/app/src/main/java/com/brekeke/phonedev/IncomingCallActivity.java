@@ -226,7 +226,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
-
+    if (BrekekeUtils.isUserAgentConfig()) {
+      webViewAvatar.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
+      webViewAvatarTalking.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
+    }
     imgAvatar = (ImageView) findViewById(R.id.avatar);
     imgAvatarTalking = (ImageView) findViewById(R.id.avatar_talking);
     btnAnswer = (Button) findViewById(R.id.btn_answer);
@@ -367,6 +370,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     openMainActivity();
   }
 
+  public void updateUserAgentConfig(String userAgent) {
+    if (!userAgent.equals("")) {
+      webViewAvatar.getSettings().setUserAgentString(userAgent);
+      webViewAvatarTalking.getSettings().setUserAgentString(userAgent);
+    }
+    if (webViewAvatar.getVisibility() == View.VISIBLE
+        && avatar != null
+        && !BrekekeUtils.isImageUrl(avatar)) {
+      webViewAvatar.loadUrl(avatar);
+    }
+  }
+
   public void updateCallConfig() {
     updateBtnDisabled("hangup", btnReject);
     updateBtnDisabled("hangup", btnEndCall);
@@ -437,12 +452,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } else if (!BrekekeUtils.isImageUrl(avatar)) {
       webViewAvatar.setVisibility(View.VISIBLE);
       imgAvatar.setVisibility(View.GONE);
+      vWebViewAvatarLoading.setVisibility(View.VISIBLE);
       webViewAvatar.setWebViewClient(
           new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
-              vWebViewAvatarLoading.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -451,7 +466,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               vWebViewAvatarLoading.setVisibility(View.GONE);
             }
           });
-      webViewAvatar.loadUrl(avatar);
+      if (BrekekeUtils.userAgentConfig != null) {
+        webViewAvatar.loadUrl(avatar);
+      }
     } else {
       webViewAvatar.setVisibility(View.GONE);
       imgAvatar.setVisibility(View.VISIBLE);

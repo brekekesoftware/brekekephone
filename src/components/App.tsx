@@ -102,6 +102,13 @@ const initApp = async () => {
   })
 
   AppState.addEventListener('change', async () => {
+    // to check and reconnect pbx
+    if (AppState.currentState === 'active') {
+      cs.fgAt = Date.now()
+    } else if (AppState.currentState === 'background') {
+      cs.bgAt = Date.now()
+    }
+
     if (AppState.currentState !== 'active') {
       return
     }
@@ -264,8 +271,10 @@ export const App = observer(() => {
     sipConnectingOrFailure,
     ucConnectingOrFailure,
     ucLoginFromAnotherPlace,
+    pbxLoginFromAnotherPlace,
+    showMsgPbxLoginFromAnotherPlace,
     signedInId,
-    resetFailureStateIncludeUcLoginFromAnotherPlace,
+    resetFailureStateIncludePbxOrUc,
   } = getAuthStore()
 
   const serviceConnectingOrFailure = pbxConnectingOrFailure()
@@ -276,15 +285,22 @@ export const App = observer(() => {
         ? 'UC'
         : ''
   const isFailure = isConnFailure()
-
   const connMessage =
-    isFailure && ucLoginFromAnotherPlace
-      ? intl`UC signed in from another location`
-      : !serviceConnectingOrFailure
-        ? ''
-        : isFailure
-          ? intl`${serviceConnectingOrFailure} connection failed`
-          : intl`Connecting to ${serviceConnectingOrFailure}...`
+    pbxLoginFromAnotherPlace && !showMsgPbxLoginFromAnotherPlace
+      ? ''
+      : isFailure && showMsgPbxLoginFromAnotherPlace
+        ? intl`Logged in from another location as the same phone`
+        : isFailure && ucLoginFromAnotherPlace
+          ? intl`UC signed in from another location`
+          : !serviceConnectingOrFailure
+            ? ''
+            : isFailure
+              ? intl`${serviceConnectingOrFailure} connection failed`
+              : intl`Connecting to ${serviceConnectingOrFailure}...`
+
+  const onPressConnMessage = isFailure
+    ? resetFailureStateIncludePbxOrUc
+    : undefined
 
   const cp = getAuthStore().listCustomPage[0]
 
@@ -301,11 +317,7 @@ export const App = observer(() => {
         >
           <RnTouchableOpacity
             style={css.App_ConnectionStatusInner}
-            onPress={
-              isFailure
-                ? resetFailureStateIncludeUcLoginFromAnotherPlace
-                : undefined
-            }
+            onPress={onPressConnMessage}
           >
             <RnText small white>
               {connMessage}
@@ -331,7 +343,7 @@ export const App = observer(() => {
         {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
-            onPress={resetFailureStateIncludeUcLoginFromAnotherPlace}
+            onPress={onPressConnMessage}
           />
         )}
       </View>

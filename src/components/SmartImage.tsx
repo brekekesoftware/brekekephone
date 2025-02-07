@@ -12,7 +12,6 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import noPhoto from '../assets/no_photo.png'
 
-import { buildWebViewSource } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
@@ -84,7 +83,7 @@ export const SmartImage = ({
 
   const onMessage = (event: WebViewMessageEvent) => {
     try {
-      // For sure just update load page 1 time
+      // for sure just update load page 1 time
       if (statusImageLoading === StatusImage.loaded) {
         return
       }
@@ -103,9 +102,9 @@ export const SmartImage = ({
       return
     }
   }
-  // For case Webview load  live stream camera url:
+  // for case Webview load  live stream camera url:
   // onLoadEnd, onLoad do not fire
-  // We should be check url same or not to update Loading status
+  // we should be check url same or not to update loading status
   const onLoadStart = (e: WebViewNavigationEvent) => {
     const cPageUrl = e?.nativeEvent?.url
     if (!cPageUrl || cPageUrl === cUrl.current) {
@@ -140,7 +139,7 @@ export const SmartImage = ({
       )}
       {!uri ? null : !isImageUrl ? (
         <WebView
-          source={buildWebViewSource(uri)}
+          source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={
             Platform.OS === 'android' ? js : ''
@@ -154,6 +153,7 @@ export const SmartImage = ({
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
+          userAgent={getAuthStore().userAgentConfig}
         />
       ) : (
         <Image
