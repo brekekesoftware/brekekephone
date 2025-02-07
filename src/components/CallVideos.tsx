@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 
 import { getCallStore } from '../stores/callStore'
+import { convertExInfo } from '../utils/convertExInfo'
 import { CallVideosUI } from './CallVideosUI'
 
 @observer
@@ -21,7 +22,14 @@ export class CallVideos extends Component {
     )
   }
 
-  resolveCall = () => ({
-    sourceObject: getCallStore().getOngoingCall()?.remoteVideoStreamObject,
-  })
+  resolveCall() {
+    const oc = getCallStore().getOngoingCall()
+    return {
+      sourceObject: convertExInfo(
+        oc?.remoteUserOptionsTable?.[oc?.videoStreamActive?.user ?? '']?.exInfo,
+      )
+        ? oc?.videoStreamActive?.remoteStreamObject
+        : null,
+    }
+  }
 }

@@ -35,6 +35,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -953,13 +955,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsVideoCall(String uuid, boolean isVideoCall) {
+  public void setIsVideoCall(String uuid, boolean isVideoCall, boolean isMuted) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setBtnVideoSelected(isVideoCall);
+              at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
             } catch (Exception e) {
             }
           }
@@ -1145,5 +1147,83 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
       p.resolve(-1d);
     }
+  }
+
+  @ReactMethod
+  public void setRemoteStreams(String uuid, ReadableArray streams) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            at(uuid).setRemoteStreams(streams);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setStreamActive(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            at(uuid).setStreamActive(stream);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setLocalStream(String uuid, String streamUrl) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).setLocalStream(streamUrl);
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void addStreamToView(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).addStreamToView(stream);
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void removeStreamFromView(String uuid, String vId) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              a.removeStreamFromView(vId);
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).setOptionsRemoteStream(arr);
+            }
+          }
+        });
   }
 }

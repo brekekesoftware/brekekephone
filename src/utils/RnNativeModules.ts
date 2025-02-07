@@ -28,7 +28,7 @@ type TBrekekeUtils = {
   setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
-  setIsVideoCall(uuid: string, isVideoCall: boolean): void
+  setIsVideoCall(uuid: string, isVideoCall: boolean, isMuted: boolean): void
   setRemoteVideoStreamUrl(uuid: string, url: string): void
   setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
@@ -66,6 +66,18 @@ type TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
+  setRemoteStreams: (
+    uuid: string,
+    streams: Array<{ vId: string; streamUrl: string }>,
+  ) => void
+  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  setLocalStream: (uuid: string, streamUrl: string) => void
+  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  removeStreamFromView: (uuid: string, vId: string) => void
+  setOptionsRemoteStream: (
+    uuid: string,
+    d: Array<{ vId: string; enableVideo: boolean }>,
+  ) => void
 }
 
 export type TNativeModules = {
@@ -118,6 +130,14 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
+
+  // these methods available on Android
+  setRemoteStreams: () => undefined,
+  setStreamActive: () => undefined,
+  setLocalStream: () => undefined,
+  addStreamToView: () => undefined,
+  removeStreamFromView: () => undefined,
+  setOptionsRemoteStream: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

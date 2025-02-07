@@ -240,17 +240,28 @@ export class SIP extends EventEmitter {
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
+        localStreamObject: session.localVideoStreamObject,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
       if (!ev) {
         return
       }
+      const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        localStreamObject: session.localVideoStreamObject,
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
 
@@ -281,11 +292,12 @@ export class SIP extends EventEmitter {
       //   this.enableVideo(ev.sessionId)
       // }
 
-      // TODO DuyP to fix issues related to video call
-      // this.emit('session-updated', {
-      //   id: ev.sessionId,
-      //   remoteUserOptionsTable: ev.remoteUserOptionsTable,
-      // })
+      /* Duy Phan add this to handle toggle on/off video streams */
+
+      this.emit('session-updated', {
+        id: ev.sessionId,
+        remoteUserOptionsTable: ev.remoteUserOptionsTable,
+      })
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
@@ -408,12 +420,27 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
+  enableVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      undefined,
+      JSON.stringify({ enableVideo: true }),
+    )
   disableVideo = (sessionId: string) =>
-    this.phone?.setWithVideo(sessionId, false)
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      undefined,
+      JSON.stringify({ enableVideo: false }),
+    )
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
-  switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
+  switchCamera = async (
+    sessionId: string,
+    mutedVideo: boolean,
+    isFrontCamera: boolean,
+  ) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
       return
@@ -442,9 +469,17 @@ export class SIP extends EventEmitter {
           isFrontCamera,
         ),
       },
+      shareStream: true,
     }
+    /* TODO: Need handle the best way to switch camera still keep connection */
+
     this.phone?.setWithVideo(sessionId, false, videoOptions)
-    this.phone?.setWithVideo(sessionId, true, videoOptions)
+    this.phone?.setWithVideo(
+      sessionId,
+      true,
+      videoOptions,
+      JSON.stringify({ enableVideo: !mutedVideo }),
+    )
   }
 }
 
@@ -543,6 +578,7 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
         answer: {
           mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
+        shareStream: true,
       },
     },
     dtmfSendPal,
