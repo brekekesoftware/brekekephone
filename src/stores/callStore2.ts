@@ -337,16 +337,20 @@ export class CallStore {
         }
       }
 
-      if (
-        p.videoSessionId &&
-        e.videoSessionId &&
-        p.videoSessionId !== e.videoSessionId &&
-        !p.remoteVideoEnabled
-      ) {
-        delete p.videoSessionId
-        delete p.remoteVideoEnabled
-        delete p.remoteVideoStreamObject
-      }
+      /* Can not handle check stream video disable when on/off connection.
+        Checked with exInfo when on/off stream video */
+
+      // if (
+      //   p.videoSessionId &&
+      //   e.videoSessionId &&
+      //   p.videoSessionId !== e.videoSessionId &&
+      //   !p.remoteVideoEnabled
+      // ) {
+      //   delete p.videoSessionId
+      //   delete p.remoteVideoEnabled
+      //   delete p.remoteVideoStreamObject
+      // }
+
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now

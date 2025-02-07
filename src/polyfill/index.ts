@@ -11,15 +11,6 @@ import {
   RTCSessionDescription,
 } from 'react-native-webrtc'
 
-import type { TBackgroundTimer } from '../utils/BackgroundTimer'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-
-declare global {
-  interface Window {
-    BackgroundTimer: TBackgroundTimer
-  }
-}
-
 window.URL = window.URL || {}
 // @ts-ignore
 window.URL.createObjectURL = (stream: MediaStream) => stream.toURL()

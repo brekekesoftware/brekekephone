@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Dimensions, Platform } from 'react-native'
 
+/* This hook will use later. Current not handle orientation */
+
 export enum EOrientation {
   Portrait = 'Portrait',
   Landscape = 'Landscape',

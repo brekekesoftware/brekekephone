@@ -518,7 +518,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        <View style={[!isShowAvatar ? css.styleTextBottom : {}]}>
+        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
           <RnText title white center numberOfLines={2}>
             {`${c.getDisplayName()}`}
           </RnText>

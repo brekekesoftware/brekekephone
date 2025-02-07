@@ -471,7 +471,8 @@ export class SIP extends EventEmitter {
       },
       shareStream: true,
     }
-    // 4. add new stream to connection
+    /* TODO: Need handle the best way to switch camera still keep connection */
+
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(
       sessionId,
