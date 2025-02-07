@@ -28,8 +28,6 @@ import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
-import android.util.Log;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.facebook.react.bridge.Arguments;
@@ -52,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -1154,11 +1151,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRemoteStreams(String uuid, ReadableArray streams) {
-     UiThreadUtil.runOnUiThread(
+    UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-             at(uuid).setRemoteStreams(streams);
+            at(uuid).setRemoteStreams(streams);
           }
         });
   }
@@ -1166,66 +1163,67 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setStreamActive(String uuid, ReadableMap stream) {
     UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                at(uuid).setStreamActive(stream);
-              }
-            });
+        new Runnable() {
+          @Override
+          public void run() {
+            at(uuid).setStreamActive(stream);
+          }
+        });
   }
 
   @ReactMethod
   public void setLocalStream(String uuid, String streamUrl) {
     UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                IncomingCallActivity a = at(uuid);
-                if(a != null) {
-                  at(uuid).setLocalStream(streamUrl);
-                }
-              }
-            });
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).setLocalStream(streamUrl);
+            }
+          }
+        });
   }
 
   @ReactMethod
   public void addStreamToView(String uuid, ReadableMap stream) {
     UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                IncomingCallActivity a = at(uuid);
-                if(a != null) {
-                  at(uuid).addStreamToView(stream);
-                }
-              }
-            });
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).addStreamToView(stream);
+            }
+          }
+        });
   }
 
   @ReactMethod
   public void removeStreamFromView(String uuid, String vId) {
     UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                IncomingCallActivity a = at(uuid);
-                if(a != null) {
-                  a.removeStreamFromView(vId);
-                }
-              }
-            });
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              a.removeStreamFromView(vId);
+            }
+          }
+        });
   }
+
   @ReactMethod
   public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
     UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                IncomingCallActivity a = at(uuid);
-                if(a != null) {
-                  at(uuid).setOptionsRemoteStream(arr);
-                }
-              }
-            });
+        new Runnable() {
+          @Override
+          public void run() {
+            IncomingCallActivity a = at(uuid);
+            if (a != null) {
+              at(uuid).setOptionsRemoteStream(arr);
+            }
+          }
+        });
   }
 }
