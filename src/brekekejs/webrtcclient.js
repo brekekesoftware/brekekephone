@@ -2353,26 +2353,16 @@ if (!Brekeke.WebrtcClient) {
       }
       if (this._gettingUserMedia) {
         if (!count || count < this.getUserMediaTimeout) {
-          window.BackgroundTimer
-            ? window.BackgroundTimer.setTimeout(
-                by(this, this._getUserMedia, [
-                  constraints,
-                  screenCapture,
-                  successCallback,
-                  errorCallback,
-                  (count || 0) + 1,
-                ]),
-                1000,
-              )
-            : setTimeout(
-                by(this, this._getUserMedia, [
-                  constraints,
-                  screenCapture,
-                  successCallback,
-                  errorCallback,
-                  (count || 0) + 1,
-                ]),
-              )
+          setTimeout(
+            by(this, this._getUserMedia, [
+              constraints,
+              screenCapture,
+              successCallback,
+              errorCallback,
+              (count || 0) + 1,
+            ]),
+            1000,
+          )
         } else {
           this._gettingUserMedia = false
           ev.error = '_getUserMedia timeout'
@@ -2858,9 +2848,7 @@ if (!Brekeke.WebrtcClient) {
               'debug',
               'Waiting for creating previous local media...',
             )
-            window.BackgroundTimer
-              ? window.BackgroundTimer.setTimeout(doCallFunc, 1000)
-              : setTimeout(doCallFunc, 1000)
+            setTimeout(doCallFunc, 1000)
             return
           }
           if (self._gettingUserMedia) {
@@ -2869,11 +2857,7 @@ if (!Brekeke.WebrtcClient) {
               'debug',
               'Waiting for creating another local user media...',
             )
-            window.BackgroundTimer
-              ? window.BackgroundTimer.setTimeout(doCallFunc, 1000)
-              : setTimeout(doCallFunc, 1000)
-            // temp comment because when app background, native ActivityIncomingCall not work well with setTimeout
-            // setTimeout(doCallFunc, 1000)
+            setTimeout(doCallFunc, 1000)
             return
           }
         }
@@ -3308,15 +3292,10 @@ if (!Brekeke.WebrtcClient) {
       var session
 
       if (delay) {
-        window.BackgroundTimer
-          ? window.BackgroundTimer.setTimeout(
-              by(this, this._sendInfoXUaEx, [sessionId, echo, withVideo, 0]),
-              delay,
-            )
-          : setTimeout(
-              by(this, this._sendInfoXUaEx, [sessionId, echo, withVideo, 0]),
-              delay,
-            )
+        setTimeout(
+          by(this, this._sendInfoXUaEx, [sessionId, echo, withVideo, 0]),
+          delay,
+        )
         return
       }
       session = this._sessionTable[sessionId]
@@ -4151,10 +4130,7 @@ if (!Brekeke.WebrtcClient) {
                   'debug',
                   'Waiting for creating previous local media...',
                 )
-                window.BackgroundTimer
-                  ? window.BackgroundTimer.setTimeout(doAnswerFunc, 1000)
-                  : setTimeout(doAnswerFunc, 1000)
-
+                setTimeout(doAnswerFunc, 1000)
                 return
               }
               if (self._gettingUserMedia) {
@@ -4163,9 +4139,7 @@ if (!Brekeke.WebrtcClient) {
                   'debug',
                   'Waiting for creating another local user media...',
                 )
-                window.BackgroundTimer
-                  ? window.BackgroundTimer.setTimeout(doAnswerFunc, 1000)
-                  : setTimeout(doAnswerFunc, 1000)
+                setTimeout(doAnswerFunc, 1000)
                 return
               }
             }
@@ -4199,15 +4173,7 @@ if (!Brekeke.WebrtcClient) {
           if (!count) {
             // first try
             // wait and retry
-            window.BackgroundTimer
-              ? window.BackgroundTimer.setTimeout(
-                  by(this, this._vua_newRTCSession, [e, count + 1]),
-                  1000,
-                )
-              : setTimeout(
-                  by(this, this._vua_newRTCSession, [e, count + 1]),
-                  1000,
-                )
+            setTimeout(by(this, this._vua_newRTCSession, [e, count + 1]), 1000)
             return
           } else {
             // retry
