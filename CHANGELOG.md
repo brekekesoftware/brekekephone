@@ -1,3 +1,7 @@
+#### 2.15.7
+
+- Fix android 14 sdk 34 it should have microphone work with new permission policy (issue 1016)
+
 #### 2.15.6
 
 - Fix it should getPhoneAppliContact properly when the pbx disconnects during a request (issue 998)
