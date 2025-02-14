@@ -425,17 +425,23 @@ export class SIP extends EventEmitter {
       sessionId,
       true,
       undefined,
-      JSON.stringify({ enableVideo: true }),
+      JSON.stringify({ soundOnly: false }),
     )
   disableVideo = (sessionId: string) =>
     this.phone?.setWithVideo(
       sessionId,
       true,
       undefined,
-      JSON.stringify({ enableVideo: false }),
+      JSON.stringify({ soundOnly: true }),
     )
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
+  setMutedVideo = (muted: boolean, sessionId: string) => {
+    this.phone?.setMuted({ videoClient: muted }, sessionId)
+    const session: any = this.phone?.getSession(sessionId)
+    const videoSession = session.videoClientSessionTable
+  }
+
   switchCamera = async (
     sessionId: string,
     mutedVideo: boolean,
@@ -478,7 +484,7 @@ export class SIP extends EventEmitter {
       sessionId,
       true,
       videoOptions,
-      JSON.stringify({ enableVideo: !mutedVideo }),
+      JSON.stringify({ soundOnly: mutedVideo }),
     )
   }
 }

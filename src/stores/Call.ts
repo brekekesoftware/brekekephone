@@ -82,7 +82,7 @@ export class Call {
       this.remoteVideoEnabled,
       videoOptions,
       this.remoteVideoEnabled
-        ? JSON.stringify({ enableVideo: true })
+        ? JSON.stringify({ soundOnly: false })
         : undefined,
     )
     // should hangup call if user don't allow permissions for call before answering
@@ -152,8 +152,10 @@ export class Call {
     if (this.localVideoEnabled) {
       this.mutedVideo = !this.mutedVideo
       if (this.mutedVideo) {
+        sip.setMutedVideo(true, this.id)
         sip.disableVideo(this.id)
       } else {
+        sip.setMutedVideo(false, this.id)
         sip.enableVideo(this.id)
       }
     } else {

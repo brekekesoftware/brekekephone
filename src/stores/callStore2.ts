@@ -693,7 +693,7 @@ export class CallStore {
       undefined,
       true,
       undefined,
-      JSON.stringify({ enableVideo: true }),
+      JSON.stringify({ soundOnly: false }),
     )
 
   updateBackgroundCalls = () => {
