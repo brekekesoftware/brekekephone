@@ -395,7 +395,7 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index f53c052..b8a0e24 100644
+index f53c052..68631a1 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 @@ -51,6 +51,8 @@ import android.util.Log;
@@ -457,6 +457,20 @@ index f53c052..b8a0e24 100644
  
          if (foregroundSettings.hasKey("notificationIcon")) {
              Context context = this.getApplicationContext();
+@@ -352,6 +368,13 @@ public class VoiceConnectionService extends ConnectionService {
+             return;
+         }
+ 
++        // Fix multiple voice connection service, when more than 1 connection service is running
++        // don't stop foreground service to avoid issue no-voice (permission for microphone ) on Android 14 and above
++        if (currentConnections.size() > 1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
++            Log.d(TAG, "[VoiceConnectionService] Skip stop foreground service due to multiple active connections on Android 14+");
++            return;
++        }
++        
+         try {
+             stopForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE);
+         } catch (Exception e) {
 diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
 index ee1a7fb..a6230f9 100644
 --- a/node_modules/react-native-callkeep/index.d.ts
@@ -536,7 +550,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..52fcfc6 100644
+index e67c3cd..6780f95 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
