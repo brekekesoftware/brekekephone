@@ -1,3 +1,7 @@
+#### 2.15.8
+
+- Fix android 14 sdk 34 it should have microphone work with new permission policy (issue 1017)
+
 #### 2.15.7
 
 - Fix android 14 sdk 34 it should have microphone work with new permission policy (issue 1016)
