@@ -76,15 +76,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(
-      this.id,
-      options,
-      this.remoteVideoEnabled,
-      videoOptions,
-      this.remoteVideoEnabled
-        ? JSON.stringify({ soundOnly: false })
-        : undefined,
-    )
+    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -177,6 +169,10 @@ export class Call {
     [key: string]: {
       withVideo: boolean
       exInfo: string
+      muted: {
+        main?: boolean
+        videoClient?: boolean
+      }
     }
   } = {}
   voiceStreamObject: MediaStream | null = null

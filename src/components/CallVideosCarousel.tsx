@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
 import type { Call } from '../stores/Call'
-import { convertExInfo } from '../utils/convertExInfo'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { VideoViewItem } from './VideoViewItem'
 
 type CallVideoCarouselProps = {
@@ -76,8 +76,8 @@ export const CallVideosCarousel = observer(
                   key={item.vId}
                   view={{ width: finalWidth, height: finalHeight }}
                   onSelect={() => updateVideoStreamActive(item)}
-                  enabled={convertExInfo(
-                    remoteUserOptionsTable?.[item.user]?.exInfo,
+                  enabled={checkMutedRemoteUser(
+                    remoteUserOptionsTable?.[item.user]?.muted,
                   )}
                 />
               ))}

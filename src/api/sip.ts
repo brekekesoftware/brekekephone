@@ -421,19 +421,9 @@ export class SIP extends EventEmitter {
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
   enableVideo = (sessionId: string) =>
-    this.phone?.setWithVideo(
-      sessionId,
-      true,
-      undefined,
-      JSON.stringify({ soundOnly: false }),
-    )
+    this.phone?.setWithVideo(sessionId, true, undefined)
   disableVideo = (sessionId: string) =>
-    this.phone?.setWithVideo(
-      sessionId,
-      true,
-      undefined,
-      JSON.stringify({ soundOnly: true }),
-    )
+    this.phone?.setWithVideo(sessionId, true, undefined)
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
   setMutedVideo = (muted: boolean, sessionId: string) => {
@@ -480,12 +470,7 @@ export class SIP extends EventEmitter {
     /* TODO: Need handle the best way to switch camera still keep connection */
 
     this.phone?.setWithVideo(sessionId, false, videoOptions)
-    this.phone?.setWithVideo(
-      sessionId,
-      true,
-      videoOptions,
-      JSON.stringify({ soundOnly: mutedVideo }),
-    )
+    this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
 }
 

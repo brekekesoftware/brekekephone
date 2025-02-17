@@ -13,7 +13,7 @@ import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
-import { convertExInfo } from '../utils/convertExInfo'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { permForCall } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -401,7 +401,7 @@ export class CallStore {
             if (itemExisted) {
               return {
                 vId: itemExisted.vId,
-                enableVideo: convertExInfo(v.exInfo),
+                enableVideo: checkMutedRemoteUser(v.exInfo),
               }
             }
             return {
@@ -688,13 +688,7 @@ export class CallStore {
     )
   }
   startVideoCall = (number: string) =>
-    this.startCall(
-      number,
-      undefined,
-      true,
-      undefined,
-      JSON.stringify({ soundOnly: false }),
-    )
+    this.startCall(number, undefined, true, undefined)
 
   updateBackgroundCalls = () => {
     // auto hold background calls

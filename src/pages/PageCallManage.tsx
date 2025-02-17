@@ -47,7 +47,7 @@ import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
-import { convertExInfo } from '../utils/convertExInfo'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
@@ -461,14 +461,13 @@ class PageCallManage extends Component<{
         <View style={[css.Video]}>
           <VideoPlayer
             sourceObject={
-              convertExInfo(
+              checkMutedRemoteUser(
                 c.remoteUserOptionsTable?.[c.videoStreamActive?.user ?? '']
-                  ?.exInfo,
+                  ?.muted,
               )
                 ? c.videoStreamActive?.remoteStreamObject
                 : null
             }
-            isShowLoading
             zOrder={0}
           />
         </View>
