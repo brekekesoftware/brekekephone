@@ -462,9 +462,9 @@ index f53c052..68631a1 100644
          }
  
 +        // Fix multiple voice connection service, when more than 1 connection service is running
-+        // don't stop foreground service to avoid issue no-voice (permission for microphone ) on Android 14 and above
-+        if (currentConnections.size() > 1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-+            Log.d(TAG, "[VoiceConnectionService] Skip stop foreground service due to multiple active connections on Android 14+");
++        // don't stop foreground service to avoid issue no-voice (permission for microphone ) on Android 13 and above
++        if (currentConnections.size() > 1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
++            Log.d(TAG, "[VoiceConnectionService] Skip stop foreground service due to multiple active connections on Android 13+");
 +            return;
 +        }
 +        
