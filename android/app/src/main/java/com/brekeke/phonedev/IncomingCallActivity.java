@@ -594,9 +594,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     int density = (int) getResources().getDisplayMetrics().density;
     int p;
     if (isActive) {
-      p = density * 5 - 2;
+      p = density * 6 - 2;
     } else {
-      p = density * 3 - 2;
+      p = density * 4 - 2;
     }
     ln.setPadding(p, p, p, p);
   }
@@ -607,6 +607,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     ln.addView(rtcView);
+    ln.setClipToPadding(true);
+    ln.setClipChildren(true);
     return ln;
   }
 
