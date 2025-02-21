@@ -428,15 +428,9 @@ export class SIP extends EventEmitter {
     this.phone?.setMuted({ main: muted }, sessionId)
   setMutedVideo = (muted: boolean, sessionId: string) => {
     this.phone?.setMuted({ videoClient: muted }, sessionId)
-    const session: any = this.phone?.getSession(sessionId)
-    const videoSession = session.videoClientSessionTable
   }
 
-  switchCamera = async (
-    sessionId: string,
-    mutedVideo: boolean,
-    isFrontCamera: boolean,
-  ) => {
+  switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
       return

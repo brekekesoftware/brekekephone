@@ -401,7 +401,7 @@ export class CallStore {
             if (itemExisted) {
               return {
                 vId: itemExisted.vId,
-                enableVideo: checkMutedRemoteUser(v.exInfo),
+                enableVideo: checkMutedRemoteUser(itemExisted.muted),
               }
             }
             return {

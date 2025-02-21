@@ -623,7 +623,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = phonedev;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phonedev;
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -661,7 +661,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
 				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = phonedev;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phonedev;
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

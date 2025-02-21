@@ -561,6 +561,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnSwitchCamera.setVisibility(View.VISIBLE);
       vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
+      disableAvatarTalking();
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
       }
