@@ -26,6 +26,7 @@ import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
 import type { CancelRecentPn } from './cancelRecentPn'
+import { contactStore } from './contactStore'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
@@ -530,6 +531,8 @@ export class CallStore {
       })
       return
     }
+    //   update phonebook info to display user name
+    await contactStore.updateContact(number)
     // check line resource
     const auth = getAuthStore()
     if (
