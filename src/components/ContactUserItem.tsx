@@ -289,9 +289,9 @@ export const UserItem: FC<
                   name === intl`<Unnamed>` ? v.colors.greyTextChat : 'black',
               }}
             >
-              {getPartyName(partyNumber) ||
-                partyName ||
+              {partyName ||
                 name ||
+                getPartyName(partyNumber) ||
                 partyNumber ||
                 id}
             </RnText>

@@ -6,6 +6,7 @@ import { checkAndRemovePnTokenViaSip } from '../api/sip'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
+import { contactStore } from '../stores/contactStore'
 import { Nav } from '../stores/Nav'
 import { openLinkSafely, urls } from './deeplink'
 import { PushNotification } from './PushNotification'
@@ -303,6 +304,10 @@ export const parse = async (
     )
     getAuthStore().saveActionOpenCustomPage = true
   }
+
+  // update phonebook info
+  contactStore.updateContact(n.from)
+
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen
