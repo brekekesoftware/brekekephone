@@ -13,6 +13,7 @@ import type { Call, CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
+import { contactStore, getPartyName } from '../stores/contactStore'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
@@ -150,9 +151,12 @@ export class SIP extends EventEmitter {
           partyNumber
       }
       const d = await getAuthStore().getCurrentDataAsync()
+      // update phonebook info
+      contactStore.updateContact(partyNumber)
       partyName =
         partyName ||
         d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
+        getPartyName(partyNumber) ||
         partyNumber
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')

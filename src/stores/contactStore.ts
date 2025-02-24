@@ -323,6 +323,30 @@ class ContactStore {
     }
   }
 
+  updateContact = async (partyNumber: string) => {
+    if (!partyNumber) {
+      return
+    }
+    const c = this.getPhoneBookByPhoneNumber(partyNumber)
+    if (c) {
+      return
+    }
+    // try to get contact info from pbx
+    const contacts = await pbx.getContacts({
+      search_text: partyNumber,
+      offset: 0,
+      limit: 1,
+    })
+    if (!contacts?.length) {
+      return
+    }
+    const contact = await pbx.getContact(contacts[0].id)
+    if (!contact) {
+      return
+    }
+    contactStore.upsertPhonebook(contact as Phonebook)
+  }
+
   getPhoneBookByPhoneNumber = (phoneNumber?: string) => {
     if (!phoneNumber) {
       return
@@ -367,7 +391,18 @@ class ContactStore {
 
 export const contactStore = new ContactStore()
 
-export const getPartyName = (partyNumber?: string) =>
-  (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
-  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name ||
-  contactStore.getParkNameByParkNumber(partyNumber)
+// prioritize displaying phonebook name first for calls
+export const getPartyName = (partyNumber?: string, forCall: boolean = true) => {
+  if (!partyNumber) {
+    return undefined
+  }
+
+  const phonebookName =
+    contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name
+  const pbxUserName = contactStore.getPbxUserById(partyNumber)?.name
+  const parkName = contactStore.getParkNameByParkNumber(partyNumber)
+
+  return forCall
+    ? phonebookName || pbxUserName || parkName
+    : pbxUserName || phonebookName || parkName
+}
