@@ -16,7 +16,7 @@ if (!Brekeke.WebrtcClient) {
   Brekeke.WebrtcClient = {}
 }
 ;(function (WebrtcClient) {
-  var WEBRTC_CLIENT_VERSION = '2.0.36.353',
+  var WEBRTC_CLIENT_VERSION = '2.0.37.356',
     Phone,
     Logger,
     jssipHack,
@@ -1744,12 +1744,14 @@ if (!Brekeke.WebrtcClient) {
               ) {
                 // for safari, react-native
                 videoClientSession.rtcSession._connection.getLocalStreams =
-                  function () {
-                    return [
-                      self._sessionLocalMediaTable[videoClientSessionId]
-                        .localMediaStreamForCall,
-                    ]
-                  }
+                  (function (videoClientSessionId) {
+                    return function () {
+                      return [
+                        self._sessionLocalMediaTable[videoClientSessionId]
+                          .localMediaStreamForCall,
+                      ]
+                    }
+                  })(videoClientSessionId)
               }
               if (muted.videoClient) {
                 videoClientSession.rtcSession.mute({ audio: true, video: true })
@@ -4404,8 +4406,9 @@ if (!Brekeke.WebrtcClient) {
         data,
         i = 0,
         me = {},
-        members = [],
+        meOrg = {},
         member2 = [],
+        members = [],
         rid = '',
         sessionId
 
@@ -4454,6 +4457,9 @@ if (!Brekeke.WebrtcClient) {
         }
       }
 
+      meOrg =
+        (this._ridMembersTable[rid] && this._ridMembersTable[rid].me) || {}
+
       this._ridMembersTable[rid] = {
         members: members.sort(function (m1, m2) {
           return m1.phone_id < m2.phone_id
@@ -4467,6 +4473,10 @@ if (!Brekeke.WebrtcClient) {
 
       for (sessionId in this._sessionTable) {
         if (this._getRid(sessionId) === rid) {
+          if (meOrg.talker_hold === 'h' && me.talker_hold !== 'h') {
+            // unholded
+            ;(this._sessionTable[sessionId] || {}).remoteUserOptionsTable = {}
+          }
           this._tryVideoCall(sessionId)
           break
         }

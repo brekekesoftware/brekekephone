@@ -534,7 +534,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void updateDisplayVideo(boolean isVideoCall) {
     if (isVideoCall) {
-      videoLoading.setVisibility(View.VISIBLE);
+      videoLoading.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
     } else {
@@ -591,14 +591,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         getDrawableFromResources(
             isActive ? R.drawable.bg_stream_video_active : R.drawable.bg_stream_video);
     ln.setBackground(drawable);
-    int density = (int) getResources().getDisplayMetrics().density;
+   int density = (int) getResources().getDisplayMetrics().density;
     int p;
-    if (isActive) {
-      p = density * 6 - 2;
-    } else {
-      p = density * 4 - 2;
-    }
-    ln.setPadding(p, p, p, p);
+   if (isActive) {
+     p = density * 5;
+   } else {
+     p = density * 3;
+   }
+   ln.setPadding(p, p, p, p);
   }
 
   private LinearLayout createStreamItem(String streamUrl, boolean isActive) {
