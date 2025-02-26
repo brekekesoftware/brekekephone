@@ -443,9 +443,13 @@ export class SIP extends EventEmitter {
     if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       return
     }
-    const cameras = this.cameraIds.map(s => s.deviceId)
-    this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
+    const cameras = this.cameraIds.map(s => s.deviceId)
+    if (cameras.length < 2) {
+      return
+    }
+
+    this.currentCamera = isFrontCamera ? cameras[0] : cameras[1]
     const videoOptions = {
       call: {
         mediaConstraints: sipCreateMediaConstraints(
