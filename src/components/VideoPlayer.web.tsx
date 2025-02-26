@@ -24,6 +24,7 @@ export const VideoPlayer = observer(
           height: '100%',
           objectFit: 'cover',
         }}
+        playsInline
         autoPlay
       />
     ) : p.isShowLoading ? (
