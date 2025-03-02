@@ -33,6 +33,7 @@ import {
 import { BrekekeGradient } from '../components/BrekekeGradient'
 import { ButtonIcon } from '../components/ButtonIcon'
 import { IncomingItemWithTimer } from '../components/CallNotify'
+import { CallVideosCarousel } from '../components/CallVideosCarousel'
 import { FieldButton } from '../components/FieldButton'
 import { Layout } from '../components/Layout'
 import { RnTouchableOpacity } from '../components/Rn'
@@ -46,6 +47,7 @@ import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
 import { Duration } from '../stores/timerStore'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { PageCallTransferAttend } from './PageCallTransferAttend'
@@ -286,7 +288,7 @@ class PageCallManage extends Component<{
     if (
       !getCallStore().inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      this.props.call.remoteVideoEnabled
+      this.props.call.remoteVideoEnabled()
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
@@ -433,6 +435,7 @@ class PageCallManage extends Component<{
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
+        {c.localVideoEnabled && <View style={{ flex: 1 }} />}
         {this.renderHangupBtn()}
         {c.transferring ? renderTransferring() : null}
       </>
@@ -455,11 +458,27 @@ class PageCallManage extends Component<{
           />
         </View>
         <View style={css.Video_Space} />
-        <View style={css.Video}>
-          <VideoPlayer sourceObject={c.remoteVideoStreamObject} />
+        <View style={[css.Video]}>
+          <VideoPlayer
+            sourceObject={
+              checkMutedRemoteUser(
+                c.remoteUserOptionsTable?.[c.videoStreamActive?.user ?? '']
+                  ?.muted,
+              )
+                ? c.videoStreamActive?.remoteStreamObject
+                : null
+            }
+            zOrder={0}
+          />
         </View>
+        <CallVideosCarousel
+          call={c}
+          showButtonsInVideoCall={this.showButtonsInVideoCall}
+          onButtonsInVideo={this.toggleButtons}
+        />
         <RnTouchableOpacity
           onPress={this.toggleButtons}
+          activeOpacity={0}
           style={[StyleSheet.absoluteFill, { zIndex: 10 }]}
         />
       </>
@@ -477,7 +496,7 @@ class PageCallManage extends Component<{
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
-      <View style={[css.Image_wrapper, { flex: 1 }]}>
+      <View style={[!c.localVideoEnabled && css.Image_wrapper, { flex: 1 }]}>
         <View
           style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
         >
@@ -586,7 +605,9 @@ class PageCallManage extends Component<{
               name={intl`VIDEO`}
               noborder
               onPress={c.toggleVideo}
-              path={c.localVideoEnabled ? mdiVideo : mdiVideoOff}
+              path={
+                c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
+              }
               size={40}
               textcolor='white'
             />
@@ -678,7 +699,9 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     const incoming = c.incoming && !c.answered
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
-    const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
+    const isHangupBtnHidden =
+      (incoming && this.isBtnHidden('hangup')) ||
+      (!this.showButtonsInVideoCall && c.answered)
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding ? (
