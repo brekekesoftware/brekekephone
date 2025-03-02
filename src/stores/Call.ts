@@ -76,13 +76,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(
-      this.id,
-      options,
-      this.remoteVideoEnabled,
-      videoOptions,
-      exInfo,
-    )
+    sip.phone?.answer(this.id, options, this.remoteVideoEnabled(), videoOptions)
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -140,7 +134,6 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
-  @observable remoteVideoEnabled = false
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -148,9 +141,17 @@ export class Call {
       return
     }
     if (this.localVideoEnabled) {
-      sip.disableVideo(this.id)
+      this.mutedVideo = !this.mutedVideo
+      if (this.mutedVideo) {
+        sip.setMutedVideo(true, this.id)
+        sip.disableVideo(this.id)
+      } else {
+        sip.setMutedVideo(false, this.id)
+        sip.enableVideo(this.id)
+      }
     } else {
       sip.enableVideo(this.id)
+      this.mutedVideo = false
     }
   }
   @action toggleSwitchCamera = () => {
@@ -159,10 +160,34 @@ export class Call {
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
-  @observable remoteVideoStreamObject: MediaStream | null = null
+  @observable localStreamObject: MediaStream | null = null
+  @observable videoClientSessionTable: Array<Session & { vId: string }> = []
+  remoteVideoEnabled = () =>
+    this.videoClientSessionTable.some(v => v.remoteStreamObject)
+  @observable videoStreamActive: (Session & { vId: string }) | null = null
+  @observable remoteUserOptionsTable: {
+    [key: string]: {
+      withVideo: boolean
+      exInfo: string
+      muted: {
+        main?: boolean
+        videoClient?: boolean
+      }
+    }
+  } = {}
   voiceStreamObject: MediaStream | null = null
 
+  @action updateVideoStreamActive = stream => {
+    this.videoStreamActive = stream
+  }
+
+  @action updateVideoStreamFromNative = vId => {
+    const item = this.videoClientSessionTable.find(v => v.vId === vId)
+    item && this.updateVideoStreamActive(item)
+  }
+
   @observable muted = false
+  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {

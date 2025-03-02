@@ -384,7 +384,10 @@ export type Sip = {
   makeCall: MakeCallFn
   answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
-  setMuted(options: { main: boolean }, sessionId: string): void
+  setMuted(
+    options: { main?: boolean; videoClient?: boolean },
+    sessionId: string,
+  ): void
   setWithVideo(
     sessionId: string,
     withVideo?: boolean,
@@ -437,6 +440,7 @@ export type SipConstructorOptions = {
       answer: {
         mediaConstraints: MediaStreamConstraints
       }
+      shareStream?: boolean
     }
   }
   configuration?: Partial<SipConfiguration>
@@ -472,6 +476,7 @@ export type SipEventMap = {
   videoClientSessionCreated: VideoSession
   videoClientSessionEnded: VideoSession
   rtcErrorOccurred: Error
+  remoteUserOptionsChanged: Session
 }
 export type PhoneStatusChangedEvent = {
   phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
@@ -500,6 +505,7 @@ export type Session = {
   remoteWithVideo: boolean
   remoteStreamObject: MediaStream
   localStreamObject: MediaStream
+  localVideoStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string | undefined
     body?: object
@@ -520,6 +526,7 @@ export type Session = {
   }
   remoteUserOptionsTable: null
   analyzer: null
+  user: string
 }
 export type VideoSession = {
   sessionId: string
