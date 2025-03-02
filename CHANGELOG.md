@@ -1,10 +1,10 @@
 #### 2.15.8
 
-- Fix android 14 sdk 34 it should have microphone work in background with multiple calls, by patching callkeep library (issue 1017)
+- Fix android 13 14 it should have microphone work in background with multiple calls, by patching callkeep library (issue 1017)
 
 #### 2.15.7
 
-- Fix android 14 sdk 34 it should have microphone work in background, by adding new permissions (issue 1016)
+- Fix android 14 it should have microphone work in background, by adding new permissions (issue 1016)
 
 #### 2.15.6
 
