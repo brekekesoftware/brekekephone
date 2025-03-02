@@ -65,7 +65,7 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
     versionCode 215008
-    versionName "2.15.8"
+    versionName "2.16.1"
   }
 
   signingConfigs {

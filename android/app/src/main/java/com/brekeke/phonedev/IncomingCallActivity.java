@@ -6,21 +6,26 @@ import android.app.KeyguardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -31,9 +36,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
 import java.util.Timer;
@@ -47,7 +55,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vCallManageLoading,
       vHeaderIncomingCall,
       vWebViewAvatarLoading,
-      vWebViewAvatarTalkingLoading;
+      vWebViewAvatarTalkingLoading,
+      vRemoteStreams;
   public LinearLayout vNavHeader,
       vCallManageControls,
       vBtnTransfer,
@@ -59,6 +68,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vBtnDTMF,
       vBtnHold;
   public WebRTCView vWebrtcVideo;
+  public LinearLayout vScrollViewStreams;
+  public ArrayMap<String, StreamData> arrayStreams = new ArrayMap();
+  public String activeStreamId = "";
+  public int localStreamId = 0;
+  public String localStreamUrl = "";
   public ProgressBar videoLoading;
   public View vCardAvatar, vCardAvatarTalking;
   public ImageView imgAvatar, imgAvatarTalking;
@@ -99,7 +113,20 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       answered = false,
       isLarge = false,
       isVideoCall = false,
-      autoAnswer = false;
+      autoAnswer = false,
+      isMuted = false;
+
+  class StreamData {
+    String vId;
+    String streamUrl;
+    int id;
+
+    StreamData(int id, String vId, String streamUrl) {
+      this.id = id;
+      this.streamUrl = streamUrl;
+      this.vId = vId;
+    }
+  }
 
   public JSONObject pbxConfig;
   public JSONObject callConfig;
@@ -168,6 +195,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vWebViewAvatarLoading = (RelativeLayout) findViewById(R.id.rl_webview_loading);
     vWebViewAvatarTalkingLoading = (RelativeLayout) findViewById(R.id.rl_taking_loading);
     vCallManage.setOnClickListener(this);
+    vScrollViewStreams = (LinearLayout) findViewById((R.id.scroll_view_streams));
+    vRemoteStreams = (RelativeLayout) findViewById(R.id.view_remote_streams);
 
     vBtnTransfer = (LinearLayout) findViewById(R.id.ln_btn_transfer);
     vBtnPark = (LinearLayout) findViewById(R.id.ln_btn_park);
@@ -259,6 +288,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       updateHeader();
     }
     updateCallConfig();
+
+    HorizontalScrollView h = findViewById(R.id.horizontal_scroll_view_streams);
+    h.setHorizontalScrollBarEnabled(false);
+    h.setOverScrollMode(View.OVER_SCROLL_NEVER);
   }
 
   @Override
@@ -272,6 +305,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     debug("onPause");
     paused = true;
     super.onPause();
+  }
+
+  private void updateSizeStreamItem(LinearLayout ln) {
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    float scale = getResources().getDisplayMetrics().density;
+    int w = (int) ((displayMetrics.widthPixels / scale) / 3.5) - 16;
+    int h = (int) Math.floor(182 * scale);
+    if (ln != null) {
+      LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int) (w * scale), h);
+      lp.setMargins((int) (16 * scale), 0, 0, 0);
+      ln.setClipChildren(true);
+      ln.setClipToPadding(true);
+      ln.setLayoutParams(lp);
+    }
   }
 
   @Override
@@ -351,7 +399,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           callConfig != null && callConfig.has(k)
               ? callConfig.getString(k).equals("false")
               : (pbxConfig != null && pbxConfig.has(k) && pbxConfig.getString(k).equals("false"));
-      if ("hangup".equals(k) && btnHold.isSelected()) {
+      if ("hangup".equals(k) && (btnHold.isSelected() || isCallManageControlsHidden)) {
         disabled = true;
       }
       v.setVisibility(disabled ? View.GONE : View.VISIBLE);
@@ -479,13 +527,14 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     vWebrtcVideo.setObjectFit("cover");
+    vWebrtcVideo.setZOrder(0);
     vWebrtc.addView(vWebrtcVideo);
     vWebrtc.setVisibility(View.VISIBLE);
   }
 
   public void updateDisplayVideo(boolean isVideoCall) {
     if (isVideoCall) {
-      videoLoading.setVisibility(View.VISIBLE);
+      videoLoading.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
     } else {
@@ -506,14 +555,231 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnSwitchCamera.setVisibility(View.GONE);
       updateDisplayVideo(isVideoCall);
     } else {
-      initWebrtcVideo();
+      if (vWebrtcVideo == null || vWebrtc.getVisibility() == View.GONE) {
+        initWebrtcVideo();
+      }
       btnSwitchCamera.setVisibility(View.VISIBLE);
       vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
+      disableAvatarTalking();
       if (!hasManuallyToggledCallManageControls) {
         hideCallManageControls();
       }
     }
+  }
+
+  private WebRTCView createNewRTCView(String streamUrl) {
+    WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
+    rtcView.setZOrder(1);
+    rtcView.setObjectFit("cover");
+    rtcView.setStreamURL(streamUrl);
+    LinearLayout.LayoutParams lp =
+        new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+    rtcView.setLayoutParams(lp);
+    return rtcView;
+  }
+
+  private Drawable getDrawableFromResources(int id) {
+    Resources res = getResources();
+    Drawable drawable = ResourcesCompat.getDrawable(res, id, null);
+    return drawable;
+  }
+
+  private void updateBgForStream(LinearLayout ln, boolean isActive) {
+    Drawable drawable =
+        getDrawableFromResources(
+            isActive ? R.drawable.bg_stream_video_active : R.drawable.bg_stream_video);
+    ln.setBackground(drawable);
+    int density = (int) getResources().getDisplayMetrics().density;
+    int p;
+    if (isActive) {
+      p = density * 5;
+    } else {
+      p = density * 3;
+    }
+    ln.setPadding(p, p, p, p);
+  }
+
+  private LinearLayout createStreamItem(String streamUrl, boolean isActive) {
+    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    updateBgForStream(ln, isActive);
+    updateSizeStreamItem(ln);
+    WebRTCView rtcView = createNewRTCView(streamUrl);
+    ln.addView(rtcView);
+    ln.setClipToPadding(true);
+    ln.setClipChildren(true);
+    return ln;
+  }
+
+  private LinearLayout createStreamItemRelative(String streamUrl) {
+    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
+    rl.setLayoutParams(
+        new RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+    ln.addView(rl);
+    updateSizeStreamItem(ln);
+    updateBgForStream(ln, false);
+    WebRTCView rtcView = createNewRTCView(streamUrl);
+    rl.addView(rtcView);
+    rl.setGravity(Gravity.CENTER);
+    return ln;
+  }
+
+  public void setRemoteStreams(ReadableArray streams) {
+    for (int i = 0; i < streams.size(); i++) {
+      ReadableMap streamItem = streams.getMap(i);
+      String streamUrl = streamItem.getString("streamUrl");
+      LinearLayout v = this.createStreamItem(streamUrl, false);
+      vScrollViewStreams.addView(v);
+    }
+    vRemoteStreams.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
+  }
+
+  public void addStreamToView(ReadableMap stream) {
+    String vId = stream.getString("vId");
+    String streamUrl = stream.getString("streamUrl");
+
+    if (vId != "") {
+      boolean isExist = arrayStreams.containsKey(vId);
+      if (!isExist) {
+        int id = View.generateViewId();
+        StreamData sData = new StreamData(id, vId, streamUrl);
+        arrayStreams.put(vId, sData);
+        LinearLayout v = createStreamItem(streamUrl, false);
+        v.setId(id);
+        v.setTag(vId);
+        v.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                String tag = (String) v.getTag();
+                StreamData sDNew = arrayStreams.get(tag);
+                if (activeStreamId == "") {
+                  updateBgForStream((LinearLayout) v, true);
+                  updateStreamActive(sDNew.vId, sDNew.streamUrl);
+                } else {
+                  StreamData sD = arrayStreams.get(activeStreamId);
+                  LinearLayout l = findViewById(sD.id);
+                  updateBgForStream(l, false);
+                  updateBgForStream((LinearLayout) v, true);
+                  if (((LinearLayout) v).getChildAt(0) != null) {
+                    updateStreamActive(sDNew.vId, sDNew.streamUrl);
+                  } else {
+                    updateStreamActive(sDNew.vId, "");
+                  }
+                }
+              }
+            });
+        vScrollViewStreams.addView(v);
+        v.setVisibility(View.GONE);
+      }
+    }
+    if (arrayStreams.size() > 0 && localStreamId != 0) {
+      vRemoteStreams.setVisibility(View.VISIBLE);
+      btnSwitchCamera.setVisibility(View.VISIBLE);
+      if (activeStreamId == "") {
+        StreamData s = arrayStreams.valueAt(0);
+        updateStreamActive(s.vId, s.streamUrl);
+        LinearLayout l = findViewById(s.id);
+        updateBgForStream((LinearLayout) l, true);
+      }
+    }
+    if (arrayStreams.size() > 1) {
+      arrayStreams.forEach(
+          (k, v) -> {
+            LinearLayout l = findViewById(v.id);
+            if (l != null) {
+              l.setVisibility(View.VISIBLE);
+            }
+          });
+    }
+  }
+
+  public void removeStreamFromView(String vId) {
+    boolean isExist = arrayStreams.containsKey(vId);
+    if (isExist) {
+      StreamData d = arrayStreams.get(vId);
+      LinearLayout l = findViewById(d.id);
+      if (l != null) {
+        arrayStreams.remove(vId);
+        if (activeStreamId.equals(vId)) {
+          if (arrayStreams.size() > 0) {
+            StreamData s = arrayStreams.valueAt(0);
+            LinearLayout l2 = findViewById(s.id);
+            if (l2 != null) {
+              updateBgForStream(l2, true);
+              updateStreamActive(s.vId, s.streamUrl);
+            }
+          } else {
+            activeStreamId = "";
+            setRemoteVideoStreamUrl("");
+          }
+        }
+        vScrollViewStreams.removeView(l);
+      }
+    }
+    if (arrayStreams.size() == 0) {
+      vRemoteStreams.setVisibility(View.GONE);
+    }
+    if (arrayStreams.size() == 1) {
+      arrayStreams.forEach(
+          (k, v) -> {
+            LinearLayout l = findViewById(v.id);
+            if (l != null) {
+              l.setVisibility(View.GONE);
+            }
+          });
+    }
+  }
+
+  public void setStreamActive(ReadableMap stream) {
+    String vId = stream.getString("vId");
+    String streamUrl = stream.getString("streamUrl");
+    this.activeStreamId = vId;
+    setRemoteVideoStreamUrl(streamUrl);
+  }
+
+  public void updateStreamActive(String vId, String streamUrl) {
+    this.activeStreamId = vId;
+    setRemoteVideoStreamUrl(streamUrl);
+    BrekekeUtils.emit("updateStreamActive", vId);
+  }
+
+  public void setLocalStream(String streamUrl) {
+    if (localStreamId != 0) {
+      View existView = findViewById(this.localStreamId);
+      if (existView != null) {
+        vScrollViewStreams.removeView(existView);
+      }
+    }
+
+    LinearLayout v = this.createStreamItemRelative(streamUrl);
+    RelativeLayout r = (RelativeLayout) v.getChildAt(0);
+    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
+    Button bt = new Button(BrekekeUtils.ctx);
+    Drawable drawable = getDrawableFromResources(R.drawable.btn_camera_rolate);
+    bt.setBackground(drawable);
+    float scale = getResources().getDisplayMetrics().density;
+    bt.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            onBtnSwitchCamera(v);
+          }
+        });
+    RelativeLayout.LayoutParams params =
+        new RelativeLayout.LayoutParams((int) scale * 28, (int) scale * 28);
+    params.addRule(RelativeLayout.CENTER_VERTICAL);
+    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    rl.setLayoutParams(params);
+    rl.addView(bt);
+    r.addView(rl, 1);
+    localStreamId = View.generateViewId();
+    localStreamUrl = streamUrl;
+    v.setId(localStreamId);
+    vScrollViewStreams.addView(v);
   }
 
   public void onBtnSwitchCamera(View v) {
@@ -536,14 +802,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void showCallManageControls() {
     isCallManageControlsHidden = false;
     vCallManageControls.setVisibility(View.VISIBLE);
+    vCallManage.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
+    btnEndCall.setVisibility(View.VISIBLE);
     updateBtnUnlockLabel();
   }
 
   public void hideCallManageControls() {
     isCallManageControlsHidden = true;
     vCallManageControls.setVisibility(View.GONE);
+    vRemoteStreams.bringToFront();
     btnUnlock.setVisibility(View.GONE);
+    btnEndCall.setVisibility(View.GONE);
   }
 
   // vIncomingCall
@@ -825,7 +1095,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnVideoClick(View v) {
     BrekekeUtils.emit("video", uuid);
-    updateDisplayVideo(!isVideoCall);
     updateUILayoutManagerCall(!isVideoCall);
   }
 
@@ -991,6 +1260,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     constraintSet.clear(R.id.btn_unlock, ConstraintSet.TOP);
     constraintSet.connect(
         R.id.btn_unlock, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 50);
+    constraintSet.connect(
+        R.id.view_call_manage_controls, ConstraintSet.TOP, R.id.btn_unlock, ConstraintSet.TOP, 50);
     constraintSet.applyTo(constraintLayout);
   }
 
@@ -1016,15 +1287,62 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void updateUILayoutManagerCall(boolean isVideoCall) {
     if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       disableAvatarTalking();
-    } else {
-      enableAvatarTalking();
     }
   }
 
-  public void setBtnVideoSelected(boolean _isVideoCall) {
+  public void setBtnVideoSelected(boolean _isVideoCall, boolean _isMuted) {
     if (isVideoCall != _isVideoCall) {
       isVideoCall = _isVideoCall;
-      btnVideo.setSelected(_isVideoCall);
+      updateUILayoutManagerCall(isVideoCall);
+    }
+    if (isMuted != _isMuted) {
+      isMuted = _isMuted;
+    }
+    btnVideo.setSelected(_isVideoCall && !_isMuted);
+    checkVideoLocalEnable();
+  }
+
+  public void checkVideoLocalEnable() {
+    if (this.localStreamId != 0) {
+      LinearLayout existView = findViewById(this.localStreamId);
+      RelativeLayout child = (RelativeLayout) existView.getChildAt(0);
+      if (existView != null) {
+        WebRTCView w = (WebRTCView) child.getChildAt(0);
+        if (child != null && w != null) {
+          w.setVisibility(isMuted ? View.GONE : View.VISIBLE);
+        }
+      }
+    }
+  }
+
+  public void setOptionsRemoteStream(ReadableArray arr) {
+    for (int i = 0; i < arr.size(); i++) {
+      ReadableMap streamItem = arr.getMap(i);
+      String vId = streamItem.getString("vId");
+      boolean enableVideo = streamItem.getBoolean("enableVideo");
+      StreamData sD = arrayStreams.get(vId);
+
+      if (sD != null) {
+        LinearLayout l = findViewById(sD.id);
+        if (l != null) {
+          if (enableVideo == true) {
+            if (l.getChildAt(0) == null) {
+              WebRTCView rtcView = createNewRTCView(sD.streamUrl);
+              l.addView(rtcView);
+            }
+            if (sD.vId.equals(activeStreamId)) {
+              setRemoteVideoStreamUrl(sD.streamUrl);
+            }
+          } else {
+            if (l.getChildAt(0) != null) {
+              l.removeViewAt(0);
+            }
+            if (sD.vId.equals(activeStreamId)) {
+              setRemoteVideoStreamUrl("");
+            }
+          }
+        }
+      }
     }
   }
 
@@ -1033,6 +1351,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
+    if (isVideoCall) {
+      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE);
+      vWebrtcVideo.setVisibility(holding ? View.GONE : View.VISIBLE);
+    }
   }
 
   public void setBtnMuteSelected(boolean isMute) {

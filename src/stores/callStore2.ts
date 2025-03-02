@@ -13,6 +13,7 @@ import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { permForCall } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -313,16 +314,42 @@ export class CallStore {
         Object.assign(e.rawSession, p.rawSession)
         delete p.rawSession
       }
-      if (
-        p.videoSessionId &&
-        e.videoSessionId &&
-        p.videoSessionId !== e.videoSessionId &&
-        !p.remoteVideoEnabled
-      ) {
-        delete p.videoSessionId
-        delete p.remoteVideoEnabled
-        delete p.remoteVideoStreamObject
+
+      if (e.incoming && e.callkeepUuid) {
+        if (
+          p.localStreamObject &&
+          p.localStreamObject !== e.localStreamObject
+        ) {
+          BrekekeUtils.setLocalStream(
+            e.callkeepUuid,
+            p.localStreamObject.toURL(),
+          )
+        }
+        if (p.videoSessionId) {
+          if (p.remoteVideoStreamObject) {
+            BrekekeUtils.addStreamToView(e.callkeepUuid, {
+              vId: p.videoSessionId,
+              streamUrl: p.remoteVideoStreamObject.toURL(),
+            })
+          } else {
+            BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
+          }
+        }
       }
+
+      /* Can not handle check stream video disable when on/off connection. */
+
+      // if (
+      //   p.videoSessionId &&
+      //   e.videoSessionId &&
+      //   p.videoSessionId !== e.videoSessionId &&
+      //   !p.remoteVideoEnabled
+      // ) {
+      //   delete p.videoSessionId
+      //   delete p.remoteVideoEnabled
+      //   delete p.remoteVideoStreamObject
+      // }
+
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now
@@ -343,12 +370,6 @@ export class CallStore {
           partyImageSize: e.phoneappliAvatar ? 'large' : p.partyImageSize,
         })
       }
-      if (e.incoming && e.callkeepUuid) {
-        BrekekeUtils.setRemoteVideoStreamUrl(
-          e.callkeepUuid,
-          e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
-        )
-      }
 
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
         BrekekeUtils.setTalkingAvatar(
@@ -363,7 +384,32 @@ export class CallStore {
         e.callkeepUuid &&
         typeof e.localVideoEnabled === 'boolean'
       ) {
-        BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
+        BrekekeUtils.setIsVideoCall(
+          e.callkeepUuid,
+          e.localVideoEnabled,
+          e.mutedVideo,
+        )
+      }
+
+      if (e.incoming && e.callkeepUuid) {
+        const options = Object.entries(e.remoteUserOptionsTable).map(
+          ([key, v]) => {
+            const itemExisted = e.videoClientSessionTable.find(
+              item => item.user === key,
+            )
+            if (itemExisted) {
+              return {
+                vId: itemExisted.vId,
+                enableVideo: checkMutedRemoteUser(v.muted),
+              }
+            }
+            return {
+              vId: '',
+              enableVideo: false,
+            }
+          },
+        )
+        BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
 
       return
