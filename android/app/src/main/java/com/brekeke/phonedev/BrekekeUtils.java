@@ -779,7 +779,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void isOverlayPermissionGranted(Promise p) {
-    p.resolve(this.isOverlayPermissionGranted(ctx));
+    p.resolve(isOverlayPermissionGranted(ctx));
   }
 
   @ReactMethod
@@ -969,20 +969,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setRemoteVideoStreamUrl(String uuid, String url) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRemoteVideoStreamUrl(url);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
   public void setIsFrontCamera(String uuid, boolean isFrontCamera) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -1155,7 +1141,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            at(uuid).setRemoteStreams(streams);
+            try {
+              at(uuid).setRemoteStreams(streams);
+            } catch (Exception e) {
+            }
           }
         });
   }
@@ -1166,7 +1155,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            at(uuid).setStreamActive(stream);
+            try {
+              at(uuid).setStreamActive(stream);
+            } catch (Exception e) {
+            }
           }
         });
   }
@@ -1177,9 +1169,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            IncomingCallActivity a = at(uuid);
-            if (a != null) {
+            try {
               at(uuid).setLocalStream(streamUrl);
+            } catch (Exception e) {
             }
           }
         });
@@ -1191,9 +1183,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            IncomingCallActivity a = at(uuid);
-            if (a != null) {
+            try {
               at(uuid).addStreamToView(stream);
+            } catch (Exception e) {
             }
           }
         });
@@ -1205,9 +1197,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            IncomingCallActivity a = at(uuid);
-            if (a != null) {
+            try {
               a.removeStreamFromView(vId);
+            } catch (Exception e) {
             }
           }
         });
@@ -1219,9 +1211,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            IncomingCallActivity a = at(uuid);
-            if (a != null) {
+            try {
               at(uuid).setOptionsRemoteStream(arr);
+            } catch (Exception e) {
             }
           }
         });

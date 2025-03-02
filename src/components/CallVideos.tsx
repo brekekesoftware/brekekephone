@@ -14,7 +14,7 @@ export class CallVideos extends Component {
         callIds={(oc ? [oc] : [])
           .filter(
             _ =>
-              _.videoSessionId && _.localVideoEnabled && _.remoteVideoEnabled,
+              _.videoSessionId && _.localVideoEnabled && _.remoteVideoEnabled(),
           )
           .map(_ => _.id)}
         resolveCall={this.resolveCall}

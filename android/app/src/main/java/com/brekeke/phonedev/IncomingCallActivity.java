@@ -631,7 +631,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     for (int i = 0; i < streams.size(); i++) {
       ReadableMap streamItem = streams.getMap(i);
       String streamUrl = streamItem.getString("streamUrl");
-      LinearLayout v = this.createStreamItem(streamUrl, false);
+      LinearLayout v = createStreamItem(streamUrl, false);
       vScrollViewStreams.addView(v);
     }
     vRemoteStreams.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
@@ -737,25 +737,25 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void setStreamActive(ReadableMap stream) {
     String vId = stream.getString("vId");
     String streamUrl = stream.getString("streamUrl");
-    this.activeStreamId = vId;
+    activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
   }
 
   public void updateStreamActive(String vId, String streamUrl) {
-    this.activeStreamId = vId;
+    activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
     BrekekeUtils.emit("updateStreamActive", vId);
   }
 
   public void setLocalStream(String streamUrl) {
     if (localStreamId != 0) {
-      View existView = findViewById(this.localStreamId);
+      View existView = findViewById(localStreamId);
       if (existView != null) {
         vScrollViewStreams.removeView(existView);
       }
     }
 
-    LinearLayout v = this.createStreamItemRelative(streamUrl);
+    LinearLayout v = createStreamItemRelative(streamUrl);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
     RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
     Button bt = new Button(BrekekeUtils.ctx);
@@ -1303,8 +1303,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void checkVideoLocalEnable() {
-    if (this.localStreamId != 0) {
-      LinearLayout existView = findViewById(this.localStreamId);
+    if (localStreamId != 0) {
+      LinearLayout existView = findViewById(localStreamId);
       RelativeLayout child = (RelativeLayout) existView.getChildAt(0);
       if (existView != null) {
         WebRTCView w = (WebRTCView) child.getChildAt(0);

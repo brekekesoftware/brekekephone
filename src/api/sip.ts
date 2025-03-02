@@ -164,7 +164,6 @@ export class SIP extends EventEmitter {
         incoming: ev.rtcSession.direction === 'incoming',
         partyNumber,
         partyName,
-        remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
@@ -238,7 +237,6 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
         localStreamObject: session.localVideoStreamObject,
         videoClientSessionTable: Object.entries(
@@ -255,7 +253,6 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
         videoClientSessionTable: Object.entries(
           session.videoClientSessionTable,
@@ -292,8 +289,7 @@ export class SIP extends EventEmitter {
       //   this.enableVideo(ev.sessionId)
       // }
 
-      /* Duy Phan add this to handle toggle on/off video streams */
-
+      // DuyP add this to handle toggle on/off video streams
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteUserOptionsTable: ev.remoteUserOptionsTable,
@@ -464,8 +460,9 @@ export class SIP extends EventEmitter {
       },
       shareStream: true,
     }
-    /* TODO: Need handle the best way to switch camera still keep connection */
 
+    // TODO: Need handle the best way to switch camera still keep connection
+    // current: disable video then enable, same with UC desktop
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
   }

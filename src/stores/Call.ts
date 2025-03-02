@@ -76,7 +76,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
+    sip.phone?.answer(this.id, options, this.remoteVideoEnabled(), videoOptions)
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -134,7 +134,6 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
-  @observable remoteVideoEnabled = false
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -161,9 +160,10 @@ export class Call {
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
-  @observable remoteVideoStreamObject: MediaStream | null = null
   @observable localStreamObject: MediaStream | null = null
   @observable videoClientSessionTable: Array<Session & { vId: string }> = []
+  remoteVideoEnabled = () =>
+    this.videoClientSessionTable.some(v => v.remoteStreamObject)
   @observable videoStreamActive: (Session & { vId: string }) | null = null
   @observable remoteUserOptionsTable: {
     [key: string]: {
