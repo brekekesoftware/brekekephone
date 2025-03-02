@@ -3923,7 +3923,9 @@ if (!Brekeke.WebrtcClient) {
               session.exInfo,
           )
 
-          // wait timeout for audio recording service on android (Issue #879)
+          // ==================================================================
+          // REACT NATIVE
+          // wait timeout for audio recording service on android (issue 879)
           await new Promise(r => setTimeout(r, 500))
 
           // answer
