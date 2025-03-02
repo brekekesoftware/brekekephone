@@ -1200,7 +1200,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             try {
-              a.removeStreamFromView(vId);
+              at(uuid).removeStreamFromView(vId);
             } catch (Exception e) {
             }
           }
