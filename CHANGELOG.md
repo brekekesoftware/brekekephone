@@ -1,3 +1,13 @@
+#### 2.16.1
+
+- Upgrade webrtcclient to 2.0.37.356
+- Fix video conference it should work with UC desktop
+- Fix web browser access front camera on mobile devices
+
+#### 2.16.0
+
+- Initial implementation of video conference
+
 #### 2.15.10
 
 - Fix ios it should not crash when press hold

@@ -349,6 +349,9 @@ export const setupCallKeepEvents = async () => {
     }
     cs.inPageCallManage = undefined
   })
+  eventEmitter.addListener('updateStreamActive', (vId: string) => {
+    cs.getOngoingCall()?.updateVideoStreamFromNative(vId)
+  })
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
   )
