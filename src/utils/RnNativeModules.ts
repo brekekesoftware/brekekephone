@@ -45,6 +45,19 @@ type TBrekekeUtils = {
   permDisableBatteryOptimization(): Promise<boolean>
   permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
+  // android video conference
+  setRemoteStreams: (
+    uuid: string,
+    streams: Array<{ vId: string; streamUrl: string }>,
+  ) => void
+  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  setLocalStream: (uuid: string, streamUrl: string) => void
+  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  removeStreamFromView: (uuid: string, vId: string) => void
+  setOptionsRemoteStream: (
+    uuid: string,
+    d: Array<{ vId: string; enableVideo: boolean }>,
+  ) => void
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -65,18 +78,6 @@ type TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs(): Promise<number>
-  setRemoteStreams: (
-    uuid: string,
-    streams: Array<{ vId: string; streamUrl: string }>,
-  ) => void
-  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
-  setLocalStream: (uuid: string, streamUrl: string) => void
-  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
-  removeStreamFromView: (uuid: string, vId: string) => void
-  setOptionsRemoteStream: (
-    uuid: string,
-    d: Array<{ vId: string; enableVideo: boolean }>,
-  ) => void
 }
 
 export type TNativeModules = {
@@ -117,6 +118,13 @@ const Polyfill: TBrekekeUtils = {
   permDisableBatteryOptimization: () => Promise.resolve(false),
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
+  // android video conference
+  setRemoteStreams: () => undefined,
+  setStreamActive: () => undefined,
+  setLocalStream: () => undefined,
+  addStreamToView: () => undefined,
+  removeStreamFromView: () => undefined,
+  setOptionsRemoteStream: () => undefined,
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
@@ -128,14 +136,6 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
-
-  // these methods available on Android
-  setRemoteStreams: () => undefined,
-  setStreamActive: () => undefined,
-  setLocalStream: () => undefined,
-  addStreamToView: () => undefined,
-  removeStreamFromView: () => undefined,
-  setOptionsRemoteStream: () => undefined,
 }
 
 const M = NativeModules as TNativeModules
