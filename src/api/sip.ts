@@ -165,6 +165,7 @@ export class SIP extends EventEmitter {
         partyNumber,
         partyName,
         localVideoEnabled: ev.withVideo,
+        remoteVideoEnabled: ev.remoteWithVideo,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
