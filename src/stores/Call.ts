@@ -76,7 +76,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(this.id, options, this.remoteVideoEnabled(), videoOptions)
+    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -144,15 +144,17 @@ export class Call {
       this.mutedVideo = !this.mutedVideo
       if (this.mutedVideo) {
         sip.setMutedVideo(true, this.id)
-        sip.disableVideo(this.id)
       } else {
         sip.setMutedVideo(false, this.id)
-        sip.enableVideo(this.id)
       }
     } else {
-      sip.enableVideo(this.id)
       this.mutedVideo = false
     }
+    // for video conference
+    // with the current logic of webrtcclient.js
+    // if we disable the local stream, it will remove all other streams
+    // so to make video conference works, we need to enable to keep receiving other streams
+    sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
@@ -162,8 +164,7 @@ export class Call {
 
   @observable localStreamObject: MediaStream | null = null
   @observable videoClientSessionTable: Array<Session & { vId: string }> = []
-  remoteVideoEnabled = () =>
-    this.videoClientSessionTable.some(v => v.remoteStreamObject)
+  @observable remoteVideoEnabled = false
   @observable videoStreamActive: (Session & { vId: string }) | null = null
   @observable remoteUserOptionsTable: {
     [key: string]: {
