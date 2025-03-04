@@ -144,15 +144,17 @@ export class Call {
       this.mutedVideo = !this.mutedVideo
       if (this.mutedVideo) {
         sip.setMutedVideo(true, this.id)
-        sip.enableVideo(this.id)
       } else {
         sip.setMutedVideo(false, this.id)
-        sip.enableVideo(this.id)
       }
     } else {
-      sip.enableVideo(this.id)
       this.mutedVideo = false
     }
+    // for video conference
+    // with the current logic of webrtcclient.js
+    // if we disable the local stream, it will remove all other streams
+    // so to make video conference works, we need to enable to keep receiving other streams
+    sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera

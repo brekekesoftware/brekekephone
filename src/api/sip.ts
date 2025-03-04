@@ -417,8 +417,9 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
-  disableVideo = (sessionId: string) =>
+  enableLocalVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(sessionId, true)
+  disableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, false)
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
