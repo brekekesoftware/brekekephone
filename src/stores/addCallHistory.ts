@@ -128,6 +128,7 @@ export const addCallHistory = async (
         answeredBy,
         lineValue,
         lineLabel,
+        to: c.pbxUsername,
       }
     : {
         id,
@@ -142,6 +143,7 @@ export const addCallHistory = async (
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
         isAboutToHangup: false,
+        to: c.to,
       }
 
   // do not show notification if rejected by callee
@@ -186,6 +188,7 @@ export type CallHistoryInfo = {
   answeredBy?: { name: string; phoneNumber: string }
   lineLabel?: string
   lineValue?: string
+  to?: string
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
@@ -276,6 +279,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
         pre_app_state: AppState.currentState,
         my_custom_data: 'local_notification',
         is_local_notification: 'local_notification',
+        to: c.to,
       },
       identifier: new Date().toISOString(),
       body,
@@ -303,6 +307,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
             pre_app_state: AppState.currentState,
             local_notification: true,
             is_local_notification: 'local_notification',
+            to: c.to,
           },
         },
       })
