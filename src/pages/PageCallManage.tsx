@@ -288,7 +288,7 @@ class PageCallManage extends Component<{
     if (
       !getCallStore().inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
-      this.props.call.remoteVideoEnabled()
+      this.props.call.remoteVideoEnabled
     ) {
       this.showButtonsInVideoCall = false
       this.alreadySetShowButtonsInVideoCall = true
