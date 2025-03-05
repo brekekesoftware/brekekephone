@@ -500,9 +500,6 @@ export class CallStore {
     if (c.callkeepUuid) {
       this.endCallKeep(c.callkeepUuid)
     }
-    await addCallHistory(c)
-    c.callkeepUuid = ''
-    c.callkeepAlreadyRejected = true
 
     this.calls = this.calls.filter(c0 => c0 !== c)
     // set number of total calls in our custom java incoming call module
@@ -526,7 +523,14 @@ export class CallStore {
     ) {
       this.incallManagerStarted = false
       IncallManager.stop()
+      // reset audio mode to allow notification to play sound
+      BrekekeUtils.setModeAudio(0)
     }
+
+    await addCallHistory(c)
+    c.callkeepUuid = ''
+    c.callkeepAlreadyRejected = true
+
     // emit to embed api
     c.finishEmitEmbed()
   }
