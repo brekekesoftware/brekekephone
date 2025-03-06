@@ -78,6 +78,8 @@ type TBrekekeUtils = {
   setProximityMonitoring(enabled: boolean): void
   systemUptimeMs(): Promise<number>
   // these methods available on both
+
+  // LPC
   isOtherPermissionGranted(): Promise<boolean>
   permForIncomingCall(): Promise<boolean>
 }
@@ -138,7 +140,7 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
-
+  // LPC
   isOtherPermissionGranted: () => Promise.resolve(false),
   permForIncomingCall: () => Promise.resolve(false),
 }
