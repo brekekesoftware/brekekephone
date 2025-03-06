@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
-import { isEmpty } from 'lodash'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
 import { currentVersion } from '../components/variables'
+import { bundleIdentifier } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -126,7 +126,13 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
-      //
+
+      const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
+      const xPbxRpi = extraHeaders.find(header =>
+        header.startsWith('X-PBX-RPI:'),
+      )
+      const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
+
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
@@ -151,14 +157,15 @@ export class SIP extends EventEmitter {
       //
       const arr = m?.getHeader('X-PBX-Session-Info')?.split(';')
       const patch: Partial<Call> = {
+        line: line?.trim(),
         rawSession: ev,
         id: ev.sessionId,
         pnId: m?.getHeader('X-PN-ID'),
         incoming: ev.rtcSession.direction === 'incoming',
         partyNumber,
         partyName,
-        remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
+        remoteVideoEnabled: ev.remoteWithVideo,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
@@ -231,19 +238,28 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
+        localStreamObject: session.localVideoStreamObject,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
       if (!ev) {
         return
       }
+      const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        localStreamObject: session.localVideoStreamObject,
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
 
@@ -251,6 +267,10 @@ export class SIP extends EventEmitter {
       if (!ev) {
         return
       }
+
+      // TODO #934 this issue has been fixed somewhere else, can not reproduce
+      // however this caused #1010, we remove it here for now
+
       // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
       //    reproduce:
       //      - caller make video call to callee
@@ -258,15 +278,23 @@ export class SIP extends EventEmitter {
       //      - callee disable video, then enable again
       //      - issue: -> caller show loading, callee black remote video
       // the issue is because of webrtclient.js but we can not modify it
-      if (
-        ev.remoteWithVideo &&
-        isEmpty(ev.videoClientSessionTable) &&
-        ev.withVideo &&
-        ev.rtcSession.direction !== 'incoming'
-      ) {
-        this.disableVideo(ev.sessionId)
-        this.enableVideo(ev.sessionId)
-      }
+
+      // if (
+      //   ev.remoteWithVideo &&
+      //   isEmpty(ev.videoClientSessionTable) &&
+      //   ev.withVideo &&
+      //   ev.rtcSession.direction !== 'incoming' &&
+      //   !getCallStore().getOngoingCall()?.transferring
+      // ) {
+      //   this.disableVideo(ev.sessionId)
+      //   this.enableVideo(ev.sessionId)
+      // }
+
+      // DuyP add this to handle toggle on/off video streams
+      this.emit('session-updated', {
+        id: ev.sessionId,
+        remoteUserOptionsTable: ev.remoteUserOptionsTable,
+      })
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
@@ -389,11 +417,16 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
-  disableVideo = (sessionId: string) =>
+  enableLocalVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(sessionId, true)
+  disableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, false)
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
+  setMutedVideo = (muted: boolean, sessionId: string) => {
+    this.phone?.setMuted({ videoClient: muted }, sessionId)
+  }
+
   switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
@@ -407,9 +440,13 @@ export class SIP extends EventEmitter {
     if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       return
     }
-    const cameras = this.cameraIds.map(s => s.deviceId)
-    this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
+    const cameras = this.cameraIds.map(s => s.deviceId)
+    if (cameras.length < 2) {
+      return
+    }
+
+    this.currentCamera = isFrontCamera ? cameras[0] : cameras[1]
     const videoOptions = {
       call: {
         mediaConstraints: sipCreateMediaConstraints(
@@ -423,7 +460,11 @@ export class SIP extends EventEmitter {
           isFrontCamera,
         ),
       },
+      shareStream: true,
     }
+
+    // TODO: Need handle the best way to switch camera still keep connection
+    // current: disable video then enable, same with UC desktop
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
@@ -474,14 +515,14 @@ const osMap: { [k: string]: string } = {
   android: 'Android',
   web: 'Web',
 }
-const getUserAgent = async (a: ParsedPn | AccountUnique) => {
+export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
   const au = 'to' in a ? await accountStore.findByPn(a) : a
   const d = await accountStore.findData(au)
   if (d?.userAgent) {
     return d.userAgent
   }
   const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15`
+  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
 }
 
 const getWssUrl = (host?: string, port?: string) =>
@@ -524,6 +565,7 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
         answer: {
           mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
+        shareStream: true,
       },
     },
     dtmfSendPal,

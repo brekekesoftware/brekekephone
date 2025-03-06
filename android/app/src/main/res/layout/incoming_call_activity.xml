@@ -176,6 +176,13 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
+            <WebView
+              android:id="@+id/avatar_html"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"
+            />
             <RelativeLayout
               android:id="@+id/rl_webview_loading"
               android:layout_width="match_parent"
@@ -194,13 +201,6 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
-            <WebView
-              android:id="@+id/avatar_html"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
-              android:gravity="center"
-            />
           </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
       </RelativeLayout>
@@ -226,6 +226,33 @@
       </RelativeLayout>
       <!-- view_incoming_call -->
       <!-- view_call_manage -->
+      <RelativeLayout
+        android:id="@+id/view_remote_streams"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+      >
+        <HorizontalScrollView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/horizontal_scroll_view_streams"
+        >
+          <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+          >
+            <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:id="@+id/scroll_view_streams"
+            />
+          </ScrollView>
+        </HorizontalScrollView>
+      </RelativeLayout>
       <RelativeLayout
         android:id="@+id/view_call_manage"
         android:layout_width="match_parent"
@@ -646,6 +673,13 @@
               android:layout_centerHorizontal="true"
               android:gravity="center"
             />
+            <WebView
+              android:id="@+id/avatar_talking_html"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"
+            />
             <RelativeLayout
               android:id="@+id/rl_taking_loading"
               android:layout_width="match_parent"
@@ -664,13 +698,6 @@
                 android:indeterminateTint="@color/black"
               />
             </RelativeLayout>
-            <WebView
-              android:id="@+id/avatar_talking_html"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_centerHorizontal="true"
-              android:gravity="center"
-            />
           </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
       </RelativeLayout>

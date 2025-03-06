@@ -25,7 +25,7 @@ public class CallService extends InCallService {
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         startActivity(intent);
       } else {
-        // todo with incoming call
+        // TODO incoming call
       }
     } catch (Exception e) {
 

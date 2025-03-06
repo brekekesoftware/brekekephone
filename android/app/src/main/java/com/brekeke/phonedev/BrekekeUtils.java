@@ -43,6 +43,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -122,6 +123,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
+  public static String userAgentConfig = null;
 
   public BrekekeUtils(ReactApplicationContext c) {
     super(c);
@@ -746,7 +748,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     ctx.startActivity(intent);
   }
 
-  // Overlay screen permission
+  // overlay screen permission
   public static boolean isOverlayPermissionGranted(Context context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;
@@ -770,12 +772,42 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
+  public static boolean isUserAgentConfig() {
+    return BrekekeUtils.userAgentConfig != null && !BrekekeUtils.userAgentConfig.equals("");
+  }
+
   // ==========================================================================
   // react methods
 
   @ReactMethod
+  public void setUserAgentConfig(String userAgentConfig) {
+    if (BrekekeUtils.userAgentConfig == null) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              try {
+                for (IncomingCallActivity a : activities) {
+                  try {
+                    a.updateUserAgentConfig(userAgentConfig);
+                  } catch (Exception e) {
+                    BrekekeUtils.emit(
+                        "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                  }
+                }
+              } catch (Exception e) {
+                BrekekeUtils.emit(
+                    "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+              }
+            }
+          });
+    }
+    BrekekeUtils.userAgentConfig = userAgentConfig;
+  }
+
+  @ReactMethod
   public void isOverlayPermissionGranted(Promise p) {
-    p.resolve(this.isOverlayPermissionGranted(ctx));
+    p.resolve(isOverlayPermissionGranted(ctx));
   }
 
   @ReactMethod
@@ -938,27 +970,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsVideoCall(String uuid, boolean isVideoCall) {
+  public void setIsVideoCall(String uuid, boolean isVideoCall, boolean isMuted) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setBtnVideoSelected(isVideoCall);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setRemoteVideoStreamUrl(String uuid, String url) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRemoteVideoStreamUrl(url);
+              at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
             } catch (Exception e) {
             }
           }
@@ -1214,5 +1232,89 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       openOtherPermSettingsPromise.resolve(result);
       openOtherPermSettingsPromise = null;
     }
+  // android video conference
+
+  @ReactMethod
+  public void setRemoteStreams(String uuid, ReadableArray streams) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRemoteStreams(streams);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setStreamActive(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setStreamActive(stream);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setLocalStream(String uuid, String streamUrl) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setLocalStream(streamUrl);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void addStreamToView(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).addStreamToView(stream);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void removeStreamFromView(String uuid, String vId) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).removeStreamFromView(vId);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setOptionsRemoteStream(arr);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 }

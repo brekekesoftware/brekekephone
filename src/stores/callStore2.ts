@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import { action, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -8,11 +8,12 @@ import { v4 as newUuid } from 'uuid'
 import { pbx } from '../api/pbx'
 import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
-import type { MakeCallFn, Session } from '../brekekejs'
-import { embedApi } from '../embed/embedApi'
+import { mdiPhone } from '../assets/icons'
+import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { permForCall } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -20,6 +21,7 @@ import { waitTimeout } from '../utils/waitTimeout'
 import { webShowNotification } from '../utils/webShowNotification'
 import { accountStore } from './accountStore'
 import { addCallHistory } from './addCallHistory'
+import { authPBX } from './AuthPBX'
 import { authSIP } from './AuthSIP'
 import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
@@ -29,6 +31,7 @@ import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
 import { RnAppState } from './RnAppState'
+import { RnPicker } from './RnPicker'
 import { RnStacker } from './RnStacker'
 import { timerStore } from './timerStore'
 
@@ -60,6 +63,10 @@ export class CallStore {
     )
   }
 
+  // to check and reconnect pbx
+  bgAt = 0
+  fgAt = 0
+
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
     n?: ParsedPn,
@@ -76,7 +83,9 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
-        // TODO
+        BackgroundTimer.setTimeout(() => {
+          RNCallKeep.answerIncomingCall(uuid)
+        }, 2000)
       }
     }
     checkAndRemovePnTokenViaSip(n)
@@ -113,20 +122,32 @@ export class CallStore {
     // so even if sipState is `success` but the connection has dropped
     // we just drop the connection no matter if it is alive or not
     // then construct a new connection to receive the call as quickly as possible
-    if (now - this.recentCallActivityAt > 3000) {
-      const as = getAuthStore()
-      if (as.sipState === 'connecting') {
-        return
-      }
-      const count = sip.phone?.getSessionCount()
-
-      if (!count) {
-        console.log(
-          `SIP PN debug: new notification: getSessionCount=${count} | call destroyWebRTC()`,
-        )
-        as.sipState = 'stopped'
-        sip.destroyWebRTC()
-        authSIP.auth()
+    const count = sip.phone?.getSessionCount()
+    if (count) {
+      return
+    }
+    const as = getAuthStore()
+    if (
+      as.sipState !== 'connecting' &&
+      now - this.recentCallActivityAt > 3000
+    ) {
+      console.log('SIP PN debug: reconnect sip on new notification')
+      as.sipState = 'stopped'
+      sip.destroyWebRTC()
+      authSIP.auth()
+    }
+    if (as.pbxState !== 'connecting') {
+      const fg = AppState.currentState === 'active'
+      const fgDiff = now - this.fgAt
+      const bgDiff = now - this.bgAt
+      console.log(
+        `PBX PN debug: try reconnect pbx on new notification fg=${fg} diff=${fg ? fgDiff : bgDiff}`,
+      )
+      // if it has just waken up less than 1s, or been bg more than 10s, then reconnect pbx
+      if ((fg && fgDiff < 1000) || (!fg && bgDiff > 10000)) {
+        as.pbxState = 'stopped'
+        authPBX.dispose()
+        authPBX.auth()
       }
     }
   }
@@ -239,9 +260,45 @@ export class CallStore {
       IncallManager.start()
     }
   }
+
+  updatePhoneAppliAvatar = (c: Call, res: PbxPhoneappliContact | undefined) => {
+    if (!c || !res) {
+      return
+    }
+
+    const partyImageUrl = res?.image_url || c.partyImageUrl
+    const talkingImageUrl = res?.image_url || c.talkingImageUrl
+    const partyName = res?.display_name || c.partyName
+    const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
+
+    // this method is called after an async operator and the call might be ended
+    const stillExist = this.calls.some(
+      _ => _.callkeepUuid === c.callkeepUuid || _.id === c.id,
+    )
+    if (!stillExist) {
+      return
+    }
+
+    Object.assign(c, {
+      partyImageUrl,
+      talkingImageUrl,
+      partyName,
+      partyImageSize,
+      phoneappliAvatar: res?.image_url,
+      phoneappliUsername: res?.display_name,
+    })
+    BrekekeUtils.setTalkingAvatar(
+      c.callkeepUuid,
+      c.talkingImageUrl,
+      c.partyImageSize === 'large',
+    )
+  }
   @action private upsertCall = (
     // partial
-    p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
+    p: Pick<Call, 'id'> &
+      Partial<Omit<Call, 'id'>> & {
+        remoteVideoStreamObject?: MediaStream | null
+      },
   ) => {
     const auth = getAuthStore()
     this.updateCurrentCallDebounce()
@@ -264,16 +321,29 @@ export class CallStore {
         Object.assign(e.rawSession, p.rawSession)
         delete p.rawSession
       }
-      if (
-        p.videoSessionId &&
-        e.videoSessionId &&
-        p.videoSessionId !== e.videoSessionId &&
-        !p.remoteVideoEnabled
-      ) {
-        delete p.videoSessionId
-        delete p.remoteVideoEnabled
-        delete p.remoteVideoStreamObject
+
+      if (e.incoming && e.callkeepUuid) {
+        if (
+          p.localStreamObject &&
+          p.localStreamObject !== e.localStreamObject
+        ) {
+          BrekekeUtils.setLocalStream(
+            e.callkeepUuid,
+            p.localStreamObject.toURL(),
+          )
+        }
+        if (p.videoSessionId) {
+          if (p.remoteVideoStreamObject) {
+            BrekekeUtils.addStreamToView(e.callkeepUuid, {
+              vId: p.videoSessionId,
+              streamUrl: p.remoteVideoStreamObject.toURL(),
+            })
+          } else {
+            BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
+          }
+        }
       }
+
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now
@@ -294,12 +364,6 @@ export class CallStore {
           partyImageSize: e.phoneappliAvatar ? 'large' : p.partyImageSize,
         })
       }
-      if (e.incoming && e.callkeepUuid) {
-        BrekekeUtils.setRemoteVideoStreamUrl(
-          e.callkeepUuid,
-          e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
-        )
-      }
 
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
         BrekekeUtils.setTalkingAvatar(
@@ -314,19 +378,45 @@ export class CallStore {
         e.callkeepUuid &&
         typeof e.localVideoEnabled === 'boolean'
       ) {
-        BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
+        BrekekeUtils.setIsVideoCall(
+          e.callkeepUuid,
+          e.localVideoEnabled,
+          e.mutedVideo,
+        )
       }
 
-      // emit to embed api
-      if (!window._BrekekePhoneWebRoot) {
-        embedApi.emit('call_update', e)
+      if (e.incoming && e.callkeepUuid) {
+        const options = Object.entries(e.remoteUserOptionsTable).map(
+          ([key, v]) => {
+            const itemExisted = e.videoClientSessionTable.find(
+              item => item.user === key,
+            )
+            if (itemExisted) {
+              return {
+                vId: itemExisted.vId,
+                enableVideo: checkMutedRemoteUser(v.muted),
+              }
+            }
+            return {
+              vId: '',
+              enableVideo: false,
+            }
+          },
+        )
+        BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
+
       return
     }
+
     //
     // construct a new call
     const c = new Call(this)
     Object.assign(c, p)
+    // clear start call interval timer when the outgoing call is created
+    if (Platform.OS === 'web' && !c.incoming) {
+      this.clearStartCallIntervalTimer()
+    }
     // get Avatar and Username of phoneappli
     const ca = auth.getCurrentAccount()
     if (auth.phoneappliEnabled() && !c.incoming && ca) {
@@ -334,23 +424,15 @@ export class CallStore {
       pbx
         .getPhoneappliContact(pbxTenant, pbxUsername, c.partyNumber)
         .then(res => {
-          const partyImageUrl = res?.image_url || c.partyImageUrl
-          const talkingImageUrl = res?.image_url || c.talkingImageUrl
-          const partyName = res?.display_name || c.partyName
-          const partyImageSize = res?.image_url ? 'large' : c.partyImageSize
-          Object.assign(c, {
-            partyImageUrl,
-            talkingImageUrl,
-            partyName,
-            partyImageSize,
-            phoneappliAvatar: res?.image_url,
-            phoneappliUsername: res?.display_name,
+          this.updatePhoneAppliAvatar(c, res)
+        })
+        .catch(err => {
+          console.error('PBX debug: getPhoneappliContact error:', err)
+          pbx.pendingRequests.push({
+            funcName: 'getPhoneappliContact',
+            params: [pbxTenant, pbxUsername, c.partyNumber],
+            callback: res => this.updatePhoneAppliAvatar(c, res),
           })
-          BrekekeUtils.setTalkingAvatar(
-            c.callkeepUuid,
-            c.talkingImageUrl,
-            c.partyImageSize === 'large',
-          )
         })
     }
 
@@ -360,9 +442,7 @@ export class CallStore {
     // update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call', c)
-    }
+    c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
       webShowNotification(
@@ -455,9 +535,7 @@ export class CallStore {
       IncallManager.stop()
     }
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('call_end', c)
-    }
+    c.finishEmitEmbed()
   }
 
   @action onSelectBackgroundCall = async (c: Immutable<Call>) => {
@@ -479,11 +557,10 @@ export class CallStore {
   }
   private callkeepUuidPending = ''
   startCall: MakeCallFn = async (number: string, ...args) => {
-    // Make sure sip is ready before make call
+    // make sure sip is ready before make call
     if (getAuthStore().sipState !== 'success') {
       return
     }
-
     if (!(await permForCall())) {
       return
     }
@@ -495,6 +572,22 @@ export class CallStore {
         message: intlDebug`There is already an outgoing call`,
       })
       return
+    }
+    // check line resource
+    const auth = getAuthStore()
+    if (
+      auth.resourceLines.length > 0 &&
+      !this.isLineExist(args[0], auth.resourceLines)
+    ) {
+      try {
+        const extraHeaders = await this.getExtraHeader(
+          auth.resourceLines,
+          args[0],
+        )
+        args[0] = { ...args[0], extraHeaders }
+      } catch (error) {
+        return
+      }
     }
     // start call logic in RNCallKeep
     // adding this will help the outgoing call automatically hold on GSM call
@@ -717,12 +810,10 @@ export class CallStore {
     if (setAction) {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
-
     // disable proximity mode if no running call
     if (Platform.OS === 'ios' && !this.calls.length) {
       BrekekeUtils.setProximityMonitoring(false)
     }
-
     const pnData = this.callkeepMap[uuid]?.incomingPnData
     if (
       pnData &&
@@ -864,6 +955,61 @@ export class CallStore {
         completedBy: n.completedBy,
       })
     }
+  }
+
+  getExtraHeader = async (resourceLines, exh) => {
+    const extraHeaders = exh?.extraHeaders || []
+    const index = extraHeaders.findIndex(header =>
+      header.startsWith('X-PBX-RPI:'),
+    )
+    const allowNoLine = resourceLines.some(l => l.value === '')
+    // if it allows calling without a value `no-line`, then make a call without a line resource.
+    if (allowNoLine && index !== -1) {
+      extraHeaders.splice(index, 1)
+      return extraHeaders
+    }
+    // show select line picker
+    const selectedKey = await new Promise((resolve, reject) => {
+      RnPicker.open({
+        options: resourceLines.map(l => ({
+          key: l.value,
+          label: l.key,
+          icon: mdiPhone,
+        })),
+        onSelect: (k: string) => {
+          resolve(k)
+        },
+        onDismiss: () => {
+          reject(null)
+        },
+      })
+    })
+    // for case choose "no-line"
+    if (!selectedKey) {
+      if (index !== -1) {
+        extraHeaders.splice(index, 1)
+      }
+      return extraHeaders
+    }
+    if (index !== -1) {
+      extraHeaders[index] = `X-PBX-RPI: ${selectedKey}`
+    } else {
+      extraHeaders.push(`X-PBX-RPI: ${selectedKey}`)
+    }
+    return extraHeaders
+  }
+  isLineExist = (options, resourceLines) => {
+    if (!options || !options.extraHeaders || isEmpty(options.extraHeaders)) {
+      return false
+    }
+    return options.extraHeaders.some(h => {
+      const m = h.match(/^X-PBX-RPI:(.*)$/)
+      if (m) {
+        const v = m[1].trim()
+        return resourceLines.some(l => l.value === v)
+      }
+      return false
+    })
   }
 
   constructor() {

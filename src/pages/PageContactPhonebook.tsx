@@ -283,6 +283,8 @@ export class PageContactPhonebook extends Component {
                     key={i}
                     phonebook={`${u.phonebook}${u.shared ? 'Ⓢ' : ''}`}
                     name={`${u?.display_name || intl`<Unnamed>`}`}
+                    phonebookInfo={u}
+                    canTouch
                   />
                 ),
               )}

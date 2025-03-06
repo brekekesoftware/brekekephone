@@ -65,6 +65,7 @@ export type GetPalOptions = {
   tenant: string
   login_user: string
   login_password: string
+  phone_idx?: string
   _wn: string
   park: string[]
   voicemail: string
@@ -91,6 +92,7 @@ export type Pbx = PbxPal & {
   notify_park?(e: PbxEvent['park']): void
   notify_voicemail?(e: PbxEvent['voicemail']): void
   notify_callrecording?(e: PbxEvent['callRecording']): void
+  notify_pal?(e: PbxEvent['pal']): void
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal>(
     k: K,
@@ -120,6 +122,10 @@ export type PbxEvent = {
     user: string
     talker_id: string
     status: string // on or off
+  }
+  pal: {
+    code: number
+    message: string
   }
 }
 
@@ -198,6 +204,10 @@ export type PbxPal = {
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
 }
 
+export type PbxResourceLine = {
+  key: string
+  value: string
+}
 export type PbxCustomPage = {
   id: string
   url: string
@@ -233,6 +243,9 @@ export type PbxGetProductInfoRes = {
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string
   'webphone.phonebook.personal.editable': string
+  'webphone.recents.max': string
+  'webphone.resource-line': string
+  'webphone.http.useragent.product': string
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -371,7 +384,10 @@ export type Sip = {
   makeCall: MakeCallFn
   answer: MakeCallFn
   setWithVideo(sessionId: string, withVideo?: boolean): void
-  setMuted(options: { main: boolean }, sessionId: string): void
+  setMuted(
+    options: { main?: boolean; videoClient?: boolean },
+    sessionId: string,
+  ): void
   setWithVideo(
     sessionId: string,
     withVideo?: boolean,
@@ -398,7 +414,7 @@ export type MakeCallFn = (
   options?: object,
   videoEnabled?: boolean,
   videoOptions?: object,
-  exInfo?: object,
+  exInfo?: string,
 ) => void
 
 export type VideoOptions = {
@@ -424,6 +440,7 @@ export type SipConstructorOptions = {
       answer: {
         mediaConstraints: MediaStreamConstraints
       }
+      shareStream?: boolean
     }
   }
   configuration?: Partial<SipConfiguration>
@@ -459,6 +476,7 @@ export type SipEventMap = {
   videoClientSessionCreated: VideoSession
   videoClientSessionEnded: VideoSession
   rtcErrorOccurred: Error
+  remoteUserOptionsChanged: Session
 }
 export type PhoneStatusChangedEvent = {
   phoneStatus: 'starting' | 'started' | 'stopping' | 'stopped'
@@ -479,11 +497,15 @@ export type Session = {
     }
     direction: 'outgoing' | 'incoming'
     terminate(): void
+    _request?: {
+      extraHeaders?: string[]
+    }
   }
   withVideo: boolean
   remoteWithVideo: boolean
   remoteStreamObject: MediaStream
   localStreamObject: MediaStream
+  localVideoStreamObject: MediaStream
   incomingMessage?: {
     getHeader(h: string): string | undefined
     body?: object
@@ -504,6 +526,7 @@ export type Session = {
   }
   remoteUserOptionsTable: null
   analyzer: null
+  user: string
 }
 export type VideoSession = {
   sessionId: string

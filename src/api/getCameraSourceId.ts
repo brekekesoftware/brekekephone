@@ -49,37 +49,39 @@ export const getCameraSourceIds = async () => {
     return []
   }
 
-  return mediaDevices
-    .enumerateDevices()
-    .then(a => {
-      const videoInputs = a.filter(i => /videoinput/i.test(i.kind))
-      if (videoInputs.length === 1) {
-        return [...videoInputs, ...videoInputs]
-      }
-      const frontCamera = videoInputs.find(i =>
-        Platform.OS === 'web'
-          ? i.label.includes('Front')
-          : i.facing.includes('front'),
-      )
-      const backCamera = videoInputs.find(i =>
-        Platform.OS === 'web'
-          ? i.label.includes('Back')
-          : i.facing.includes('environment'),
-      )
-      const result: MediaDeviceInfo[] = []
-      if (frontCamera) {
-        result.push(frontCamera)
-      }
-      if (backCamera) {
-        result.push(backCamera)
-      }
-      return result
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices()
+
+    const videoInputs = devices.filter(i => /videoinput/i.test(i.kind))
+
+    const front = videoInputs.find(i =>
+      Platform.OS === 'web'
+        ? /front|facetime|face/i.test(i.label)
+        : i.facing === 'front',
+    )
+    const back = videoInputs.find(i =>
+      Platform.OS === 'web'
+        ? /back|rear/i.test(i.label)
+        : i.facing === 'environment',
+    )
+    const result: MediaDeviceInfo[] = []
+    if (front) {
+      result.push(front)
+    }
+    if (back) {
+      result.push(back)
+    }
+
+    if (result.length === 0 && videoInputs.length > 0) {
+      return videoInputs
+    }
+
+    return result
+  } catch (err) {
+    RnAlert.error({
+      message: intlDebug`Failed to get front camera information`,
+      err: err as Error,
     })
-    .catch((err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to get front camera information`,
-        err,
-      })
-      return []
-    })
+    return []
+  }
 }

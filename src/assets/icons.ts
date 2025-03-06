@@ -203,8 +203,16 @@ export var mdiRadioboxMarked =
 export var mdiMoreHoriz =
   'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'
 
+// components: Picker
+export var mdiContentCopy =
+  'M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z'
 export var mdiMenuDown = 'M7,10L12,15L17,10H7Z'
 export var mdiMenuLeft = 'M14,7L9,12L14,17V7Z'
 export var mdiMenuRight = 'M10,17L15,12L10,7V17Z'
 export var mdiFolderPlus =
   'M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z'
+
+// components: VideoViewItem
+
+export var mdiCameraRolate =
+  'M11.375 5.25 9.625 7H7c-.964 0-1.75.786-1.75 1.75v10.5c0 .964.786 1.75 1.75 1.75h14c.964 0 1.75-.786 1.75-1.75V8.75C22.75 7.786 21.964 7 21 7h-2.625l-1.75-1.75h-5.25zM14 9.625A4.332 4.332 0 0 1 18.375 14 4.332 4.332 0 0 1 14 18.375v-1.75c1.487 0 2.625-1.138 2.625-2.625S15.487 11.375 14 11.375 11.375 12.513 11.375 14h1.75L10.5 16.625 7.875 14h1.75A4.332 4.332 0 0 1 14 9.625z'

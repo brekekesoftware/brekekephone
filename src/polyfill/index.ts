@@ -1,6 +1,7 @@
 import 'react-native-get-random-values'
 import './shared'
 
+import BgTimer from 'react-native-background-timer'
 import {
   mediaDevices,
   MediaStream,
@@ -28,3 +29,10 @@ window.navigator.mediaDevices = window.navigator.mediaDevices || mediaDevices
 window.navigator.getUserMedia =
   // @ts-ignore
   window.navigator.getUserMedia || mediaDevices.getUserMedia
+
+// @ts-ignore
+window.setTimeout = (f, t) => BgTimer.setTimeout(f, Math.floor(t) || 0)
+window.clearTimeout = id => BgTimer.clearTimeout(id)
+// @ts-ignore
+window.setInterval = (f, t) => BgTimer.setInterval(f, Math.floor(t) || 0)
+window.clearInterval = id => BgTimer.clearInterval(id)

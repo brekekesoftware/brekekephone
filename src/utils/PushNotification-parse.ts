@@ -14,7 +14,6 @@ import { toBoolean } from './string'
 import { waitTimeout } from './waitTimeout'
 
 const keysInCustomNotification = [
-  // Chat message
   'google.message_id',
   'title',
   'threadId',

@@ -58,7 +58,6 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }
 
-    super.onMessageReceived(remoteMessage);
     //fix [Crash] Android - AssertionException: Expected to run on UI thread
     runOnUiThread(new Runnable() {
       @Override
@@ -66,6 +65,15 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
         LpcUtilities.createReactContextInBackground(r);
       }
     });
+    // Build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
+    RemoteMessage newRemoteMessage =
+        new RemoteMessage.Builder(remoteMessage.getFrom())
+            .setMessageId(remoteMessage.getMessageId()) // Retain the original message ID
+            .setTtl(remoteMessage.getTtl()) // Retain the original TTL (Time-to-Live)
+            .setData(remoteMessage.getData()) // Add the updated data
+            .build();
+
+    super.onMessageReceived(newRemoteMessage);
 
   }
 }

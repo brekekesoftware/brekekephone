@@ -150,12 +150,13 @@ export class PageChatRecents extends Component {
 
     // don't display webchat
     arr = arr.filter(c => !webchatInactive.some(gr => gr.id === c.id))
-    arr = orderBy(arr, ['created', 'name'])
-      // .filter(c => !!c.created && !c.group)
-      .reverse()
 
     // when anyItem changes page will be render again => don't need timeout
     this.saveLastChatItem(arr)
+
+    arr = orderBy(arr, ['created', 'name'])
+      // .filter(c => !!c.created && !c.group)
+      .reverse()
 
     return (
       <Layout

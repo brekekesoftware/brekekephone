@@ -1,14 +1,19 @@
-import { action, observable } from 'mobx'
+import CiruclarJSON from 'circular-json'
+import type { IReactionDisposer } from 'mobx'
+import { action, autorun, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
+import { embedApi } from '../embed/embedApi'
 import { getPartyName } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
+import { authPBX } from './AuthPBX'
+import { getAuthStore } from './authStore'
 import type { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -17,7 +22,7 @@ import { RnAlert } from './RnAlert'
 
 export class Call {
   constructor(private store: CallStore) {}
-
+  line?: string
   rawSession?: Session
 
   @observable earlyMedia: MediaStream | null = null
@@ -61,7 +66,7 @@ export class Call {
   answer = async (
     options?: { ignoreNav?: boolean },
     videoOptions?: object,
-    exInfo?: object,
+    exInfo?: string,
   ) => {
     this.holding = false
     this.answered = true
@@ -71,13 +76,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(
-      this.id,
-      options,
-      this.remoteVideoEnabled,
-      videoOptions,
-      exInfo,
-    )
+    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -129,12 +128,12 @@ export class Call {
 
   // to use in embed api and hang up special transfer case
   hangup = () => {
+    this.isAboutToHangup = true
     sip.hangupSession(this.id)
   }
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
-  @observable remoteVideoEnabled = false
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -142,10 +141,20 @@ export class Call {
       return
     }
     if (this.localVideoEnabled) {
-      sip.disableVideo(this.id)
+      this.mutedVideo = !this.mutedVideo
+      if (this.mutedVideo) {
+        sip.setMutedVideo(true, this.id)
+      } else {
+        sip.setMutedVideo(false, this.id)
+      }
     } else {
-      sip.enableVideo(this.id)
+      this.mutedVideo = false
     }
+    // for video conference
+    // with the current logic of webrtcclient.js
+    // if we disable the local stream, it will remove all other streams
+    // so to make video conference works, we need to enable to keep receiving other streams
+    sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
@@ -153,10 +162,33 @@ export class Call {
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
-  @observable remoteVideoStreamObject: MediaStream | null = null
+  @observable localStreamObject: MediaStream | null = null
+  @observable videoClientSessionTable: Array<Session & { vId: string }> = []
+  @observable remoteVideoEnabled = false
+  @observable videoStreamActive: (Session & { vId: string }) | null = null
+  @observable remoteUserOptionsTable: {
+    [key: string]: {
+      withVideo: boolean
+      exInfo: string
+      muted: {
+        main?: boolean
+        videoClient?: boolean
+      }
+    }
+  } = {}
   voiceStreamObject: MediaStream | null = null
 
+  @action updateVideoStreamActive = stream => {
+    this.videoStreamActive = stream
+  }
+
+  @action updateVideoStreamFromNative = vId => {
+    const item = this.videoClientSessionTable.find(v => v.vId === vId)
+    item && this.updateVideoStreamActive(item)
+  }
+
   @observable muted = false
+  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -191,6 +223,8 @@ export class Call {
         : intlDebug`Failed to start recording the call`
       RnAlert.error({ message, err })
     }
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
   }
 
   toggleHoldWithCheck = () => {
@@ -209,14 +243,34 @@ export class Call {
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
+
     return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
+  }
+
+  private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
+    if (err === true) {
+      return
+    }
+    if (
+      err &&
+      typeof err === 'object' &&
+      (('code' in err && (err as any).code === -1) ||
+        ('message' in err && /timeout/i.test(err.message)))
+    ) {
+      getAuthStore().pbxState = 'stopped'
+      authPBX.dispose()
+      authPBX.auth()
+    }
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
       return true
     }
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
+
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
     if (typeof err !== 'boolean') {
@@ -265,6 +319,8 @@ export class Call {
       message: intlDebug`Failed to transfer the call`,
       err,
     })
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action stopTransferring = () => {
@@ -283,6 +339,8 @@ export class Call {
       message: intlDebug`Failed to stop the transfer`,
       err,
     })
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action conferenceTransferring = () => {
@@ -301,6 +359,8 @@ export class Call {
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action park = (number: string) =>
@@ -312,6 +372,41 @@ export class Call {
       message: intlDebug`Failed to park the call`,
       err,
     })
+    // try to re-auth if error is timeout
+    this.checkTimeoutToReconnectPbx(err)
+  }
+
+  private _autorunEmitEmbed = false // check if autorun is already started
+  private _disposeEmitEmbed?: IReactionDisposer // dispose autorun
+  startEmitEmbed = () => {
+    if (window._BrekekePhoneWebRoot) {
+      return
+    }
+    embedApi.emit('call', this)
+    this._disposeEmitEmbed = autorun(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { store, ...c } = this // do not autorun on store
+      CiruclarJSON.stringify(c)
+      if (!this._autorunEmitEmbed) {
+        this._autorunEmitEmbed = true
+        return
+      }
+      if (this.isAboutToHangup) {
+        return
+      }
+      embedApi.emit('call_update', this)
+    })
+  }
+  disposeEmitEmbed = () => {
+    this._disposeEmitEmbed?.()
+    this._disposeEmitEmbed = undefined
+  }
+  finishEmitEmbed = () => {
+    if (window._BrekekePhoneWebRoot) {
+      return
+    }
+    this.disposeEmitEmbed()
+    embedApi.emit('call_end', this)
   }
 }
 

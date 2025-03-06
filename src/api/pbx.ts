@@ -3,18 +3,27 @@ import { random } from 'lodash'
 import { Platform } from 'react-native'
 import validator from 'validator'
 
-import type { Pbx, PbxCustomPage, PbxEvent } from '../brekekejs'
+import type {
+  Pbx,
+  PbxCustomPage,
+  PbxEvent,
+  PbxResourceLine,
+} from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
+import { authPBX } from '../stores/AuthPBX'
+import { authSIP } from '../stores/AuthSIP'
 import { getAuthStore, waitPbx } from '../stores/authStore'
+import { getCallStore } from '../stores/callStore'
 import type { PbxUser, Phonebook } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
+import { waitTimeout } from '../utils/waitTimeout'
 import {
   addFromNumberNonce,
   hasPbxTokenTobeRepalced,
@@ -27,6 +36,8 @@ import {
 import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from './pnConfig'
 import { PnCommand, PnServiceId } from './pnConfig'
+import { sip } from './sip'
+import { SyncPnToken } from './syncPnToken'
 
 export class PBX extends EventEmitter {
   client?: Pbx
@@ -35,9 +46,16 @@ export class PBX extends EventEmitter {
   // wait auth state to success
   isMainInstance = true
 
+  pendingRequests: {
+    funcName: keyof PBX
+    params: string[]
+    callback: Function
+  }[] = []
+
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
+    forSyncPnToken?: boolean,
   ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
@@ -56,6 +74,7 @@ export class PBX extends EventEmitter {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
       login_password: a.pbxPassword,
+      ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
       park: a.parks || [],
       voicemail: 'self',
@@ -105,32 +124,6 @@ export class PBX extends EventEmitter {
     const connected = new Promise<boolean>(r => {
       resolveFn = r
     })
-    const pendingServerStatus: PbxEvent['serverStatus'][] = []
-    setListenerWithEmbed('notify_serverstatus', e => {
-      pendingServerStatus.push(e)
-      if (!e?.status) {
-        return
-      }
-      if (e.status === 'active') {
-        resolveFn?.(true)
-        resolveFn = undefined
-      } else if (e.status === 'inactive') {
-        resolveFn?.(false)
-        resolveFn = undefined
-      }
-    })
-    const pendingClose: unknown[] = []
-    setListenerWithEmbed('onClose', () => {
-      pendingClose.push()
-      resolveFn?.(false)
-      resolveFn = undefined
-    })
-    const pendingError: Error[] = []
-    setListenerWithEmbed('onError', err => {
-      pendingError.push(err)
-      resolveFn?.(false)
-      resolveFn = undefined
-    })
 
     const newTimeoutPromise = () => {
       this.clearConnectTimeoutId()
@@ -150,6 +143,57 @@ export class PBX extends EventEmitter {
     const login = new Promise<boolean>((resolve, reject) =>
       client.login(() => resolve(true), reject),
     )
+
+    // listeners to be added after login successfully
+    const listeners = {
+      onClose: this.onClose,
+      onError: this.onError,
+      notify_serverstatus: this.onServerStatus,
+      notify_park: this.onPark,
+      notify_callrecording: this.onCallRecording,
+      notify_voicemail: this.onVoicemail,
+      notify_status: this.onUserStatus,
+      notify_pal: this.onUserLoginOtherDevices,
+    }
+    // pending events received before login successfully
+    const pendings = Object.keys(listeners).reduce(
+      (m, k) => {
+        m[k] = []
+        return m
+      },
+      {} as { [k: string]: any[] },
+    )
+    // pending listeners before login successfully
+    const pendingOnCloseOrError = () => {
+      resolveFn?.(false)
+      resolveFn = undefined
+    }
+    const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
+      if (!e?.status) {
+        return
+      }
+      if (e.status === 'active') {
+        resolveFn?.(true)
+        resolveFn = undefined
+      } else if (e.status === 'inactive') {
+        resolveFn?.(false)
+        resolveFn = undefined
+      }
+    }
+    const pendingListeners = {
+      onClose: pendingOnCloseOrError,
+      onError: pendingOnCloseOrError,
+      notify_serverstatus: pendingOnServerStatus,
+    }
+    // add listeners before login successfully
+    // also add the event to pendings array
+    Object.keys(listeners).forEach((k: any) => {
+      setListenerWithEmbed(k, e => {
+        pendings[k].push(e)
+        pendingListeners[k]?.(e)
+      })
+    })
+
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
 
@@ -183,18 +227,13 @@ export class PBX extends EventEmitter {
       }
     }
 
-    // register client direct event handlers
-    setListenerWithEmbed('onClose', this.onClose)
-    setListenerWithEmbed('onError', this.onError)
-    setListenerWithEmbed('notify_serverstatus', this.onServerStatus)
-    setListenerWithEmbed('notify_park', this.onPark)
-    setListenerWithEmbed('notify_callrecording', this.onCallRecording)
-    setListenerWithEmbed('notify_voicemail', this.onVoicemail)
-    setListenerWithEmbed('notify_status', this.onUserStatus)
-    // fire pending events
-    pendingClose.forEach(this.onClose)
-    pendingError.forEach(this.onError)
-    pendingServerStatus.forEach(this.onServerStatus)
+    // reset state
+    getCallStore().parkNumbers = {}
+    // call listeners using pendings then set
+    Object.keys(listeners).forEach((k: any) => {
+      pendings[k].forEach(e => listeners[k](e))
+      setListenerWithEmbed(k, listeners[k])
+    })
 
     return connected
   }
@@ -278,6 +317,32 @@ export class PBX extends EventEmitter {
     }
   }
 
+  private onUserLoginOtherDevices = async (e: PbxEvent['pal']) => {
+    if (!e) {
+      return
+    }
+    if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
+      getAuthStore().pbxLoginFromAnotherPlace = true
+      if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
+        console.log(
+          'pbxLoginFromAnotherPlace debug:  No call is in progress, disconnect SIP and PBX.',
+        )
+        const a = getAuthStore().getCurrentAccount()
+        if (a) {
+          console.log(
+            'pbxLoginFromAnotherPlace debug:  remove token for account ' +
+              a.pbxUsername,
+          )
+          await SyncPnToken().sync(a, { noUpsert: true })
+        }
+        authSIP.dispose()
+        authPBX.dispose()
+        // wait for the last device to complete syncing the token before allowing the current device to interact
+        await waitTimeout(2500)
+        getAuthStore().showMsgPbxLoginFromAnotherPlace = true
+      }
+    }
+  }
   disconnect = () => {
     if (this.client) {
       this.client.close()
@@ -292,7 +357,6 @@ export class PBX extends EventEmitter {
       this.connectTimeoutId = 0
     }
   }
-
   getConfig = async (skipWait?: boolean) => {
     if (this.isMainInstance) {
       const s = getAuthStore()
@@ -317,6 +381,8 @@ export class PBX extends EventEmitter {
 
     const as = getAuthStore()
     as.pbxConfig = config
+    as.setUserAgentConfig(config['webphone.http.useragent.product'])
+    as.setRecentCallsMax(config['webphone.recents.max'])
 
     // the custom page only load at the first time the tab is shown after you log in
     //    even after re-connected it, don't refresh it again
@@ -324,6 +390,9 @@ export class PBX extends EventEmitter {
     if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
       _parseListCustomPage()
     }
+
+    // get resource line
+    _parseResourceLines(config['webphone.resource-line'])
 
     const d = await as.getCurrentDataAsync()
     if (d) {
@@ -483,16 +552,12 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    try {
-      const res = await this.client.call_pal('getPhoneAppliContact', {
-        tenant,
-        user,
-        tel,
-      })
-      return res
-    } catch (err) {
-      return {}
-    }
+    const res = await this.client.call_pal('getPhoneAppliContact', {
+      tenant,
+      user,
+      tel,
+    })
+    return res
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
@@ -799,6 +864,35 @@ export class PBX extends EventEmitter {
 }
 
 export const pbx = new PBX()
+
+// ----------------------------------------------------------------------------
+// parse resource line data
+const _parseResourceLines = (l: string | undefined) => {
+  const as = getAuthStore()
+  if (!l) {
+    as.resourceLines = []
+    return
+  }
+  const lines = l.split(',')
+  const resourceLines: PbxResourceLine[] = []
+  lines.forEach(line => {
+    if (line.includes(':')) {
+      const [key, value] = line.split(':')
+      if (key) {
+        resourceLines.push({ key: key.trim(), value: value.trim() })
+      }
+    } else if (line) {
+      resourceLines.push({ key: line.trim(), value: line.trim() })
+    }
+  })
+  // remove duplicate value
+  as.resourceLines = resourceLines.filter((item, index) => {
+    const nextItem = resourceLines.find(
+      (next, nextIndex) => nextIndex > index && next.value === item.value,
+    )
+    return !nextItem
+  })
+}
 
 // ----------------------------------------------------------------------------
 // custom page url utils

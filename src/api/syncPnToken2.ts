@@ -3,6 +3,7 @@ import WifiManager from 'react-native-wifi-reborn'
 
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
+import { getAuthStore } from '../stores/authStore'
 import { compareSemVer } from '../stores/debugStore'
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -30,7 +31,8 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
-  const pnEnabled = p.pushNotificationEnabled
+  const pnEnabled =
+    !getAuthStore().pbxLoginFromAnotherPlace && p.pushNotificationEnabled
   console.log(
     `PN sync debug: trying to turn ${pnEnabled ? 'on' : 'off'} PN for account ${
       p.pbxUsername
@@ -53,7 +55,7 @@ const syncPnTokenWithoutCatch = async (
   }
 
   try {
-    const success = await pbx.connect(p)
+    const success = await pbx.connect(p, false, true)
     if (!success) {
       console.log('PN sync debug: failed to connect to pbx')
       return disconnectPbx()
