@@ -131,7 +131,6 @@ public class MainActivity extends ReactActivity {
     setIntent(intent);
     // handle call from other app
     handleIntent(intent);
-    handleIntent(intent);
   }
 
   private void handleIntent(Intent intent) {

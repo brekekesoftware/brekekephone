@@ -45,9 +45,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       return;
     }
     ReactApplication r = (ReactApplication) this.getApplication();
-    Log.d(TAG, "onMessageReceived: " + LpcUtilities.convertMapToString(remoteMessage.getData()));
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
-    Log.d(IncomingCallActivity.TAG, "Incoming call started by PN");
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();
     }

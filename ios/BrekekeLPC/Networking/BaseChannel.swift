@@ -106,7 +106,6 @@ class BaseChannel {
             port: conn.port,
             tlsKeyHash: conn.tlsKeyHash
           )
-          print("Connection setup \(connection)")
           self.networkSession.connect(connection: connection)
         case .disconnect:
           self.logger.log("Calling network session disconnect")

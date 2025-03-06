@@ -20,11 +20,7 @@ class BrekekeLPCExtension: NEAppPushProvider {
 
   override init() {
     super.init()
-
     logger.log("Initialized")
-
-    os_log("Duy Phann")
-
     // observe notification channel connection state for logging purposes
     channel.statePublisher
       .sink { [weak self] state in
@@ -63,7 +59,6 @@ class BrekekeLPCExtension: NEAppPushProvider {
     // notification channel when receiving a Settings change
     SettingsManager.shared.settingsPublisher
       .sink { [weak self] settings in
-        print("settingsPublisher::start::user1 ")
         self?.logger.log("settingsPublisher::start::user1 \(settings)")
         guard let self = self
         else {
@@ -80,7 +75,6 @@ class BrekekeLPCExtension: NEAppPushProvider {
         let user = User(uuid: settings.user.uuid,
                         uuid2: settings.user.uuid2,
                         deviceName: settings.user.deviceName)
-        print("Userrrr \(user)")
         self.channel.setConnectionDetail(
           host: settings.pushManagerSettings.host,
           port: settings.pushManagerSettings.port,
