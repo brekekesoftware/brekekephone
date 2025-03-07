@@ -6,8 +6,8 @@ import { Platform, View } from 'react-native'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
-import { debugStore } from '../stores/debugStore'
 import { intl, intlDebug } from '../stores/intl'
+import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -144,7 +144,7 @@ export const AccountCreateForm: FC<{
                 ? [
                     {
                       label: intl`Open debug log`,
-                      onPress: debugStore.openLogFile,
+                      onPress: Nav().goToPageSettingsDebugFiles,
                     },
                   ]
                 : []),
