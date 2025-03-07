@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiCheck, mdiClose } from '../assets/icons'
+import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -212,6 +213,13 @@ export class UnreadChatNoti extends Component {
       if (isWebchat && !isWebchatJoined) {
         return false
       }
+
+      // Always show chat message notifications when in Call manage screen
+      const inPageCallManage = getCallStore().inPageCallManage
+      if (!!inPageCallManage) {
+        return true
+      }
+
       const { name, buddy, groupId } = s
 
       if (name === 'PageChatRecents') {
