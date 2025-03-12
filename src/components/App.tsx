@@ -146,6 +146,7 @@ const initApp = async () => {
     if (!isConnected) {
       return
     }
+
     s.resetFailureState()
     authPBX.auth()
     authSIP.auth()

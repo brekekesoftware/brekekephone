@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import NetworkExtension
+import OSLog
 import UserNotifications
 
 class BrekekeLPCExtension: NEAppPushProvider {
@@ -19,9 +20,7 @@ class BrekekeLPCExtension: NEAppPushProvider {
 
   override init() {
     super.init()
-
     logger.log("Initialized")
-
     // observe notification channel connection state for logging purposes
     channel.statePublisher
       .sink { [weak self] state in
@@ -60,7 +59,6 @@ class BrekekeLPCExtension: NEAppPushProvider {
     // notification channel when receiving a Settings change
     SettingsManager.shared.settingsPublisher
       .sink { [weak self] settings in
-        print("settingsPublisher::start::user1 ")
         self?.logger.log("settingsPublisher::start::user1 \(settings)")
         guard let self = self
         else {
@@ -73,6 +71,7 @@ class BrekekeLPCExtension: NEAppPushProvider {
         }
 
         self.logger.log("settingsPublisher::start::user \(settings)")
+
         let user = User(uuid: settings.user.uuid,
                         uuid2: settings.user.uuid2,
                         deviceName: settings.user.deviceName)

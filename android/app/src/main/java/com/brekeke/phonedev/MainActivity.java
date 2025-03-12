@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import com.brekeke.phonedev.lpc.OtherPermUtilities;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -14,6 +15,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import io.wazo.callkeep.RNCallKeepModule;
 
 public class MainActivity extends ReactActivity {
+
   // ==========================================================================
   // set/unset BrekekeUtils.main
   @Override
@@ -25,36 +27,49 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onResume() {
     super.onResume();
+
     // call history
     // temporary disabled
     BrekekeUtils.resolveIgnoreBattery(
         BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this));
     BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this));
-    if (true) {
-      return;
-    }
-    Bundle b = getIntent().getExtras();
-    if (b == null) {
-      return;
-    }
-    String phone = b.getString("extra_phone");
-    if (phone == null || phone.isEmpty()) {
-      return;
-    }
-    // remove cache when open app again
-    getIntent().removeExtra("extra_phone");
-    if (BrekekeUtils.eventEmitter != null) {
-      BrekekeUtils.emit("makeCall", phone);
-      return;
-    }
-    Runnable r =
-        new Runnable() {
-          public void run() {
-            BrekekeUtils.emit("makeCall", phone);
-          }
-        };
-    Handler handler = new android.os.Handler();
-    handler.postDelayed(r, 5000);
+    BrekekeUtils.resolvePermForIncomingCall(OtherPermUtilities.isOtherPermissionGranted(this));
+    // disable call history function
+    // if (true) {
+    //   return;
+    // }
+    // Bundle b = getIntent().getExtras();
+    // if (b == null) {
+    //   return;
+    // }
+    // String phone = b.getString("extra_phone");
+    // if (phone == null || phone.isEmpty()) {
+    //   return;
+    // }
+    // // remove cache when open app again
+    // getIntent().removeExtra("extra_phone");
+    // if (BrekekeUtils.eventEmitter != null) {
+    //   BrekekeUtils.emit("makeCall", phone);
+    //   return;
+    // }
+    // Runnable r =
+    //     new Runnable() {
+    //       public void run() {
+    //         BrekekeUtils.emit("makeCall", phone);
+    //       }
+    //     };
+    // Handler handler = new android.os.Handler();
+    // handler.postDelayed(r, 5000);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
   }
 
   @Override

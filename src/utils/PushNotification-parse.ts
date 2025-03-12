@@ -89,7 +89,6 @@ export const parseNotificationData = (raw?: object) => {
   if (!raw) {
     return
   }
-
   let n: ParsedPn | undefined
   if (Platform.OS === 'android') {
     n = parseNotificationDataMultiple(
@@ -177,7 +176,6 @@ export const parseNotificationData = (raw?: object) => {
 
   n.isCall = !!n.id || !!n.sipPn.sipAuth
   n.time = Number(n.time) || 0
-
   return n
 }
 
@@ -201,6 +199,7 @@ export const parse = async (
   if (!raw || !n) {
     return
   }
+
   // received PN chat but don't click item notification
   if (!n.isCall && !isClickAction) {
     return
@@ -210,6 +209,7 @@ export const parse = async (
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (Platform.OS === 'android' && n.callkeepUuid) {
     const k = n.id || jsonStableStringify(raw)
+
     if (androidAlreadyProccessedPn[k]) {
       console.log(
         `SIP PN debug: PushNotification-parse: already processed k=${k}`,
@@ -218,8 +218,8 @@ export const parse = async (
     }
     androidAlreadyProccessedPn[k] = true
   }
-
   const acc = await checkAndRemovePnTokenViaSip(n)
+
   if (!acc) {
     console.log(
       'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
@@ -265,6 +265,7 @@ export const parse = async (
       n.is_local_notification ||
       !n.isCall,
   )
+
   // handle uc chat notification on press
   // currently server is sending PN as not-data-only
   // if the app is killed, the PN will show up instantly without triggering this code
@@ -286,6 +287,7 @@ export const parse = async (
     if ((isGroupChat || !senderId) && confId) {
       nav.customPageIndex = nav.goToPageChatRecents
       waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
+
       return
     }
     if (senderId) {
@@ -306,6 +308,7 @@ export const parse = async (
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen
+
   if (!n.callkeepUuid) {
     console.error(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
@@ -326,6 +329,7 @@ export const parse = async (
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
+
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       cs.onCallKeepAnswerCall(n.callkeepUuid)
@@ -334,6 +338,7 @@ export const parse = async (
     }
     // already invoke callkeep in java code
   }
+
   // let pbx/sip connect by this awaiting time
   await waitTimeout(10000)
   return

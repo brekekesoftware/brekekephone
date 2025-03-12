@@ -44,6 +44,7 @@ type TBrekekeUtils = {
   isDisableBatteryOptimizationGranted(): Promise<boolean>
   permDisableBatteryOptimization(): Promise<boolean>
   permOverlay(): Promise<boolean>
+
   setUserAgentConfig(userAgentConfig: string): void
   // android video conference
   setRemoteStreams: (
@@ -75,9 +76,12 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   setProximityMonitoring(enabled: boolean): void
-
-  // these methods available on both
   systemUptimeMs(): Promise<number>
+  // these methods available on both
+
+  // LPC
+  isOtherPermissionGranted(): Promise<boolean>
+  permForIncomingCall(): Promise<boolean>
 }
 
 export type TNativeModules = {
@@ -136,6 +140,9 @@ const Polyfill: TBrekekeUtils = {
 
   // these methods available on both
   systemUptimeMs: () => Promise.resolve(-1),
+  // LPC
+  isOtherPermissionGranted: () => Promise.resolve(false),
+  permForIncomingCall: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

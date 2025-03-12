@@ -290,6 +290,7 @@ export class AuthStore {
   }
   @action reconnectSip = () => {
     const count = sip.phone?.getSessionCount()
+
     if (count) {
       console.log(
         `SIP PN debug: can not reconnect sip due to ongoing sessions getSessionCount=${count} sipState=${this.sipState}`,
@@ -525,7 +526,6 @@ export class AuthStore {
       this.clearUrlParams()
       return true
     }
-    //
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(getCallStore().callkeepMap).length ||

@@ -115,6 +115,7 @@ class AuthSIP {
     if (pn.sipAuth) {
       console.log('SIP PN debug: AuthSIP.authPnWithoutCatch')
       this.authPnWithoutCatch(pn)
+
       return
     }
     console.log('SIP PN debug: AuthSIP.authWithoutCatch')

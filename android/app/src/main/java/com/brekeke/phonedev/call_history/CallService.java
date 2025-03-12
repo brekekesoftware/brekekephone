@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.call_history;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,7 +7,6 @@ import android.telecom.InCallService;
 import android.telecom.TelecomManager;
 
 public class CallService extends InCallService {
-
   @Override
   public void onCallAdded(Call call) {
     super.onCallAdded(call);

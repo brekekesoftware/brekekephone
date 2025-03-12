@@ -20,7 +20,7 @@ class BaseChannel {
   private let networkSession = RequestResponseSession()
   private let heartbeatMonitor: HeartbeatMonitor
   private let shouldConnectToServerSubject = CurrentValueSubject<Bool,
-    Never>(false)
+    Never>(true)
   private let stateSubject = CurrentValueSubject<NetworkSession.State,
     Never>(.disconnected)
   private let registrationSubject = CurrentValueSubject<User?, Never>(nil)
@@ -173,7 +173,9 @@ class BaseChannel {
       .scan(nil) { last, next -> (conn: NewConnection, connect: Bool?)? in
         let (networkSessionState, shouldConnectToServer, conn) = next
         var connect: Bool?
-
+        print(
+          "shouldConnectToServer, shouldConnectToServer \(shouldConnectToServer), \(networkSessionState)"
+        )
         if shouldConnectToServer, !conn.host.isEmpty {
           switch networkSessionState {
           case .connecting, .connected:
