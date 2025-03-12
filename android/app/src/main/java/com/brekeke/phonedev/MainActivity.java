@@ -34,31 +34,32 @@ public class MainActivity extends ReactActivity {
         BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this));
     BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this));
     BrekekeUtils.resolvePermForIncomingCall(OtherPermUtilities.isOtherPermissionGranted(this));
-    if (true) {
-      return;
-    }
-    Bundle b = getIntent().getExtras();
-    if (b == null) {
-      return;
-    }
-    String phone = b.getString("extra_phone");
-    if (phone == null || phone.isEmpty()) {
-      return;
-    }
-    // remove cache when open app again
-    getIntent().removeExtra("extra_phone");
-    if (BrekekeUtils.eventEmitter != null) {
-      BrekekeUtils.emit("makeCall", phone);
-      return;
-    }
-    Runnable r =
-        new Runnable() {
-          public void run() {
-            BrekekeUtils.emit("makeCall", phone);
-          }
-        };
-    Handler handler = new android.os.Handler();
-    handler.postDelayed(r, 5000);
+    // disable call history function
+    // if (true) {
+    //   return;
+    // }
+    // Bundle b = getIntent().getExtras();
+    // if (b == null) {
+    //   return;
+    // }
+    // String phone = b.getString("extra_phone");
+    // if (phone == null || phone.isEmpty()) {
+    //   return;
+    // }
+    // // remove cache when open app again
+    // getIntent().removeExtra("extra_phone");
+    // if (BrekekeUtils.eventEmitter != null) {
+    //   BrekekeUtils.emit("makeCall", phone);
+    //   return;
+    // }
+    // Runnable r =
+    //     new Runnable() {
+    //       public void run() {
+    //         BrekekeUtils.emit("makeCall", phone);
+    //       }
+    //     };
+    // Handler handler = new android.os.Handler();
+    // handler.postDelayed(r, 5000);
   }
 
   @Override

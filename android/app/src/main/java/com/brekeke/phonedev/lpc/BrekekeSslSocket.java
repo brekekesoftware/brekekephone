@@ -213,6 +213,7 @@ public class BrekekeSslSocket {
           requestSent = false;
           if (Objects.equals(wr.payload.codingKey, 3)) {
             String res = new String(Base64.decode(wr.payload.data, Base64.NO_WRAP));
+            Log.d(TAG, "handleResponse: " + res);
             Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);

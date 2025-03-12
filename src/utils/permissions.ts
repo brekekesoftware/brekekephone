@@ -8,7 +8,6 @@ import {
   request,
   requestMultiple,
   requestNotifications,
-  RESULTS,
 } from 'react-native-permissions'
 
 import { intl } from '../stores/intl'
@@ -243,15 +242,13 @@ const permOtherForIncomingCall = async () => {
 }
 
 export const permFineLocation = async () => {
-  const c = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-  if (c === RESULTS.GRANTED) {
-    return true
-  }
   const r = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-  if (r[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION] === 'granted') {
-    return true
-  }
-  return false
+  return r === 'granted'
+}
+
+export const checkFineLocation = async () => {
+  const r = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+  return r === 'granted'
 }
 
 const permOverlayPermission = async () => {
