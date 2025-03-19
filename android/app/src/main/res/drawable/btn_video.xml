@@ -12,7 +12,7 @@
         android:left="10dp"
         android:bottom="10dp"
         android:right="10dp"
-        android:drawable="@drawable/ic_video_active"
+        android:drawable="@drawable/ic_video_inactive_black"
       />
     </layer-list>
   </item>
@@ -28,7 +28,7 @@
         android:left="10dp"
         android:bottom="10dp"
         android:right="10dp"
-        android:drawable="@drawable/ic_video"
+        android:drawable="@drawable/ic_video_active_white"
       />
     </layer-list>
   </item>

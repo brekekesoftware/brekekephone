@@ -14,8 +14,7 @@ import {
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
-  mdiCameraFrontVariant,
-  mdiCameraRearVariant,
+  mdiChat,
   mdiDialpad,
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -164,19 +163,22 @@ const css = StyleSheet.create({
     left: '-100%',
   },
   viewHangupBtns: {
-    marginBottom: 10,
+    marginBottom: 8,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
     marginTop: 10,
-    zIndex: 100,
+    zIndex: 12,
+    pointerEvents: 'box-none',
   },
   viewHangupBtn: {
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
+    zIndex: 12,
     flexDirection: 'row',
+    pointerEvents: 'box-none',
   },
   txtHold: {
     height: 65,
@@ -379,6 +381,15 @@ class PageCallManage extends Component<{
 
   private renderLayout = () => {
     const { call: c } = this.props
+    const navChatDetail = () => {
+      if (c.partyNumber.startsWith('uc')) {
+        Nav().goToPageChatGroupDetail({
+          groupId: c.partyNumber.replace('uc', ''),
+        })
+      } else {
+        Nav().goToPageChatDetail({ buddy: c.partyNumber })
+      }
+    }
     return (
       <Layout
         compact
@@ -394,6 +405,8 @@ class PageCallManage extends Component<{
               ]
             : undefined
         }
+        iconRights={!c.transferring ? [mdiChat] : []}
+        iconRightFuncs={[() => navChatDetail()]}
         noScroll
         onBack={backAction}
         title={c.getDisplayName() || intl`Connecting...`}
@@ -446,17 +459,6 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <>
-        <View style={css.cameraStyle}>
-          <ButtonIcon
-            color='white'
-            noborder
-            onPress={c.toggleSwitchCamera}
-            path={
-              c.isFrontCamera ? mdiCameraFrontVariant : mdiCameraRearVariant
-            }
-            size={40}
-          />
-        </View>
         <View style={css.Video_Space} />
         <View style={[css.Video]}>
           <VideoPlayer
@@ -552,7 +554,10 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={{ marginTop: isHideButtons ? 30 : 0, zIndex: 100 }}
+        style={{
+          marginTop: isHideButtons ? 30 : 0,
+          zIndex: 100,
+        }}
       >
         {n > 0 && (
           <FieldButton
@@ -600,8 +605,10 @@ class PageCallManage extends Component<{
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={!c.answered}
-              bgcolor={c.localVideoEnabled ? activeColor : 'white'}
-              color={c.localVideoEnabled ? 'white' : 'black'}
+              bgcolor={
+                c.localVideoEnabled && !c.mutedVideo ? activeColor : 'white'
+              }
+              color={c.localVideoEnabled && !c.mutedVideo ? 'white' : 'black'}
               name={intl`VIDEO`}
               noborder
               onPress={c.toggleVideo}

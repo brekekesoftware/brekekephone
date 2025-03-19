@@ -90,8 +90,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       btnDtmf,
       btnHold,
       btnEndCall,
-      btnSwitchCamera,
-      btnBack;
+      btnBack,
+      btnVideoItem,
+      btnChat;
   public TextView txtCallerName,
       txtHeaderCallerName,
       txtIncomingCall,
@@ -242,8 +243,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf = (Button) findViewById(R.id.btn_dtmf);
     btnHold = (Button) findViewById(R.id.btn_hold);
     btnEndCall = (Button) findViewById(R.id.btn_end_call);
-    btnSwitchCamera = (Button) findViewById(R.id.btn_switch_camera);
     btnBack = (Button) findViewById(R.id.btn_back);
+    btnChat = (Button) findViewById(R.id.btn_chat);
+    btnChat.setVisibility(View.GONE); // default disable until call connected
 
     btnBack.setOnClickListener(this);
     btnAnswer.setOnClickListener(this);
@@ -258,8 +260,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnDtmf.setOnClickListener(this);
     btnHold.setOnClickListener(this);
     btnEndCall.setOnClickListener(this);
-    btnSwitchCamera.setOnClickListener(this);
-    btnSwitchCamera.setSelected(true); // default front camera
+    btnChat.setOnClickListener(this);
 
     txtCallerName = (TextView) findViewById(R.id.txt_caller_name);
     txtHeaderCallerName = (TextView) findViewById(R.id.txt_header_caller_name);
@@ -538,7 +539,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtcVideo = null;
     } else {
-      btnSwitchCamera.setVisibility(View.GONE);
       vWebrtc.removeView(vWebrtcVideo);
       vWebrtc.setVisibility(View.GONE);
       videoLoading.setVisibility(View.GONE);
@@ -552,13 +552,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       if (vWebrtcVideo == null) {
         return;
       }
-      btnSwitchCamera.setVisibility(View.GONE);
       updateDisplayVideo(isVideoCall);
     } else {
       if (vWebrtcVideo == null || vWebrtc.getVisibility() == View.GONE) {
         initWebrtcVideo();
       }
-      btnSwitchCamera.setVisibility(View.VISIBLE);
       vCardAvatarTalking.setVisibility(View.GONE);
       vWebrtcVideo.setStreamURL(url);
       disableAvatarTalking();
@@ -623,7 +621,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBgForStream(ln, false);
     WebRTCView rtcView = createNewRTCView(streamUrl);
     rl.addView(rtcView);
-    rl.setGravity(Gravity.CENTER);
+    rl.setGravity(Gravity.BOTTOM);
     return ln;
   }
 
@@ -678,7 +676,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
     if (arrayStreams.size() > 0 && localStreamId != 0) {
       vRemoteStreams.setVisibility(View.VISIBLE);
-      btnSwitchCamera.setVisibility(View.VISIBLE);
       if (activeStreamId == "") {
         StreamData s = arrayStreams.valueAt(0);
         updateStreamActive(s.vId, s.streamUrl);
@@ -755,27 +752,52 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       }
     }
 
+    float scale = getResources().getDisplayMetrics().density;
     LinearLayout v = createStreamItemRelative(streamUrl);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
-    Button bt = new Button(BrekekeUtils.ctx);
-    Drawable drawable = getDrawableFromResources(R.drawable.btn_camera_rolate);
-    bt.setBackground(drawable);
-    float scale = getResources().getDisplayMetrics().density;
-    bt.setOnClickListener(
+    LinearLayout rl = new LinearLayout(BrekekeUtils.ctx);
+    rl.setOrientation(LinearLayout.HORIZONTAL);
+    rl.setGravity(Gravity.CENTER);
+
+    btnVideoItem = new Button(BrekekeUtils.ctx);
+    btnVideoItem.setBackground(getDrawableFromResources(R.drawable.btn_video_item));
+    Button btnCameraRotate = new Button(BrekekeUtils.ctx);
+    btnCameraRotate.setBackground(getDrawableFromResources(R.drawable.btn_switch_camera));
+    btnVideoItem.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            onBtnVideoClick(v);
+          }
+        });
+    btnCameraRotate.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             onBtnSwitchCamera(v);
           }
         });
-    RelativeLayout.LayoutParams params =
-        new RelativeLayout.LayoutParams((int) scale * 28, (int) scale * 28);
-    params.addRule(RelativeLayout.CENTER_VERTICAL);
-    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-    rl.setLayoutParams(params);
-    rl.addView(bt);
-    r.addView(rl, 1);
+    LinearLayout.LayoutParams buttonParams =
+        new LinearLayout.LayoutParams((int) (scale * 28), (int) (scale * 28));
+    int margin = (int) (scale * 8);
+    buttonParams.setMargins(margin, 0, margin, 0);
+
+    btnVideoItem.setLayoutParams(buttonParams);
+    btnCameraRotate.setLayoutParams(buttonParams);
+
+    RelativeLayout.LayoutParams containerParams =
+        new RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+    containerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+    rl.setBackgroundColor(Color.argb((int) (255 * 0.3), 0, 0, 0));
+
+    int padding = (int) (scale * 2);
+    rl.setPadding(padding, padding, padding, padding);
+    rl.setLayoutParams(containerParams);
+    rl.addView(btnVideoItem);
+    rl.addView(btnCameraRotate);
+    r.addView(rl);
+
     localStreamId = View.generateViewId();
     localStreamUrl = streamUrl;
     v.setId(localStreamId);
@@ -1057,6 +1079,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     BrekekeUtils.remove(uuid);
   }
 
+  public void onBtnChatClick(View v) {
+    BrekekeUtils.emit("navChat", uuid);
+    openMainActivity();
+  }
+
   // vCallManage
   public void onViewCallManageClick(View v) {
     if (!isVideoCall) {
@@ -1213,8 +1240,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       case R.id.btn_end_call:
         onBtnRejectClick(v);
         break;
-      case R.id.btn_switch_camera:
-        onBtnSwitchCamera(v);
+      case R.id.btn_chat:
+        onBtnChatClick(v);
         break;
       default:
         break;
@@ -1242,6 +1269,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     long answeredAt = System.currentTimeMillis();
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
+    btnChat.setVisibility(View.VISIBLE);
     if (talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
     } else {
@@ -1298,7 +1326,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (isMuted != _isMuted) {
       isMuted = _isMuted;
     }
-    btnVideo.setSelected(_isVideoCall && !_isMuted);
+    boolean isSelected = _isVideoCall && !_isMuted;
+    btnVideo.setSelected(isSelected);
+    if (btnVideoItem != null) {
+      btnVideoItem.setSelected(isSelected);
+    }
     checkVideoLocalEnable();
   }
 
@@ -1364,10 +1396,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void setBtnSpeakerSelected(boolean isSpeakerOn) {
     btnSpeaker.setSelected(isSpeakerOn);
-  }
-
-  public void setBtnSwitchCamera(boolean isFrontCamera) {
-    btnSwitchCamera.setSelected(isFrontCamera);
   }
 
   public void setImageTalkingUrl(String url, boolean _isLarge) {
