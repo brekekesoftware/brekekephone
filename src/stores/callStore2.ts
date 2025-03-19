@@ -346,6 +346,12 @@ export class CallStore {
         BrekekeUtils.onCallConnected(e.callkeepUuid)
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
+
+        // auto disable video if the call is answered and incoming call
+        if (e.incoming && e.localVideoEnabled) {
+          e.mutedVideo = true
+          sip.setMutedVideo(true, e.id)
+        }
       }
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,

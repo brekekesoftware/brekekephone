@@ -157,9 +157,11 @@ export class Call {
     sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
+    if (this.localVideoEnabled && this.mutedVideo) {
+      return
+    }
     this.isFrontCamera = !this.isFrontCamera
     sip.switchCamera(this.id, this.isFrontCamera)
-    BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
   @observable localStreamObject: MediaStream | null = null
