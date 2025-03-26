@@ -197,8 +197,6 @@ export class Call {
         : intlDebug`Failed to start recording the call`
       RnAlert.error({ message, err })
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   toggleHoldWithCheck = () => {
@@ -223,27 +221,10 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
-  private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
-    if (err === true) {
-      return
-    }
-    if (
-      err &&
-      typeof err === 'object' &&
-      (('code' in err && (err as any).code === -1) ||
-        ('message' in err && /timeout/i.test(err.message)))
-    ) {
-      getAuthStore().pbxState = 'stopped'
-      authPBX.dispose()
-      authPBX.auth()
-    }
-  }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
       return true
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
 
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
@@ -293,8 +274,6 @@ export class Call {
       message: intlDebug`Failed to transfer the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action stopTransferring = () => {
@@ -313,8 +292,6 @@ export class Call {
       message: intlDebug`Failed to stop the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action conferenceTransferring = () => {
@@ -333,8 +310,6 @@ export class Call {
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action park = (number: string) =>
@@ -346,8 +321,6 @@ export class Call {
       message: intlDebug`Failed to park the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   private _autorunEmitEmbed = false // check if autorun is already started

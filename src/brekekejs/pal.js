@@ -112,6 +112,7 @@ Brekeke.pbx.getPalPrototype = function () {
     'getToken',
     'getVoicemails',
     'getTalkerInfo',
+    'ping',
   ]
   for (var i = 0; i < pal.methods.length; i++) {
     pal.regMethod(pal.methods[i])
