@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3'
 import { unmountComponentAtNode } from 'react-dom'
 
 import { parsePalParams } from '../api/parseParamsWithPrefix'
-import type { MakeCallFn } from '../brekekejs'
+import type { MakeCallFn, PbxGetProductInfoRes } from '../brekekejs'
 import type { Account } from '../stores/accountStore'
 import { accountStore, getAccountUniqueId } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
@@ -12,12 +12,24 @@ import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 
+type EmbedPbxConfig = Partial<
+  Pick<
+    PbxGetProductInfoRes,
+    'webphone.useragent' | 'webphone.http.useragent.product'
+  >
+>
+type EmbedPalConfig = {
+  // webphone.pal.param.*
+  [k: string]: string
+}
+
 export type EmbedSignInOptions = {
   autoLogin?: boolean
   clearExistingAccount?: boolean
   palEvents?: string[]
   accounts: EmbedAccount[]
-} & { [k: string]: string }
+} & EmbedPbxConfig &
+  EmbedPalConfig
 
 export class EmbedApi extends EventEmitter {
   /** ==========================================================================
@@ -56,12 +68,14 @@ export class EmbedApi extends EventEmitter {
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
+  _pbxConfig: EmbedPbxConfig = {}
 
   _signIn = async (o: EmbedSignInOptions) => {
     await accountStore.waitStorageLoaded()
     // reassign options on each sign in
     embedApi._palEvents = o.palEvents
     embedApi._palParams = parsePalParams(o)
+    embedApi._pbxConfig = o // TODO pick fields
     // check if cleanup existing account
     if (o.clearExistingAccount) {
       accountStore.accounts = []

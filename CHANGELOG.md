@@ -1,3 +1,8 @@
+#### 2.16.2
+
+- Embed:
+  - Add support for user agent in embed login options
+
 #### 2.16.1
 
 - Upgrade webrtcclient to 2.0.37.356
