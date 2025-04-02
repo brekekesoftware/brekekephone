@@ -42,6 +42,7 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
+  isAutoAnswer = false
   phoneappliUsername = ''
   phoneappliAvatar = ''
   getDisplayName = () =>
@@ -103,7 +104,12 @@ export class Call {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
     }
     RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-    RNCallKeep.setOnHold(this.callkeepUuid, false)
+    // In case the user has not answered the call on callkeep display incoming call
+    // audio session should not be assigned to WebRTC (in didToggleHoldCallAction) 
+    // before the didActivateAudioSession event is called
+    if (Platform.OS !== 'ios' || !this.isAutoAnswer) {
+      RNCallKeep.setOnHold(this.callkeepUuid, false)
+    }
     BrekekeUtils.setOnHold(this.callkeepUuid, false)
   }
 

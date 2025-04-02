@@ -82,9 +82,10 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
-        BackgroundTimer.setTimeout(() => {
-          RNCallKeep.answerIncomingCall(uuid)
-        }, 2000)
+        const call = this.getCallKeep(uuid)
+        if (call) {
+          call.isAutoAnswer = true
+        }
       }
     }
     checkAndRemovePnTokenViaSip(n)
@@ -469,6 +470,8 @@ export class CallStore {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
+    c.isAutoAnswer =
+      c.isAutoAnswer || this.getAutoAnswerFromPnId(c.pnId) || false
     const callkeepAction = this.getCallKeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
@@ -740,6 +743,10 @@ export class CallStore {
       c.callkeepUuid = this.getUuidFromPnId(c.pnId)
     }
   }
+  private getAutoAnswerFromPnId = (pnId: string) =>
+    Object.values(this.callkeepMap)
+      .map(c => c.incomingPnData)
+      .find(d => d?.id === pnId)?.sipPn?.autoAnswer
 
   // logic to end call if timeout of 20s
   private autoEndCallKeepTimerId = 0
