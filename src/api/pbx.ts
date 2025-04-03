@@ -192,14 +192,14 @@ export class PBX extends EventEmitter {
             pbx.lastAccessTime = end
             resolve(result)
           },
-          (error: any) => {
+          (err: any) => {
             const end = Date.now()
             this.logTimestamp(
               `PAL Call Error - Method: ${method}, Duration: ${end - start}ms, Error:`,
-              error,
+              err,
             )
-            this.checkTimeoutToReconnectPbx(error)
-            reject(error)
+            this.checkTimeoutToReconnectPbx(err)
+            reject(err)
           },
         )
       })
