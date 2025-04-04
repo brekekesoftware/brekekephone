@@ -54,32 +54,39 @@ export class PBX extends EventEmitter {
     callback: Function
   }[] = []
 
+  private getInactivityLimit = () => {
+    const config = getAuthStore().pbxConfig
+    const limit = config?.['webphone.pal.inactivityLimit']
+    if (!limit || limit < 30000) {
+      return 30000
+    }
+    return limit
+  }
   private startTrackingPALConnection = () => {
     if (!this.isMainInstance) {
       return
     }
     const pingFrequency = 20000
     this.stopTrackingPALConnection()
-    const getInactivityLimit = () => {
-      const config = getAuthStore().pbxConfig
-      const limit = config?.['webphone.pal.inactivityLimit']
-      if (!limit || limit < 30000) {
-        return 30000
-      }
-      return limit
-    }
+
     this.pingIntervalId = BackgroundTimer.setInterval(() => {
       if (getAuthStore().pbxLoginFromAnotherPlace) {
         this.stopTrackingPALConnection()
         return
       }
-      const now = Date.now()
-      const timeSinceLastActivity = now - this.lastAccessTime
-      this.inactivityLimit = getInactivityLimit()
-      if (timeSinceLastActivity > this.inactivityLimit) {
-        this.sendPing()
-      }
+      this.checkConnection()
     }, pingFrequency)
+  }
+  checkConnection = () => {
+    if (!this.client || !this.isMainInstance) {
+      return
+    }
+    const now = Date.now()
+    const timeSinceLastActivity = now - this.lastAccessTime
+    this.inactivityLimit = this.getInactivityLimit()
+    if (timeSinceLastActivity > this.inactivityLimit) {
+      this.sendPing()
+    }
   }
   private stopTrackingPALConnection = () => {
     if (!this.isMainInstance) {

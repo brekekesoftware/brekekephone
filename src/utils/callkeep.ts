@@ -8,6 +8,7 @@ import {
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 
+import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { bundleIdentifier } from '../config'
 import { getAuthStore, waitSip } from '../stores/authStore'
@@ -351,6 +352,8 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
   )
+  // TODO: should check additional conditions when user switches between activities
+  eventEmitter.addListener('onResume', (m: string) => pbx.checkConnection())
 }
 
 export const onBackPressed = () => {

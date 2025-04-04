@@ -64,7 +64,7 @@ export class CallStore {
   // to check and reconnect pbx
   bgAt = 0
   fgAt = 0
-
+  proximityOnAt = 0
   @action onCallKeepDidDisplayIncomingCall = async (
     uuid: string,
     n?: ParsedPn,

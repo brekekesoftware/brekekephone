@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
+  DeviceEventEmitter,
   Platform,
   StyleSheet,
   View,
@@ -16,6 +17,7 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
@@ -101,6 +103,19 @@ const initApp = async () => {
     return false
   })
 
+  // It just working with android via incallmanager lib
+  // TODO: should do it with ios
+  DeviceEventEmitter.addListener('Proximity', data => {
+    const isOn = data?.isNear
+    if (isOn) {
+      cs.proximityOnAt = Date.now()
+    } else {
+      if (cs.proximityOnAt && Date.now() - cs.proximityOnAt > 10000) {
+        pbx.checkConnection()
+      }
+    }
+  })
+
   AppState.addEventListener('change', async () => {
     // to check and reconnect pbx
     if (AppState.currentState === 'active') {
@@ -111,6 +126,11 @@ const initApp = async () => {
 
     if (AppState.currentState !== 'active') {
       return
+    }
+    // keep 10s gap to avoid spamming although check connection has min period of 30s
+    const shouldCheck = cs.bgAt && cs.fgAt - cs.bgAt > 10000
+    if (shouldCheck) {
+      pbx.checkConnection()
     }
 
     s.resetFailureState()
