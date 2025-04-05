@@ -140,11 +140,11 @@ export class PBX extends EventEmitter {
       }
       return listener(...args)
     }) as T
-  private logMainInstance = (message: string, ...optionalParams: any[]) => {
+  private logMainInstance = (message: string, ...args: any[]) => {
     if (!this.isMainInstance) {
       return
     }
-    console.log(message, ...optionalParams)
+    console.log(message, ...args)
   }
 
   // wait auth state to be success
@@ -283,30 +283,18 @@ export class PBX extends EventEmitter {
 
     // listeners to be added after login successfully
     const listeners = {
-      onClose: this.wrapListenersWithLog('onClose', this.onClose),
-      onError: this.wrapListenersWithLog('onError', this.onError),
-      notify_serverstatus: this.wrapListenersWithLog(
-        'notify_serverstatus',
-        this.onServerStatus,
-      ),
-      notify_park: this.wrapListenersWithLog('notify_park', this.onPark),
-      notify_callrecording: this.wrapListenersWithLog(
-        'notify_callrecording',
-        this.onCallRecording,
-      ),
-      notify_voicemail: this.wrapListenersWithLog(
-        'notify_voicemail',
-        this.onVoicemail,
-      ),
-      notify_status: this.wrapListenersWithLog(
-        'notify_status',
-        this.onUserStatus,
-      ),
-      notify_pal: this.wrapListenersWithLog(
-        'notify_pal',
-        this.onUserLoginOtherDevices,
-      ),
+      onClose: this.onClose,
+      onError: this.onError,
+      notify_serverstatus: this.onServerStatus,
+      notify_park: this.onPark,
+      notify_callrecording: this.onCallRecording,
+      notify_voicemail: this.onVoicemail,
+      notify_status: this.onUserStatus,
+      notify_pal: this.onUserLoginOtherDevices,
     }
+    Object.keys(listeners).forEach(k => {
+      listeners[k] = this.wrapListenersWithLog(k, listeners[k])
+    })
 
     // pending events received before login successfully
     const pendings = Object.keys(listeners).reduce(
