@@ -468,13 +468,12 @@ export class PBX extends EventEmitter {
       getAuthStore().pbxLoginFromAnotherPlace = true
       if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
         console.log(
-          'pbxLoginFromAnotherPlace debug:  No call is in progress, disconnect SIP and PBX.',
+          'pbxLoginFromAnotherPlace: no call is in progress, disconnect SIP and PBX',
         )
         const a = getAuthStore().getCurrentAccount()
         if (a) {
           console.log(
-            'pbxLoginFromAnotherPlace debug:  remove token for account ' +
-              a.pbxUsername,
+            `pbxLoginFromAnotherPlace: remove token for account ${a.pbxUsername}`,
           )
           await SyncPnToken().sync(a, { noUpsert: true })
         }
@@ -488,10 +487,10 @@ export class PBX extends EventEmitter {
   }
   disconnect = () => {
     if (this.client) {
-      this.logMainInstance('PAL Client Close Start')
+      this.logMainInstance('PAL client close begin')
       this.client.close()
       this.client = undefined
-      this.logMainInstance('PAL Client Close Completed')
+      this.logMainInstance('PAL client close end')
     }
     this.stopPingInterval()
     this.clearConnectTimeoutId()
