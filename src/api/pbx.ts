@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3'
-import { random } from 'lodash'
+import { debounce, random } from 'lodash'
 import { Platform } from 'react-native'
 import validator from 'validator'
 
@@ -44,8 +44,6 @@ export class PBX extends EventEmitter {
   private connectTimeoutId = 0
   private pingIntervalId: number | undefined = undefined
   private lastAccessTime = 0
-  private inactivityLimit = 30000 // default 30s
-  // wait auth state to success
   isMainInstance = true
 
   pendingRequests: {
@@ -68,7 +66,6 @@ export class PBX extends EventEmitter {
     }
     const pingFrequency = 20000
     this.stopTrackingPALConnection()
-
     this.pingIntervalId = BackgroundTimer.setInterval(() => {
       if (getAuthStore().pbxLoginFromAnotherPlace) {
         this.stopTrackingPALConnection()
@@ -76,17 +73,6 @@ export class PBX extends EventEmitter {
       }
       this.checkConnection()
     }, pingFrequency)
-  }
-  checkConnection = () => {
-    if (!this.client || !this.isMainInstance) {
-      return
-    }
-    const now = Date.now()
-    const timeSinceLastActivity = now - this.lastAccessTime
-    this.inactivityLimit = this.getInactivityLimit()
-    if (timeSinceLastActivity > this.inactivityLimit) {
-      this.sendPing()
-    }
   }
   private stopTrackingPALConnection = () => {
     if (!this.isMainInstance) {
@@ -99,6 +85,25 @@ export class PBX extends EventEmitter {
     }
   }
 
+  checkConnection = debounce(
+    () => {
+      if (!this.client || !this.isMainInstance) {
+        return
+      }
+      const now = Date.now()
+      const timeSinceLastActivity = now - this.lastAccessTime
+      if (timeSinceLastActivity > this.getInactivityLimit()) {
+        this.sendPing()
+      }
+    },
+    10000,
+    {
+      maxWait: 10000,
+      leading: true,
+      trailing: true,
+    },
+  )
+
   private checkTimeoutToReconnectPbx = async (err: Error | boolean) => {
     if (err === true) {
       return
@@ -106,12 +111,12 @@ export class PBX extends EventEmitter {
     if (
       err &&
       typeof err === 'object' &&
+      // check for timeout error and handles PBX reconnection
       (('code' in err && (err as any).code === -1) ||
         ('message' in err && /timeout/i.test(err.message)))
     ) {
       authPBX.dispose()
-      // Checks for timeout errors and handles PBX reconnection
-      // Waits for 1 second to ensure PBX state is stopped, preventing multiple authWithCheck calls from reactions
+      // wait for 1 second to ensure PBX state is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
       authPBX.auth()
     } else {

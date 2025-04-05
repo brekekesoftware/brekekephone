@@ -103,16 +103,10 @@ const initApp = async () => {
     return false
   })
 
-  // It just working with android via incallmanager lib
-  // TODO: should do it with ios
+  // android only, via incallmanager lib
   DeviceEventEmitter.addListener('Proximity', data => {
-    const isOn = data?.isNear
-    if (isOn) {
-      cs.proximityOnAt = Date.now()
-    } else {
-      if (cs.proximityOnAt && Date.now() - cs.proximityOnAt > 10000) {
-        pbx.checkConnection()
-      }
+    if (!data?.isNear) {
+      pbx.checkConnection()
     }
   })
 
@@ -127,14 +121,10 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
-    // keep 10s gap to avoid spamming although check connection has min period of 30s
-    const shouldCheck = cs.bgAt && cs.fgAt - cs.bgAt > 10000
-    if (shouldCheck) {
-      pbx.checkConnection()
-    }
 
     s.resetFailureState()
     cs.onCallKeepAction()
+    pbx.checkConnection()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
       return
