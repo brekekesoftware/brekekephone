@@ -106,7 +106,7 @@ const initApp = async () => {
   // android only, via incallmanager lib
   DeviceEventEmitter.addListener('Proximity', data => {
     if (!data?.isNear) {
-      pbx.checkConnection()
+      pbx.ping()
     }
   })
 
@@ -124,7 +124,7 @@ const initApp = async () => {
 
     s.resetFailureState()
     cs.onCallKeepAction()
-    pbx.checkConnection()
+    pbx.ping()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
       return

@@ -67,20 +67,20 @@ export class PBX extends EventEmitter {
     }
     return t
   }
-  private startTrackingPALConnection = () => {
+  private startPingInterval = () => {
     if (!this.isMainInstance) {
       return
     }
-    this.stopTrackingPALConnection()
+    this.stopPingInterval()
     this.pingIntervalId = BackgroundTimer.setInterval(() => {
       if (getAuthStore().pbxLoginFromAnotherPlace) {
-        this.stopTrackingPALConnection()
+        this.stopPingInterval()
         return
       }
-      this.checkConnection()
+      this.ping()
     }, this.getPingInterval())
   }
-  private stopTrackingPALConnection = () => {
+  private stopPingInterval = () => {
     if (!this.isMainInstance) {
       return
     }
@@ -90,8 +90,7 @@ export class PBX extends EventEmitter {
       this.pingLastSuccessAt = 0
     }
   }
-
-  checkConnection = debounce(
+  ping = debounce(
     () => {
       if (!this.client || !this.isMainInstance) {
         return
@@ -99,7 +98,7 @@ export class PBX extends EventEmitter {
       const now = Date.now()
       const timeSinceLastActivity = now - this.pingLastSuccessAt
       if (timeSinceLastActivity > this.getPingTimeout()) {
-        this.sendPing()
+        this.client.call_pal('ping')
       }
     },
     10000,
@@ -128,13 +127,6 @@ export class PBX extends EventEmitter {
     } else {
       this.pingLastSuccessAt = Date.now()
     }
-  }
-
-  private sendPing = () => {
-    if (!this.client) {
-      return
-    }
-    this.client.call_pal('ping')
   }
 
   private wrapListenersWithLog = <T extends (...args: any[]) => void>(
@@ -397,7 +389,7 @@ export class PBX extends EventEmitter {
       setListenerWithEmbed(k, listeners[k])
     })
 
-    this.startTrackingPALConnection()
+    this.startPingInterval()
 
     return connected
   }
@@ -514,7 +506,7 @@ export class PBX extends EventEmitter {
       this.client = undefined
       this.logMainInstance('PAL Client Close Completed')
     }
-    this.stopTrackingPALConnection()
+    this.stopPingInterval()
     this.clearConnectTimeoutId()
   }
   private clearConnectTimeoutId = () => {

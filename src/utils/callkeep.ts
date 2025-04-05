@@ -353,7 +353,7 @@ export const setupCallKeepEvents = async () => {
     console.log(`Android debug: ${m}`),
   )
   // TODO: should check additional conditions when user switches between activities
-  eventEmitter.addListener('onResume', (m: string) => pbx.checkConnection())
+  eventEmitter.addListener('onResume', (m: string) => pbx.ping())
 }
 
 export const onBackPressed = () => {
