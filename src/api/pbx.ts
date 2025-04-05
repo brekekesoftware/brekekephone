@@ -43,18 +43,14 @@ export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
 
-  // wait auth state to be success
-  private connectTimeoutId = 0
-
-  private pingIntervalId: number | undefined = undefined
-  private lastAccessTime = 0
-
   pendingRequests: {
     funcName: keyof PBX
     params: string[]
     callback: Function
   }[] = []
 
+  private pingIntervalId: number | undefined = undefined
+  private pingLastSuccessAt = 0
   private getPingInterval = () => {
     const config = getAuthStore().pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_interval']))
@@ -91,7 +87,7 @@ export class PBX extends EventEmitter {
     if (this.pingIntervalId) {
       clearInterval(this.pingIntervalId)
       this.pingIntervalId = undefined
-      this.lastAccessTime = 0
+      this.pingLastSuccessAt = 0
     }
   }
 
@@ -101,7 +97,7 @@ export class PBX extends EventEmitter {
         return
       }
       const now = Date.now()
-      const timeSinceLastActivity = now - this.lastAccessTime
+      const timeSinceLastActivity = now - this.pingLastSuccessAt
       if (timeSinceLastActivity > this.getPingTimeout()) {
         this.sendPing()
       }
@@ -130,7 +126,7 @@ export class PBX extends EventEmitter {
       await waitTimeout(1000)
       authPBX.auth()
     } else {
-      this.lastAccessTime = Date.now()
+      this.pingLastSuccessAt = Date.now()
     }
   }
 
@@ -146,18 +142,22 @@ export class PBX extends EventEmitter {
     listener: T,
   ): T =>
     ((...args: any[]) => {
+      this.logMainInstance(`PAL Event triggered: ${name}, args:`, ...args)
       if (this.isMainInstance) {
-        console.log(`[${Date.now()}] PAL Event triggered: ${name}`, ...args)
-        this.lastAccessTime = Date.now()
+        this.pingLastSuccessAt = Date.now()
       }
       return listener(...args)
     }) as T
 
-  private logTimestamp = (message: string, ...optionalParams: any[]) => {
-    if (this.isMainInstance) {
-      console.log(`[${Date.now()}] ${message}`, ...optionalParams)
+  private logMainInstance = (message: string, ...optionalParams: any[]) => {
+    if (!this.isMainInstance) {
+      return
     }
+    console.log(message, ...optionalParams)
   }
+
+  // wait auth state to be success
+  private connectTimeoutId = 0
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
@@ -197,7 +197,10 @@ export class PBX extends EventEmitter {
     client.call_pal = (method: keyof Pbx, params?: object) =>
       new Promise((resolve, reject) => {
         const start = Date.now()
-        this.logTimestamp(`PAL Call Start - Method: ${method}, Params:`, params)
+        this.logMainInstance(
+          `PAL call start, method: ${method}, params:`,
+          params,
+        )
         const f = client[method] as Function
         if (typeof f !== 'function') {
           return reject(new Error(`PAL client doesn't support "${method}"`))
@@ -205,22 +208,26 @@ export class PBX extends EventEmitter {
         f.call(
           client,
           params,
-          (result: any) => {
-            const end = Date.now()
-            this.logTimestamp(
-              `PAL Call Success - Method: ${method}, Duration: ${end - start}ms, Result:`,
-              result,
-            )
-            pbx.lastAccessTime = end
-            resolve(result)
+          (r: any) => {
+            if (this.isMainInstance) {
+              const end = Date.now()
+              console.log(
+                `PAL call success - method: ${method}, duration: ${end - start}ms, result:`,
+                r,
+              )
+              pbx.pingLastSuccessAt = end
+            }
+            resolve(r)
           },
           (err: any) => {
-            const end = Date.now()
-            this.logTimestamp(
-              `PAL Call Error - Method: ${method}, Duration: ${end - start}ms, Error:`,
-              err,
-            )
-            this.checkTimeoutToReconnectPbx(err)
+            if (this.isMainInstance) {
+              const end = Date.now()
+              console.log(
+                `PAL call error - method: ${method}, duration: ${end - start}ms, error:`,
+                err,
+              )
+              this.checkTimeoutToReconnectPbx(err)
+            }
             reject(err)
           },
         )
@@ -270,14 +277,14 @@ export class PBX extends EventEmitter {
       })
     }
     const login = new Promise<boolean>((resolve, reject) => {
-      this.logTimestamp('PAL Login Start')
+      this.logMainInstance('PAL Login Start')
       client.login(
         () => {
-          this.logTimestamp('PAL Login Success')
+          this.logMainInstance('PAL Login Success')
           resolve(true)
         },
         (err: any) => {
-          this.logTimestamp('PAL Login Error:', err)
+          this.logMainInstance('PAL Login Error:', err)
           reject(err)
         },
       )
@@ -502,10 +509,10 @@ export class PBX extends EventEmitter {
   }
   disconnect = () => {
     if (this.client) {
-      this.logTimestamp('PAL Client Close Start')
+      this.logMainInstance('PAL Client Close Start')
       this.client.close()
       this.client = undefined
-      this.logTimestamp('PAL Client Close Completed')
+      this.logMainInstance('PAL Client Close Completed')
     }
     this.stopTrackingPALConnection()
     this.clearConnectTimeoutId()
