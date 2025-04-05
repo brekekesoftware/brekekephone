@@ -41,10 +41,13 @@ import { SyncPnToken } from './syncPnToken'
 
 export class PBX extends EventEmitter {
   client?: Pbx
+  isMainInstance = true
+
+  // wait auth state to be success
   private connectTimeoutId = 0
+
   private pingIntervalId: number | undefined = undefined
   private lastAccessTime = 0
-  isMainInstance = true
 
   pendingRequests: {
     funcName: keyof PBX
@@ -52,19 +55,26 @@ export class PBX extends EventEmitter {
     callback: Function
   }[] = []
 
-  private getInactivityLimit = () => {
+  private getPingInterval = () => {
     const config = getAuthStore().pbxConfig
-    const limit = config?.['webphone.pal.inactivityLimit']
-    if (!limit || limit < 30000) {
+    const t = Math.round(Number(config?.['webphone.pal.ping_interval']))
+    if (!t || t <= 5000) {
+      return 20000
+    }
+    return t
+  }
+  private getPingTimeout = () => {
+    const config = getAuthStore().pbxConfig
+    const t = Math.round(Number(config?.['webphone.pal.ping_timeout']))
+    if (!t || t <= 5000) {
       return 30000
     }
-    return limit
+    return t
   }
   private startTrackingPALConnection = () => {
     if (!this.isMainInstance) {
       return
     }
-    const pingFrequency = 20000
     this.stopTrackingPALConnection()
     this.pingIntervalId = BackgroundTimer.setInterval(() => {
       if (getAuthStore().pbxLoginFromAnotherPlace) {
@@ -72,7 +82,7 @@ export class PBX extends EventEmitter {
         return
       }
       this.checkConnection()
-    }, pingFrequency)
+    }, this.getPingInterval())
   }
   private stopTrackingPALConnection = () => {
     if (!this.isMainInstance) {
@@ -92,7 +102,7 @@ export class PBX extends EventEmitter {
       }
       const now = Date.now()
       const timeSinceLastActivity = now - this.lastAccessTime
-      if (timeSinceLastActivity > this.getInactivityLimit()) {
+      if (timeSinceLastActivity > this.getPingTimeout()) {
         this.sendPing()
       }
     },
