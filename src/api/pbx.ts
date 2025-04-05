@@ -487,10 +487,10 @@ export class PBX extends EventEmitter {
   }
   disconnect = () => {
     if (this.client) {
-      this.logMainInstance('PAL client close begin')
+      this.logMainInstance('PAL client close')
       this.client.close()
       this.client = undefined
-      this.logMainInstance('PAL client close end')
+      console.log('PBX PN debug: pbx.client set to null in pbx.disconnect')
     }
     this.stopPingInterval()
     this.clearConnectTimeoutId()
