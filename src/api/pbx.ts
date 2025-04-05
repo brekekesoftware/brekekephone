@@ -116,12 +116,12 @@ export class PBX extends EventEmitter {
     if (
       err &&
       typeof err === 'object' &&
-      // check for timeout error and handles PBX reconnection
+      // check for timeout error and reconnect PBX
       (('code' in err && (err as any).code === -1) ||
         ('message' in err && /timeout/i.test(err.message)))
     ) {
       authPBX.dispose()
-      // wait for 1 second to ensure PBX state is fully stopped and Mobx reactions cleared
+      // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
       authPBX.auth()
     } else {
@@ -134,13 +134,12 @@ export class PBX extends EventEmitter {
     listener: T,
   ): T =>
     ((...args: any[]) => {
-      this.logMainInstance(`PAL Event triggered: ${name}, args:`, ...args)
       if (this.isMainInstance) {
+        console.log(`PAL event triggered: ${name}, args:`, ...args)
         this.pingLastSuccessAt = Date.now()
       }
       return listener(...args)
     }) as T
-
   private logMainInstance = (message: string, ...optionalParams: any[]) => {
     if (!this.isMainInstance) {
       return
@@ -258,7 +257,7 @@ export class PBX extends EventEmitter {
       return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
           resolve(false)
-          console.warn('Pbx login connection timed out')
+          console.warn('PAL login connection timed out')
           // fix case already reconnected
           if (client === this.client) {
             this.disconnect()
@@ -269,14 +268,14 @@ export class PBX extends EventEmitter {
       })
     }
     const login = new Promise<boolean>((resolve, reject) => {
-      this.logMainInstance('PAL Login Start')
+      this.logMainInstance('PAL login start')
       client.login(
         () => {
-          this.logMainInstance('PAL Login Success')
+          this.logMainInstance('PAL login success')
           resolve(true)
         },
         (err: any) => {
-          this.logMainInstance('PAL Login Error:', err)
+          this.logMainInstance('PAL login error:', err)
           reject(err)
         },
       )
