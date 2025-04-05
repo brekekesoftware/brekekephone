@@ -50,7 +50,7 @@ export class PBX extends EventEmitter {
   }[] = []
 
   private pingIntervalId: number | undefined = undefined
-  private pingLastSuccessAt = 0
+  private pingActivityAt = 0
   private getPingInterval = () => {
     const config = getAuthStore().pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_interval']))
@@ -87,7 +87,7 @@ export class PBX extends EventEmitter {
     if (this.pingIntervalId) {
       clearInterval(this.pingIntervalId)
       this.pingIntervalId = undefined
-      this.pingLastSuccessAt = 0
+      this.pingActivityAt = 0
     }
   }
   ping = debounce(
@@ -95,9 +95,8 @@ export class PBX extends EventEmitter {
       if (!this.client || !this.isMainInstance) {
         return
       }
-      const now = Date.now()
-      const timeSinceLastActivity = now - this.pingLastSuccessAt
-      if (timeSinceLastActivity > this.getPingTimeout()) {
+      const d = Date.now() - this.pingActivityAt
+      if (d > this.getPingTimeout()) {
         this.client.call_pal('ping')
       }
     },
@@ -125,7 +124,7 @@ export class PBX extends EventEmitter {
       await waitTimeout(1000)
       authPBX.auth()
     } else {
-      this.pingLastSuccessAt = Date.now()
+      this.pingActivityAt = Date.now()
     }
   }
 
@@ -136,7 +135,7 @@ export class PBX extends EventEmitter {
     ((...args: any[]) => {
       if (this.isMainInstance) {
         console.log(`PAL event triggered: ${name}, args:`, ...args)
-        this.pingLastSuccessAt = Date.now()
+        this.pingActivityAt = Date.now()
       }
       return listener(...args)
     }) as T
@@ -206,7 +205,7 @@ export class PBX extends EventEmitter {
                 `PAL call success - method: ${method}, duration: ${end - start}ms, result:`,
                 r,
               )
-              pbx.pingLastSuccessAt = end
+              pbx.pingActivityAt = end
             }
             resolve(r)
           },

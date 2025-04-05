@@ -1,3 +1,9 @@
+#### 2.15.9
+
+- Implement pal ping interval and reconnect mechanic based on the last activity timestamp
+  - webphone.pal.ping_interval, default 20s
+  - webphone.pal.ping_timeout, default 30s
+
 #### 2.15.8
 
 - Fix android 13 14 it should have microphone work in background with multiple calls, by patching callkeep library (issue 1017)
