@@ -42,7 +42,9 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
+  isAudioActive = false
   isAutoAnswer = false
+  partyAnswered = false
   phoneappliUsername = ''
   phoneappliAvatar = ''
   getDisplayName = () =>
@@ -77,7 +79,13 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
+    sip.phone?.answer(
+      this.id,
+      options,
+      this.remoteVideoEnabled,
+      videoOptions,
+      'answered',
+    )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -104,12 +112,7 @@ export class Call {
       RNCallKeep.reportConnectedOutgoingCallWithUUID(this.callkeepUuid)
     }
     RNCallKeep.setCurrentCallActive(this.callkeepUuid)
-    // In case the user has not answered the call on callkeep display incoming call
-    // audio session should not be assigned to WebRTC (in didToggleHoldCallAction) 
-    // before the didActivateAudioSession event is called
-    if (Platform.OS !== 'ios' || !this.isAutoAnswer) {
-      RNCallKeep.setOnHold(this.callkeepUuid, false)
-    }
+    RNCallKeep.setOnHold(this.callkeepUuid, false)
     BrekekeUtils.setOnHold(this.callkeepUuid, false)
   }
 
@@ -254,6 +257,9 @@ export class Call {
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
   }
+
+  setHoldWithoutCallKeep = (hold: boolean) =>
+    pbx[`${hold ? 'hold' : 'unhold'}Talker`](this.pbxTenant, this.pbxTalkerId)
 
   private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
     if (err === true) {

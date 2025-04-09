@@ -348,6 +348,20 @@ export class CallStore {
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       }
+      // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
+      if (p.remoteUserOptionsTable?.[e.partyNumber]?.exInfo === 'answered') {
+        e.partyAnswered = true
+      }
+      if (
+        Platform.OS === 'ios' &&
+        e.isAutoAnswer &&
+        !e.isAudioActive &&
+        e.partyAnswered &&
+        AppState.currentState !== 'active'
+      ) {
+        e.setHoldWithoutCallKeep(true)
+      }
+
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
@@ -470,8 +484,15 @@ export class CallStore {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
-    c.isAutoAnswer =
-      c.isAutoAnswer || this.getAutoAnswerFromPnId(c.pnId) || false
+
+    if (
+      c.callkeepUuid &&
+      !this.calls.some(i => i.callkeepUuid !== c.callkeepUuid)
+    ) {
+      c.isAutoAnswer =
+        c.isAutoAnswer || this.getAutoAnswerFromPnId(c.pnId) || false
+    }
+
     const callkeepAction = this.getCallKeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
