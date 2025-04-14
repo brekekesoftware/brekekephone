@@ -258,8 +258,20 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
-  setHoldWithoutCallKeep = (hold: boolean) =>
-    pbx[`${hold ? 'hold' : 'unhold'}Talker`](this.pbxTenant, this.pbxTalkerId)
+  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+    const act = hold ? 'hold' : 'unhold'
+    try {
+      const result = await pbx[`${act}Talker`](this.pbxTenant, this.pbxTalkerId)
+      if (result === true) {
+        this.holding = hold
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error(`setHoldWithoutCallKeep Failed to ${action} call:`, err)
+      return false
+    }
+  }
 
   private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
     if (err === true) {
