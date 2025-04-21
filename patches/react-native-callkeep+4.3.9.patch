@@ -395,7 +395,7 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index f53c052..68631a1 100644
+index f53c052..4352ab0 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 @@ -51,6 +51,8 @@ import android.util.Log;
@@ -550,7 +550,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index e67c3cd..6780f95 100644
+index e67c3cd..e642c10 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
@@ -569,7 +569,7 @@ index e67c3cd..6780f95 100644
          [RNCallKeep initCallKitProvider];
  
          self.callKeepProvider = sharedProvider;
-@@ -160,20 +158,17 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+@@ -160,67 +158,31 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
              body, @"data",
              nil
          ];
@@ -595,10 +595,10 @@ index e67c3cd..6780f95 100644
      }
  }
  
-@@ -181,48 +176,6 @@ + (NSString *) getAudioOutput {
-     return [AVAudioSession sharedInstance].currentRoute.outputs.count > 0 ? [AVAudioSession sharedInstance].currentRoute.outputs[0].portType : nil;
- }
- 
+ + (NSString *) getAudioOutput {
+-    return [AVAudioSession sharedInstance].currentRoute.outputs.count > 0 ? [AVAudioSession sharedInstance].currentRoute.outputs[0].portType : nil;
+-}
+-
 -+ (void)setup:(NSDictionary *)options {
 -    RNCallKeep *callKeep = [RNCallKeep allocWithZone: nil];
 -    [callKeep setup:options];
@@ -613,7 +613,15 @@ index e67c3cd..6780f95 100644
 -        RCTLog(@"[RNCallKeep][setup] already setup in native code");
 -#endif
 -        return;
--    }
++    // fix issue: index 0 beyond bounds for empty array
++    @try{
++        NSArray<AVAudioSessionPortDescription *>* outputs = [AVAudioSession sharedInstance].currentRoute.outputs;
++        if(outputs != nil && outputs.count > 0){
++            return outputs[0].portType;
++        }
++    } @catch(NSException* error) {
++        NSLog(@"getAudioOutput error :%@", [error description]);
+     }
 -
 -#ifdef DEBUG
 -    NSLog(@"[RNCallKeep][setup] options = %@", options);
@@ -639,12 +647,11 @@ index e67c3cd..6780f95 100644
 -    // Store settings in NSUserDefault
 -    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:@"RNCallKeepSettings"];
 -    [[NSUserDefaults standardUserDefaults] synchronize];
--}
--
++    return nil;
+ }
+ 
  RCT_EXPORT_METHOD(setReachable)
- {
- #ifdef DEBUG
-@@ -277,21 +230,6 @@ + (void)setup:(NSDictionary *)options {
+@@ -277,21 +239,6 @@ + (void)setup:(NSDictionary *)options {
                            fromPushKit: NO
                                payload: nil
                  withCompletionHandler: nil];
@@ -666,7 +673,7 @@ index e67c3cd..6780f95 100644
  }
  
  RCT_EXPORT_METHOD(getInitialEvents:(RCTPromiseResolveBlock)resolve
-@@ -319,7 +257,13 @@ + (void)setup:(NSDictionary *)options {
+@@ -319,7 +266,13 @@ + (void)setup:(NSDictionary *)options {
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
@@ -680,7 +687,40 @@ index e67c3cd..6780f95 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -856,37 +800,20 @@ + (int)getHandleType:(NSString *)handleType
+@@ -631,17 +584,22 @@ + (NSString *) getAudioInputType: (NSString *) type
+ 
+ + (NSString *) getSelectedAudioRoute
+ {
+-    AVAudioSession* myAudioSession = [AVAudioSession sharedInstance];
+-    AVAudioSessionRouteDescription *currentRoute = [myAudioSession currentRoute];
+-    NSArray *selectedOutputs = currentRoute.outputs;
+-    
+-    AVAudioSessionPortDescription *selectedOutput = selectedOutputs[0];
+-    
+-    if(selectedOutput && [selectedOutput.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
+-        return @"Phone";
++    @try{
++        AVAudioSession* myAudioSession = [AVAudioSession sharedInstance];
++        AVAudioSessionRouteDescription *currentRoute = [myAudioSession currentRoute];
++        NSArray *selectedOutputs = currentRoute.outputs;
++        // fix issue: index 0 beyond bounds for empty array
++        if (selectedOutputs != nil && selectedOutputs.count > 0) {
++            AVAudioSessionPortDescription *selectedOutput = selectedOutputs[0];
++            if (selectedOutput && [selectedOutput.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
++                return @"Phone";
++            }
++            return [RNCallKeep getAudioInputType:selectedOutput.portType];
++        }
++    } @catch(NSException* error) {
++        NSLog(@"getSelectedAudioRoute error :%@", [error description]);
+     }
+-    
+-    return [RNCallKeep getAudioInputType: selectedOutput.portType];
++    return nil;
+ }
+ 
+ - (void)requestTransaction:(CXTransaction *)transaction
+@@ -856,37 +814,20 @@ + (int)getHandleType:(NSString *)handleType
      }
  }
  
@@ -728,7 +768,7 @@ index e67c3cd..6780f95 100644
      return providerConfiguration;
  }
  
-@@ -935,7 +862,7 @@ + (BOOL)application:(UIApplication *)application
+@@ -935,7 +876,7 @@ + (BOOL)application:(UIApplication *)application
  
  + (BOOL)application:(UIApplication *)application
  continueUserActivity:(NSUserActivity *)userActivity
