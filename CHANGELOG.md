@@ -1,3 +1,7 @@
+#### 2.15.10
+
+- Fix ios it should not crash when press hold
+
 #### 2.15.9
 
 - Implement pal ping interval and reconnect mechanic based on the last activity timestamp

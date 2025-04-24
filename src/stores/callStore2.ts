@@ -69,6 +69,7 @@ export class CallStore {
     uuid: string,
     n?: ParsedPn,
   ) => {
+    pbx.ping()
     this.setAutoEndCallKeepTimer(uuid, n)
     if (!uuid || !n) {
       return
