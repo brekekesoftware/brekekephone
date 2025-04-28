@@ -395,10 +395,18 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index f53c052..68631a1 100644
+index f53c052..8e54162 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-@@ -51,6 +51,8 @@ import android.util.Log;
+@@ -25,6 +25,7 @@ import android.app.NotificationChannel;
+ import android.app.NotificationManager;
+ import android.app.PendingIntent;
+ import android.app.Activity;
++import android.content.pm.PackageManager;
+ import android.content.res.Resources;
+ import android.content.Intent;
+ import android.content.Context;
+@@ -51,6 +52,8 @@ import android.util.Log;
  import com.facebook.react.HeadlessJsTaskService;
  import com.facebook.react.bridge.ReadableMap;
  import com.facebook.react.bridge.WritableMap;
@@ -407,7 +415,7 @@ index f53c052..68631a1 100644
  
  import java.util.ArrayList;
  import java.util.HashMap;
-@@ -122,6 +124,22 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -122,6 +125,22 @@ public class VoiceConnectionService extends ConnectionService {
  
      public static WritableMap getSettings(@Nullable Context context) {
         WritableMap settings = RNCallKeepModule.getSettings(context);
@@ -430,7 +438,7 @@ index f53c052..68631a1 100644
         return settings;
      }
  
-@@ -313,17 +331,15 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -313,15 +332,16 @@ public class VoiceConnectionService extends ConnectionService {
              .setPriority(NotificationManager.IMPORTANCE_MIN)
              .setCategory(Notification.CATEGORY_SERVICE);
  
@@ -443,21 +451,20 @@ index f53c052..68631a1 100644
 -
 -            PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
 -
--            notificationBuilder.setContentIntent(pendingIntent);
--        }
-+        // TODO check new logic after upgrade version
-+        // Activity currentActivity = RNCallKeepModule.instance.getCurrentReactActivity();
-+        // if (currentActivity != null) {
-+        //     Intent notificationIntent = new Intent(this, currentActivity.getClass());
-+        //     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-+        //     final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
-+        //     PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, flag);
-+        //     notificationBuilder.setContentIntent(pendingIntent);
-+        // }
++        // Get launch activity from package manager
++        PackageManager pm = getPackageManager();
++        Intent launchIntent = pm.getLaunchIntentForPackage(getPackageName());
++        if (launchIntent != null) {
++            launchIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
++            final int flag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
++             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE :
++             PendingIntent.FLAG_UPDATE_CURRENT;
++            PendingIntent pendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID,
++             launchIntent, flag);
+             notificationBuilder.setContentIntent(pendingIntent);
+         }
  
-         if (foregroundSettings.hasKey("notificationIcon")) {
-             Context context = this.getApplicationContext();
-@@ -352,6 +368,13 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -352,6 +372,13 @@ public class VoiceConnectionService extends ConnectionService {
              return;
          }
  

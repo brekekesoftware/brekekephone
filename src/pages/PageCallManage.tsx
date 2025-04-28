@@ -255,6 +255,9 @@ class PageCallManage extends Component<{
   call: Call
 }> {
   componentDidMount = () => {
+    // Handle the case when app is killed and opened during a call
+    this.onAppStateChange(AppState.currentState)
+
     this.checkJavaPn()
     this.componentDidUpdate()
     this.appStateSubscription = AppState.addEventListener(
@@ -333,6 +336,7 @@ class PageCallManage extends Component<{
   private openJavaPnOnVisible = () => {
     const { call: c } = this.props
     const s = getCallStore()
+
     if (
       this.hasJavaPn &&
       this.isVisible() &&
@@ -346,8 +350,8 @@ class PageCallManage extends Component<{
   }
 
   private appStateSubscription?: NativeEventSubscription
-  private onAppStateChange = () => {
-    if (AppState.currentState === 'active') {
+  private onAppStateChange = (nextAppState: string) => {
+    if (nextAppState === 'active') {
       const { call: c } = this.props
       if (
         this.hasJavaPn &&
