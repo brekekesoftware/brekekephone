@@ -255,8 +255,8 @@ class PageCallManage extends Component<{
   call: Call
 }> {
   componentDidMount = () => {
-    // Handle the case when app is killed and opened during a call
-    this.onAppStateChange(AppState.currentState)
+    // Handle the case when app is killed and opened during a call with incoming call
+    this.props.call.incoming && this.onAppStateChange(AppState.currentState)
 
     this.checkJavaPn()
     this.componentDidUpdate()
