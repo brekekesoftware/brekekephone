@@ -4,10 +4,13 @@ import { Platform } from 'react-native'
 import validator from 'validator'
 
 import type {
+  PalMethodParams,
   Pbx,
   PbxCustomPage,
   PbxEvent,
+  PbxPal,
   PbxResourceLine,
+  PendingRequest,
 } from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
@@ -43,12 +46,82 @@ export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
 
-  pendingRequests: {
-    funcName: keyof PBX
-    params: string[]
-    callback: Function
-  }[] = []
+  // === handle cache and retry requests
+  private pendingRequests: PendingRequest<keyof PbxPal>[] = []
 
+  private MAX_RETRY = 3
+  private RETRY_DELAY = 500
+
+  isPalTimeoutError = (err: unknown): boolean => {
+    if (!err || typeof err !== 'object') {
+      return false
+    }
+    return (
+      ('code' in err && (err as any).code === -1) ||
+      ('message' in err && /timeout/i.test((err as Error).message))
+    )
+  }
+  private async palRequestWithRetry<K extends keyof PbxPal>(
+    method: K,
+    ...params: PalMethodParams<K>
+  ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]> {
+    return new Promise((resolve, reject) => {
+      if (!this.client) {
+        this.pendingRequests.push({
+          method,
+          params,
+          resolve,
+          reject,
+          retryCount: 0,
+        })
+        return
+      }
+
+      this.client
+        .call_pal(method, ...params)
+        .then(resolve)
+        .catch((err: any) => {
+          if (this.isPalTimeoutError(err)) {
+            this.pendingRequests.push({
+              method,
+              params,
+              resolve,
+              reject,
+              retryCount: 0,
+            })
+          } else {
+            reject(err)
+          }
+        })
+    })
+  }
+  retryRequests() {
+    while (this.pendingRequests.length > 0) {
+      const request = this.pendingRequests.shift()
+      if (!request) {
+        continue
+      }
+      if (request.retryCount >= this.MAX_RETRY) {
+        request.reject(new Error('Maximum number of retries reached'))
+        continue
+      }
+      const params = request?.params as PalMethodParams<typeof request.method>
+      this.client
+        ?.call_pal(request.method, ...params)
+        .then(request.resolve)
+        .catch((err: any) => {
+          if (this.isPalTimeoutError(err)) {
+            request.retryCount++
+            setTimeout(() => {
+              this.pendingRequests.push(request)
+            }, this.RETRY_DELAY)
+          } else {
+            request.reject(err)
+          }
+        })
+    }
+  }
+  // === end handle cache and retry requests
   private pingIntervalId: number | undefined = undefined
   private pingActivityAt = 0
   private getPingInterval = () => {
@@ -112,13 +185,7 @@ export class PBX extends EventEmitter {
     if (err === true) {
       return
     }
-    if (
-      err &&
-      typeof err === 'object' &&
-      // check for timeout error and reconnect PBX
-      (('code' in err && (err as any).code === -1) ||
-        ('message' in err && /timeout/i.test(err.message)))
-    ) {
+    if (this.isPalTimeoutError(err)) {
       authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
@@ -695,7 +762,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    const res = await this.client.call_pal('getPhoneAppliContact', {
+    const res = await this.palRequestWithRetry('getPhoneAppliContact', {
       tenant,
       user,
       tel,
@@ -769,7 +836,7 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client.call_pal('hold', {
+    await this.palRequestWithRetry('hold', {
       tenant,
       tid: talker,
     })
@@ -783,7 +850,11 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return false
     }
-    await this.client.call_pal('unhold', {
+    // await this.client.call_pal('unhold', {
+    //   tenant,
+    //   tid: talker,
+    // })
+    await this.palRequestWithRetry('hold', {
       tenant,
       tid: talker,
     })

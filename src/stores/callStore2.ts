@@ -387,14 +387,6 @@ export class CallStore {
         .then(res => {
           this.updatePhoneAppliAvatar(c, res)
         })
-        .catch(err => {
-          console.error('PBX debug: getPhoneappliContact error:', err)
-          pbx.pendingRequests.push({
-            funcName: 'getPhoneappliContact',
-            params: [pbxTenant, pbxUsername, c.partyNumber],
-            callback: res => this.updatePhoneAppliAvatar(c, res),
-          })
-        })
     }
 
     this.calls = [c, ...this.calls]
