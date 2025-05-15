@@ -333,6 +333,17 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  public void updateBtnRqStatus(String name, boolean isLoading) {
+    switch (name) {
+      case "record":
+        vBtnRecord.setActivated(isLoading);
+        break;
+      case "hold":
+        vBtnHold.setActivated(isLoading);
+        break;
+    }
+  }
+
   public void updateCallConfig() {
     updateBtnDisabled("hangup", btnReject);
     updateBtnDisabled("hangup", btnEndCall);
@@ -842,7 +853,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnRecordClick(View v) {
-    BrekekeUtils.emit("record", uuid);
+    if (!v.isActivated()) {
+      BrekekeUtils.emit("record", uuid);
+    }
   }
 
   public void onBtnDtmfClick(View v) {
@@ -851,7 +864,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnHoldClick(View v) {
-    BrekekeUtils.emit("hold", uuid);
+    if (!v.isActivated()) {
+      BrekekeUtils.emit("hold", uuid);
+    }
   }
 
   public void onRequestUnlock(View v) {
@@ -1030,6 +1045,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setBtnHoldSelected(boolean holding) {
+    if (btnHold.isActivated()) {
+      return;
+    }
     btnHold.setSelected(holding);
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);

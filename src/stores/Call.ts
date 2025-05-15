@@ -40,6 +40,11 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
+  @observable rqLoadings: { [k: string]: boolean } = {
+    hold: false,
+    record: false,
+  }
+
   phoneappliUsername = ''
   phoneappliAvatar = ''
   getDisplayName = () =>
@@ -176,6 +181,8 @@ export class Call {
     BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
   }
   @action toggleRecording = () => {
+    this.rqLoadings['record'] = true
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
       ? pbx.stopRecordingTalker
       : pbx.startRecordingTalker
@@ -185,6 +192,8 @@ export class Call {
       .catch(this.onToggleRecordingFailure)
   }
   @action private onToggleRecordingFailure = (err: Error | boolean) => {
+    this.rqLoadings['record'] = false
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
       return
     }
@@ -208,6 +217,8 @@ export class Call {
   private prevHolding = false
 
   @action private toggleHold = () => {
+    this.rqLoadings['hold'] = true
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHolding(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
@@ -220,7 +231,11 @@ export class Call {
   }
 
   @action private onToggleHoldFailure = (err: Error | boolean) => {
+    this.rqLoadings['hold'] = false
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', false)
     if (err === true) {
+      // update UI for hold button on native android
+      BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
       return true
     }
 

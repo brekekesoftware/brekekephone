@@ -47,6 +47,7 @@ type TBrekekeUtils = {
   permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
 
+  updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -107,7 +108,7 @@ const Polyfill: TBrekekeUtils = {
   permDisableBatteryOptimization: () => Promise.resolve(false),
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
-
+  updateRqStatus: () => undefined,
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
