@@ -109,7 +109,7 @@ export type PendingRequest<K extends keyof PbxPal> = {
   method: K
   params: any[]
   resolve: (value: Parameters<Parameters<PbxPal[K]>[1]>[0]) => void
-  reject: (error: any) => void
+  reject: ErrorHandler
   retryCount: number
 }
 
