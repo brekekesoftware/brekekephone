@@ -17,6 +17,7 @@ import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
+import { toast } from './ToastStore'
 
 export class Call {
   constructor(private store: CallStore) {}
@@ -246,8 +247,7 @@ export class Call {
         prevFn === 'unhold'
           ? intlDebug`Failed to unhold the call`
           : intlDebug`Failed to hold the call`
-      RnAlert.error({ message, err })
-      // already show error, considered it's handled
+      toast.error({ message, err }, 8000)
       return true
     }
     return false
