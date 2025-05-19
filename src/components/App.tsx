@@ -35,7 +35,6 @@ import { authUC } from '../stores/AuthUC'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { contactStore } from '../stores/contactStore'
-import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { Nav } from '../stores/Nav'
 import { RnAlert } from '../stores/RnAlert'
@@ -46,9 +45,11 @@ import { RnStackerRoot } from '../stores/RnStackerRoot'
 import { userStore } from '../stores/userStore'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { setupCallKeepEvents } from '../utils/callkeep'
+import { getConnectionStatus } from '../utils/getConnectionStatus'
 import { checkPermForCall, permForCall } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
+import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 import { webPromptPermission } from '../utils/webPromptPermission'
 import { AnimatedSize } from './AnimatedSize'
@@ -185,6 +186,15 @@ const initApp = async () => {
 
   await accountStore.loadAccountsFromLocalStorage()
 
+  const clearConnectionReaction = reaction(
+    () => getConnectionStatus(),
+    status => {
+      BrekekeUtils.updateConnectionStatus(status.message, status.isFailure)
+    },
+    { fireImmediately: true },
+  )
+  void clearConnectionReaction
+
   const onAuthUpdate = debounce(() => {
     nav.goToPageIndex()
     chatStore.clearStore()
@@ -277,41 +287,11 @@ export const App = observer(() => {
   }, [])
 
   const {
-    isConnFailure,
-    pbxConnectingOrFailure,
-    sipConnectingOrFailure,
-    ucConnectingOrFailure,
-    ucLoginFromAnotherPlace,
-    pbxLoginFromAnotherPlace,
-    showMsgPbxLoginFromAnotherPlace,
     signedInId,
-    resetFailureStateIncludePbxOrUc,
-  } = getAuthStore()
-
-  const serviceConnectingOrFailure = pbxConnectingOrFailure()
-    ? 'PBX'
-    : sipConnectingOrFailure()
-      ? 'SIP'
-      : ucConnectingOrFailure()
-        ? 'UC'
-        : ''
-  const isFailure = isConnFailure()
-  const connMessage =
-    pbxLoginFromAnotherPlace && !showMsgPbxLoginFromAnotherPlace
-      ? ''
-      : isFailure && showMsgPbxLoginFromAnotherPlace
-        ? intl`Logged in from another location as the same phone`
-        : isFailure && ucLoginFromAnotherPlace
-          ? intl`UC signed in from another location`
-          : !serviceConnectingOrFailure
-            ? ''
-            : isFailure
-              ? intl`${serviceConnectingOrFailure} connection failed`
-              : intl`Connecting to ${serviceConnectingOrFailure}...`
-
-  const onPressConnMessage = isFailure
-    ? resetFailureStateIncludePbxOrUc
-    : undefined
+    message: connMessage,
+    isFailure,
+    onPress: onPressConnMessage,
+  } = getConnectionStatus()
 
   const cp = getAuthStore().listCustomPage[0]
 

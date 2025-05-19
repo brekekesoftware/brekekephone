@@ -30,6 +30,7 @@ import android.provider.Settings;
 import android.telecom.TelecomManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
+import com.brekeke.phonedev.toast.ToastType;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -748,6 +749,57 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+  @ReactMethod
+  public void showToast(String uuid, String msg, String type, String error) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              ToastType toastType;
+              switch (type.toLowerCase()) {
+                case "success":
+                  toastType = ToastType.SUCCESS;
+                  break;
+                case "error":
+                  toastType = ToastType.ERROR;
+                  break;
+                case "warning":
+                  toastType = ToastType.WARNING;
+                  break;
+                case "info":
+                  toastType = ToastType.INFO;
+                  break;
+                default:
+                  toastType = ToastType.INFO;
+                  break;
+              }
+              at(uuid).showToast(msg, error, toastType);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void updateConnectionStatus(String msg, boolean isConnFailure) {
+
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.updateConnectionStatus(msg, isConnFailure);
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
 
   @ReactMethod
   public void updateRqStatus(String uuid, String name, boolean isLoading) {

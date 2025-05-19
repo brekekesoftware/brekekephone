@@ -32,6 +32,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+import com.brekeke.phonedev.toast.ToastManager;
+import com.brekeke.phonedev.toast.ToastType;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.oney.WebRTCModule.WebRTCView;
@@ -41,6 +43,9 @@ import java.util.TimerTask;
 import org.json.JSONObject;
 
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
+  private ToastManager toastManager;
+  private LinearLayout toastContainer;
+
   public RelativeLayout vWebrtc,
       vIncomingCall,
       vCallManage,
@@ -92,7 +97,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtHoldBtn,
       txtCallIsOnHold,
       txtDurationCall,
-      txtCallerNameHeader;
+      txtCallerNameHeader,
+      txtConnectionStatus;
   public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
   public boolean destroyed = false,
       paused = false,
@@ -104,6 +110,29 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public JSONObject pbxConfig;
   public JSONObject callConfig;
   final int PERMISSIONS_REQUEST_CODE = 1222;
+
+  public void updateConnectionStatus(String msg, boolean isFailure) {
+    if (msg.equals("")) {
+      txtConnectionStatus.setVisibility(View.GONE);
+      return;
+    }
+    txtConnectionStatus.setVisibility(View.VISIBLE);
+    txtConnectionStatus.setText(msg);
+    if (isFailure) {
+      txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_error));
+    }
+  }
+
+  public void showToast(String message, String error, ToastType type) {
+    if (toastManager == null) {
+      return;
+    }
+    if (error != null && !error.isEmpty()) {
+      toastManager.show(message, ToastType.ERROR, error, 6000);
+    } else {
+      toastManager.show(message, type);
+    }
+  }
 
   // ==========================================================================
   // activity lifecycles
@@ -148,6 +177,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (!autoAnswer) {
       BrekekeUtils.staticStartRingtone();
     }
+
+    // Initialize toast manager
+    toastContainer = (LinearLayout) findViewById(R.id.toast_container);
+    toastManager = ToastManager.getInstance(this, toastContainer);
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
@@ -247,6 +280,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallIsOnHold = (TextView) findViewById(R.id.txt_call_is_on_hold);
     txtDurationCall = (TextView) findViewById(R.id.txt_count_timer);
     txtCallerNameHeader = (TextView) findViewById(R.id.txt_caller_name_header);
+    txtConnectionStatus = (TextView) findViewById(R.id.txt_conection_status);
 
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);

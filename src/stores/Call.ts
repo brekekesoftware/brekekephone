@@ -248,6 +248,12 @@ export class Call {
           ? intlDebug`Failed to unhold the call`
           : intlDebug`Failed to hold the call`
       toast.error({ message, err }, 8000)
+      BrekekeUtils.showToast(
+        this.callkeepUuid,
+        message.label,
+        'error',
+        err?.message,
+      )
       return true
     }
     return false

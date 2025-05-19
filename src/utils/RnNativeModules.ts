@@ -48,6 +48,13 @@ type TBrekekeUtils = {
   setUserAgentConfig(userAgentConfig: string): void
 
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
+  updateConnectionStatus(msg: string, isConnFailure: boolean): void
+  showToast(
+    uuid: string,
+    msg: string,
+    type: 'success' | 'error' | 'warning' | 'info',
+    err: string | undefined,
+  ): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -109,6 +116,8 @@ const Polyfill: TBrekekeUtils = {
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
   updateRqStatus: () => undefined,
+  updateConnectionStatus: () => undefined,
+  showToast: () => undefined,
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

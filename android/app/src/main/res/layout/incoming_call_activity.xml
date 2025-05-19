@@ -10,11 +10,36 @@
   android:orientation="vertical"
   tools:context="com.brekeke.phonedev.IncomingCallActivity"
 >
+
+    
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
   >
+    <!-- Connection status -->
+    <TextView
+      android:id="@+id/txt_conection_status"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#FFFFFF"
+      android:background="@color/toast_warning"
+      android:textSize="14sp"
+      android:maxLines="1"
+      android:paddingVertical="5dp"
+      android:paddingHorizontal="10dp"
+      android:visibility="gone"
+      android:ellipsize="end"/>
+    <!-- Toast Container -->
+    <LinearLayout
+      android:id="@+id/toast_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:orientation="vertical"
+      android:visibility="visible">
+    </LinearLayout>
+
     <LinearLayout
       android:id="@+id/view_nav_header"
       android:layout_width="match_parent"
