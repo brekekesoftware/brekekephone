@@ -55,6 +55,7 @@ type TBrekekeUtils = {
     type: 'success' | 'error' | 'warning' | 'info',
     err: string | undefined,
   ): void
+  updateAnyHoldLoading(isAnyHoldLoading: boolean): void
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -118,6 +119,7 @@ const Polyfill: TBrekekeUtils = {
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
   showToast: () => undefined,
+  updateAnyHoldLoading: () => undefined,
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

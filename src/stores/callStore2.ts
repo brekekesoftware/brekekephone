@@ -1,5 +1,5 @@
 import { debounce, isEmpty } from 'lodash'
-import { action, observable, runInAction } from 'mobx'
+import { action, computed, observable, runInAction } from 'mobx'
 import { AppState, Platform } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -448,6 +448,9 @@ export class CallStore {
     if (!c) {
       return
     }
+
+    c.cancelPendingRequest()
+
     if (c.rawSession) {
       Object.assign(c.rawSession, rawSession)
     } else {
@@ -488,11 +491,14 @@ export class CallStore {
     c.finishEmitEmbed()
   }
 
+  @computed get isAnyHoldLoading() {
+    return this.calls.some(call => call.rqLoadings['hold'])
+  }
   @action onSelectBackgroundCall = async (c: Immutable<Call>) => {
     this.setCurrentCallId(c.id)
     Nav().backToPageCallManage()
     await waitTimeout()
-    if (c.holding) {
+    if (c.holding && c.rqLoadings['hold']) {
       c.toggleHoldWithCheck()
     }
   }

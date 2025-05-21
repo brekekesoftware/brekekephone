@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
 import { Platform } from 'react-native'
+import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
 import type {
@@ -10,7 +11,7 @@ import type {
   PbxEvent,
   PbxPal,
   PbxResourceLine,
-  PendingRequest,
+  Request,
 } from '../brekekejs'
 import { bundleIdentifier, fcmApplicationId } from '../config'
 import { embedApi } from '../embed/embedApi'
@@ -47,11 +48,14 @@ export class PBX extends EventEmitter {
   isMainInstance = true
 
   // === handle cache and retry requests
-  private pendingRequests: PendingRequest<keyof PbxPal>[] = []
-
+  private pendingRequests: Request<keyof PbxPal>[] = []
+  private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  private RETRY_DELAY = 500
+  private RETRY_DELAY = 300
 
+  private generateRequestId(): string {
+    return newUuid()
+  }
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
       return false
@@ -61,44 +65,90 @@ export class PBX extends EventEmitter {
       ('message' in err && /timeout/i.test((err as Error).message))
     )
   }
-  private async palRequestWithRetry<K extends keyof PbxPal>(
+
+  cancelRequest(requestId: string): boolean {
+    const index = this.pendingRequests.findIndex(req => req.id === requestId)
+    if (index !== -1) {
+      const request = this.pendingRequests[index]
+      this.pendingRequests.splice(index, 1)
+      request.cancelled = true
+      request.reject(this.msgErrorCancelRequest(request))
+      return true
+    }
+    const index2 = this.requests.findIndex(req => req.id === requestId)
+    if (index2 !== -1) {
+      const request = this.requests[index2]
+      this.requests.splice(index2, 1)
+      request.cancelled = true
+      request.reject(this.msgErrorCancelRequest(request))
+      return true
+    }
+    return false
+  }
+  removeRequest(requestId: string) {
+    const index = this.requests.findIndex(req => req.id === requestId)
+    if (index !== -1) {
+      this.requests.splice(index, 1)
+      return true
+    }
+    return false
+  }
+  private msgErrorCancelRequest = (request: Request<keyof PbxPal>) =>
+    new Error(`${request.method} request cancelled by user`)
+  private palRequestWithRetry<K extends keyof PbxPal>(
     method: K,
     ...params: PalMethodParams<K>
-  ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]> {
-    return new Promise((resolve, reject) => {
-      if (!this.client) {
-        this.pendingRequests.push({
-          method,
-          params,
-          resolve,
-          reject,
-          retryCount: 0,
-        })
-        return
+  ): {
+    promise: Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
+    requestId: string
+  } {
+    const requestId = this.generateRequestId()
+    const promise = new Promise((resolve, reject) => {
+      const rq = {
+        id: requestId,
+        method,
+        params,
+        resolve,
+        reject,
+        retryCount: 0,
+        cancelled: false,
       }
 
+      if (!this.client) {
+        this.pendingRequests.push(rq)
+        return
+      }
+      this.requests.push(rq)
       this.client
         .call_pal(method, ...params)
-        .then(resolve)
-        .catch((err: any) => {
+        .then(result => {
+          const request = this.pendingRequests.find(req => req.id === requestId)
+          if (request?.cancelled) {
+            reject(this.msgErrorCancelRequest(request))
+          } else {
+            resolve(result)
+            this.removeRequest(requestId)
+          }
+        })
+        .catch(err => {
           if (this.isPalTimeoutError(err)) {
-            this.pendingRequests.push({
-              method,
-              params,
-              resolve,
-              reject,
-              retryCount: 0,
-            })
+            this.pendingRequests.push(rq)
           } else {
             reject(err)
+            this.removeRequest(requestId)
           }
         })
     })
+    return { promise, requestId }
   }
   retryRequests() {
     while (this.pendingRequests.length > 0) {
       const request = this.pendingRequests.shift()
       if (!request) {
+        continue
+      }
+      if (request.cancelled) {
+        request.reject(this.msgErrorCancelRequest(request))
         continue
       }
       if (request.retryCount >= this.MAX_RETRY) {
@@ -108,8 +158,18 @@ export class PBX extends EventEmitter {
       const params = request?.params as PalMethodParams<typeof request.method>
       this.client
         ?.call_pal(request.method, ...params)
-        .then(request.resolve)
-        .catch((err: any) => {
+        .then(result => {
+          if (request.cancelled) {
+            request.reject(this.msgErrorCancelRequest(request))
+          } else {
+            request.resolve(result)
+          }
+        })
+        .catch(err => {
+          if (request.cancelled) {
+            request.reject(this.msgErrorCancelRequest(request))
+            return
+          }
           if (this.isPalTimeoutError(err)) {
             request.retryCount++
             setTimeout(() => {
@@ -762,12 +822,12 @@ export class PBX extends EventEmitter {
     if (!this.client) {
       return
     }
-    const res = await this.palRequestWithRetry('getPhoneAppliContact', {
+    const res = this.palRequestWithRetry('getPhoneAppliContact', {
       tenant,
       user,
       tel,
     })
-    return res
+    return res.promise
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
@@ -833,14 +893,15 @@ export class PBX extends EventEmitter {
     if (this.isMainInstance) {
       await waitPbx()
     }
+
     if (!this.client) {
-      return false
+      return { promise: Promise.resolve(false), requestId: '' }
     }
-    await this.palRequestWithRetry('hold', {
+    const res = this.palRequestWithRetry('hold', {
       tenant,
       tid: talker,
     })
-    return true
+    return res
   }
 
   unholdTalker = async (tenant: string, talker: string) => {
@@ -848,17 +909,13 @@ export class PBX extends EventEmitter {
       await waitPbx()
     }
     if (!this.client) {
-      return false
+      return { promise: Promise.resolve(false), requestId: '' }
     }
-    // await this.client.call_pal('unhold', {
-    //   tenant,
-    //   tid: talker,
-    // })
-    await this.palRequestWithRetry('hold', {
+    const res = this.palRequestWithRetry('unhold', {
       tenant,
       tid: talker,
     })
-    return true
+    return res
   }
 
   startRecordingTalker = async (tenant: string, talker: string) => {

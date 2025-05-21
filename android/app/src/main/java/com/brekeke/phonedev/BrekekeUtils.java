@@ -749,6 +749,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+
+  @ReactMethod
+  public void updateAnyHoldLoading(boolean isAnyHoldLoading) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              for (IncomingCallActivity a : activities) {
+                try {
+                  a.updateEnableSwitchCall(!isAnyHoldLoading);
+                } catch (Exception e) {
+                }
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
   @ReactMethod
   public void showToast(String uuid, String msg, String type, String error) {
     UiThreadUtil.runOnUiThread(

@@ -105,12 +105,14 @@ export type Pbx = PbxPal & {
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
 }
 
-export type PendingRequest<K extends keyof PbxPal> = {
+export type Request<K extends keyof PbxPal> = {
+  id: string
   method: K
   params: any[]
   resolve: (value: Parameters<Parameters<PbxPal[K]>[1]>[0]) => void
   reject: ErrorHandler
   retryCount: number
+  cancelled?: boolean
 }
 
 export type PbxEvent = {

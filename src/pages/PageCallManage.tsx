@@ -540,6 +540,7 @@ class PageCallManage extends Component<{
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageCallBackgrounds}
             textInputStyle={css.labelStyle}
+            disabled={getCallStore().isAnyHoldLoading}
             value={
               n > 1
                 ? intl`${n} other calls are in background`

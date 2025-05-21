@@ -123,7 +123,7 @@ export class Call {
       return
     }
     this.isAboutToHangup = true
-    if (this.holding) {
+    if (this.holding && !this.rqLoadings['hold']) {
       await this.toggleHold().then(
         success =>
           !success &&
@@ -216,30 +216,49 @@ export class Call {
 
   @observable holding = false
   private prevHolding = false
+  requestIds: string[] = []
 
-  @action private toggleHold = () => {
-    this.rqLoadings['hold'] = true
-    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', true)
+  @action cancelPendingRequest = () => {
+    this.requestIds.forEach(id => {
+      pbx.cancelRequest(id)
+    })
+    this.requestIds = []
+  }
+
+  private toggleHoldLoading = (isLoading: boolean) => {
+    this.rqLoadings['hold'] = isLoading
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
+  }
+
+  @action private toggleHold = async () => {
+    this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHolding(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
+    const res = await pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
 
-    return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
-      .then(this.onToggleHoldFailure)
+    if (!res) {
+      this.onToggleHoldFailure(false)
+      return
+    }
+    const { promise, requestId } = res
+
+    if (requestId) {
+      this.requestIds.push(requestId)
+    }
+    return promise
+      .then(this.onToggleHoldSuccess)
       .catch(this.onToggleHoldFailure)
   }
 
+  private onToggleHoldSuccess = () => {
+    this.toggleHoldLoading(false)
+    BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+  }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
-    this.rqLoadings['hold'] = false
-    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', false)
-    if (err === true) {
-      // update UI for hold button on native android
-      BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
-      return true
-    }
-
+    this.toggleHoldLoading(false)
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
     if (typeof err !== 'boolean') {

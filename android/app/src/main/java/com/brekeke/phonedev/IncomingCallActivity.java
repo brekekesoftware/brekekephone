@@ -367,6 +367,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
+  public void updateEnableSwitchCall(boolean isEnabled) {
+    if (!BrekekeUtils.isLocked() && btnUnlock.getVisibility() == View.VISIBLE) {
+      btnUnlock.setEnabled(isEnabled);
+    }
+  }
+
   public void updateBtnRqStatus(String name, boolean isLoading) {
     switch (name) {
       case "record":

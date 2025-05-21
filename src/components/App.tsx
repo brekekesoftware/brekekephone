@@ -195,6 +195,15 @@ const initApp = async () => {
   )
   void clearConnectionReaction
 
+  const clearGetHoldLoadingReaction = reaction(
+    () => getCallStore().isAnyHoldLoading,
+    isAnyHoldLoading => {
+      BrekekeUtils.updateAnyHoldLoading(isAnyHoldLoading)
+    },
+    { fireImmediately: true },
+  )
+  void clearGetHoldLoadingReaction
+
   const onAuthUpdate = debounce(() => {
     nav.goToPageIndex()
     chatStore.clearStore()
