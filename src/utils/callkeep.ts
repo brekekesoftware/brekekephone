@@ -8,6 +8,7 @@ import {
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 
+import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { bundleIdentifier } from '../config'
 import { getAuthStore, waitSip } from '../stores/authStore'
@@ -162,6 +163,12 @@ export const setupCallKeepEvents = async () => {
   ) => {
     const uuid = e.callUUID.toUpperCase()
     const c = cs.calls.find(_ => _.callkeepUuid === uuid)
+    // in case the user has not answered the call on callkeep display incoming call
+    // audio session should not be assigned to WebRTC
+    // before the didActivateAudioSession event is called
+    if (Platform.OS === 'ios' && c?.isAutoAnswer && !c.isAudioActive) {
+      return
+    }
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
@@ -184,6 +191,11 @@ export const setupCallKeepEvents = async () => {
   ) => {
     // only in ios
     console.log('CallKeep debug: didActivateAudioSession')
+    const c = cs.getOngoingCall()
+    if (c?.isAutoAnswer) {
+      c.isAudioActive = true
+      c.partyAnswered && c.setHoldWithoutCallKeep(false)
+    }
     BrekekeUtils.webrtcSetAudioEnabled(true)
   }
   const didDeactivateAudioSession = (
@@ -354,6 +366,8 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
   )
+  // TODO: should check additional conditions when user switches between activities
+  eventEmitter.addListener('onResume', () => pbx.ping())
 }
 
 export const onBackPressed = () => {

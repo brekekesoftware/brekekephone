@@ -57,7 +57,7 @@ keysInCustomNotification.forEach(k => {
 
 const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
   const n: ParsedPn = fields
-    .filter(f => !!f)
+    .filter(f => f)
     .map(f => {
       // @ts-ignore
       if (typeof f === 'string' && f.charAt(0) === '{') {
@@ -175,7 +175,7 @@ export const parseNotificationData = (raw?: object) => {
   }
   n.displayName = get(n, 'displayname') || n.from
 
-  n.isCall = !!n.id || !!n.sipPn.sipAuth
+  n.isCall = !!(n.id || n.sipPn.sipAuth)
   n.time = Number(n.time) || 0
 
   return n
@@ -303,6 +303,7 @@ export const parse = async (
     )
     getAuthStore().saveActionOpenCustomPage = true
   }
+
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen

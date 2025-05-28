@@ -38,6 +38,8 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       BrekekeUtils.emit("phonePermission", "");
       return;
     }
+    // it should close the default dialer permission popup when there is an incoming call
+    BrekekeUtils.resolveDefaultDialer("The call is incoming");
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
 
     if (initialNotifications == null) {

@@ -65,8 +65,8 @@ export class PageSettingsDebug extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`OPEN DEBUG LOG`}
-              onCreateBtnPress={debugStore.openLogFile}
-              onTouchPress={debugStore.openLogFile}
+              onCreateBtnPress={Nav().goToPageSettingsDebugFiles}
+              onTouchPress={Nav().goToPageSettingsDebugFiles}
               value={debugStore.getLogSizeStr()}
             />
 

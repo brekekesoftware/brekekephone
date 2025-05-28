@@ -8,12 +8,10 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
-import { getPartyName } from '../stores/contactStore'
+import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
-import { authPBX } from './AuthPBX'
-import { getAuthStore } from './authStore'
 import type { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -46,11 +44,21 @@ export class Call {
   phoneappliAvatar = ''
   getDisplayName = () =>
     this.partyName ||
-    getPartyName(this.partyNumber) ||
+    getPartyName({ partyNumber: this.partyNumber }) ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
+  getDisplayNameAsync = async () =>
+    this.partyName ||
+    (await getPartyNameAsync(this.partyNumber)) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
   createdAt = Date.now()
+  // ios auto answer
+  isAutoAnswer = false
+  isAudioActive = false
+  partyAnswered = false
 
   @observable incoming = false
   @observable answered = false
@@ -76,7 +84,13 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(this.id, options, this.remoteVideoEnabled, videoOptions)
+    sip.phone?.answer(
+      this.id,
+      options,
+      this.remoteVideoEnabled,
+      videoOptions,
+      'answered',
+    )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
@@ -223,56 +237,32 @@ export class Call {
         : intlDebug`Failed to start recording the call`
       RnAlert.error({ message, err })
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
+  @observable holding = false
+  private prevHolding = false
   toggleHoldWithCheck = () => {
     if (this.isAboutToHangup) {
       return
     }
     this.toggleHold()
   }
-
-  @observable holding = false
-  private prevHolding = false
-
   @action private toggleHold = () => {
     const fn = this.holding ? 'unhold' : 'hold'
-    this.setHolding(fn === 'hold')
+    this.setHoldWithCallkeep(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
-
     return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
-  }
-
-  private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
-    if (err === true) {
-      return
-    }
-    if (
-      err &&
-      typeof err === 'object' &&
-      (('code' in err && (err as any).code === -1) ||
-        ('message' in err && /timeout/i.test(err.message)))
-    ) {
-      getAuthStore().pbxState = 'stopped'
-      authPBX.dispose()
-      authPBX.auth()
-    }
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
       return true
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
-
     const prevFn = this.holding ? 'hold' : 'unhold'
-    this.setHolding(prevFn === 'unhold')
+    this.setHoldWithCallkeep(prevFn === 'unhold')
     if (typeof err !== 'boolean') {
       const message =
         prevFn === 'unhold'
@@ -284,8 +274,7 @@ export class Call {
     }
     return false
   }
-
-  private setHolding = (holding: boolean) => {
+  private setHoldWithCallkeep = (holding: boolean) => {
     this.holding = holding
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
@@ -294,6 +283,20 @@ export class Call {
     // might need to check if there wont be multiple calls holding=false
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)
+  }
+  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+    const act = hold ? 'hold' : 'unhold'
+    try {
+      const result = await pbx[`${act}Talker`](this.pbxTenant, this.pbxTalkerId)
+      if (result === true) {
+        this.holding = hold
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error(`setHoldWithoutCallKeep Failed to ${action} call:`, err)
+      return false
+    }
   }
 
   @observable transferring = ''
@@ -307,7 +310,7 @@ export class Call {
   @action transferAttended = (number: string) => {
     this.transferring = number
     // avoid issue no-voice if user set hold before
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -319,48 +322,42 @@ export class Call {
       message: intlDebug`Failed to transfer the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action stopTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action conferenceTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     this.prevHolding = this.holding
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action park = (number: string) =>
@@ -372,8 +369,6 @@ export class Call {
       message: intlDebug`Failed to park the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   private _autorunEmitEmbed = false // check if autorun is already started
