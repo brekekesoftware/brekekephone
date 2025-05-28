@@ -1,3 +1,14 @@
+#### 2.16.3
+
+- Improve debug log with multiples files, and mark for login logout
+- Fix it should login into the correct account when press on the missed call notification (issue 955)
+- Fix it should update avatar without cache in the next call (issue 958)
+- Fix it should display name from phone book in calls (issue 960)
+- Fix android it should have notification sound after a missed group call answer simultaneously (issue 974)
+- Fix ios auto answer it should have audio (issue 975, 978, 1008)
+- Fix it should show UC notification in call manage screen (issue 982)
+- Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
+
 #### 2.16.2
 
 - Embed:
@@ -12,6 +23,16 @@
 #### 2.16.0
 
 - Initial implementation of video conference
+
+#### 2.15.10
+
+- Fix ios it should not crash when press hold
+
+#### 2.15.9
+
+- Implement pal ping interval and reconnect mechanic based on the last activity timestamp
+  - webphone.pal.ping_interval, default 20s
+  - webphone.pal.ping_timeout, default 30s
 
 #### 2.15.8
 
