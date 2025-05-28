@@ -81,6 +81,9 @@ export const Layout: FC<
     children: ReactNode
     style?: StyleProp<ViewStyle>
     isFullContent?: boolean
+    iconRights?: string[]
+    iconRightColors?: string[]
+    iconRightFuncs?: Function[]
   }>
 > = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -165,7 +168,7 @@ export const Layout: FC<
       </Container>
       {props.isShowToastMessage && (
         <Toast
-          isVisible={props.isShowToastMessage}
+          isVisible
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
           containerStyles={{
             marginTop: headerSpace,

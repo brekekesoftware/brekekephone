@@ -348,6 +348,12 @@ export class CallStore {
         BrekekeUtils.onCallConnected(e.callkeepUuid)
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
+
+        // auto disable video if the call is answered and incoming call
+        if (e.incoming && e.localVideoEnabled) {
+          e.mutedVideo = true
+          sip.setMutedVideo(true, e.id)
+        }
       }
       // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
       if (p.remoteUserOptionsTable?.[e.partyNumber]?.exInfo === 'answered') {

@@ -61,7 +61,7 @@ import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
 import { PhonebookAddItem } from './PhonebookAddItem'
 import { AudioPlayer, RnStatusBar, RnText } from './Rn'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { Toast } from './Toast'
+import { ToastRoot } from './ToastRoot'
 import { v } from './variables'
 
 const initApp = async () => {
@@ -332,7 +332,7 @@ export const App = observer(() => {
       <CallVoices />
       <ChatGroupInvite />
       <UnreadChatNoti />
-      <Toast />
+      <ToastRoot />
       <View style={css.App_Inner}>
         <RnStackerRoot />
         <RenderAllCalls />

@@ -23,6 +23,7 @@ export const CallVideosCarousel = observer(
       isFrontCamera,
       remoteUserOptionsTable,
       mutedVideo,
+      toggleVideo,
     },
     showButtonsInVideoCall,
     onButtonsInVideo,
@@ -49,9 +50,7 @@ export const CallVideosCarousel = observer(
 
     return (
       !!localStreamObject && (
-        <View
-          style={[styles.streams, { zIndex: showButtonsInVideoCall ? 0 : 11 }]}
-        >
+        <View style={[styles.streams, { zIndex: 11 }]}>
           <ScrollView
             horizontal
             style={styles.scrollView}
@@ -67,6 +66,7 @@ export const CallVideosCarousel = observer(
               onSwitchCamera={() => toggleSwitchCamera()}
               isFrontCamera={isFrontCamera}
               enabled={!mutedVideo}
+              toggleVideo={toggleVideo}
             />
             {videoClientSessionTable.length > 1 &&
               videoClientSessionTable.map(item => (
@@ -104,5 +104,6 @@ const styles = StyleSheet.create({
     height: 'auto',
     width: '100%',
     bottom: 0,
+    pointerEvents: 'box-none',
   },
 })

@@ -366,6 +366,19 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
   )
+  // android native video conference
+  eventEmitter.addListener('navChat', async (uuid: string) => {
+    await waitTimeoutNav()
+    const chatId = cs.getOngoingCall()?.partyNumber
+    if (!chatId) {
+      return
+    }
+    if (chatId.startsWith('uc')) {
+      Nav().goToPageChatGroupDetail({ groupId: chatId.replace('uc', '') })
+    } else {
+      Nav().goToPageChatDetail({ buddy: chatId })
+    }
+  })
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => pbx.ping())
 }

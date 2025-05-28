@@ -8,6 +8,8 @@ import type { HeaderDropdownItem } from './HeaderDropdown'
 import { Dropdown, DropdownBtn } from './HeaderDropdown'
 import { Navigation } from './HeaderNavigation'
 import { Title } from './HeaderTitle'
+import { RnIcon } from './RnIcon'
+import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
 const css = StyleSheet.create({
@@ -29,6 +31,15 @@ const css = StyleSheet.create({
   Inner__hasBackBtn: {
     paddingLeft: 35,
   },
+  ButtonIcon__right: {
+    position: 'absolute',
+    top: 0,
+    right: 30,
+    flexDirection: 'row',
+    bottom: 0,
+    alignItems: 'center',
+    paddingRight: 5,
+  },
 })
 
 export const Header: FC<
@@ -43,6 +54,9 @@ export const Header: FC<
     title: string
     transparent: boolean
     isTab?: boolean
+    iconRights?: string[]
+    iconRightColors?: string[]
+    iconRightFuncs?: Function[]
   }>
 > = p => {
   const {
@@ -56,8 +70,16 @@ export const Header: FC<
     title,
     isTab,
     transparent,
+    iconRights,
+    iconRightColors,
+    iconRightFuncs,
   } = p
   const [dropdownActive, setDropdownActive] = useState(false)
+  const onPressRightIcons = (i: number) => {
+    if (iconRights && iconRights[i]) {
+      iconRightFuncs?.[i]?.()
+    }
+  }
   return (
     <>
       <View style={css.Header}>
@@ -76,6 +98,20 @@ export const Header: FC<
             />
             {onBack && (
               <BackBtn compact={compact as boolean} onPress={onBack} />
+            )}
+            {iconRights && iconRights.length > 0 && (
+              <View
+                style={[css.ButtonIcon__right, { right: dropdown ? 30 : 5 }]}
+              >
+                {iconRights?.map((_, i) => (
+                  <RnTouchableOpacity
+                    key={i}
+                    onPress={e => onPressRightIcons(i)}
+                  >
+                    <RnIcon path={_} color={iconRightColors?.[i]} />
+                  </RnTouchableOpacity>
+                ))}
+              </View>
             )}
             {dropdown && (
               <DropdownBtn onPress={() => setDropdownActive(true)} />
