@@ -4,6 +4,7 @@
     <trust-anchors>
       <certificates src="system" />
       <certificates src="user" />
+      <certificates src="@raw/ca" />
     </trust-anchors>
   </base-config>
   <!-- Fix android 9 network error -->

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
-import { mdiCameraRolate, mdiVideo, mdiVideoOff } from '../assets/icons'
+import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '../assets/icons'
 import { getCallStore } from '../stores/callStore'
 import { RnIcon } from './RnIcon'
 import { VideoPlayer } from './VideoPlayer'
@@ -75,7 +75,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
             onPress={() => onSwitchCamera?.()}
             style={styles.switchCameraBtn}
           >
-            <RnIcon path={mdiCameraRolate} color='white' />
+            <RnIcon path={mdiCameraRotate} color='white' />
           </TouchableOpacity>
         </View>
       )}

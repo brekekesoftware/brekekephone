@@ -68,6 +68,9 @@ type TBrekekeUtils = {
     err: string | undefined,
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
+  // android lpc
+  isAndroidLpcPermissionGranted(): Promise<boolean>
+  permForIncomingCall(): Promise<boolean>
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -140,6 +143,9 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   showToast: () => undefined,
   updateAnyHoldLoading: () => undefined,
+  // android lpc
+  isAndroidLpcPermissionGranted: () => Promise.resolve(false),
+  permForIncomingCall: () => Promise.resolve(false),
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,

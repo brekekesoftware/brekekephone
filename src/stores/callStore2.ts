@@ -51,6 +51,7 @@ export class CallStore {
     },
   ) => {
     const pnId = this.getPnIdFromUuid(uuid)
+
     return this.calls.find(
       c =>
         (!pnId || c.pnId === pnId) &&
@@ -97,6 +98,7 @@ export class CallStore {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
     }
+
     // check if call is rejected already
     const rejected = this.isCallRejected({
       callkeepUuid: uuid,
@@ -154,6 +156,7 @@ export class CallStore {
   @action onCallKeepAnswerCall = (uuid: string) => {
     this.setCallKeepAction({ callkeepUuid: uuid }, 'answerCall')
     const c = this.getCallKeep(uuid)
+
     console.log(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
@@ -306,6 +309,7 @@ export class CallStore {
     //
     // existing
     const e = this.calls.find(c => c.id === p.id)
+
     if (e) {
       if (p.callConfig) {
         // merge new config with current config instead of replacing
@@ -447,6 +451,7 @@ export class CallStore {
     }
 
     this.calls = [c, ...this.calls]
+
     this.displayingCallId = c.id // do not set ongoing call
     // update java and embed api
     BrekekeUtils.setJsCallsSize(this.calls.length)
@@ -459,6 +464,7 @@ export class CallStore {
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
+
       this.callkeepUuidPending = ''
     }
     if (
@@ -497,6 +503,7 @@ export class CallStore {
     if (callkeepAction === 'answerCall') {
       c.callkeepAlreadyAnswered = true
       c.answer()
+
       console.log('SIP PN debug: answer by recentPnAction')
     } else if (callkeepAction === 'rejectCall') {
       c.callkeepAlreadyRejected = true

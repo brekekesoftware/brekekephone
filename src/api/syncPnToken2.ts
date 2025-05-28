@@ -1,10 +1,11 @@
 import { Platform } from 'react-native'
-import { getCurrentWifiSSID } from 'react-native-wifi-reborn'
+import WifiManager from 'react-native-wifi-reborn'
 
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { compareSemVer } from '../stores/debugStore'
+import { checkFineLocation, permFineLocation } from '../utils/permissions'
 import { PushNotification } from '../utils/PushNotification'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
@@ -14,12 +15,13 @@ import { PnCommand, PnServiceId } from './pnConfig'
 import { setSyncPnTokenModule } from './syncPnToken'
 import { updatePhoneIndex } from './updatePhoneIndex'
 
+let locationPerm: boolean | null = null
 const syncPnTokenWithoutCatch = async (
   p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
 ) => {
   console.log('PN sync debug: syncPnTokenWithoutCatch')
-
+  const isAndroid = Platform.OS === 'android'
   if (Platform.OS === 'web') {
     // TODO should be implemented by now
     console.log('PN sync debug: not implemented yet on web browser')
@@ -110,7 +112,9 @@ const syncPnTokenWithoutCatch = async (
         }
       : undefined
 
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
+      // disableLpc here so that the service can be turned back on every time the server restarts
+      BrekekeUtils.disableLPC()
       if (newParams) {
         await pbx.pnmanage(newParams)
       } else {
@@ -118,7 +122,8 @@ const syncPnTokenWithoutCatch = async (
         const fn = pnEnabled ? pbx.setFcmPnToken : pbx.removeFcmPnToken
         await Promise.all([fn(params), fn({ ...params, voip: true })])
       }
-      return disconnectPbx(true)
+      // return here if not used lpc
+      // return disconnectPbx(true)
     }
 
     const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
@@ -144,7 +149,21 @@ const syncPnTokenWithoutCatch = async (
           fn({ ...params, device_id: tvoip, voip: true }),
         ])
       }
+
+      locationPerm = null
       return disconnectPbx(true)
+    }
+
+    if (isAndroid && pnEnabled) {
+      // request access fine location to get current ssid
+      const granted = await permFineLocation()
+      locationPerm = granted
+
+      if (!granted) {
+        BrekekeUtils.disableLPC()
+        // set flag -> "blocked"
+        return disconnectPbx(true)
+      }
     }
 
     const remoteSsids =
@@ -152,7 +171,21 @@ const syncPnTokenWithoutCatch = async (
         ?.split(',')
         .map(w => w.trim())
         .filter(w => w) || []
-    const localSsid = remoteSsids.length ? '' : await getLocalSsid()
+
+    // Android needs to use localSsid to check if localSsid exists in remoteSsid or not.
+    // So we need to get the current ssid
+    const f = isAndroid ? !remoteSsids.length : remoteSsids.length
+
+    const localSsid = f ? '' : await getLocalSsid()
+
+    if (isAndroid) {
+      const r = remoteSsids.filter(v => v === localSsid)
+      if (!r.length) {
+        // localSsid does not exist in remoteSsid
+        return disconnectPbx(true)
+      }
+    }
+
     const lpcPn = toBoolean(c['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
       pnmanageNew,
@@ -161,6 +194,8 @@ const syncPnTokenWithoutCatch = async (
       localSsid,
       tlsKeyHash,
       lpcPn,
+      t,
+      tvoip,
     })
     if (pnEnabled) {
       BrekekeUtils.enableLPC(
@@ -212,9 +247,17 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
   accountStore.pnSyncLoadingMap[p.id] = false
 }
 
-const syncPnTokenForAllAccounts = () => {
+const syncPnTokenForAllAccounts = async () => {
+  // If locationPerm = null then do not check for permission changes anymore
+  const noCheckChange = locationPerm === null
+  // Check if user changed location permissions in App Info
+  // If true, resync
+
+  const isChange = noCheckChange
+    ? false
+    : (await checkFineLocation()) !== locationPerm
   accountStore.accounts.forEach(a => {
-    if (a.pushNotificationEnabledSynced) {
+    if (a.pushNotificationEnabledSynced && !isChange) {
       return
     }
     syncPnToken(a)
@@ -230,6 +273,6 @@ setSyncPnTokenModule(m)
 export type TSyncPnToken = typeof m
 
 const getLocalSsid = () =>
-  Promise.race([getCurrentWifiSSID(), waitTimeout(10000)])
+  Promise.race([WifiManager.getCurrentWifiSSID(), waitTimeout(10000)])
     .then(v => v || '')
     .catch(() => '')
