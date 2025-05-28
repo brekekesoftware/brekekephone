@@ -45,6 +45,7 @@ type TBrekekeUtils = {
   permDisableBatteryOptimization(): Promise<boolean>
   permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
+  setAudioMode: (mode: number) => void
   // android video conference
   setRemoteStreams: (
     uuid: string,
@@ -58,7 +59,7 @@ type TBrekekeUtils = {
     uuid: string,
     d: Array<{ vId: string; enableVideo: boolean }>,
   ) => void
-  setModeAudio: (mode: number) => void
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -118,6 +119,7 @@ const Polyfill: TBrekekeUtils = {
   permDisableBatteryOptimization: () => Promise.resolve(false),
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
+  setAudioMode: () => undefined,
   // android video conference
   setRemoteStreams: () => undefined,
   setStreamActive: () => undefined,
@@ -125,7 +127,7 @@ const Polyfill: TBrekekeUtils = {
   addStreamToView: () => undefined,
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
-  setModeAudio: () => undefined,
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

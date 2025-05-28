@@ -751,7 +751,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // ==========================================================================
   // react methods
   @ReactMethod
-  public void setModeAudio(int mode) {
+  public void setAudioMode(int mode) {
     if (am == null) {
       return;
     }

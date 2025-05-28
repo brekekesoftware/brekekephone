@@ -70,6 +70,7 @@ export class CallStore {
     uuid: string,
     n?: ParsedPn,
   ) => {
+    pbx.ping()
     this.setAutoEndCallKeepTimer(uuid, n)
     if (!uuid || !n) {
       return
@@ -246,7 +247,7 @@ export class CallStore {
   }
 
   private incallManagerStarted = false
-  onCallUpsert: CallStore['upsertCall'] = c => {
+  onCallUpsert: CallStore['upsertCall'] = async c => {
     this.upsertCall(c)
     if (
       Platform.OS === 'android' &&
@@ -290,7 +291,7 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
-  @action private upsertCall = (
+  @action private upsertCall = async (
     // partial
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
@@ -440,10 +441,8 @@ export class CallStore {
     c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      webShowNotification(
-        c.getDisplayName() + ' ' + intl`Incoming call`,
-        c.getDisplayName(),
-      )
+      const name = await c.getDisplayNameAsync()
+      webShowNotification(name + ' ' + intl`Incoming call`, name)
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -460,7 +459,7 @@ export class CallStore {
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
-        c.getDisplayName(),
+        await c.getDisplayNameAsync(),
         'generic',
       )
     }
@@ -524,7 +523,7 @@ export class CallStore {
       this.incallManagerStarted = false
       IncallManager.stop()
       // reset audio mode to allow notification to play sound
-      BrekekeUtils.setModeAudio(0)
+      BrekekeUtils.setAudioMode(0)
     }
 
     await addCallHistory(c)
@@ -582,7 +581,7 @@ export class CallStore {
           args[0],
         )
         args[0] = { ...args[0], extraHeaders }
-      } catch (error) {
+      } catch (err) {
         return
       }
     }
