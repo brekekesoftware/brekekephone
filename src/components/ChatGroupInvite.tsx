@@ -214,9 +214,8 @@ export class UnreadChatNoti extends Component {
         return false
       }
 
-      // Always show chat message notifications when in Call manage screen
-      const inPageCallManage = getCallStore().inPageCallManage
-      if (!!inPageCallManage) {
+      // always show chat message notifications when in call manage screen
+      if (getCallStore().inPageCallManage) {
         return true
       }
 
