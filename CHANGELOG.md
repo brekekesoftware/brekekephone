@@ -4,6 +4,7 @@
 - Fix it should login into the correct account when press on the missed call notification (issue 955)
 - Fix it should update avatar without cache in the next call (issue 958)
 - Fix it should display name from phone book in calls (issue 960)
+- Fix android it should have notification sound after a missed group call answer simultaneously (issue 974)
 
 #### 2.16.2
 
