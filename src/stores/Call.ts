@@ -17,6 +17,7 @@ import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
+import { toast } from './ToastStore'
 
 export class Call {
   constructor(private store: CallStore) {}
@@ -40,6 +41,11 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
+  @observable rqLoadings: { [k: string]: boolean } = {
+    hold: false,
+    record: false,
+  }
+
   phoneappliUsername = ''
   phoneappliAvatar = ''
   getDisplayName = () =>
@@ -117,7 +123,7 @@ export class Call {
       return
     }
     this.isAboutToHangup = true
-    if (this.holding) {
+    if (this.holding && !this.rqLoadings['hold']) {
       await this.toggleHold().then(
         success =>
           !success &&
@@ -176,6 +182,8 @@ export class Call {
     BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
   }
   @action toggleRecording = () => {
+    this.rqLoadings['record'] = true
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
       ? pbx.stopRecordingTalker
       : pbx.startRecordingTalker
@@ -185,6 +193,8 @@ export class Call {
       .catch(this.onToggleRecordingFailure)
   }
   @action private onToggleRecordingFailure = (err: Error | boolean) => {
+    this.rqLoadings['record'] = false
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
       return
     }
@@ -206,24 +216,49 @@ export class Call {
 
   @observable holding = false
   private prevHolding = false
+  requestIds: string[] = []
 
-  @action private toggleHold = () => {
+  @action cancelPendingRequest = () => {
+    this.requestIds.forEach(id => {
+      pbx.cancelRequest(id)
+    })
+    this.requestIds = []
+  }
+
+  private toggleHoldLoading = (isLoading: boolean) => {
+    this.rqLoadings['hold'] = isLoading
+    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
+  }
+
+  @action private toggleHold = async () => {
+    this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHolding(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
+    const res = await pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
 
-    return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
-      .then(this.onToggleHoldFailure)
+    if (!res) {
+      this.onToggleHoldFailure(false)
+      return
+    }
+    const { promise, requestId } = res
+
+    if (requestId) {
+      this.requestIds.push(requestId)
+    }
+    return promise
+      .then(this.onToggleHoldSuccess)
       .catch(this.onToggleHoldFailure)
   }
 
+  private onToggleHoldSuccess = () => {
+    this.toggleHoldLoading(false)
+    BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+  }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
-    if (err === true) {
-      return true
-    }
-
+    this.toggleHoldLoading(false)
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
     if (typeof err !== 'boolean') {
@@ -231,8 +266,13 @@ export class Call {
         prevFn === 'unhold'
           ? intlDebug`Failed to unhold the call`
           : intlDebug`Failed to hold the call`
-      RnAlert.error({ message, err })
-      // already show error, considered it's handled
+      toast.error({ message, err }, 8000)
+      BrekekeUtils.showToast(
+        this.callkeepUuid,
+        message.label,
+        'error',
+        err?.message,
+      )
       return true
     }
     return false

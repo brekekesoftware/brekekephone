@@ -540,6 +540,7 @@ class PageCallManage extends Component<{
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={Nav().goToPageCallBackgrounds}
             textInputStyle={css.labelStyle}
+            disabled={getCallStore().isAnyHoldLoading}
             value={
               n > 1
                 ? intl`${n} other calls are in background`
@@ -635,6 +636,7 @@ class PageCallManage extends Component<{
               noborder
               onPress={c.toggleRecording}
               path={c.recording ? mdiRecordCircle : mdiRecord}
+              loading={c.rqLoadings['record']}
               size={40}
               textcolor='white'
             />
@@ -664,7 +666,7 @@ class PageCallManage extends Component<{
               onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
-              msLoading={1000}
+              loading={c.rqLoadings['hold']}
               textcolor='white'
             />
           )}
@@ -681,7 +683,7 @@ class PageCallManage extends Component<{
     const isHangupBtnHidden = incoming && this.isBtnHidden('hangup')
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
-        {c.holding ? (
+        {c.holding && !c.rqLoadings['hold'] ? (
           <View style={css.txtHold}>
             <RnText small white center>
               {intl`CALL IS ON HOLD`}
