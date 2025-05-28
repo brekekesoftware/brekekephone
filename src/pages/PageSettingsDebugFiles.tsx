@@ -29,12 +29,13 @@ export class PageSettingsDebugFiles extends Component {
     const logFiles = debugStore.logFiles
     return (
       <Layout
-        description={intl`Debug Files`}
+        title={intl`Debug Log`}
+        description={intl`Debug Log`}
         dropdown={
           Platform.OS !== 'web'
             ? [
                 {
-                  label: intl`Clear all log files`,
+                  label: intl`Clear all Debug Log`,
                   onPress: debugStore.clearLogFiles,
                   danger: true,
                 },
@@ -42,9 +43,8 @@ export class PageSettingsDebugFiles extends Component {
             : undefined
         }
         onBack={Nav().backToPageAccountSignIn}
-        title={intl`Debug Files`}
       >
-        <Field isGroup label={intl`LOG FILES (${logFiles.length})`} />
+        <Field isGroup label={intl`DEBUG LOG (${logFiles.length})`} />
         {logFiles.length > 0 &&
           logFiles.map(file => (
             <Field

@@ -831,7 +831,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void updateConnectionStatus(String msg, boolean isConnFailure) {
-
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
