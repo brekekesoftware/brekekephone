@@ -1,3 +1,8 @@
+#### 2.16.2
+
+- Embed:
+  - Add support for user agent in embed login options
+
 #### 2.16.1
 
 - Upgrade webrtcclient to 2.0.37.356
@@ -7,6 +12,16 @@
 #### 2.16.0
 
 - Initial implementation of video conference
+
+#### 2.15.10
+
+- Fix ios it should not crash when press hold
+
+#### 2.15.9
+
+- Implement pal ping interval and reconnect mechanic based on the last activity timestamp
+  - webphone.pal.ping_interval, default 20s
+  - webphone.pal.ping_timeout, default 30s
 
 #### 2.15.8
 

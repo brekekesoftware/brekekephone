@@ -153,7 +153,7 @@ export const SmartImage = ({
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
-          userAgent={getAuthStore().userAgentConfig}
+          userAgent={getAuthStore().getUserAgentConfig()}
         />
       ) : (
         <Image
