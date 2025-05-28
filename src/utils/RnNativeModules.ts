@@ -45,6 +45,7 @@ type TBrekekeUtils = {
   permDisableBatteryOptimization(): Promise<boolean>
   permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
+  setAudioMode: (mode: number) => void
   // android video conference
   setRemoteStreams: (
     uuid: string,
@@ -118,6 +119,7 @@ const Polyfill: TBrekekeUtils = {
   permDisableBatteryOptimization: () => Promise.resolve(false),
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
+  setAudioMode: () => undefined,
   // android video conference
   setRemoteStreams: () => undefined,
   setStreamActive: () => undefined,
