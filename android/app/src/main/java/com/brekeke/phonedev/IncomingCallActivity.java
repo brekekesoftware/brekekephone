@@ -326,6 +326,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onResume() {
     super.onResume();
     debug("onResume answered=" + answered);
+    BrekekeUtils.emit("onResume", "");
     if (!answered) {
       BrekekeUtils.staticStartRingtone();
     } else {

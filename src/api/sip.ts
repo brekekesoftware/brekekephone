@@ -3,8 +3,6 @@ import jsonStableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
-import { currentVersion } from '../components/variables'
-import { bundleIdentifier } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -41,6 +39,7 @@ export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
 
 const removePnTokenViaSip = async (n: ParsedPn) => {
   const s = getCallStore()
+  const as = getAuthStore()
   if (n.callkeepUuid) {
     s.onCallKeepEndCall(n.callkeepUuid)
   }
@@ -52,7 +51,7 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
   }
   console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
-  const userAgent = await getUserAgent(n)
+  const userAgent = await as.getUserAgent(n)
   phone.startWebRTC({
     register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
@@ -305,6 +304,7 @@ export class SIP extends EventEmitter {
   }
 
   connect = async (o: SipLoginOption, a: AccountUnique) => {
+    const as = getAuthStore()
     console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
     resetProcessedPn()
     this.phone?._removeEventListenerPhoneStatusChange?.()
@@ -323,7 +323,7 @@ export class SIP extends EventEmitter {
     }
     phone.setDefaultCallOptions(callOptions)
     //
-    const userAgent = await getUserAgent(a)
+    const userAgent = await as.getUserAgent(a)
     phone.startWebRTC({
       url: getWssUrl(o.hostname, o.port),
       tls: true,
@@ -508,21 +508,6 @@ const parseCanceledPnIds = (data?: string) => {
       completedBy: lowers.match(/call completed by ([^"]+)/)?.[0],
     }
   })
-}
-
-const osMap: { [k: string]: string } = {
-  ios: 'iOS',
-  android: 'Android',
-  web: 'Web',
-}
-export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
-  const au = 'to' in a ? await accountStore.findByPn(a) : a
-  const d = await accountStore.findData(au)
-  if (d?.userAgent) {
-    return d.userAgent
-  }
-  const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
 }
 
 const getWssUrl = (host?: string, port?: string) =>
