@@ -64,7 +64,7 @@ class DebugStore {
     const file = (await RNFS.stat(path)) as unknown as ReadDirItem
     // update the file info
     Object.assign(file, { path, name: fileName })
-    
+
     this.logFiles = [file, ...this.logFiles]
     this.currentFile = file
     return file
