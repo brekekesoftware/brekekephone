@@ -1,14 +1,18 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.push_notification;
+
+import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.util.Log;
+import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService;
 import java.util.ArrayList;
 import org.json.JSONArray;
 
+// custom push notification
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static String TAG = "BrekekeMessagingService";
   private static ArrayList<String> initialNotifications = null;
@@ -38,10 +42,10 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       BrekekeUtils.emit("phonePermission", "");
       return;
     }
+    ReactApplication r = (ReactApplication) this.getApplication();
     // it should close the default dialer permission popup when there is an incoming call
     BrekekeUtils.resolveDefaultDialer("The call is incoming");
     BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
-
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();
     }
@@ -52,6 +56,14 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }
 
+    // fix [Crash] Android - AssertionException: Expected to run on UI thread
+    runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            LpcUtils.createReactContextInBackground(r);
+          }
+        });
     // Build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
     RemoteMessage newRemoteMessage =
         new RemoteMessage.Builder(remoteMessage.getFrom())
@@ -61,12 +73,5 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
             .build();
 
     super.onMessageReceived(newRemoteMessage);
-
-    // construct and load our normal React JS code bundle
-    ReactInstanceManager rim =
-        ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground();
-    }
   }
 }
