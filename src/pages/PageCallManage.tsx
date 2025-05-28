@@ -255,8 +255,10 @@ class PageCallManage extends Component<{
   call: Call
 }> {
   componentDidMount = () => {
-    // Handle the case when app is killed and opened during a call with incoming call
-    this.props.call.incoming && this.onAppStateChange(AppState.currentState)
+    // handle the case when app is killed and opened during a call with incoming call
+    if (this.props.call.incoming) {
+      this.onAppStateChange(AppState.currentState)
+    }
 
     this.checkJavaPn()
     this.componentDidUpdate()
@@ -336,7 +338,6 @@ class PageCallManage extends Component<{
   private openJavaPnOnVisible = () => {
     const { call: c } = this.props
     const s = getCallStore()
-
     if (
       this.hasJavaPn &&
       this.isVisible() &&
