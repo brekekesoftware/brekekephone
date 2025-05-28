@@ -75,7 +75,8 @@ export class CallStore {
     if (!uuid || !n) {
       return
     }
-    if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
+    const c = this.getCallKeep(uuid)
+    if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
@@ -83,16 +84,15 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
-        const call = this.getCallKeep(uuid)
-        if (call) {
-          call.isAutoAnswer = true
-        }
+        c.isAutoAnswer = true
+        BackgroundTimer.setTimeout(() => {
+          RNCallKeep.answerIncomingCall(uuid)
+        }, 2000)
       }
     }
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
     // assign the data and config
-    const c = this.getCallKeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
