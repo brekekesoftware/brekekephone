@@ -7,7 +7,7 @@
         android:left="2dp"
         android:bottom="2dp"
         android:right="2dp"
-        android:drawable="@drawable/ic_switch_camera"
+        android:drawable="@drawable/ic_video_inactive"
       />
     </layer-list>
   </item>
@@ -18,7 +18,7 @@
         android:left="2dp"
         android:bottom="2dp"
         android:right="2dp"
-        android:drawable="@drawable/ic_switch_camera"
+        android:drawable="@drawable/ic_video_active_white"
       />
     </layer-list>
   </item>

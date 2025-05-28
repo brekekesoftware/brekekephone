@@ -1080,20 +1080,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsFrontCamera(String uuid, boolean isFrontCamera) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnSwitchCamera(isFrontCamera);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
   public void setOnHold(String uuid, boolean holding) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {

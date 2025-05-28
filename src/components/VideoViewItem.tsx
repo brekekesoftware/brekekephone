@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
-import { mdiCameraRolate } from '../assets/icons'
+import { mdiCameraRolate, mdiVideo, mdiVideoOff } from '../assets/icons'
+import { getCallStore } from '../stores/callStore'
 import { RnIcon } from './RnIcon'
 import { VideoPlayer } from './VideoPlayer'
 
@@ -14,6 +15,7 @@ type VideoViewItemProps = {
   view: { width: number; height: number }
   enabled?: boolean
   isFrontCamera?: boolean
+  toggleVideo?(): void
 }
 
 export const VideoViewItem = observer((props: VideoViewItemProps) => {
@@ -21,12 +23,13 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     sourceObject,
     active = false,
     onSwitchCamera,
+    toggleVideo,
     showSwitchCamera = false,
     view,
     onSelect,
     enabled = true,
   } = props
-
+  const c = getCallStore().getOngoingCall()
   return (
     <View
       style={[
@@ -50,12 +53,24 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
           />
         </TouchableOpacity>
       </View>
-      {showSwitchCamera && (
+      {showSwitchCamera && c && (
         <View
           style={{
             ...styles.switchCameraView,
           }}
         >
+          <TouchableOpacity
+            onPress={() => toggleVideo?.()}
+            style={styles.switchCameraBtn}
+          >
+            <RnIcon
+              path={
+                c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
+              }
+              color='white'
+            />
+          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => onSwitchCamera?.()}
             style={styles.switchCameraBtn}
@@ -83,12 +98,13 @@ const styles = StyleSheet.create({
   switchCameraView: {
     position: 'absolute',
     zIndex: 1,
-    top: 0,
+    bottom: 0,
     left: 0,
     width: '100%',
-    height: '100%',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   switchCameraBtn: {
     width: 28,
