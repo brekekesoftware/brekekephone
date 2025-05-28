@@ -1,9 +1,10 @@
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
-import { debounce } from 'lodash'
+import { debounce, orderBy } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking, Platform } from 'react-native'
+import type { ReadDirItem } from 'react-native-fs'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
@@ -19,19 +20,105 @@ declare global {
 }
 
 let store = null as any as DebugStore
-// the location of 2 log file, log2 will be deleted and replaced by log1
-//    when log1 reach the limit, then log1 will be reset
-// the `log` will be used for combining the two above files in ios
-//    because in ios Share only works with `file://...` url
-const [log, log1, log2] = ['log', 'log1', 'log2'].map(n =>
-  Platform.OS === 'web'
-    ? ''
-    : `${RNFS.DocumentDirectoryPath}/brekeke-phone-${n}.txt`,
-)
-const maximumBytes = 100000 // 100KB
+const LOG_DIR = `${RNFS.DocumentDirectoryPath}`
+const LOG_PREFIX = 'brekeke_phone_log_'
 
+const maximumBytes = 300000 // 300KB
+const maxFiles = 20
+export const getFilePath = (rootPath: string, file: string) =>
+  `${rootPath}/${file}`
+
+export const getTotalFilesSize = (files: ReadDirItem[]) => {
+  if (!files.length) {
+    return 0
+  }
+  let totalSize = 0
+  for (const file of files) {
+    totalSize += file.size
+  }
+  return totalSize
+}
 class DebugStore {
   loading = true
+  private timer = 0
+  @observable logFiles: ReadDirItem[] = []
+  @observable totalLogFiles = 0
+  @observable currentFile: ReadDirItem | undefined
+
+  checkAndCreateFile = async (rootPath: string, fileName: string) => {
+    if (!fileName) {
+      return
+    }
+    const path = getFilePath(rootPath, fileName)
+    const fileExists = await RNFS.exists(path)
+    if (!fileExists) {
+      // create the file with initial content
+      await RNFS.writeFile(path, '', 'utf8')
+      if (this.logFiles.length === maxFiles) {
+        const f = this.logFiles.pop()
+        if (f) {
+          await RNFS.unlink(f.path)
+        }
+      }
+    }
+    const file = (await RNFS.stat(path)) as unknown as ReadDirItem
+    // update the file info
+    Object.assign(file, { path, name: fileName })
+
+    this.logFiles = [file, ...this.logFiles]
+    this.currentFile = file
+    return file
+  }
+  createLogFileName = () =>
+    // use moment to get the current date and time in the desired format
+    LOG_PREFIX + moment().format('YYYYMMDD_HHmmss') + '.txt'
+
+  getLogFiles = async () => {
+    try {
+      // check if the directory exists
+      const dirExists = await RNFS.exists(LOG_DIR)
+      if (!dirExists) {
+        await RNFS.mkdir(LOG_DIR)
+        await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
+        return
+      }
+      // get the list of files in the directory
+      const files = await RNFS.readDir(LOG_DIR)
+      const sortedFiles = files.filter(
+        file => file.isFile() && file.name.startsWith(LOG_PREFIX),
+      )
+      if (sortedFiles.length === 0) {
+        await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
+        return
+      }
+      // sort by datetime
+      this.logFiles = orderBy(
+        sortedFiles,
+        [
+          file => {
+            const str = file.name.split('_')
+            const date = str[3] + str[4].replace('.txt', '')
+            return moment(date, 'YYYYMMDDHHmmss').unix()
+          },
+        ],
+        ['desc'],
+      )
+
+      this.totalLogFiles = getTotalFilesSize(this.logFiles)
+      this.currentFile = this.logFiles[0]
+      if (
+        !this.logFiles[0].name.startsWith(
+          LOG_PREFIX + moment().format('YYYYMMDD'),
+        )
+      ) {
+        await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
+        return
+      }
+      return
+    } catch (error) {
+      return error
+    }
+  }
   // by default only error logs will be captured
   // if this flag is turned on, all logs will be captured
   // this flag will be saved to storage and we will read it again
@@ -45,10 +132,7 @@ class DebugStore {
     )
   }
 
-  // cache the size of log files
-  @observable logSizes = [0, 0]
-  getLogSize = () => this.logSizes.reduce((sum, s) => sum + s, 0)
-  getLogSizeStr = () => `${filesize(this.getLogSize())}`
+  getLogSizeStr = () => `${filesize(this.totalLogFiles)}`
 
   // use a queue to write logs to file in batch
   logQueue: string[] = []
@@ -83,46 +167,48 @@ class DebugStore {
     if (!this.logQueue.length) {
       return
     }
+    if (!this.currentFile) {
+      await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
+    }
+    if (!this.currentFile) {
+      return
+    }
     const msg = this.logQueue.join('\n')
     this.logQueue = []
-    // append to log1
-    await RNFS.appendFile(log1, msg + '\n', 'utf8')
-    const { size } = await RNFS.stat(log1)
-    this.logSizes[0] = Number(size)
-    // if the size of log1 passes the limit
-    //    we will copy it to log2 and clear the log1
-    if (this.logSizes[0] > maximumBytes) {
-      this.logSizes[1] = this.logSizes[0]
-      await RNFS.unlink(log2).catch((err: Error) => {
-        console.error('debugStore RNFS.unlink(log2).catch error:', err)
-      })
-      await RNFS.moveFile(log1, log2)
+    await RNFS.appendFile(this.currentFile.path, msg + '\n', 'utf8')
+    const { size } = (await RNFS.stat(
+      this.currentFile.path,
+    )) as unknown as ReadDirItem
+    this.totalLogFiles = this.totalLogFiles + (size - this.currentFile.size)
+    // update logFiles
+    Object.assign(this.currentFile, { size })
+    this.logFiles[0] = this.currentFile
+    if (this.currentFile.size > maximumBytes) {
+      await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
     }
   }
   writeFileBatch = debounce(this.writeFile, 300, { maxWait: 1000 })
 
-  openLogFile = () =>
-    this.openLogFileWithoutCatch().catch((err: Error) => {
+  openLogFile = (file: ReadDirItem) =>
+    this.openLogFileWithoutCatch(file).catch((err: Error) => {
       RnAlert.error({
         message: intlDebug`Failed to build and open log file`,
         err,
       })
     })
-  openLogFileWithoutCatch = async () => {
-    const promises = [log1, log2].map(l =>
-      RNFS.exists(l)
-        .then(e => (e ? RNFS.readFile(l, 'utf8') : ''))
-        .then(f => f || ''),
-    )
-    const [f0, f1] = await Promise.all(promises)
-    const title = `brekeke_phone_log_${moment().format('YYMMDDHHmmss')}.txt`
+  openLogFileWithoutCatch = async (file: ReadDirItem) => {
+    const isFileExists = await RNFS.exists(file.path)
+    if (!isFileExists) {
+      return
+    }
+    const title = file.name
     let url: string | null = null
     // share works inconsistency between android and ios
     if (Platform.OS === 'ios') {
-      await RNFS.writeFile(log, f1 + f0, 'utf8')
-      url = log // only works with `file://...`
+      url = file.path // only works with `file://...`
     } else {
-      const b64 = Buffer.from(f1 + f0).toString('base64')
+      const content = await RNFS.readFile(file.path, 'utf8')
+      const b64 = Buffer.from(content).toString('base64')
       url = `data:text/plain;base64,${b64}` // only works with base64
     }
     Share.open({ title, url, subject: title })
@@ -145,12 +231,14 @@ class DebugStore {
     })
   clearLogFilesWithoutCatch = () =>
     Promise.all(
-      [log1, log2].map((l, i) =>
-        RNFS.exists(l)
-          .then(e => (e ? RNFS.unlink(l) : undefined))
-          .then(() => (this.logSizes[i] = 0)),
+      this.logFiles.map((l, i) =>
+        RNFS.exists(l.path).then(e => (e ? RNFS.unlink(l.path) : undefined)),
       ),
-    )
+    ).then(() => {
+      this.logFiles = []
+      this.totalLogFiles = 0
+      this.currentFile = undefined
+    })
 
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
@@ -225,31 +313,19 @@ class DebugStore {
 
   init = async () => {
     this.loading = true
-    // read size of log files using stat for the initial state
-    const promises = [log1, log2].map((l, i) =>
-      RNFS.exists(l)
-        .then(e => (e ? RNFS.stat(l) : undefined))
-        .then(e => (e ? (this.logSizes[i] = Number(e.size) || 0) : 0))
-        .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to read debug log file size`,
-            err,
-          })
-        }),
-    )
-    // delete the combined unused log file
-    // this file will be created every time user request opening the log file
-    //    (ios only because in ios Share only works with `file://...` url)
+    const promises: Promise<any>[] = []
+    // get latest log file
     promises.push(
-      RNFS.exists(log)
-        .then(e => (e ? RNFS.unlink(log) : undefined))
-        .catch((err: Error) => {
+      this.getLogFiles()
+        .then(async file => {})
+        .catch(err => {
           RnAlert.error({
-            message: intlDebug`Failed to delete unused debug log file`,
+            message: intlDebug`Failed to get log files from storage`,
             err,
           })
         }),
     )
+
     // read debug log settings from storage
     promises.push(
       RnAsyncStorage.getItem('captureDebugLog')
