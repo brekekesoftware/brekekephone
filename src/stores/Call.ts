@@ -8,12 +8,10 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
-import { getPartyName } from '../stores/contactStore'
+import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
-import { authPBX } from './AuthPBX'
-import { getAuthStore } from './authStore'
 import type { CallStore } from './callStore2'
 import { contactStore } from './contactStore'
 import { intlDebug } from './intl'
@@ -46,7 +44,13 @@ export class Call {
   phoneappliAvatar = ''
   getDisplayName = () =>
     this.partyName ||
-    getPartyName(this.partyNumber) ||
+    getPartyName({ partyNumber: this.partyNumber }) ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
+  getDisplayNameAsync = async () =>
+    this.partyName ||
+    (await getPartyNameAsync(this.partyNumber)) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
@@ -223,8 +227,6 @@ export class Call {
         : intlDebug`Failed to start recording the call`
       RnAlert.error({ message, err })
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   toggleHoldWithCheck = () => {
@@ -249,27 +251,10 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
-  private checkTimeoutToReconnectPbx = (err: Error | boolean) => {
-    if (err === true) {
-      return
-    }
-    if (
-      err &&
-      typeof err === 'object' &&
-      (('code' in err && (err as any).code === -1) ||
-        ('message' in err && /timeout/i.test(err.message)))
-    ) {
-      getAuthStore().pbxState = 'stopped'
-      authPBX.dispose()
-      authPBX.auth()
-    }
-  }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
       return true
     }
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
 
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
@@ -319,8 +304,6 @@ export class Call {
       message: intlDebug`Failed to transfer the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action stopTransferring = () => {
@@ -339,8 +322,6 @@ export class Call {
       message: intlDebug`Failed to stop the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action conferenceTransferring = () => {
@@ -359,8 +340,6 @@ export class Call {
       message: intlDebug`Failed to make conference for the transfer`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   @action park = (number: string) =>
@@ -372,8 +351,6 @@ export class Call {
       message: intlDebug`Failed to park the call`,
       err,
     })
-    // try to re-auth if error is timeout
-    this.checkTimeoutToReconnectPbx(err)
   }
 
   private _autorunEmitEmbed = false // check if autorun is already started

@@ -199,7 +199,7 @@ export class PageCallTransferAttend extends Component {
             />
             <RnText center singleLine small>
               {phoneappliTarget.username ||
-                getPartyName(oc.transferring) ||
+                getPartyName({ partyNumber: oc.transferring }) ||
                 oc.transferring}
             </RnText>
           </View>

@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
-import { getUserAgent, sip } from '../api/sip'
+import { sip } from '../api/sip'
 import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
@@ -11,6 +11,9 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '../brekekejs'
+import { currentVersion } from '../components/variables'
+import { bundleIdentifier } from '../config'
+import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
 import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
@@ -18,7 +21,7 @@ import { BrekekeUtils } from '../utils/RnNativeModules'
 import { toBoolean } from '../utils/string'
 import { waitForActiveAppState } from '../utils/waitForActiveAppState'
 import { waitTimeout } from '../utils/waitTimeout'
-import type { Account, RecentCall } from './accountStore'
+import type { Account, AccountUnique, RecentCall } from './accountStore'
 import {
   accountStore,
   getAccountUniqueId,
@@ -122,7 +125,7 @@ export class AuthStore {
       this.pbxState,
       this.sipState,
       this.getCurrentAccount()?.ucEnabled ? this.ucState : undefined,
-    ].filter(s => !!s)
+    ].filter(s => s)
     return !states.includes('connecting') && states.includes('failure')
   }
 
@@ -151,8 +154,27 @@ export class AuthStore {
 
   @observable resourceLines: PbxResourceLine[] = []
 
-  @observable userAgentConfig: string | undefined = undefined
+  // user agent for sip pal client
+  // TODO check embed api, dont need to set BrekekeUtils since this in web only?
+  getUserAgent = async (a: ParsedPn | AccountUnique) =>
+    embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
+  private _getUserAgent = async (a: ParsedPn | AccountUnique) => {
+    const au = 'to' in a ? await accountStore.findByPn(a) : a
+    const d = await accountStore.findData(au)
+    if (d?.userAgent) {
+      return d.userAgent
+    }
+    const osMap: { [k: string]: string } = {
+      ios: 'iOS',
+      android: 'Android',
+      web: 'Web',
+    }
+    const os = osMap[Platform.OS]
+    return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
+  }
 
+  // user agent for http request such as iframe webview smart avatar...
+  @observable private userAgentConfig: string | undefined = undefined
   setUserAgentConfig = async (useragent: string | undefined) => {
     const isEnabled = useragent === undefined || toBoolean(useragent)
     if (!isEnabled) {
@@ -163,10 +185,13 @@ export class AuthStore {
     if (!a) {
       return
     }
-    const userAgent = await getUserAgent(a)
+    const userAgent = await this.getUserAgent(a)
     BrekekeUtils.setUserAgentConfig(userAgent)
     this.userAgentConfig = userAgent
   }
+  getUserAgentConfig = () =>
+    embedApi._pbxConfig['webphone.http.useragent.product'] ||
+    this.userAgentConfig
 
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
 
@@ -205,6 +230,10 @@ export class AuthStore {
 
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    console.log(
+      '=======================================================================',
+    )
+    console.log(`signIn debug: account ${a.pbxUsername} signed in`)
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
@@ -237,6 +266,9 @@ export class AuthStore {
   }
 
   signOut = () => {
+    console.log(
+      '=======================================================================',
+    )
     console.log('signOut debug: autoStore.signOut')
     saveLastSignedInId(false)
     this.signOutWithoutSaving()

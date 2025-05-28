@@ -323,6 +323,41 @@ class ContactStore {
     }
   }
 
+  updateContact = async (partyNumber: string) => {
+    if (!partyNumber) {
+      return
+    }
+    const c = this.getPhoneBookByPhoneNumber(partyNumber)
+    if (c) {
+      return
+    }
+    // try to get contact info from pbx
+    if (this.updateContactCache[partyNumber]) {
+      return
+    }
+    this.updateContactCache[partyNumber] = this.updateContactWithoutCache(
+      partyNumber,
+    ).catch(() => {
+      delete this.updateContactCache[partyNumber]
+    })
+  }
+  private updateContactCache: { [k: string]: Promise<void> | undefined } = {}
+  private updateContactWithoutCache = async (partyNumber: string) => {
+    const contacts = await pbx.getContacts({
+      search_text: partyNumber,
+      offset: 0,
+      limit: 1,
+    })
+    if (!contacts?.length) {
+      return
+    }
+    const contact = await pbx.getContact(contacts[0].id)
+    if (!contact) {
+      return
+    }
+    contactStore.upsertPhonebook(contact as Phonebook)
+  }
+
   getPhoneBookByPhoneNumber = (phoneNumber?: string) => {
     if (!phoneNumber) {
       return
@@ -367,7 +402,27 @@ class ContactStore {
 
 export const contactStore = new ContactStore()
 
-export const getPartyName = (partyNumber?: string) =>
-  (partyNumber && contactStore.getPbxUserById(partyNumber)?.name) ||
-  contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name ||
-  contactStore.getParkNameByParkNumber(partyNumber)
+// prioritize displaying phonebook name first for calls
+export const getPartyName = (o: {
+  partyNumber?: string
+  preferPbxName?: boolean
+}) => {
+  if (!o.partyNumber) {
+    return undefined
+  }
+
+  const phonebookName = contactStore.getPhoneBookByPhoneNumber(
+    o.partyNumber,
+  )?.display_name
+  const pbxUserName = contactStore.getPbxUserById(o.partyNumber)?.name
+  const parkName = contactStore.getParkNameByParkNumber(o.partyNumber)
+
+  return o.preferPbxName
+    ? pbxUserName || phonebookName || parkName
+    : phonebookName || pbxUserName || parkName
+}
+
+export const getPartyNameAsync = async (partyNumber: string) => {
+  await contactStore.updateContact(partyNumber)
+  return getPartyName({ partyNumber })
+}
