@@ -260,11 +260,25 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
+  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+    const act = hold ? 'hold' : 'unhold'
+    try {
+      const result = await pbx[`${act}Talker`](this.pbxTenant, this.pbxTalkerId)
+      if (result === true) {
+        this.holding = hold
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error(`setHoldWithoutCallKeep Failed to ${action} call:`, err)
+      return false
+    }
+  }
+
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     if (err === true) {
       return true
     }
-
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHolding(prevFn === 'unhold')
     if (typeof err !== 'boolean') {

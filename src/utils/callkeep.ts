@@ -163,10 +163,10 @@ export const setupCallKeepEvents = async () => {
   ) => {
     const uuid = e.callUUID.toUpperCase()
     const c = cs.calls.find(_ => _.callkeepUuid === uuid)
-    // In case the user has not answered the call on callkeep display incoming call
+    // in case the user has not answered the call on callkeep display incoming call
     // audio session should not be assigned to WebRTC
     // before the didActivateAudioSession event is called
-    if (Platform.OS === 'ios' && c && c.isAutoAnswer && !c.isAudioActive) {
+    if (Platform.OS === 'ios' && c?.isAutoAnswer && !c.isAudioActive) {
       return
     }
     if (c && c.holding !== e.hold) {
