@@ -238,28 +238,51 @@ export class Call {
     }
   }
 
+  @observable holding = false
+  private prevHolding = false
   toggleHoldWithCheck = () => {
     if (this.isAboutToHangup) {
       return
     }
     this.toggleHold()
   }
-
-  @observable holding = false
-  private prevHolding = false
-
   @action private toggleHold = () => {
     const fn = this.holding ? 'unhold' : 'hold'
-    this.setHolding(fn === 'hold')
+    this.setHoldWithCallkeep(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
-
     return pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleHoldFailure)
       .catch(this.onToggleHoldFailure)
   }
-
+  @action private onToggleHoldFailure = (err: Error | boolean) => {
+    if (err === true) {
+      return true
+    }
+    const prevFn = this.holding ? 'hold' : 'unhold'
+    this.setHoldWithCallkeep(prevFn === 'unhold')
+    if (typeof err !== 'boolean') {
+      const message =
+        prevFn === 'unhold'
+          ? intlDebug`Failed to unhold the call`
+          : intlDebug`Failed to hold the call`
+      RnAlert.error({ message, err })
+      // already show error, considered it's handled
+      return true
+    }
+    return false
+  }
+  private setHoldWithCallkeep = (holding: boolean) => {
+    this.holding = holding
+    if (!this.callkeepUuid || this.isAboutToHangup) {
+      return
+    }
+    // TODO
+    // might need to check if there wont be multiple calls holding=false
+    RNCallKeep.setOnHold(this.callkeepUuid, holding)
+    BrekekeUtils.setOnHold(this.callkeepUuid, holding)
+  }
   @action setHoldWithoutCallKeep = async (hold: boolean) => {
     const act = hold ? 'hold' : 'unhold'
     try {
@@ -275,35 +298,6 @@ export class Call {
     }
   }
 
-  @action private onToggleHoldFailure = (err: Error | boolean) => {
-    if (err === true) {
-      return true
-    }
-    const prevFn = this.holding ? 'hold' : 'unhold'
-    this.setHolding(prevFn === 'unhold')
-    if (typeof err !== 'boolean') {
-      const message =
-        prevFn === 'unhold'
-          ? intlDebug`Failed to unhold the call`
-          : intlDebug`Failed to hold the call`
-      RnAlert.error({ message, err })
-      // already show error, considered it's handled
-      return true
-    }
-    return false
-  }
-
-  private setHolding = (holding: boolean) => {
-    this.holding = holding
-    if (!this.callkeepUuid || this.isAboutToHangup) {
-      return
-    }
-    // TODO
-    // might need to check if there wont be multiple calls holding=false
-    RNCallKeep.setOnHold(this.callkeepUuid, holding)
-    BrekekeUtils.setOnHold(this.callkeepUuid, holding)
-  }
-
   @observable transferring = ''
   private prevTransferring = ''
   transferBlind = (number: string) => {
@@ -315,7 +309,7 @@ export class Call {
   @action transferAttended = (number: string) => {
     this.transferring = number
     // avoid issue no-voice if user set hold before
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -333,14 +327,14 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
@@ -351,14 +345,14 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     this.prevHolding = this.holding
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,
