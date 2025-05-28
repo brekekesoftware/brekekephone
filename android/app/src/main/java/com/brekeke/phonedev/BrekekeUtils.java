@@ -750,6 +750,32 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+  @ReactMethod
+  public void setAudioMode(int mode) {
+    if (am == null) {
+      return;
+    }
+    switch (mode) {
+      case AudioManager.MODE_NORMAL:
+        am.setMode(AudioManager.MODE_NORMAL);
+        break;
+      case AudioManager.MODE_RINGTONE:
+        am.setMode(AudioManager.MODE_RINGTONE);
+        break;
+      case AudioManager.MODE_IN_CALL:
+        am.setMode(AudioManager.MODE_IN_CALL);
+        break;
+      case AudioManager.MODE_IN_COMMUNICATION:
+        am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        break;
+      case AudioManager.MODE_CALL_SCREENING:
+        am.setMode(AudioManager.MODE_CALL_SCREENING);
+        break;
+      default:
+        am.setMode(AudioManager.MODE_NORMAL);
+        break;
+    }
+  }
 
   @ReactMethod
   public void setUserAgentConfig(String userAgentConfig) {
