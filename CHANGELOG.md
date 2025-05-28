@@ -9,6 +9,7 @@
 - Fix it should show UC notification in call manage screen (issue 982)
 - Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
 - Fix android it should resolve dialer permission automatically when there is an incoming call (issue 1006)
+- Fix android it should open app when press on the running in background notification (issue 1022, 1034)
 
 #### 2.16.2
 
