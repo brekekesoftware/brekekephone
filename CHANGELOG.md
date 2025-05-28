@@ -1,3 +1,7 @@
+#### 2.16.3
+
+- Improve debug log with multiples files, and mark for login logout
+
 #### 2.16.2
 
 - Embed:

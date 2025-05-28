@@ -230,6 +230,10 @@ export class AuthStore {
 
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    console.log(
+      '=======================================================================',
+    )
+    console.log(`signIn debug: account ${a.pbxUsername} signed in`)
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
@@ -262,6 +266,9 @@ export class AuthStore {
   }
 
   signOut = () => {
+    console.log(
+      '=======================================================================',
+    )
     console.log('signOut debug: autoStore.signOut')
     saveLastSignedInId(false)
     this.signOutWithoutSaving()
