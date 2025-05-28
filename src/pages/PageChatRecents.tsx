@@ -154,9 +154,7 @@ export class PageChatRecents extends Component {
     // when anyItem changes page will be render again => don't need timeout
     this.saveLastChatItem(arr)
 
-    arr = orderBy(arr, ['created', 'name'])
-      // .filter(c => !!c.created && !c.group)
-      .reverse()
+    arr = orderBy(arr, ['created', 'name']).reverse()
 
     return (
       <Layout

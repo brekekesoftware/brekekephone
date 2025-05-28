@@ -125,7 +125,7 @@ export class AuthStore {
       this.pbxState,
       this.sipState,
       this.getCurrentAccount()?.ucEnabled ? this.ucState : undefined,
-    ].filter(s => !!s)
+    ].filter(s => s)
     return !states.includes('connecting') && states.includes('failure')
   }
 
