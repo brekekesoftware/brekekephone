@@ -1,6 +1,7 @@
 #### 2.16.3
 
 - Improve debug log with multiples files, and mark for login logout
+- Fix it should update avatar without cache in the next call (issue 958)
 
 #### 2.16.2
 
