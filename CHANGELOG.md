@@ -8,6 +8,7 @@
 - Fix ios auto answer it should have audio (issue 975, 978, 1008)
 - Fix it should show UC notification in call manage screen (issue 982)
 - Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
+- Fix android it should resolve dialer permission automatically when there is an incoming call (issue 1006)
 
 #### 2.16.2
 
