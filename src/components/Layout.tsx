@@ -168,7 +168,7 @@ export const Layout: FC<
       </Container>
       {props.isShowToastMessage && (
         <Toast
-          isVisible={props.isShowToastMessage}
+          isVisible
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
           containerStyles={{
             marginTop: headerSpace,
