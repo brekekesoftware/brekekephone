@@ -465,17 +465,20 @@ export class PBX extends EventEmitter {
     }
     if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
       getAuthStore().pbxLoginFromAnotherPlace = true
+
+      const a = getAuthStore().getCurrentAccount()
+      if (a) {
+        console.log(
+          'pbxLoginFromAnotherPlace debug: remove token for account ' +
+            a.pbxUsername,
+        )
+        await SyncPnToken().sync(a, { noUpsert: true })
+      }
+
       if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
         console.log(
           'pbxLoginFromAnotherPlace: no call is in progress, disconnect SIP and PBX',
         )
-        const a = getAuthStore().getCurrentAccount()
-        if (a) {
-          console.log(
-            `pbxLoginFromAnotherPlace: remove token for account ${a.pbxUsername}`,
-          )
-          await SyncPnToken().sync(a, { noUpsert: true })
-        }
         authSIP.dispose()
         authPBX.dispose()
         // wait for the last device to complete syncing the token before allowing the current device to interact

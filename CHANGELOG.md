@@ -6,6 +6,7 @@
 - Fix it should display name from phone book in calls (issue 960)
 - Fix android it should have notification sound after a missed group call answer simultaneously (issue 974)
 - Fix it should show UC notification in call manage screen (issue 982)
+- Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
 
 #### 2.16.2
 
