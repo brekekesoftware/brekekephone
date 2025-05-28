@@ -5,7 +5,7 @@ import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
-import { getPartyName } from '../stores/contactStore'
+import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { permForCallLog } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
@@ -48,16 +48,18 @@ export const getUserInfoFromReasons = (reason?: string | false) => {
     phoneNumber: m[2]?.trim() || m[1]?.trim(),
   }
 }
-export const getReasonCancelCall = (ms?: {
+export const getReasonCancelCall = async (ms?: {
   name: string
   phoneNumber: string
 }) => {
   if (!ms) {
     return
   }
-  return intl`answered by ${
-    ms.name || getPartyName(ms.phoneNumber) || ms.phoneNumber
-  }`
+  let name = ms.name
+  if (!name) {
+    name = (await getPartyNameAsync(ms.phoneNumber)) || ms.phoneNumber
+  }
+  return intl`answered by ${name}`
 }
 
 export const addCallHistory = async (
@@ -106,7 +108,7 @@ export const addCallHistory = async (
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
-  const reason = getReasonCancelCall(answeredBy)
+  const reason = await getReasonCancelCall(answeredBy)
   const line = (isTypeCall && c?.line) || undefined
   // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
   const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
@@ -120,7 +122,7 @@ export const addCallHistory = async (
         created,
         incoming: c.incoming,
         answered: c.answered,
-        partyName: c.getDisplayName(),
+        partyName: await c.getDisplayNameAsync(),
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
@@ -135,7 +137,10 @@ export const addCallHistory = async (
         created,
         incoming: true,
         answered: false,
-        partyName: getPartyName(c.from) || c.displayName || c.from,
+        partyName:
+          getPartyName({ partyNumber: c.from, preferPbxName: true }) ||
+          c.displayName ||
+          c.from,
         partyNumber: c.from,
         duration: 0,
         reason,

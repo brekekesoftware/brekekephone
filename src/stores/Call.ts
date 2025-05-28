@@ -8,7 +8,7 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
-import { getPartyName } from '../stores/contactStore'
+import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -44,7 +44,13 @@ export class Call {
   phoneappliAvatar = ''
   getDisplayName = () =>
     this.partyName ||
-    getPartyName(this.partyNumber) ||
+    getPartyName({ partyNumber: this.partyNumber }) ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
+  getDisplayNameAsync = async () =>
+    this.partyName ||
+    (await getPartyNameAsync(this.partyNumber)) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id

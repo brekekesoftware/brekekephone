@@ -3,6 +3,7 @@
 - Improve debug log with multiples files, and mark for login logout
 - Fix it should login into the correct account when press on the missed call notification (issue 955)
 - Fix it should update avatar without cache in the next call (issue 958)
+- Fix it should display name from phone book in calls (issue 960)
 
 #### 2.16.2
 

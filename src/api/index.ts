@@ -9,7 +9,7 @@ import { authUC } from '../stores/AuthUC'
 import type { Call } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { chatStore, FileEvent } from '../stores/chatStore'
-import { contactStore, getPartyName } from '../stores/contactStore'
+import { contactStore, getPartyNameAsync } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 import { userStore } from '../stores/userStore'
@@ -208,12 +208,12 @@ class Api {
     sip.stopWebRTC()
     authSIP.auth()
   }
-  onSIPSessionStarted = (c: Call) => {
+  onSIPSessionStarted = async (c: Call) => {
     if (c.partyNumber === '8') {
       c.partyName = intl`Voicemail`
     }
     if (!c.partyName) {
-      c.partyName = getPartyName(c.partyNumber) || c.partyNumber
+      c.partyName = (await getPartyNameAsync(c.partyNumber)) || c.partyNumber
     }
     getCallStore().onCallUpsert(c)
   }

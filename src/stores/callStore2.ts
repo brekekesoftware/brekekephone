@@ -27,6 +27,7 @@ import { getAuthStore, reconnectAndWaitSip, waitSip } from './authStore'
 import { Call } from './Call'
 import { setCallStore } from './callStore'
 import type { CancelRecentPn } from './cancelRecentPn'
+import { contactStore } from './contactStore'
 import { intl, intlDebug } from './intl'
 import { Nav } from './Nav'
 import { RnAlert } from './RnAlert'
@@ -247,7 +248,7 @@ export class CallStore {
   }
 
   private incallManagerStarted = false
-  onCallUpsert: CallStore['upsertCall'] = c => {
+  onCallUpsert: CallStore['upsertCall'] = async c => {
     this.upsertCall(c)
     if (
       Platform.OS === 'android' &&
@@ -291,7 +292,7 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
-  @action private upsertCall = (
+  @action private upsertCall = async (
     // partial
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
@@ -441,10 +442,8 @@ export class CallStore {
     c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      webShowNotification(
-        c.getDisplayName() + ' ' + intl`Incoming call`,
-        c.getDisplayName(),
-      )
+      const name = await c.getDisplayNameAsync()
+      webShowNotification(name + ' ' + intl`Incoming call`, name)
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -461,7 +460,7 @@ export class CallStore {
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
-        c.getDisplayName(),
+        await c.getDisplayNameAsync(),
         'generic',
       )
     }
