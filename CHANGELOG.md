@@ -10,6 +10,8 @@
 - Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
 - Fix android it should resolve dialer permission automatically when there is an incoming call (issue 1006)
 - Fix android it should open app when press on the running in background notification (issue 1022, 1034)
+- Improve hold pal with pending cache and retry, add toast to show message on android incoming call
+- Fix it should prevent double quickly click hold button (issue 1031)
 
 #### 2.16.2
 
