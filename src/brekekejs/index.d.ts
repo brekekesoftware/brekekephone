@@ -76,6 +76,11 @@ export type GetPalOptions = {
   callrecording: string
 }
 
+export type PalMethodParams<K extends keyof PbxPal> = Parameters<
+  PbxPal[K]
+>[0] extends undefined
+  ? []
+  : [Parameters<PbxPal[K]>[0]]
 /* PBX */
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
@@ -96,10 +101,18 @@ export type Pbx = PbxPal & {
   // not actually exist in the sdk, should be added manually
   call_pal<K extends keyof PbxPal>(
     k: K,
-    ...p: Parameters<PbxPal[K]>[0] extends undefined
-      ? []
-      : [Parameters<PbxPal[K]>[0]]
+    ...p: PalMethodParams<K>
   ): Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
+}
+
+export type Request<K extends keyof PbxPal> = {
+  id: string
+  method: K
+  params: any[]
+  resolve: (value: Parameters<Parameters<PbxPal[K]>[1]>[0]) => void
+  reject: ErrorHandler
+  retryCount: number
+  cancelled?: boolean
 }
 
 export type PbxEvent = {

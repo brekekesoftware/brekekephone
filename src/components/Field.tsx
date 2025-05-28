@@ -295,6 +295,7 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
           style={[css.Field_Btn, css.Field_Btn__create, props.createBtnStyle]}
+          disabled={props.disabled}
         >
           <RnIcon
             color={v.colors.primary}

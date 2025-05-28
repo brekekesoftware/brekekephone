@@ -54,13 +54,19 @@ export const FieldButton: FC<
     label: string
     value: string
     textInputStyle?: TextInputProps['style']
+    disabled?: boolean
   }>
 > = p0 => {
   const { style, ...p } = p0
   return (
     <RnTouchableOpacity
       onPress={p.onCreateBtnPress}
-      style={[css.FieldButton, style]}
+      style={[
+        css.FieldButton,
+        style,
+        { backgroundColor: p.disabled ? '#f0f0f0' : 'white' },
+      ]}
+      disabled={p.disabled}
     >
       <View style={css.Inner}>
         <Field
@@ -69,6 +75,7 @@ export const FieldButton: FC<
           createBtnIconStyle={css.CreateBtnIcon}
           createBtnStyle={css.CreateBtn}
           transparent
+          disabled={p.disabled}
         />
       </View>
     </RnTouchableOpacity>

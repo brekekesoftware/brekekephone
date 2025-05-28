@@ -1,69 +1,116 @@
-import type { FC } from 'react'
-import { useEffect, useState } from 'react'
+import { observer } from 'mobx-react'
+import { useEffect, useRef } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
+import type { ToastType } from '../stores/ToastStore'
+import { toast } from '../stores/ToastStore'
 import { RnText } from './Rn'
+import { v } from './variables'
 
-const css = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    right: 0,
+const getBg = (type: ToastType) => {
+  switch (type) {
+    case 'success':
+      return v.colors.primary
+    case 'error':
+      return v.colors.danger
+    case 'warning':
+      return v.colors.warning
+    default:
+      return v.colors.primary
+  }
+}
+
+const s = StyleSheet.create({
+  root: {
     left: 0,
-    top: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    right: 0,
+    top: 0,
   },
-  content: {
-    padding: 10,
-    backgroundColor: '#000',
-    maxWidth: '50%',
-    opacity: 0.8,
-    borderRadius: 5,
+  item: {
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    marginBottom: 0,
+    marginHorizontal: 0,
+    borderEndEndRadius: 4,
   },
-  textStyle: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
+  text: {
+    color: 'white',
+  },
+  errorDetail: {
+    fontSize: 12,
+    color: 'white',
+    marginLeft: 4,
   },
 })
 
-type ToastProps = {
-  title: string
-  isVisible?: boolean
-  duration?: number
-  containerStyles?: {}
-}
+const TOAST_DISPLAY_DURATION = 2700
 
-const TOAST_ANIMATION_DURATION = 3000
-const MAX_LENGTH_TEXT = 50
+const Item = observer(
+  ({
+    data,
+    onEnd,
+  }: {
+    data: {
+      id: string
+      msg: string | undefined
+      type: ToastType
+      err?: Error
+    }
+    onEnd: () => void
+  }) => {
+    const fade = useRef(new Animated.Value(0)).current
+    const y = useRef(new Animated.Value(0)).current
 
-export const Toast: FC<ToastProps> = ({
-  title,
-  isVisible,
-  containerStyles,
-}: ToastProps) => {
-  const [fadeAnim] = useState(new Animated.Value(0))
-  const validTitle =
-    title.length > MAX_LENGTH_TEXT
-      ? `${title.substring(0, MAX_LENGTH_TEXT)}...`
-      : title
-
-  useEffect(() => {
-    if (isVisible) {
-      fadeAnim.setValue(1)
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: TOAST_ANIMATION_DURATION,
+    useEffect(() => {
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 500,
         useNativeDriver: true,
       }).start()
-    }
-  }, [fadeAnim, isVisible])
 
-  return (
-    <View style={[css.container, containerStyles]}>
-      <Animated.View style={[css.content, { opacity: fadeAnim }]}>
-        <RnText style={css.textStyle}>{validTitle}</RnText>
+      const timer = setTimeout(() => {
+        Animated.timing(fade, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(onEnd)
+      }, TOAST_DISPLAY_DURATION)
+
+      return () => clearTimeout(timer)
+    }, [fade, onEnd])
+
+    const errorDetail = data.err?.message
+
+    return (
+      <Animated.View
+        style={[
+          s.item,
+          {
+            backgroundColor: getBg(data.type),
+            opacity: fade,
+            transform: [{ translateY: y }],
+          },
+        ]}
+      >
+        {data?.msg && (
+          <RnText numberOfLines={1} ellipsizeMode='tail' style={s.text}>
+            {data.msg}
+          </RnText>
+        )}
+        {errorDetail && (
+          <RnText numberOfLines={2} ellipsizeMode='tail' style={s.errorDetail}>
+            {errorDetail}
+          </RnText>
+        )}
       </Animated.View>
-    </View>
-  )
-}
+    )
+  },
+)
+
+export const Toast = observer(() => (
+  <View style={s.root}>
+    {toast.items.map(t => (
+      <Item key={t.id} data={t} onEnd={() => toast.hide(t.id)} />
+    ))}
+  </View>
+))

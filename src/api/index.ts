@@ -73,22 +73,7 @@ class Api {
     }
 
     // handle pending request when pbx start
-    pbx.pendingRequests.forEach(({ funcName, params, callback }) => {
-      const fn = pbx[funcName] as Function
-      if (!fn) {
-        console.error(`PBX debug: can not find method ${funcName}`)
-        return
-      }
-      fn.apply(pbx, params)
-        .then(callback)
-        .catch(err => {
-          console.error(
-            `PBX debug: try to call ${funcName} more but still get error:`,
-            err,
-          )
-        })
-    })
-    pbx.pendingRequests = []
+    pbx.retryRequests()
 
     // when pbx reconnects due to timeout, we wait for successConnectCheckPeriod before
     // attempting to syncPnToken, getPbxConfig, and getPbxUsers again

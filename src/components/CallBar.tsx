@@ -122,6 +122,7 @@ export const CallBar = observer(() => {
             color={oc.holding ? v.colors.primary : v.color}
             onPress={oc.toggleHoldWithCheck}
             path={oc.holding ? mdiPlay : mdiPause}
+            loading={oc.rqLoadings['hold']}
           />
         </View>
       </RnTouchableOpacity>
