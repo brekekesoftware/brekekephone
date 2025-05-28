@@ -229,7 +229,8 @@ class ChatStore {
       name = chatStore.getGroupById(threadId)?.name
     } else {
       // user not set username
-      name = getPartyName(threadId, false) || threadId
+      name =
+        getPartyName({ partyNumber: threadId, preferPbxName: true }) || threadId
     }
 
     // show desktop notification for Web platform

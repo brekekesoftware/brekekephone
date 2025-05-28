@@ -305,9 +305,6 @@ export const parse = async (
     getAuthStore().saveActionOpenCustomPage = true
   }
 
-  // update phonebook info
-  contactStore.updateContact(n.from)
-
   // custom fork of react-native-voip-push-notification to get callkeepUuid
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen

@@ -291,7 +291,7 @@ export const UserItem: FC<
             >
               {partyName ||
                 name ||
-                getPartyName(partyNumber) ||
+                getPartyName({ partyNumber }) ||
                 partyNumber ||
                 id}
             </RnText>

@@ -332,6 +332,17 @@ class ContactStore {
       return
     }
     // try to get contact info from pbx
+    if (this.updateContactCache[partyNumber]) {
+      return
+    }
+    this.updateContactCache[partyNumber] = this.updateContactWithoutCache(
+      partyNumber,
+    ).catch(() => {
+      delete this.updateContactCache[partyNumber]
+    })
+  }
+  private updateContactCache: { [k: string]: Promise<void> | undefined } = {}
+  private updateContactWithoutCache = async (partyNumber: string) => {
     const contacts = await pbx.getContacts({
       search_text: partyNumber,
       offset: 0,
@@ -392,17 +403,26 @@ class ContactStore {
 export const contactStore = new ContactStore()
 
 // prioritize displaying phonebook name first for calls
-export const getPartyName = (partyNumber?: string, forCall: boolean = true) => {
-  if (!partyNumber) {
+export const getPartyName = (o: {
+  partyNumber?: string
+  preferPbxName?: boolean
+}) => {
+  if (!o.partyNumber) {
     return undefined
   }
 
-  const phonebookName =
-    contactStore.getPhoneBookByPhoneNumber(partyNumber)?.display_name
-  const pbxUserName = contactStore.getPbxUserById(partyNumber)?.name
-  const parkName = contactStore.getParkNameByParkNumber(partyNumber)
+  const phonebookName = contactStore.getPhoneBookByPhoneNumber(
+    o.partyNumber,
+  )?.display_name
+  const pbxUserName = contactStore.getPbxUserById(o.partyNumber)?.name
+  const parkName = contactStore.getParkNameByParkNumber(o.partyNumber)
 
-  return forCall
-    ? phonebookName || pbxUserName || parkName
-    : pbxUserName || phonebookName || parkName
+  return o.preferPbxName
+    ? pbxUserName || phonebookName || parkName
+    : phonebookName || pbxUserName || parkName
+}
+
+export const getPartyNameAsync = async (partyNumber: string) => {
+  await contactStore.updateContact(partyNumber)
+  return getPartyName({ partyNumber })
 }

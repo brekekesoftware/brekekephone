@@ -151,7 +151,7 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={Nav().backToPageChatRecents}
-        title={getPartyName(id, false) || id} // for user not set username
+        title={getPartyName({ partyNumber: id, preferPbxName: true }) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
         dropdown={[
