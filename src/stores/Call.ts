@@ -40,9 +40,6 @@ export class Call {
   @observable pbxUsername = ''
   @observable isFrontCamera = true
   @observable callConfig: CallConfig = {}
-  isAudioActive = false
-  isAutoAnswer = false
-  partyAnswered = false
   phoneappliUsername = ''
   phoneappliAvatar = ''
   getDisplayName = () =>
@@ -58,6 +55,10 @@ export class Call {
     this.pbxTalkerId ||
     this.id
   createdAt = Date.now()
+  // ios auto answer
+  isAutoAnswer = false
+  isAudioActive = false
+  partyAnswered = false
 
   @observable incoming = false
   @observable answered = false
