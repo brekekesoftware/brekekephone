@@ -59,6 +59,16 @@ type TBrekekeUtils = {
     uuid: string,
     d: Array<{ vId: string; enableVideo: boolean }>,
   ) => void
+  // android pending cache and retry pal
+  updateRqStatus(uuid: string, name: string, isLoading: boolean): void
+  updateConnectionStatus(msg: string, isConnFailure: boolean): void
+  showToast(
+    uuid: string,
+    msg: string,
+    type: 'success' | 'error' | 'warning' | 'info',
+    err: string | undefined,
+  ): void
+  updateAnyHoldLoading(isAnyHoldLoading: boolean): void
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -127,6 +137,11 @@ const Polyfill: TBrekekeUtils = {
   addStreamToView: () => undefined,
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
+  // android pending cache and retry pal
+  updateRqStatus: () => undefined,
+  updateConnectionStatus: () => undefined,
+  showToast: () => undefined,
+  updateAnyHoldLoading: () => undefined,
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,

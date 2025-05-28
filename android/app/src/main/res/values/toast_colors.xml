@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <color name="toast_success">#609B3A</color>
+  <color name="toast_error">#DC0F39</color>
+  <color name="toast_warning">#F1AF20</color>
+  <color name="toast_info">#9e9e9e</color>
+</resources>
