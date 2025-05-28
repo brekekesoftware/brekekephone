@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import {
   ActivityIndicator,
   AppState,
+  DeviceEventEmitter,
   Platform,
   StyleSheet,
   View,
@@ -16,6 +17,7 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
+import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
 import { getWebRootIdProps } from '../embed/polyfill'
@@ -101,6 +103,13 @@ const initApp = async () => {
     return false
   })
 
+  // android only, via incallmanager lib
+  DeviceEventEmitter.addListener('Proximity', data => {
+    if (!data?.isNear) {
+      pbx.ping()
+    }
+  })
+
   AppState.addEventListener('change', async () => {
     // to check and reconnect pbx
     if (AppState.currentState === 'active') {
@@ -115,6 +124,7 @@ const initApp = async () => {
 
     s.resetFailureState()
     cs.onCallKeepAction()
+    pbx.ping()
     pnToken.syncForAllAccounts()
     if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
       return

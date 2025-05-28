@@ -202,6 +202,7 @@ export type PbxPal = {
   cancelTransfer: PbxPal['hold']
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
+  ping(p: undefined, resolve: () => void, reject: ErrorHandler): void
 }
 
 export type PbxResourceLine = {
