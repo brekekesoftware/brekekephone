@@ -28,8 +28,7 @@ type TBrekekeUtils = {
   setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
-  setIsVideoCall(uuid: string, isVideoCall: boolean): void
-  setRemoteVideoStreamUrl(uuid: string, url: string): void
+  setIsVideoCall(uuid: string, isVideoCall: boolean, isMuted: boolean): void
   setIsFrontCamera(uuid: string, isFrontCamera: boolean): void
   setOnHold(uuid: string, holding: boolean): void
   setIsMute(uuid: string, isMute: boolean): void
@@ -46,7 +45,21 @@ type TBrekekeUtils = {
   permDisableBatteryOptimization(): Promise<boolean>
   permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
-
+  setAudioMode: (mode: number) => void
+  // android video conference
+  setRemoteStreams: (
+    uuid: string,
+    streams: Array<{ vId: string; streamUrl: string }>,
+  ) => void
+  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  setLocalStream: (uuid: string, streamUrl: string) => void
+  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  removeStreamFromView: (uuid: string, vId: string) => void
+  setOptionsRemoteStream: (
+    uuid: string,
+    d: Array<{ vId: string; enableVideo: boolean }>,
+  ) => void
+  // android pending cache and retry pal
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
   showToast(
@@ -56,6 +69,7 @@ type TBrekekeUtils = {
     err: string | undefined,
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
+
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
@@ -99,7 +113,6 @@ const Polyfill: TBrekekeUtils = {
   setJsCallsSize: () => undefined,
   setRecordingStatus: () => undefined,
   setIsVideoCall: () => undefined,
-  setRemoteVideoStreamUrl: () => undefined,
   setIsFrontCamera: () => undefined,
   setOnHold: () => undefined,
   setIsMute: () => undefined,
@@ -116,10 +129,20 @@ const Polyfill: TBrekekeUtils = {
   permDisableBatteryOptimization: () => Promise.resolve(false),
   permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
+  setAudioMode: () => undefined,
+  // android video conference
+  setRemoteStreams: () => undefined,
+  setStreamActive: () => undefined,
+  setLocalStream: () => undefined,
+  addStreamToView: () => undefined,
+  removeStreamFromView: () => undefined,
+  setOptionsRemoteStream: () => undefined,
+  // android pending cache and retry pal
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
   showToast: () => undefined,
   updateAnyHoldLoading: () => undefined,
+
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,

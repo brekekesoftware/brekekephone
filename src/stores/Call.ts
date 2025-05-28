@@ -8,7 +8,7 @@ import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
 import { embedApi } from '../embed/embedApi'
-import { getPartyName } from '../stores/contactStore'
+import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -50,11 +50,21 @@ export class Call {
   phoneappliAvatar = ''
   getDisplayName = () =>
     this.partyName ||
-    getPartyName(this.partyNumber) ||
+    getPartyName({ partyNumber: this.partyNumber }) ||
+    this.partyNumber ||
+    this.pbxTalkerId ||
+    this.id
+  getDisplayNameAsync = async () =>
+    this.partyName ||
+    (await getPartyNameAsync(this.partyNumber)) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
   createdAt = Date.now()
+  // ios auto answer
+  isAutoAnswer = false
+  isAudioActive = false
+  partyAnswered = false
 
   @observable incoming = false
   @observable answered = false
@@ -85,7 +95,7 @@ export class Call {
       options,
       this.remoteVideoEnabled,
       videoOptions,
-      exInfo,
+      'answered',
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
@@ -144,7 +154,6 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
-  @observable remoteVideoEnabled = false
   toggleVideo = () => {
     const pbxUser = contactStore.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -152,10 +161,20 @@ export class Call {
       return
     }
     if (this.localVideoEnabled) {
-      sip.disableVideo(this.id)
+      this.mutedVideo = !this.mutedVideo
+      if (this.mutedVideo) {
+        sip.setMutedVideo(true, this.id)
+      } else {
+        sip.setMutedVideo(false, this.id)
+      }
     } else {
-      sip.enableVideo(this.id)
+      this.mutedVideo = false
     }
+    // for video conference
+    // with the current logic of webrtcclient.js
+    // if we disable the local stream, it will remove all other streams
+    // so to make video conference works, we need to enable to keep receiving other streams
+    sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
     this.isFrontCamera = !this.isFrontCamera
@@ -163,10 +182,33 @@ export class Call {
     BrekekeUtils.setIsFrontCamera(this.callkeepUuid, this.isFrontCamera)
   }
 
-  @observable remoteVideoStreamObject: MediaStream | null = null
+  @observable localStreamObject: MediaStream | null = null
+  @observable videoClientSessionTable: Array<Session & { vId: string }> = []
+  @observable remoteVideoEnabled = false
+  @observable videoStreamActive: (Session & { vId: string }) | null = null
+  @observable remoteUserOptionsTable: {
+    [key: string]: {
+      withVideo: boolean
+      exInfo: string
+      muted: {
+        main?: boolean
+        videoClient?: boolean
+      }
+    }
+  } = {}
   voiceStreamObject: MediaStream | null = null
 
+  @action updateVideoStreamActive = stream => {
+    this.videoStreamActive = stream
+  }
+
+  @action updateVideoStreamFromNative = vId => {
+    const item = this.videoClientSessionTable.find(v => v.vId === vId)
+    item && this.updateVideoStreamActive(item)
+  }
+
   @observable muted = false
+  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -207,6 +249,10 @@ export class Call {
     }
   }
 
+  @observable holding = false
+  private prevHolding = false
+  // TODO: make this more generic to support all pal functions
+  pendingRequestIds: string[] = []
   toggleHoldWithCheck = () => {
     if (this.isAboutToHangup) {
       return
@@ -214,15 +260,11 @@ export class Call {
     this.toggleHold()
   }
 
-  @observable holding = false
-  private prevHolding = false
-  requestIds: string[] = []
-
   @action cancelPendingRequest = () => {
-    this.requestIds.forEach(id => {
+    this.pendingRequestIds.forEach(id => {
       pbx.cancelRequest(id)
     })
-    this.requestIds = []
+    this.pendingRequestIds = []
   }
 
   private toggleHoldLoading = (isLoading: boolean) => {
@@ -233,20 +275,14 @@ export class Call {
   @action private toggleHold = async () => {
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
-    this.setHolding(fn === 'hold')
+    this.setHoldWithCallkeep(fn === 'hold')
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
     const res = await pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
-
-    if (!res) {
-      this.onToggleHoldFailure(false)
-      return
-    }
     const { promise, requestId } = res
-
     if (requestId) {
-      this.requestIds.push(requestId)
+      this.pendingRequestIds.push(requestId)
     }
     return promise
       .then(this.onToggleHoldSuccess)
@@ -259,8 +295,11 @@ export class Call {
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     this.toggleHoldLoading(false)
+    if (err === true) {
+      return true
+    }
     const prevFn = this.holding ? 'hold' : 'unhold'
-    this.setHolding(prevFn === 'unhold')
+    this.setHoldWithCallkeep(prevFn === 'unhold')
     if (typeof err !== 'boolean') {
       const message =
         prevFn === 'unhold'
@@ -277,8 +316,7 @@ export class Call {
     }
     return false
   }
-
-  private setHolding = (holding: boolean) => {
+  private setHoldWithCallkeep = (holding: boolean) => {
     this.holding = holding
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
@@ -287,6 +325,25 @@ export class Call {
     // might need to check if there wont be multiple calls holding=false
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)
+  }
+  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+    const act = hold ? 'hold' : 'unhold'
+    try {
+      const res = await pbx[`${act}Talker`](this.pbxTenant, this.pbxTalkerId)
+      const { promise, requestId } = res
+      if (requestId) {
+        this.pendingRequestIds.push(requestId)
+      }
+      const result = await promise
+      if (result === true) {
+        this.holding = hold
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error(`setHoldWithoutCallKeep Failed to ${action} call:`, err)
+      return false
+    }
   }
 
   @observable transferring = ''
@@ -300,7 +357,7 @@ export class Call {
   @action transferAttended = (number: string) => {
     this.transferring = number
     // avoid issue no-voice if user set hold before
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     Nav().backToPageCallManage()
     return pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
@@ -318,14 +375,14 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to stop the transfer`,
       err,
@@ -336,14 +393,14 @@ export class Call {
     this.prevTransferring = this.transferring
     this.transferring = ''
     this.prevHolding = this.holding
-    this.setHolding(false)
+    this.setHoldWithCallkeep(false)
     return pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
-    this.setHolding(this.prevHolding)
+    this.setHoldWithCallkeep(this.prevHolding)
     RnAlert.error({
       message: intlDebug`Failed to make conference for the transfer`,
       err,

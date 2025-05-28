@@ -13,6 +13,7 @@ import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
+import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
 import { permForCall } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -74,7 +75,8 @@ export class CallStore {
     if (!uuid || !n) {
       return
     }
-    if (n.sipPn.autoAnswer && !this.calls.some(c => c.callkeepUuid !== uuid)) {
+    const c = this.getCallKeep(uuid)
+    if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
@@ -82,6 +84,7 @@ export class CallStore {
       // on ios, QA suggest to reject the call?
       // TODO
       if (Platform.OS === 'ios') {
+        c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {
           RNCallKeep.answerIncomingCall(uuid)
         }, 2000)
@@ -90,7 +93,6 @@ export class CallStore {
     checkAndRemovePnTokenViaSip(n)
     // find the current incoming call which is not callkeep
     // assign the data and config
-    const c = this.getCallKeep(uuid)
     if (c) {
       c.callkeepUuid = uuid
       BrekekeUtils.setCallConfig(uuid, JSON.stringify(c.callConfig))
@@ -246,7 +248,7 @@ export class CallStore {
   }
 
   private incallManagerStarted = false
-  onCallUpsert: CallStore['upsertCall'] = c => {
+  onCallUpsert: CallStore['upsertCall'] = async c => {
     this.upsertCall(c)
     if (
       Platform.OS === 'android' &&
@@ -290,9 +292,12 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
-  @action private upsertCall = (
+  @action private upsertCall = async (
     // partial
-    p: Pick<Call, 'id'> & Partial<Omit<Call, 'id'>>,
+    p: Pick<Call, 'id'> &
+      Partial<Omit<Call, 'id'>> & {
+        remoteVideoStreamObject?: MediaStream | null
+      },
   ) => {
     const auth = getAuthStore()
     this.updateCurrentCallDebounce()
@@ -314,16 +319,29 @@ export class CallStore {
         Object.assign(e.rawSession, p.rawSession)
         delete p.rawSession
       }
-      if (
-        p.videoSessionId &&
-        e.videoSessionId &&
-        p.videoSessionId !== e.videoSessionId &&
-        !p.remoteVideoEnabled
-      ) {
-        delete p.videoSessionId
-        delete p.remoteVideoEnabled
-        delete p.remoteVideoStreamObject
+
+      if (e.incoming && e.callkeepUuid) {
+        if (
+          p.localStreamObject &&
+          p.localStreamObject !== e.localStreamObject
+        ) {
+          BrekekeUtils.setLocalStream(
+            e.callkeepUuid,
+            p.localStreamObject.toURL(),
+          )
+        }
+        if (p.videoSessionId) {
+          if (p.remoteVideoStreamObject) {
+            BrekekeUtils.addStreamToView(e.callkeepUuid, {
+              vId: p.videoSessionId,
+              streamUrl: p.remoteVideoStreamObject.toURL(),
+            })
+          } else {
+            BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
+          }
+        }
       }
+
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now
@@ -331,6 +349,20 @@ export class CallStore {
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
       }
+      // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
+      if (p.remoteUserOptionsTable?.[e.partyNumber]?.exInfo === 'answered') {
+        e.partyAnswered = true
+      }
+      if (
+        Platform.OS === 'ios' &&
+        e.isAutoAnswer &&
+        !e.isAudioActive &&
+        e.partyAnswered &&
+        AppState.currentState !== 'active'
+      ) {
+        e.setHoldWithoutCallKeep(true)
+      }
+
       Object.assign(e, p, {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
@@ -343,12 +375,6 @@ export class CallStore {
           partyName: e.phoneappliUsername || p.partyName,
           partyImageSize: e.phoneappliAvatar ? 'large' : p.partyImageSize,
         })
-      }
-      if (e.incoming && e.callkeepUuid) {
-        BrekekeUtils.setRemoteVideoStreamUrl(
-          e.callkeepUuid,
-          e.remoteVideoStreamObject ? e.remoteVideoStreamObject.toURL() : '',
-        )
       }
 
       if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
@@ -364,7 +390,32 @@ export class CallStore {
         e.callkeepUuid &&
         typeof e.localVideoEnabled === 'boolean'
       ) {
-        BrekekeUtils.setIsVideoCall(e.callkeepUuid, !!e.localVideoEnabled)
+        BrekekeUtils.setIsVideoCall(
+          e.callkeepUuid,
+          e.localVideoEnabled,
+          e.mutedVideo,
+        )
+      }
+
+      if (e.incoming && e.callkeepUuid) {
+        const options = Object.entries(e.remoteUserOptionsTable).map(
+          ([key, v]) => {
+            const itemExisted = e.videoClientSessionTable.find(
+              item => item.user === key,
+            )
+            if (itemExisted) {
+              return {
+                vId: itemExisted.vId,
+                enableVideo: checkMutedRemoteUser(v.muted),
+              }
+            }
+            return {
+              vId: '',
+              enableVideo: false,
+            }
+          },
+        )
+        BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
 
       return
@@ -397,10 +448,8 @@ export class CallStore {
     c.startEmitEmbed()
     // desktop notification
     if (Platform.OS === 'web' && c.incoming && !c.answered) {
-      webShowNotification(
-        c.getDisplayName() + ' ' + intl`Incoming call`,
-        c.getDisplayName(),
-      )
+      const name = await c.getDisplayNameAsync()
+      webShowNotification(name + ' ' + intl`Incoming call`, name)
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -417,7 +466,7 @@ export class CallStore {
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
-        c.getDisplayName(),
+        await c.getDisplayNameAsync(),
         'generic',
       )
     }
@@ -426,6 +475,15 @@ export class CallStore {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
+
+    if (
+      c.callkeepUuid &&
+      !this.calls.some(i => i.callkeepUuid !== c.callkeepUuid)
+    ) {
+      c.isAutoAnswer =
+        c.isAutoAnswer || this.getAutoAnswerFromPnId(c.pnId) || false
+    }
+
     const callkeepAction = this.getCallKeepAction(c)
     console.log(
       `PN ID debug: upsertCall pnId=${c.pnId} callkeepUuid=${c.callkeepUuid} callkeepAction=${callkeepAction}`,
@@ -460,9 +518,6 @@ export class CallStore {
     if (c.callkeepUuid) {
       this.endCallKeep(c.callkeepUuid)
     }
-    await addCallHistory(c)
-    c.callkeepUuid = ''
-    c.callkeepAlreadyRejected = true
 
     this.calls = this.calls.filter(c0 => c0 !== c)
     // set number of total calls in our custom java incoming call module
@@ -486,7 +541,14 @@ export class CallStore {
     ) {
       this.incallManagerStarted = false
       IncallManager.stop()
+      // reset audio mode to allow notification to play sound
+      BrekekeUtils.setAudioMode(0)
     }
+
+    await addCallHistory(c)
+    c.callkeepUuid = ''
+    c.callkeepAlreadyRejected = true
+
     // emit to embed api
     c.finishEmitEmbed()
   }
@@ -703,6 +765,10 @@ export class CallStore {
       c.callkeepUuid = this.getUuidFromPnId(c.pnId)
     }
   }
+  private getAutoAnswerFromPnId = (pnId: string) =>
+    Object.values(this.callkeepMap)
+      .map(c => c.incomingPnData)
+      .find(d => d?.id === pnId)?.sipPn?.autoAnswer
 
   // logic to end call if timeout of 20s
   private autoEndCallKeepTimerId = 0

@@ -3,8 +3,6 @@ import jsonStableStringify from 'json-stable-stringify'
 import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
-import { currentVersion } from '../components/variables'
-import { bundleIdentifier } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -13,6 +11,7 @@ import type { Call, CallConfig } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
+import { contactStore, getPartyNameAsync } from '../stores/contactStore'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
@@ -41,6 +40,7 @@ export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
 
 const removePnTokenViaSip = async (n: ParsedPn) => {
   const s = getCallStore()
+  const as = getAuthStore()
   if (n.callkeepUuid) {
     s.onCallKeepEndCall(n.callkeepUuid)
   }
@@ -52,7 +52,7 @@ const removePnTokenViaSip = async (n: ParsedPn) => {
   }
   console.log('checkAndRemovePnTokenViaSip debug: begin')
   const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
-  const userAgent = await getUserAgent(n)
+  const userAgent = await as.getUserAgent(n)
   phone.startWebRTC({
     register: false,
     url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
@@ -150,8 +150,11 @@ export class SIP extends EventEmitter {
           partyNumber
       }
       const d = await getAuthStore().getCurrentDataAsync()
+      // update phonebook info
+      contactStore.updateContact(partyNumber)
       partyName =
         partyName ||
+        (await getPartyNameAsync(partyNumber)) ||
         d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       //
@@ -164,8 +167,8 @@ export class SIP extends EventEmitter {
         incoming: ev.rtcSession.direction === 'incoming',
         partyNumber,
         partyName,
-        remoteVideoEnabled: ev.remoteWithVideo,
         localVideoEnabled: ev.withVideo,
+        remoteVideoEnabled: ev.remoteWithVideo,
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
@@ -238,19 +241,28 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: true,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
+        localStreamObject: session.localVideoStreamObject,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {
       if (!ev) {
         return
       }
+      const session = phone.getSession(ev.sessionId)
       this.emit('session-updated', {
         id: ev.sessionId,
         videoSessionId: ev.videoClientSessionId,
-        remoteVideoEnabled: false,
         remoteVideoStreamObject: null,
+        videoClientSessionTable: Object.entries(
+          session.videoClientSessionTable,
+        ).map(([key, value]) => ({ ...value, vId: key })),
+        localStreamObject: session.localVideoStreamObject,
+        remoteUserOptionsTable: session.remoteUserOptionsTable,
       })
     })
 
@@ -281,11 +293,11 @@ export class SIP extends EventEmitter {
       //   this.enableVideo(ev.sessionId)
       // }
 
-      // TODO DuyP to fix issues related to video call
-      // this.emit('session-updated', {
-      //   id: ev.sessionId,
-      //   remoteUserOptionsTable: ev.remoteUserOptionsTable,
-      // })
+      // DuyP add this to handle toggle on/off video streams
+      this.emit('session-updated', {
+        id: ev.sessionId,
+        remoteUserOptionsTable: ev.remoteUserOptionsTable,
+      })
     })
 
     phone.addEventListener('rtcErrorOccurred', ev => {
@@ -296,6 +308,7 @@ export class SIP extends EventEmitter {
   }
 
   connect = async (o: SipLoginOption, a: AccountUnique) => {
+    const as = getAuthStore()
     console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
     resetProcessedPn()
     this.phone?._removeEventListenerPhoneStatusChange?.()
@@ -314,7 +327,7 @@ export class SIP extends EventEmitter {
     }
     phone.setDefaultCallOptions(callOptions)
     //
-    const userAgent = await getUserAgent(a)
+    const userAgent = await as.getUserAgent(a)
     phone.startWebRTC({
       url: getWssUrl(o.hostname, o.port),
       tls: true,
@@ -408,11 +421,16 @@ export class SIP extends EventEmitter {
       ? this.phone.sendDTMF(p.signal, p.sessionId)
       : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
-  enableVideo = (sessionId: string) => this.phone?.setWithVideo(sessionId, true)
-  disableVideo = (sessionId: string) =>
+  enableLocalVideo = (sessionId: string) =>
+    this.phone?.setWithVideo(sessionId, true)
+  disableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, false)
   setMuted = (muted: boolean, sessionId: string) =>
     this.phone?.setMuted({ main: muted }, sessionId)
+  setMutedVideo = (muted: boolean, sessionId: string) => {
+    this.phone?.setMuted({ videoClient: muted }, sessionId)
+  }
+
   switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
     // alert(this.currentFrontCamera)
     if (!this.phone) {
@@ -426,9 +444,13 @@ export class SIP extends EventEmitter {
     if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       return
     }
-    const cameras = this.cameraIds.map(s => s.deviceId)
-    this.currentCamera = isFrontCamera ? cameras[1] : cameras[0]
 
+    const cameras = this.cameraIds.map(s => s.deviceId)
+    if (cameras.length < 2) {
+      return
+    }
+
+    this.currentCamera = isFrontCamera ? cameras[0] : cameras[1]
     const videoOptions = {
       call: {
         mediaConstraints: sipCreateMediaConstraints(
@@ -442,7 +464,11 @@ export class SIP extends EventEmitter {
           isFrontCamera,
         ),
       },
+      shareStream: true,
     }
+
+    // TODO: Need handle the best way to switch camera still keep connection
+    // current: disable video then enable, same with UC desktop
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
@@ -488,21 +514,6 @@ const parseCanceledPnIds = (data?: string) => {
   })
 }
 
-const osMap: { [k: string]: string } = {
-  ios: 'iOS',
-  android: 'Android',
-  web: 'Web',
-}
-export const getUserAgent = async (a: ParsedPn | AccountUnique) => {
-  const au = 'to' in a ? await accountStore.findByPn(a) : a
-  const d = await accountStore.findData(au)
-  if (d?.userAgent) {
-    return d.userAgent
-  }
-  const os = osMap[Platform.OS]
-  return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
-}
-
 const getWssUrl = (host?: string, port?: string) =>
   `wss://${host}:${port}/phone`
 
@@ -543,6 +554,7 @@ const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
         answer: {
           mediaConstraints: sipCreateMediaConstraints(sourceId, true),
         },
+        shareStream: true,
       },
     },
     dtmfSendPal,

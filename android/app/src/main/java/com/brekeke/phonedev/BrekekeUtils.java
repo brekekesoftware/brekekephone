@@ -36,6 +36,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -749,6 +751,32 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // react methods
+  @ReactMethod
+  public void setAudioMode(int mode) {
+    if (am == null) {
+      return;
+    }
+    switch (mode) {
+      case AudioManager.MODE_NORMAL:
+        am.setMode(AudioManager.MODE_NORMAL);
+        break;
+      case AudioManager.MODE_RINGTONE:
+        am.setMode(AudioManager.MODE_RINGTONE);
+        break;
+      case AudioManager.MODE_IN_CALL:
+        am.setMode(AudioManager.MODE_IN_CALL);
+        break;
+      case AudioManager.MODE_IN_COMMUNICATION:
+        am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        break;
+      case AudioManager.MODE_CALL_SCREENING:
+        am.setMode(AudioManager.MODE_CALL_SCREENING);
+        break;
+      default:
+        am.setMode(AudioManager.MODE_NORMAL);
+        break;
+    }
+  }
 
   @ReactMethod
   public void updateAnyHoldLoading(boolean isAnyHoldLoading) {
@@ -863,7 +891,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void isOverlayPermissionGranted(Promise p) {
-    p.resolve(this.isOverlayPermissionGranted(ctx));
+    p.resolve(isOverlayPermissionGranted(ctx));
   }
 
   @ReactMethod
@@ -1039,27 +1067,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setIsVideoCall(String uuid, boolean isVideoCall) {
+  public void setIsVideoCall(String uuid, boolean isVideoCall, boolean isMuted) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              at(uuid).setBtnVideoSelected(isVideoCall);
-            } catch (Exception e) {
-            }
-          }
-        });
-  }
-
-  @ReactMethod
-  public void setRemoteVideoStreamUrl(String uuid, String url) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRemoteVideoStreamUrl(url);
+              at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
             } catch (Exception e) {
             }
           }
@@ -1231,5 +1245,91 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
       p.resolve(-1d);
     }
+  }
+
+  // android video conference
+
+  @ReactMethod
+  public void setRemoteStreams(String uuid, ReadableArray streams) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setRemoteStreams(streams);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setStreamActive(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setStreamActive(stream);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setLocalStream(String uuid, String streamUrl) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setLocalStream(streamUrl);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void addStreamToView(String uuid, ReadableMap stream) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).addStreamToView(stream);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void removeStreamFromView(String uuid, String vId) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).removeStreamFromView(vId);
+            } catch (Exception e) {
+            }
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              at(uuid).setOptionsRemoteStream(arr);
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 }
