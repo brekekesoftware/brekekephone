@@ -20,7 +20,7 @@ declare global {
 }
 
 let store = null as any as DebugStore
-const LOG_DIR = `${RNFS.DocumentDirectoryPath}`
+const LOG_DIR = Platform.OS !== 'web' ? `${RNFS.DocumentDirectoryPath}` : ''
 const LOG_PREFIX = 'brekeke_phone_log_'
 
 const maximumBytes = 300000 // 300KB
