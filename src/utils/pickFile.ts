@@ -1,5 +1,5 @@
+import DocumentRnPicker from '@react-native-documents/picker'
 import { Platform } from 'react-native'
-import DocumentRnPicker from 'react-native-document-picker'
 import RNFS from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
@@ -91,7 +91,15 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       file = (await fn()) as File
     }
   } catch (err) {
-    if (!DocumentRnPicker.isCancel(err as object)) {
+    // If DocumentRnPicker.isCancel does not exist, fallback to a generic check
+    if (
+      !(
+        err &&
+        typeof err === 'object' &&
+        'message' in err &&
+        (err as any).message === 'User canceled document picker'
+      )
+    ) {
       onPickFileNativeError(err as Error)
     }
   }
