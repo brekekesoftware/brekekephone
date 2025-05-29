@@ -28,7 +28,7 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-
+.kotlin/
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
@@ -53,6 +53,14 @@ local.properties
 
 # testing
 /coverage
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # node.js
 #
