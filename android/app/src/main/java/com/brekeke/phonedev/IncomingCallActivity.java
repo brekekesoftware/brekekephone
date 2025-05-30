@@ -1272,8 +1272,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnHoldClick(v);
     } else if (id == R.id.btn_end_call) {
       onBtnRejectClick(v);
-    } else if (id == R.id.btn_switch_camera) {
-      onBtnSwitchCamera(v);
     }
   }
 
