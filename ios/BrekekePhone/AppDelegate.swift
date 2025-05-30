@@ -21,7 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) -> Bool {
     let jsCodeLocation: URL
     jsCodeLocation = RCTBundleURLProvider.sharedSettings()
-      .jsBundleURL(forBundleRoot: "index")
+      .jsBundleURL(forBundleRoot: "index")!
     let rootView = RCTRootView(
       bundleURL: jsCodeLocation,
       moduleName: "BrekekePhone",
@@ -40,10 +40,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
 
   func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {
     #if DEBUG
-      return ()
+      return (
       RCTBundleURLProvider
         .sharedSettings()
-        .jsBundleURLForBundleRoot("index", fallbackResource: nil)
+        .jsBundleURL(forBundleRoot: "index", fallbackExtension: nil)) as NSURL?
     #else
       return Bundle
         .main
