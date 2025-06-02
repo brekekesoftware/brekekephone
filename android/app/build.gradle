@@ -130,3 +130,4 @@ dependencies {
         implementation("io.github.react-native-community:jsc-android:2026004.+")
     }
 }
+apply plugin: "com.google.gms.google-services"
