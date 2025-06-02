@@ -41,8 +41,6 @@ class MainApplication : Application(), ReactApplication {
 
     override fun onCreate() {
         super.onCreate()
-        // Ép disable bridgeless để tránh lỗi libreact_featureflagsjni.so
-        System.setProperty("react.bridgeless", "false")
         SoLoader.init(this, OpenSourceMergedSoMapping)
 
     }

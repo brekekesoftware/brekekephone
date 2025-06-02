@@ -1,3 +1,4 @@
+import './polyfill/rn-proptypes-polyfill'
 import './embed/polyfill'
 import './utils/captureConsoleOutput'
 import './polyfill'
