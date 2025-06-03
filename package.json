@@ -143,12 +143,6 @@
     "PhotoLibrary",
     "PhotoLibraryAddOnly"
   ],
-  "patchPackage": {
-    "excludePaths": [
-      "**/.gitignore",
-      "**/README.md"
-    ]
-  },
   "lint-staged": {
     "*.{js,ts,tsx}": [
       "eslint --fix",
