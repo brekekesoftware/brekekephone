@@ -1,4 +1,4 @@
-import DocumentRnPicker from '@react-native-documents/picker'
+import { pick } from '@react-native-documents/picker'
 import { Platform } from 'react-native'
 import RNFS from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
@@ -55,10 +55,7 @@ const actionSheetHandlers = [
               : resolve(r.assets?.[0]),
       )
     }),
-  () =>
-    DocumentRnPicker.pick({
-      type: [DocumentRnPicker.types.allFiles],
-    }),
+  () => pick(),
 ]
 
 export const pickFile = (cb: Function) =>

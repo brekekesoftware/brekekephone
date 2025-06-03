@@ -125,14 +125,14 @@ const File: FC<
   <View style={[css.File, css.Message]}>
     <View>
       <View style={css.Message_File_Preview_Wrapper}>
-        <RnIcon path={mdiFile} size={50} />
+        <View>
+          <RnIcon path={mdiFile} size={20} />
+        </View>
         <View style={css.Message_File_Preview_Info}>
           <RnText numberOfLines={1}>{p.name}</RnText>
-          <RnText style={css.Message_File_Preview_Info_Size}>
-            {p.size} KB
-          </RnText>
         </View>
       </View>
+      <RnText style={css.Message_File_Preview_Info_Size}>{p.size} KB</RnText>
       <View style={css.Message_File_Button_Wrapper}>
         {p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity onPress={p.reject}>
