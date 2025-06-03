@@ -1,6 +1,6 @@
 PODS:
   - boost (1.84.0)
-  - BVLinearGradient (2.7.3):
+  - BVLinearGradient (2.8.3):
     - React-Core
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -1299,7 +1299,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-get-random-values (1.9.0):
+  - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-image-picker (8.2.1):
     - DoubleConversion
@@ -1877,7 +1877,7 @@ PODS:
     - Yoga
   - RNVoipPushNotification (3.3.1):
     - React-Core
-  - RNWifi (4.8.3):
+  - RNWifi (4.13.5):
     - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
@@ -2181,7 +2181,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  BVLinearGradient: 4a9d6755e4f89f454b048698a78f414098a028bb
+  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 84b955f7b4da8b895faf5946f73748267347c975
@@ -2222,7 +2222,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 5c70006073e9a37215d789a7838a5163aacde1cb
   react-native-background-timer: 4638ae3bee00320753647900b21260b10587b6f7
   react-native-document-picker: 4d9047bf58ea484b5918336eb75046f730b0bb67
-  react-native-get-random-values: 419569b6ed3d15bfb9b6781b2f2e058f8e8d2698
+  react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-image-picker: b52410918f988fa3deff333af299bd242dd1cc07
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-notifications: 3bafa1237ae8a47569a84801f17d80242fe9f6a5
@@ -2272,7 +2272,7 @@ SPEC CHECKSUMS:
   RNShare: 277a99694390c6a4d161437dc81f2dfaa23f5ecb
   RNSVG: 5412c508c07957b006f984097623abf112c3587b
   RNVoipPushNotification: 43cb3200c68822bad3fdd5a05ee1d5e59950ac1d
-  RNWifi: 07e66b6080dee956228add5cdb6e1a6e43f77a8a
+  RNWifi: 525b9a07514cfae3fef83635a3521d30041dbc92
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
