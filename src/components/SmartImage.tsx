@@ -6,7 +6,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
@@ -64,6 +63,12 @@ enum StatusImage {
   loaded = 1,
   error = 2,
 }
+
+const getNoCacheUri = (uri: string) => {
+  const sep = uri.includes('?') ? '&' : '?'
+  return `${uri}${sep}nocache=${Date.now()}`
+}
+
 export const SmartImage = ({
   uri,
   style,
@@ -157,11 +162,9 @@ export const SmartImage = ({
           userAgent={getAuthStore().getUserAgentConfig()}
         />
       ) : (
-        <FastImage
+        <Image
           source={{
-            uri,
-            cache: FastImage.cacheControl.web,
-            headers: { 'Cache-Control': 'no-cache' },
+            uri: getNoCacheUri(uri),
           }}
           style={[css.image, css.full]}
           onError={onImageLoadError}
