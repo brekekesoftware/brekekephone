@@ -1324,7 +1324,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-netinfo (9.4.1):
+  - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-notifications (5.1.0):
     - React-Core
@@ -1728,7 +1728,7 @@ PODS:
     - React-Core
   - RNCallKeep (4.3.9):
     - React
-  - RNCAsyncStorage (1.19.0):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1751,7 +1751,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNCClipboard (1.14.2):
+  - RNCClipboard (1.16.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -2224,7 +2224,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: 4d9047bf58ea484b5918336eb75046f730b0bb67
   react-native-get-random-values: 419569b6ed3d15bfb9b6781b2f2e058f8e8d2698
   react-native-image-picker: b52410918f988fa3deff333af299bd242dd1cc07
-  react-native-netinfo: 58a62fc2fc7245875718b99ac9914c307e1523ca
+  react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-notifications: 3bafa1237ae8a47569a84801f17d80242fe9f6a5
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-video: 372909a9036a23db9e84593dde484a3ae8294e51
@@ -2263,8 +2263,8 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: a23922ca00122b050ae9412f960061791c232c47
   ReactNativeIncallManager: 0a3b5ebbda3029aa30c68a73213c667aac7401f1
   RNCallKeep: a59fbb04afe9e7626101a71c4ea08f650655a39f
-  RNCAsyncStorage: e9637ad29fa4b539c7afa4b5c9a6fceb758238b6
-  RNCClipboard: 295ae8801c94c91ca0e261194ca2b939870e6480
+  RNCAsyncStorage: 2c0b1326c74baf026f4a8e5e7552ac9f8525aa94
+  RNCClipboard: 474795710683e3d48a963adb71f0743f1a28dbd0
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
