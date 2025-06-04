@@ -1,5 +1,4 @@
-import { Platform } from 'react-native'
-
+import { isWeb } from '../config'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 
@@ -55,14 +54,10 @@ export const getCameraSourceIds = async () => {
     const videoInputs = devices.filter(i => /videoinput/i.test(i.kind))
 
     const front = videoInputs.find(i =>
-      Platform.OS === 'web'
-        ? /front|facetime|face/i.test(i.label)
-        : i.facing === 'front',
+      isWeb ? /front|facetime|face/i.test(i.label) : i.facing === 'front',
     )
     const back = videoInputs.find(i =>
-      Platform.OS === 'web'
-        ? /back|rear/i.test(i.label)
-        : i.facing === 'environment',
+      isWeb ? /back|rear/i.test(i.label) : i.facing === 'environment',
     )
     const result: MediaDeviceInfo[] = []
     if (front) {

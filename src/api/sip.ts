@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3'
 import jsonStableStringify from 'json-stable-stringify'
-import { Platform } from 'react-native'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
+import { isWeb } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { AccountUnique } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -271,7 +271,7 @@ export class SIP extends EventEmitter {
         return
       }
 
-      // TODO #934 this issue has been fixed somewhere else, can not reproduce
+      // TODO:#934 this issue has been fixed somewhere else, can not reproduce
       // however this caused #1010, we remove it here for now
 
       // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
@@ -539,7 +539,7 @@ const sipCreateMediaConstraints = (
 
   return {
     audio: false,
-    video: Platform.OS === 'web' ? webVideoConfig : appVideoConfig,
+    video: isWeb ? webVideoConfig : appVideoConfig,
   } as any as MediaStreamConstraints
 }
 const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>

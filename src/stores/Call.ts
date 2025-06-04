@@ -323,7 +323,7 @@ export class Call {
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
     }
-    // TODO
+    // TODO:
     // might need to check if there wont be multiple calls holding=false
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)

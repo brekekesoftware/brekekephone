@@ -68,11 +68,17 @@ type TBrekekeUtils = {
     err: string | undefined,
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
+  // android lpc
+  androidLpcIsPermGranted(): Promise<boolean>
+  androidLpcPermIncomingCall(): Promise<boolean>
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
   stopRBT(): void
+  setProximityMonitoring(enabled: boolean): void
+
+  // these methods available on both
   enableLPC(
     token: string,
     tokenVoip: string,
@@ -84,9 +90,6 @@ type TBrekekeUtils = {
     tlsKeyHash: string,
   ): void
   disableLPC(): void
-  setProximityMonitoring(enabled: boolean): void
-
-  // these methods available on both
   systemUptimeMs(): Promise<number>
 }
 
@@ -140,16 +143,19 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   showToast: () => undefined,
   updateAnyHoldLoading: () => undefined,
+  // android lpc
+  androidLpcIsPermGranted: () => Promise.resolve(false),
+  androidLpcPermIncomingCall: () => Promise.resolve(false),
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
-  enableLPC: () => undefined,
-  disableLPC: () => undefined,
   setProximityMonitoring: () => undefined,
 
   // these methods available on both
+  enableLPC: () => undefined,
+  disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
 }
 

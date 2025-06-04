@@ -362,7 +362,7 @@ if (Platform.OS !== 'web') {
   // assign to window to use in src/utils/captureConsoleOutput.ts
   store = window.debugStore = new DebugStore()
 
-  // TODO call init together with other store
+  // TODO:call init together with other store
   // need to determine the order of init functions and call them using await
   store.init()
 }

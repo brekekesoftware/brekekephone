@@ -50,6 +50,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
 
+// incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   private ToastManager toastManager;
   private LinearLayout toastContainer;

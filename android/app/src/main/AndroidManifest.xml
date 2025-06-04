@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+>
   <uses-feature android:name="android.hardware.camera" />
   <uses-feature android:name="android.hardware.camera.autofocus" />
   <uses-feature android:name="android.hardware.audio.output" />
@@ -11,16 +14,20 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission
     android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+    tools:ignore="ProtectedPermissions"
   />
   <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-  <!-- for notification on android 13 -->
+  <!-- notification on android 13 -->
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.CALL_PHONE" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-  <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+  <uses-permission
+    android:name="android.permission.MODIFY_PHONE_STATE"
+    tools:ignore="ProtectedPermissions"
+  />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <!-- react-native-webrtc bluetooth -->
   <uses-permission
@@ -48,7 +55,8 @@
   <uses-permission
     android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
   />
-  <!--   Use this to target android >= 14-->
+
+  <!-- android >= 14 background permissions -->
   <uses-permission
     android:minSdkVersion="34"
     android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"
@@ -59,10 +67,23 @@
   />
 
   <!-- call history -->
-  <!-- temporary disabled
+  <!-- TODO: temporary disabled
   <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
   <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
   -->
+
+  <!-- android lpc -->
+  <uses-feature
+    android:name="android.hardware.location"
+    android:required="true"
+  />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+  <uses-permission
+    android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+  />
+
   <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -75,6 +96,7 @@
   >
     <activity
       android:name=".IncomingCallActivity"
+      android:exported="true"
       android:label="IncomingCallActivity"
       android:launchMode="standard"
       android:showOnLockScreen="true"
@@ -87,6 +109,7 @@
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
     />
+
     <!-- react-native-notifications -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
@@ -96,15 +119,20 @@
       android:name="com.google.firebase.messaging.default_notification_channel_id"
       android:value="default"
     />
+
+    <!-- custom push notification handler -->
     <service
-      android:name="BrekekeMessagingService"
+      android:name=".push_notification.BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
+      android:foregroundServiceType="remoteMessaging"
+      tools:ignore="ForegroundServicePermission"
     >
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
+
     <!-- call keep -->
     <service
       android:name="io.wazo.callkeep.VoiceConnectionService"
@@ -112,6 +140,7 @@
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
       android:foregroundServiceType="camera|microphone"
       android:exported="false"
+      tools:ignore="ForegroundServicePermission"
     >
       <intent-filter>
         <action android:name="android.telecom.ConnectionService" />
@@ -119,11 +148,14 @@
     </service>
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
+      android:foregroundServiceType="camera|microphone"
     />
+
     <!-- react dev -->
     <activity
       android:name="com.facebook.react.devsupport.DevSettingsActivity"
     />
+
     <!-- main -->
     <activity
       android:name=".MainActivity"
@@ -160,9 +192,10 @@
         <data android:scheme="brekekephonedev" android:host="call" />
       </intent-filter>
     </activity>
+
     <!-- default phone call app -->
     <service
-      android:name=".CallService"
+      android:name=".call_history.CallService"
       android:permission="android.permission.BIND_INCALL_SERVICE"
       android:exported="true"
     >
@@ -170,18 +203,42 @@
         android:name="android.telecom.IN_CALL_SERVICE_UI"
         android:value="true"
       />
-
       <intent-filter>
         <action android:name="android.telecom.InCallService" />
       </intent-filter>
     </service>
+
     <!-- call history -->
-    <!-- temporary disabled
+    <!-- TODO: temporary disabled
     <receiver android:name="BrekekeOutgoingCallHandler" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
       </intent-filter>
     </receiver>
     -->
+
+    <!-- lpc -->
+    <service
+      android:name=".lpc.BrekekeLpcService"
+      android:enabled="true"
+      android:exported="true"
+      android:foregroundServiceType="specialUse"
+    />
+    <service
+      android:name=".lpc.BrekekeLpcServiceIntent"
+      android:enabled="true"
+    />
+    <receiver
+      android:name=".lpc.BrekekeLpcReceiver"
+      android:enabled="true"
+      android:exported="false"
+    >
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+        <action android:name="android.intent.action.REBOOT" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </receiver>
   </application>
 </manifest>

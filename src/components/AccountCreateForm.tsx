@@ -176,7 +176,7 @@ export const AccountCreateForm: FC<{
             label: 'PBX',
           },
           {
-            // autoFocus: true, // TODO Animation issue
+            // autoFocus: true, // TODO:Animation issue
             disabled: props.footerLogout,
             name: 'pbxUsername',
             label: intl`USERNAME`,

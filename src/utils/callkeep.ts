@@ -19,7 +19,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { parseNotificationData } from './PushNotification-parse'
+import { parse, parseNotificationData } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -261,6 +261,11 @@ export const setupCallKeepEvents = async () => {
 
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+
+  eventEmitter.addListener('lpcIncomingCall', (v: string) => {
+    parse(JSON.parse(v))
+  })
+
   eventEmitter.addListener('answerCall', async (uuid: string) => {
     // should update the native android UI here to fix a case with auto answer
     const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)

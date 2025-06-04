@@ -1,5 +1,6 @@
 package com.brekeke.phonedev;
 
+// labels for multi langues
 public class L {
   public static String l = null;
 

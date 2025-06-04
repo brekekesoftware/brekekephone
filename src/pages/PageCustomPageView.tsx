@@ -123,7 +123,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
     const description = !loaded
       ? intl`Loading...`
       : this.state.webviewError
-        ? // TODO
+        ? // TODO:
           ''
         : ''
 

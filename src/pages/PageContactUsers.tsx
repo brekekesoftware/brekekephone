@@ -167,7 +167,7 @@ export class PageContactUsers extends Component {
           index: number
         }) => <RenderItemUser item={item} index={index} />}
         renderSectionHeader={({ section: { title } }) => (
-          // TODO move to a new component with observer
+          // TODO:move to a new component with observer
           <Field isGroup label={title} />
         )}
       />
@@ -199,7 +199,7 @@ export class PageContactUsers extends Component {
           icon={mdiMagnify}
           label={intl`SEARCH FOR USERS`}
           onValueChange={(v: string) => {
-            // TODO use debounced value to perform data filter
+            // TODO:use debounced value to perform data filter
             contactStore.usersSearchTerm = v
           }}
           value={contactStore.usersSearchTerm}
@@ -236,7 +236,7 @@ type ItemUser = {
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => (
-  // TODO move to a new component with observer
+  // TODO:move to a new component with observer
   <UserItem
     iconFuncs={[
       () => getCallStore().startVideoCall(item.id),

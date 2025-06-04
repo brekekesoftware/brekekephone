@@ -34,7 +34,7 @@ export const ListUsers: FC<{
     {p.recents.map(({ id, name, group, text, unread, created }) => (
       <RnTouchableOpacity
         key={id}
-        onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO group
+        onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO:group
         style={(unread || chatStore.getThreadConfig(id).isUnread) && css.Unread}
       >
         <UserItem

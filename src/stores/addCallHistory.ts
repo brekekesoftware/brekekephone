@@ -160,7 +160,7 @@ export const addCallHistory = async (
   }
 
   // try to wait for login?
-  // TODO
+  // TODO:
   // add method based on the Account class
   // allow multiple accounts at the same time
   const as = getAuthStore()
@@ -197,7 +197,7 @@ export type CallHistoryInfo = {
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
-  // temporary disabled
+  // TODO: temporary disabled
   const disabled = true
   if (disabled) {
     return

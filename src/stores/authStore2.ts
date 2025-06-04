@@ -155,7 +155,7 @@ export class AuthStore {
   @observable resourceLines: PbxResourceLine[] = []
 
   // user agent for sip pal client
-  // TODO check embed api, dont need to set BrekekeUtils since this in web only?
+  // TODO:check embed api, dont need to set BrekekeUtils since this in web only?
   getUserAgent = async (a: ParsedPn | AccountUnique) =>
     embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
   private _getUserAgent = async (a: ParsedPn | AccountUnique) => {

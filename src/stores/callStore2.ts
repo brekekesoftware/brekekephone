@@ -82,7 +82,7 @@ export class CallStore {
       }
       // on android already answer in native java activity
       // on ios, QA suggest to reject the call?
-      // TODO
+      // TODO:
       if (Platform.OS === 'ios') {
         c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {

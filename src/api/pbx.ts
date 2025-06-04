@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
-import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -13,7 +12,7 @@ import type {
   PbxResourceLine,
   Request,
 } from '../brekekejs'
-import { bundleIdentifier, fcmApplicationId } from '../config'
+import { bundleIdentifier, fcmApplicationId, isWeb } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -479,7 +478,7 @@ export class PBX extends EventEmitter {
     // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
       const as = getAuthStore()
-      // TODO
+      // TODO:
       // any function get pbxConfig on this time may get undefined
       as.pbxConfig = undefined
       await isConnected()
@@ -530,7 +529,7 @@ export class PBX extends EventEmitter {
     if (!e?.status) {
       return
     }
-    // TODO
+    // TODO:
     if (e.status === 'on') {
       this.emit('park-started', e.park)
     } else if (e.status === 'off') {
@@ -1069,22 +1068,21 @@ export class PBX extends EventEmitter {
       if (id === PnServiceId.fcm || id === PnServiceId.web) {
         isFcm = true
       } else if (isFcm) {
-        throw new Error('Can not mix service_id fcm/web together with apns/lpc')
+        // throw new Error('Can not mix service_id fcm/web together with apns/lpc')
+        // now should be able to use fcm together with lpc
       }
     })
     let application_id = isFcm ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
-      if (!isFcm) {
-        application_id += '.voip'
-      }
+      application_id += '.voip'
       username += '@voip'
     }
     await this.client.call_pal('pnmanage', {
       command,
       service_id,
       application_id,
-      user_agent: Platform.OS === 'web' ? navigator.userAgent : 'react-native',
+      user_agent: isWeb ? navigator.userAgent : 'react-native',
       username,
       device_id,
       device_id_voip,
