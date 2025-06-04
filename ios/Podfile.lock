@@ -1330,7 +1330,7 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-video (6.14.0):
+  - react-native-video (6.14.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1344,7 +1344,7 @@ PODS:
     - React-ImageManager
     - React-jsc
     - React-jsi
-    - react-native-video/Video (= 6.14.0)
+    - react-native-video/Video (= 6.14.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1354,7 +1354,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Fabric (6.14.0):
+  - react-native-video/Fabric (6.14.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1377,7 +1377,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.14.0):
+  - react-native-video/Video (6.14.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1404,7 +1404,7 @@ PODS:
   - react-native-webrtc (111.0.3):
     - JitsiWebRTC (~> 111.0.0)
     - React-Core
-  - react-native-webview (13.13.5):
+  - react-native-webview (13.14.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1724,7 +1724,7 @@ PODS:
     - React-utils (= 0.79.2)
   - ReactNativeExceptionHandler (2.10.10):
     - React-Core
-  - ReactNativeIncallManager (4.1.0):
+  - ReactNativeIncallManager (4.2.1):
     - React-Core
   - RNCallKeep (4.3.9):
     - React
@@ -1782,7 +1782,7 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.20.0):
     - React-Core
-  - RNPermissions (3.8.4):
+  - RNPermissions (5.4.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -2227,9 +2227,9 @@ SPEC CHECKSUMS:
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-notifications: 3bafa1237ae8a47569a84801f17d80242fe9f6a5
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
-  react-native-video: 372909a9036a23db9e84593dde484a3ae8294e51
+  react-native-video: 929aae8586ddfd256946159063623b3ab76a06b4
   react-native-webrtc: 2423dee5d8c5921000b0d70c7bd6d59e8490b81a
-  react-native-webview: faccaeb84216940628d4422822d367ad03d15a81
+  react-native-webview: a3446e41cc84d58b0e701890e90397e5cd8ebd31
   React-NativeModulesApple: d3eb18811640d9889dd157c367b964ca7efb1743
   React-oscompat: ef5df1c734f19b8003e149317d041b8ce1f7d29c
   React-perflogger: 9a151e0b4c933c9205fd648c246506a83f31395d
@@ -2261,14 +2261,14 @@ SPEC CHECKSUMS:
   ReactCodegen: d626183718fa3f625325ef451b8b03b640a89d42
   ReactCommon: 10aa03e315dae449ec6345233fff8b3a1e004fb8
   ReactNativeExceptionHandler: a23922ca00122b050ae9412f960061791c232c47
-  ReactNativeIncallManager: 0a3b5ebbda3029aa30c68a73213c667aac7401f1
+  ReactNativeIncallManager: dccd3e7499caa3bb73d3acfedf4fb0360f1a87d5
   RNCallKeep: a59fbb04afe9e7626101a71c4ea08f650655a39f
   RNCAsyncStorage: 2c0b1326c74baf026f4a8e5e7552ac9f8525aa94
   RNCClipboard: 474795710683e3d48a963adb71f0743f1a28dbd0
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNPermissions: c77779ca671e333b06d30de58e030ff597abe73a
+  RNPermissions: b329e21667d531e40ff28641877a7ffe34a8d550
   RNShare: 277a99694390c6a4d161437dc81f2dfaa23f5ecb
   RNSVG: 5412c508c07957b006f984097623abf112c3587b
   RNVoipPushNotification: 43cb3200c68822bad3fdd5a05ee1d5e59950ac1d
@@ -2278,6 +2278,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf
 
-PODFILE CHECKSUM: 47ac4390c1ca10dcfe6317002e85ae68a0c7c2ba
+PODFILE CHECKSUM: 3fff2b2f103610b545c9cf1c124146260b4b481a
 
 COCOAPODS: 1.15.2

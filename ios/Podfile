@@ -1,5 +1,6 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
 require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative('../node_modules/react-native-permissions/scripts/setup')
 # require Pod::Executable.execute_command('node', ['-p',
 #   'require.resolve(
 #     "react-native/scripts/react_native_pods.rb",
@@ -9,6 +10,17 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 # use_modular_headers!
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+# config for react-native-permissions
+setup_permissions([
+   "Camera",
+    "LocationAlways",
+    "LocationWhenInUse",
+    "Microphone",
+    "Notifications",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly"
+])
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
