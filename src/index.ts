@@ -1,5 +1,5 @@
-import './polyfill/rn-proptypes-polyfill'
 import './embed/polyfill'
+import './polyfill/rn-proptypes-polyfill'
 import './utils/captureConsoleOutput'
 import './polyfill'
 import './polyfill/mobx'
