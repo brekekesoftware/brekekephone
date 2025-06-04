@@ -8,6 +8,9 @@
  * - EdgeInsetsPropType
  * - PointPropType
  * - Text.propTypes
+ * - Platform.OS
+ * - TextInputPropTypes
+ * - ImagePropTypes
  *
  * Implementation approaches:
  * 1. Global ReactNative object polyfill (for native)
@@ -40,9 +43,27 @@ const PointPropTypeDef = PropTypes.oneOfType([
   PropTypes.array,
 ])
 
+// Platform polyfill
+const PlatformDef = {
+  OS: 'unknown',
+  select: obj => obj.default || obj[Object.keys(obj)[0]],
+}
+
+// Ensure global Platform exists
+if (!global.Platform) {
+  global.Platform = PlatformDef
+}
+
 // 1. Polyfill via global.ReactNative
 if (global.ReactNative) {
   const RN = global.ReactNative
+
+  // Platform
+  if (!RN.Platform) {
+    RN.Platform = PlatformDef
+  } else if (RN.Platform && RN.Platform.OS === undefined) {
+    RN.Platform.OS = PlatformDef.OS
+  }
 
   // ViewPropTypes
   if (!RN.ViewPropTypes) {
@@ -72,11 +93,41 @@ if (global.ReactNative) {
       style: PropTypes.any,
     }
   }
+
+  // TextInputPropTypes
+  if (!RN.TextInputPropTypes) {
+    RN.TextInputPropTypes = {
+      style: ViewStylePropType,
+      value: PropTypes.string,
+      onChangeText: PropTypes.func,
+    }
+  }
+
+  // ImagePropTypes
+  if (!RN.ImagePropTypes) {
+    RN.ImagePropTypes = {
+      style: ViewStylePropType,
+      source: PropTypes.any,
+    }
+  }
 }
 
 // 2. Polyfill via Object.defineProperty for direct imports
 try {
   const RN = require('react-native')
+
+  // Platform
+  if (!RN.Platform) {
+    Object.defineProperty(RN, 'Platform', {
+      configurable: true,
+      get: () => PlatformDef,
+    })
+  } else if (RN.Platform && RN.Platform.OS === undefined) {
+    Object.defineProperty(RN.Platform, 'OS', {
+      configurable: true,
+      get: () => PlatformDef.OS,
+    })
+  }
 
   // ViewPropTypes
   if (!RN.ViewPropTypes) {
@@ -111,4 +162,39 @@ try {
       get: () => PointPropTypeDef,
     })
   }
-} catch (err) {}
+
+  // Text.propTypes
+  if (RN.Text && !RN.Text.propTypes) {
+    Object.defineProperty(RN.Text, 'propTypes', {
+      configurable: true,
+      get: () => ({
+        style: PropTypes.any,
+      }),
+    })
+  }
+
+  // TextInputPropTypes
+  if (!RN.TextInputPropTypes) {
+    Object.defineProperty(RN, 'TextInputPropTypes', {
+      configurable: true,
+      get: () => ({
+        style: ViewStylePropType,
+        value: PropTypes.string,
+        onChangeText: PropTypes.func,
+      }),
+    })
+  }
+
+  // ImagePropTypes
+  if (!RN.ImagePropTypes) {
+    Object.defineProperty(RN, 'ImagePropTypes', {
+      configurable: true,
+      get: () => ({
+        style: ViewStylePropType,
+        source: PropTypes.any,
+      }),
+    })
+  }
+} catch (err) {
+  console.warn('React Native PropTypes polyfill encountered an error:', err)
+}
