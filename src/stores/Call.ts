@@ -1,12 +1,12 @@
 import CiruclarJSON from 'circular-json'
 import type { IReactionDisposer } from 'mobx'
 import { action, autorun, observable } from 'mobx'
-import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import type { Session, SessionStatus } from '../brekekejs'
+import { isIos } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { checkPermForCall } from '../utils/permissions'
@@ -100,7 +100,7 @@ export class Call {
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
     // https://stackoverflow.com/a/31707642/25021683
-    if (Platform.OS === 'ios' && !(await checkPermForCall(true, false))) {
+    if (isIos && !(await checkPermForCall(true, false))) {
       this.hangupWithUnhold()
       return
     }

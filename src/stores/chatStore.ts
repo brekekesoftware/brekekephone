@@ -2,12 +2,13 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
 import { uc } from '../api/uc'
 import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
+import { isAndroid, isIos, isWeb } from '../config'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { filterTextOnly } from '../utils/formatChatContent'
@@ -137,12 +138,12 @@ class ChatStore {
     threadId?: string,
     isGroupChat?: boolean,
   ) => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       return
     }
     body = decode(body)
     const id = `message-${Date.now()}`
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       Notifications.postLocalNotification({
         payload: {
           id,
@@ -234,11 +235,7 @@ class ChatStore {
     }
 
     // show desktop notification for Web platform
-    if (
-      Platform.OS === 'web' &&
-      this.getThreadConfig(threadId).isUnread &&
-      m.length === 1
-    ) {
+    if (isWeb && this.getThreadConfig(threadId).isUnread && m.length === 1) {
       const messageNotification = name + ': ' + m[0]?.text || ''
       webShowNotification(messageNotification, name)
     }
@@ -322,7 +319,7 @@ class ChatStore {
   }
   @observable chatNotificationSoundRunning: boolean = false
   private playChatNotificationSoundVibration = async () => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       webPlayDing()
       return
     }
@@ -336,7 +333,7 @@ class ChatStore {
         this.chatNotificationSoundRunning = false
       }, 700)
     }
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       // ios already check by <Video> with ignoreSilentSwitch
       playSoundAndVibrate()
       return

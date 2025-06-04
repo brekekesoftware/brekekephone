@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
-import { AppState, Platform, StyleSheet } from 'react-native'
+import { AppState, StyleSheet } from 'react-native'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '../assets/icons'
 import { UserItem } from '../components/ContactUserItem'
@@ -10,6 +10,7 @@ import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/RnText'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
+import { isIos } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { contactStore } from '../stores/contactStore'
@@ -26,7 +27,7 @@ const css = StyleSheet.create({
 export class PageCallRecents extends Component {
   appStateSubscription?: NativeEventSubscription
   componentDidMount = () => {
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       const h = () => {
         if (AppState.currentState === 'active') {
           PushNotification.resetBadgeNumber()

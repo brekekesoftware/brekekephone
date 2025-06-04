@@ -12,7 +12,7 @@ import type {
   PbxResourceLine,
   Request,
 } from '../brekekejs'
-import { bundleIdentifier, fcmApplicationId, isWeb } from '../config'
+import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -1062,17 +1062,7 @@ export class PBX extends EventEmitter {
       endpoint,
       key,
     } = d
-    let isFcm = false
-    const arr = Array.isArray(service_id) ? service_id : [service_id]
-    arr.forEach(id => {
-      if (id === PnServiceId.fcm || id === PnServiceId.web) {
-        isFcm = true
-      } else if (isFcm) {
-        // throw new Error('Can not mix service_id fcm/web together with apns/lpc')
-        // now should be able to use fcm together with lpc
-      }
-    })
-    let application_id = isFcm ? fcmApplicationId : bundleIdentifier
+    let application_id = isAndroid ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
       application_id += '.voip'

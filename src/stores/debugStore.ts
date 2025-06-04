@@ -3,12 +3,13 @@ import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
-import { Linking, Platform } from 'react-native'
+import { Linking } from 'react-native'
 import type { ReadDirItem } from 'react-native-fs'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '../components/Rn'
+import { isAndroid, isIos, isWeb } from '../config'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { intl, intlDebug } from './intl'
 import { RnAlert } from './RnAlert'
@@ -20,7 +21,7 @@ declare global {
 }
 
 let store = null as any as DebugStore
-const LOG_DIR = Platform.OS !== 'web' ? `${RNFS.DocumentDirectoryPath}` : ''
+const LOG_DIR = !isWeb ? `${RNFS.DocumentDirectoryPath}` : ''
 const LOG_PREFIX = 'brekeke_phone_log_'
 
 const maximumBytes = 300000 // 300KB
@@ -204,7 +205,7 @@ class DebugStore {
     const title = file.name
     let url: string | null = null
     // share works inconsistency between android and ios
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       url = file.path // only works with `file://...`
     } else {
       const content = await RNFS.readFile(file.path, 'utf8')
@@ -249,28 +250,27 @@ class DebugStore {
       return
     }
     this.isCheckingForUpdate = true
-    const p =
-      Platform.OS === 'android'
-        ? window
-            .fetch(
-              'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
-            )
-            .then(res => res.text())
-            .then(
-              t =>
-                t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim() ||
-                t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
-            )
-        : window
-            .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
-            .then(res => res.json())
-            .then(
-              (j: {
-                results?: {
-                  version: string
-                }[]
-              }) => j.results?.[0].version,
-            )
+    const p = isAndroid
+      ? window
+          .fetch(
+            'https://play.google.com/store/apps/details?id=com.brekeke.phone&hl=en',
+          )
+          .then(res => res.text())
+          .then(
+            t =>
+              t.match(/\[\[\["(\d+\.\d+\.\d+)"\]/)?.[1].trim() ||
+              t.match(/Current Version.+>([\d.]+)<\/span>/)?.[1].trim(),
+          )
+      : window
+          .fetch('https://itunes.apple.com/lookup?bundleId=com.brekeke.phone')
+          .then(res => res.json())
+          .then(
+            (j: {
+              results?: {
+                version: string
+              }[]
+            }) => j.results?.[0].version,
+          )
     p.then(v => {
       if (!v) {
         throw new Error('The returned version from app store is empty')
@@ -299,7 +299,7 @@ class DebugStore {
 
   openInStore = () => {
     Linking.openURL(
-      Platform.OS === 'android'
+      isAndroid
         ? 'https://play.google.com/store/apps/details?id=com.brekeke.phone'
         : 'itms-apps://apps.apple.com/app/id1233825750',
     )
@@ -358,7 +358,7 @@ class DebugStore {
   }
 }
 
-if (Platform.OS !== 'web') {
+if (!isWeb) {
   // assign to window to use in src/utils/captureConsoleOutput.ts
   store = window.debugStore = new DebugStore()
 

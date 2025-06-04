@@ -1,13 +1,13 @@
 import { flow, get } from 'lodash'
 import { observer } from 'mobx-react'
 import { Fragment } from 'react'
-import { Platform } from 'react-native'
 import type { Rules } from 'validatorjs'
 import Validator from 'validatorjs'
 
 import type { PbxBook } from '../brekekejs'
 import { Field } from '../components/Field'
 import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
+import { isWeb } from '../config'
 import { arrToMap } from './arrToMap'
 import type { CreatedStore } from './createStore'
 import { useStore } from './useStore'
@@ -85,8 +85,8 @@ export const useForm = () => {
     render: observer((props: object) => {
       $.props = Object.assign($.props, props)
       const { $: $parent, fields, k } = $.props
-      const RnForm = Platform.OS === 'web' ? 'form' : Fragment
-      const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
+      const RnForm = isWeb ? 'form' : Fragment
+      const formProps = isWeb ? { onSubmit: $.submit } : null
       return (
         <RnForm {...(formProps as object)}>
           {fields.map(

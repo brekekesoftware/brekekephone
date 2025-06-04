@@ -1,7 +1,8 @@
 import { get, set } from 'lodash'
 import type { NativeModule } from 'react-native'
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 
+import { isWeb } from '../config'
 import type { TCallKeepAction } from '../stores/callStore2'
 
 export enum CallLogType {
@@ -162,7 +163,7 @@ const Polyfill: TBrekekeUtils = {
 const M = NativeModules as TNativeModules
 export const BrekekeUtils = M.BrekekeUtils || Polyfill
 
-if (__DEV__ && Platform.OS !== 'web') {
+if (__DEV__ && !isWeb) {
   const k = Object.keys(M.BrekekeUtils || {})
   console.log(
     `BrekekeUtils debug: found ${k.length} methods` +
