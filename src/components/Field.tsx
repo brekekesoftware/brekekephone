@@ -281,8 +281,8 @@ export const Field: FC<
     isParkNameFocusing: boolean
     park: Park
   }
-  const inputRef = useRef<HTMLInputElement>()
-  const inputRefName = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRefName = useRef<HTMLInputElement>(null)
   if (!inputRef.current && $.isFocusing) {
     $.set('isFocusing', false)
   }

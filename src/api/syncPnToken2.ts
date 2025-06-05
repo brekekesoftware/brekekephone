@@ -1,5 +1,5 @@
 import { Platform } from 'react-native'
-import { getCurrentWifiSSID } from 'react-native-wifi-reborn'
+import WifiManager from 'react-native-wifi-reborn'
 
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -230,6 +230,6 @@ setSyncPnTokenModule(m)
 export type TSyncPnToken = typeof m
 
 const getLocalSsid = () =>
-  Promise.race([getCurrentWifiSSID(), waitTimeout(10000)])
+  Promise.race([WifiManager.getCurrentWifiSSID(), waitTimeout(10000)])
     .then(v => v || '')
     .catch(() => '')

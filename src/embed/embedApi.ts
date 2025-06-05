@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import { unmountComponentAtNode } from 'react-dom'
 
 import { parsePalParams } from '../api/parseParamsWithPrefix'
 import type { MakeCallFn, PbxGetProductInfoRes } from '../brekekejs'
@@ -56,7 +55,9 @@ export class EmbedApi extends EventEmitter {
   cleanup = () => {
     getAuthStore().signOutWithoutSaving()
     if (this._rootTag) {
-      unmountComponentAtNode(this._rootTag)
+      // React 19+: unmountComponentAtNode is removed, use root.unmount() if possible
+      // For minimal change: just clear the container's innerHTML
+      this._rootTag.innerHTML = ''
     }
   }
 
@@ -91,7 +92,8 @@ export class EmbedApi extends EventEmitter {
     let firstAccountInOptions: Account | undefined
     o.accounts.forEach(a => {
       const fr = convertToStorage(a)
-      const to = accountsMap[getAccountUniqueId(fr)]
+      const uniqueId = getAccountUniqueId(fr)
+      const to = uniqueId ? accountsMap[uniqueId] : undefined
       if (to) {
         copyToStorage(fr, to)
         firstAccountInOptions = firstAccountInOptions || to

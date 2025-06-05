@@ -31,7 +31,7 @@ const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
   const acc = await accountStore.findByPn(n)
   const k = n.id || jsonStableStringify(n)
-  if (!alreadyRemovePnTokenViaSip[k] && !acc) {
+  if (k && !alreadyRemovePnTokenViaSip[k] && !acc) {
     alreadyRemovePnTokenViaSip[k] = true
     removePnTokenViaSip(n)
   }

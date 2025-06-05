@@ -16,10 +16,7 @@ export const useAnimation = <T extends AnimationProps>(
   props: T,
   options?: Animated.TimingAnimationConfig,
 ) => {
-  const r = useRef<Animated.Value>()
-  if (!r.current) {
-    r.current = new Animated.Value(0)
-  }
+  const r = useRef<Animated.Value>(new Animated.Value(0))
   const v = r.current
   useEffect(() => {
     const t = Animated.timing(v, {

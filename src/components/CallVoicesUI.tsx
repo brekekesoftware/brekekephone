@@ -18,7 +18,8 @@ export class IncomingItem extends Component {
     if (Platform.OS === 'android') {
       BrekekeUtils.startRingtone()
     } else {
-      IncallManager.startRingtone('_BUNDLE_')
+      // Old logic: only play ringtone without vibration and repeat the ringtone continuously
+      IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
     }
   }
   componentWillUnmount = () => {
@@ -99,7 +100,6 @@ export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
       repeat={true}
       ignoreSilentSwitch='ignore'
       playInBackground={true}
-      audioOnly
     />
   )
 }

@@ -236,7 +236,7 @@ export class AuthStore {
     console.log(`signIn debug: account ${a.pbxUsername} signed in`)
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
     if (!autoSignIn) {
-      await saveLastSignedInId(getAccountUniqueId(a))
+      await saveLastSignedInId(getAccountUniqueId(a) || false)
     }
     return true
   }

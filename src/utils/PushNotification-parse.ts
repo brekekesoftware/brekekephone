@@ -210,6 +210,9 @@ export const parse = async (
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (Platform.OS === 'android' && n.callkeepUuid) {
     const k = n.id || jsonStableStringify(raw)
+    if (!k) {
+      return
+    }
     if (androidAlreadyProccessedPn[k]) {
       console.log(
         `SIP PN debug: PushNotification-parse: already processed k=${k}`,

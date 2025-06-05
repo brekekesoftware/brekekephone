@@ -286,8 +286,12 @@ class AccountStore {
     if (d) {
       return d
     }
+    const uniqueId = getAccountUniqueId(a)
+    if (!uniqueId) {
+      throw new Error('Account unique id is undefined')
+    }
     const newD = {
-      id: getAccountUniqueId(a),
+      id: uniqueId,
       accessToken: '',
       recentCalls: [],
       recentChats: [],

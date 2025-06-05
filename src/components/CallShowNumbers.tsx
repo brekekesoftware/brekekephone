@@ -33,7 +33,7 @@ export const ShowNumber: FC<{
   selectionChange?(
     e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
   ): void
-  refInput: RefObject<TextInput>
+  refInput: RefObject<TextInput | null>
   value: string
 }> = p => (
   <View style={css.ShowNumbers}>
