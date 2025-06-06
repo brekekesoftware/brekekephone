@@ -14,6 +14,8 @@ import android.util.Log;
 import com.brekeke.phonedev.R;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -245,5 +247,15 @@ public class LpcUtils {
     sslContext.init(null, trustAllCerts, null);
 
     return sslContext;
+  }
+
+  public static Boolean matchSsid(ReadableArray remoteSsid , String localSsid) {
+    for(int i = 0 ; i < remoteSsid.size(); i++) {
+      ReadableType type = remoteSsid.getType(i);
+      if (type == ReadableType.String && remoteSsid.getString(i).equals(localSsid)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
