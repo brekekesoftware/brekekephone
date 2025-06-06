@@ -160,7 +160,7 @@ const syncPnTokenWithoutCatch = async (
         ?.split(',')
         .map(w => w.trim())
         .filter(w => w) || []
-    const localSsid = remoteSsids.length ? '' : await getLocalSsid()
+    const localSsid = remoteSsids.length && isIos ? '' : await getLocalSsid()
 
     const lpcPn = toBoolean(c['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {

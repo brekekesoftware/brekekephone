@@ -285,7 +285,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    Log.d(LpcUtils.TAG, (new JSONObject(data)).toString());
     //
     // check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
@@ -1267,6 +1266,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
+     if(!LpcUtils.matchSsid(remoteSsids,localSsid)) {
+         disableLPC();
+         return;
+     }
     Intent i =
         LpcUtils.putConfigToIntent(
             host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
@@ -1278,7 +1281,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           v -> {
             if (!v) {
               disableLPC();
-              Log.d(TAG, "disableLPC in callback: ");
             }
           });
     }
