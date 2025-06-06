@@ -1,17 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  ActivityIndicator,
-  Image,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import noPhoto from '../assets/no_photo.png'
 
+import { isAndroid } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { checkImageUrl } from '../utils/checkImageUrl'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
@@ -147,9 +142,7 @@ export const SmartImage = ({
         <WebView
           source={{ uri }}
           injectedJavaScript={js}
-          injectedJavaScriptBeforeContentLoaded={
-            Platform.OS === 'android' ? js : ''
-          }
+          injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}

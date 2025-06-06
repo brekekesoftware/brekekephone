@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
 import {
+  check,
   checkMultiple,
   checkNotifications,
   openSettings,
@@ -9,23 +10,34 @@ import {
   requestNotifications,
 } from 'react-native-permissions'
 
+import { isIos } from '../config'
 import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
+
+const mergeMsg = (...msgs: unknown[]) => {
+  let msg = msgs.filter(v => v).join('\n')
+  if (msg) {
+    msg = '\n' + msg
+  }
+  msg = msg + '\n'
+  return msg
+}
 
 const showMessagePermForCallIos = async (
   rMicro: string,
   rCam: string,
   rNotify: boolean,
 ) => {
-  const msgMicro = rMicro !== 'granted' ? intl`- Microphone` + '\n' : ''
-  const msgCam = rCam !== 'granted' ? intl`- Camera` + '\n' : ''
-  const msgNotify = !rNotify ? intl`- Notifications` + '\n' : ''
+  const msgMicro = rMicro !== 'granted' && intl`- Microphone`
+  const msgCam = rCam !== 'granted' && intl`- Camera`
+  const msgNotify = !rNotify && intl`- Notifications`
+
+  const msg = mergeMsg(msgMicro, msgCam, msgNotify)
 
   RnAlert.prompt({
     title: '',
-    message: intl`You do not have permission as follows
-${msgMicro}${msgCam}${msgNotify}Please grant access permission in the app settings of the device.`,
+    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -72,25 +84,32 @@ const showMessagePermForCallAndroid = async (
   rRecord: string,
   rBluetooth: string,
   rNotify: boolean,
+  rAndroidLpc: boolean,
 ) => {
-  const msgBattery = !rBattery
-    ? intl`- Disable Battery Optimization` + '\n'
-    : ''
-  const msgOverlay = !rOverlay ? intl`- Display over other apps` + '\n' : ''
+  const msgBattery = !rBattery && intl`- Disable Battery Optimization`
+  const msgOverlay = !rOverlay && intl`- Display over other apps`
+  const msgPermOther = !rAndroidLpc && intl`- Enable Android lpc permissions`
   const msgCallPhone =
-    rCallPhone !== 'granted' && rReadPhone !== 'granted'
-      ? intl`- Phone` + '\n'
-      : ''
-  const msgCam = rCam !== 'granted' ? intl`- Camera` + '\n' : ''
-  const msgRecord = rRecord !== 'granted' ? intl`- Microphone` + '\n' : ''
-  const msgBluetooth =
-    rBluetooth !== 'granted' ? intl`- Nearby devices` + '\n' : ''
-  const msgNotify = !rNotify ? intl`- Notifications` + '\n' : ''
+    rCallPhone !== 'granted' && rReadPhone !== 'granted' && intl`- Phone`
+  const msgCam = rCam !== 'granted' && intl`- Camera`
+  const msgRecord = rRecord !== 'granted' && intl`- Microphone`
+  const msgBluetooth = rBluetooth !== 'granted' && intl`- Nearby devices`
+  const msgNotify = !rNotify && intl`- Notifications`
+
+  const msg = mergeMsg(
+    msgBattery,
+    msgOverlay,
+    msgPermOther,
+    msgCallPhone,
+    msgCam,
+    msgRecord,
+    msgBluetooth,
+    msgNotify,
+  )
 
   RnAlert.prompt({
     title: '',
-    message: intl`You do not have permission as follows
-${msgBattery}${msgOverlay}${msgCallPhone}${msgCam}${msgRecord}${msgBluetooth}${msgNotify}Please grant access permission in the app settings of the device.`,
+    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device.`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -107,6 +126,7 @@ const checkPermForCallAndroid = async (
 
   const rBattery = await BrekekeUtils.isDisableBatteryOptimizationGranted()
   const rOverlay = await BrekekeUtils.isOverlayPermissionGranted()
+  const rAndroidLpc = await BrekekeUtils.androidLpcIsPermGranted()
 
   let rNotify = true
   if (isNotifyPermNeeded) {
@@ -133,6 +153,7 @@ const checkPermForCallAndroid = async (
     rCam,
     isShowDialog,
     rNotify,
+    rAndroidLpc,
   })
   //
   if (
@@ -143,6 +164,7 @@ const checkPermForCallAndroid = async (
     rCallPhone === 'granted' &&
     rBattery &&
     rOverlay &&
+    rAndroidLpc &&
     rNotify
   ) {
     return true
@@ -159,6 +181,7 @@ const checkPermForCallAndroid = async (
     rRecord,
     rBluetooth,
     rNotify,
+    rAndroidLpc,
   )
   return false
 }
@@ -167,7 +190,7 @@ export const checkPermForCall = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
 ) => {
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     return await checkPermForCallIos(isShowDialog, isNotifyPermNeeded)
   }
   return await checkPermForCallAndroid(isShowDialog, isNotifyPermNeeded)
@@ -214,6 +237,36 @@ const permDisableBatteryOptimization = async () => {
   })
 }
 
+const permAndroidLpcForIncomingCall = async () => {
+  if (await BrekekeUtils.androidLpcIsPermGranted()) {
+    return true
+  }
+  console.log('Permission debug permDisableBatteryOptimization')
+  return await new Promise<void | boolean>(resolve => {
+    RnAlert.prompt({
+      title: '',
+      message: intl`To ensure the best user experience, the application requires the "Show on Lock screen" and "Display pop-up windows while running in the background" permissions. Please enable these two permissions in your device settings to proceed.`,
+      onConfirm: async () => {
+        const r = await BrekekeUtils.androidLpcPermIncomingCall()
+        resolve(r)
+      },
+      onDismiss: () => resolve(false),
+      confirmText: intl`OK`,
+      dismissText: intl`Cancel`,
+    })
+  })
+}
+
+export const permFineLocation = async () => {
+  const r = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+  return r === 'granted'
+}
+
+export const checkFineLocation = async () => {
+  const r = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+  return r === 'granted'
+}
+
 const permOverlayPermission = async () => {
   if (await BrekekeUtils.isOverlayPermissionGranted()) {
     return true
@@ -240,8 +293,8 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
   }
 
   const rBattery = await permDisableBatteryOptimization()
-
   const rOverlay = await permOverlayPermission()
+  const rAndroidLpc = await permAndroidLpcForIncomingCall()
 
   let rNotify = true
   if (isNotifyPermNeeded) {
@@ -271,6 +324,7 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
     rBattery,
     rOverlay,
     rNotify,
+    rAndroidLpc,
   })
   if (
     rBluetooth === 'granted' &&
@@ -280,12 +334,13 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
     rCallPhone === 'granted' &&
     rBattery &&
     rOverlay &&
+    rAndroidLpc &&
     rNotify
   ) {
     return true
   }
 
-  if (!rBattery || !rOverlay) {
+  if (!rBattery || !rOverlay || !rAndroidLpc) {
     return false
   }
 
@@ -298,6 +353,7 @@ const permForCallAndroid = async (isNotifyPermNeeded = false) => {
     rRecord,
     rBluetooth,
     rNotify,
+    rAndroidLpc,
   )
 
   return false
@@ -322,7 +378,7 @@ const permForCallIos = async (isNotifyPermNeeded = false) => {
 }
 
 export const permForCall = async (isNotifyPermNeeded = false) => {
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     return await permForCallIos(isNotifyPermNeeded)
   }
   return await permForCallAndroid(isNotifyPermNeeded)

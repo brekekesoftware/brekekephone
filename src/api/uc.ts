@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3'
 import { encode } from 'html-entities'
-import { Platform } from 'react-native'
 
 import type {
   UcBuddy,
@@ -16,6 +15,7 @@ import type {
   UcWebchatConferenceText,
 } from '../brekekejs'
 import { ChatClient, Constants, Logger } from '../brekekejs/ucclient'
+import { isWeb } from '../config'
 import type { Account } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import type { ChatFile } from '../stores/chatStore'
@@ -611,7 +611,7 @@ export class UC extends EventEmitter {
 
   sendFile = async (user_id: string, file: Blob) => {
     let inputw: HTMLInputElement | undefined
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       inputw = document.createElement('input')
       inputw.type = 'file'
       inputw.name = 'file'
@@ -635,7 +635,7 @@ export class UC extends EventEmitter {
     }
 
     let inputrn: object | undefined
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       const fd = new FormData()
       fd.append('file', {
         ...file,
@@ -672,7 +672,7 @@ export class UC extends EventEmitter {
         id: res.text_id,
         file: res.fileInfo.file_id,
         text: res.fileInfo.name,
-        type: -1, // TODO
+        type: -1, // TODO:
         creator: this.client.getProfile().user_id,
         created: res.ltime,
       },
@@ -681,7 +681,7 @@ export class UC extends EventEmitter {
 
   sendFiles = async (conf_id: string, file: Blob) => {
     let inputw: HTMLInputElement | undefined
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       inputw = document.createElement('input')
       inputw.type = 'file'
       inputw.name = 'file'
@@ -705,7 +705,7 @@ export class UC extends EventEmitter {
     }
 
     let inputrn: object | undefined
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       const fd = new FormData()
 
       fd.append('file', {
@@ -747,7 +747,7 @@ export class UC extends EventEmitter {
         id: file_res.text_id,
         file: file_res.fileInfo.file_id,
         text: file_res.fileInfo.name,
-        type: -1, // TODO
+        type: -1, // TODO:
         creator: this.client.getProfile().user_id,
         created: file_res.ltime,
       },

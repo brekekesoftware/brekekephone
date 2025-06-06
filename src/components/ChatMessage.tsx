@@ -7,6 +7,7 @@ import Hyperlink from 'react-native-hyperlink'
 import Share from 'react-native-share'
 
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '../assets/icons'
+import { isWeb } from '../config'
 import type { ChatFile } from '../stores/chatStore'
 import { intl, intlDebug } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
@@ -198,7 +199,7 @@ export class Message extends Component<{
   createdByMe: boolean
 }> {
   onLinkPress = (url: string) => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       window.open(url, '_blank', 'noopener')
       return
     }
@@ -269,7 +270,7 @@ export class Message extends Component<{
     const file = p.file as any as ChatFile
     const isImage =
       file && (file.fileType === 'image' || file.fileType === 'video')
-    const TextContainer = Platform.OS === 'web' ? View : RnTouchableOpacity
+    const TextContainer = isWeb ? View : RnTouchableOpacity
     const { text, isTextOnly } = formatChatContent(p)
 
     return (

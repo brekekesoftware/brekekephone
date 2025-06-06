@@ -4,7 +4,7 @@ module.exports = {
     'jssip',
     // allow any in lodash.get
     '@types/lodash',
-    // TODO
+    // TODO:
     'mobx',
     'mobx-react',
   ],

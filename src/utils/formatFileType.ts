@@ -1,12 +1,12 @@
-import { Platform } from 'react-native'
+import { isIos, isWeb } from '../config'
 
 export const formatFileType = (name: string) => {
   const typeImage = ['PNG', 'JPG', 'JPEG', 'GIF']
   let typeVideo: string[] = []
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     // https://www.w3schools.com/tags/tag_video.asp
     typeVideo = ['MP4', 'WEBM', 'OGG', 'MOV']
-  } else if (Platform.OS === 'ios') {
+  } else if (isIos) {
     // https://stackoverflow.com/questions/1535836/video-file-formats-supported-in-iphone
     typeVideo = ['MP4', 'M4A', 'MOV', '3GP']
   } else {

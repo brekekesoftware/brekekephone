@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
-  Platform,
   StyleSheet,
   View,
 } from 'react-native'
@@ -20,6 +19,7 @@ import {
   mdiImageBrokenVariant,
   mdiPlayCircleOutline,
 } from '../assets/icons'
+import { isAndroid } from '../config'
 import type { ChatFile } from '../stores/chatStore'
 import { RnIcon } from './RnIcon'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
@@ -140,7 +140,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   }, [])
 
   const renderVideo = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       return (
         <View style={css.vVideo}>
           <Video

@@ -38,8 +38,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
-import com.brekeke.phonedev.toast.ToastManager;
-import com.brekeke.phonedev.toast.ToastType;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.react.bridge.ReadableArray;
@@ -50,6 +48,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
 
+// incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   private ToastManager toastManager;
   private LinearLayout toastContainer;

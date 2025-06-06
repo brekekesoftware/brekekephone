@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { isWeb } from '../config'
 
 declare global {
   interface Window {
@@ -9,11 +9,9 @@ declare global {
 
 export const webRootId = '__brekeke_phone_web_root'
 export const getWebRootIdProps = () =>
-  Platform.OS === 'web' && !window._BrekekePhoneWebRoot
-    ? { id: webRootId }
-    : undefined
+  isWeb && !window._BrekekePhoneWebRoot ? { id: webRootId } : undefined
 
-if (Platform.OS === 'web') {
+if (isWeb) {
   window._BrekekePhoneWebRoot = document.getElementById(webRootId)
   if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
     window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot

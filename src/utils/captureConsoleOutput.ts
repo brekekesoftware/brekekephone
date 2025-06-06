@@ -1,8 +1,8 @@
 import CircularJSON from 'circular-json'
 import moment from 'moment'
-import { Platform } from 'react-native'
 import { format } from 'util'
 
+import { isWeb } from '../config'
 import { sipErrorEmitter } from '../stores/sipErrorEmitter'
 
 const formatErrors = (...errs: Error[]) => {
@@ -18,7 +18,7 @@ const formatErrors = (...errs: Error[]) => {
   )
   let tpl = msgs.shift() || ''
   // remove %c on web from the debug lib
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     const m: { [k: number]: boolean } = {}
     const regex = /%\w/g
     let mi = 0
@@ -56,7 +56,7 @@ const formatErrors = (...errs: Error[]) => {
 }
 
 const captureConsoleOutput = () => {
-  if (Platform.OS === 'web' && !window._BrekekePhoneCaptureConsole) {
+  if (isWeb && !window._BrekekePhoneCaptureConsole) {
     return
   }
   const customConsoleObject = ['debug', 'log', 'info', 'warn', 'error'].reduce(
@@ -64,7 +64,7 @@ const captureConsoleOutput = () => {
       const f0 = console[k as keyof Console] as Function
       const f = f0.bind(console) as Function
       m[k] =
-        Platform.OS === 'web' || process.env.NODE_ENV !== 'production'
+        isWeb || process.env.NODE_ENV !== 'production'
           ? (...args: Error[]) => {
               const msg = formatErrors(...args)
               // add timestamp on dev (prod already added in debugStore)
