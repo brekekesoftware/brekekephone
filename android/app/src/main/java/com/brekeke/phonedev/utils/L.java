@@ -89,4 +89,12 @@ public class L {
   public static String goToSetting() {
     return "ja".equals(l) ? "設定に移動" : "Go to settings";
   }
+
+  public static String serviceIsRunning() {
+    return "ja".equals(l) ? "サービスは実行中です" : "Service is running";
+  }
+
+  public static String serviceIsRunningInBackground() {
+    return "ja".equals(l) ? "サービスはバックグラウンドで実行されています" : "Service is running in background";
+  }
 }

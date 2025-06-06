@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.call_history;
+package com.brekeke.phonedev;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -25,7 +25,7 @@ public class CallService extends InCallService {
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         startActivity(intent);
       } else {
-        // TODO:incoming call
+        // TODO: incoming call
       }
     } catch (Exception e) {
 

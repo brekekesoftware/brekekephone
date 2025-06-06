@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;

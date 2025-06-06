@@ -184,7 +184,7 @@ class AccountStore {
     }
 
     const clonedA = { ...a } // clone before assign
-    // TODO:nav should be in AccountData then we dont need to update here
+    // TODO: nav should be in AccountData then we dont need to update here
     const navUpdate = compareAccountPartial(a, p)
       ? null
       : { navIndex: -1, navSubMenus: [] }

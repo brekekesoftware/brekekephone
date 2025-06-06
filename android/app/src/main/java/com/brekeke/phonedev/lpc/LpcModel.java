@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.lpc;
+package com.brekeke.phonedev;
 
 public class LpcModel {
   public class User {

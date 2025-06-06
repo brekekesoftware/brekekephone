@@ -114,7 +114,7 @@ const js = `
 function addTitleListener() {
   var titleDomNode = document.querySelector('title');
   if (!titleDomNode) {
-    // TODO:handle if html has no title
+    // TODO: handle if html has no title
     return false;
   }
   if (document.__alreadyObserving) {

@@ -46,7 +46,7 @@ export const ButtonIcon: FC<{
     if (p.msLoading) {
       setLoading(true)
       BackgroundTimer.setTimeout(() => {
-        // TODO:possible react warning memory leak set state after unmount
+        // TODO: possible react warning memory leak set state after unmount
         setLoading(false)
       }, p.msLoading)
     }

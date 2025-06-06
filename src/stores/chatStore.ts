@@ -108,7 +108,7 @@ class ChatStore {
     )?.length
 
   // threadId can be uc user id or group id
-  // TODO:threadId can be duplicated between them
+  // TODO: threadId can be duplicated between them
   @computed get threadIdsOrderedByRecent() {
     return sortBy(
       Object.keys(this.messagesByThreadId),

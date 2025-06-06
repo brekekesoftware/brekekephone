@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.push_notification;
+package com.brekeke.phonedev;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;

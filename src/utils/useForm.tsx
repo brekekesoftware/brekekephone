@@ -46,7 +46,7 @@ export const useForm = () => {
       $.set('currentFocus', k)
     },
     onFieldChange: (k: string, v: string) => {
-      // TODO:batch, remember k
+      // TODO: batch, remember k
       const rule = $.props.fields.find((f: FormField) => f.name === k)?.rule
       const validator = rule ? new Validator({ [k]: v }, { [k]: rule }) : null
       $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k))
@@ -69,7 +69,7 @@ export const useForm = () => {
             _ => validator.errors.first(_),
           ),
         )
-        // TODO:show toast
+        // TODO: show toast
       } else {
         $.set('errorMap', {})
         if (onValidSubmit) {
@@ -107,7 +107,7 @@ export const useForm = () => {
                   onValueChange={flow(
                     [
                       // add change handler to trigger validate
-                      // TODO:update all flows to regular funcs
+                      // TODO: update all flows to regular funcs
                       (v: string) => {
                         $.onFieldChange(f.name, v)
                         return v
