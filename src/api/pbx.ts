@@ -12,7 +12,7 @@ import type {
   PbxResourceLine,
   Request,
 } from '../brekekejs'
-import { bundleIdentifier, fcmApplicationId, isWeb } from '../config'
+import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '../config'
 import { embedApi } from '../embed/embedApi'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
@@ -1072,7 +1072,8 @@ export class PBX extends EventEmitter {
         // now should be able to use fcm together with lpc
       }
     })
-    let application_id = isFcm ? fcmApplicationId : bundleIdentifier
+    // TODO: need to sovle the case when lpc is disabled by admin
+    let application_id = isAndroid ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
       application_id += '.voip'
