@@ -1,13 +1,13 @@
 import jsonStableStringify from 'json-stable-stringify'
 import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
-import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 
 import { SyncPnToken } from '../api/syncPnToken'
 import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
 import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
+import { isWeb } from '../config'
 import { arrToMap } from '../utils/arrToMap'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
@@ -95,7 +95,7 @@ class AccountStore {
     pbxPassword: '',
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
-    pushNotificationEnabled: Platform.OS === 'web' ? false : true,
+    pushNotificationEnabled: isWeb ? false : true,
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -184,7 +184,7 @@ class AccountStore {
     }
 
     const clonedA = { ...a } // clone before assign
-    // TODO:nav should be in AccountData then we dont need to update here
+    // TODO: nav should be in AccountData then we dont need to update here
     const navUpdate = compareAccountPartial(a, p)
       ? null
       : { navIndex: -1, navSubMenus: [] }

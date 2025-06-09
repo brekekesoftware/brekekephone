@@ -1,7 +1,7 @@
 import { darken, lighten, transparentize } from 'polished'
-import { Platform } from 'react-native'
 
 import json from '../../package.json'
+import { isWeb } from '../config'
 
 export const v = {
   fontSize: 14,
@@ -26,10 +26,9 @@ export const v = {
   },
   iconSize: 24,
   fontWeight: 'normal' as 'normal',
-  fontFamily:
-    Platform.OS === 'web'
-      ? "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
-      : undefined,
+  fontFamily: isWeb
+    ? "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
+    : undefined,
   //
   borderRadius: 3,
   maxModalWidth: 380,

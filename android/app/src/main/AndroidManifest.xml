@@ -96,8 +96,8 @@
   >
     <activity
       android:name=".IncomingCallActivity"
-      android:exported="true"
       android:label="IncomingCallActivity"
+      android:exported="true"
       android:launchMode="standard"
       android:showOnLockScreen="true"
       android:screenOrientation="sensorPortrait"
@@ -106,6 +106,7 @@
     />
     <activity
       android:name=".ExitActivity"
+      android:label="ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
     />

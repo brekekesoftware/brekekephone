@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.lpc;
+package com.brekeke.phonedev;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,8 +12,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
-import com.brekeke.phonedev.MainActivity;
-import com.brekeke.phonedev.R;
 import com.google.gson.Gson;
 
 // main lpc service
@@ -42,8 +40,8 @@ public class BrekekeLpcService extends Service {
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
     Notification notification =
         new Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("Service is Running")
-            .setContentText("Service running in background")
+            .setContentTitle(L.serviceIsRunning())
+            .setContentText(L.serviceIsRunningInBackground())
             .setSmallIcon(R.drawable.exo_notification_small_icon)
             .setContentIntent(pendingIntent)
             .build();

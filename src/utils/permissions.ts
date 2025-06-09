@@ -10,6 +10,7 @@ import {
   requestNotifications,
 } from 'react-native-permissions'
 
+import { isIos } from '../config'
 import { intl } from '../stores/intl'
 import { RnAlert } from '../stores/RnAlert'
 import { BrekekeUtils } from './RnNativeModules'
@@ -189,7 +190,7 @@ export const checkPermForCall = async (
   isShowDialog = false,
   isNotifyPermNeeded = false,
 ) => {
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     return await checkPermForCallIos(isShowDialog, isNotifyPermNeeded)
   }
   return await checkPermForCallAndroid(isShowDialog, isNotifyPermNeeded)
@@ -377,7 +378,7 @@ const permForCallIos = async (isNotifyPermNeeded = false) => {
 }
 
 export const permForCall = async (isNotifyPermNeeded = false) => {
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     return await permForCallIos(isNotifyPermNeeded)
   }
   return await permForCallAndroid(isNotifyPermNeeded)

@@ -12,7 +12,7 @@ import type {
   UcConfig,
 } from '../brekekejs'
 import { currentVersion } from '../components/variables'
-import { bundleIdentifier } from '../config'
+import { bundleIdentifier, isIos, isWeb } from '../config'
 import { embedApi } from '../embed/embedApi'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '../utils/deeplink'
@@ -155,7 +155,7 @@ export class AuthStore {
   @observable resourceLines: PbxResourceLine[] = []
 
   // user agent for sip pal client
-  // TODO:check embed api, dont need to set BrekekeUtils since this in web only?
+  // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
   getUserAgent = async (a: ParsedPn | AccountUnique) =>
     embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
   private _getUserAgent = async (a: ParsedPn | AccountUnique) => {
@@ -276,7 +276,7 @@ export class AuthStore {
   signOutWithoutSaving = () => {
     try {
       getCallStore().calls.forEach(c => c.hangupWithUnhold())
-      if (Platform.OS !== 'web') {
+      if (!isWeb) {
         // try to end callkeep if it's stuck
         getCallStore().endCallKeepAllCalls()
       }
@@ -547,7 +547,7 @@ export class AuthStore {
 
       // make sure audio engine active before start call
       // https://stackoverflow.com/a/60572329/25021683
-      if (Platform.OS === 'ios') {
+      if (isIos) {
         await waitForActiveAppState()
         await waitTimeout(100)
       }
@@ -663,7 +663,7 @@ export class AuthStore {
     await this.signIn(acc)
   }
   phoneappliEnabled = () =>
-    Platform.OS !== 'web' &&
+    !isWeb &&
     (this.userExtensionProperties?.phoneappli ||
       getAuthStore().getCurrentData()?.phoneappliEnabled)
   userExtensionProperties: null | {

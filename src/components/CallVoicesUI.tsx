@@ -1,9 +1,10 @@
 import { Component, useEffect } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
+import { isAndroid } from '../config'
 import { getCallStore } from '../stores/callStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 
@@ -15,14 +16,14 @@ const css = StyleSheet.create({
 })
 export class IncomingItem extends Component {
   componentDidMount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       BrekekeUtils.startRingtone()
     } else {
       IncallManager.startRingtone('_BUNDLE_')
     }
   }
   componentWillUnmount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       BrekekeUtils.stopRingtone()
     } else {
       IncallManager.stopRingtone()
@@ -39,12 +40,12 @@ export class OutgoingItem extends Component {
     if (ongoingCallId) {
       sip.disableMedia(ongoingCallId)
     }
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
   componentWillUnmount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       IncallManager.stopRingback()
     }
   }

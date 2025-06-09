@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Dimensions, Platform } from 'react-native'
+import { Dimensions } from 'react-native'
+
+import { isWeb } from '../config'
 
 /* This hook will use later. Current not handle orientation */
 
@@ -11,7 +13,7 @@ export enum EOrientation {
 export const useOrientation = () => {
   const w = Dimensions.get('window')
   const [orientation, setOrientation] = useState<EOrientation>(
-    w.width < w.height || Platform.OS === 'web'
+    w.width < w.height || isWeb
       ? EOrientation.Portrait
       : EOrientation.Landscape,
   )

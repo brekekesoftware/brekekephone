@@ -1,10 +1,8 @@
-package com.brekeke.phonedev.push_notification;
+package com.brekeke.phonedev;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.util.Log;
-import com.brekeke.phonedev.BrekekeUtils;
-import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;

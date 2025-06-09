@@ -34,10 +34,6 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import com.brekeke.phonedev.lpc.BrekekeLpcService;
-import com.brekeke.phonedev.lpc.LpcUtils;
-import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
-import com.brekeke.phonedev.toast.ToastType;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -344,7 +340,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               NotificationCompat.Builder b =
                   new NotificationCompat.Builder(appCtx, "CALL_CHANNEL_ID")
                       .setSmallIcon(R.drawable.exo_notification_small_icon)
-                      .setContentTitle("Incoming call")
+                      .setContentTitle(L.incomingCall())
                       .setPriority(NotificationCompat.PRIORITY_HIGH)
                       .setCategory(NotificationCompat.CATEGORY_CALL)
                       .setFullScreenIntent(pi, true);

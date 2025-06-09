@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   AppState,
   Dimensions,
-  Platform,
   StyleSheet,
   View,
 } from 'react-native'
@@ -40,6 +39,7 @@ import { RnText } from '../components/RnText'
 import { SmartImage } from '../components/SmartImage'
 import { v } from '../components/variables'
 import { VideoPlayer } from '../components/VideoPlayer'
+import { isAndroid, isWeb } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import type { Call, CallConfigKey } from '../stores/Call'
 import { getCallStore } from '../stores/callStore'
@@ -305,7 +305,7 @@ class PageCallManage extends Component<{
   @observable private hasJavaPn = true
   private checkJavaPn = async () => {
     if (
-      Platform.OS !== 'android' ||
+      !isAndroid ||
       !this.props.call.incoming ||
       !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
     ) {
@@ -554,8 +554,7 @@ class PageCallManage extends Component<{
       ? v.colors.primary
       : v.colors.warning
     const isHideButtons =
-      (c.incoming || (!c.withSDPControls && Platform.OS === 'web')) &&
-      !c.answered
+      (c.incoming || (!c.withSDPControls && isWeb)) && !c.answered
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
@@ -625,7 +624,7 @@ class PageCallManage extends Component<{
               textcolor='white'
             />
           )}
-          {Platform.OS !== 'web' && !this.isBtnHidden('speaker') && (
+          {!isWeb && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={c.sessionStatus === 'dialing'}

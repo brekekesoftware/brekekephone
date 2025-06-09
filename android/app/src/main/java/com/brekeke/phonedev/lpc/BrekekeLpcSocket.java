@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.lpc;
+package com.brekeke.phonedev;
 
 import static java.net.StandardSocketOptions.SO_KEEPALIVE;
 import static java.net.StandardSocketOptions.TCP_NODELAY;
@@ -8,12 +8,7 @@ import android.os.AsyncTask;
 import android.os.NetworkOnMainThreadException;
 import android.util.Base64;
 import android.util.Log;
-import com.brekeke.phonedev.BrekekeUtils;
 import com.google.gson.Gson;
-import com.tlschannel.ClientTlsChannel;
-import com.tlschannel.NeedsReadException;
-import com.tlschannel.NeedsWriteException;
-import com.tlschannel.TlsChannel;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -33,6 +28,11 @@ import java.util.Objects;
 import java.util.Random;
 import javax.net.ssl.SSLContext;
 import org.json.JSONObject;
+
+import tlschannel.ClientTlsChannel;
+import tlschannel.NeedsReadException;
+import tlschannel.NeedsWriteException;
+import tlschannel.TlsChannel;
 
 public class BrekekeLpcSocket {
   public class SSLSocketAsyncTask extends AsyncTask<LpcModel.Settings, Void, String> {

@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
-import { buildWebViewSource } from '../config'
+import { buildWebViewSource, isAndroid } from '../config'
 import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
 
 const css = StyleSheet.create({
@@ -94,9 +94,7 @@ export const CustomPageWebView = ({
     <WebView
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
-      injectedJavaScriptBeforeContentLoaded={
-        Platform.OS === 'android' ? js : ''
-      }
+      injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
       style={css.full}
       bounces={false}
       originWhitelist={['*']}
@@ -116,7 +114,7 @@ const js = `
 function addTitleListener() {
   var titleDomNode = document.querySelector('title');
   if (!titleDomNode) {
-    // TODO:handle if html has no title
+    // TODO: handle if html has no title
     return false;
   }
   if (document.__alreadyObserving) {
@@ -135,7 +133,7 @@ function sendJsonToRn(json) {
   window.ReactNativeWebView.postMessage(JSON.stringify(json));
   addTitleListener();
 }
-${webviewInjectSendJsonToRnOnLoad(true)}
+${webviewInjectSendJsonToRnOnLoad()}
 sendJsonToRn({
   loading: true,
   title: document.title,

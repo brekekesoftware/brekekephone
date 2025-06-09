@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.lpc;
+package com.brekeke.phonedev;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1062,17 +1062,6 @@ export class PBX extends EventEmitter {
       endpoint,
       key,
     } = d
-    let isFcm = false
-    const arr = Array.isArray(service_id) ? service_id : [service_id]
-    arr.forEach(id => {
-      if (id === PnServiceId.fcm || id === PnServiceId.web) {
-        isFcm = true
-      } else if (isFcm) {
-        // throw new Error('Can not mix service_id fcm/web together with apns/lpc')
-        // now should be able to use fcm together with lpc
-      }
-    })
-    // TODO: need to sovle the case when lpc is disabled by admin
     let application_id = isAndroid ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {

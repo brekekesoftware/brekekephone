@@ -1,6 +1,6 @@
 import { debounce, isEmpty } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
 import { v4 as newUuid } from 'uuid'
@@ -10,6 +10,7 @@ import { checkAndRemovePnTokenViaSip, sip } from '../api/sip'
 import { uc } from '../api/uc'
 import { mdiPhone } from '../assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '../brekekejs'
+import { isAndroid, isIos, isWeb } from '../config'
 import { arrToMap } from '../utils/arrToMap'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import type { TEvent } from '../utils/callkeep'
@@ -83,7 +84,7 @@ export class CallStore {
       // on android already answer in native java activity
       // on ios, QA suggest to reject the call?
       // TODO:
-      if (Platform.OS === 'ios') {
+      if (isIos) {
         c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {
           RNCallKeep.answerIncomingCall(uuid)
@@ -164,8 +165,8 @@ export class CallStore {
     this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getCallKeep(uuid, {
       includingAnswered: true,
-      includingRejected: Platform.OS === 'android',
-      includingOutgoing: Platform.OS === 'ios',
+      includingRejected: isAndroid,
+      includingOutgoing: isIos,
     })
     console.log(`SIP PN debug: onCallKeepEndCall found: ${!!c}`)
     if (c) {
@@ -251,7 +252,7 @@ export class CallStore {
   onCallUpsert: CallStore['upsertCall'] = async c => {
     this.upsertCall(c)
     if (
-      Platform.OS === 'android' &&
+      isAndroid &&
       !this.incallManagerStarted &&
       this.calls.find(_ => _.answered || !_.incoming)
     ) {
@@ -360,7 +361,7 @@ export class CallStore {
         e.partyAnswered = true
       }
       if (
-        Platform.OS === 'ios' &&
+        isIos &&
         e.isAutoAnswer &&
         !e.isAudioActive &&
         e.partyAnswered &&
@@ -432,7 +433,7 @@ export class CallStore {
     const c = new Call(this)
     Object.assign(c, p)
     // clear start call interval timer when the outgoing call is created
-    if (Platform.OS === 'web' && !c.incoming) {
+    if (isWeb && !c.incoming) {
       this.clearStartCallIntervalTimer()
     }
     // get Avatar and Username of phoneappli
@@ -453,7 +454,7 @@ export class CallStore {
     // emit to embed api
     c.startEmitEmbed()
     // desktop notification
-    if (Platform.OS === 'web' && c.incoming && !c.answered) {
+    if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
       webShowNotification(name + ' ' + intl`Incoming call`, name)
     }
@@ -462,7 +463,7 @@ export class CallStore {
       this.callkeepUuidPending = ''
     }
     if (
-      Platform.OS !== 'web' &&
+      !isWeb &&
       c.incoming &&
       !c.callkeepUuid &&
       !ca?.pushNotificationEnabled
@@ -477,7 +478,7 @@ export class CallStore {
       )
     }
     // get and check callkeep if pending incoming call
-    if (Platform.OS === 'web' || !c.incoming || c.answered) {
+    if (isWeb || !c.incoming || c.answered) {
       return
     }
     c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
@@ -533,18 +534,14 @@ export class CallStore {
       uc.sendCallResult(c.getDuration(), c.partyNumber)
     }
     // reset loud speaker if there's no call left
-    if (Platform.OS !== 'web' && !this.calls.length) {
+    if (!isWeb && !this.calls.length) {
       this.isLoudSpeakerEnabled = false
-      if (Platform.OS === 'ios') {
+      if (isIos) {
         IncallManager.setForceSpeakerphoneOn(false)
       }
     }
     // stop android incall manager if there's no call left
-    if (
-      Platform.OS === 'android' &&
-      this.incallManagerStarted &&
-      !this.calls.length
-    ) {
+    if (isAndroid && this.incallManagerStarted && !this.calls.length) {
       this.incallManagerStarted = false
       IncallManager.stop()
       // reset audio mode to allow notification to play sound
@@ -616,10 +613,10 @@ export class CallStore {
     // start call logic in RNCallKeep
     // adding this will help the outgoing call automatically hold on GSM call
     let uuid = ''
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
-      if (Platform.OS === 'android') {
+      if (isAndroid) {
         RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
@@ -779,7 +776,7 @@ export class CallStore {
   // logic to end call if timeout of 20s
   private autoEndCallKeepTimerId = 0
   private clearAutoEndCallKeepTimer = () => {
-    if (Platform.OS === 'web' || !this.autoEndCallKeepTimerId) {
+    if (isWeb || !this.autoEndCallKeepTimerId) {
       return
     }
     BackgroundTimer.clearInterval(this.autoEndCallKeepTimerId)
@@ -789,7 +786,7 @@ export class CallStore {
     uuid: string,
     incomingPnData?: ParsedPn,
   ) => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       return
     }
     if (incomingPnData) {
@@ -839,7 +836,7 @@ export class CallStore {
       this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     }
     // disable proximity mode if no running call
-    if (Platform.OS === 'ios' && !this.calls.length) {
+    if (isIos && !this.calls.length) {
       BrekekeUtils.setProximityMonitoring(false)
     }
     const pnData = this.callkeepMap[uuid]?.incomingPnData
@@ -860,7 +857,7 @@ export class CallStore {
     BrekekeUtils.closeIncomingCall(uuid)
   }
   endCallKeepAllCalls = () => {
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       RNCallKeep.endAllCalls()
     }
     BrekekeUtils.closeAllIncomingCalls()
@@ -945,7 +942,7 @@ export class CallStore {
     })
 
   shouldRingInNotify = (uuid?: string) => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       return true
     }
     const ca = getAuthStore().getCurrentAccount()
@@ -955,7 +952,7 @@ export class CallStore {
     }
     // do not ring in ios even if PN is turned off
     // since we already show the call via RNCallKeep in js code
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       return false
     }
     // do not ring on background
@@ -1041,7 +1038,7 @@ export class CallStore {
   }
 
   constructor() {
-    if (Platform.OS !== 'android') {
+    if (!isAndroid) {
       return
     }
     BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
@@ -1072,11 +1069,11 @@ export class CallStore {
   // some other fields
   @observable isLoudSpeakerEnabled = false
   @action toggleLoudSpeaker = () => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       return
     }
     this.isLoudSpeakerEnabled = !this.isLoudSpeakerEnabled
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       IncallManager.setForceSpeakerphoneOn(this.isLoudSpeakerEnabled)
       return
     }

@@ -23,7 +23,7 @@ const syncPnTokenWithoutCatch = async (
   console.log('PN sync debug: syncPnTokenWithoutCatch')
 
   if (isWeb) {
-    // TODO:should be implemented by now
+    // TODO: should be implemented by now
     console.log('PN sync debug: not implemented yet on web browser')
     return
   }

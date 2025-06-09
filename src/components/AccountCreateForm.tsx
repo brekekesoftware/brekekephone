@@ -1,8 +1,9 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Platform, View } from 'react-native'
+import { View } from 'react-native'
 
+import { isWeb } from '../config'
 import type { Account } from '../stores/accountStore'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
@@ -21,7 +22,6 @@ export const AccountCreateForm: FC<{
   footerLogout?: boolean
   title: string
 }> = observer(props => {
-  const isWeb = Platform.OS === 'web'
   const m = () => ({
     observable: {
       account: {
@@ -140,7 +140,7 @@ export const AccountCreateForm: FC<{
                     },
                   ]
                 : []),
-              ...(Platform.OS !== 'web'
+              ...(!isWeb
                 ? [
                     {
                       label: intl`Open debug log`,
@@ -176,7 +176,7 @@ export const AccountCreateForm: FC<{
             label: 'PBX',
           },
           {
-            // autoFocus: true, // TODO:Animation issue
+            // autoFocus: true, // TODO: Animation issue
             disabled: props.footerLogout,
             name: 'pbxUsername',
             label: intl`USERNAME`,
