@@ -95,7 +95,7 @@
     android:largeHeap="true"
   >
     <activity
-      android:name=".IncomingCallActivity"
+      android:name=".activity.IncomingCallActivity"
       android:label="IncomingCallActivity"
       android:exported="true"
       android:launchMode="standard"
@@ -105,7 +105,7 @@
       android:windowSoftInputMode="adjustPan"
     />
     <activity
-      android:name=".ExitActivity"
+      android:name=".activity.ExitActivity"
       android:label="ExitActivity"
       android:theme="@android:style/Theme.NoDisplay"
       android:autoRemoveFromRecents="true"
