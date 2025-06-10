@@ -10343,10 +10343,10 @@ react-native-video@6.14.1:
   resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.14.1.tgz#1b62acb8f3e1821b08f1ff20271ab427329f544c"
   integrity sha512-nTPHqg+GKu6UV6Hr5Ph48Hn2jod963bHCt0wWtlK9jv9lE1FDGyDdX0Jl15lky8v7VhNdqjqb9DX0EUhMontWg==
 
-react-native-voip-push-notification@3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-3.3.1.tgz#42db64161d0bc4ff76312da08b04e89ecacea4b5"
-  integrity sha512-AlS0QDUNpKMEAOz4MeLx+wg4Tf4Xg+0LhsjRUCjUOGzfVRGYltyiHECtyZUcTF5OIQC6eem5IU8mLPxN7sB6Qg==
+react-native-voip-push-notification@3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-voip-push-notification/-/react-native-voip-push-notification-3.3.3.tgz#60169cc4083fc619383ab081f330e42a995c0dfa"
+  integrity sha512-cyWuI9//T1IQIq4RPq0QQe0NuEwIpnE0L98H2sUH4MjFsNMD/yNE4EJzEZN4cIwfPMZaASa0gQw6B1a7VwnkMA==
 
 react-native-web-linear-gradient@1.1.2:
   version "1.1.2"

@@ -78,24 +78,22 @@ export const PushNotification = {
     initApp()
 
     Voip.addEventListener('register', onVoipToken)
-    Voip.addEventListener('notification', (n: PN) => onNotification(n, initApp))
-    Voip.addEventListener(
-      'didLoadWithEvents',
-      (e: { name: string; data: PN }[]) => {
-        if (!e?.length) {
-          return
-        }
-        e.forEach(({ name, data }) => {
-          if (name === 'RNVoipPushRemoteNotificationsRegisteredEvent') {
-            if (typeof data === 'string') {
-              onVoipToken(data)
-            }
-          } else if (name === 'RNVoipPushRemoteNotificationReceivedEvent') {
-            onNotification(data, initApp)
+    Voip.addEventListener('notification', ((n: any) =>
+      onNotification(n as PN, initApp)) as (args: object) => void)
+    Voip.addEventListener('didLoadWithEvents', ((e: any[]) => {
+      if (!e?.length) {
+        return
+      }
+      ;(e as { name: string; data: PN }[]).forEach(({ name, data }) => {
+        if (name === 'RNVoipPushRemoteNotificationsRegisteredEvent') {
+          if (typeof data === 'string') {
+            onVoipToken(data)
           }
-        })
-      },
-    )
+        } else if (name === 'RNVoipPushRemoteNotificationReceivedEvent') {
+          onNotification(data, initApp)
+        }
+      })
+    }) as (args: object) => void)
     Voip.registerVoipToken()
 
     PushNotificationIOS.addEventListener('register', onApnsToken)

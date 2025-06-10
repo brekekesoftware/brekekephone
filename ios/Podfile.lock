@@ -1875,7 +1875,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNVoipPushNotification (3.3.1):
+  - RNVoipPushNotification (3.3.3):
     - React-Core
   - RNWifi (4.13.5):
     - React-Core
@@ -2271,7 +2271,7 @@ SPEC CHECKSUMS:
   RNPermissions: b329e21667d531e40ff28641877a7ffe34a8d550
   RNShare: 277a99694390c6a4d161437dc81f2dfaa23f5ecb
   RNSVG: 5412c508c07957b006f984097623abf112c3587b
-  RNVoipPushNotification: 43cb3200c68822bad3fdd5a05ee1d5e59950ac1d
+  RNVoipPushNotification: 4998fe6724d421da616dca765da7dc421ff54c4e
   RNWifi: 525b9a07514cfae3fef83635a3521d30041dbc92
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
