@@ -249,8 +249,8 @@ public class LpcUtils {
     return sslContext;
   }
 
-  public static Boolean matchSsid(ReadableArray remoteSsid , String localSsid) {
-    for(int i = 0 ; i < remoteSsid.size(); i++) {
+  public static Boolean matchSsid(ReadableArray remoteSsid, String localSsid) {
+    for (int i = 0; i < remoteSsid.size(); i++) {
       ReadableType type = remoteSsid.getType(i);
       if (type == ReadableType.String && remoteSsid.getString(i).equals(localSsid)) {
         return true;

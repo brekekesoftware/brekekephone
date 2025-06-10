@@ -2,6 +2,7 @@ package com.brekeke.phonedev;
 
 import static android.content.Context.TELECOM_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -33,7 +34,6 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.brekeke.phonedev.activity.ExitActivity;
 import com.brekeke.phonedev.activity.IncomingCallActivity;
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
@@ -1273,10 +1273,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
-     if(!LpcUtils.matchSsid(remoteSsids,localSsid)) {
-         disableLPC();
-         return;
-     }
+    if (!LpcUtils.matchSsid(remoteSsids, localSsid)) {
+      disableLPC();
+      return;
+    }
     Intent i =
         LpcUtils.putConfigToIntent(
             host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));

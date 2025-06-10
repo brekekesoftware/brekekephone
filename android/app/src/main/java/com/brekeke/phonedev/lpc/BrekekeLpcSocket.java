@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.Random;
 import javax.net.ssl.SSLContext;
 import org.json.JSONObject;
-
 import tlschannel.ClientTlsChannel;
 import tlschannel.NeedsReadException;
 import tlschannel.NeedsWriteException;

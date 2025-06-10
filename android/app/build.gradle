@@ -109,9 +109,8 @@ dependencies {
   implementation("com.github.bumptech.glide:glide:4.11.0")
   annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
   implementation("com.google.code.gson:gson:2.9.0")
-  implementation 'com.github.marianobarrios:tls-channel:0.8.1'
+  implementation("com.github.marianobarrios:tls-channel:0.8.1")
 }
-
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
