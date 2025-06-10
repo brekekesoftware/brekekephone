@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.activity;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -38,6 +38,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.BuildConfig;
+import com.brekeke.phonedev.MainActivity;
+import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.ToastManager;
+import com.brekeke.phonedev.utils.ToastType;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.react.bridge.ReadableArray;

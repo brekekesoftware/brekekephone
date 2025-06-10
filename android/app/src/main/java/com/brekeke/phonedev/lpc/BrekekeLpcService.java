@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,6 +12,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.brekeke.phonedev.MainActivity;
+import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.L;
 import com.google.gson.Gson;
 
 // main lpc service

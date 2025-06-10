@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.utils;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.brekeke.phonedev.R;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import com.brekeke.phonedev.R;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReadableArray;

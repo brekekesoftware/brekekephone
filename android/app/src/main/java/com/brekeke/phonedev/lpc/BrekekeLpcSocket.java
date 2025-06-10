@@ -1,4 +1,4 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.lpc;
 
 import static java.net.StandardSocketOptions.SO_KEEPALIVE;
 import static java.net.StandardSocketOptions.TCP_NODELAY;
@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.NetworkOnMainThreadException;
 import android.util.Base64;
 import android.util.Log;
+import com.brekeke.phonedev.BrekekeUtils;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;

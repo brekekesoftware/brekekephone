@@ -2,7 +2,6 @@ package com.brekeke.phonedev;
 
 import static android.content.Context.TELECOM_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
-
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -34,6 +33,14 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.brekeke.phonedev.activity.ExitActivity;
+import com.brekeke.phonedev.activity.IncomingCallActivity;
+import com.brekeke.phonedev.lpc.BrekekeLpcService;
+import com.brekeke.phonedev.lpc.LpcUtils;
+import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
+import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.ToastType;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
