@@ -89,42 +89,72 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
-  func playRBT() {
-    print("BrekekeUtils.playRBT()")
+  func playRBT(_ isLoudSpeaker: Bool) {
     do {
       if audio != nil {
         if audio.isPlaying {
-          print("startRingback(): is already playing")
           return ()
         } else {
-          stopRBT()
+          audio.stop()
+          audio = nil
         }
       }
-      let soundFilePath: String! = String(
-        format: "%@/incallmanager_ringback.mp3",
-        Bundle.main.resourcePath!
+      // Load ringback tone
+      guard let soundURL = Bundle.main.url(
+        forResource: "incallmanager_ringback",
+        withExtension: "mp3"
+      ) else {
+        print("BrekekeUtils.playRBT: Failed to find incallmanager_ringback.mp3")
+        return
+      }
+
+      audio = try AVAudioPlayer(contentsOf: soundURL)
+      audio?.numberOfLoops = -1
+      // Set volume: 1.0 for Speaker (loudspeaker mode), 0.3 for Receiver
+      // (earpiece).
+      // Reason: Normalized ringback tone (-0.9 dB) with volume=1.0 was too loud for Receiver due to high systemVolume (0.75).
+      // 0.3 ensures comfortable Receiver output while keeping Speaker loud.
+      audio?.volume = isLoudSpeaker ? 1.0 : 0.3
+      audio?.prepareToPlay()
+
+      try audioSession.setCategory(
+        .playAndRecord,
+        mode: .voiceChat,
+        options: [.allowBluetooth, .defaultToSpeaker, .mixWithOthers]
       )
-      let soundFileURL = URL(fileURLWithPath: soundFilePath)
-      audio = try AVAudioPlayer(contentsOf: soundFileURL)
-      audio.numberOfLoops = -1
-      audio.prepareToPlay()
-      try audioSession.setCategory(AVAudioSession.Category.playAndRecord)
-      audio.play()
-    } catch let error as NSError {
-      print(error.localizedDescription)
+      try audioSession.setActive(true)
+      try audioSession.overrideOutputAudioPort(isLoudSpeaker ? .speaker : .none)
+
+      audio?.play()
+      print("BrekekeUtils.playRBT: Playing, loudspeaker=\(isLoudSpeaker)")
     } catch {
-      print("AVAudioPlayer init failed")
+      print("BrekekeUtils.playRBT: Error: \(error.localizedDescription)")
     }
   }
 
   @objc
-  func stopRBT() {
-    if audio == nil {
-      return
+  func stopRBT(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    if audio != nil {
+      print("BrekekeUtils.stopRBT: Stopped")
+      audio?.stop()
+      audio = nil
     }
-    print("BrekekeUtils.stopRBT()")
-    audio.stop()
-    audio = nil
+    do {
+      // Deactivate AVAudioSession with notifyOthersOnDeactivation.
+      // Reason: Ensures WebRTC or RNInCallManager can configure audio routes without conflicts after stopping RBT.
+      // Notifying others allows WebRTC to activate AVAudioSession cleanly
+      try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+      print("BrekekeUtils.stopRBT: AVAudioSession deactivated")
+      resolve(nil)
+    } catch {
+      print(
+        "BrekekeUtils.stopRBT: Error deactivating AVAudioSession: \(error.localizedDescription)"
+      )
+      reject("BrekekeUtils.stopRBT: Error", error.localizedDescription, error)
+    }
   }
 
   @objc

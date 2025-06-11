@@ -71,8 +71,8 @@ type TBrekekeUtils = {
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
-  playRBT(): void
-  stopRBT(): void
+  playRBT(isLoudSpeaker: boolean): void
+  stopRBT(): Promise<void>
   enableLPC(
     token: string,
     tokenVoip: string,
@@ -144,7 +144,7 @@ const Polyfill: TBrekekeUtils = {
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
-  stopRBT: () => undefined,
+  stopRBT: () => Promise.resolve(),
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   setProximityMonitoring: () => undefined,

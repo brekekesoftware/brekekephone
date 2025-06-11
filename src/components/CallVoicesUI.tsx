@@ -1,18 +1,12 @@
 import { Component, useEffect } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
-import Video from 'react-native-video'
 
 import { sip } from '../api/sip'
 import { getCallStore } from '../stores/callStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
+import { waitTimeout } from '../utils/waitTimeout'
 
-const css = StyleSheet.create({
-  video: {
-    width: 0,
-    height: 0,
-  },
-})
 export class IncomingItem extends Component {
   componentDidMount = () => {
     if (Platform.OS === 'android') {
@@ -69,7 +63,7 @@ export class OutgoingItemWithSDP extends Component<{
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const oc = getCallStore().getOngoingCall()
     if (oc) {
       sip.enableMedia(oc.id)
@@ -81,25 +75,17 @@ export class AnsweredItem extends Component<{
 }
 
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
-  // play local RBT without loud speaker
+  const stopRingbackAndSyncSpeaker = async () => {
+    await BrekekeUtils.stopRBT()
+    // Make sure AVAudioSession deactivated
+    await waitTimeout()
+    IncallManager.setForceSpeakerphoneOn(p.isLoudSpeaker)
+  }
   useEffect(() => {
-    if (!p.isLoudSpeaker) {
-      BrekekeUtils.playRBT()
-    }
+    BrekekeUtils.playRBT(p.isLoudSpeaker)
     return () => {
-      BrekekeUtils.stopRBT()
+      stopRingbackAndSyncSpeaker()
     }
   }, [p.isLoudSpeaker])
-
-  // play local RBT with loud speaker
-  return (
-    <Video
-      source={require('../assets/incallmanager_ringback.mp3')}
-      style={css.video}
-      paused={!p.isLoudSpeaker}
-      repeat={true}
-      ignoreSilentSwitch='ignore'
-      playInBackground={true}
-    />
-  )
+  return null
 }
