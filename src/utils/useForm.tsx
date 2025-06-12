@@ -1,13 +1,13 @@
 import { flow, get } from 'lodash'
 import { observer } from 'mobx-react'
 import { Fragment } from 'react'
-import { Platform } from 'react-native'
 import type { Rules } from 'validatorjs'
 import Validator from 'validatorjs'
 
 import type { PbxBook } from '../brekekejs'
 import { Field } from '../components/Field'
 import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
+import { isWeb } from '../config'
 import { arrToMap } from './arrToMap'
 import type { CreatedStore } from './createStore'
 import { useStore } from './useStore'
@@ -46,7 +46,7 @@ export const useForm = () => {
       $.set('currentFocus', k)
     },
     onFieldChange: (k: string, v: string) => {
-      // TODO batch, remember k
+      // TODO: batch, remember k
       const rule = $.props.fields.find((f: FormField) => f.name === k)?.rule
       const validator = rule ? new Validator({ [k]: v }, { [k]: rule }) : null
       $.set(`errorMap.${k}`, validator?.fails() && validator.errors.first(k))
@@ -69,7 +69,7 @@ export const useForm = () => {
             _ => validator.errors.first(_),
           ),
         )
-        // TODO show toast
+        // TODO: show toast
       } else {
         $.set('errorMap', {})
         if (onValidSubmit) {
@@ -85,8 +85,8 @@ export const useForm = () => {
     render: observer((props: object) => {
       $.props = Object.assign($.props, props)
       const { $: $parent, fields, k } = $.props
-      const RnForm = Platform.OS === 'web' ? 'form' : Fragment
-      const formProps = Platform.OS === 'web' ? { onSubmit: $.submit } : null
+      const RnForm = isWeb ? 'form' : Fragment
+      const formProps = isWeb ? { onSubmit: $.submit } : null
       return (
         <RnForm {...(formProps as object)}>
           {fields.map(
@@ -107,7 +107,7 @@ export const useForm = () => {
                   onValueChange={flow(
                     [
                       // add change handler to trigger validate
-                      // TODO update all flows to regular funcs
+                      // TODO: update all flows to regular funcs
                       (v: string) => {
                         $.onFieldChange(f.name, v)
                         return v

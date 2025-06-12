@@ -1,5 +1,4 @@
-import { Platform } from 'react-native'
-
+import { isIos } from '../config'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -48,7 +47,7 @@ export const handlePhoneAppli = async extProps => {
   if (paEnabled && s.name === 'PageCallRecents') {
     Nav().customPageIndex = Nav().goToPageCallKeypad
     Nav().goToPageCallKeypad()
-    if (Platform.OS === 'ios') {
+    if (isIos) {
       PushNotification.resetBadgeNumber()
     }
     openLinkSafely(urls.phoneappli.HISTORY_CALLED)

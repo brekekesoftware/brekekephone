@@ -1,11 +1,12 @@
 import { filesize } from 'filesize'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
+import { isWeb } from '../config'
 import { debugStore } from '../stores/debugStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -32,7 +33,7 @@ export class PageSettingsDebugFiles extends Component {
         title={intl`Debug Log`}
         description={intl`Debug Log`}
         dropdown={
-          Platform.OS !== 'web'
+          !isWeb
             ? [
                 {
                   label: intl`Clear all Debug Log`,

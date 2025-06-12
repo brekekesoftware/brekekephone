@@ -1,11 +1,10 @@
-import { Platform } from 'react-native'
-
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
 } from '../assets/icons'
 import type { PbxCustomPage } from '../brekekejs'
+import { isIos } from '../config'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { intl } from '../stores/intl'
@@ -155,7 +154,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             s.navFnKey === 'goToPageCallRecents' ||
             s.navFnKey === 'backToPageCallRecents'
           ) {
-            if (Platform.OS === 'ios') {
+            if (isIos) {
               PushNotification.resetBadgeNumber()
             }
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)

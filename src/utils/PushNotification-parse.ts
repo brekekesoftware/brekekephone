@@ -1,8 +1,9 @@
 import jsonStableStringify from 'json-stable-stringify'
 import { get } from 'lodash'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 
 import { checkAndRemovePnTokenViaSip } from '../api/sip'
+import { isAndroid, isIos } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
@@ -91,7 +92,7 @@ export const parseNotificationData = (raw?: object) => {
   }
 
   let n: ParsedPn | undefined
-  if (Platform.OS === 'android') {
+  if (isAndroid) {
     n = parseNotificationDataMultiple(
       raw,
       get(raw, 'alert'),
@@ -102,7 +103,7 @@ export const parseNotificationData = (raw?: object) => {
       get(raw, 'custom_notification'),
     )
   }
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     n = parseNotificationDataMultiple(
       raw,
       get(raw, 'custom_notification'),
@@ -208,7 +209,7 @@ export const parse = async (
 
   // handle duplicated pn on android
   // sometimes getInitialNotifications not update callkeepUuid yet
-  if (Platform.OS === 'android' && n.callkeepUuid) {
+  if (isAndroid && n.callkeepUuid) {
     const k = n.id || jsonStableStringify(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(
@@ -247,7 +248,7 @@ export const parse = async (
 
     if (as.userExtensionProperties && as.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
-      if (Platform.OS === 'ios') {
+      if (isIos) {
         PushNotification.resetBadgeNumber()
       }
       openLinkSafely(urls.phoneappli.HISTORY_CALLED)
@@ -322,7 +323,7 @@ export const parse = async (
     })
 
   // continue handling incoming call in android
-  if (Platform.OS === 'android') {
+  if (isAndroid) {
     cs.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,

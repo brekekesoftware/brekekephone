@@ -1,4 +1,4 @@
-package com.brekeke.phonedev.toast;
+package com.brekeke.phonedev.utils;
 
 public enum ToastType {
   SUCCESS,

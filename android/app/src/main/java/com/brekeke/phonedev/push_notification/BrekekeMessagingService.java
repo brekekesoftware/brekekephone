@@ -1,16 +1,20 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.push_notification;
+
+import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.util.Log;
+import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdListenerService;
 import java.util.ArrayList;
 import org.json.JSONArray;
 
+// custom push notification
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
-  private static String TAG = "BrekekeMessagingService";
+  private static String TAG = "[BrekekeMessagingService]";
   private static ArrayList<String> initialNotifications = null;
 
   public static void getInitialNotifications(Promise promise) {
@@ -62,11 +66,16 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
 
     super.onMessageReceived(newRemoteMessage);
 
-    // construct and load our normal React JS code bundle
-    ReactInstanceManager rim =
-        ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground();
-    }
+    // android lpc
+    // fix crash AssertionException: Expected to run on UI thread
+    // wake up from lpc will run on a diffrent thread, need to switch to the main thread
+    ReactApplication r = (ReactApplication) getApplication();
+    runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            LpcUtils.createReactContextInBackground(r);
+          }
+        });
   }
 }

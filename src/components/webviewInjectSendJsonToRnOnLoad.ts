@@ -1,7 +1,7 @@
-import { Platform } from 'react-native'
+import { isIos } from '../config'
 
-export const webviewInjectSendJsonToRnOnLoad = (title?: boolean) =>
-  Platform.OS === 'ios'
+export const webviewInjectSendJsonToRnOnLoad = () =>
+  isIos
     ? `
 window.addEventListener('load', function() {
   sendJsonToRn({ loading: false });
@@ -10,13 +10,12 @@ window.addEventListener('load', function() {
     : // event load doesnt work on android webview
       // need to have a jquery implementation
       `
-const allImages = document.getElementsByTagName('img');
-  if (allImages.length === 1) {
-    allImages[0].onload = function() {
-      sendJsonToRn({ loading: false });
-    };
-  }
-
+var allImages = document.getElementsByTagName('img');
+if (allImages.length === 1) {
+  allImages[0].onload = function() {
+    sendJsonToRn({ loading: false });
+  };
+}
 var ready = function (fn) {
   if (typeof fn !== 'function') {
     return;

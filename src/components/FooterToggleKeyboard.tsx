@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Keyboard, Platform, StyleSheet } from 'react-native'
+import { Keyboard, StyleSheet } from 'react-native'
 
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '../assets/icons'
+import { isWeb } from '../config'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { AnimatedSize } from './AnimatedSize'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
@@ -30,10 +31,7 @@ const css = StyleSheet.create({
 export const ToggleKeyboard: FC<{
   onShowKeyboard(): void
 }> = observer(({ onShowKeyboard }) => {
-  if (
-    Platform.OS === 'web' ||
-    (!RnKeyboard.isKeyboardShowing && !onShowKeyboard)
-  ) {
+  if (isWeb || (!RnKeyboard.isKeyboardShowing && !onShowKeyboard)) {
     return null
   }
   return (
