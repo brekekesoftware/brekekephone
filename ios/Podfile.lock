@@ -1726,7 +1726,7 @@ PODS:
     - React-Core
   - ReactNativeIncallManager (4.2.1):
     - React-Core
-  - RNCallKeep (4.3.9):
+  - RNCallKeep (4.3.16):
     - React
   - RNCAsyncStorage (2.1.2):
     - DoubleConversion
@@ -2262,7 +2262,7 @@ SPEC CHECKSUMS:
   ReactCommon: 10aa03e315dae449ec6345233fff8b3a1e004fb8
   ReactNativeExceptionHandler: a23922ca00122b050ae9412f960061791c232c47
   ReactNativeIncallManager: dccd3e7499caa3bb73d3acfedf4fb0360f1a87d5
-  RNCallKeep: a59fbb04afe9e7626101a71c4ea08f650655a39f
+  RNCallKeep: 1930a01d8caf48f018be4f2db0c9f03405c2f977
   RNCAsyncStorage: 2c0b1326c74baf026f4a8e5e7552ac9f8525aa94
   RNCClipboard: 474795710683e3d48a963adb71f0743f1a28dbd0
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
