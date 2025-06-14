@@ -1,4 +1,4 @@
-import { pick } from '@react-native-documents/picker'
+import { isErrorWithCode, pick } from '@react-native-documents/picker'
 import { Platform } from 'react-native'
 import RNFS from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
@@ -89,6 +89,11 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
     }
   } catch (err) {
     // If DocumentRnPicker.isCancel does not exist, fallback to a generic check
+    // https://react-native-documents.github.io/docs/sponsor-only/errors#error-codes
+    if (i === 3 && isErrorWithCode(err) && err.code === 'OPERATION_CANCELED') {
+      console.warn('pickFile cancelled by user')
+      return
+    }
     if (
       !(
         err &&
