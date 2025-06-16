@@ -7,7 +7,7 @@ import type {
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
 import { uc } from '../api/uc'
@@ -19,6 +19,7 @@ import { Layout } from '../components/Layout'
 import { RnText } from '../components/RnText'
 import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
 import { v } from '../components/variables'
+import { isWeb } from '../config'
 import { waitPbx, waitUc } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import type { ChatFile, ChatGroup, ChatMessage } from '../stores/chatStore'
@@ -114,7 +115,7 @@ export class PageChatGroupDetail extends Component<{
     }
   }
   componentWillUnmount = () => {
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       const { topic_id } = this.state
       if (topic_id) {
         caches.delete(topic_id)
@@ -498,7 +499,7 @@ export class PageChatGroupDetail extends Component<{
     const { blobFile } = this.state
     this.setState({ topic_id: res.file.topic_id })
     Object.assign(res.file, blobFile, { save: 'success' })
-    if (Platform.OS === 'web') {
+    if (isWeb) {
       this.handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
     } else {
       chatStore.upsertFile(res.file)

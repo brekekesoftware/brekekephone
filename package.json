@@ -12,7 +12,7 @@
     "android": "react-native run-android --no-packager",
     "ios": "react-native run-ios",
     "format": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
-    "postinstall": "npx husky && patch-package"
+    "postinstall": "husky && patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
@@ -113,7 +113,7 @@
     "@types/validatorjs": "3.15.5",
     "@typescript-eslint/eslint-plugin": "7.8.0",
     "@typescript-eslint/parser": "6.11.0",
-    "caniuse-lite": "1.0.30001720",
+    "caniuse-lite": "1.0.30001721",
     "circular-dependency-plugin": "5.2.2",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-prefer-arrow": "1.2.3",

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import io.wazo.callkeep.RNCallKeepModule
+import com.brekeke.phonedev.lpc.LpcUtils
 
 class MainActivity : ReactActivity() {
     // set/unset BrekekeUtils.main
@@ -20,10 +21,15 @@ class MainActivity : ReactActivity() {
 
     override fun onResume() {
         super.onResume()
-        // call history
-        // temporary disabled
+
         BrekekeUtils.resolveIgnoreBattery(BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this))
         BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this))
+
+        // android lpc
+        BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted(this))
+
+        // call history
+        // TODO: temporary disabled
         if (true) return
         val b = intent.extras ?: return
         val phone = b.getString("extra_phone")

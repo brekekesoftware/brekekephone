@@ -1,15 +1,15 @@
 import { Component, useEffect } from 'react'
-import { Platform } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
 
 import { sip } from '../api/sip'
+import { isAndroid } from '../config'
 import { getCallStore } from '../stores/callStore'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
 
 export class IncomingItem extends Component {
   componentDidMount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       BrekekeUtils.startRingtone()
     } else {
       // Old logic: only play ringtone without vibration and repeat the ringtone continuously
@@ -17,7 +17,7 @@ export class IncomingItem extends Component {
     }
   }
   componentWillUnmount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       BrekekeUtils.stopRingtone()
     } else {
       IncallManager.stopRingtone()
@@ -34,12 +34,12 @@ export class OutgoingItem extends Component {
     if (ongoingCallId) {
       sip.disableMedia(ongoingCallId)
     }
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       IncallManager.startRingback('_BUNDLE_')
     }
   }
   componentWillUnmount = () => {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       IncallManager.stopRingback()
     }
   }

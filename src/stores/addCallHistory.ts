@@ -1,10 +1,11 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import moment from 'moment'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
 import { pbx } from '../api/pbx'
+import { isAndroid, isWeb } from '../config'
 import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
 import { permForCallLog } from '../utils/permissions'
 import type { ParsedPn } from '../utils/PushNotification-parse'
@@ -160,7 +161,7 @@ export const addCallHistory = async (
   }
 
   // try to wait for login?
-  // TODO
+  // TODO:
   // add method based on the Account class
   // allow multiple accounts at the same time
   const as = getAuthStore()
@@ -175,7 +176,7 @@ export const addCallHistory = async (
     return
   }
   as.pushRecentCall(info)
-  if (Platform.OS === 'android') {
+  if (isAndroid) {
     addToCallLog(info)
   }
 }
@@ -197,7 +198,7 @@ export type CallHistoryInfo = {
 }
 
 const addToCallLog = async (c: CallHistoryInfo) => {
-  // temporary disabled
+  // TODO: temporary disabled
   const disabled = true
   if (disabled) {
     return
@@ -253,7 +254,7 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
 }
 
 const presentNotification = async (c: CallHistoryInfo) => {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     return
   }
   // if two users answer a call at the same time, the system will automatically end the call for the second user to join
@@ -266,7 +267,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
 
-  if (Platform.OS === 'android') {
+  if (isAndroid) {
     Notifications.postLocalNotification({
       payload: {
         title,

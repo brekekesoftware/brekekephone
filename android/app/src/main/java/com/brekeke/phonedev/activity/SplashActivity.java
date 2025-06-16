@@ -1,8 +1,9 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import com.brekeke.phonedev.MainActivity;
 
 public class SplashActivity extends AppCompatActivity {
   @Override

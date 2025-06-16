@@ -128,7 +128,7 @@ export const Layout: FC<
     props.transparent = false
   }
 
-  // TODO put more document here
+  // TODO: put more document here
   let headerSpace = 86 + 15
   if (props.menu) {
     headerSpace += 35
@@ -136,7 +136,7 @@ export const Layout: FC<
   if (props.compact) {
     headerSpace -= 46
   }
-  // TODO put more document here
+  // TODO: put more document here
   let footerSpace = getBottomSpace()
   if (props.fabRender) {
     footerSpace += 40

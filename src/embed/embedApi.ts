@@ -76,7 +76,7 @@ export class EmbedApi extends EventEmitter {
     // reassign options on each sign in
     embedApi._palEvents = o.palEvents
     embedApi._palParams = parsePalParams(o)
-    embedApi._pbxConfig = o // TODO pick fields
+    embedApi._pbxConfig = o // TODO: pick fields
     // check if cleanup existing account
     if (o.clearExistingAccount) {
       accountStore.accounts = []
