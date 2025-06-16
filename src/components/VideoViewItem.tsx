@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '#/assets/icons'
 import { RnIcon } from '#/components/RnIcon'
 import { VideoPlayer } from '#/components/VideoPlayer'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 
 type VideoViewItemProps = {
   sourceObject: MediaStream | null
@@ -29,7 +29,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     onSelect,
     enabled = true,
   } = props
-  const c = getCallStore().getOngoingCall()
+  const c = ctx.call.getOngoingCall()
   return (
     <View
       style={[

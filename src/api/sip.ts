@@ -1,19 +1,16 @@
 import EventEmitter from 'eventemitter3'
 
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
-import { pbx } from '#/api/pbx'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { AccountUnique } from '#/stores/accountStore'
-import { accountStore } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
 import type { Call, CallConfig } from '#/stores/Call'
-import { getCallStore } from '#/stores/callStore'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
-import { chatStore } from '#/stores/chatStore'
-import { contactStore, getPartyNameAsync } from '#/stores/contactStore'
+import { getPartyNameAsync } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
@@ -27,62 +24,6 @@ type DeviceInputWeb = {
   groupId: string
   facing: string
 }
-const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
-export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
-  const acc = await accountStore.findByPn(n)
-  const k = n.id || jsonStable(n)
-  if (!alreadyRemovePnTokenViaSip[k] && !acc) {
-    alreadyRemovePnTokenViaSip[k] = true
-    removePnTokenViaSip(n)
-  }
-  return acc
-}
-
-const removePnTokenViaSip = async (n: ParsedPn) => {
-  const s = getCallStore()
-  const as = getAuthStore()
-  if (n.callkeepUuid) {
-    s.onCallKeepEndCall(n.callkeepUuid)
-  }
-  if (!n.sipPn.sipAuth) {
-    console.log(
-      `checkAndRemovePnTokenViaSip debug: no sip auth token isCall=${n.isCall}`,
-    )
-    return
-  }
-  console.log('checkAndRemovePnTokenViaSip debug: begin')
-  const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
-  const userAgent = await as.getUserAgent(n)
-  phone.startWebRTC({
-    register: false,
-    url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
-    tls: true,
-    user: n.sipPn.phoneId,
-    auth: n.sipPn.sipAuth,
-    useVideoClient: true,
-    userAgent,
-  })
-  const started = await new Promise(async r => {
-    phone.addEventListener('phoneStatusChanged', e => {
-      if (e.phoneStatus === 'started') {
-        r(true)
-      }
-    })
-    await waitTimeout(10000)
-    r(false)
-  })
-  const o = phone._ua?.registrator?.()!
-  if (!started || !o) {
-    console.log(
-      `checkAndRemovePnTokenViaSip debug: started=${started} registrator=${!!o}`,
-    )
-  }
-  o._registered = true
-  o.setExtraHeaders(['X-PN-Manage: remove'])
-  phone.stopWebRTC()
-  console.log('checkAndRemovePnTokenViaSip debug: done')
-}
-
 export class SIP extends EventEmitter {
   phone?: Sip
   currentCamera: string | undefined = '1'
@@ -145,13 +86,13 @@ export class SIP extends EventEmitter {
         partyNumber.startsWith('uc')
       ) {
         partyName =
-          chatStore.getGroupById(partyNumber.replace('uc', ''))?.name ||
+          ctx.chat.getGroupById(partyNumber.replace('uc', ''))?.name ||
           partyName ||
           partyNumber
       }
-      const d = await getAuthStore().getCurrentDataAsync()
+      const d = await ctx.auth.getCurrentDataAsync()
       // update phonebook info
-      contactStore.updateContact(partyNumber)
+      ctx.contact.updateContact(partyNumber)
       partyName =
         partyName ||
         (await getPartyNameAsync(partyNumber)) ||
@@ -287,7 +228,7 @@ export class SIP extends EventEmitter {
       //   isEmpty(ev.videoClientSessionTable) &&
       //   ev.withVideo &&
       //   ev.rtcSession.direction !== 'incoming' &&
-      //   !getCallStore().getOngoingCall()?.transferring
+      //   !ctx.callStore.getOngoingCall()?.transferring
       // ) {
       //   this.disableVideo(ev.sessionId)
       //   this.enableVideo(ev.sessionId)
@@ -308,7 +249,6 @@ export class SIP extends EventEmitter {
   }
 
   connect = async (o: SipLoginOption, a: AccountUnique) => {
-    const as = getAuthStore()
     console.log('SIP PN debug: call sip.stopWebRTC in sip.connect')
     resetProcessedPn()
     this.phone?._removeEventListenerPhoneStatusChange?.()
@@ -327,7 +267,7 @@ export class SIP extends EventEmitter {
     }
     phone.setDefaultCallOptions(callOptions)
     //
-    const userAgent = await as.getUserAgent(a)
+    const userAgent = await ctx.auth.getUserAgent(a)
     phone.startWebRTC({
       url: getWssUrl(o.hostname, o.port),
       tls: true,
@@ -348,15 +288,13 @@ export class SIP extends EventEmitter {
       if (!pnIds?.length) {
         return
       }
-      console.log(
-        `SIP PN debug: newNotify canceled pnIds=${JSON.stringify(pnIds)}`,
-      )
+      console.log(`SIP PN debug: newNotify canceled pnIds=${jsonSafe(pnIds)}`)
       pnIds.forEach(cancelRecentPn)
     })
   }
 
   private hackJssipFork = () => {
-    const socket = sip.phone?._ua?._transport?.socket
+    const socket = ctx.sip.phone?._ua?._transport?.socket
     if (socket) {
       Object.assign(socket, { __brekekephone_stopped: true })
     }
@@ -413,13 +351,13 @@ export class SIP extends EventEmitter {
     if (!this.phone) {
       return
     }
-    const c = await pbx.getConfig()
+    const c = await ctx.pbx.getConfig()
     const dtmfSendMode = Number(c?.['webrtcclient.dtmfSendMode']) || 0
     this.phone._options.dtmfSendMode = dtmfSendMode
     this.phone.dtmfSendMode = dtmfSendMode
     return !this.phone._options.dtmfSendPal
       ? this.phone.sendDTMF(p.signal, p.sessionId)
-      : pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
+      : ctx.pbx.sendDTMF(p.signal, p.tenant, p.talkerId)
   }
   enableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, true)
@@ -472,9 +410,18 @@ export class SIP extends EventEmitter {
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
   }
-}
 
-export const sip = new SIP()
+  checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
+    const acc = await ctx.account.findByPn(n)
+    const k = n.id || jsonStable(n)
+    if (!alreadyRemovePnTokenViaSip[k] && !acc) {
+      alreadyRemovePnTokenViaSip[k] = true
+      removePnTokenViaSip(n)
+    }
+    return acc
+  }
+}
+ctx.sip = new SIP()
 
 export interface SipLoginOption {
   hostname: string
@@ -484,6 +431,51 @@ export interface SipLoginOption {
   accessToken: string
   dtmfSendPal: boolean
   turnConfig?: RTCIceServer
+}
+
+const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
+
+const removePnTokenViaSip = async (n: ParsedPn) => {
+  if (n.callkeepUuid) {
+    ctx.call.onCallKeepEndCall(n.callkeepUuid)
+  }
+  if (!n.sipPn.sipAuth) {
+    console.log(
+      `checkAndRemovePnTokenViaSip debug: no sip auth token isCall=${n.isCall}`,
+    )
+    return
+  }
+  console.log('checkAndRemovePnTokenViaSip debug: begin')
+  const phone = getWebrtcClient(toBoolean(n.sipPn.dtmfSendPal))
+  const userAgent = await ctx.auth.getUserAgent(n)
+  phone.startWebRTC({
+    register: false,
+    url: getWssUrl(n.pbxHostname, n.sipPn.sipWssPort || n.pbxPort),
+    tls: true,
+    user: n.sipPn.phoneId,
+    auth: n.sipPn.sipAuth,
+    useVideoClient: true,
+    userAgent,
+  })
+  const started = await new Promise(async r => {
+    phone.addEventListener('phoneStatusChanged', e => {
+      if (e.phoneStatus === 'started') {
+        r(true)
+      }
+    })
+    await waitTimeout(10000)
+    r(false)
+  })
+  const o = phone._ua?.registrator?.()!
+  if (!started || !o) {
+    console.log(
+      `checkAndRemovePnTokenViaSip debug: started=${started} registrator=${!!o}`,
+    )
+  }
+  o._registered = true
+  o.setExtraHeaders(['X-PN-Manage: remove'])
+  phone.stopWebRTC()
+  console.log('checkAndRemovePnTokenViaSip debug: done')
 }
 
 const parseCanceledPnIds = (data?: string) => {
@@ -536,12 +528,12 @@ const sipCreateMediaConstraints = (
     facingMode: isFrontCamera ? 'user' : 'environment',
     optional: sourceId ? [{ sourceId }] : [],
   }
-
   return {
     audio: false,
     video: isWeb ? webVideoConfig : appVideoConfig,
   } as any as MediaStreamConstraints
 }
+
 const getWebrtcClient = (dtmfSendPal = false, sourceId?: string) =>
   new window.Brekeke.WebrtcClient.Phone({
     logLevel: 'all',

@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native'
 
-import { uc } from '#/api/uc'
 import { mdiFolderPlus } from '#/assets/icons'
 import { ContactList } from '#/components/ContactList'
 import { ContactSectionList } from '#/components/ContactSectionList'
@@ -18,10 +17,8 @@ import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { SelectionItem } from '#/components/SelectionItem'
-import { accountStore } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnDropdown } from '#/stores/RnDropdown'
 import { userStore } from '#/stores/userStore'
@@ -58,7 +55,7 @@ export class PageContactEdit extends Component {
   state = { didMount: false }
 
   componentDidMount = () => {
-    if (getAuthStore().getCurrentAccount()?.ucEnabled) {
+    if (ctx.auth.getCurrentAccount()?.ucEnabled) {
       userStore.loadUcBuddyList(true)
     } else {
       userStore.loadPbxBuddyList(true)
@@ -100,7 +97,7 @@ export class PageContactEdit extends Component {
 
   onAddRemoveUser = (ddIndex: number) => {
     RnDropdown.close()
-    Nav().goToPageContactGroupEdit({
+    ctx.nav.goToPageContactGroupEdit({
       groupName: userStore.dataGroupAllUser[ddIndex].title,
       listItem: userStore.dataGroupAllUser[ddIndex].data.map(itm => itm),
     })
@@ -135,16 +132,16 @@ export class PageContactEdit extends Component {
   }
 
   onAddGroup = () => {
-    Nav().goToPageContactGroupCreate()
+    ctx.nav.goToPageContactGroupCreate()
     this.scrollToTopListContact()
   }
 
   onGoBack = () => {
-    if (getAuthStore().getCurrentAccount()?.ucEnabled) {
+    if (ctx.auth.getCurrentAccount()?.ucEnabled) {
       userStore.loadUcBuddyList()
     }
     RnDropdown.close()
-    Nav().backToPageContactUsers()
+    ctx.nav.backToPageContactUsers()
   }
 
   view?: ScrollView
@@ -239,7 +236,8 @@ export class PageContactEdit extends Component {
       ...groups,
       ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
     ]
-    uc.saveProperties(!isSelectedAddAllUser, data)
+    ctx.uc
+      .saveProperties(!isSelectedAddAllUser, data)
       .then(this.onSaveSuccess)
       .catch(this.onSaveFailure)
   }
@@ -253,7 +251,7 @@ export class PageContactEdit extends Component {
         ...dataListAllUser.filter(u => selectedUserIds[u.user_id]),
       ],
     }
-    getAuthStore().savePbxBuddyList(data)
+    ctx.auth.savePbxBuddyList(data)
     userStore.updateDisplayGroupList()
     this.onGoBack()
   }
@@ -269,7 +267,7 @@ export class PageContactEdit extends Component {
     }
   }
   onSaveSuccess = () => {
-    accountStore.saveAccountsToLocalStorageDebounced()
+    ctx.account.saveAccountsToLocalStorageDebounced()
     userStore.updateDisplayGroupList()
     this.onGoBack()
   }

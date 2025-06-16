@@ -9,7 +9,7 @@ import { Message } from '#/components/ChatMessage'
 import { RnText } from '#/components/Rn'
 import { v } from '#/components/variables'
 import type { ChatMessage } from '#/stores/chatStore'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   DateGroup: {
@@ -89,7 +89,7 @@ export const MessageList: FC<{
               creatorId: string
             }
             const name = c0?.creatorName
-            const status = contactStore.getUcUserById(c0.creatorId)?.status
+            const status = ctx.contact.getUcUserById(c0.creatorId)?.status
             return (
               <View
                 key={`${time}${id}`}

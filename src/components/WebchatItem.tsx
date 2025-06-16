@@ -3,15 +3,13 @@ import type { FC } from 'react'
 import { useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { uc } from '#/api/uc'
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { chatStore } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { Duration } from '#/stores/timerStore'
 
 const css = StyleSheet.create({
@@ -57,7 +55,7 @@ const css = StyleSheet.create({
 export const WebchatItem: FC<{
   data: Conference
 }> = observer(({ data }) => {
-  const messages = chatStore.getMessagesByThreadId(data.conf_id)
+  const messages = ctx.chat.getMessagesByThreadId(data.conf_id)
   const isEnabledAnswer =
     data.conf_status === Constants.CONF_STATUS_INVITED_WEBCHAT
   const isEnabledJoin = data.conf_status === Constants.CONF_STATUS_INVITED
@@ -66,21 +64,21 @@ export const WebchatItem: FC<{
   const textDisplay = messages.slice(Math.max(messages.length - 5, 0))
 
   const answerPress = useCallback(() => {
-    uc.answerWebchatConference(data.conf_id)
-    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
+    ctx.uc.answerWebchatConference(data.conf_id)
+    ctx.nav.goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const showPress = useCallback(() => {
-    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
+    ctx.nav.goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const joinPress = useCallback(() => {
-    uc.joinWebchatConference(data.conf_id)
-    Nav().goToPageChatGroupDetail({ groupId: data.conf_id })
+    ctx.uc.joinWebchatConference(data.conf_id)
+    ctx.nav.goToPageChatGroupDetail({ groupId: data.conf_id })
   }, [data.conf_id])
 
   const closePress = useCallback(() => {
-    chatStore.removeWebchatItem(data.conf_id)
+    ctx.chat.removeWebchatItem(data.conf_id)
   }, [data.conf_id])
 
   return (

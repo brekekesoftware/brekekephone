@@ -9,7 +9,7 @@ import { mdiRecord } from '#/assets/icons'
 import { RnIcon, RnImage } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Avatar: {
@@ -58,7 +58,7 @@ export const Avatar = observer(
         <View style={css.ImageOuter}>
           <RnImage source={imgSource} style={css.Image} />
         </View>
-        {getAuthStore().getCurrentAccount()?.ucEnabled &&
+        {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
               color={statusMapColor[status as keyof typeof statusMapColor]}

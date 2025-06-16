@@ -11,10 +11,8 @@ import { BrekekeGradient } from '#/components/BrekekeGradient'
 import { Layout } from '#/components/Layout'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { currentVersion, v } from '#/components/variables'
-import { accountStore } from '#/stores/accountStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { intlStore } from '#/stores/intlStore'
-import { Nav } from '#/stores/Nav'
 import { permForCall } from '#/utils/permissions'
 
 const css = StyleSheet.create({
@@ -73,13 +71,13 @@ const css = StyleSheet.create({
 })
 
 export const PageAccountSignIn = observer(() => {
-  const ids = accountStore.accounts.map(a => a.id).filter(id => id)
+  const ids = ctx.account.accounts.map(a => a.id).filter(id => id)
   const l = ids.length
   const createAccount = async () => {
     if (!(await permForCall(true))) {
       return
     }
-    Nav().goToPageAccountCreate()
+    ctx.nav.goToPageAccountCreate()
   }
   return (
     <BrekekeGradient>
@@ -114,7 +112,7 @@ export const PageAccountSignIn = observer(() => {
         )}
       </Layout>
       <RnTouchableOpacity
-        onPress={Nav().goToPageSettingsDebug}
+        onPress={ctx.nav.goToPageSettingsDebug}
         style={css.CornerButton}
       >
         <View style={[css.CornerButton_Inner, css.CornerButton_Inner__info]}>
@@ -130,19 +128,19 @@ export const PageAccountSignIn = observer(() => {
         </View>
       </RnTouchableOpacity>
       <RnTouchableOpacity
-        onPress={intlStore.localeLoading ? undefined : intlStore.selectLocale}
+        onPress={ctx.intl.localeLoading ? undefined : ctx.intl.selectLocale}
         style={[css.CornerButton, css.CornerButton__language]}
       >
         <View
           style={[css.CornerButton_Inner, css.CornerButton_Inner__language]}
         >
           <RnText bold white>
-            {intlStore.localeLoading ? '\u200a' : intlStore.getLocaleName()}
+            {ctx.intl.localeLoading ? '\u200a' : ctx.intl.getLocaleName()}
           </RnText>
           <RnIcon
             color='white'
             path={
-              intlStore.localeLoading
+              ctx.intl.localeLoading
                 ? mdiDotsHorizontal
                 : mdiUnfoldMoreHorizontal
             }

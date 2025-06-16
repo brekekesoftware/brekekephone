@@ -10,7 +10,6 @@ import type {
 import { StyleSheet, View } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
-import { uc } from '#/api/uc'
 import { numberOfChatsPerLoad } from '#/components/chatConfig'
 import { MessageList } from '#/components/ChatMessageList'
 import { ChatInput } from '#/components/FooterChatInput'
@@ -18,13 +17,10 @@ import { Layout } from '#/components/Layout'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-import { waitPbx, waitUc } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
 import type { ChatFile, ChatMessage } from '#/stores/chatStore'
-import { chatStore } from '#/stores/chatStore'
-import { contactStore, getPartyName } from '#/stores/contactStore'
+import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
@@ -54,7 +50,7 @@ export class PageChatDetail extends Component<{
 }> {
   @computed get chatById() {
     return arrToMap(
-      chatStore.getMessagesByThreadId(this.props.buddy),
+      ctx.chat.getMessagesByThreadId(this.props.buddy),
       'id',
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
@@ -83,12 +79,12 @@ export class PageChatDetail extends Component<{
   componentDidMountAsync = async () => {
     const { buddy: id } = this.props
     this.setState({ loadingRecent: true })
-    await waitPbx()
-    await waitUc()
-    await uc
+    await ctx.auth.waitPbx()
+    await ctx.auth.waitUc()
+    await ctx.uc
       .getBuddyChats(id, { max: numberOfChatsPerLoad })
       .then(chats => {
-        chatStore.pushMessages(id, chats)
+        ctx.chat.pushMessages(id, chats)
         BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
       })
       .catch((err: Error) => {
@@ -98,15 +94,15 @@ export class PageChatDetail extends Component<{
         })
       })
     this.setState({ loadingRecent: false })
-    uc.readUnreadChats(id)
-    chatStore.updateThreadConfig(id, false, {
+    ctx.uc.readUnreadChats(id)
+    ctx.chat.updateThreadConfig(id, false, {
       isUnread: false,
     })
   }
   componentDidUpdate = () => {
     const { buddy: id } = this.props
-    if (chatStore.getThreadConfig(id).isUnread) {
-      chatStore.updateThreadConfig(id, false, {
+    if (ctx.chat.getThreadConfig(id).isUnread) {
+      ctx.chat.updateThreadConfig(id, false, {
         isUnread: false,
       })
     }
@@ -136,9 +132,9 @@ export class PageChatDetail extends Component<{
 
   render() {
     const { buddy: id } = this.props
-    const { allMessagesLoaded, isUnread } = chatStore.getThreadConfig(id)
+    const { allMessagesLoaded, isUnread } = ctx.chat.getThreadConfig(id)
     const { loadingMore, loadingRecent, emojiTurnOn } = this.state
-    const listMessage = chatStore.getMessagesByThreadId(this.props.buddy)
+    const listMessage = ctx.chat.getMessagesByThreadId(this.props.buddy)
     const incomingMessage = listMessage
       ? listMessage[listMessage.length - 1]?.text
       : undefined
@@ -151,18 +147,18 @@ export class PageChatDetail extends Component<{
         containerOnScroll={this.onScroll}
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
-        onBack={Nav().backToPageChatRecents}
+        onBack={ctx.nav.backToPageChatRecents}
         title={getPartyName({ partyNumber: id, preferPbxName: true }) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
         dropdown={[
           {
             label: intl`Start voice call`,
-            onPress: () => getCallStore().startCall(id),
+            onPress: () => ctx.call.startCall(id),
           },
           {
             label: intl`Start video call`,
-            onPress: () => getCallStore().startVideoCall(id),
+            onPress: () => ctx.call.startVideoCall(id),
           },
         ]}
       >
@@ -170,7 +166,7 @@ export class PageChatDetail extends Component<{
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
           <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
-            {!chatStore.getMessagesByThreadId(this.props.buddy).length
+            {!ctx.chat.getMessagesByThreadId(this.props.buddy).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
           </RnText>
@@ -302,7 +298,7 @@ export class PageChatDetail extends Component<{
 
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
-    const file = chatStore.getFileById(chat.file)
+    const file = ctx.chat.getFileById(chat.file)
     const text = chat.text
     const creator = this.resolveCreator(chat.creator)
     return {
@@ -317,12 +313,12 @@ export class PageChatDetail extends Component<{
       createdByMe: creator.id === this.me.id,
     }
   }
-  me = uc.me()
+  me = ctx.uc.me()
   resolveCreator = (creator: string) => {
     if (creator === this.me.id) {
       return this.me
     }
-    return contactStore.getUcUserById(creator) || {}
+    return ctx.contact.getUcUserById(creator) || {}
   }
 
   loadMore = () => {
@@ -331,16 +327,16 @@ export class PageChatDetail extends Component<{
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
     const oldestChat =
-      chatStore.getMessagesByThreadId(this.props.buddy)[0] ||
-      ({} as ChatMessage)
+      ctx.chat.getMessagesByThreadId(this.props.buddy)[0] || ({} as ChatMessage)
     const oldestCreated = oldestChat.created || 0
     const max = this.numberOfChatsPerLoadMore
     const end = oldestCreated
     const query = { max, end }
     const { buddy: id } = this.props
-    uc.getBuddyChats(id, query)
+    ctx.uc
+      .getBuddyChats(id, query)
       .then(chats => {
-        chatStore.pushMessages(id, chats)
+        ctx.chat.pushMessages(id, chats)
       })
       .catch((err: Error) => {
         RnAlert.error({
@@ -353,9 +349,9 @@ export class PageChatDetail extends Component<{
       })
       .then(() => {
         const { buddy } = this.props
-        const totalChatLoaded = chatStore.getMessagesByThreadId(buddy).length
+        const totalChatLoaded = ctx.chat.getMessagesByThreadId(buddy).length
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          chatStore.updateThreadConfig(buddy, false, {
+          ctx.chat.updateThreadConfig(buddy, false, {
             allMessagesLoaded: true,
           })
         }
@@ -376,7 +372,8 @@ export class PageChatDetail extends Component<{
     }
     this.submitting = true
     //
-    uc.sendBuddyChatText(this.props.buddy, txt)
+    ctx.uc
+      .sendBuddyChatText(this.props.buddy, txt)
       .then(this.onSubmitEditingTextSuccess)
       .catch(this.onSubmitEditingTextFailure)
       .then(() => {
@@ -384,7 +381,7 @@ export class PageChatDetail extends Component<{
       })
   }
   onSubmitEditingTextSuccess = (chat: unknown) => {
-    chatStore.pushMessages(this.props.buddy, chat as ChatMessage)
+    ctx.chat.pushMessages(this.props.buddy, chat as ChatMessage)
     this.setState({ editingText: '' })
   }
   onSubmitEditingTextFailure = (err: Error) => {
@@ -394,7 +391,8 @@ export class PageChatDetail extends Component<{
     })
   }
   acceptFile = (file: { id: string; name: string; fileType: string }) => {
-    uc.acceptFile(file.id)
+    ctx.uc
+      .acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)
   }
@@ -404,7 +402,7 @@ export class PageChatDetail extends Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      const f = chatStore.getFileById(file.id)
+      const f = ctx.chat.getFileById(file.id)
       if (!f) {
         return
       }
@@ -423,7 +421,7 @@ export class PageChatDetail extends Component<{
     })
   }
   rejectFile = (file: object) => {
-    uc.rejectFile(file).catch(this.onRejectFileFailure)
+    ctx.uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = (err: Error) => {
     RnAlert.error({
@@ -450,16 +448,17 @@ export class PageChatDetail extends Component<{
         data,
       )
       Object.assign(file, { url })
-      chatStore.upsertFile(file)
-      chatStore.pushMessages(buddyId, chat)
+      ctx.chat.upsertFile(file)
+      ctx.chat.pushMessages(buddyId, chat)
     } catch (err) {
       console.error('PageChatDetail.handleSaveBlobFileWeb err', err)
     }
   }
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
-    const u = contactStore.getUcUserById(this.props.buddy)
-    uc.sendFile(u?.id, file as any as Blob)
+    const u = ctx.contact.getUcUserById(this.props.buddy)
+    ctx.uc
+      .sendFile(u?.id, file as any as Blob)
       .then(res => {
         this.setState({ topic_id: res.file.topic_id })
         const buddyId = this.props.buddy
@@ -472,8 +471,8 @@ export class PageChatDetail extends Component<{
             res.chat,
           )
         } else {
-          chatStore.upsertFile(res.file)
-          chatStore.pushMessages(buddyId, res.chat)
+          ctx.chat.upsertFile(res.file)
+          ctx.chat.pushMessages(buddyId, res.chat)
         }
       })
       .catch((err: Error) => {

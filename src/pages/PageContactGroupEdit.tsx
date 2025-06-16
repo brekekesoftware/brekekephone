@@ -9,8 +9,8 @@ import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { css } from '#/pages/PageContactEdit'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnDropdown } from '#/stores/RnDropdown'
 import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
@@ -36,10 +36,10 @@ export class PageContactGroupEdit extends Component<{
   render() {
     return (
       <Layout
-        fabOnBack={Nav().goToPageContactEdit}
+        fabOnBack={ctx.nav.goToPageContactEdit}
         fabOnNext={this.create}
         fabOnNextText={intl`SAVE`}
-        onBack={Nav().backToPageContactEdit}
+        onBack={ctx.nav.backToPageContactEdit}
         title={intl`Add/Remove Contact`}
       >
         <Field
@@ -85,7 +85,7 @@ export class PageContactGroupEdit extends Component<{
       this.selectedUserItems,
     )
     RnDropdown.setShouldUpdatePosition(true)
-    Nav().backToPageContactEdit()
+    ctx.nav.backToPageContactEdit()
   }
 }
 

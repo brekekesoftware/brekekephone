@@ -5,8 +5,6 @@ import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
 import { Platform, Pressable, StyleSheet, View } from 'react-native'
 
-import { pbx } from '#/api/pbx'
-import { uc } from '#/api/uc'
 import {
   mdiAccountGroup,
   mdiContentCopy,
@@ -22,9 +20,9 @@ import { RnCheckBox } from '#/components/RnCheckbox'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contactStore'
-import { contactStore, getPartyName } from '#/stores/contactStore'
+import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RnPickerOption } from '#/stores/RnPicker'
 import { RnPicker } from '#/stores/RnPicker'
@@ -177,7 +175,7 @@ export const UserItem: FC<
   const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : View
 
   const isGroupAvailable = (groupId: string) => {
-    const groupInfo: Conference = uc.getChatGroupInfo(groupId)
+    const groupInfo: Conference = ctx.uc.getChatGroupInfo(groupId)
     const groupStatus = groupInfo.conf_status
     if (
       groupStatus === Constants.CONF_STATUS_INACTIVE ||
@@ -201,10 +199,10 @@ export const UserItem: FC<
     if (partyNumber.startsWith('uc')) {
       const groupId = partyNumber.replace('uc', '')
       if (isGroupAvailable(partyNumber.replace('uc', ''))) {
-        Nav().goToPageChatGroupDetail({ groupId })
+        ctx.nav.goToPageChatGroupDetail({ groupId })
       }
     } else {
-      Nav().goToPageChatDetail({ buddy: partyNumber })
+      ctx.nav.goToPageChatDetail({ buddy: partyNumber })
     }
   }
 
@@ -220,8 +218,8 @@ export const UserItem: FC<
 
   const onLongPressItem = async () => {
     if (phonebookInfo && isEmpty(phonebookInfo?.info)) {
-      const pb = await pbx.getContact(phonebookInfo.id)
-      contactStore.upsertPhonebook(pb as Phonebook)
+      const pb = await ctx.pbx.getContact(phonebookInfo.id)
+      ctx.contact.upsertPhonebook(pb as Phonebook)
       Object.assign(phonebookInfo, pb)
     }
     const number = partyNumber ?? id

@@ -5,11 +5,10 @@ import type { ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
 import { css as fcss } from '#/components/FooterNavigation'
-import { getSubMenus } from '#/components/navigationConfig'
-import { getTabs } from '#/components/navigationConfig2'
+import { getSubMenus, getTabs } from '#/components/navigationConfig'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { chatStore } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Navigation: {
@@ -66,8 +65,8 @@ export const Navigation: FC<{
     <View style={css.Navigation}>
       {tabs.map(s => {
         const active = s.key === subMenu
-        const totalUnreadChat = chatStore.unreadCount
-        const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
+        const totalUnreadChat = ctx.chat.unreadCount
+        const totalNoticesWebchat = ctx.chat.getNumberWebchatNoti()
 
         return (
           <RnTouchableOpacity

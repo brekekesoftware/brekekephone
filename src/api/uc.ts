@@ -17,10 +17,11 @@ import type {
 import { ChatClient, Constants, Logger } from '#/brekekejs/ucclient'
 import { isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
 import type { ChatFile } from '#/stores/chatStore'
 import type { UcUser } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { formatFileType } from '#/utils/formatFileType'
+import { jsonSafe } from '#/utils/jsonSafe'
 
 export const isUcBuddy = (u: object): u is UcBuddy =>
   'user_id' in u && 'group' in u
@@ -320,11 +321,10 @@ export class UC extends EventEmitter {
   getProfile = () => this.client.getProfile()
 
   getConfigProperties = () => {
-    const s = getAuthStore()
-    if (!s.ucConfig) {
-      s.ucConfig = this.client.getConfigProperties()
+    if (!ctx.auth.ucConfig) {
+      ctx.auth.ucConfig = this.client.getConfigProperties()
     }
-    return s.ucConfig
+    return ctx.auth.ucConfig
   }
 
   readUnreadChats = async (id: string) => {
@@ -451,7 +451,7 @@ export class UC extends EventEmitter {
     )
 
   sendCallResult = (duration: number, target: string) => {
-    const text = JSON.stringify({ talklen: duration })
+    const text = jsonSafe({ talklen: duration })
     return new Promise((resolve, reject) =>
       this.client.sendCallResult(
         { user_id: target },
@@ -765,4 +765,4 @@ export class UC extends EventEmitter {
   }
 }
 
-export const uc = new UC()
+ctx.uc = new UC()

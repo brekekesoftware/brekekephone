@@ -1,7 +1,6 @@
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 
-export const cancelRecentPn = (n?: CancelRecentPn) =>
-  getCallStore().onSipUaCancel(n)
+export const cancelRecentPn = (n?: CancelRecentPn) => ctx.call.onSipUaCancel(n)
 
 export type CancelRecentPn = {
   pnId?: string

@@ -7,11 +7,9 @@ import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { getAuthStore } from '#/stores/authStore'
 import type { ItemPBForm, Phonebook } from '#/stores/contactStore'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { intlStore } from '#/stores/intlStore'
 import { RnAlert } from '#/stores/RnAlert'
 import { jsonStable } from '#/utils/jsonStable'
 import { toBooleanFalsy } from '#/utils/string'
@@ -20,7 +18,7 @@ import { useStore } from '#/utils/useStore'
 
 const genEmptyPhonebook = (lang: string) => {
   const emptyObj = {}
-  contactStore
+  ctx.contact
     .getManageItems(lang)
     ?.filter(i => i?.onscreen)
     .forEach(u => {
@@ -57,8 +55,8 @@ export const ContactsCreateForm: FC<{
     isFocus: false,
     maxLength: 100,
   }
-  const c = getAuthStore().pbxConfig
-  const lang = props.updatingPhonebook?.info?.$lang || intlStore.locale
+  const c = ctx.auth.pbxConfig
+  const lang = props.updatingPhonebook?.info?.$lang || ctx.intl.locale
   const disabled =
     props.updatingPhonebook?.shared ||
     toBooleanFalsy(c?.['webphone.phonebook.personal.editable'])
@@ -76,7 +74,7 @@ export const ContactsCreateForm: FC<{
         if (key === 'phonebook') {
           return phonebookField
         }
-        const item = contactStore.getManageItems(lang).find(_ => _.id === key)
+        const item = ctx.contact.getManageItems(lang).find(_ => _.id === key)
         if (item) {
           return item
         }
@@ -96,7 +94,7 @@ export const ContactsCreateForm: FC<{
           ?.map(i => ({ ...i, disabled })) || ([] as ItemPBForm[])
       )
     } else {
-      const items = contactStore.getManageItems(lang)?.filter(i => i?.onscreen)
+      const items = ctx.contact.getManageItems(lang)?.filter(i => i?.onscreen)
       return (
         ([phonebookField, ...items]?.filter(
           _ => _.label !== '$lang' || _.id !== '$lang',
@@ -135,12 +133,12 @@ export const ContactsCreateForm: FC<{
 
   const onSelectItem = (value: string) => {
     value.replace('$', '') // prevent key on manage.item in phonebook.js
-    contactStore.dismissPicker()
+    ctx.contact.dismissPicker()
     const isExistField = $.fields.some(_ => _.label === value || _.id === value)
     if (isExistField) {
       return
     }
-    const itemExist = contactStore
+    const itemExist = ctx.contact
       .getManageItems(lang)
       .find(_ => _.label === value || _.id === value)
     if (itemExist) {
@@ -159,12 +157,12 @@ export const ContactsCreateForm: FC<{
     $.phonebook = { ...$.phonebook, [newField.id]: '' }
   }
   const openPicker = () => {
-    contactStore.openPicker({
+    ctx.contact.openPicker({
       onSelect: onSelectItem,
-      listOption: contactStore.getManageItems(lang).filter(i => !i?.onscreen),
+      listOption: ctx.contact.getManageItems(lang).filter(i => !i?.onscreen),
     })
   }
-  const previewName = contactStore
+  const previewName = ctx.contact
     .getManagerContact($.phonebook?.$lang)
     ?.toDisplayName($.phonebook)
 

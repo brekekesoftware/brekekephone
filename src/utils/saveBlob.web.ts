@@ -1,4 +1,4 @@
-import { uc } from '#/api/uc'
+import { ctx } from '#/stores/ctx'
 
 export const saveBlob = (blob: Blob, name: string) => {
   const a = document.createElement('a')
@@ -18,7 +18,7 @@ export const saveBlobFile = (
 ) =>
   new Promise(async (resolve, reject) => {
     try {
-      const dataBlob = data ? data : ((await uc.acceptFile(id)) as Blob)
+      const dataBlob = data ? data : ((await ctx.uc.acceptFile(id)) as Blob)
       const fr = new FileReader()
       fr.onloadend = async event => {
         const r = event.target?.result as ArrayBuffer

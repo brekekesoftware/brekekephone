@@ -10,10 +10,9 @@ import type {
 import { KeyPad } from '#/components/CallKeyPad'
 import { ShowNumber } from '#/components/CallShowNumbers'
 import { Layout } from '#/components/Layout'
-import { setPageCallTransferDial } from '#/components/navigationConfig2'
-import { getCallStore } from '#/stores/callStore'
+import { setPageCallTransferDial } from '#/components/navigationConfig'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 
@@ -24,11 +23,10 @@ export class PageCallTransferDial extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
-    const cs = getCallStore()
-    if (this.prevId && this.prevId !== cs.ongoingCallId) {
-      Nav().backToPageCallManage()
+    if (this.prevId && this.prevId !== ctx.call.ongoingCallId) {
+      ctx.nav.backToPageCallManage()
     }
-    this.prevId = cs.ongoingCallId
+    this.prevId = ctx.call.ongoingCallId
   }
 
   @observable txt = ''
@@ -47,7 +45,7 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    getCallStore().getOngoingCall()?.transferBlind(this.txt)
+    ctx.call.getOngoingCall()?.transferBlind(this.txt)
   }
   transferAttended = () => {
     this.txt = this.txt.trim()
@@ -57,14 +55,14 @@ export class PageCallTransferDial extends Component {
       })
       return
     }
-    getCallStore().getOngoingCall()?.transferAttended(this.txt)
+    ctx.call.getOngoingCall()?.transferAttended(this.txt)
   }
 
   render() {
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={Nav().backToPageCallManage}
+        onBack={ctx.nav.backToPageCallManage}
         menu='call_transfer'
         subMenu='external_number'
         isTab

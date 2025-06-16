@@ -1,7 +1,7 @@
 import { Linking } from 'react-native'
 
 import { compareAccountPartial } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import type { UrlParams } from '#/utils/deeplink-parse'
 import { parse } from '#/utils/deeplink-parse'
 
@@ -32,7 +32,7 @@ export const getUrlParams = async () => {
   alreadyHandleFirstOpen = true
   Linking.addEventListener('url', e => {
     urlParams = parse(e.url)
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     // check against the current user
     if (
       !urlParams ||
@@ -46,7 +46,7 @@ export const getUrlParams = async () => {
     ) {
       return
     }
-    getAuthStore().handleUrlParams()
+    ctx.auth.handleUrlParams()
   })
   urlParams = Linking.getInitialURL().then(parse)
   return urlParams

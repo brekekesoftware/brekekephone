@@ -9,10 +9,8 @@ import { IncomingItem } from '#/components/CallVoicesUI'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-import { getAuthStore } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 const css = StyleSheet.create({
@@ -60,33 +58,33 @@ export class DidMountTimer extends Component<any> {
 }
 
 export const CallNotify = observer(() => {
-  const as = getAuthStore()
-  const cs = getCallStore()
   // try trigger observer?
-  void Object.keys(cs.callkeepMap)
-  void cs.calls.map(_ => _.callkeepUuid)
-  const c = cs.getCallInNotify()
+  void Object.keys(ctx.call.callkeepMap)
+  void ctx.call.calls.map(_ => _.callkeepUuid)
+  const c = ctx.call.getCallInNotify()
   // do not show notify if in page call manage
-  if (cs.inPageCallManage || !c) {
+  if (ctx.call.inPageCallManage || !c) {
     return null
   }
-  const k = cs.callkeepMap[c.callkeepUuid]
+  const k = ctx.call.callkeepMap[c.callkeepUuid]
   const Wrapper =
-    k?.hasAction || isWeb || !as.getCurrentAccount()?.pushNotificationEnabled
+    k?.hasAction ||
+    isWeb ||
+    !ctx.auth.getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
-  const configure = getAuthStore().pbxConfig
+  const configure = ctx.auth.pbxConfig
   const hideHangup =
     c.incoming && configure?.['webphone.call.hangup'] === 'false'
-  const n = cs.calls.filter(
+  const n = ctx.call.calls.filter(
     _ => _.incoming && !_.answered && _.id !== c.id,
   ).length
   return (
     <Wrapper>
-      {cs.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
+      {ctx.call.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
       <RnTouchableOpacity
         style={css.Notify}
-        onPress={() => Nav().goToPageCallManage()}
+        onPress={() => ctx.nav.goToPageCallManage()}
       >
         <View style={css.Notify_Info}>
           <RnText bold>{c.getDisplayName()}</RnText>
@@ -110,8 +108,8 @@ export const CallNotify = observer(() => {
           color={v.colors.primary}
           onPress={() => {
             c.answer()
-            if (cs.calls.some(_ => _.answered && _.id !== c.id)) {
-              cs.onSelectBackgroundCall(c)
+            if (ctx.call.calls.some(_ => _.answered && _.id !== c.id)) {
+              ctx.call.onSelectBackgroundCall(c)
             }
           }}
           path={mdiCheck}

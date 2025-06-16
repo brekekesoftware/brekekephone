@@ -7,8 +7,8 @@ import { UserItem } from '#/components/ContactUserItem'
 import { RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 // import {intl} from '../stores/intl'
-import { chatStore } from '#/stores/chatStore'
 import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Unread: {
@@ -35,7 +35,7 @@ export const ListUsers: FC<{
       <RnTouchableOpacity
         key={id}
         onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO: group
-        style={(unread || chatStore.getThreadConfig(id).isUnread) && css.Unread}
+        style={(unread || ctx.chat.getThreadConfig(id).isUnread) && css.Unread}
       >
         <UserItem
           key={id}

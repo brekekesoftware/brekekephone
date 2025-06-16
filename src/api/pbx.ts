@@ -15,8 +15,6 @@ import {
 import { parseCallParams, parsePalParams } from '#/api/parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from '#/api/pnConfig'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
-import { sip } from '#/api/sip'
-import { SyncPnToken } from '#/api/syncPnToken'
 import type {
   PalMethodParams,
   Pbx,
@@ -29,15 +27,11 @@ import type {
 import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
-import { accountStore } from '#/stores/accountStore'
-import { authPBX } from '#/stores/AuthPBX'
-import { authSIP } from '#/stores/AuthSIP'
-import { getAuthStore, waitPbx } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { intlStore } from '#/stores/intlStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { jsonSafe } from '#/utils/jsonSafe'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -52,9 +46,7 @@ export class PBX extends EventEmitter {
   private MAX_RETRY = 3
   private RETRY_DELAY = 300
 
-  private generateRequestId(): string {
-    return newUuid()
-  }
+  private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
       return false
@@ -65,7 +57,7 @@ export class PBX extends EventEmitter {
     )
   }
 
-  cancelRequest(requestId: string): boolean {
+  cancelRequest = (requestId: string): boolean => {
     const index = this.pendingRequests.findIndex(req => req.id === requestId)
     if (index !== -1) {
       const request = this.pendingRequests[index]
@@ -84,7 +76,7 @@ export class PBX extends EventEmitter {
     }
     return false
   }
-  removeRequest(requestId: string) {
+  removeRequest = (requestId: string) => {
     const index = this.requests.findIndex(req => req.id === requestId)
     if (index !== -1) {
       this.requests.splice(index, 1)
@@ -94,13 +86,13 @@ export class PBX extends EventEmitter {
   }
   private msgErrorCancelRequest = (request: Request<keyof PbxPal>) =>
     new Error(`${request.method} request cancelled by user`)
-  private palRequestWithRetry<K extends keyof PbxPal>(
+  private palRequestWithRetry = <K extends keyof PbxPal>(
     method: K,
     ...params: PalMethodParams<K>
   ): {
     promise: Promise<Parameters<Parameters<PbxPal[K]>[1]>[0]>
     requestId: string
-  } {
+  } => {
     const requestId = this.generateRequestId()
     const promise = new Promise((resolve, reject) => {
       const rq = {
@@ -112,7 +104,6 @@ export class PBX extends EventEmitter {
         retryCount: 0,
         cancelled: false,
       }
-
       if (!this.client) {
         this.pendingRequests.push(rq)
         return
@@ -140,7 +131,7 @@ export class PBX extends EventEmitter {
     })
     return { promise, requestId }
   }
-  retryRequests() {
+  retryRequests = () => {
     while (this.pendingRequests.length > 0) {
       const request = this.pendingRequests.shift()
       if (!request) {
@@ -184,7 +175,7 @@ export class PBX extends EventEmitter {
   private pingIntervalId: number | undefined = undefined
   private pingActivityAt = 0
   private getPingInterval = () => {
-    const config = getAuthStore().pbxConfig
+    const config = ctx.auth.pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_interval']))
     if (!t || t <= 5000) {
       return 20000
@@ -192,7 +183,7 @@ export class PBX extends EventEmitter {
     return t
   }
   private getPingTimeout = () => {
-    const config = getAuthStore().pbxConfig
+    const config = ctx.auth.pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_timeout']))
     if (!t || t <= 5000) {
       return 30000
@@ -205,7 +196,7 @@ export class PBX extends EventEmitter {
     }
     this.stopPingInterval()
     this.pingIntervalId = BackgroundTimer.setInterval(() => {
-      if (getAuthStore().pbxLoginFromAnotherPlace) {
+      if (ctx.auth.pbxLoginFromAnotherPlace) {
         this.stopPingInterval()
         return
       }
@@ -245,10 +236,10 @@ export class PBX extends EventEmitter {
       return
     }
     if (this.isPalTimeoutError(err)) {
-      authPBX.dispose()
+      ctx.authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
-      authPBX.auth()
+      ctx.authPBX.auth()
     } else {
       this.pingActivityAt = Date.now()
     }
@@ -285,7 +276,7 @@ export class PBX extends EventEmitter {
       return true
     }
 
-    const d = await accountStore.findDataWithDefault(a)
+    const d = await ctx.account.findDataWithDefault(a)
     const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
@@ -331,7 +322,7 @@ export class PBX extends EventEmitter {
                 `PAL call success - method: ${method}, duration: ${end - start}ms, result:`,
                 r,
               )
-              pbx.pingActivityAt = end
+              ctx.pbx.pingActivityAt = end
             }
             resolve(r)
           },
@@ -477,13 +468,12 @@ export class PBX extends EventEmitter {
 
     // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
-      const as = getAuthStore()
       // TODO:
       // any function get pbxConfig on this time may get undefined
-      as.pbxConfig = undefined
+      ctx.auth.pbxConfig = undefined
       await isConnected()
       await this.getConfig(true)
-      const newPalParamUser = as.pbxConfig?.['webphone.pal.param.user']
+      const newPalParamUser = ctx.auth.pbxConfig?.['webphone.pal.param.user']
       if (newPalParamUser !== oldPalParamUser) {
         console.warn(
           `Attempt to reconnect due to mismatch webphone.pal.param.user after login: old=${oldPalParamUser} new=${newPalParamUser}`,
@@ -494,7 +484,7 @@ export class PBX extends EventEmitter {
     }
 
     // reset state
-    getCallStore().parkNumbers = {}
+    ctx.call.parkNumbers = {}
     // call listeners using pendings then set
     Object.keys(listeners).forEach((k: any) => {
       pendings[k].forEach(e => listeners[k](e))
@@ -590,26 +580,26 @@ export class PBX extends EventEmitter {
       return
     }
     if (e.code === 1 && e.message === 'ANOTHER_LOGIN') {
-      getAuthStore().pbxLoginFromAnotherPlace = true
+      ctx.auth.pbxLoginFromAnotherPlace = true
 
-      const a = getAuthStore().getCurrentAccount()
+      const a = ctx.auth.getCurrentAccount()
       if (a) {
         console.log(
           'pbxLoginFromAnotherPlace debug: remove token for account ' +
             a.pbxUsername,
         )
-        await SyncPnToken().sync(a, { noUpsert: true })
+        await ctx.pnToken.sync(a, { noUpsert: true })
       }
 
-      if (!getCallStore().calls.length && !sip.phone?.getSessionCount()) {
+      if (!ctx.call.calls.length && !ctx.sip.phone?.getSessionCount()) {
         console.log(
           'pbxLoginFromAnotherPlace: no call is in progress, disconnect SIP and PBX',
         )
-        authSIP.dispose()
-        authPBX.dispose()
+        ctx.authSIP.dispose()
+        ctx.authPBX.dispose()
         // wait for the last device to complete syncing the token before allowing the current device to interact
         await waitTimeout(2500)
-        getAuthStore().showMsgPbxLoginFromAnotherPlace = true
+        ctx.auth.showMsgPbxLoginFromAnotherPlace = true
       }
     }
   }
@@ -631,12 +621,11 @@ export class PBX extends EventEmitter {
   }
   getConfig = async (skipWait?: boolean) => {
     if (this.isMainInstance) {
-      const s = getAuthStore()
-      if (s.pbxConfig) {
-        return s.pbxConfig
+      if (ctx.auth.pbxConfig) {
+        return ctx.auth.pbxConfig
       }
       if (!skipWait) {
-        await waitPbx()
+        await ctx.auth.waitPbx()
       }
     }
     if (!this.client) {
@@ -649,16 +638,15 @@ export class PBX extends EventEmitter {
     if (!this.isMainInstance) {
       return config
     }
-    BrekekeUtils.setPbxConfig(JSON.stringify(parseCallParams(config)))
+    BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))
 
-    const as = getAuthStore()
-    as.pbxConfig = config
-    as.setUserAgentConfig(config['webphone.http.useragent.product'])
-    as.setRecentCallsMax(config['webphone.recents.max'])
+    ctx.auth.pbxConfig = config
+    ctx.auth.setUserAgentConfig(config['webphone.http.useragent.product'])
+    ctx.auth.setRecentCallsMax(config['webphone.recents.max'])
 
     // the custom page only load at the first time the tab is shown after you log in
     //    even after re-connected it, don't refresh it again
-    const urlCustomPage = as.listCustomPage?.[0]?.url
+    const urlCustomPage = ctx.auth.listCustomPage?.[0]?.url
     if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
       _parseListCustomPage()
     }
@@ -666,20 +654,20 @@ export class PBX extends EventEmitter {
     // get resource line
     _parseResourceLines(config['webphone.resource-line'])
 
-    const d = await as.getCurrentDataAsync()
+    const d = await ctx.auth.getCurrentDataAsync()
     if (d) {
-      d.palParams = parsePalParams(as.pbxConfig)
-      d.userAgent = as.pbxConfig['webphone.useragent']
-      d.pnExpires = as.pbxConfig['webphone.pn_expires']
-      accountStore.updateAccountData(d)
+      d.palParams = parsePalParams(ctx.auth.pbxConfig)
+      d.userAgent = ctx.auth.pbxConfig['webphone.useragent']
+      d.pnExpires = ctx.auth.pbxConfig['webphone.pn_expires']
+      ctx.account.updateAccountData(d)
     }
 
-    return as.pbxConfig
+    return ctx.auth.pbxConfig
   }
 
   createSIPAccessToken = async (sipUsername: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -691,7 +679,7 @@ export class PBX extends EventEmitter {
 
   getUsers = async (tenant: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -706,9 +694,9 @@ export class PBX extends EventEmitter {
   }
   getExtraUsers = async (ids: string[]): Promise<PbxUser[] | undefined> => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!this.client || !ca) {
       return
     }
@@ -726,7 +714,7 @@ export class PBX extends EventEmitter {
 
   getPbxPropertiesForCurrentUser = async (tenant: string, userId: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -790,7 +778,7 @@ export class PBX extends EventEmitter {
     limit: number
   }) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -819,7 +807,7 @@ export class PBX extends EventEmitter {
   }
   getPhoneappliContact = async (tenant: string, user: string, tel: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -833,7 +821,7 @@ export class PBX extends EventEmitter {
   }
   getContact = async (id: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -854,7 +842,7 @@ export class PBX extends EventEmitter {
   }
   deleteContact = async (id: string[]) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -866,7 +854,7 @@ export class PBX extends EventEmitter {
   }
   setContact = async (contact: Phonebook) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -882,7 +870,7 @@ export class PBX extends EventEmitter {
 
   getPbxToken = async (): Promise<{ token: string } | undefined> => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return
@@ -893,7 +881,7 @@ export class PBX extends EventEmitter {
 
   holdTalker = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
 
     if (!this.client) {
@@ -908,7 +896,7 @@ export class PBX extends EventEmitter {
 
   unholdTalker = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return { promise: Promise.resolve(false), requestId: '' }
@@ -922,7 +910,7 @@ export class PBX extends EventEmitter {
 
   startRecordingTalker = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -936,7 +924,7 @@ export class PBX extends EventEmitter {
 
   stopRecordingTalker = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -954,7 +942,7 @@ export class PBX extends EventEmitter {
     toUser: string,
   ) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -974,7 +962,7 @@ export class PBX extends EventEmitter {
     toUser: string,
   ) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -989,7 +977,7 @@ export class PBX extends EventEmitter {
 
   joinTalkerTransfer = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -1003,7 +991,7 @@ export class PBX extends EventEmitter {
 
   stopTalkerTransfer = async (tenant: string, talker: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -1017,7 +1005,7 @@ export class PBX extends EventEmitter {
 
   parkTalker = async (tenant: string, talker: string, atNumber: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -1032,7 +1020,7 @@ export class PBX extends EventEmitter {
 
   sendDTMF = async (signal: string, tenant: string, talker_id: string) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -1047,7 +1035,7 @@ export class PBX extends EventEmitter {
 
   pnmanage = async (d: PnParamsNew) => {
     if (this.isMainInstance) {
-      await waitPbx()
+      await ctx.auth.waitPbx()
     }
     if (!this.client) {
       return false
@@ -1125,14 +1113,13 @@ export class PBX extends EventEmitter {
     })
 }
 
-export const pbx = new PBX()
+ctx.pbx = new PBX()
 
 // ----------------------------------------------------------------------------
 // parse resource line data
 const _parseResourceLines = (l: string | undefined) => {
-  const as = getAuthStore()
   if (!l) {
-    as.resourceLines = []
+    ctx.auth.resourceLines = []
     return
   }
   const lines = l.split(',')
@@ -1148,7 +1135,7 @@ const _parseResourceLines = (l: string | undefined) => {
     }
   })
   // remove duplicate value
-  as.resourceLines = resourceLines.filter((item, index) => {
+  ctx.auth.resourceLines = resourceLines.filter((item, index) => {
     const nextItem = resourceLines.find(
       (next, nextIndex) => nextIndex > index && next.value === item.value,
     )
@@ -1161,8 +1148,7 @@ const _parseResourceLines = (l: string | undefined) => {
 // need to place them here to avoid circular dependencies
 
 const _parseListCustomPage = () => {
-  const as = getAuthStore()
-  const c = as.pbxConfig
+  const c = ctx.auth.pbxConfig
   if (!c) {
     return
   }
@@ -1194,24 +1180,24 @@ const _parseListCustomPage = () => {
       incoming,
     })
   })
-  as.listCustomPage = results
+  ctx.auth.listCustomPage = results
 }
 
 export const buildCustomPageUrl = async (url: string) => {
-  const ca = getAuthStore().getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
   if (!ca) {
     return url
   }
   url = replaceUrlWithoutPbxToken(
     url,
-    intlStore.locale,
+    ctx.intl.locale,
     ca.pbxTenant,
     ca.pbxUsername,
   )
   if (!hasPbxTokenTobeRepalced(url)) {
     return url
   }
-  const r = await pbx.getPbxToken()
+  const r = await ctx.pbx.getPbxToken()
   return r?.token ? replacePbxToken(url, r.token) : url
 }
 
@@ -1220,6 +1206,6 @@ export const rebuildCustomPageUrlNonce = (url: string) =>
 
 export const rebuildCustomPageUrlPbxToken = async (url: string) => {
   url = rebuildCustomPageUrlNonce(url)
-  const r = await pbx.getPbxToken()
+  const r = await ctx.pbx.getPbxToken()
   return r?.token ? replacePbxTokenUsingSessParam(url, r.token) : url
 }

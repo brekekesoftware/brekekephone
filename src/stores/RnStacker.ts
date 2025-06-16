@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 import type { SyntheticEvent } from 'react'
 
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
@@ -48,7 +48,7 @@ export class RnStackerStore {
     const Component = o[name]
     const f = RnKeyboard.waitKeyboard(
       action((stack: SyntheticEvent) => {
-        getCallStore().inPageCallManage = undefined
+        ctx.call.inPageCallManage = undefined
         // prevent multiple stacks from opening at the same time
         if (this.stackAnimating) {
           return
@@ -81,9 +81,8 @@ export class RnStackerStore {
   createBackTo =
     <T>(o: { [k: string]: ReactComponentLike }, isRoot = false): StackerFn<T> =>
     (...args: unknown[]) => {
-      const cs = getCallStore()
-      if (cs.inPageCallManage) {
-        cs.inPageCallManage = undefined
+      if (ctx.call.inPageCallManage) {
+        ctx.call.inPageCallManage = undefined
         return
       }
       if (this.stacks.length <= 1) {

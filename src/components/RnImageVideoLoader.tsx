@@ -101,9 +101,6 @@ const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
   state,
-  id,
-  name,
-  incoming,
   fileType,
   save,
 }) => {
@@ -120,7 +117,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return nextUrl
   }, [])
 
-  const images = url ? [{ url: convertUri(url) }] : []
+  const images = url ? [{ url: convertUri(url) }] : undefined
   const isLoading =
     (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
     (save && save === 'started')
@@ -130,7 +127,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     state === 'success' && !!url && save && save === 'success'
 
   const onShowImage = useCallback(() => {
-    if (images.length > 0) {
+    if (images?.length) {
       setIsVisible(true)
     }
   }, [images])

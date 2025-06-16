@@ -2,13 +2,13 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 
 import { CallVideosUI } from '#/components/CallVideosUI'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 
 @observer
 export class CallVideos extends Component {
   render() {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     return (
       <CallVideosUI
         callIds={(oc ? [oc] : [])
@@ -23,7 +23,7 @@ export class CallVideos extends Component {
   }
 
   resolveCall() {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     return {
       sourceObject: checkMutedRemoteUser(
         oc?.remoteUserOptionsTable?.[oc?.videoStreamActive?.user ?? '']?.muted,

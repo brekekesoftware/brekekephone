@@ -3,15 +3,10 @@ import { Component, createRef } from 'react'
 
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 
 export const IncomingItem = observer(() => (
-  <audio
-    autoPlay
-    loop
-    src={getCallStore().ringtone || ringtone}
-    muted={false}
-  />
+  <audio autoPlay loop src={ctx.call.ringtone || ringtone} muted={false} />
 ))
 export const OutgoingItem = () => (
   <audio autoPlay loop src={ringback} muted={false} />

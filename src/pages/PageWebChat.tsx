@@ -5,21 +5,20 @@ import { ListWebchats } from '#/components/ChatListWebchats'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
-import { chatStore } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 
 @observer
 export class PageWebChat extends Component {
   render() {
-    const arr = chatStore.groups.filter(group => group.webchat)
+    const arr = ctx.chat.groups.filter(group => group.webchat)
     return (
       <Layout
         description={intl`UC recent active chat`}
         dropdown={[
           {
             label: intl`Create group chat`,
-            onPress: Nav().goToPageChatGroupCreate,
+            onPress: ctx.nav.goToPageChatGroupCreate,
           },
         ]}
         menu='contact'

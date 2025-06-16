@@ -1,23 +1,16 @@
-import CiruclarJSON from 'circular-json'
 import type { IReactionDisposer } from 'mobx'
 import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
-import { pbx } from '#/api/pbx'
-import { sip } from '#/api/sip'
 import type { Session, SessionStatus } from '#/brekekejs'
 import { isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
-import type { CallStore } from '#/stores/callStore2'
-import {
-  contactStore,
-  getPartyName,
-  getPartyNameAsync,
-} from '#/stores/contactStore'
+import type { CallStore } from '#/stores/callStore'
+import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
-import { toast } from '#/stores/ToastStore'
+import { jsonSafe } from '#/utils/jsonSafe'
 import { checkPermForCall } from '#/utils/permissions'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -93,7 +86,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    sip.phone?.answer(
+    ctx.sip.phone?.answer(
       this.id,
       options,
       this.remoteVideoEnabled,
@@ -108,7 +101,7 @@ export class Call {
       return
     }
     if (!ignoreNav) {
-      Nav().goToPageCallManage()
+      ctx.nav.goToPageCallManage()
     }
   }
   answerCallKeep = async () => {
@@ -146,19 +139,19 @@ export class Call {
       )
       await waitTimeout()
     }
-    sip.hangupSession(this.id)
+    ctx.sip.hangupSession(this.id)
   }
 
   // to use in embed api and hang up special transfer case
   hangup = () => {
     this.isAboutToHangup = true
-    sip.hangupSession(this.id)
+    ctx.sip.hangupSession(this.id)
   }
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
   toggleVideo = () => {
-    const pbxUser = contactStore.getPbxUserById(this.partyNumber)
+    const pbxUser = ctx.contact.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
     if (this.holding || callerStatus === 'holding') {
       return
@@ -166,9 +159,9 @@ export class Call {
     if (this.localVideoEnabled) {
       this.mutedVideo = !this.mutedVideo
       if (this.mutedVideo) {
-        sip.setMutedVideo(true, this.id)
+        ctx.sip.setMutedVideo(true, this.id)
       } else {
-        sip.setMutedVideo(false, this.id)
+        ctx.sip.setMutedVideo(false, this.id)
       }
     } else {
       this.mutedVideo = false
@@ -177,14 +170,14 @@ export class Call {
     // with the current logic of webrtcclient.js
     // if we disable the local stream, it will remove all other streams
     // so to make video conference works, we need to enable to keep receiving other streams
-    sip.enableLocalVideo(this.id)
+    ctx.sip.enableLocalVideo(this.id)
   }
   @action toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
       return
     }
     this.isFrontCamera = !this.isFrontCamera
-    sip.switchCamera(this.id, this.isFrontCamera)
+    ctx.sip.switchCamera(this.id, this.isFrontCamera)
   }
 
   @observable localStreamObject: MediaStream | null = null
@@ -220,7 +213,7 @@ export class Call {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
       BrekekeUtils.setIsMute(this.callkeepUuid, this.muted)
     }
-    return sip.setMuted(this.muted, this.id)
+    return ctx.sip.setMuted(this.muted, this.id)
   }
 
   @observable recording = false
@@ -232,8 +225,8 @@ export class Call {
     this.rqLoadings['record'] = true
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
-      ? pbx.stopRecordingTalker
-      : pbx.startRecordingTalker
+      ? ctx.pbx.stopRecordingTalker
+      : ctx.pbx.startRecordingTalker
     this.recording = !this.recording
     return fn(this.pbxTenant, this.pbxTalkerId)
       .then(this.onToggleRecordingFailure)
@@ -267,7 +260,7 @@ export class Call {
 
   @action cancelPendingRequest = () => {
     this.pendingRequestIds.forEach(id => {
-      pbx.cancelRequest(id)
+      ctx.pbx.cancelRequest(id)
     })
     this.pendingRequestIds = []
   }
@@ -284,7 +277,7 @@ export class Call {
     if (!this.isAboutToHangup && fn === 'unhold') {
       this.store.setCurrentCallId(this.id)
     }
-    const res = await pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
+    const res = await ctx.pbx[`${fn}Talker`](this.pbxTenant, this.pbxTalkerId)
     const { promise, requestId } = res
     if (requestId) {
       this.pendingRequestIds.push(requestId)
@@ -310,7 +303,7 @@ export class Call {
         prevFn === 'unhold'
           ? intlDebug`Failed to unhold the call`
           : intlDebug`Failed to hold the call`
-      toast.error({ message, err }, 8000)
+      ctx.toast.error({ message, err }, 8000)
       BrekekeUtils.showToast(
         this.callkeepUuid,
         message.label,
@@ -334,7 +327,10 @@ export class Call {
   @action setHoldWithoutCallKeep = async (hold: boolean) => {
     const act = hold ? 'hold' : 'unhold'
     try {
-      const res = await pbx[`${act}Talker`](this.pbxTenant, this.pbxTalkerId)
+      const res = await ctx.pbx[`${act}Talker`](
+        this.pbxTenant,
+        this.pbxTalkerId,
+      )
       const { promise, requestId } = res
       if (requestId) {
         this.pendingRequestIds.push(requestId)
@@ -354,8 +350,8 @@ export class Call {
   @observable transferring = ''
   private prevTransferring = ''
   transferBlind = (number: string) => {
-    Nav().goToPageCallRecents()
-    return pbx
+    ctx.nav.goToPageCallRecents()
+    return ctx.pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
@@ -363,8 +359,8 @@ export class Call {
     this.transferring = number
     // avoid issue no-voice if user set hold before
     this.setHoldWithCallkeep(false)
-    Nav().backToPageCallManage()
-    return pbx
+    ctx.nav.backToPageCallManage()
+    return ctx.pbx
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
@@ -381,7 +377,7 @@ export class Call {
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
     this.setHoldWithCallkeep(false)
-    return pbx
+    return ctx.pbx
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
@@ -399,7 +395,7 @@ export class Call {
     this.transferring = ''
     this.prevHolding = this.holding
     this.setHoldWithCallkeep(false)
-    return pbx
+    return ctx.pbx
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
@@ -413,7 +409,7 @@ export class Call {
   }
 
   @action park = (number: string) =>
-    pbx
+    ctx.pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onParkFailure)
   private onParkFailure = (err: Error) => {
@@ -433,7 +429,7 @@ export class Call {
     this._disposeEmitEmbed = autorun(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { store, ...c } = this // do not autorun on store
-      CiruclarJSON.stringify(c)
+      jsonSafe(c)
       if (!this._autorunEmitEmbed) {
         this._autorunEmitEmbed = true
         return

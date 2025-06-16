@@ -1,11 +1,9 @@
 import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
-import { pbx } from '#/api/pbx'
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
-import { getAuthStore, waitPbx } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
-import { intlStore } from '#/stores/intlStore'
 import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
 
@@ -62,7 +60,7 @@ export type PickerItemOption = {
   listOption: ItemPBForm[]
 }
 
-class ContactStore {
+export class ContactStore {
   @observable usersSearchTerm = ''
   @observable phonebookSearchTerm = ''
   @observable chatSearchTerm = ''
@@ -73,12 +71,12 @@ class ContactStore {
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
-    await waitPbx()
-    if (getAuthStore().pbxState !== 'success' || this.loading) {
+    await ctx.auth.waitPbx()
+    if (ctx.auth.pbxState !== 'success' || this.loading) {
       return
     }
     this.loading = true
-    await pbx
+    await ctx.pbx
       .getContacts({
         search_text: this.phonebookSearchTerm,
         offset: this.offset,
@@ -146,13 +144,13 @@ class ContactStore {
     this.showPickerItem = null
   }
   getManagerContact = (lang?: string) =>
-    window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)
+    window.Brekeke.Phonebook.getManager(lang ? lang : ctx.intl.locale)
   getItemPhonebook = (lang?: string) =>
-    window.Brekeke.Phonebook.getManager(lang ? lang : intlStore.locale)?.item
+    window.Brekeke.Phonebook.getManager(lang ? lang : ctx.intl.locale)?.item
 
   getManageItems = (lang?: string) => {
     const items = window.Brekeke.Phonebook.getManager(
-      lang ? lang : intlStore.locale,
+      lang ? lang : ctx.intl.locale,
     )?.item
     if (!items || !items.length) {
       return []
@@ -173,11 +171,11 @@ class ContactStore {
 
   getPbxUsers = async () => {
     try {
-      const ca = getAuthStore().getCurrentAccount()
+      const ca = ctx.auth.getCurrentAccount()
       if (!ca) {
         return
       }
-      const res = await pbx.getUsers(ca.pbxTenant)
+      const res = await ctx.pbx.getUsers(ca.pbxTenant)
       if (!res) {
         return
       }
@@ -235,7 +233,7 @@ class ContactStore {
   private getExtraPbxUsersBatch = debounce(() => {
     const ids = this.extraPbxUsersBatch
     this.extraPbxUsersBatch = []
-    pbx
+    ctx.pbx
       .getExtraUsers(ids)
       .then(
         action(arr => {
@@ -280,7 +278,7 @@ class ContactStore {
 
   @action loadPbxBoook = () => {
     this.pbxBooks = []
-    pbx.getPhonebooks().then(res => {
+    ctx.pbx.getPhonebooks().then(res => {
       if (res) {
         this.pbxBooks = res
       }
@@ -298,8 +296,10 @@ class ContactStore {
     const partyNumber =
       p.info?.$tel_mobile || p.info?.$tel_work || p.info?.$tel_home
     if (partyNumber) {
-      const ac = getAuthStore()
-      ac.updatePartyNameRecentCall({ partyName: p.display_name, partyNumber })
+      ctx.auth.updatePartyNameRecentCall({
+        partyName: p.display_name,
+        partyNumber,
+      })
     }
 
     this.phoneBooks = [...this.phoneBooks]
@@ -343,7 +343,7 @@ class ContactStore {
   }
   private updateContactCache: { [k: string]: Promise<void> | undefined } = {}
   private updateContactWithoutCache = async (partyNumber: string) => {
-    const contacts = await pbx.getContacts({
+    const contacts = await ctx.pbx.getContacts({
       search_text: partyNumber,
       offset: 0,
       limit: 1,
@@ -351,11 +351,11 @@ class ContactStore {
     if (!contacts?.length) {
       return
     }
-    const contact = await pbx.getContact(contacts[0].id)
+    const contact = await ctx.pbx.getContact(contacts[0].id)
     if (!contact) {
       return
     }
-    contactStore.upsertPhonebook(contact as Phonebook)
+    ctx.contact.upsertPhonebook(contact as Phonebook)
   }
 
   getPhoneBookByPhoneNumber = (phoneNumber?: string) => {
@@ -373,7 +373,7 @@ class ContactStore {
     if (!parkNumber) {
       return
     }
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return
     }
@@ -400,7 +400,7 @@ class ContactStore {
   }
 }
 
-export const contactStore = new ContactStore()
+ctx.contact = new ContactStore()
 
 // prioritize displaying phonebook name first for calls
 export const getPartyName = (o: {
@@ -411,11 +411,11 @@ export const getPartyName = (o: {
     return undefined
   }
 
-  const phonebookName = contactStore.getPhoneBookByPhoneNumber(
+  const phonebookName = ctx.contact.getPhoneBookByPhoneNumber(
     o.partyNumber,
   )?.display_name
-  const pbxUserName = contactStore.getPbxUserById(o.partyNumber)?.name
-  const parkName = contactStore.getParkNameByParkNumber(o.partyNumber)
+  const pbxUserName = ctx.contact.getPbxUserById(o.partyNumber)?.name
+  const parkName = ctx.contact.getParkNameByParkNumber(o.partyNumber)
 
   return o.preferPbxName
     ? pbxUserName || phonebookName || parkName
@@ -423,6 +423,6 @@ export const getPartyName = (o: {
 }
 
 export const getPartyNameAsync = async (partyNumber: string) => {
-  await contactStore.updateContact(partyNumber)
+  await ctx.contact.updateContact(partyNumber)
   return getPartyName({ partyNumber })
 }

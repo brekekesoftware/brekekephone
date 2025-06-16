@@ -1,21 +1,18 @@
-import { pbx } from '#/api/pbx'
 import { isIos } from '#/config'
-import { accountStore } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnStacker } from '#/stores/RnStacker'
 import { openLinkSafely, urls } from '#/utils/deeplink'
 import { PushNotification } from '#/utils/PushNotification'
 
 export const updatePhoneAppli = async () => {
-  const p = getAuthStore().getCurrentAccount()
+  const p = ctx.auth.getCurrentAccount()
   if (!p) {
     return
   }
 
-  const extProps = await pbx.getPbxPropertiesForCurrentUser(
+  const extProps = await ctx.pbx.getPbxPropertiesForCurrentUser(
     p.pbxTenant,
     p.pbxUsername,
   )
@@ -33,20 +30,19 @@ export const handlePhoneAppli = async extProps => {
     return
   }
 
-  const as = getAuthStore()
-  as.userExtensionProperties = extProps
-  const d = await as.getCurrentDataAsync()
+  ctx.auth.userExtensionProperties = extProps
+  const d = await ctx.auth.getCurrentDataAsync()
   const paEnabled = extProps.phoneappli
   if (d) {
     d.phoneappliEnabled = paEnabled
-    accountStore.updateAccountData(d)
+    ctx.account.updateAccountData(d)
   }
 
   // open PhoneAppli app when phoneappli.enable is true and on PageCallRecents
   const s = RnStacker.stacks[RnStacker.stacks.length - 1]
   if (paEnabled && s.name === 'PageCallRecents') {
-    Nav().customPageIndex = Nav().goToPageCallKeypad
-    Nav().goToPageCallKeypad()
+    ctx.nav.customPageIndex = ctx.nav.goToPageCallKeypad
+    ctx.nav.goToPageCallKeypad()
     if (isIos) {
       PushNotification.resetBadgeNumber()
     }
@@ -55,8 +51,8 @@ export const handlePhoneAppli = async extProps => {
 }
 
 export const updatePhoneIndex = async (
-  p = getAuthStore().getCurrentAccount(),
-  api = pbx,
+  p = ctx.auth.getCurrentAccount(),
+  api = ctx.pbx,
 ): Promise<null | {
   id: string
   type: string
@@ -75,9 +71,8 @@ export const updatePhoneIndex = async (
     return null
   }
 
-  const as = getAuthStore()
   // update current account data phoneappli.enable
-  if (p.id === as.getCurrentAccount()?.id) {
+  if (p.id === ctx.auth.getCurrentAccount()?.id) {
     handlePhoneAppli(extProps)
   }
 
@@ -133,7 +128,7 @@ export const updatePhoneIndex = async (
             })
         },
         onDismiss: () => {
-          Nav().goToPageAccountSignIn()
+          ctx.nav.goToPageAccountSignIn()
           resolve(null)
         },
       })

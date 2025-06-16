@@ -27,11 +27,8 @@ import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 import { isIos } from '#/config'
-import { getAuthStore } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
 import type { ChatMessage } from '#/stores/chatStore'
-import { chatStore } from '#/stores/chatStore'
-import { Nav } from '#/stores/Nav'
+import { ctx } from '#/stores/ctx'
 import type { DropdownPosition } from '#/stores/RnDropdown'
 import { RnDropdown } from '#/stores/RnDropdown'
 import type { GroupUserSectionListData } from '#/stores/userStore'
@@ -184,7 +181,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     )
   })
 const getLastMessageChat = (id: string) => {
-  const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+  const chats = filterTextOnly(ctx.chat.getMessagesByThreadId(id))
   return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
@@ -198,7 +195,7 @@ const RenderItemUser = observer(
   ({ sectionListData, item, title, isEditMode, isTransferCall }: ItemUser) => {
     const index = sectionListData.findIndex(i => i.title === title)
     const hidden = RnDropdown.hiddenIndexes.some(idx => idx === index)
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
 
     return !hidden ? (
       <View
@@ -228,8 +225,8 @@ const RenderItemUser = observer(
         ) : !isTransferCall ? (
           <UserItem
             iconFuncs={[
-              () => getCallStore().startVideoCall(item.user_id),
-              () => getCallStore().startCall(item.user_id),
+              () => ctx.call.startVideoCall(item.user_id),
+              () => ctx.call.startCall(item.user_id),
             ]}
             icons={[mdiVideo, mdiPhone]}
             lastMessage={getLastMessageChat(item.user_id)?.text}
@@ -239,8 +236,8 @@ const RenderItemUser = observer(
             status={item.status}
             canTouch
             onPress={
-              getAuthStore().getCurrentAccount()?.ucEnabled
-                ? () => Nav().goToPageChatDetail({ buddy: item.user_id })
+              ctx.auth.getCurrentAccount()?.ucEnabled
+                ? () => ctx.nav.goToPageChatDetail({ buddy: item.user_id })
                 : undefined
             }
           />

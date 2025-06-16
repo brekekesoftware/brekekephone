@@ -1,9 +1,8 @@
 import { Component, useEffect } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
-import { sip } from '#/api/sip'
 import { isAndroid } from '#/config'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -30,9 +29,8 @@ export class IncomingItem extends Component {
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {
-    const { ongoingCallId } = getCallStore()
-    if (ongoingCallId) {
-      sip.disableMedia(ongoingCallId)
+    if (ctx.call.ongoingCallId) {
+      ctx.sip.disableMedia(ctx.call.ongoingCallId)
     }
     if (isAndroid) {
       IncallManager.startRingback('_BUNDLE_')
@@ -51,9 +49,8 @@ export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   componentDidMount = () => {
-    const { ongoingCallId } = getCallStore()
-    if (ongoingCallId) {
-      sip.enableMedia(ongoingCallId)
+    if (ctx.call.ongoingCallId) {
+      ctx.sip.enableMedia(ctx.call.ongoingCallId)
     }
   }
   render() {
@@ -64,9 +61,9 @@ export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   componentDidMount = () => {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (oc) {
-      sip.enableMedia(oc.id)
+      ctx.sip.enableMedia(oc.id)
     }
   }
   render() {

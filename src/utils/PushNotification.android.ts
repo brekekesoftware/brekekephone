@@ -9,7 +9,7 @@ import type {
 } from 'react-native-notifications'
 import { Notifications } from 'react-native-notifications'
 
-import { chatStore } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { permNotifications } from '#/utils/permissions'
 import { parse } from '#/utils/PushNotification-parse'
@@ -191,7 +191,7 @@ const getInitialNotifications = async () => {
       }
       const senderId = payload?.senderUserId
       const confId = payload?.confId
-      chatStore.pushChatNotification(
+      ctx.chat.pushChatNotification(
         '',
         payload?.message || '',
         senderId || confId,

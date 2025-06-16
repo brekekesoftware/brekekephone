@@ -8,7 +8,7 @@ import noPhoto from '#/assets/no_photo.png'
 
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { isAndroid } from '#/config'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/checkImageUrl'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
@@ -127,7 +127,7 @@ export const SmartImage = ({
     setStatusImageLoading(StatusImage.loaded)
   }
   const isImageUrl =
-    (getAuthStore().phoneappliEnabled() && !incoming) || checkImageUrl(uri)
+    (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
   return (
     <View style={[css.image, style]}>
@@ -152,7 +152,7 @@ export const SmartImage = ({
           originWhitelist={['*']}
           javaScriptEnabled={true}
           scalesPageToFit={false}
-          userAgent={getAuthStore().getUserAgentConfig()}
+          userAgent={ctx.auth.getUserAgentConfig()}
         />
       ) : (
         <Image

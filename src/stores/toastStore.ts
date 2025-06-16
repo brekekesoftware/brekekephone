@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
+import { ctx } from '#/stores/ctx'
 import type { ErrorRnAlert } from '#/stores/RnAlert'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -13,7 +14,7 @@ interface Toast {
   err?: Error
 }
 
-class ToastStore {
+export class ToastStore {
   @observable items: Toast[] = []
 
   @action
@@ -66,4 +67,4 @@ class ToastStore {
   }
 }
 
-export const toast = new ToastStore()
+ctx.toast = new ToastStore()

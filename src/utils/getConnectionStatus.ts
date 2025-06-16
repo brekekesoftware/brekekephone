@@ -1,24 +1,24 @@
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
 export const getConnectionStatus = () => {
-  const s = getAuthStore()
-  const signedInId = s.signedInId
-  const serviceConnectingOrFailure = s.pbxConnectingOrFailure()
+  const signedInId = ctx.auth.signedInId
+  const serviceConnectingOrFailure = ctx.auth.pbxConnectingOrFailure()
     ? 'PBX'
-    : s.sipConnectingOrFailure()
+    : ctx.auth.sipConnectingOrFailure()
       ? 'SIP'
-      : s.ucConnectingOrFailure()
+      : ctx.auth.ucConnectingOrFailure()
         ? 'UC'
         : ''
 
-  const isFailure = s.isConnFailure()
+  const isFailure = ctx.auth.isConnFailure()
   const message =
-    s.pbxLoginFromAnotherPlace && !s.showMsgPbxLoginFromAnotherPlace
+    ctx.auth.pbxLoginFromAnotherPlace &&
+    !ctx.auth.showMsgPbxLoginFromAnotherPlace
       ? ''
-      : isFailure && s.showMsgPbxLoginFromAnotherPlace
+      : isFailure && ctx.auth.showMsgPbxLoginFromAnotherPlace
         ? intl`Logged in from another location as the same phone`
-        : isFailure && s.ucLoginFromAnotherPlace
+        : isFailure && ctx.auth.ucLoginFromAnotherPlace
           ? intl`UC signed in from another location`
           : !serviceConnectingOrFailure
             ? ''
@@ -30,6 +30,6 @@ export const getConnectionStatus = () => {
     signedInId,
     message,
     isFailure,
-    onPress: isFailure ? s.resetFailureStateIncludePbxOrUc : undefined,
+    onPress: isFailure ? ctx.auth.resetFailureStateIncludePbxOrUc : undefined,
   }
 }

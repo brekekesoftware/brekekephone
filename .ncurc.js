@@ -3,8 +3,5 @@ module.exports = {
     // compatible with brekekejs
     'jssip',
     'react-native-webrtc',
-    // TODO:
-    'mobx',
-    'mobx-react',
   ],
 }

@@ -5,8 +5,7 @@ import { StyleSheet, View } from 'react-native'
 import { menus } from '#/components/navigationConfig'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { getAuthStore } from '#/stores/authStore'
-import { chatStore } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 
 export const css = StyleSheet.create({
   Navigation: {
@@ -55,11 +54,11 @@ export const Navigation: FC<{
   <View style={css.Navigation}>
     {menus().map(m => {
       const active = m.key === menu
-      const totalUnreadChat = chatStore.unreadCount
-      const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
+      const totalUnreadChat = ctx.chat.unreadCount
+      const totalNoticesWebchat = ctx.chat.getNumberWebchatNoti()
       const totalNoticesContact = totalUnreadChat + totalNoticesWebchat
       const showUnreadChat =
-        getAuthStore().getCurrentAccount()?.ucEnabled &&
+        ctx.auth.getCurrentAccount()?.ucEnabled &&
         !!totalNoticesContact &&
         m.key === 'contact' &&
         !active

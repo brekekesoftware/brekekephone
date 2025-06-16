@@ -11,8 +11,7 @@ import { PanResponder, Platform, StyleSheet, View } from 'react-native'
 
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
-import { getCallStore } from '#/stores/callStore'
-import { Nav } from '#/stores/Nav'
+import { ctx } from '#/stores/ctx'
 import { RnStacker } from '#/stores/RnStacker'
 
 const css = StyleSheet.create({
@@ -69,8 +68,8 @@ class Mini extends Component<Props> {
         style={[
           css.Mini,
           {
-            top: getCallStore().videoPositionT,
-            left: getCallStore().videoPositionL,
+            top: ctx.call.videoPositionT,
+            left: ctx.call.videoPositionL,
           },
         ]}
         {...this.panResponder.panHandlers}
@@ -87,8 +86,8 @@ class Mini extends Component<Props> {
   onDrag = (e: GestureResponderEvent, gesture: PanResponderGestureState) => {
     this.view?.setNativeProps({
       style: {
-        left: getCallStore().videoPositionL + gesture.dx,
-        top: getCallStore().videoPositionT + gesture.dy,
+        left: ctx.call.videoPositionL + gesture.dx,
+        top: ctx.call.videoPositionT + gesture.dy,
       },
     })
   }
@@ -97,9 +96,9 @@ class Mini extends Component<Props> {
     e: GestureResponderEvent,
     gesture: PanResponderGestureState,
   ) => {
-    Object.assign(getCallStore(), {
-      videoPositionL: getCallStore().videoPositionL + gesture.dx,
-      videoPositionT: getCallStore().videoPositionT + gesture.dy,
+    Object.assign(ctx.call, {
+      videoPositionL: ctx.call.videoPositionL + gesture.dx,
+      videoPositionT: ctx.call.videoPositionT + gesture.dy,
     })
     const n = Date.now()
     if (
@@ -121,13 +120,13 @@ class Control extends Component<{
   render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
-      getCallStore().inPageCallManage ||
+      ctx.call.inPageCallManage ||
       s.name === 'PageCallTransferDial' ||
       s.name === 'PageCallTransferAttend'
     ) {
       return null
     }
-    return <Mini {...this.props} onDoubleTap={Nav().goToPageCallManage} />
+    return <Mini {...this.props} onDoubleTap={ctx.nav.goToPageCallManage} />
   }
 }
 

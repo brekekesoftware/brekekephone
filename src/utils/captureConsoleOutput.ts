@@ -1,9 +1,9 @@
-import CircularJSON from 'circular-json'
 import moment from 'moment'
 import { format } from 'util'
 
 import { isWeb } from '#/config'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
+import { jsonSafe } from '#/utils/jsonSafe'
 
 const formatErrors = (...errs: Error[]) => {
   // normalize and fix circular json
@@ -13,7 +13,7 @@ const formatErrors = (...errs: Error[]) => {
       : e.message
         ? e.message
         : typeof e === 'object'
-          ? CircularJSON.stringify(e)
+          ? jsonSafe(e)
           : `${e}`,
   )
   let tpl = msgs.shift() || ''

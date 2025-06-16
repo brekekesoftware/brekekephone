@@ -1,13 +1,13 @@
 import moment from 'moment'
 
-import { uc } from '#/api/uc'
 import type { ChatMessage } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
 export const numberOfChatsPerLoad = 20
 
 export const groupByTimestamp = (arr: ChatMessage[]) => {
-  const me = uc.me()
+  const me = ctx.uc.me()
   const groupByDate: {
     date: string
     groupByTime: {

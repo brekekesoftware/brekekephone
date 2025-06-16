@@ -15,11 +15,8 @@ import { FooterActions } from '#/components/FooterActions'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-import { accountStore } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
 
@@ -59,7 +56,7 @@ export const AccountSignInItem: FC<{
       if (!(await permForCall(true))) {
         return
       }
-      Nav().goToPageAccountCreate()
+      ctx.nav.goToPageAccountCreate()
     }
     return (
       <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
@@ -78,27 +75,27 @@ export const AccountSignInItem: FC<{
   if (!props.id) {
     return null
   }
-  const a = accountStore.accountsMap[props.id]
+  const a = ctx.account.accountsMap[props.id]
   if (!a) {
     return null
   }
-  const isLoading = accountStore.pnSyncLoadingMap[props.id]
+  const isLoading = ctx.account.pnSyncLoadingMap[props.id]
 
   const onPressSignIn = async () => {
     if (!(await permForCall(a.pushNotificationEnabled))) {
       return
     }
-    getAuthStore().signIn(a)
+    ctx.auth.signIn(a)
     if (!isWeb) {
       // try to end callkeep if it's stuck
-      getCallStore().endCallKeepAllCalls()
+      ctx.call.endCallKeepAllCalls()
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
     if (e && !(await checkPermForCall(true, true))) {
       return
     }
-    accountStore.upsertAccount({
+    ctx.account.upsertAccount({
       id: a.id,
       pushNotificationEnabled: e,
     })
@@ -108,7 +105,7 @@ export const AccountSignInItem: FC<{
       style={[css.AccountSignInItem, props.last && css.AccountSignInItem__last]}
     >
       <RnTouchableOpacity
-        onPress={() => Nav().goToPageAccountUpdate({ id: a.id })}
+        onPress={() => ctx.nav.goToPageAccountUpdate({ id: a.id })}
       >
         <Field
           icon={mdiAccountCircleOutline}
@@ -133,7 +130,7 @@ export const AccountSignInItem: FC<{
       <Field
         label='UC'
         onValueChange={(e: boolean) =>
-          accountStore.upsertAccount({ id: a.id, ucEnabled: e })
+          ctx.account.upsertAccount({ id: a.id, ucEnabled: e })
         }
         type='Switch'
         value={a.ucEnabled}
@@ -154,12 +151,12 @@ export const AccountSignInItem: FC<{
                 </>
               ),
               onConfirm: () => {
-                accountStore.removeAccount(a.id)
+                ctx.account.removeAccount(a.id)
               },
             })
           }}
           onBackIcon={mdiClose}
-          onMore={() => Nav().goToPageAccountUpdate({ id: a.id })}
+          onMore={() => ctx.nav.goToPageAccountUpdate({ id: a.id })}
           onMoreIcon={mdiDotsHorizontal}
           onNext={onPressSignIn}
           onNextText={intl`SIGN IN`}

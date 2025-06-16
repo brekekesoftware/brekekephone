@@ -13,7 +13,7 @@ import {
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   txtPb: {
@@ -93,18 +93,18 @@ export const PhonebookAutoComplete: FC<
   const [isChoose, setChoose] = useState(false)
 
   useEffect(() => {
-    contactStore.loadPbxBoook()
+    ctx.contact.loadPbxBoook()
     setChoose(false)
   }, [value])
 
   const getData = () => {
-    if (!contactStore.pbxBooks.length) {
+    if (!ctx.contact.pbxBooks.length) {
       return []
     }
     if (!value) {
-      return [...contactStore.pbxBooks]
+      return [...ctx.contact.pbxBooks]
     }
-    const result = contactStore.pbxBooks.filter(item =>
+    const result = ctx.contact.pbxBooks.filter(item =>
       // make same web search
       item.phonebook.toLowerCase().startsWith(value.toLowerCase()),
     )

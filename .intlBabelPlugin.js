@@ -30,7 +30,7 @@ const findBrackets = (rawTemplate, i, bracket) => {
 
 const intlBabelPlugin = () => ({
   visitor: {
-    TaggedTemplateExpression(p, s) {
+    TaggedTemplateExpression: (p, s) => {
       //
       const tagName = p.node.tag.name
       const tl = tagName && tagName.toLowerCase()

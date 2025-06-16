@@ -2,19 +2,18 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
-import { pbx } from '#/api/pbx'
-import { getAuthStore } from '#/stores/authStore'
+import { ctx } from '#/stores/ctx'
 import { waitTimeout } from '#/utils/waitTimeout'
 
-class AuthPBX {
+export class AuthPBX {
   private clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
     this.clearShouldAuthReaction?.()
-    const s = getAuthStore()
+
     this.clearShouldAuthReaction = reaction(
-      s.pbxShouldAuth,
+      ctx.auth.pbxShouldAuth,
       this.authWithCheckDebounced,
     )
   }
@@ -22,33 +21,32 @@ class AuthPBX {
     console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearShouldAuthReaction?.()
     this.clearShouldAuthReaction = undefined
-    pbx.disconnect()
-    const s = getAuthStore()
-    s.pbxState = 'stopped'
+    ctx.pbx.disconnect()
+
+    ctx.auth.pbxState = 'stopped'
   }
 
   @action private authWithCheck = async () => {
-    const s = getAuthStore()
-    if (!s.pbxShouldAuth()) {
+    if (!ctx.auth.pbxShouldAuth()) {
       return
     }
-    if (s.pbxTotalFailure > 1) {
-      s.pbxState = 'waiting'
+    if (ctx.auth.pbxTotalFailure > 1) {
+      ctx.auth.pbxState = 'waiting'
       await waitTimeout(
-        s.pbxTotalFailure < 5 ? s.pbxTotalFailure * 1000 : 15000,
+        ctx.auth.pbxTotalFailure < 5 ? ctx.auth.pbxTotalFailure * 1000 : 15000,
       )
-      if (s.pbxState !== 'waiting') {
+      if (ctx.auth.pbxState !== 'waiting') {
         return
       }
     }
-    const ca = s.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return
     }
     console.log('PBX PN debug: disconnect by AuthPBX.authWithCheck')
-    pbx.disconnect()
-    s.pbxState = 'connecting'
-    pbx
+    ctx.pbx.disconnect()
+    ctx.auth.pbxState = 'connecting'
+    ctx.pbx
       .connect(ca)
       .then(connected => {
         if (!connected) {
@@ -57,8 +55,8 @@ class AuthPBX {
       })
       .catch(
         action((err: Error) => {
-          s.pbxState = 'failure'
-          s.pbxTotalFailure += 1
+          ctx.auth.pbxState = 'failure'
+          ctx.auth.pbxTotalFailure += 1
           console.error('Failed to connect to pbx:', err)
           this.authWithCheck()
         }),
@@ -67,4 +65,4 @@ class AuthPBX {
   private authWithCheckDebounced = debounce(this.authWithCheck, 300)
 }
 
-export const authPBX = new AuthPBX()
+ctx.authPBX = new AuthPBX()

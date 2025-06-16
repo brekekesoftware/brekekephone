@@ -5,18 +5,14 @@ import type { FC } from 'react'
 import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { uc } from '#/api/uc'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/ButtonIcon'
 import { formatDateTimeSemantic } from '#/components/chatConfig'
 import { UserItem } from '#/components/ContactUserItem'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { getCallStore } from '#/stores/callStore'
-import { chatStore } from '#/stores/chatStore'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnStacker } from '#/stores/RnStacker'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
@@ -94,8 +90,8 @@ export class ChatGroupInvite extends Component {
   @observable loading = false
 
   formatGroup = (group: string) => {
-    const { id, inviter, name } = chatStore.getGroupById(group) || {}
-    const inviterName = contactStore.getUcUserById(inviter)?.name
+    const { id, inviter, name } = ctx.chat.getGroupById(group) || {}
+    const inviterName = ctx.contact.getUcUserById(inviter)?.name
     return {
       id,
       name,
@@ -104,12 +100,13 @@ export class ChatGroupInvite extends Component {
   }
   // TODO: rejected but existed in chat home => error when click
   reject = (group: string) => {
-    uc.leaveChatGroup(group)
+    ctx.uc
+      .leaveChatGroup(group)
       .then(this.onRejectSuccess)
       .catch(this.onRejectFailure)
   }
   onRejectSuccess = (res: { id: string }) => {
-    chatStore.removeGroup(res.id)
+    ctx.chat.removeGroup(res.id)
   }
   onRejectFailure = (err: Error) => {
     RnAlert.error({
@@ -119,7 +116,8 @@ export class ChatGroupInvite extends Component {
   }
   accept = (group: string) => {
     this.loading = true
-    uc.joinChatGroup(group)
+    ctx.uc
+      .joinChatGroup(group)
       .then(this.onAcceptSuccess)
       .catch(this.onAcceptFailure)
   }
@@ -134,7 +132,7 @@ export class ChatGroupInvite extends Component {
   }
 
   render() {
-    return chatStore.groups
+    return ctx.chat.groups
       .filter(gr => !gr.webchat && !gr.jointed)
       .map(gr => gr.id)
       .map(group => (
@@ -176,14 +174,14 @@ export class UnreadChatNoti extends Component {
     if (this.unreadChat) {
       return
     }
-    let unreadChats = Object.entries(chatStore.threadConfig)
+    let unreadChats = Object.entries(ctx.chat.threadConfig)
       .filter(
         ([k, c]) =>
           c.isUnread &&
-          filterTextOnly(chatStore.getMessagesByThreadId(k)).length,
+          filterTextOnly(ctx.chat.getMessagesByThreadId(k)).length,
       )
       .map(([k, c]) => {
-        const arr = filterTextOnly(chatStore.getMessagesByThreadId(k))
+        const arr = filterTextOnly(ctx.chat.getMessagesByThreadId(k))
         return {
           ...c,
           lastMessage: arr[arr.length - 1],
@@ -204,8 +202,8 @@ export class UnreadChatNoti extends Component {
         buddy: string
         groupId: string
       }
-      const isWebchat = chatStore.isWebchat(c.id)
-      const isWebchatJoined = chatStore.isWebchatJoined(c.id)
+      const isWebchat = ctx.chat.isWebchat(c.id)
+      const isWebchatJoined = ctx.chat.isWebchatJoined(c.id)
 
       if (!s) {
         return true
@@ -215,7 +213,7 @@ export class UnreadChatNoti extends Component {
       }
 
       // always show chat message notifications when in call manage screen
-      if (getCallStore().inPageCallManage) {
+      if (ctx.call.inPageCallManage) {
         return true
       }
 
@@ -258,8 +256,8 @@ export class UnreadChatNoti extends Component {
     const { id, isGroup } = this.unreadChat
     this.clear()
     return isGroup
-      ? Nav().goToPageChatGroupDetail({ groupId: id })
-      : Nav().goToPageChatDetail({ buddy: id })
+      ? ctx.nav.goToPageChatGroupDetail({ groupId: id })
+      : ctx.nav.goToPageChatDetail({ buddy: id })
   }
 
   componentWillUnmount = () => {
@@ -267,12 +265,12 @@ export class UnreadChatNoti extends Component {
   }
 
   render() {
-    Object.values(chatStore.threadConfig).forEach(c => {
+    Object.values(ctx.chat.threadConfig).forEach(c => {
       Object.values(c).forEach(v2 => {
         void v2
       })
     })
-    Object.values(chatStore.messagesByThreadId).forEach(c => {
+    Object.values(ctx.chat.messagesByThreadId).forEach(c => {
       c.forEach(v2 => {
         void v2.id
       })
@@ -295,8 +293,8 @@ export class UnreadChatNoti extends Component {
           <UserItem
             key={id}
             {...(isGroup
-              ? chatStore.getGroupById(id)
-              : contactStore.getUcUserById(id))}
+              ? ctx.chat.getGroupById(id)
+              : ctx.contact.getUcUserById(id))}
             lastMessage={text}
             isRecentChat
             lastMessageDate={formatDateTimeSemantic(created)}

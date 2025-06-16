@@ -10,9 +10,11 @@ import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '#/components/Rn'
 import { isAndroid, isIos, isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { jsonSafe } from '#/utils/jsonSafe'
 
 declare global {
   interface Window {
@@ -39,7 +41,7 @@ export const getTotalFilesSize = (files: ReadDirItem[]) => {
   }
   return totalSize
 }
-class DebugStore {
+export class DebugStore {
   loading = true
   private timer = 0
   @observable logFiles: ReadDirItem[] = []
@@ -127,10 +129,7 @@ class DebugStore {
   @observable captureDebugLog = false
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
-    RnAsyncStorage.setItem(
-      'captureDebugLog',
-      JSON.stringify(this.captureDebugLog),
-    )
+    RnAsyncStorage.setItem('captureDebugLog', jsonSafe(this.captureDebugLog))
   }
 
   getLogSizeStr = () => `${filesize(this.totalLogFiles)}`
@@ -288,7 +287,7 @@ class DebugStore {
   saveRemoteVersionToStorage = () => {
     RnAsyncStorage.setItem(
       'remoteVersion',
-      JSON.stringify({
+      jsonSafe({
         version: this.remoteVersion,
         lastCheck: this.remoteVersionLastCheck,
       }),
@@ -366,7 +365,7 @@ if (!isWeb) {
   // need to determine the order of init functions and call them using await
   store.init()
 }
-export const debugStore = store
+ctx.debug = store
 
 const getSemVer = (v?: string) => {
   const a =

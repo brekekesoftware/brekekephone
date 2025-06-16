@@ -7,9 +7,8 @@ import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { isWeb } from '#/config'
-import { debugStore } from '#/stores/debugStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 
 const css = StyleSheet.create({
   BtnIcon: {
@@ -27,7 +26,7 @@ const css = StyleSheet.create({
 @observer
 export class PageSettingsDebugFiles extends Component {
   render() {
-    const logFiles = debugStore.logFiles
+    const logFiles = ctx.debug.logFiles
     return (
       <Layout
         title={intl`Debug Log`}
@@ -37,13 +36,13 @@ export class PageSettingsDebugFiles extends Component {
             ? [
                 {
                   label: intl`Clear all Debug Log`,
-                  onPress: debugStore.clearLogFiles,
+                  onPress: ctx.debug.clearLogFiles,
                   danger: true,
                 },
               ]
             : undefined
         }
-        onBack={Nav().backToPageAccountSignIn}
+        onBack={ctx.nav.backToPageAccountSignIn}
       >
         <Field isGroup label={intl`DEBUG LOG (${logFiles.length})`} />
         {logFiles.length > 0 &&
@@ -53,8 +52,8 @@ export class PageSettingsDebugFiles extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={file.name}
-              onCreateBtnPress={() => debugStore.openLogFile(file)}
-              onTouchPress={() => debugStore.openLogFile(file)}
+              onCreateBtnPress={() => ctx.debug.openLogFile(file)}
+              onTouchPress={() => ctx.debug.openLogFile(file)}
               value={`${filesize(file.size)}`}
             />
           ))}

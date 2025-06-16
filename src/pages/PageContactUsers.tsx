@@ -8,14 +8,9 @@ import { ContactSectionList } from '#/components/ContactSectionList'
 import { UserItem } from '#/components/ContactUserItem'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { accountStore } from '#/stores/accountStore'
-import { getAuthStore } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
 import type { ChatMessage } from '#/stores/chatStore'
-import { chatStore } from '#/stores/chatStore'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { Nav } from '#/stores/Nav'
 import { userStore } from '#/stores/userStore'
 import { DelayFlag } from '#/utils/DelayFlag'
 import { filterTextOnly } from '#/utils/formatChatContent'
@@ -30,14 +25,14 @@ export class PageContactUsers extends Component {
 
   getMatchUserIds = () => {
     const userIds = uniq([
-      ...contactStore.pbxUsers.map(u => u.id),
-      ...contactStore.ucUsers.map(u => u.id),
+      ...ctx.contact.pbxUsers.map(u => u.id),
+      ...ctx.contact.ucUsers.map(u => u.id),
     ])
     return userIds.filter(this.isMatchUser)
   }
   resolveUser = (id: string) => {
-    const pbxUser = contactStore.getPbxUserById(id) || {}
-    const ucUser = contactStore.getUcUserById(id) || {}
+    const pbxUser = ctx.contact.getPbxUserById(id) || {}
+    const ucUser = ctx.contact.getUcUserById(id) || {}
     const u = {
       ...pbxUser,
       ...ucUser,
@@ -50,14 +45,14 @@ export class PageContactUsers extends Component {
     }
     let userId = id
     let pbxUserName: string
-    const pbxUser = contactStore.getPbxUserById(id)
+    const pbxUser = ctx.contact.getPbxUserById(id)
     if (pbxUser) {
       pbxUserName = pbxUser.name
     } else {
       pbxUserName = ''
     }
     let ucUserName: string
-    const ucUser = contactStore.getUcUserById(id)
+    const ucUser = ctx.contact.getUcUserById(id)
     if (ucUser) {
       ucUserName = ucUser.name
     } else {
@@ -67,7 +62,7 @@ export class PageContactUsers extends Component {
     userId = userId.toLowerCase()
     pbxUserName = pbxUserName.toLowerCase()
     ucUserName = ucUserName.toLowerCase()
-    const txt = contactStore.usersSearchTerm.toLowerCase()
+    const txt = ctx.contact.usersSearchTerm.toLowerCase()
     return (
       userId.includes(txt) ||
       pbxUserName.includes(txt) ||
@@ -76,13 +71,13 @@ export class PageContactUsers extends Component {
   }
 
   componentDidUpdate = () => {
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (this.displayOfflineUsers.enabled !== ca?.displayOfflineUsers) {
       this.displayOfflineUsers.setEnabled(ca?.displayOfflineUsers)
     }
   }
   getDescription = (isUserSelectionMode: boolean) => {
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return ''
     }
@@ -100,7 +95,7 @@ export class PageContactUsers extends Component {
       }
       return desc
     } else {
-      const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+      const searchTxt = ctx.contact.usersSearchTerm.toLowerCase()
       const isShowOfflineUser =
         !ca.ucEnabled || this.displayOfflineUsers.enabled
       const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
@@ -118,15 +113,15 @@ export class PageContactUsers extends Component {
     }
   }
   renderUserSelectionMode = () => {
-    const searchTxt = contactStore.usersSearchTerm.toLowerCase()
+    const searchTxt = ctx.contact.usersSearchTerm.toLowerCase()
     const isShowOfflineUser =
-      !getAuthStore().getCurrentAccount()?.ucEnabled ||
+      !ctx.auth.getCurrentAccount()?.ucEnabled ||
       this.displayOfflineUsers.enabled
     const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
@@ -175,12 +170,11 @@ export class PageContactUsers extends Component {
   }
 
   render() {
-    const s = getAuthStore()
-    const ca = s.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode() || !ca.pbxLocalAllUsers
+    const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
     const description = this.getDescription(isUserSelectionMode)
     return (
       <Layout
@@ -188,7 +182,7 @@ export class PageContactUsers extends Component {
         dropdown={[
           {
             label: intl`Edit buddy list`,
-            onPress: Nav().goToPageContactEdit,
+            onPress: ctx.nav.goToPageContactEdit,
           },
         ]}
         menu='contact'
@@ -200,16 +194,16 @@ export class PageContactUsers extends Component {
           label={intl`SEARCH FOR USERS`}
           onValueChange={(v: string) => {
             // TODO: use debounced value to perform data filter
-            contactStore.usersSearchTerm = v
+            ctx.contact.usersSearchTerm = v
           }}
-          value={contactStore.usersSearchTerm}
+          value={ctx.contact.usersSearchTerm}
         />
-        {getAuthStore().getCurrentAccount()?.ucEnabled && (
+        {ctx.auth.getCurrentAccount()?.ucEnabled && (
           <Field
             label={intl`SHOW OFFLINE USERS`}
             onValueChange={(v: boolean) => {
-              accountStore.upsertAccount({
-                id: getAuthStore().signedInId,
+              ctx.account.upsertAccount({
+                id: ctx.auth.signedInId,
                 displayOfflineUsers: v,
               })
             }}
@@ -226,7 +220,7 @@ export class PageContactUsers extends Component {
 }
 
 const getLastMessageChat = (id: string) => {
-  const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+  const chats = filterTextOnly(ctx.chat.getMessagesByThreadId(id))
   return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
 }
 type ItemUser = {
@@ -239,16 +233,16 @@ const RenderItemUser = observer(({ item, index }: ItemUser) => (
   // TODO: move to a new component with observer
   <UserItem
     iconFuncs={[
-      () => getCallStore().startVideoCall(item.id),
-      () => getCallStore().startCall(item.id),
+      () => ctx.call.startVideoCall(item.id),
+      () => ctx.call.startCall(item.id),
     ]}
     icons={[mdiVideo, mdiPhone]}
     lastMessage={getLastMessageChat(item.id)?.text}
     {...item}
     canTouch
     onPress={
-      getAuthStore().getCurrentAccount()?.ucEnabled
-        ? () => Nav().goToPageChatDetail({ buddy: item.id })
+      ctx.auth.getCurrentAccount()?.ucEnabled
+        ? () => ctx.nav.goToPageChatDetail({ buddy: item.id })
         : undefined
     }
   />

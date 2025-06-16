@@ -11,9 +11,7 @@ import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { isIos } from '#/config'
-import { getAuthStore } from '#/stores/authStore'
-import { getCallStore } from '#/stores/callStore'
-import { contactStore } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { PushNotification } from '#/utils/PushNotification'
 
@@ -37,16 +35,16 @@ export class PageCallRecents extends Component {
       h()
       this.appStateSubscription = AppState.addEventListener('change', h)
     }
-    getAuthStore().rcFirstTimeLoadData()
+    ctx.auth.rcFirstTimeLoadData()
   }
   componentWillUnmount = () => {
     this.appStateSubscription?.remove()
-    getAuthStore().cRecentCalls = []
-    getAuthStore().rcPage = 0
+    ctx.auth.cRecentCalls = []
+    ctx.auth.rcPage = 0
   }
 
   getAvatar = (id: string) => {
-    const ucUser = contactStore.getUcUserById(id) || {}
+    const ucUser = ctx.contact.getUcUserById(id) || {}
     return {
       id,
       avatar: ucUser.avatar,
@@ -54,8 +52,7 @@ export class PageCallRecents extends Component {
   }
 
   render() {
-    const as = getAuthStore()
-    const calls = as.cRecentCalls
+    const calls = ctx.auth.cRecentCalls
     return (
       <Layout
         description={intl`Recent calls`}
@@ -68,20 +65,20 @@ export class PageCallRecents extends Component {
           label={intl`SEARCH NAME, PHONE NUMBER ...`}
           onValueChange={(v: string) => {
             // TODO: use debounced value to perform data filter
-            contactStore.callSearchRecents = v
-            as.rcSearchRecentCall()
+            ctx.contact.callSearchRecents = v
+            ctx.auth.rcSearchRecentCall()
           }}
-          value={contactStore.callSearchRecents}
+          value={ctx.contact.callSearchRecents}
         />
-        <Field isGroup label={intl`RECENT CALLS (${as.rcCount})`} />
+        <Field isGroup label={intl`RECENT CALLS (${ctx.auth.rcCount})`} />
         {calls.map((c, i) => {
           const today = moment().format('MMM D')
           // display line information
           const created =
             (c.created + '').replace(` - ${today}`, '') +
-            `${as.resourceLines.length && c.lineValue ? '   ' + `${c?.lineLabel ? c.lineLabel + ':' : ''} ${c.lineValue}` : ''}`
+            `${ctx.auth.resourceLines.length && c.lineValue ? '   ' + `${c?.lineLabel ? c.lineLabel + ':' : ''} ${c.lineValue}` : ''}`
           const option =
-            (as.resourceLines.length &&
+            (ctx.auth.resourceLines.length &&
               c.lineValue && {
                 extraHeaders: [`X-PBX-RPI: ${c.lineValue}`],
               }) ||
@@ -90,13 +87,13 @@ export class PageCallRecents extends Component {
             <UserItem
               iconFuncs={[
                 // update extraHeaders if start call with line value
-                () => getCallStore().startCall(c.partyNumber, option, true),
-                () => getCallStore().startCall(c.partyNumber, option),
+                () => ctx.call.startCall(c.partyNumber, option, true),
+                () => ctx.call.startCall(c.partyNumber, option),
               ]}
-              {...contactStore.getUcUserById(c.partyNumber)}
+              {...ctx.contact.getUcUserById(c.partyNumber)}
               icons={[mdiVideo, mdiPhone]}
               isRecentCall
-              canTouch={as.getCurrentAccount()?.ucEnabled}
+              canTouch={ctx.auth.getCurrentAccount()?.ucEnabled}
               key={i}
               {...this.getAvatar(c.partyNumber)}
               {...c}
@@ -104,7 +101,7 @@ export class PageCallRecents extends Component {
             />
           )
         })}
-        {as.rcLoading ? (
+        {ctx.auth.rcLoading ? (
           <RnText
             style={css.Loading}
             warning
@@ -112,8 +109,8 @@ export class PageCallRecents extends Component {
             normal
             center
           >{intl`Loading...`}</RnText>
-        ) : as.cRecentCalls.length < as.rcCount ? (
-          <RnTouchableOpacity onPress={as.rcLoadMore}>
+        ) : ctx.auth.cRecentCalls.length < ctx.auth.rcCount ? (
+          <RnTouchableOpacity onPress={ctx.auth.rcLoadMore}>
             <RnText
               style={css.Loading}
               primary
