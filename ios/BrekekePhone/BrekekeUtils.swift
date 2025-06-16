@@ -99,7 +99,8 @@ public class BrekekeUtils: NSObject {
           audio = nil
         }
       }
-      // Load ringback tone
+
+      // load ringback tone mp3 file
       guard let soundURL = Bundle.main.url(
         forResource: "incallmanager_ringback",
         withExtension: "mp3"
@@ -108,12 +109,13 @@ public class BrekekeUtils: NSObject {
         return
       }
 
+      // set volume: 1.0 for Speaker (loudspeaker mode), 0.3 for Receiver
+      // (earpiece).
+      // normalized ringback tone (-0.9 dB) with volume=1.0 was too loud for
+      // Receiver due to high systemVolume (0.75).
+      // 0.3 ensures comfortable Receiver output while keeping Speaker loud.
       audio = try AVAudioPlayer(contentsOf: soundURL)
       audio?.numberOfLoops = -1
-      // Set volume: 1.0 for Speaker (loudspeaker mode), 0.3 for Receiver
-      // (earpiece).
-      // Reason: Normalized ringback tone (-0.9 dB) with volume=1.0 was too loud for Receiver due to high systemVolume (0.75).
-      // 0.3 ensures comfortable Receiver output while keeping Speaker loud.
       audio?.volume = isLoudSpeaker ? 1.0 : 0.3
       audio?.prepareToPlay()
 

@@ -1,4 +1,3 @@
-import jsonStableStringify from 'json-stable-stringify'
 import { cloneDeep } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
@@ -10,6 +9,7 @@ import { contactStore } from '../stores/contactStore'
 import { intl } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
 import { RnAlert } from '../stores/RnAlert'
+import { jsonStable } from '../utils/jsonStable'
 import { toBooleanFalsy } from '../utils/string'
 import { useForm } from '../utils/useForm'
 import { useStore } from '../utils/useStore'
@@ -109,9 +109,7 @@ export const ContactsCreateForm: FC<{
       phonebook: { ...defaultObj },
       fields: getFields() as ItemPBForm[],
     },
-    hasUnsavedChanges: () =>
-      !(jsonStableStringify($.phonebook) === jsonStableStringify(defaultObj)),
-
+    hasUnsavedChanges: () => jsonStable($.phonebook) !== jsonStable(defaultObj),
     onBackBtnPress: () => {
       if (!$.hasUnsavedChanges()) {
         props.onBack()

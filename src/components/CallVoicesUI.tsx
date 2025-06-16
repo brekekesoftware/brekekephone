@@ -12,7 +12,7 @@ export class IncomingItem extends Component {
     if (isAndroid) {
       BrekekeUtils.startRingtone()
     } else {
-      // Old logic: only play ringtone without vibration and repeat the ringtone continuously
+      // old logic: only play ringtone without vibration and repeat the ringtone continuously
       IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
     }
   }
@@ -63,7 +63,7 @@ export class OutgoingItemWithSDP extends Component<{
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
-  componentDidMount = async () => {
+  componentDidMount = () => {
     const oc = getCallStore().getOngoingCall()
     if (oc) {
       sip.enableMedia(oc.id)
@@ -77,7 +77,7 @@ export class AnsweredItem extends Component<{
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
   const stopRingbackAndSyncSpeaker = async () => {
     await BrekekeUtils.stopRBT()
-    // Make sure AVAudioSession deactivated
+    // make sure AVAudioSession deactivated
     await waitTimeout()
     IncallManager.setForceSpeakerphoneOn(p.isLoudSpeaker)
   }

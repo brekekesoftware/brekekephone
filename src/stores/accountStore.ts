@@ -1,4 +1,3 @@
-import jsonStableStringify from 'json-stable-stringify'
 import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
@@ -9,6 +8,7 @@ import { RnAsyncStorage } from '../components/Rn'
 import { currentVersion } from '../components/variables'
 import { isWeb } from '../config'
 import { arrToMap } from '../utils/arrToMap'
+import { jsonStable } from '../utils/jsonStable'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -286,12 +286,8 @@ class AccountStore {
     if (d) {
       return d
     }
-    const uniqueId = getAccountUniqueId(a)
-    if (!uniqueId) {
-      throw new Error('Account unique id is undefined')
-    }
     const newD = {
-      id: uniqueId,
+      id: getAccountUniqueId(a),
       accessToken: '',
       recentCalls: [],
       recentChats: [],
@@ -319,7 +315,7 @@ export type AccountUnique = Pick<
   'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
 >
 export const getAccountUniqueId = (a: AccountUnique) =>
-  jsonStableStringify({
+  jsonStable({
     u: a.pbxUsername,
     t: a.pbxTenant || '-',
     h: a.pbxHostname,

@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import jsonStableStringify from 'json-stable-stringify'
 
 import type { CallOptions, Session, Sip } from '../brekekejs'
 import { isWeb } from '../config'
@@ -12,6 +11,7 @@ import { getCallStore } from '../stores/callStore'
 import { cancelRecentPn } from '../stores/cancelRecentPn'
 import { chatStore } from '../stores/chatStore'
 import { contactStore, getPartyNameAsync } from '../stores/contactStore'
+import { jsonStable } from '../utils/jsonStable'
 import type { ParsedPn } from '../utils/PushNotification-parse'
 import { resetProcessedPn } from '../utils/PushNotification-parse'
 import { toBoolean } from '../utils/string'
@@ -30,8 +30,8 @@ type DeviceInputWeb = {
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
 export const checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
   const acc = await accountStore.findByPn(n)
-  const k = n.id || jsonStableStringify(n)
-  if (k && !alreadyRemovePnTokenViaSip[k] && !acc) {
+  const k = n.id || jsonStable(n)
+  if (!alreadyRemovePnTokenViaSip[k] && !acc) {
     alreadyRemovePnTokenViaSip[k] = true
     removePnTokenViaSip(n)
   }

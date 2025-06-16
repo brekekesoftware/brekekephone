@@ -345,8 +345,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               PendingIntent pi =
                   PendingIntent.getActivity(appCtx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
               NotificationCompat.Builder b =
-                  new NotificationCompat.Builder(appCtx, "CALL_CHANNEL_ID")
-                      .setSmallIcon(R.drawable.exo_notification_small_icon)
+                  new NotificationCompat.Builder(appCtx, LpcUtils.NOTI_CHANNEL_ID_CALL)
                       .setContentTitle(L.incomingCall())
                       .setPriority(NotificationCompat.PRIORITY_HIGH)
                       .setCategory(NotificationCompat.CATEGORY_CALL)

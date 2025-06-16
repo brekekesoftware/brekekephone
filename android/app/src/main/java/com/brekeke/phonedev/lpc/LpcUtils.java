@@ -36,6 +36,9 @@ import org.json.JSONObject;
 
 public class LpcUtils {
   public static String TAG = "[BrekekeLpcService]";
+
+  public static String NOTI_CHANNEL_ID = "NOTIFICATION_CHANNEL";
+  public static String NOTI_CHANNEL_ID_CALL = "CALL_CHANNEL_ID";
   public static int NOTI_ID = 0;
 
   public static Intent putConfigToIntent(

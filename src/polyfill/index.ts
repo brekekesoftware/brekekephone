@@ -12,7 +12,7 @@ import {
   RTCSessionDescription,
 } from 'react-native-webrtc'
 
-// Fix error viewPropTypes for keyboard-spacer
+// fix error viewPropTypes for keyboard-spacer
 if (
   !View.hasOwnProperty('propTypes') &&
   !('ViewPropTypes' in require('react-native'))

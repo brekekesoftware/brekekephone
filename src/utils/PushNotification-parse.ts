@@ -1,4 +1,3 @@
-import jsonStableStringify from 'json-stable-stringify'
 import { get } from 'lodash'
 import { AppState } from 'react-native'
 
@@ -9,6 +8,7 @@ import { getCallStore } from '../stores/callStore'
 import { chatStore } from '../stores/chatStore'
 import { Nav } from '../stores/Nav'
 import { openLinkSafely, urls } from './deeplink'
+import { jsonStable } from './jsonStable'
 import { PushNotification } from './PushNotification'
 import { BrekekeUtils } from './RnNativeModules'
 import { toBoolean } from './string'
@@ -210,10 +210,7 @@ export const parse = async (
   // handle duplicated pn on android
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (isAndroid && n.callkeepUuid) {
-    const k = n.id || jsonStableStringify(raw)
-    if (!k) {
-      return
-    }
+    const k = n.id || jsonStable(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(
         `SIP PN debug: PushNotification-parse: already processed k=${k}`,
