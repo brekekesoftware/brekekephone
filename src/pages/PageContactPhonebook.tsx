@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { pbx } from '../api/pbx'
+import { pbx } from '#/api/pbx'
 import {
   mdiBriefcase,
   mdiCellphone,
@@ -11,19 +11,19 @@ import {
   mdiInformation,
   mdiMagnify,
   mdiPhone,
-} from '../assets/icons'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { getCallStore } from '../stores/callStore'
-import type { Phonebook } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnPicker } from '../stores/RnPicker'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+} from '#/assets/icons'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { getCallStore } from '#/stores/callStore'
+import type { Phonebook } from '#/stores/contactStore'
+import { contactStore } from '#/stores/contactStore'
+import { intl, intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnPicker } from '#/stores/RnPicker'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   Loading: {

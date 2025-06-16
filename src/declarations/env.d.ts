@@ -1,6 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable import/no-duplicates */
-
 declare module 'jssip' {
   const m: unknown
   export default m

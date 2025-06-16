@@ -1,8 +1,8 @@
 import moment from 'moment'
 
-import { uc } from '../api/uc'
-import type { ChatMessage } from '../stores/chatStore'
-import { intl } from '../stores/intl'
+import { uc } from '#/api/uc'
+import type { ChatMessage } from '#/stores/chatStore'
+import { intl } from '#/stores/intl'
 
 export const numberOfChatsPerLoad = 20
 

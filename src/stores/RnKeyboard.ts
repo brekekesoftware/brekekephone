@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 class RnKeyboardStore {
   @observable isKeyboardShowing = false

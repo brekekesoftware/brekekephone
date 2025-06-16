@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { buildCustomPageUrl } from '../api/pbx'
-import { getAuthStore } from '../stores/authStore'
+import { buildCustomPageUrl } from '#/api/pbx'
+import { getAuthStore } from '#/stores/authStore'
 
 @observer
 export class PageCustomPage extends Component<{ id: string }> {

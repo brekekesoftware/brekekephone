@@ -1,4 +1,4 @@
-import { uc } from '../api/uc'
+import { uc } from '#/api/uc'
 
 export const saveBlob = (blob: Blob, name: string) => {
   const a = document.createElement('a')

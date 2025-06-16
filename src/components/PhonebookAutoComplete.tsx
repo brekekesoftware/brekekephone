@@ -10,10 +10,10 @@ import {
   View,
 } from 'react-native'
 
-import type { PbxBook } from '../brekekejs'
-import { contactStore } from '../stores/contactStore'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+import type { PbxBook } from '#/brekekejs'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import { contactStore } from '#/stores/contactStore'
 
 const css = StyleSheet.create({
   txtPb: {

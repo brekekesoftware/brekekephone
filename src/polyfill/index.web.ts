@@ -1,5 +1,5 @@
-import './dev'
-import './shared'
+import '#/polyfill/dev'
+import '#/polyfill/shared'
 
 import PropTypes from 'prop-types'
 import * as Rn from 'react-native'

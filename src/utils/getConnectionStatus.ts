@@ -1,5 +1,5 @@
-import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
+import { getAuthStore } from '#/stores/authStore'
+import { intl } from '#/stores/intl'
 
 export const getConnectionStatus = () => {
   const s = getAuthStore()

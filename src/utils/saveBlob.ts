@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs'
 
-import { uc } from '../api/uc'
+import { uc } from '#/api/uc'
 
 export const saveBlob = (blob: Blob, name: string) => {
   const fr = new FileReader()

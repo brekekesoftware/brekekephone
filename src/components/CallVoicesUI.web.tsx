@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 
-import ringback from '../assets/incallmanager_ringback.mp3'
-import ringtone from '../assets/incallmanager_ringtone.mp3'
-import { getCallStore } from '../stores/callStore'
+import ringback from '#/assets/incallmanager_ringback.mp3'
+import ringtone from '#/assets/incallmanager_ringtone.mp3'
+import { getCallStore } from '#/stores/callStore'
 
 export const IncomingItem = observer(() => (
   <audio

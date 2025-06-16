@@ -1,5 +1,5 @@
-import { isWeb } from '../config'
-import { webPlayDing } from './webPlayDing'
+import { isWeb } from '#/config'
+import { webPlayDing } from '#/utils/webPlayDing'
 
 export const getAudioVideoPermission = () => {
   const cb = (stream: MediaStream) => stream.getTracks().forEach(t => t.stop())

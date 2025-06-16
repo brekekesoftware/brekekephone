@@ -1,10 +1,10 @@
 import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { mdiCached, mdiKeyboardBackspace } from '../assets/icons'
-import { intl } from '../stores/intl'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { mdiCached, mdiKeyboardBackspace } from '#/assets/icons'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { intl } from '#/stores/intl'
 
 const css = StyleSheet.create({
   Actions: {

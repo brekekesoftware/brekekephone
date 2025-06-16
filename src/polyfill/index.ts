@@ -1,5 +1,5 @@
 import 'react-native-get-random-values'
-import './shared'
+import '#/polyfill/shared'
 
 import { View } from 'react-native'
 import BgTimer from 'react-native-background-timer'

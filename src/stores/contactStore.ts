@@ -1,13 +1,13 @@
 import { debounce, isEqual, uniqBy } from 'lodash'
 import { action, computed, observable } from 'mobx'
 
-import { pbx } from '../api/pbx'
-import type { ItemPhonebook, PbxBook } from '../brekekejs'
-import { arrToMap } from '../utils/arrToMap'
-import { getAuthStore, waitPbx } from './authStore'
-import { intlDebug } from './intl'
-import { intlStore } from './intlStore'
-import { RnAlert } from './RnAlert'
+import { pbx } from '#/api/pbx'
+import type { ItemPhonebook, PbxBook } from '#/brekekejs'
+import { getAuthStore, waitPbx } from '#/stores/authStore'
+import { intlDebug } from '#/stores/intl'
+import { intlStore } from '#/stores/intlStore'
+import { RnAlert } from '#/stores/RnAlert'
+import { arrToMap } from '#/utils/arrToMap'
 
 export type PbxUser = {
   id: string

@@ -9,11 +9,11 @@ import type {
 } from 'react-native'
 import { PanResponder, Platform, StyleSheet, View } from 'react-native'
 
-import { getCallStore } from '../stores/callStore'
-import { Nav } from '../stores/Nav'
-import { RnStacker } from '../stores/RnStacker'
-import { v } from './variables'
-import { VideoPlayer } from './VideoPlayer'
+import { v } from '#/components/variables'
+import { VideoPlayer } from '#/components/VideoPlayer'
+import { getCallStore } from '#/stores/callStore'
+import { Nav } from '#/stores/Nav'
+import { RnStacker } from '#/stores/RnStacker'
 
 const css = StyleSheet.create({
   Mini: {

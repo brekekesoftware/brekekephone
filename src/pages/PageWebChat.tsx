@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { ListWebchats } from '../components/ChatListWebchats'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText } from '../components/Rn'
-import { chatStore } from '../stores/chatStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { ListWebchats } from '#/components/ChatListWebchats'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/Rn'
+import { chatStore } from '#/stores/chatStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
 
 @observer
 export class PageWebChat extends Component {

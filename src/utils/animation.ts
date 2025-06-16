@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 
-import { arrToMap } from './arrToMap'
+import { arrToMap } from '#/utils/arrToMap'
 
 export const animationOption = {
   duration: 150,

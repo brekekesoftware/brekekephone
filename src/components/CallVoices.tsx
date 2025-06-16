@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 
-import { isIos } from '../config'
-import { getCallStore } from '../stores/callStore'
 import {
   AnsweredItem,
   IosRBT,
   OutgoingItem,
   OutgoingItemWithSDP,
-} from './CallVoicesUI'
+} from '#/components/CallVoicesUI'
+import { isIos } from '#/config'
+import { getCallStore } from '#/stores/callStore'
 
 export const CallVoices = observer(() => {
   const cs = getCallStore()

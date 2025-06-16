@@ -1,9 +1,9 @@
 import { Linking } from 'react-native'
 
-import { compareAccountPartial } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import type { UrlParams } from './deeplink-parse'
-import { parse } from './deeplink-parse'
+import { compareAccountPartial } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import type { UrlParams } from '#/utils/deeplink-parse'
+import { parse } from '#/utils/deeplink-parse'
 
 export const urls = {
   phoneappli: {

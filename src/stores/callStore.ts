@@ -1,4 +1,4 @@
-import type { CallStore } from './callStore2'
+import type { CallStore } from '#/stores/callStore2'
 
 let callStore: CallStore
 export const setCallStore = (c: CallStore) => {

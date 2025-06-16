@@ -6,8 +6,8 @@ import type {
 } from 'react-native'
 import { Keyboard, StyleSheet, View } from 'react-native'
 
-import { intl } from '../stores/intl'
-import { RnTextInput } from './Rn'
+import { RnTextInput } from '#/components/Rn'
+import { intl } from '#/stores/intl'
 
 const css = StyleSheet.create({
   ShowNumbers: {

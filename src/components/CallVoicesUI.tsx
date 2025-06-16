@@ -1,11 +1,11 @@
 import { Component, useEffect } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
-import { sip } from '../api/sip'
-import { isAndroid } from '../config'
-import { getCallStore } from '../stores/callStore'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
+import { sip } from '#/api/sip'
+import { isAndroid } from '#/config'
+import { getCallStore } from '#/stores/callStore'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export class IncomingItem extends Component {
   componentDidMount = () => {

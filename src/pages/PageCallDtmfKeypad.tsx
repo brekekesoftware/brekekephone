@@ -7,15 +7,15 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import { sip } from '../api/sip'
-import { KeyPad } from '../components/CallKeyPad'
-import { ShowNumber } from '../components/CallShowNumbers'
-import { Layout } from '../components/Layout'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnKeyboard } from '../stores/RnKeyboard'
+import { sip } from '#/api/sip'
+import { KeyPad } from '#/components/CallKeyPad'
+import { ShowNumber } from '#/components/CallShowNumbers'
+import { Layout } from '#/components/Layout'
+import { getAuthStore } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 @observer
 export class PageCallDtmfKeypad extends Component {

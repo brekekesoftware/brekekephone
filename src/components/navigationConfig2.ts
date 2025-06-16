@@ -1,13 +1,13 @@
 import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
-import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
-import { RnStacker } from '../stores/RnStacker'
-import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, urls } from '../utils/deeplink'
-import type { Menu, SubMenu } from './navigationConfig'
+import type { Menu, SubMenu } from '#/components/navigationConfig'
+import { getAuthStore } from '#/stores/authStore'
+import { intl } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnStacker } from '#/stores/RnStacker'
+import { arrToMap } from '#/utils/arrToMap'
+import { openLinkSafely, urls } from '#/utils/deeplink'
 
 let PageCallTransferChooseUser: ReactComponentLike
 export const setPageCallTransferChooseUser = (p: ReactComponentLike) => {

@@ -2,13 +2,13 @@ import { cloneDeep } from 'lodash'
 import { action, observable } from 'mobx'
 import type { SectionListData } from 'react-native'
 
-import { pbx } from '../api/pbx'
-import { isUcBuddy, uc } from '../api/uc'
-import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
-import { accountStore } from './accountStore'
-import { getAuthStore, waitPbx, waitUc } from './authStore'
-import { contactStore } from './contactStore'
-import { intl } from './intl'
+import { pbx } from '#/api/pbx'
+import { isUcBuddy, uc } from '#/api/uc'
+import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
+import { accountStore } from '#/stores/accountStore'
+import { getAuthStore, waitPbx, waitUc } from '#/stores/authStore'
+import { contactStore } from '#/stores/contactStore'
+import { intl } from '#/stores/intl'
 
 const defaultBuddyMax = 100
 

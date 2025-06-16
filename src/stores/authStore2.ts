@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState, Platform } from 'react-native'
 
-import { sip } from '../api/sip'
+import { sip } from '#/api/sip'
 import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
@@ -10,39 +10,39 @@ import type {
   UcBuddy,
   UcBuddyGroup,
   UcConfig,
-} from '../brekekejs'
-import { currentVersion } from '../components/variables'
-import { bundleIdentifier, isIos, isWeb } from '../config'
-import { embedApi } from '../embed/embedApi'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { clearUrlParams, getUrlParams } from '../utils/deeplink'
-import type { ParsedPn, SipPn } from '../utils/PushNotification-parse'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { toBoolean } from '../utils/string'
-import { waitForActiveAppState } from '../utils/waitForActiveAppState'
-import { waitTimeout } from '../utils/waitTimeout'
-import type { Account, AccountUnique, RecentCall } from './accountStore'
+} from '#/brekekejs'
+import { currentVersion } from '#/components/variables'
+import { bundleIdentifier, isIos, isWeb } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import type { Account, AccountUnique, RecentCall } from '#/stores/accountStore'
 import {
   accountStore,
   getAccountUniqueId,
   getLastSignedInId,
   saveLastSignedInId,
-} from './accountStore'
-import type { CallHistoryInfo } from './addCallHistory'
-import { authPBX } from './AuthPBX'
-import { authSIP } from './AuthSIP'
-import { getAuthStore, setAuthStore, waitSip } from './authStore'
-import { authUC } from './AuthUC'
-import type { Call } from './Call'
-import { getCallStore } from './callStore'
-import { chatStore } from './chatStore'
-import { contactStore } from './contactStore'
-import { intlDebug } from './intl'
-import { Nav } from './Nav'
-import { RnAlert } from './RnAlert'
-import { RnAppState } from './RnAppState'
-import { RnStacker } from './RnStacker'
-import { userStore } from './userStore'
+} from '#/stores/accountStore'
+import type { CallHistoryInfo } from '#/stores/addCallHistory'
+import { authPBX } from '#/stores/AuthPBX'
+import { authSIP } from '#/stores/AuthSIP'
+import { getAuthStore, setAuthStore, waitSip } from '#/stores/authStore'
+import { authUC } from '#/stores/AuthUC'
+import type { Call } from '#/stores/Call'
+import { getCallStore } from '#/stores/callStore'
+import { chatStore } from '#/stores/chatStore'
+import { contactStore } from '#/stores/contactStore'
+import { intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnAppState } from '#/stores/RnAppState'
+import { RnStacker } from '#/stores/RnStacker'
+import { userStore } from '#/stores/userStore'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
+import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { toBoolean } from '#/utils/string'
+import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 type ConnectionState =
   | 'stopped'

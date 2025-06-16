@@ -2,9 +2,9 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
-import { pbx } from '../api/pbx'
-import { waitTimeout } from '../utils/waitTimeout'
-import { getAuthStore } from './authStore'
+import { pbx } from '#/api/pbx'
+import { getAuthStore } from '#/stores/authStore'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 class AuthPBX {
   private clearShouldAuthReaction?: Lambda

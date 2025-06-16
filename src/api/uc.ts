@@ -13,14 +13,14 @@ import type {
   UcSendFile,
   UcSendFiles,
   UcWebchatConferenceText,
-} from '../brekekejs'
-import { ChatClient, Constants, Logger } from '../brekekejs/ucclient'
-import { isWeb } from '../config'
-import type { Account } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import type { ChatFile } from '../stores/chatStore'
-import type { UcUser } from '../stores/contactStore'
-import { formatFileType } from '../utils/formatFileType'
+} from '#/brekekejs'
+import { ChatClient, Constants, Logger } from '#/brekekejs/ucclient'
+import { isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import type { ChatFile } from '#/stores/chatStore'
+import type { UcUser } from '#/stores/contactStore'
+import { formatFileType } from '#/utils/formatFileType'
 
 export const isUcBuddy = (u: object): u is UcBuddy =>
   'user_id' in u && 'group' in u

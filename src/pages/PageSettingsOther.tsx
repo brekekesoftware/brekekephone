@@ -1,16 +1,16 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { uc } from '../api/uc'
-import { mdiCheck, mdiTranslate } from '../assets/icons'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { isWeb } from '../config'
-import { getAuthStore } from '../stores/authStore'
-import { intl, intlDebug } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { uc } from '#/api/uc'
+import { mdiCheck, mdiTranslate } from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { isWeb } from '#/config'
+import { getAuthStore } from '#/stores/authStore'
+import { intl, intlDebug } from '#/stores/intl'
+import { intlStore } from '#/stores/intlStore'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PageSettingsOther extends Component {

@@ -1,6 +1,5 @@
 package com.brekeke.phonedev
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -18,7 +17,6 @@ import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 
 class MainApplication : Application(), ReactApplication {
-
   override val reactNativeHost: ReactNativeHost =
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
@@ -44,7 +42,6 @@ class MainApplication : Application(), ReactApplication {
     SoLoader.init(this, OpenSourceMergedSoMapping)
   }
 
-  @SuppressLint("WrongConstant")
   override fun registerReceiver(receiver: BroadcastReceiver?, filter: IntentFilter): Intent? {
     return if (Build.VERSION.SDK_INT >= 34 && applicationInfo.targetSdkVersion >= 34) {
       super.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)

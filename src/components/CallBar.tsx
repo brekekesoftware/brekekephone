@@ -11,15 +11,15 @@ import {
   mdiPlay,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '../assets/icons'
-import { isWeb } from '../config'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { Duration } from '../stores/timerStore'
-import { ButtonIcon } from './ButtonIcon'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+} from '#/assets/icons'
+import { ButtonIcon } from '#/components/ButtonIcon'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { Duration } from '#/stores/timerStore'
 
 const css = StyleSheet.create({
   CallBar: {

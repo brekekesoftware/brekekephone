@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 
-import { AccountCreateForm } from '../components/AccountCreateForm'
-import type { Account } from '../stores/accountStore'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { AccountCreateForm } from '#/components/AccountCreateForm'
+import type { Account } from '#/stores/accountStore'
+import { accountStore } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export const PageSettingsCurrentAccount = observer(() => (
   <AccountCreateForm

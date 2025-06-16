@@ -3,13 +3,13 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { mdiKeyboardBackspace } from '../assets/icons'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { isWeb } from '../config'
-import { debugStore } from '../stores/debugStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { mdiKeyboardBackspace } from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { isWeb } from '#/config'
+import { debugStore } from '#/stores/debugStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
 
 const css = StyleSheet.create({
   BtnIcon: {

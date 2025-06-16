@@ -3,30 +3,6 @@ import { debounce, random } from 'lodash'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
-import type {
-  PalMethodParams,
-  Pbx,
-  PbxCustomPage,
-  PbxEvent,
-  PbxPal,
-  PbxResourceLine,
-  Request,
-} from '../brekekejs'
-import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '../config'
-import { embedApi } from '../embed/embedApi'
-import type { Account } from '../stores/accountStore'
-import { accountStore } from '../stores/accountStore'
-import { authPBX } from '../stores/AuthPBX'
-import { authSIP } from '../stores/AuthSIP'
-import { getAuthStore, waitPbx } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import type { PbxUser, Phonebook } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { toBoolean } from '../utils/string'
-import { waitTimeout } from '../utils/waitTimeout'
 import {
   addFromNumberNonce,
   hasPbxTokenTobeRepalced,
@@ -35,12 +11,36 @@ import {
   replacePbxToken,
   replacePbxTokenUsingSessParam,
   replaceUrlWithoutPbxToken,
-} from './customPage'
-import { parseCallParams, parsePalParams } from './parseParamsWithPrefix'
-import type { PnParams, PnParamsNew } from './pnConfig'
-import { PnCommand, PnServiceId } from './pnConfig'
-import { sip } from './sip'
-import { SyncPnToken } from './syncPnToken'
+} from '#/api/customPage'
+import { parseCallParams, parsePalParams } from '#/api/parseParamsWithPrefix'
+import type { PnParams, PnParamsNew } from '#/api/pnConfig'
+import { PnCommand, PnServiceId } from '#/api/pnConfig'
+import { sip } from '#/api/sip'
+import { SyncPnToken } from '#/api/syncPnToken'
+import type {
+  PalMethodParams,
+  Pbx,
+  PbxCustomPage,
+  PbxEvent,
+  PbxPal,
+  PbxResourceLine,
+  Request,
+} from '#/brekekejs'
+import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import type { Account } from '#/stores/accountStore'
+import { accountStore } from '#/stores/accountStore'
+import { authPBX } from '#/stores/AuthPBX'
+import { authSIP } from '#/stores/AuthSIP'
+import { getAuthStore, waitPbx } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import type { PbxUser, Phonebook } from '#/stores/contactStore'
+import { intl } from '#/stores/intl'
+import { intlStore } from '#/stores/intlStore'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { toBoolean } from '#/utils/string'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export class PBX extends EventEmitter {
   client?: Pbx

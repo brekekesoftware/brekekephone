@@ -2,6 +2,7 @@ const path = require('path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const babel = require('./.babelrc')
+
 const nullAlias = path.join(__dirname, './src/polyfill/null.ts')
 
 module.exports = {

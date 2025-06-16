@@ -3,13 +3,13 @@ import RnAsyncStorage from '@react-native-async-storage/async-storage'
 import { action, observable, runInAction } from 'mobx'
 import { NativeModules } from 'react-native'
 
-import en from '../assets/intl-en.json'
-import ja from '../assets/intl-ja.json'
-import { isIos } from '../config'
-import { arrToMap } from '../utils/arrToMap'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { RnPicker } from './RnPicker'
+import en from '#/assets/intl-en.json'
+import ja from '#/assets/intl-ja.json'
+import { isIos } from '#/config'
+import { RnPicker } from '#/stores/RnPicker'
+import { arrToMap } from '#/utils/arrToMap'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export const labels = {
   en,

@@ -1,6 +1,6 @@
 import jsonStableStringify from 'json-stable-stringify'
 
-import { jsonSafe } from './jsonSafe'
+import { jsonSafe } from '#/utils/jsonSafe'
 
 export const jsonStable = (v: unknown) => {
   let j: string | undefined

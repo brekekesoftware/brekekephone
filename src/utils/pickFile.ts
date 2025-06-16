@@ -3,9 +3,12 @@ import RNFS from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
-import { isIos } from '../config'
-import { RnPicker } from '../stores/RnPicker'
-import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
+import { isIos } from '#/config'
+import { RnPicker } from '#/stores/RnPicker'
+import {
+  onPickFileNativeError,
+  pickFileNativeOptions,
+} from '#/utils/pickFile.web'
 
 const actionSheetHandlers = [
   () =>

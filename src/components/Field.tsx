@@ -21,13 +21,19 @@ import {
   mdiClose,
   mdiPlus,
   mdiUnfoldMoreHorizontal,
-} from '../assets/icons'
-import { isWeb } from '../config'
-import { intl } from '../stores/intl'
-import { RnPicker } from '../stores/RnPicker'
-import { useStore } from '../utils/useStore'
-import { RnIcon, RnSwitch, RnText, RnTextInput, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+} from '#/assets/icons'
+import {
+  RnIcon,
+  RnSwitch,
+  RnText,
+  RnTextInput,
+  RnTouchableOpacity,
+} from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import { intl } from '#/stores/intl'
+import { RnPicker } from '#/stores/RnPicker'
+import { useStore } from '#/utils/useStore'
 
 export type Park = {
   number: string

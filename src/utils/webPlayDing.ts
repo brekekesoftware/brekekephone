@@ -1,5 +1,5 @@
-import ding from '../assets/ding.mp3'
-import { waitTimeout } from './waitTimeout'
+import ding from '#/assets/ding.mp3'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export const webPlayDing = async () => {
   const a = new Audio()

@@ -1,13 +1,13 @@
-import { isIos } from '../config'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnStacker } from '../stores/RnStacker'
-import { openLinkSafely, urls } from '../utils/deeplink'
-import { PushNotification } from '../utils/PushNotification'
-import { pbx } from './pbx'
+import { pbx } from '#/api/pbx'
+import { isIos } from '#/config'
+import { accountStore } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import { intl, intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnStacker } from '#/stores/RnStacker'
+import { openLinkSafely, urls } from '#/utils/deeplink'
+import { PushNotification } from '#/utils/PushNotification'
 
 export const updatePhoneAppli = async () => {
   const p = getAuthStore().getCurrentAccount()

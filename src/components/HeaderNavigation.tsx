@@ -4,12 +4,12 @@ import { useCallback } from 'react'
 import type { ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
-import { chatStore } from '../stores/chatStore'
-import { css as fcss } from './FooterNavigation'
-import { getSubMenus } from './navigationConfig'
-import { getTabs } from './navigationConfig2'
-import { RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { css as fcss } from '#/components/FooterNavigation'
+import { getSubMenus } from '#/components/navigationConfig'
+import { getTabs } from '#/components/navigationConfig2'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { chatStore } from '#/stores/chatStore'
 
 const css = StyleSheet.create({
   Navigation: {

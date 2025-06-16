@@ -2,10 +2,10 @@ import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
-import type { ToastType } from '../stores/ToastStore'
-import { toast } from '../stores/ToastStore'
-import { RnText } from './Rn'
-import { v } from './variables'
+import { RnText } from '#/components/Rn'
+import { v } from '#/components/variables'
+import type { ToastType } from '#/stores/ToastStore'
+import { toast } from '#/stores/ToastStore'
 
 const getBg = (type: ToastType) => {
   switch (type) {

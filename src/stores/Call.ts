@@ -3,21 +3,24 @@ import type { IReactionDisposer } from 'mobx'
 import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
-import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
-import type { Session, SessionStatus } from '../brekekejs'
-import { isIos } from '../config'
-import { embedApi } from '../embed/embedApi'
-import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
-import { checkPermForCall } from '../utils/permissions'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import type { CallStore } from './callStore2'
-import { contactStore } from './contactStore'
-import { intlDebug } from './intl'
-import { Nav } from './Nav'
-import { RnAlert } from './RnAlert'
-import { toast } from './ToastStore'
+import { pbx } from '#/api/pbx'
+import { sip } from '#/api/sip'
+import type { Session, SessionStatus } from '#/brekekejs'
+import { isIos } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import type { CallStore } from '#/stores/callStore2'
+import {
+  contactStore,
+  getPartyName,
+  getPartyNameAsync,
+} from '#/stores/contactStore'
+import { intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { toast } from '#/stores/ToastStore'
+import { checkPermForCall } from '#/utils/permissions'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export class Call {
   constructor(private store: CallStore) {}

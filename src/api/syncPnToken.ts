@@ -1,4 +1,4 @@
-import type { TSyncPnToken } from './syncPnToken2'
+import type { TSyncPnToken } from '#/api/syncPnToken2'
 
 let m: TSyncPnToken = null!
 export const setSyncPnTokenModule = (m0: TSyncPnToken) => {

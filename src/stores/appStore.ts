@@ -1,4 +1,4 @@
-import { RnAsyncStorage } from '../components/Rn'
+import { RnAsyncStorage } from '#/components/Rn'
 
 export const saveFirstRunToLocalStorage = async () => {
   try {

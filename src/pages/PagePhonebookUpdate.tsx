@@ -3,14 +3,14 @@ import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { pbx } from '../api/pbx'
-import { ContactsCreateForm } from '../components/ContactCreateForm'
-import { getAuthStore } from '../stores/authStore'
-import type { ContactInfo, Phonebook } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { pbx } from '#/api/pbx'
+import { ContactsCreateForm } from '#/components/ContactCreateForm'
+import { getAuthStore } from '#/stores/authStore'
+import type { ContactInfo, Phonebook } from '#/stores/contactStore'
+import { contactStore } from '#/stores/contactStore'
+import { intl, intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PagePhonebookUpdate extends Component<{

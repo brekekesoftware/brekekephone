@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
-import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '../assets/icons'
-import { getCallStore } from '../stores/callStore'
-import { RnIcon } from './RnIcon'
-import { VideoPlayer } from './VideoPlayer'
+import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '#/assets/icons'
+import { RnIcon } from '#/components/RnIcon'
+import { VideoPlayer } from '#/components/VideoPlayer'
+import { getCallStore } from '#/stores/callStore'
 
 type VideoViewItemProps = {
   sourceObject: MediaStream | null

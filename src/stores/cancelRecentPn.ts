@@ -1,4 +1,4 @@
-import { getCallStore } from './callStore'
+import { getCallStore } from '#/stores/callStore'
 
 export const cancelRecentPn = (n?: CancelRecentPn) =>
   getCallStore().onSipUaCancel(n)

@@ -2,9 +2,9 @@ import { action, observable } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 import type { SyntheticEvent } from 'react'
 
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { getCallStore } from './callStore'
-import { RnKeyboard } from './RnKeyboard'
+import { getCallStore } from '#/stores/callStore'
+import { RnKeyboard } from '#/stores/RnKeyboard'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export type StackerFn<T> = keyof T extends never
   ? () => void

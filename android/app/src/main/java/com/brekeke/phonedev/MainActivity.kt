@@ -13,6 +13,7 @@ import com.facebook.react.ReactActivityDelegate
 import io.wazo.callkeep.RNCallKeepModule
 
 class MainActivity : ReactActivity() {
+  // ==========================================================================
   // set/unset BrekekeUtils.main
   override fun onStart() {
     BrekekeUtils.main = this
@@ -21,14 +22,12 @@ class MainActivity : ReactActivity() {
 
   override fun onResume() {
     super.onResume()
-
+    // permissions
     BrekekeUtils.resolveIgnoreBattery(
         BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this))
     BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this))
-
     // android lpc
     BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted(this))
-
     // call history
     // TODO: temporary disabled
     if (true) return
@@ -36,12 +35,7 @@ class MainActivity : ReactActivity() {
     val phone = b.getString("extra_phone")
     if (phone.isNullOrEmpty()) return
     intent.removeExtra("extra_phone")
-    if (BrekekeUtils.eventEmitter != null) {
-      BrekekeUtils.emit("makeCall", phone)
-      return
-    }
-    val handler = Handler()
-    handler.postDelayed({ BrekekeUtils.emit("makeCall", phone) }, 5000)
+    handleMakeCall(phone)
   }
 
   override fun onDestroy() {
@@ -50,6 +44,7 @@ class MainActivity : ReactActivity() {
     super.onDestroy()
   }
 
+  // ==========================================================================
   // check if notification pressed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -62,6 +57,7 @@ class MainActivity : ReactActivity() {
     handleIntent(intent)
   }
 
+  // ==========================================================================
   // stop ringtone on any press and custom back btn handler
   override fun dispatchKeyEvent(e: KeyEvent): Boolean {
     val k = e.keyCode
@@ -77,6 +73,7 @@ class MainActivity : ReactActivity() {
     return super.dispatchKeyEvent(e)
   }
 
+  // ==========================================================================
   // react-native config
   override fun getMainComponentName(): String = "BrekekePhone"
 
@@ -89,9 +86,24 @@ class MainActivity : ReactActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     setIntent(intent)
+    // handle call from other app
     handleIntent(intent)
   }
 
+  override fun onRequestPermissionsResult(
+      requestCode: Int,
+      @NonNull permissions: Array<String>,
+      @NonNull grantResults: IntArray
+  ) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    when (requestCode) {
+      RNCallKeepModule.REQUEST_READ_PHONE_STATE ->
+          RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+  }
+
+  // ==========================================================================
+  // handle call from other app
   private fun handleIntent(intent: Intent) {
     if (Intent.ACTION_VIEW == intent.action || intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
       val data: Uri? = intent.data
@@ -116,18 +128,6 @@ class MainActivity : ReactActivity() {
       RESULT_CANCELED ->
           BrekekeUtils.resolveDefaultDialer("Permission to set default phone app was canceled")
       RESULT_OK -> BrekekeUtils.resolveDefaultDialer("Default dialer set successfully")
-    }
-  }
-
-  override fun onRequestPermissionsResult(
-      requestCode: Int,
-      @NonNull permissions: Array<String>,
-      @NonNull grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    when (requestCode) {
-      RNCallKeepModule.REQUEST_READ_PHONE_STATE ->
-          RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
   }
 }

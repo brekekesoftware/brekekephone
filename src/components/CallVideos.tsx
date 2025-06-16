@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { getCallStore } from '../stores/callStore'
-import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
-import { CallVideosUI } from './CallVideosUI'
+import { CallVideosUI } from '#/components/CallVideosUI'
+import { getCallStore } from '#/stores/callStore'
+import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 
 @observer
 export class CallVideos extends Component {

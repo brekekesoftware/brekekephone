@@ -1,4 +1,4 @@
-import { getAuthStore } from '../stores/authStore'
+import { getAuthStore } from '#/stores/authStore'
 
 export const webShowNotification = async (body: string, tag: string) => {
   if (getAuthStore().pbxConfig?.['webphone.desktop.notification'] === 'false') {

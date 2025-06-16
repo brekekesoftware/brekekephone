@@ -9,19 +9,19 @@ import {
   mdiDotsHorizontal,
   mdiServerNetwork,
   mdiWeb,
-} from '../assets/icons'
-import { isWeb } from '../config'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { checkPermForCall, permForCall } from '../utils/permissions'
-import { Field } from './Field'
-import { FooterActions } from './FooterActions'
-import { RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+} from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { FooterActions } from '#/components/FooterActions'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import { accountStore } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { checkPermForCall, permForCall } from '#/utils/permissions'
 
 const css = StyleSheet.create({
   AccountSignInItem: {

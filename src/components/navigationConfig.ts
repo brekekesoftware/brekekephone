@@ -2,18 +2,18 @@ import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
-} from '../assets/icons'
-import type { PbxCustomPage } from '../brekekejs'
-import { isIos } from '../config'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, urls } from '../utils/deeplink'
-import { PushNotification } from '../utils/PushNotification'
+} from '#/assets/icons'
+import type { PbxCustomPage } from '#/brekekejs'
+import { isIos } from '#/config'
+import { accountStore } from '#/stores/accountStore'
+import { getAuthStore } from '#/stores/authStore'
+import { intl } from '#/stores/intl'
+import { intlStore } from '#/stores/intlStore'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { arrToMap } from '#/utils/arrToMap'
+import { openLinkSafely, urls } from '#/utils/deeplink'
+import { PushNotification } from '#/utils/PushNotification'
 
 export type Menu = {
   key: string

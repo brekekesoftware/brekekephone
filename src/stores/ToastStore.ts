@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
-import type { ErrorRnAlert } from './RnAlert'
+import type { ErrorRnAlert } from '#/stores/RnAlert'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 

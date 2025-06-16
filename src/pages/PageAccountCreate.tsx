@@ -1,8 +1,8 @@
-import { AccountCreateForm } from '../components/AccountCreateForm'
-import type { Account } from '../stores/accountStore'
-import { accountStore } from '../stores/accountStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { AccountCreateForm } from '#/components/AccountCreateForm'
+import type { Account } from '#/stores/accountStore'
+import { accountStore } from '#/stores/accountStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
 
 export const PageAccountCreate = () => (
   <AccountCreateForm

@@ -2,11 +2,11 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { getAuthStore } from '../stores/authStore'
-import { chatStore } from '../stores/chatStore'
-import { menus } from './navigationConfig'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { menus } from '#/components/navigationConfig'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { getAuthStore } from '#/stores/authStore'
+import { chatStore } from '#/stores/chatStore'
 
 export const css = StyleSheet.create({
   Navigation: {

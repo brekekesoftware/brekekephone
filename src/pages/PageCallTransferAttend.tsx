@@ -2,22 +2,22 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
+import { pbx } from '#/api/pbx'
+import { sip } from '#/api/sip'
 import {
   mdiArrowRight,
   mdiPhoneForward,
   mdiPhoneHangup,
   mdiPhoneOff,
-} from '../assets/icons'
-import { Avatar } from '../components/Avatar'
-import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { contactStore, getPartyName } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+} from '#/assets/icons'
+import { Avatar } from '#/components/Avatar'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { getAuthStore } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import { contactStore, getPartyName } from '#/stores/contactStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
 
 export const css = StyleSheet.create({
   Outer: {

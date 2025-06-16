@@ -2,8 +2,8 @@ import CircularJSON from 'circular-json'
 import moment from 'moment'
 import { format } from 'util'
 
-import { isWeb } from '../config'
-import { sipErrorEmitter } from '../stores/sipErrorEmitter'
+import { isWeb } from '#/config'
+import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
 
 const formatErrors = (...errs: Error[]) => {
   // normalize and fix circular json

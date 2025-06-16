@@ -2,14 +2,14 @@ import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { getAuthStore } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
 
 @observer
 export class PageCallParks extends Component<{

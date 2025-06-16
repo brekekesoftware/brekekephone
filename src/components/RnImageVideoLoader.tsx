@@ -18,12 +18,12 @@ import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
   mdiPlayCircleOutline,
-} from '../assets/icons'
-import { isAndroid } from '../config'
-import type { ChatFile } from '../stores/chatStore'
-import { RnIcon } from './RnIcon'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+} from '#/assets/icons'
+import { RnIcon } from '#/components/RnIcon'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import { isAndroid } from '#/config'
+import type { ChatFile } from '#/stores/chatStore'
 
 const css = StyleSheet.create({
   vVideoModal: {

@@ -7,15 +7,15 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import { KeyPad } from '../components/CallKeyPad'
-import { ShowNumber } from '../components/CallShowNumbers'
-import { Layout } from '../components/Layout'
-import { setPageCallTransferDial } from '../components/navigationConfig2'
-import { getCallStore } from '../stores/callStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnKeyboard } from '../stores/RnKeyboard'
+import { KeyPad } from '#/components/CallKeyPad'
+import { ShowNumber } from '#/components/CallShowNumbers'
+import { Layout } from '#/components/Layout'
+import { setPageCallTransferDial } from '#/components/navigationConfig2'
+import { getCallStore } from '#/stores/callStore'
+import { intl, intlDebug } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 @observer
 export class PageCallTransferDial extends Component {

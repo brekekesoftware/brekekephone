@@ -2,20 +2,20 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { isCustomPageUrlBuilt } from '../api/customPage'
+import { isCustomPageUrlBuilt } from '#/api/customPage'
 import {
   buildCustomPageUrl,
   rebuildCustomPageUrlNonce,
   rebuildCustomPageUrlPbxToken,
-} from '../api/pbx'
-import type { PbxCustomPage } from '../brekekejs'
-import { CustomPageWebView } from '../components/CustomPageWebView'
-import { Layout } from '../components/Layout'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnStacker } from '../stores/RnStacker'
+} from '#/api/pbx'
+import type { PbxCustomPage } from '#/brekekejs'
+import { CustomPageWebView } from '#/components/CustomPageWebView'
+import { Layout } from '#/components/Layout'
+import { getAuthStore } from '#/stores/authStore'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
+import { Nav } from '#/stores/Nav'
+import { RnStacker } from '#/stores/RnStacker'
 
 const css = StyleSheet.create({
   invisible: {

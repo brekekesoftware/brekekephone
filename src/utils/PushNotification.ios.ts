@@ -1,10 +1,10 @@
-import './callkeep'
+import '#/utils/callkeep'
 
 import type { PushNotification as PN } from '@react-native-community/push-notification-ios'
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import Voip from 'react-native-voip-push-notification'
 
-import { parse } from './PushNotification-parse'
+import { parse } from '#/utils/PushNotification-parse'
 
 let voipTokenFn: Function | undefined = undefined
 const voipToken = new Promise<string>(resolve => {

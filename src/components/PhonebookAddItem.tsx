@@ -9,12 +9,12 @@ import {
   View,
 } from 'react-native'
 
-import type { ItemPBForm, PickerItemOption } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { useAnimationOnDidMount } from '../utils/animation'
-import { RnText, RnTextInput, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import type { ItemPBForm, PickerItemOption } from '#/stores/contactStore'
+import { contactStore } from '#/stores/contactStore'
+import { intl } from '#/stores/intl'
+import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = StyleSheet.create({
   vBottom: {

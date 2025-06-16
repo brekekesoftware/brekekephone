@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { mdiPhone } from '../assets/icons'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
+import { mdiPhone } from '#/assets/icons'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { getCallStore } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
 
 @observer
 export class PageVoicemail extends Component {

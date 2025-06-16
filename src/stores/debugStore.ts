@@ -8,11 +8,11 @@ import type { ReadDirItem } from 'react-native-fs'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
-import { RnAsyncStorage } from '../components/Rn'
-import { isAndroid, isIos, isWeb } from '../config'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { intl, intlDebug } from './intl'
-import { RnAlert } from './RnAlert'
+import { RnAsyncStorage } from '#/components/Rn'
+import { isAndroid, isIos, isWeb } from '#/config'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 declare global {
   interface Window {

@@ -5,17 +5,17 @@ import {
   mdiDotsHorizontal,
   mdiLadybug,
   mdiUnfoldMoreHorizontal,
-} from '../assets/icons'
-import { AccountSignInItem } from '../components/AccountSignInItem'
-import { BrekekeGradient } from '../components/BrekekeGradient'
-import { Layout } from '../components/Layout'
-import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import { currentVersion, v } from '../components/variables'
-import { accountStore } from '../stores/accountStore'
-import { intl } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { permForCall } from '../utils/permissions'
+} from '#/assets/icons'
+import { AccountSignInItem } from '#/components/AccountSignInItem'
+import { BrekekeGradient } from '#/components/BrekekeGradient'
+import { Layout } from '#/components/Layout'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { currentVersion, v } from '#/components/variables'
+import { accountStore } from '#/stores/accountStore'
+import { intl } from '#/stores/intl'
+import { intlStore } from '#/stores/intlStore'
+import { Nav } from '#/stores/Nav'
+import { permForCall } from '#/utils/permissions'
 
 const css = StyleSheet.create({
   PageAccountSignIn_ListServers: {

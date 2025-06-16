@@ -5,10 +5,10 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
-import { mdiImageBrokenVariant } from '../assets/icons'
-import type { ChatFile } from '../stores/chatStore'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+import { mdiImageBrokenVariant } from '#/assets/icons'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import type { ChatFile } from '#/stores/chatStore'
 
 const size = 200
 const css = StyleSheet.create({

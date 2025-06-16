@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars/dist/handlebars'
 import HandlebarsMoment from 'helper-moment'
 
-import { enLabelsMapIndex, intlStore, labels } from './intlStore'
+import { enLabelsMapIndex, intlStore, labels } from '#/stores/intlStore'
 
 Handlebars.registerHelper('moment', HandlebarsMoment)
 
