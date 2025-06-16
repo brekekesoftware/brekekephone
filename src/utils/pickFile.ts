@@ -88,7 +88,6 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       file = (await fn()) as File
     }
   } catch (err) {
-    // If DocumentRnPicker.isCancel does not exist, fallback to a generic check
     // https://react-native-documents.github.io/docs/sponsor-only/errors#error-codes
     if (i === 3 && isErrorWithCode(err) && err.code === 'OPERATION_CANCELED') {
       console.warn('pickFile cancelled by user')

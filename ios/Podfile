@@ -8,13 +8,13 @@ prepare_react_native_project!
 
 # config for react-native-permissions
 setup_permissions([
-   "Camera",
-    "LocationAlways",
-    "LocationWhenInUse",
-    "Microphone",
-    "Notifications",
-    "PhotoLibrary",
-    "PhotoLibraryAddOnly"
+  "Camera",
+  "LocationAlways",
+  "LocationWhenInUse",
+  "Microphone",
+  "Notifications",
+  "PhotoLibrary",
+  "PhotoLibraryAddOnly"
 ])
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -27,7 +27,6 @@ target 'BrekekePhone' do
   config = use_native_modules!
   flags = get_default_flags()
 
-
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => false,
@@ -38,7 +37,6 @@ target 'BrekekePhone' do
   pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
   pod 'react-native-document-picker', :path => '../node_modules/@react-native-documents/picker', :modular_headers => true
   pod 'react-native-video', :path => '../node_modules/react-native-video', :modular_headers => true
-
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -58,11 +56,5 @@ target 'BrekekePhone' do
         config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
       end
     end
-
-    # Xoá file modulemap gây lỗi redefinition
-    # jsitooling_modulemap = File.join(__dir__, 'Pods/Headers/Public/react_runtime/React-jsitooling.modulemap')
-    # if File.exist?(jsitooling_modulemap)
-    #   File.delete(jsitooling_modulemap)
-    # end
   end
 end
