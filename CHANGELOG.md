@@ -1,5 +1,6 @@
 #### 2.16.3
 
+- Upgrade react-native to 0.79.3 and other available dependencies
 - Initial implementation of android lpc
 - Improve video conference according to feedbacks
 - Improve debug log with multiples files, and mark for login logout

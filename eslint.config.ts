@@ -131,7 +131,9 @@ const nonFix: ConfigWithExtends = {
     'func-style': [warn, 'expression', { allowArrowFunctions: true }],
 
     'import/no-default-export': warn,
-    'no-for-of-loops/no-for-of-loops': warn,
+
+    // TODO: discuss to choose the convention
+    'no-for-of-loops/no-for-of-loops': off,
   },
 }
 
