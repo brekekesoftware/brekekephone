@@ -1,13 +1,14 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 import { mdiKeyboardBackspace } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
 import { RnText } from '../components/Rn'
 import { currentVersion } from '../components/variables'
+import { isWeb } from '../config'
 import { compareSemVer, debugStore } from '../stores/debugStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -29,13 +30,12 @@ const css = StyleSheet.create({
 export class PageSettingsDebug extends Component {
   render() {
     const isUpdateAvailable =
-      Platform.OS !== 'web' &&
-      compareSemVer(debugStore.remoteVersion, currentVersion) > 0
+      !isWeb && compareSemVer(debugStore.remoteVersion, currentVersion) > 0
     return (
       <Layout
         description={intl`App information and debugging`}
         dropdown={
-          Platform.OS !== 'web'
+          !isWeb
             ? [
                 {
                   label: intl`Clear all log files`,
@@ -52,7 +52,7 @@ export class PageSettingsDebug extends Component {
         onBack={Nav().backToPageAccountSignIn}
         title={intl`Debug`}
       >
-        {Platform.OS !== 'web' && (
+        {!isWeb && (
           <>
             <Field isGroup label={intl`DEBUG LOG`} />
             <Field
@@ -98,7 +98,7 @@ export class PageSettingsDebug extends Component {
             </RnText>
           </>
         )}
-        {Platform.OS === 'web' && (
+        {isWeb && (
           <>
             <RnText normal primary small style={css.Text}>
               {intl`Current version: ${currentVersion}`}

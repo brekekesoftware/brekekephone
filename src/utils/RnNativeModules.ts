@@ -1,7 +1,8 @@
 import { get, set } from 'lodash'
 import type { NativeModule } from 'react-native'
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 
+import { isWeb } from '../config'
 import type { TCallKeepAction } from '../stores/callStore2'
 
 export enum CallLogType {
@@ -68,11 +69,17 @@ type TBrekekeUtils = {
     err: string | undefined,
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
+  // android lpc
+  androidLpcIsPermGranted(): Promise<boolean>
+  androidLpcPermIncomingCall(): Promise<boolean>
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(): void
   stopRBT(): void
+  setProximityMonitoring(enabled: boolean): void
+
+  // these methods available on both
   enableLPC(
     token: string,
     tokenVoip: string,
@@ -84,9 +91,6 @@ type TBrekekeUtils = {
     tlsKeyHash: string,
   ): void
   disableLPC(): void
-  setProximityMonitoring(enabled: boolean): void
-
-  // these methods available on both
   systemUptimeMs(): Promise<number>
 }
 
@@ -140,23 +144,26 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   showToast: () => undefined,
   updateAnyHoldLoading: () => undefined,
+  // android lpc
+  androidLpcIsPermGranted: () => Promise.resolve(false),
+  androidLpcPermIncomingCall: () => Promise.resolve(false),
 
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => undefined,
-  enableLPC: () => undefined,
-  disableLPC: () => undefined,
   setProximityMonitoring: () => undefined,
 
   // these methods available on both
+  enableLPC: () => undefined,
+  disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
 }
 
 const M = NativeModules as TNativeModules
 export const BrekekeUtils = M.BrekekeUtils || Polyfill
 
-if (__DEV__ && Platform.OS !== 'web') {
+if (__DEV__ && !isWeb) {
   const k = Object.keys(M.BrekekeUtils || {})
   console.log(
     `BrekekeUtils debug: found ${k.length} methods` +

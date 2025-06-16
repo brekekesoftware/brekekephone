@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import {
   mdiBackspace,
@@ -6,6 +6,7 @@ import {
   mdiPhone,
   mdiPhoneForward,
 } from '../assets/icons'
+import { isWeb } from '../config'
 import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
 
@@ -80,10 +81,7 @@ export const KeyPad = (p: {
     ))}
     <View style={css.KeyPad_Btn}>
       <RnTouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
-        <RnIcon
-          color={Platform.OS === 'web' ? 'white' : undefined}
-          path={mdiKeyboard}
-        />
+        <RnIcon color={isWeb ? 'white' : undefined} path={mdiKeyboard} />
       </RnTouchableOpacity>
       <View style={p.callVoiceForward ? css.KeyPad_view : undefined}>
         {p.callVoiceForward && (

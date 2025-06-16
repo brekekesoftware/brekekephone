@@ -154,11 +154,11 @@ export const PushNotification = {
 
   getToken: () => fcmToken,
   resetBadgeNumber: () => {
-    // TODO
+    // TODO:
   },
 }
 
-// TODO
+// TODO:
 // { callUUID, handle, name }
 AppRegistry.registerHeadlessTask(
   'RNCallKeepBackgroundMessage',

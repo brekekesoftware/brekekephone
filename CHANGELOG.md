@@ -1,5 +1,6 @@
 #### 2.16.3
 
+- Initial implementation of android lpc
 - Improve video conference according to feedbacks
 - Improve debug log with multiples files, and mark for login logout
 - Fix it should login into the correct account when press on the missed call notification (issue 955)

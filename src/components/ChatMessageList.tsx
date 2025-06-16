@@ -68,7 +68,7 @@ export const MessageList: FC<{
 }> = observer(p => {
   const { acceptFile, loadMore, rejectFile, resolveChat } = p
   let { list } = p
-  // TODO unique and sort right after fetching
+  // TODO: unique and sort right after fetching
   if (!Array.isArray(list)) {
     list = []
   }

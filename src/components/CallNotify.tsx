@@ -1,9 +1,10 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { mdiCheck, mdiClose } from '../assets/icons'
+import { isWeb } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
@@ -71,9 +72,7 @@ export const CallNotify = observer(() => {
   }
   const k = cs.callkeepMap[c.callkeepUuid]
   const Wrapper =
-    k?.hasAction ||
-    Platform.OS === 'web' ||
-    !as.getCurrentAccount()?.pushNotificationEnabled
+    k?.hasAction || isWeb || !as.getCurrentAccount()?.pushNotificationEnabled
       ? Fragment
       : DidMountTimer
   const configure = getAuthStore().pbxConfig

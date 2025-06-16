@@ -6,6 +6,8 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -28,9 +30,17 @@ import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
+import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import com.brekeke.phonedev.toast.ToastType;
+import com.brekeke.phonedev.activity.ExitActivity;
+import com.brekeke.phonedev.activity.IncomingCallActivity;
+import com.brekeke.phonedev.lpc.BrekekeLpcService;
+import com.brekeke.phonedev.lpc.LpcUtils;
+import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
+import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.ToastType;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -64,7 +74,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
+  public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
+  private static String TAG = "[BrekekeUtils]";
 
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -107,8 +119,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
-  public static int REQUEST_CODE_FOR_DEFAULT_PHONE_APP = 10001;
-  public static int REQUEST_CODE_FOR_IGNORE_BATTERY_OPTIMIZATIONS = 10002;
   public static ReactApplicationContext ctx;
   public static KeyguardManager km;
   public static AudioManager am;
@@ -128,7 +138,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   private void debugAudioListener() {
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
       return;
     }
     OnModeChangedListener l1 =
@@ -320,7 +330,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             if (activitiesSize == 1) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
-            Intent i = new Intent(c, IncomingCallActivity.class);
+            Intent i = new Intent(appCtx, IncomingCallActivity.class);
+
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
@@ -328,6 +339,23 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
             c.startActivity(i);
+
+            if (LpcUtils.checkAppInBackground()) {
+              i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+              PendingIntent pi =
+                  PendingIntent.getActivity(appCtx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+              NotificationCompat.Builder b =
+                  new NotificationCompat.Builder(appCtx, "CALL_CHANNEL_ID")
+                      .setSmallIcon(R.drawable.exo_notification_small_icon)
+                      .setContentTitle(L.incomingCall())
+                      .setPriority(NotificationCompat.PRIORITY_HIGH)
+                      .setCategory(NotificationCompat.CATEGORY_CALL)
+                      .setFullScreenIntent(pi, true);
+              NotificationManager nm =
+                  (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
+              // declare a static const at the beginning of the file
+              nm.notify(LpcUtils.TAG, LpcUtils.NOTI_ID, b.build());
+            }
           }
         };
     Runnable onReject =
@@ -344,6 +372,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         || activitiesSize > 0) {
       onShowIncomingCallUi.run();
     }
+
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
 
@@ -645,8 +674,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static boolean checkNotificationPermission(Context ctx) {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-      return checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return checkSelfPermission(ctx, permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
     }
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
@@ -1229,6 +1258,78 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       p.resolve((double) SystemClock.elapsedRealtime());
     } catch (Exception e) {
       p.resolve(-1d);
+    }
+  }
+
+  // android lpc
+
+  @ReactMethod
+  public void enableLPC(
+      String token,
+      String tokenVoip,
+      String username,
+      String host,
+      int port,
+      ReadableArray remoteSsids,
+      String localSsid,
+      String tlsKeyHash) {
+    Intent i =
+        LpcUtils.putConfigToIntent(
+            host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
+    ctx.startForegroundService(i);
+    ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
+    // update the status if the server turns lpc on or off
+    if (LpcUtils.LpcCallback.cb == null) {
+      LpcUtils.LpcCallback.setLpcCallback(
+          v -> {
+            if (!v) {
+              disableLPC();
+            }
+          });
+    }
+  }
+
+  @ReactMethod
+  public void disableLPC() {
+    try {
+      if (BrekekeLpcService.isServiceStarted) {
+        ctx.unbindService(LpcUtils.connection);
+      }
+    } catch (Exception e) {
+      Log.d(TAG, "disableLPC: " + e.getMessage());
+    }
+  }
+
+  // handle opening the settings for the user to accept permission for Incoming Call
+  // eg: "Show on lock screen" and "Open new window when running in background"
+  @ReactMethod
+  void androidLpcPermIncomingCall(Promise p) {
+    // check "Displaying popup windows while running in the background" to start activity from
+    // background
+    if (!LpcUtils.androidLpcIsPermGranted(ctx)) {
+      Intent i = null;
+      if (LpcUtils.isMIUI()) {
+        i = LpcUtils.getPermissionManagerIntent(ctx);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+      } else {
+        // TODO: check for other OS
+        p.resolve(true);
+        return;
+      }
+      androidLpcPermPromise = p;
+      ctx.startActivity(i);
+    }
+  }
+
+  @ReactMethod
+  public void androidLpcIsPermGranted(Promise p) {
+    p.resolve(LpcUtils.androidLpcIsPermGranted(ctx));
+  }
+
+  public static void androidLpcResolvePerm(boolean result) {
+    if (androidLpcPermPromise != null) {
+      androidLpcPermPromise.resolve(result);
+      androidLpcPermPromise = null;
     }
   }
 
