@@ -2,6 +2,7 @@ clean:
 	yarn --ignore-engines --check-files && \
 	rm -rf ios/build/* ~/Library/Developer/Xcode/DerivedData/* && \
 	cd ios && \
+	rm -rf ./Pods && \
 	pod install --repo-update && \
 	cd .. && \
 	yarn jetify && \
