@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   AppState,
   DeviceEventEmitter,
-  Platform,
   StyleSheet,
   View,
 } from 'react-native'
@@ -20,6 +19,7 @@ import SplashScreen from 'react-native-splash-screen'
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
 import { SyncPnToken } from '../api/syncPnToken'
+import { isIos, isWeb } from '../config'
 import { getWebRootIdProps } from '../embed/polyfill'
 import { RenderAllCalls } from '../pages/PageCallManage'
 import { PageCustomPageView } from '../pages/PageCustomPageView'
@@ -144,7 +144,7 @@ const initApp = async () => {
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
     // https://github.com/facebook/react-native-website/issues/273
-    if (Platform.OS !== 'ios') {
+    if (!isIos) {
       return
     }
     await autoLogin()
@@ -164,7 +164,7 @@ const initApp = async () => {
     authUC.auth()
   })
 
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     if (window._BrekekePhoneWebRoot) {
       webPromptPermission()
     }
@@ -228,7 +228,7 @@ const initApp = async () => {
   } else if (
     // only auto sign in if app active mean user open app intentionally
     // other cases like wakeup via push we should not auto sign in
-    Platform.OS !== 'web' &&
+    !isWeb &&
     AppState.currentState === 'active' &&
     !hasCallOrWakeFromPN
   ) {
@@ -290,7 +290,7 @@ const css = StyleSheet.create({
 
 export const App = observer(() => {
   useEffect(() => {
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       SplashScreen.hide()
     }
   }, [])
@@ -347,7 +347,7 @@ export const App = observer(() => {
           />
         )}
       </View>
-      {Platform.OS === 'ios' && <KeyboardSpacer />}
+      {isIos && <KeyboardSpacer />}
 
       {!accountStore.appInitDone && (
         <View style={css.LoadingFullscreen}>

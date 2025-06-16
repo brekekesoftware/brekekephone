@@ -40,7 +40,7 @@ export const groupByTimestamp = (arr: ChatMessage[]) => {
       moment(m.created).valueOf() - moment(lastMessage.created).valueOf() >
         10 * 60000
     ) {
-      const time = d.format('HH:mm') // TODO intl
+      const time = d.format('HH:mm') // TODO: intl
       lastMessage = m
       messages = []
       groupByTime.push({
@@ -58,11 +58,11 @@ export const formatDateSemantic = (d0: number | string) => {
   const d = moment(d0)
   const t = moment()
   if (d.format('yyyy') !== t.format('yyyy')) {
-    return d.format('DD/MM/yyyy') // TODO intl
+    return d.format('DD/MM/yyyy') // TODO: intl
   }
   const today = t.format('MMM D')
   const yesterday = t.add(-1, 'days').format('MMM D')
-  const date = d.format('MMM D') // TODO intl
+  const date = d.format('MMM D') // TODO: intl
   return date === today
     ? intl`Today`
     : date === yesterday
@@ -75,13 +75,13 @@ export const formatDateTimeSemantic = (str: number | string) => {
   const t = moment()
   let date = ''
   if (d.format('yyyy') !== t.format('yyyy')) {
-    date = d.format('DD/MM/yyyy') // TODO intl
+    date = d.format('DD/MM/yyyy') // TODO: intl
   } else if (d.format('MMM D') !== t.format('MMM D')) {
-    date = d.format('MMM D') // TODO intl
+    date = d.format('MMM D') // TODO: intl
   }
   if (date) {
     date = ' ' + date
   }
-  const time = moment(str).format('HH:mm') // TODO intl
+  const time = moment(str).format('HH:mm') // TODO: intl
   return time + date
 }

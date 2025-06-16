@@ -1,9 +1,10 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import type { TouchableOpacityProps, ViewProps } from 'react-native'
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
+import { isIos } from '../config'
 import { BackgroundTimer } from '../utils/BackgroundTimer'
 import { RnText, RnTouchableOpacity } from './Rn'
 import { v } from './variables'
@@ -19,7 +20,7 @@ const css = StyleSheet.create({
   },
   ButtonIcon_Name: {
     paddingTop: 5,
-    minWidth: Platform.OS === 'ios' ? 70 : 80,
+    minWidth: isIos ? 70 : 80,
     textAlign: 'center',
   },
 })
@@ -45,7 +46,7 @@ export const ButtonIcon: FC<{
     if (p.msLoading) {
       setLoading(true)
       BackgroundTimer.setTimeout(() => {
-        // TODO possible react warning memory leak set state after unmount
+        // TODO: possible react warning memory leak set state after unmount
         setLoading(false)
       }, p.msLoading)
     }

@@ -1,5 +1,4 @@
-import { Platform } from 'react-native'
-
+import { isWeb } from '../config'
 import { webPlayDing } from './webPlayDing'
 
 export const getAudioVideoPermission = () => {
@@ -24,7 +23,7 @@ export const getAudioVideoPermission = () => {
   if (p?.then) {
     p.then(cb).catch(eb)
   }
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     // trigger audio permission
     webPlayDing()
   }

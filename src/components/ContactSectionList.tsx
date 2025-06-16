@@ -4,7 +4,6 @@ import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import type { ViewProps } from 'react-native'
 import {
-  Platform,
   SectionList,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -20,6 +19,7 @@ import {
   mdiVideo,
 } from '../assets/icons'
 import type { UcBuddy } from '../brekekejs'
+import { isIos } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import type { ChatMessage } from '../stores/chatStore'
@@ -121,7 +121,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
                 listDropdownPosition.push({
-                  top: Platform.OS === 'ios' ? py : py + h,
+                  top: isIos ? py : py + h,
                   right: 20,
                 })
                 // after get all section list dropdown position

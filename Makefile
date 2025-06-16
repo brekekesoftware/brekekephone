@@ -74,6 +74,7 @@ imagemin:
 	make -Bs ls | \
 	xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)';
 ls:
+	git add -A && \
 	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' | \
 	egrep -h '\.($(EXT))$$';
 

@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform } from 'react-native'
 
 import { uc } from '../api/uc'
 import { mdiCheck, mdiTranslate } from '../assets/icons'
 import { Field } from '../components/Field'
 import { Layout } from '../components/Layout'
+import { isWeb } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { intl, intlDebug } from '../stores/intl'
 import { intlStore } from '../stores/intlStore'
@@ -65,7 +65,7 @@ export class PageSettingsOther extends Component {
                 },
               ]
             : []),
-          ...(Platform.OS !== 'web'
+          ...(!isWeb
             ? [
                 {
                   label: intl`Open debug log`,

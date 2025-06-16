@@ -1,10 +1,11 @@
 // import vi from '../assets/intl-vi.json'
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
 import { action, observable, runInAction } from 'mobx'
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 
 import en from '../assets/intl-en.json'
 import ja from '../assets/intl-ja.json'
+import { isIos } from '../config'
 import { arrToMap } from '../utils/arrToMap'
 import { BrekekeUtils } from '../utils/RnNativeModules'
 import { waitTimeout } from '../utils/waitTimeout'
@@ -50,7 +51,7 @@ export class IntlStore {
     let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')
     if (!locale || !labels[locale]) {
       locale =
-        (Platform.OS === 'ios'
+        (isIos
           ? TypedNativeModules?.SettingsManager?.settings?.AppleLocale ||
             TypedNativeModules?.SettingsManager?.settings?.AppleLanguages?.[0]
           : TypedNativeModules?.I18nManager?.localeIdentifier) || ''

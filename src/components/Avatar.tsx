@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react'
 import type { ViewProps } from 'react-native'
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import type { FastImageProps } from 'react-native-fast-image'
 
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
 
 import { mdiRecord } from '../assets/icons'
+import { isWeb } from '../config'
 import { getAuthStore } from '../stores/authStore'
 import { RnIcon, RnImage } from './Rn'
 import { v } from './variables'
@@ -48,7 +49,7 @@ export const Avatar = observer(
       (typeof source !== 'string' &&
         typeof source?.uri === 'string' &&
         source?.uri) ||
-      (Platform.OS === 'web' && avatarPlaceholder) ||
+      (isWeb && avatarPlaceholder) ||
       avatarPlaceholder
     const imgSource =
       typeof uri === 'string' ? { uri } : (uri as FastImageProps['source'])

@@ -22,6 +22,7 @@ import {
   mdiPlus,
   mdiUnfoldMoreHorizontal,
 } from '../assets/icons'
+import { isWeb } from '../config'
 import { intl } from '../stores/intl'
 import { RnPicker } from '../stores/RnPicker'
 import { useStore } from '../utils/useStore'
@@ -358,13 +359,13 @@ export const Field: FC<
           placeholder={intl`park number`}
           placeholderTextColor='grey'
           onBlur={() => {
-            if (Platform.OS === 'web') {
+            if (isWeb) {
               $.set('isFocusing', false)
             }
           }}
           onChangeText={txt => onChangeNumber(txt)}
           onFocus={() => {
-            if (Platform.OS !== 'web') {
+            if (!isWeb) {
               $.set('isParkNameFocusing', false)
             }
             $.set('isFocusing', true)
@@ -391,13 +392,13 @@ export const Field: FC<
           placeholder={intl`label`}
           placeholderTextColor='grey'
           onBlur={() => {
-            if (Platform.OS === 'web') {
+            if (isWeb) {
               $.set('isParkNameFocusing', false)
             }
           }}
           onChangeText={txt => onChangeName(txt)}
           onFocus={() => {
-            if (Platform.OS !== 'web') {
+            if (!isWeb) {
               $.set('isFocusing', false)
             }
             $.set('isParkNameFocusing', true)
@@ -511,7 +512,7 @@ export const Field: FC<
         ]}
       >
         {/* Fix form auto fill style on web */}
-        {Platform.OS !== 'web' && label}
+        {!isWeb && label}
         {
           <View
             pointerEvents={
@@ -536,7 +537,7 @@ export const Field: FC<
           </View>
         }
         {/* Fix form auto fill style on web */}
-        {Platform.OS === 'web' && label}
+        {isWeb && label}
         {props.iconRender?.(props.value) ||
           (props.icon && (
             <RnIcon

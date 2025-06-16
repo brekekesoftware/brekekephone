@@ -2,7 +2,6 @@ import {
   AppState,
   Keyboard,
   NativeEventEmitter,
-  Platform,
   ToastAndroid,
 } from 'react-native'
 import type { EventsPayload } from 'react-native-callkeep'
@@ -10,7 +9,7 @@ import RNCallKeep from 'react-native-callkeep'
 
 import { pbx } from '../api/pbx'
 import { sip } from '../api/sip'
-import { bundleIdentifier } from '../config'
+import { bundleIdentifier, isAndroid, isIos, isWeb } from '../config'
 import { getAuthStore, waitSip } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -19,7 +18,7 @@ import { RnAlert } from '../stores/RnAlert'
 import { RnKeyboard } from '../stores/RnKeyboard'
 import { RnPicker } from '../stores/RnPicker'
 import { RnStacker } from '../stores/RnStacker'
-import { parseNotificationData } from './PushNotification-parse'
+import { parse, parseNotificationData } from './PushNotification-parse'
 import { BrekekeUtils } from './RnNativeModules'
 import { waitTimeout } from './waitTimeout'
 
@@ -33,7 +32,7 @@ const setupCallKeep = async () => {
 
   // do not re-setup ios when having an ongoing call
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
-  if (Platform.OS === 'ios') {
+  if (isIos) {
     if (AppState.currentState !== 'active') {
       return
     }
@@ -92,7 +91,7 @@ export type TEventDidLoad = {
 }
 
 export const setupCallKeepEvents = async () => {
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     return
   }
   const cs = getCallStore()
@@ -103,7 +102,7 @@ export const setupCallKeepEvents = async () => {
   }
   const answerCall = (e: EventsPayload['answerCall']) => {
     const uuid = e.callUUID.toUpperCase()
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
     } else {
@@ -112,7 +111,7 @@ export const setupCallKeepEvents = async () => {
   }
   const endCall = (e: EventsPayload['endCall']) => {
     const uuid = e.callUUID.toUpperCase()
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
     } else {
@@ -127,7 +126,7 @@ export const setupCallKeepEvents = async () => {
   ) => {
     const uuid = e.callUUID.toUpperCase()
     // use the custom native incoming call module for android
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       return
     }
     const n = parseNotificationData(e.payload)
@@ -149,7 +148,7 @@ export const setupCallKeepEvents = async () => {
     // for android when enable speaker, RNCallKeep will auto set unmute for call
     // we use custom UI for android then user will never interact with the native UI
     // this event can be ignored for android to fix the issue with loud speaker
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       return
     }
     const uuid = e.callUUID.toUpperCase()
@@ -166,7 +165,7 @@ export const setupCallKeepEvents = async () => {
     // in case the user has not answered the call on callkeep display incoming call
     // audio session should not be assigned to WebRTC
     // before the didActivateAudioSession event is called
-    if (Platform.OS === 'ios' && c?.isAutoAnswer && !c.isAudioActive) {
+    if (isIos && c?.isAutoAnswer && !c.isAudioActive) {
       return
     }
     if (c && c.holding !== e.hold) {
@@ -246,7 +245,7 @@ export const setupCallKeepEvents = async () => {
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
 
-  if (Platform.OS !== 'android') {
+  if (!isAndroid) {
     return
   }
 
@@ -261,11 +260,16 @@ export const setupCallKeepEvents = async () => {
 
   // events from our custom BrekekeUtils module
   const eventEmitter = new NativeEventEmitter(BrekekeUtils)
+
+  eventEmitter.addListener('lpcIncomingCall', (v: string) => {
+    parse(JSON.parse(v))
+  })
+
   eventEmitter.addListener('answerCall', async (uuid: string) => {
     // should update the native android UI here to fix a case with auto answer
     const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
     if (c) {
-      if (Platform.OS === 'android') {
+      if (isAndroid) {
         // with auto answer, talkingAvatar takes too long to update
         BrekekeUtils.setTalkingAvatar(
           uuid,

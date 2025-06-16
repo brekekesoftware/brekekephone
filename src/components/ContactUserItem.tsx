@@ -16,6 +16,7 @@ import {
 } from '../assets/icons'
 import type { Conference } from '../brekekejs'
 import { Constants } from '../brekekejs/ucclient'
+import { isWeb } from '../config'
 import type { Phonebook } from '../stores/contactStore'
 import { contactStore, getPartyName } from '../stores/contactStore'
 import { intl, intlDebug } from '../stores/intl'
@@ -173,11 +174,7 @@ export const UserItem: FC<
   } = p0
 
   // pressable for web with onLongPress
-  const Container = canTouch
-    ? Platform.OS === 'web'
-      ? Pressable
-      : RnTouchableOpacity
-    : View
+  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : View
 
   const isGroupAvailable = (groupId: string) => {
     const groupInfo: Conference = uc.getChatGroupInfo(groupId)

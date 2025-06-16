@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
+import { isWeb } from '../config'
 import { RnTouchableOpacity } from './RnTouchableOpacity'
 import { v } from './variables'
 
@@ -40,7 +41,7 @@ export type TRnStatusBarProps = {
   onPress?(): void
 }
 export const RnStatusBar: FC<TRnStatusBarProps> = p =>
-  Platform.OS === 'web' ? null : (
+  isWeb ? null : (
     <RnTouchableOpacity
       style={[
         css.RnStatusBar,

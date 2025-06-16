@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import {
   mdiAccountCircleOutline,
@@ -10,6 +10,7 @@ import {
   mdiServerNetwork,
   mdiWeb,
 } from '../assets/icons'
+import { isWeb } from '../config'
 import { accountStore } from '../stores/accountStore'
 import { getAuthStore } from '../stores/authStore'
 import { getCallStore } from '../stores/callStore'
@@ -88,7 +89,7 @@ export const AccountSignInItem: FC<{
       return
     }
     getAuthStore().signIn(a)
-    if (Platform.OS !== 'web') {
+    if (!isWeb) {
       // try to end callkeep if it's stuck
       getCallStore().endCallKeepAllCalls()
     }

@@ -90,7 +90,7 @@ export class PageCallTransferDial extends Component {
             callVoice={this.transferBlind}
             callVoiceForward={this.transferAttended}
             onPressNumber={v => {
-              // TODO create new component with PageCallDtmfKeypad
+              // TODO: create new component with PageCallDtmfKeypad
               // to avoid duplicated code
               const { end, start } = this.txtSelection
               let min = Math.min(start, end)

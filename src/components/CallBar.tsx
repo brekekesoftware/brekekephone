@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import {
   mdiMicrophone,
@@ -12,6 +12,7 @@ import {
   mdiVolumeHigh,
   mdiVolumeMedium,
 } from '../assets/icons'
+import { isWeb } from '../config'
 import { getCallStore } from '../stores/callStore'
 import { intl } from '../stores/intl'
 import { Nav } from '../stores/Nav'
@@ -97,7 +98,7 @@ export const CallBar = observer(() => {
                     onPress={() => oc.toggleMuted()}
                     path={oc.muted ? mdiMicrophoneOff : mdiMicrophone}
                   />
-                  {Platform.OS !== 'web' && (
+                  {!isWeb && (
                     <ButtonIcon
                       bdcolor={v.borderBg}
                       color={

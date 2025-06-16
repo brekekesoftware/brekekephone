@@ -1,8 +1,9 @@
-package com.brekeke.phonedev;
+package com.brekeke.phonedev.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 
+// end call then exit app, but also remove from "App Overview" button list
 public class ExitActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
-import { Platform } from 'react-native'
 
+import { isIos } from '../config'
 import { getCallStore } from '../stores/callStore'
 import {
   AnsweredItem,
@@ -32,9 +32,7 @@ export const CallVoices = observer(() => {
         ) : (
           <>
             <OutgoingItem />
-            {Platform.OS === 'ios' && (
-              <IosRBT isLoudSpeaker={cs.isLoudSpeakerEnabled} />
-            )}
+            {isIos && <IosRBT isLoudSpeaker={cs.isLoudSpeakerEnabled} />}
           </>
         ))}
       {cs.calls
