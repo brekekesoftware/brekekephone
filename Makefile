@@ -53,7 +53,7 @@ format:
 	make -Bs format_objc && \
 	make -Bs format_swift && \
 	make -Bs format_java && \
-	make -Bs format_kt && \
+	make -Bs format_kotlin && \
 	make -Bs format_xml;
 
 format_objc:

@@ -15,7 +15,9 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)tlsKeyHash)
 RCT_EXTERN_METHOD(disableLPC)
 RCT_EXTERN_METHOD(playRBT : (BOOL)isLoudSpeaker)
-RCT_EXTERN_METHOD(stopRBT:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(stopRBT
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(setProximityMonitoring : (BOOL)enabled)
 RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseResolveBlock)resolve rejecter
