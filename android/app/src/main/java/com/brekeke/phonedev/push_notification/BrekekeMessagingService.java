@@ -59,9 +59,9 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     // build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
     RemoteMessage newRemoteMessage =
         new RemoteMessage.Builder(remoteMessage.getFrom())
-            .setmessageid(remotemessage.getmessageid()) // retain the original message ID
-            .setttl(remotemessage.getttl()) // retain the original TTL (Time-to-Live)
-            .setdata(remotemessage.getdata()) // add the updated data
+            .setMessageId(remoteMessage.getMessageId()) // retain the original message ID
+            .setTtl(remoteMessage.getTtl()) // retain the original TTL (Time-to-Live)
+            .setData(remoteMessage.getData()) // add the updated data
             .build();
 
     super.onMessageReceived(newRemoteMessage);
