@@ -2,8 +2,7 @@ module.exports = {
   reject: [
     // compatible with brekekejs
     'jssip',
-    // allow any in lodash.get
-    '@types/lodash',
+    'react-native-webrtc',
     // TODO:
     'mobx',
     'mobx-react',
