@@ -229,7 +229,7 @@ public class BrekekeLpcSocket {
       }
     }
 
-    // Adds 4 bytes to the size of the message
+    // adds 4 bytes to the size of the message
     private byte[] addSizeToMessage(String message) {
       byte[] jsonBytes = message.getBytes(StandardCharsets.UTF_8);
       int lengthJson = jsonBytes.length;

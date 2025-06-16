@@ -56,12 +56,12 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       Log.e(TAG, "initialNotifications.add exception: " + e);
     }
 
-    // Build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
+    // build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
     RemoteMessage newRemoteMessage =
         new RemoteMessage.Builder(remoteMessage.getFrom())
-            .setMessageId(remoteMessage.getMessageId()) // Retain the original message ID
-            .setTtl(remoteMessage.getTtl()) // Retain the original TTL (Time-to-Live)
-            .setData(remoteMessage.getData()) // Add the updated data
+            .setmessageid(remotemessage.getmessageid()) // retain the original message ID
+            .setttl(remotemessage.getttl()) // retain the original TTL (Time-to-Live)
+            .setdata(remotemessage.getdata()) // add the updated data
             .build();
 
     super.onMessageReceived(newRemoteMessage);

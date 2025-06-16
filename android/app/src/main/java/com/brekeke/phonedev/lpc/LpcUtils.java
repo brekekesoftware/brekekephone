@@ -216,23 +216,23 @@ public class LpcUtils {
 
     // TODO: handle CA
     if (false) {
-      // Convert SHA-256 fingerprint from base64 to byte array
+      // convert SHA-256 fingerprint from base64 to byte array
       byte[] sha256Bytes = Base64.decode(sha256Fingerprint, Base64.NO_WRAP);
-      // Load certificate from file
+      // load certificate from file
       CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
       InputStream raw = mContext.getResources().openRawResource(R.raw.ca);
       X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(raw);
       raw.close();
-      // Calculate the SHA-256 fingerprint of the certificate
+      // calculate the SHA-256 fingerprint of the certificate
       byte[] certFingerprint = certificate.getPublicKey().getEncoded();
       String str = new String(certFingerprint, StandardCharsets.UTF_8);
-      // Compare the fingerprints
+      // compare the fingerprints
       if (!MessageDigest.isEqual(sha256Bytes, certFingerprint)) {
         Log.d(
             LpcUtils.TAG,
             "Certificate fingerprint does not match the provided SHA-256 fingerprint.");
       }
-      // Create a TrustManager that trusts the certificate
+      // create a TrustManager that trusts the certificate
       KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
       keyStore.load(null, null);
       keyStore.setCertificateEntry("ca", certificate);
@@ -249,6 +249,7 @@ public class LpcUtils {
     return sslContext;
   }
 
+  // TODO: match ssid in background service where it initiates the connection
   public static Boolean matchSsid(ReadableArray remoteSsid, String localSsid) {
     for (int i = 0; i < remoteSsid.size(); i++) {
       ReadableType type = remoteSsid.getType(i);

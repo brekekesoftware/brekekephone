@@ -212,7 +212,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       BrekekeUtils.staticStartRingtone();
     }
 
-    // Initialize toast manager
+    // initialize toast manager
     toastContainer = (LinearLayout) findViewById(R.id.toast_container);
     toastManager = ToastManager.getInstance(this, toastContainer);
 

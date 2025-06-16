@@ -271,7 +271,7 @@ export class SIP extends EventEmitter {
         return
       }
 
-      // TODO:#934 this issue has been fixed somewhere else, can not reproduce
+      // TODO: #934 this issue has been fixed somewhere else, can not reproduce
       // however this caused #1010, we remove it here for now
 
       // videoClientSessionCreated not fired if local caller has phone_id < remote callee phone_id
@@ -293,7 +293,7 @@ export class SIP extends EventEmitter {
       //   this.enableVideo(ev.sessionId)
       // }
 
-      // DuyP add this to handle toggle on/off video streams
+      // toggle on/off video streams (DuyP)
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteUserOptionsTable: ev.remoteUserOptionsTable,

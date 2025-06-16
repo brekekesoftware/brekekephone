@@ -224,11 +224,8 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
 }
 
 const syncPnTokenForAllAccounts = async () => {
-  // If locationPerm = null then do not check for permission changes anymore
+  // check if user open app then change permission in settings when app is running
   const noCheckChange = locationPerm === null
-  // Check if user changed location permissions in App Info
-  // If true, resync
-
   const isChange = noCheckChange
     ? false
     : (await checkFineLocation()) !== locationPerm

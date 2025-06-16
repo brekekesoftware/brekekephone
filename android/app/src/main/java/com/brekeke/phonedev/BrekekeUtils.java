@@ -1273,10 +1273,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
-    if (!LpcUtils.matchSsid(remoteSsids, localSsid)) {
-      disableLPC();
-      return;
-    }
     Intent i =
         LpcUtils.putConfigToIntent(
             host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));

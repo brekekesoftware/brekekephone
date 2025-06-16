@@ -41,7 +41,7 @@ public class BrekekeLpcServiceIntent extends Service {
                 new Intent(ctx, BrekekeLpcService.class));
         ctx.startForegroundService(i);
         ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
-        // Used to update the status if the server turns Lpc on and off
+        // used to update the status if the server turns Lpc on and off
         if (LpcUtils.LpcCallback.cb == null) {
           LpcUtils.LpcCallback.setLpcCallback(
               v -> {

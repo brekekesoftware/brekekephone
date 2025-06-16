@@ -26,7 +26,7 @@ app.get('/dev-api/plist/:version', (req, res, next) => {
   res.end(plist(d, v))
 })
 
-// TODO:/dev-api/invoke-plist/:version
+// TODO: /dev-api/invoke-plist/:version
 
 app.listen(3030, () => console.log('listening on port 3030'))
 
