@@ -342,13 +342,23 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
             if (LpcUtils.checkAppInBackground()) {
               i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-              PendingIntent pi =
-                  PendingIntent.getActivity(appCtx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+              // Fix bug: The application crashes when it is in the background state and there is an
+              // incoming call
+              // note: flags |= is used to add a flag without losing other flags already present in
+              // the flags variable.
+              int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                flags |= PendingIntent.FLAG_IMMUTABLE;
+              }
+              PendingIntent pi = PendingIntent.getActivity(appCtx, 0, i, flags);
               NotificationCompat.Builder b =
                   new NotificationCompat.Builder(appCtx, LpcUtils.NOTI_CHANNEL_ID_CALL)
                       .setContentTitle(L.incomingCall())
                       .setPriority(NotificationCompat.PRIORITY_HIGH)
                       .setCategory(NotificationCompat.CATEGORY_CALL)
+                      // If there is no icon, the app will crash: "Invalid notification (no valid
+                      // small icon)"
+                      .setSmallIcon(R.mipmap.ic_launcher)
                       .setFullScreenIntent(pi, true);
               NotificationManager nm =
                   (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
