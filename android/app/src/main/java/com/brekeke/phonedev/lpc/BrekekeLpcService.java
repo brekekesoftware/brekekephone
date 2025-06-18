@@ -42,6 +42,8 @@ public class BrekekeLpcService extends Service {
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
     Notification notification =
         new Notification.Builder(this, LpcUtils.NOTI_CHANNEL_ID)
+            // fix: the app will crash: "Invalid notification (no valid small icon)"
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(L.serviceIsRunning())
             .setContentText(L.serviceIsRunningInBackground())
             .setContentIntent(pendingIntent)

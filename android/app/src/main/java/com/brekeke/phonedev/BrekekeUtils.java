@@ -277,29 +277,24 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void onFcmMessageReceived(Context c, Map<String, String> data) {
-    //
     // check if it is a PN for incoming call
     if (data.get("x_pn-id") == null) {
       return;
     }
-    //
     // init services if not
     initStaticServices(c);
     acquireWakeLock();
-    //
     // generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    //
     // check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
     if (!checkAccountExist(appCtx, data)) {
       return;
     }
     prepareLocale(appCtx);
-    //
     // show call
     String displayName = data.get("x_displayname");
     if (displayName == null || displayName.isEmpty()) {
@@ -308,7 +303,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (displayName == null || displayName.isEmpty()) {
       displayName = "Loading...";
     }
-    String callerName = displayName; // redeclare as final to put in nested class
+
+    // redeclare as final to put in nested class
+    String callerName = displayName;
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
     boolean autoAnswer = toBoolean(data.get("x_autoanswer"));
@@ -342,23 +339,22 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
             if (LpcUtils.checkAppInBackground()) {
               i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-              // Fix bug: The application crashes when it is in the background state and there is an
+              // fix: the application crashes when it is in the background state and there is an
               // incoming call
-              // note: flags |= is used to add a flag without losing other flags already present in
-              // the flags variable.
               int flags = PendingIntent.FLAG_UPDATE_CURRENT;
               if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                // |= is used to add a flag without losing other flags already present in the flags
+                // variable.
                 flags |= PendingIntent.FLAG_IMMUTABLE;
               }
               PendingIntent pi = PendingIntent.getActivity(appCtx, 0, i, flags);
               NotificationCompat.Builder b =
                   new NotificationCompat.Builder(appCtx, LpcUtils.NOTI_CHANNEL_ID_CALL)
+                      // fix: the app will crash: "Invalid notification (no valid small icon)"
+                      .setSmallIcon(R.mipmap.ic_launcher)
                       .setContentTitle(L.incomingCall())
                       .setPriority(NotificationCompat.PRIORITY_HIGH)
                       .setCategory(NotificationCompat.CATEGORY_CALL)
-                      // If there is no icon, the app will crash: "Invalid notification (no valid
-                      // small icon)"
-                      .setSmallIcon(R.mipmap.ic_launcher)
                       .setFullScreenIntent(pi, true);
               NotificationManager nm =
                   (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -374,7 +370,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             onPassiveReject(uuid);
           }
         };
-    //
     // try to run onShowIncomingCallUi if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0

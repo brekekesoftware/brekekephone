@@ -136,7 +136,6 @@ public class BrekekeLpcSocket {
       ByteBuffer requestBuffer = null;
       ByteBuffer responseBuffer = ByteBuffer.allocateDirect(8096);
       Selector selector = Selector.open();
-
       try (SocketChannel rawChannel = SocketChannel.open()) {
         rawChannel.configureBlocking(false);
         rawChannel.setOption(SO_KEEPALIVE, true);
@@ -144,7 +143,6 @@ public class BrekekeLpcSocket {
         rawChannel.connect(new InetSocketAddress(this.settings.host, this.settings.port));
         rawChannel.register(selector, SelectionKey.OP_CONNECT);
         ClientTlsChannel.Builder builder = ClientTlsChannel.newBuilder(rawChannel, sslContext);
-
         try (TlsChannel tlsChannel = builder.build()) {
           mainloop:
           while (true) {
@@ -215,7 +213,6 @@ public class BrekekeLpcSocket {
             Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
-
             // start incoming call activity
             BrekekeUtils.onFcmMessageReceived(mContext.getApplicationContext(), m);
             // emit message to assign callKeepUuid to call store
@@ -249,7 +246,6 @@ public class BrekekeLpcSocket {
           new LpcModel().new User(this.settings.token, this.settings.token, this.settings.userName);
       map.put("payload", new Payload(u));
       map.put("command", "request");
-
       String data = new CodableHelper().encode(map);
       return addSizeToMessage(data);
     }
