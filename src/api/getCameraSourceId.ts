@@ -1,6 +1,6 @@
-import { isWeb } from '../config'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { isWeb } from '#/config'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 declare global {
   interface MediaDeviceInfo {

@@ -2,13 +2,10 @@ import { cloneDeep } from 'lodash'
 import { action, observable } from 'mobx'
 import type { SectionListData } from 'react-native'
 
-import { pbx } from '../api/pbx'
-import { isUcBuddy, uc } from '../api/uc'
-import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
-import { accountStore } from './accountStore'
-import { getAuthStore, waitPbx, waitUc } from './authStore'
-import { contactStore } from './contactStore'
-import { intl } from './intl'
+import { isUcBuddy } from '#/api/uc'
+import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 
 const defaultBuddyMax = 100
 
@@ -34,18 +31,17 @@ class UserStore {
   groups: UcBuddyGroup[] = []
 
   @action loadPbxBuddyList = async (isAllUser: boolean = false) => {
-    await waitPbx()
+    await ctx.auth.waitPbx()
     this.resetCache()
     this.type = 'PbxBuddy'
-    const s = getAuthStore()
-    const ca = s.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return
     }
     let allUsers: UcBuddy[] = []
     // get all user from pbx
     if (isAllUser) {
-      const ids = await pbx.getUsers(ca.pbxTenant)
+      const ids = await ctx.pbx.getUsers(ca.pbxTenant)
       if (!ids) {
         return
       }
@@ -67,36 +63,36 @@ class UserStore {
     }
 
     // get from local
-    const d = await s.getCurrentDataAsync()
+    const d = await ctx.auth.getCurrentDataAsync()
     const buddyList = d?.pbxBuddyList
     const users = cloneDeep(buddyList?.users || [])
 
-    if (s.isBigMode()) {
+    if (ctx.auth.isBigMode()) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.getCurrentAccount()?.pbxLocalAllUsers
+      this.isSelectedAddAllUser =
+        !!ctx.auth.getCurrentAccount()?.pbxLocalAllUsers
     }
-    this.isDisableAddAllUserToTheList = s.isBigMode()
+    this.isDisableAddAllUserToTheList = ctx.auth.isBigMode()
     this.buddyMax =
-      Number(s.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
+      Number(ctx.auth.pbxConfig?.['webphone.users.max']) || defaultBuddyMax // buddy_max
     this.buddyMode = 2 // buddy_mode
     this.groups = []
     this.filterDataUserGroup(users, allUsers, this.buddyMode === 1)
   }
   @action loadUcBuddyList = async (isAllUser: boolean = false) => {
-    await waitUc()
-    const s = getAuthStore()
-    if (s.ucState !== 'success') {
+    await ctx.auth.waitUc()
+    if (ctx.auth.ucState !== 'success') {
       return
     }
     this.resetCache()
     this.type = 'UcBuddy'
-    const userList = uc.client.getBuddylist()
-    const configProperties = uc.client.getConfigProperties()
-    const p = uc.client.getProfile()
+    const userList = ctx.uc.client.getBuddylist()
+    const configProperties = ctx.uc.client.getConfigProperties()
+    const p = ctx.uc.client.getProfile()
     let allUsers: UcBuddy[] = []
     if (isAllUser) {
-      allUsers = uc.client
+      allUsers = ctx.uc.client
         .getAllUsers()
         .user?.filter(u => !u.disabledBuddy && u.user_id !== p.user_id)
         .map(
@@ -109,13 +105,14 @@ class UserStore {
             }) as UcBuddy,
         )
     }
-    if (s.isBigMode()) {
+    if (ctx.auth.isBigMode()) {
       this.isSelectedAddAllUser = false
     } else {
-      this.isSelectedAddAllUser = !!s.getCurrentAccount()?.pbxLocalAllUsers
+      this.isSelectedAddAllUser =
+        !!ctx.auth.getCurrentAccount()?.pbxLocalAllUsers
     }
     this.isDisableAddAllUserToTheList =
-      s.isBigMode() ||
+      ctx.auth.isBigMode() ||
       configProperties.optional_config?.buddy_max < allUsers?.length
     this.buddyMax =
       configProperties.optional_config?.buddy_max || defaultBuddyMax
@@ -230,13 +227,12 @@ class UserStore {
   }
 
   @action toggleIsSelectedAddAllUser = () => {
-    if (!this.isSelectedAddAllUser && !contactStore.pbxUsers.length) {
-      contactStore.getPbxUsers()
+    if (!this.isSelectedAddAllUser && !ctx.contact.pbxUsers.length) {
+      ctx.contact.getPbxUsers()
     }
     this.isSelectedAddAllUser = !this.isSelectedAddAllUser
-    const s = getAuthStore()
-    accountStore.upsertAccount({
-      id: s.getCurrentAccount()?.id,
+    ctx.account.upsertAccount({
+      id: ctx.auth.getCurrentAccount()?.id,
       pbxLocalAllUsers: this.isSelectedAddAllUser,
     })
   }
@@ -286,7 +282,7 @@ class UserStore {
     renderData: readonly UcBuddy[],
     isEditMode?: boolean,
   ) => {
-    if (!getAuthStore().getCurrentAccount()?.ucEnabled) {
+    if (!ctx.auth.getCurrentAccount()?.ucEnabled) {
       return `(${renderData.length})`
     }
 

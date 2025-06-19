@@ -7,20 +7,16 @@ import {
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 
-import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
-import { bundleIdentifier, isAndroid, isIos, isWeb } from '../config'
-import { getAuthStore, waitSip } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnKeyboard } from '../stores/RnKeyboard'
-import { RnPicker } from '../stores/RnPicker'
-import { RnStacker } from '../stores/RnStacker'
-import { parse, parseNotificationData } from './PushNotification-parse'
-import { BrekekeUtils } from './RnNativeModules'
-import { waitTimeout } from './waitTimeout'
+import { bundleIdentifier, isAndroid, isIos, isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnKeyboard } from '#/stores/RnKeyboard'
+import { RnPicker } from '#/stores/RnPicker'
+import { RnStacker } from '#/stores/RnStacker'
+import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false
 
@@ -28,15 +24,13 @@ const setupCallKeep = async () => {
   if (alreadySetupCallKeep) {
     return
   }
-  const cs = getCallStore()
-
   // do not re-setup ios when having an ongoing call
   // https://github.com/react-native-webrtc/react-native-callkeep/issues/367#issuecomment-804923269
   if (isIos) {
     if (AppState.currentState !== 'active') {
       return
     }
-    if (Object.keys(cs.callkeepMap).length) {
+    if (Object.keys(ctx.call.callkeepMap).length) {
       return
     }
     const map = await RNCallKeep.getCalls()
@@ -94,7 +88,6 @@ export const setupCallKeepEvents = async () => {
   if (isWeb) {
     return
   }
-  const cs = getCallStore()
   await setupCallKeep()
 
   const didLoadWithEvents = (e: EventsPayload['didLoadWithEvents']) => {
@@ -106,7 +99,7 @@ export const setupCallKeepEvents = async () => {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'answerCall')
     } else {
-      cs.onCallKeepAnswerCall(uuid)
+      ctx.call.onCallKeepAnswerCall(uuid)
     }
   }
   const endCall = (e: EventsPayload['endCall']) => {
@@ -115,8 +108,8 @@ export const setupCallKeepEvents = async () => {
       // handle action from CallKeep Notification on android
       BrekekeUtils.onCallKeepAction(uuid, 'rejectCall')
     } else {
-      cs.setCalleeRejected({ callkeepUuid: uuid })
-      cs.onCallKeepEndCall(uuid)
+      ctx.call.setCalleeRejected({ callkeepUuid: uuid })
+      ctx.call.onCallKeepEndCall(uuid)
     }
     // try to setup callkeep on each endcall if not yet
     setupCallKeep()
@@ -133,13 +126,13 @@ export const setupCallKeepEvents = async () => {
     console.log(
       `SIP PN debug: callkeep.didDisplayIncomingCall has e.payload: ${!!e.payload} found pnData: ${!!n}`,
     )
-    cs.onCallKeepDidDisplayIncomingCall(uuid, n)
+    ctx.call.onCallKeepDidDisplayIncomingCall(uuid, n)
     if (!n) {
       // when PN is off we will manually call RNCallKeep.displayIncomingCall
       // pnData will be empty here
       return
     }
-    getAuthStore().signInByNotification(n)
+    ctx.auth.signInByNotification(n)
   }
   const didPerformSetMutedCallAction = (
     e: EventsPayload['didPerformSetMutedCallAction'],
@@ -152,7 +145,7 @@ export const setupCallKeepEvents = async () => {
       return
     }
     const uuid = e.callUUID.toUpperCase()
-    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
+    const c = ctx.call.calls.find(_ => _.callkeepUuid === uuid)
     if (c && c.muted !== e.muted) {
       c.toggleMuted()
     }
@@ -161,7 +154,7 @@ export const setupCallKeepEvents = async () => {
     e: EventsPayload['didToggleHoldCallAction'],
   ) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
+    const c = ctx.call.calls.find(_ => _.callkeepUuid === uuid)
     // in case the user has not answered the call on callkeep display incoming call
     // audio session should not be assigned to WebRTC
     // before the didActivateAudioSession event is called
@@ -175,9 +168,9 @@ export const setupCallKeepEvents = async () => {
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
-    const c = cs.calls.find(_ => _.callkeepUuid === uuid)
+    const c = ctx.call.calls.find(_ => _.callkeepUuid === uuid)
     if (c) {
-      sip.sendDTMF({
+      ctx.sip.sendDTMF({
         sessionId: c.id,
         signal: e.digits.charAt(e.digits.length - 1),
         talkerId: c.pbxTalkerId,
@@ -190,7 +183,7 @@ export const setupCallKeepEvents = async () => {
   ) => {
     // only in ios
     console.log('CallKeep debug: didActivateAudioSession')
-    const c = cs.getOngoingCall()
+    const c = ctx.call.getOngoingCall()
     if (c?.isAutoAnswer) {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
@@ -203,7 +196,7 @@ export const setupCallKeepEvents = async () => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
-    cs.updateBackgroundCalls()
+    ctx.call.updateBackgroundCalls()
   }
   const didReceiveStartCallAction = async (
     e: EventsPayload['didReceiveStartCallAction'],
@@ -214,11 +207,11 @@ export const setupCallKeepEvents = async () => {
       // our RNCallKeep.startCall
       return
     }
-    if (!(await getAuthStore().autoSignInLast())) {
+    if (!(await ctx.auth.autoSignInLast())) {
       return
     }
-    await waitSip()
-    getCallStore().startCall(e.handle)
+    await ctx.auth.waitSip()
+    ctx.call.startCall(e.handle)
   }
 
   // https://github.com/react-native-webrtc/react-native-callkeep#didloadwithevents
@@ -245,12 +238,10 @@ export const setupCallKeepEvents = async () => {
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
 
+  // android self-managed connection service
   if (!isAndroid) {
     return
   }
-
-  // android self-managed connection service
-  const nav = Nav()
 
   // in killed state, the event handler may fire before the nav object has init
   const waitTimeoutNav = async () => {
@@ -267,7 +258,7 @@ export const setupCallKeepEvents = async () => {
 
   eventEmitter.addListener('answerCall', async (uuid: string) => {
     // should update the native android UI here to fix a case with auto answer
-    const c = cs.calls.find(_ => _.callkeepUuid === uuid && _.answered)
+    const c = ctx.call.calls.find(_ => _.callkeepUuid === uuid && _.answered)
     if (c) {
       if (isAndroid) {
         // with auto answer, talkingAvatar takes too long to update
@@ -280,59 +271,59 @@ export const setupCallKeepEvents = async () => {
       }
       BrekekeUtils.onCallConnected(uuid)
     }
-    cs.onCallKeepAnswerCall(uuid.toUpperCase())
+    ctx.call.onCallKeepAnswerCall(uuid.toUpperCase())
     RNCallKeep.setOnHold(uuid, false)
   })
   eventEmitter.addListener('rejectCall', (uuid: string) => {
     if (uuid.startsWith('CalleeClickReject-')) {
       uuid = uuid.replace('CalleeClickReject-', '').toUpperCase()
-      cs.setCalleeRejected({ callkeepUuid: uuid })
+      ctx.call.setCalleeRejected({ callkeepUuid: uuid })
     } else {
       uuid = uuid.toUpperCase()
     }
-    cs.onCallKeepEndCall(uuid)
+    ctx.call.onCallKeepEndCall(uuid)
   })
   eventEmitter.addListener('transfer', async (uuid: string) => {
     await waitTimeoutNav()
-    nav.goToPageCallTransferChooseUser()
+    ctx.nav.goToPageCallTransferChooseUser()
   })
   eventEmitter.addListener('showBackgroundCall', async (uuid: string) => {
     await waitTimeoutNav()
-    nav.goToPageCallBackgrounds()
+    ctx.nav.goToPageCallBackgrounds()
   })
   eventEmitter.addListener('park', async (uuid: string) => {
     await waitTimeoutNav()
-    nav.goToPageCallParks2()
+    ctx.nav.goToPageCallParksOngoing()
   })
   eventEmitter.addListener('video', (uuid: string) => {
-    cs.getOngoingCall()?.toggleVideo()
+    ctx.call.getOngoingCall()?.toggleVideo()
   })
   eventEmitter.addListener('speaker', (uuid: string) => {
-    cs.toggleLoudSpeaker()
+    ctx.call.toggleLoudSpeaker()
   })
   eventEmitter.addListener('mute', (uuid: string) => {
-    cs.getOngoingCall()?.toggleMuted()
+    ctx.call.getOngoingCall()?.toggleMuted()
   })
   eventEmitter.addListener('record', (uuid: string) => {
-    cs.getOngoingCall()?.toggleRecording()
+    ctx.call.getOngoingCall()?.toggleRecording()
   })
   eventEmitter.addListener('dtmf', async (uuid: string) => {
     await waitTimeoutNav()
-    nav.goToPageCallDtmfKeypad()
+    ctx.nav.goToPageCallDtmfKeypad()
   })
   eventEmitter.addListener('hold', (uuid: string) => {
-    cs.getOngoingCall()?.toggleHoldWithCheck()
+    ctx.call.getOngoingCall()?.toggleHoldWithCheck()
   })
   eventEmitter.addListener('switchCamera', (uuid: string) => {
-    cs.getOngoingCall()?.toggleSwitchCamera()
+    ctx.call.getOngoingCall()?.toggleSwitchCamera()
   })
   eventEmitter.addListener('switchCall', (uuid: string) => {
-    const oc = cs.getOngoingCall()
-    const c = cs.calls.find(i => i.callkeepUuid === uuid)
+    const oc = ctx.call.getOngoingCall()
+    const c = ctx.call.calls.find(i => i.callkeepUuid === uuid)
     if (!c || c.id === oc?.id || !oc?.answered) {
       return
     }
-    cs.onSelectBackgroundCall(c)
+    ctx.call.onSelectBackgroundCall(c)
   })
   eventEmitter.addListener('phonePermission', () => {
     console.log(
@@ -349,23 +340,23 @@ export const setupCallKeepEvents = async () => {
   // other utils
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
     if (!RnStacker.stacks.length) {
-      nav.goToPageIndex()
+      ctx.nav.goToPageIndex()
     } else {
       RnStacker.stacks = [RnStacker.stacks[0]]
     }
-    cs.inPageCallManage = undefined
+    ctx.call.inPageCallManage = undefined
   })
   eventEmitter.addListener('onBackPressed', onBackPressed)
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
     if (!RnStacker.stacks.length) {
-      nav.goToPageIndex()
+      ctx.nav.goToPageIndex()
     } else {
       RnStacker.stacks = [RnStacker.stacks[0]]
     }
-    cs.inPageCallManage = undefined
+    ctx.call.inPageCallManage = undefined
   })
   eventEmitter.addListener('updateStreamActive', (vId: string) => {
-    cs.getOngoingCall()?.updateVideoStreamFromNative(vId)
+    ctx.call.getOngoingCall()?.updateVideoStreamFromNative(vId)
   })
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
@@ -373,18 +364,18 @@ export const setupCallKeepEvents = async () => {
   // android native video conference
   eventEmitter.addListener('navChat', async (uuid: string) => {
     await waitTimeoutNav()
-    const chatId = cs.getOngoingCall()?.partyNumber
+    const chatId = ctx.call.getOngoingCall()?.partyNumber
     if (!chatId) {
       return
     }
     if (chatId.startsWith('uc')) {
-      Nav().goToPageChatGroupDetail({ groupId: chatId.replace('uc', '') })
+      ctx.nav.goToPageChatGroupDetail({ groupId: chatId.replace('uc', '') })
     } else {
-      Nav().goToPageChatDetail({ buddy: chatId })
+      ctx.nav.goToPageChatDetail({ buddy: chatId })
     }
   })
   // TODO: should check additional conditions when user switches between activities
-  eventEmitter.addListener('onResume', () => pbx.ping())
+  eventEmitter.addListener('onResume', () => ctx.pbx.ping())
 }
 
 export const onBackPressed = () => {
@@ -400,9 +391,8 @@ export const onBackPressed = () => {
     RnPicker.dismiss()
     return true
   }
-  const cs = getCallStore()
-  if (cs.inPageCallManage) {
-    cs.inPageCallManage = undefined
+  if (ctx.call.inPageCallManage) {
+    ctx.call.inPageCallManage = undefined
     return true
   }
   if (RnStacker.stacks.length > 1) {

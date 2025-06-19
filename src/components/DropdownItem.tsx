@@ -1,9 +1,9 @@
 import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { RnText } from './RnText'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+import { RnText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
 
 export type DropdownItemProps = {
   title?: string

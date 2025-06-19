@@ -18,12 +18,12 @@ import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
   mdiPlayCircleOutline,
-} from '../assets/icons'
-import { isAndroid } from '../config'
-import type { ChatFile } from '../stores/chatStore'
-import { RnIcon } from './RnIcon'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+} from '#/assets/icons'
+import { RnIcon } from '#/components/RnIcon'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import { isAndroid } from '#/config'
+import type { ChatFile } from '#/stores/chatStore'
 
 const css = StyleSheet.create({
   vVideoModal: {
@@ -101,9 +101,6 @@ const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
   state,
-  id,
-  name,
-  incoming,
   fileType,
   save,
 }) => {
@@ -120,7 +117,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return nextUrl
   }, [])
 
-  const images = url ? [{ url: convertUri(url) }] : []
+  const images = url ? [{ url: convertUri(url) }] : undefined
   const isLoading =
     (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
     (save && save === 'started')
@@ -130,7 +127,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     state === 'success' && !!url && save && save === 'success'
 
   const onShowImage = useCallback(() => {
-    if (images.length > 0) {
+    if (images?.length) {
       setIsVisible(true)
     }
   }, [images])
@@ -149,7 +146,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             muted
             paused={true}
             style={css.video}
-            pictureInPicture
+            enterPictureInPictureOnLeave
           />
           <View style={css.vlayerVideo}>
             <RnTouchableOpacity onPress={onShowImage}>

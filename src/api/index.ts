@@ -1,91 +1,82 @@
 import { action } from 'mobx'
 
-import type { Conference, PbxEvent, Session } from '../brekekejs'
-import { successConnectCheckPeriod } from '../config'
-import { authPBX } from '../stores/AuthPBX'
-import { authSIP } from '../stores/AuthSIP'
-import { getAuthStore, waitSip } from '../stores/authStore'
-import { authUC } from '../stores/AuthUC'
-import type { Call } from '../stores/Call'
-import { getCallStore } from '../stores/callStore'
-import { chatStore, FileEvent } from '../stores/chatStore'
-import { contactStore, getPartyNameAsync } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { sipErrorEmitter } from '../stores/sipErrorEmitter'
-import { userStore } from '../stores/userStore'
-import { resetProcessedPn } from '../utils/PushNotification-parse'
-import { toBoolean } from '../utils/string'
-import { pbx } from './pbx'
-import { sip } from './sip'
-import { SyncPnToken } from './syncPnToken'
-import { uc } from './uc'
-import { updatePhoneAppli } from './updatePhoneIndex'
+import { updatePhoneAppli } from '#/api/updatePhoneIndex'
+import type { Conference, PbxEvent, Session } from '#/brekekejs'
+import { successConnectCheckPeriod } from '#/config'
+import type { Call } from '#/stores/Call'
+import { FileEvent } from '#/stores/chatStore'
+import { getPartyNameAsync } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
+import { userStore } from '#/stores/userStore'
+import { resetProcessedPn } from '#/utils/PushNotification-parse'
+import { toBoolean } from '#/utils/string'
 
 class Api {
   constructor() {
-    pbx.on('connection-started', this.onPBXConnectionStarted)
-    pbx.on('connection-stopped', this.onPBXConnectionStopped)
-    pbx.on('connection-timeout', this.onPBXConnectionTimeout)
-    pbx.on('user-calling', this.onPBXUserCalling)
-    pbx.on('user-ringing', this.onPBXUserRinging)
-    pbx.on('user-talking', this.onPBXUserTalking)
-    pbx.on('user-holding', this.onPBXUserHolding)
-    pbx.on('user-hanging', this.onPBXUserHanging)
-    pbx.on('voicemail-updated', this.onVoiceMailUpdated)
-    pbx.on('park-started', this.onPBXUserParkStarted)
-    pbx.on('park-stopped', this.onPBXUserParkStopped)
-    pbx.on('call-recording', this.onPbxCallRecording)
-    sip.on('connection-started', this.onSIPConnectionStarted)
-    sip.on('connection-stopped', this.onSIPConnectionStopped)
-    sip.on('connection-timeout', this.onSIPConnectionTimeout)
-    sip.on('session-started', this.onSIPSessionStarted)
-    sip.on('session-updated', this.onSIPSessionUpdated)
-    sip.on('session-stopped', this.onSIPSessionStopped)
-    uc.on('connection-stopped', this.onUCConnectionStopped)
-    uc.on('user-updated', this.onUCUserUpdated)
-    uc.on('buddy-chat-created', this.onBuddyChatCreated)
-    uc.on('group-chat-created', this.onGroupChatCreated)
-    uc.on('chat-group-invited', this.onChatGroupInvited)
-    uc.on('chat-group-revoked', this.onChatGroupRevoked)
-    uc.on('chat-group-updated', this.onChatGroupUpdated)
-    uc.on('file-received', this.onFileReceived)
-    uc.on('file-progress', this.onFileProgress)
-    uc.on('file-finished', this.onFileFinished)
+    ctx.pbx.on('connection-started', this.onPBXConnectionStarted)
+    ctx.pbx.on('connection-stopped', this.onPBXConnectionStopped)
+    ctx.pbx.on('connection-timeout', this.onPBXConnectionTimeout)
+    ctx.pbx.on('user-calling', this.onPBXUserCalling)
+    ctx.pbx.on('user-ringing', this.onPBXUserRinging)
+    ctx.pbx.on('user-talking', this.onPBXUserTalking)
+    ctx.pbx.on('user-holding', this.onPBXUserHolding)
+    ctx.pbx.on('user-hanging', this.onPBXUserHanging)
+    ctx.pbx.on('voicemail-updated', this.onVoiceMailUpdated)
+    ctx.pbx.on('park-started', this.onPBXUserParkStarted)
+    ctx.pbx.on('park-stopped', this.onPBXUserParkStopped)
+    ctx.pbx.on('call-recording', this.onPbxCallRecording)
+    ctx.sip.on('connection-started', this.onSIPConnectionStarted)
+    ctx.sip.on('connection-stopped', this.onSIPConnectionStopped)
+    ctx.sip.on('connection-timeout', this.onSIPConnectionTimeout)
+    ctx.sip.on('session-started', this.onSIPSessionStarted)
+    ctx.sip.on('session-updated', this.onSIPSessionUpdated)
+    ctx.sip.on('session-stopped', this.onSIPSessionStopped)
+    ctx.uc.on('connection-stopped', this.onUCConnectionStopped)
+    ctx.uc.on('user-updated', this.onUCUserUpdated)
+    ctx.uc.on('buddy-chat-created', this.onBuddyChatCreated)
+    ctx.uc.on('group-chat-created', this.onGroupChatCreated)
+    ctx.uc.on('chat-group-invited', this.onChatGroupInvited)
+    ctx.uc.on('chat-group-revoked', this.onChatGroupRevoked)
+    ctx.uc.on('chat-group-updated', this.onChatGroupUpdated)
+    ctx.uc.on('file-received', this.onFileReceived)
+    ctx.uc.on('file-progress', this.onFileProgress)
+    ctx.uc.on('file-finished', this.onFileFinished)
   }
 
   @action onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
-    const s = getAuthStore()
-    s.pbxState = 'success'
-    s.pbxTotalFailure = 0
+    ctx.auth.pbxState = 'success'
+    ctx.auth.pbxTotalFailure = 0
 
-    authSIP.auth()
-    await waitSip()
+    ctx.authSIP.auth()
+    await ctx.auth.waitSip()
 
-    await pbx.getConfig()
-    const ca = s.getCurrentAccount()
+    await ctx.pbx.getConfig()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return
     }
 
-    if (!getAuthStore().userExtensionProperties) {
+    if (!ctx.auth.userExtensionProperties) {
       updatePhoneAppli()
     }
 
     // handle pending request when pbx start
-    pbx.retryRequests()
+    ctx.pbx.retryRequests()
 
     // when pbx reconnects due to timeout, we wait for successConnectCheckPeriod before
     // attempting to syncPnToken, getPbxConfig, and getPbxUsers again
     const now = Date.now()
     console.log(
-      `PBX PN debug: onPBXConnectionStarted pbxConnectedAt=${s.pbxConnectedAt} ,
+      `PBX PN debug: onPBXConnectionStarted pbxConnectedAt=${ctx.auth.pbxConnectedAt} ,
       now=${now} successConnectCheckPeriod=${successConnectCheckPeriod} ,
-      now - s.pbxConnectedAt=${now - s.pbxConnectedAt} ms`,
+      now - s.pbxConnectedAt=${now - ctx.auth.pbxConnectedAt} ms`,
     )
     if (
-      s.pbxConnectedAt &&
-      now - s.pbxConnectedAt < successConnectCheckPeriod
+      ctx.auth.pbxConnectedAt &&
+      now - ctx.auth.pbxConnectedAt < successConnectCheckPeriod
     ) {
       console.log(
         'PBX PN debug: onPBXConnectionStarted try to skip syncPnToken, getPbxConfig, getPbxUsers',
@@ -93,105 +84,101 @@ class Api {
       return
     }
 
-    contactStore.loadContacts()
+    ctx.contact.loadContacts()
     // load list local  when pbx start
     // set default pbxLocalAllUsers = true
     if (ca.pbxLocalAllUsers === undefined) {
       ca.pbxLocalAllUsers = true
     }
-    if (s.isBigMode() || !ca.pbxLocalAllUsers) {
+    if (ctx.auth.isBigMode() || !ca.pbxLocalAllUsers) {
       if (ca.ucEnabled) {
         userStore.loadUcBuddyList()
       } else {
         userStore.loadPbxBuddyList()
       }
     } else {
-      contactStore.getPbxUsers()
+      ctx.contact.getPbxUsers()
     }
-    if (s.isSignInByNotification) {
+    if (ctx.auth.isSignInByNotification) {
       return
     }
-    if (s.pbxLoginFromAnotherPlace) {
+    if (ctx.auth.pbxLoginFromAnotherPlace) {
       console.log(
         'pbxLoginFromAnotherPlace debug: stop sync pn token when pbx login from another place',
       )
       return
     }
-    SyncPnToken()
-      .sync(ca)
-      .then(() => SyncPnToken().syncForAllAccounts())
+    ctx.pnToken.sync(ca).then(() => ctx.pnToken.syncForAllAccounts())
 
-    s.pbxConnectedAt = Date.now()
+    ctx.auth.pbxConnectedAt = Date.now()
   }
   onPBXConnectionStopped = () => {
-    getAuthStore().pbxState = 'stopped'
-    getAuthStore().pbxTotalFailure += 1
-    getAuthStore().pbxConnectedAt = 0
+    ctx.auth.pbxState = 'stopped'
+    ctx.auth.pbxTotalFailure += 1
+    ctx.auth.pbxConnectedAt = 0
   }
   onPBXConnectionTimeout = () => {
-    getAuthStore().pbxState = 'failure'
-    getAuthStore().pbxTotalFailure += 1
-    getAuthStore().pbxConnectedAt = 0
-    authPBX.auth()
+    ctx.auth.pbxState = 'failure'
+    ctx.auth.pbxTotalFailure += 1
+    ctx.auth.pbxConnectedAt = 0
+    ctx.authPBX.auth()
   }
   onPBXUserCalling = (ev: UserTalkerEvent) => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'calling')
+    ctx.contact.setTalkerStatus(ev.user, ev.talker, 'calling')
   }
   onPBXUserRinging = (ev: UserTalkerEvent) => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'ringing')
+    ctx.contact.setTalkerStatus(ev.user, ev.talker, 'ringing')
   }
   onPBXUserTalking = (ev: UserTalkerEvent) => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'talking')
+    ctx.contact.setTalkerStatus(ev.user, ev.talker, 'talking')
   }
   onPBXUserHolding = (ev: UserTalkerEvent) => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, 'holding')
+    ctx.contact.setTalkerStatus(ev.user, ev.talker, 'holding')
   }
   onPBXUserHanging = (ev: UserTalkerEvent) => {
-    contactStore.setTalkerStatus(ev.user, ev.talker, '')
+    ctx.contact.setTalkerStatus(ev.user, ev.talker, '')
   }
   onVoiceMailUpdated = (ev: { new: number }) => {
-    getCallStore().setNewVoicemailCount(ev?.new || 0)
+    ctx.call.setNewVoicemailCount(ev?.new || 0)
   }
   onPBXUserParkStarted = (parkNumber: string) => {
     console.log('onPBXUserParkStarted', parkNumber)
-    getCallStore().addParkNumber(parkNumber)
+    ctx.call.addParkNumber(parkNumber)
   }
   onPBXUserParkStopped = (parkNumber: string) => {
     console.log('onPBXUserParkStopped', parkNumber)
-    getCallStore().removeParkNumber(parkNumber)
+    ctx.call.removeParkNumber(parkNumber)
   }
   onPbxCallRecording = (ev: PbxEvent['callRecording']) => {
-    getCallStore()
-      .calls.find(item => item.pbxTalkerId === ev.talker_id)
+    ctx.call.calls
+      .find(item => item.pbxTalkerId === ev.talker_id)
       ?.updateRecordingStatus(toBoolean(ev.status))
   }
   @action onSIPConnectionStarted = () => {
     console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
-    const s = getAuthStore()
-    s.sipState = 'success'
-    s.sipTotalFailure = 0
-    authPBX.auth()
+    ctx.auth.sipState = 'success'
+    ctx.auth.sipTotalFailure = 0
+    ctx.authPBX.auth()
   }
   onSIPConnectionStopped = (e: { reason: string; response: string }) => {
-    const s = getAuthStore()
     console.log('SIP PN debug: set sipState failure stopped')
     resetProcessedPn()
-    s.sipState = 'failure'
-    s.sipTotalFailure += 1
-    if (s.sipTotalFailure > 3) {
-      s.sipPn = {}
+    ctx.auth.sipState = 'failure'
+    ctx.auth.sipTotalFailure += 1
+    if (ctx.auth.sipTotalFailure > 3) {
+      ctx.auth.sipPn = {}
     }
-    if (s.sipState === 'failure') {
-      authSIP.auth()
+    if (ctx.auth.sipState === 'failure') {
+      ctx.authSIP.auth()
     }
   }
   onSIPConnectionTimeout = () => {
     console.log('SIP PN debug: set sipState failure timeout')
-    getAuthStore().sipState = 'failure'
-    getAuthStore().sipTotalFailure += 1
-    sip.stopWebRTC()
-    authSIP.auth()
+    ctx.auth.sipState = 'failure'
+    ctx.auth.sipTotalFailure += 1
+    ctx.sip.stopWebRTC()
+    ctx.authSIP.auth()
   }
   onSIPSessionStarted = async (c: Call) => {
     if (c.partyNumber === '8') {
@@ -200,22 +187,22 @@ class Api {
     if (!c.partyName) {
       c.partyName = (await getPartyNameAsync(c.partyNumber)) || c.partyNumber
     }
-    getCallStore().onCallUpsert(c)
+    ctx.call.onCallUpsert(c)
   }
   onSIPSessionUpdated = (call: Call) => {
-    getCallStore().onCallUpsert(call)
+    ctx.call.onCallUpsert(call)
   }
   onSIPSessionStopped = (rawSession: Session) => {
-    getCallStore().onCallRemove(rawSession)
+    ctx.call.onCallRemove(rawSession)
   }
 
   onUCConnectionStopped = () => {
-    getAuthStore().ucState = 'stopped'
+    ctx.auth.ucState = 'stopped'
   }
   onUCConnectionTimeout = () => {
-    getAuthStore().ucState = 'failure'
-    getAuthStore().ucTotalFailure += 1
-    authUC.auth()
+    ctx.auth.ucState = 'failure'
+    ctx.auth.ucTotalFailure += 1
+    ctx.authUC.auth()
   }
   onUCUserUpdated = (ev: {
     id: string
@@ -224,7 +211,7 @@ class Api {
     status: string
     statusText: string
   }) => {
-    contactStore.updateUcUser(ev)
+    ctx.contact.updateUcUser(ev)
     userStore.updateStatusBuddy(ev.id, ev.status, ev.avatar)
   }
   onBuddyChatCreated = (chat: {
@@ -236,7 +223,7 @@ class Api {
     created: number
     conf_id: string
   }) => {
-    chatStore.pushMessages(chat.creator, chat, true)
+    ctx.chat.pushMessages(chat.creator, chat, true)
   }
 
   onGroupChatCreated = (chat: {
@@ -248,7 +235,7 @@ class Api {
     file?: string
     created: number
   }) => {
-    chatStore.pushMessages(chat.group, chat, true)
+    ctx.chat.pushMessages(chat.group, chat, true)
   }
 
   onChatGroupInvited = (group: {
@@ -258,7 +245,7 @@ class Api {
     members: string[]
     webchat: Conference
   }) => {
-    chatStore.upsertGroup(group)
+    ctx.chat.upsertGroup(group)
   }
   onChatGroupUpdated = (group: {
     id: string
@@ -267,10 +254,10 @@ class Api {
     members: string[]
     webchat: Conference
   }) => {
-    chatStore.upsertGroup(group)
+    ctx.chat.upsertGroup(group)
   }
   onChatGroupRevoked = (group: { id: string }) => {
-    chatStore.removeGroup(group.id)
+    ctx.chat.removeGroup(group.id)
   }
   onFileReceived = (file: {
     id: string
@@ -280,21 +267,21 @@ class Api {
     state: string
     transferPercent: number
   }) => {
-    chatStore.upsertFile(file)
+    ctx.chat.upsertFile(file)
   }
   onFileProgress = (file: {
     id: string
     state: string
     transferPercent: number
   }) => {
-    chatStore.upsertFile(file, FileEvent.onFileProgress)
+    ctx.chat.upsertFile(file, FileEvent.onFileProgress)
   }
   onFileFinished = (file: {
     id: string
     state: string
     transferPercent: number
   }) => {
-    chatStore.upsertFile(file)
+    ctx.chat.upsertFile(file)
   }
 }
 

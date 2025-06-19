@@ -2,10 +2,10 @@ import { transparentize } from 'polished'
 import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { mdiDotsVertical } from '../assets/icons'
-import { AnimatedSize } from './AnimatedSize'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { mdiDotsVertical } from '#/assets/icons'
+import { AnimatedSize } from '#/components/AnimatedSize'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   Backdrop: {

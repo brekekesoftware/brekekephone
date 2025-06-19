@@ -1,21 +1,20 @@
 import { observer } from 'mobx-react'
 
-import { isIos } from '../config'
-import { getCallStore } from '../stores/callStore'
 import {
   AnsweredItem,
   IosRBT,
   OutgoingItem,
   OutgoingItemWithSDP,
-} from './CallVoicesUI'
+} from '#/components/CallVoicesUI'
+import { isIos } from '#/config'
+import { ctx } from '#/stores/ctx'
 
 export const CallVoices = observer(() => {
-  const cs = getCallStore()
   // try trigger observer?
-  void Object.keys(cs.callkeepMap)
-  void cs.calls.map(_ => _.callkeepUuid)
+  void Object.keys(ctx.call.callkeepMap)
+  void ctx.call.calls.map(_ => _.callkeepUuid)
 
-  const oc = cs.getOngoingCall()
+  const oc = ctx.call.getOngoingCall()
   const isOutgoing = oc && !oc.incoming && !oc.answered
   const isOutgoingProgress = isOutgoing && oc.sessionStatus === 'progress'
 
@@ -32,10 +31,10 @@ export const CallVoices = observer(() => {
         ) : (
           <>
             <OutgoingItem />
-            {isIos && <IosRBT isLoudSpeaker={cs.isLoudSpeakerEnabled} />}
+            {isIos && <IosRBT isLoudSpeaker={ctx.call.isLoudSpeakerEnabled} />}
           </>
         ))}
-      {cs.calls
+      {ctx.call.calls
         .filter(c => c.answered)
         .map(c => (
           <AnsweredItem key={c.id} voiceStreamObject={c.voiceStreamObject} />

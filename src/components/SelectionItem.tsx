@@ -2,9 +2,9 @@ import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
 import { StyleSheet } from 'react-native'
 
-import { RnCheckBox } from './RnCheckbox'
-import { RnText } from './RnText'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
+import { RnCheckBox } from '#/components/RnCheckbox'
+import { RnText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 
 const css = StyleSheet.create({
   SelectionItem: {

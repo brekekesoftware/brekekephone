@@ -3,7 +3,6 @@ import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { pbx } from '../api/pbx'
 import {
   mdiBriefcase,
   mdiCellphone,
@@ -11,19 +10,17 @@ import {
   mdiInformation,
   mdiMagnify,
   mdiPhone,
-} from '../assets/icons'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { getCallStore } from '../stores/callStore'
-import type { Phonebook } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnPicker } from '../stores/RnPicker'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+} from '#/assets/icons'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import type { Phonebook } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnPicker } from '#/stores/RnPicker'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   Loading: {
@@ -34,30 +31,30 @@ const css = StyleSheet.create({
 @observer
 export class PageContactPhonebook extends Component {
   componentDidMount = () => {
-    contactStore.getManageItems()
+    ctx.contact.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
-      if (!pbx.client) {
+      if (!ctx.pbx.client) {
         return
       }
-      contactStore.loadContactsFirstTime()
+      ctx.contact.loadContactsFirstTime()
       BackgroundTimer.clearInterval(id)
     }, 1000)
   }
   componentWillUnmount = () => {
-    if (contactStore.isDeleteState) {
-      contactStore.isDeleteState = false
-      contactStore.selectedContactIds = {}
+    if (ctx.contact.isDeleteState) {
+      ctx.contact.isDeleteState = false
+      ctx.contact.selectedContactIds = {}
     }
   }
   update = (id: string) => {
-    const contact = contactStore.getPhonebookById(id)
+    const contact = ctx.contact.getPhonebookById(id)
     if (contact?.loaded) {
-      Nav().goToPagePhonebookUpdate({
+      ctx.nav.goToPagePhonebookUpdate({
         contact,
       })
     } else {
       this.loadContactDetail(id, (ct: Phonebook) => {
-        Nav().goToPagePhonebookUpdate({
+        ctx.nav.goToPagePhonebookUpdate({
           contact: ct,
         })
       })
@@ -65,7 +62,7 @@ export class PageContactPhonebook extends Component {
   }
 
   loadContactDetail = (id: string, cb: Function) => {
-    pbx
+    ctx.pbx
       .getContact(id)
       .then(ct => {
         if (!ct) {
@@ -75,7 +72,7 @@ export class PageContactPhonebook extends Component {
           ...ct,
           loaded: true,
         }
-        contactStore.upsertPhonebook(x as Phonebook)
+        ctx.contact.upsertPhonebook(x as Phonebook)
         cb(x)
       })
       .catch((err: Error) => {
@@ -88,7 +85,7 @@ export class PageContactPhonebook extends Component {
 
   callRequest = (number: string, u: Phonebook) => {
     if (number !== '') {
-      getCallStore().startCall(number.replace(/\s+/g, ''))
+      ctx.call.startCall(number.replace(/\s+/g, ''))
     } else {
       this.update(u.id)
       RnAlert.error({
@@ -159,27 +156,27 @@ export class PageContactPhonebook extends Component {
   }
 
   updateSearchText = (v: string) => {
-    contactStore.phonebookSearchTerm = v
+    ctx.contact.phonebookSearchTerm = v
     this.loadContactsDebounced()
-    contactStore.selectedContactIds = {}
+    ctx.contact.selectedContactIds = {}
   }
   loadContactsDebounced = debounce(() => {
-    contactStore.offset = 0
-    contactStore.loadContacts()
+    ctx.contact.offset = 0
+    ctx.contact.loadContacts()
   }, 500)
 
   onDelete = async () => {
-    if (isEmpty(contactStore.selectedContactIds)) {
+    if (isEmpty(ctx.contact.selectedContactIds)) {
       return
     }
     try {
-      const result = await pbx.deleteContact(
-        Object.keys(contactStore.selectedContactIds),
+      const result = await ctx.pbx.deleteContact(
+        Object.keys(ctx.contact.selectedContactIds),
       )
       if (result?.succeeded?.length) {
-        contactStore.removeContacts(result.succeeded)
+        ctx.contact.removeContacts(result.succeeded)
       }
-      contactStore.selectedContactIds = {}
+      ctx.contact.selectedContactIds = {}
     } catch (err) {
       RnAlert.error({
         message: intlDebug`Failed to delete contact`,
@@ -188,11 +185,11 @@ export class PageContactPhonebook extends Component {
     }
   }
   onCancel = () => {
-    contactStore.isDeleteState = false
-    contactStore.selectedContactIds = {}
+    ctx.contact.isDeleteState = false
+    ctx.contact.selectedContactIds = {}
   }
   render() {
-    const phonebooks = contactStore.phoneBooks
+    const phonebooks = ctx.contact.phoneBooks
     const map = {} as { [k: string]: Phonebook[] }
     phonebooks.forEach(u => {
       let c0 = u?.display_name?.charAt(0).toUpperCase()
@@ -218,7 +215,7 @@ export class PageContactPhonebook extends Component {
       {
         label:
           intl`Delete ` +
-          `(${Object.keys(contactStore.selectedContactIds).length})`,
+          `(${Object.keys(ctx.contact.selectedContactIds).length})`,
         onPress: this.onDelete,
       },
       {
@@ -229,24 +226,24 @@ export class PageContactPhonebook extends Component {
     const options = [
       {
         label: intl`Create new contact`,
-        onPress: Nav().goToPagePhonebookCreate,
+        onPress: ctx.nav.goToPagePhonebookCreate,
       },
       {
         label: intl`Delete contacts`,
         onPress: () => {
-          contactStore.isDeleteState = true
+          ctx.contact.isDeleteState = true
         },
       },
       {
         label: intl`Reload`,
-        onPress: contactStore.loadContacts,
+        onPress: ctx.contact.loadContacts,
       },
     ]
 
     return (
       <Layout
         description={intl`Your phonebook contacts`}
-        dropdown={contactStore.isDeleteState ? optionDelete : options}
+        dropdown={ctx.contact.isDeleteState ? optionDelete : options}
         menu='contact'
         subMenu='phonebook'
         title={intl`Phonebook`}
@@ -255,25 +252,25 @@ export class PageContactPhonebook extends Component {
           icon={mdiMagnify}
           label={intl`SEARCH CONTACTS`}
           onValueChange={this.updateSearchText}
-          value={contactStore.phonebookSearchTerm}
+          value={ctx.contact.phonebookSearchTerm}
         />
         <View>
           {groups.map(gr => (
             <Fragment key={gr.key}>
               <Field isGroup label={gr.key} />
               {gr.phonebooks.map((u, i) =>
-                contactStore.isDeleteState ? (
+                ctx.contact.isDeleteState ? (
                   <RnTouchableOpacity
-                    onPress={() => contactStore.selectContactId(u.id)}
+                    onPress={() => ctx.contact.selectContactId(u.id)}
                     disabled={u.shared}
                   >
                     <UserItem
                       key={i}
                       name={u?.display_name || intl`<Unnamed>`}
                       isSelection
-                      isSelected={contactStore.selectedContactIds[u.id]}
+                      isSelected={ctx.contact.selectedContactIds[u.id]}
                       disabled={u.shared}
-                      onSelect={() => contactStore.selectContactId(u.id)}
+                      onSelect={() => ctx.contact.selectContactId(u.id)}
                     />
                   </RnTouchableOpacity>
                 ) : (
@@ -291,7 +288,7 @@ export class PageContactPhonebook extends Component {
             </Fragment>
           ))}
         </View>
-        {contactStore.loading ? (
+        {ctx.contact.loading ? (
           <RnText
             style={css.Loading}
             warning
@@ -299,8 +296,8 @@ export class PageContactPhonebook extends Component {
             normal
             center
           >{intl`Loading...`}</RnText>
-        ) : contactStore.hasLoadmore ? (
-          <RnTouchableOpacity onPress={contactStore.loadMoreContacts}>
+        ) : ctx.contact.hasLoadmore ? (
+          <RnTouchableOpacity onPress={ctx.contact.loadMoreContacts}>
             <RnText
               style={css.Loading}
               primary

@@ -3,7 +3,7 @@ import type { ViewProps } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
-import { v } from './variables'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   Icon: {

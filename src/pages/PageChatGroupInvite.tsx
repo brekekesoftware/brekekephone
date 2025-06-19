@@ -2,17 +2,14 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { uc } from '../api/uc'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
-import { chatStore } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 const css = StyleSheet.create({
   PageChatGroupInvite: {},
@@ -58,7 +55,7 @@ export class PageChatGroupInvite extends Component<{
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
         <View style={css.PageChatGroupInvite_Outer}>
           <RnText style={css.PageChatGroupInvite_GroupName}>
-            {chatStore.getGroupById(this.props.groupId).name}
+            {ctx.chat.getGroupById(this.props.groupId).name}
           </RnText>
           <RnTouchableOpacity
             onPress={this.invite}
@@ -71,7 +68,7 @@ export class PageChatGroupInvite extends Component<{
           <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
         </View>
         <Field isGroup />
-        {contactStore.ucUsers
+        {ctx.contact.ucUsers
           .map(u => u.id)
           .filter(this.isNotMember)
           .map((id, i) => (
@@ -87,8 +84,8 @@ export class PageChatGroupInvite extends Component<{
     )
   }
   isNotMember = (buddy: string) =>
-    !chatStore.getGroupById(this.props.groupId).members?.includes(buddy)
-  resolveBuddy = (buddy: string) => contactStore.getUcUserById(buddy)
+    !ctx.chat.getGroupById(this.props.groupId).members?.includes(buddy)
+  resolveBuddy = (buddy: string) => ctx.contact.getUcUserById(buddy)
   toggleBuddy = (buddy: string) => {
     let { selectedBuddy } = this.state
     selectedBuddy = {
@@ -109,7 +106,8 @@ export class PageChatGroupInvite extends Component<{
       })
       return
     }
-    uc.inviteChatGroupMembers(this.props.groupId, members)
+    ctx.uc
+      .inviteChatGroupMembers(this.props.groupId, members)
       .catch(this.onInviteFailure)
       .then(this.back)
   }
@@ -120,6 +118,6 @@ export class PageChatGroupInvite extends Component<{
     })
   }
   back = () => {
-    Nav().backToPageChatGroupDetail({ groupId: this.props.groupId })
+    ctx.nav.backToPageChatGroupDetail({ groupId: this.props.groupId })
   }
 }

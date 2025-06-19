@@ -1,7 +1,8 @@
 import Handlebars from 'handlebars/dist/handlebars'
 import HandlebarsMoment from 'helper-moment'
 
-import { enLabelsMapIndex, intlStore, labels } from './intlStore'
+import { ctx } from '#/stores/ctx'
+import { enLabelsMapIndex, labels } from '#/stores/intlStore'
 
 Handlebars.registerHelper('moment', HandlebarsMoment)
 
@@ -23,10 +24,10 @@ const compileFn = (locale: string, k: string): CompileFn => {
   return fn
 }
 
-const intl0 = (k: string, data: unknown) => compileFn(intlStore.locale, k)(data)
+const intl0 = (k: string, data: unknown) => compileFn(ctx.intl.locale, k)(data)
 const intlDebug0 = (k: string, data: unknown) => ({
   label: intl0(k, data),
-  en: compileFn(intlStore.locale, k)(data),
+  en: compileFn(ctx.intl.locale, k)(data),
 })
 
 export interface IntlDebug {

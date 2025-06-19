@@ -1,10 +1,10 @@
-import './callkeep'
+import '#/utils/callkeep'
 
 import type { PushNotification as PN } from '@react-native-community/push-notification-ios'
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import Voip from 'react-native-voip-push-notification'
 
-import { parse } from './PushNotification-parse'
+import { parse } from '#/utils/PushNotification-parse'
 
 let voipTokenFn: Function | undefined = undefined
 const voipToken = new Promise<string>(resolve => {
@@ -78,24 +78,24 @@ export const PushNotification = {
     initApp()
 
     Voip.addEventListener('register', onVoipToken)
-    Voip.addEventListener('notification', (n: PN) => onNotification(n, initApp))
-    Voip.addEventListener(
-      'didLoadWithEvents',
-      (e: { name: string; data: PN }[]) => {
-        if (!e?.length) {
-          return
-        }
-        e.forEach(({ name, data }) => {
-          if (name === 'RNVoipPushRemoteNotificationsRegisteredEvent') {
-            if (typeof data === 'string') {
-              onVoipToken(data)
-            }
-          } else if (name === 'RNVoipPushRemoteNotificationReceivedEvent') {
-            onNotification(data, initApp)
+    Voip.addEventListener('notification', ((n: any) =>
+      onNotification(n as PN, initApp)) as any)
+    Voip.addEventListener('didLoadWithEvents', ((
+      e: { name: string; data: PN }[],
+    ) => {
+      if (!e?.length) {
+        return
+      }
+      e.forEach(({ name, data }) => {
+        if (name === 'RNVoipPushRemoteNotificationsRegisteredEvent') {
+          if (typeof data === 'string') {
+            onVoipToken(data)
           }
-        })
-      },
-    )
+        } else if (name === 'RNVoipPushRemoteNotificationReceivedEvent') {
+          onNotification(data, initApp)
+        }
+      })
+    }) as any)
     Voip.registerVoipToken()
 
     PushNotificationIOS.addEventListener('register', onApnsToken)

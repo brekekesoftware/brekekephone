@@ -1231,82 +1231,55 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (v == null) {
       return;
     }
-    switch (v.getId()) {
-      case R.id.btn_unlock:
-        onBtnUnlockClick(v);
-        break;
-      case R.id.btn_transfer:
-        onBtnTransferClick(v);
-        break;
-      case R.id.btn_park:
-        onBtnParkClick(v);
-        break;
-      case R.id.btn_dtmf:
-        onBtnDtmfClick(v);
-        break;
-      case R.id.btn_video:
-        onBtnVideoClick(v);
-        break;
-      case R.id.btn_back:
-        onBtnBackPress(v);
-        break;
-      default:
-        break;
+    int id = v.getId();
+    if (id == R.id.btn_unlock) {
+      onBtnUnlockClick(v);
+    } else if (id == R.id.btn_transfer) {
+      onBtnTransferClick(v);
+    } else if (id == R.id.btn_park) {
+      onBtnParkClick(v);
+    } else if (id == R.id.btn_dtmf) {
+      onBtnDtmfClick(v);
+    } else if (id == R.id.btn_video) {
+      onBtnVideoClick(v);
+    } else if (id == R.id.btn_back) {
+      onBtnBackPress(v);
     }
   }
 
   @Override
   public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.btn_back:
-        onRequestUnlock(v);
-        break;
-      // vIncomingCall
-      case R.id.btn_answer:
-        onBtnAnswerClick(v);
-        break;
-      case R.id.btn_reject:
-        onBtnRejectClick(v);
-        break;
-      // vCallManage
-      case R.id.view_call_manage:
-        onViewCallManageClick(v);
-        break;
-      case R.id.btn_unlock:
-        onRequestUnlock(v);
-        break;
-      case R.id.btn_transfer:
-        onRequestUnlock(v);
-        break;
-      case R.id.btn_park:
-        onRequestUnlock(v);
-        break;
-      case R.id.btn_video:
-        onBtnVideoClick(v);
-        break;
-      case R.id.btn_speaker:
-        onBtnSpeakerClick(v);
-        break;
-      case R.id.btn_mute:
-        onBtnMuteClick(v);
-        break;
-      case R.id.btn_record:
-        onBtnRecordClick(v);
-        break;
-      case R.id.btn_dtmf:
-        onRequestUnlock(v);
-        break;
-      case R.id.btn_hold:
-        onBtnHoldClick(v);
-        break;
-      case R.id.btn_end_call:
-        onBtnRejectClick(v);
-        break;
-      case R.id.btn_chat:
-        onBtnChatClick(v);
-        break;
-      default:
-        break;
+    int id = v.getId();
+    if (id == R.id.btn_back) {
+      onRequestUnlock(v);
+    } else if (id == R.id.btn_answer) {
+      onBtnAnswerClick(v);
+    } else if (id == R.id.btn_reject) {
+      onBtnRejectClick(v);
+    } else if (id == R.id.view_call_manage) {
+      onViewCallManageClick(v);
+    } else if (id == R.id.btn_unlock) {
+      onRequestUnlock(v);
+    } else if (id == R.id.btn_transfer) {
+      onRequestUnlock(v);
+    } else if (id == R.id.btn_park) {
+      onRequestUnlock(v);
+    } else if (id == R.id.btn_video) {
+      onBtnVideoClick(v);
+    } else if (id == R.id.btn_speaker) {
+      onBtnSpeakerClick(v);
+    } else if (id == R.id.btn_mute) {
+      onBtnMuteClick(v);
+    } else if (id == R.id.btn_record) {
+      onBtnRecordClick(v);
+    } else if (id == R.id.btn_dtmf) {
+      onRequestUnlock(v);
+    } else if (id == R.id.btn_hold) {
+      onBtnHoldClick(v);
+    } else if (id == R.id.btn_end_call) {
+      onBtnRejectClick(v);
+    } else if (id == R.id.btn_chat) {
+      onBtnChatClick(v);
     }
   }
 
