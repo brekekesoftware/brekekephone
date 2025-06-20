@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
-index 025480a..14b0dda 100644
+index 025480a..7a041fa 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 @@ -16,6 +16,8 @@
@@ -208,7 +208,38 @@ index 025480a..14b0dda 100644
          boolean hasDefaultAccount = telecomManager.getDefaultOutgoingPhoneAccount("tel") != null;
  
          promise.resolve(!hasSim || hasDefaultAccount);
-@@ -856,6 +924,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -746,17 +814,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+            Log.w(TAG, "[RNCallKeepModule] onHostDestroy ignored due to no ConnectionService or no phone account");
+            return;
+        }
+-
+-       ArrayList<Map.Entry<String, VoiceConnection>> connections =
+-           new ArrayList<Map.Entry<String, VoiceConnection>>(VoiceConnectionService.currentConnections.entrySet());
+-       for (Map.Entry<String, VoiceConnection> connectionEntry : connections) {
+-           Connection connectionToEnd = connectionEntry.getValue();
+-           connectionToEnd.onDisconnect();
+-       }
++      // In the case of multiple calls, do not end all calls if the mainActivity is destroyed.
++      // Keep the old logic
++      //  ArrayList<Map.Entry<String, VoiceConnection>> connections =
++      //      new ArrayList<Map.Entry<String, VoiceConnection>>(VoiceConnectionService.currentConnections.entrySet());
++      //  for (Map.Entry<String, VoiceConnection> connectionEntry : connections) {
++      //      Connection connectionToEnd = connectionEntry.getValue();
++      //      connectionToEnd.onDisconnect();
++      //  }
+        this.stopListenToNativeCallsState();
+        Log.d(TAG, "[RNCallKeepModule] onHostDestroy executed");
+-       // This line will kill the android process after ending all calls
+-       android.os.Process.killProcess(android.os.Process.myPid());
++
++      // Doing this will stop all other services of the application. Therefore, should not be used killProcess.
++      // Call cleanup has already been handled in IncomingCallActivity and Callkeep.ts
++      //  android.os.Process.killProcess(android.os.Process.myPid());
++      
+    }
+ 
+     @ReactMethod
+@@ -856,6 +928,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              conn.setAudioRoute(CallAudioState.ROUTE_WIRED_OR_EARPIECE);
              promise.resolve(true);
          } catch (Exception e) {
@@ -216,7 +247,7 @@ index 025480a..14b0dda 100644
              promise.reject("SetAudioRoute", e.getMessage());
          }
      }
-@@ -889,6 +958,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -889,6 +962,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              }
              promise.resolve(devices);
          } catch(Exception e) {
@@ -224,7 +255,7 @@ index 025480a..14b0dda 100644
              promise.reject("GetAudioRoutes Error", e.getMessage());
          }
      }
-@@ -1113,22 +1183,20 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1113,22 +1187,20 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          return this.reactContext.getCurrentActivity();
      }
  
@@ -253,7 +284,7 @@ index 025480a..14b0dda 100644
              builder.setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED);
          }
          else {
-@@ -1143,7 +1211,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1143,7 +1215,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
  
          PhoneAccount account = builder.build();
  
@@ -262,7 +293,7 @@ index 025480a..14b0dda 100644
  
          telecomManager.registerPhoneAccount(account);
      }
-@@ -1166,7 +1234,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1166,7 +1238,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          }
      }
  
@@ -271,7 +302,7 @@ index 025480a..14b0dda 100644
          ApplicationInfo applicationInfo = appContext.getApplicationInfo();
          int stringId = applicationInfo.labelRes;
  
-@@ -1276,6 +1344,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1276,6 +1348,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
                  _settings = MapUtils.convertJsonToMap(jsonObject);
              }
          } catch(JSONException e) {
@@ -535,7 +566,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..e50b9e4 100644
+index 786045f..ced1257 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
