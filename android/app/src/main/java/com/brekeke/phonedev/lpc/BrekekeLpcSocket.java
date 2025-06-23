@@ -213,6 +213,8 @@ public class BrekekeLpcSocket {
             Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
+            // check if the call is from lpc
+            m.put("fromLpc", "true");
             // start incoming call activity
             BrekekeUtils.onFcmMessageReceived(mContext.getApplicationContext(), m);
             // emit message to assign callKeepUuid to call store

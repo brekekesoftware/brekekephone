@@ -6,8 +6,6 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +30,6 @@ import android.provider.Settings;
 import android.telecom.TelecomManager;
 import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
 import com.brekeke.phonedev.activity.IncomingCallActivity;
@@ -337,29 +334,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("autoAnswer", autoAnswer);
             c.startActivity(i);
 
-            if (LpcUtils.checkAppInBackground()) {
-              i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-              // fix: the application crashes when it is in the background state and there is an
-              // incoming call
-              int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                // |= is used to add a flag without losing other flags already present in the flags
-                // variable.
-                flags |= PendingIntent.FLAG_IMMUTABLE;
-              }
-              PendingIntent pi = PendingIntent.getActivity(appCtx, 0, i, flags);
-              NotificationCompat.Builder b =
-                  new NotificationCompat.Builder(appCtx, LpcUtils.NOTI_CHANNEL_ID_CALL)
-                      // fix: the app will crash: "Invalid notification (no valid small icon)"
-                      .setSmallIcon(R.mipmap.ic_launcher)
-                      .setContentTitle(L.incomingCall())
-                      .setPriority(NotificationCompat.PRIORITY_HIGH)
-                      .setCategory(NotificationCompat.CATEGORY_CALL)
-                      .setFullScreenIntent(pi, true);
-              NotificationManager nm =
-                  (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
-              // declare a static const at the beginning of the file
-              nm.notify(LpcUtils.TAG, LpcUtils.NOTI_ID, b.build());
+            // check if incoming via lpc and show the notification
+            String fromLpc = data.get("fromLpc");
+            if (fromLpc != null && "true".equalsIgnoreCase(fromLpc)) {
+              LpcUtils.showIncomingCallNotification(appCtx, i);
             }
           }
         };
