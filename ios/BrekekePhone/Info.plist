@@ -73,6 +73,8 @@
 		<string>INStartAudioCallIntent</string>
 		<string>INStartVideoCallIntent</string>
 	</array>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array/>
 	<key>UIBackgroundModes</key>
