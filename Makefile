@@ -59,7 +59,7 @@ format:
 format_objc:
 	export EXT="h|m" && \
 	make -Bs ls | \
-	xargs clang-format -i -style=file;
+	xargs clang-format-11 -i -style=file;
 format_swift:
 	swiftformat ios;
 format_java:

@@ -160,7 +160,7 @@ public class NetworkSession {
 
   // MARK: - Send
 
-  internal func send(data: Data) {
+  func send(data: Data) {
     connection?.send(
       content: data,
       completion: .contentProcessed { [weak self] error in
@@ -171,7 +171,7 @@ public class NetworkSession {
     )
   }
 
-  internal func send(data: Data, context: NWConnection.ContentContext) {
+  func send(data: Data, context: NWConnection.ContentContext) {
     dispatchQueue.async { [weak self] in
       guard self?.state == .connected
       else {
@@ -193,5 +193,5 @@ public class NetworkSession {
 
   // MARK: - Receive
 
-  internal func receive() {}
+  func receive() {}
 }

@@ -150,6 +150,6 @@ yarn android --deviceId=DEVICE_ID
 - To run the format command for all possible files `make format`, we must install the following packages (on macOS):
 
 ```sh
-brew install make clang-format google-java-format ktfmt
+brew install clang-format@11 swiftformat google-java-format ktfmt
 npm i -g imagemin-cli
 ```
