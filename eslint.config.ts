@@ -1,10 +1,9 @@
 import 'eslint-plugin-only-warn'
 
-import { fixupPluginRules, includeIgnoreFile } from '@eslint/compat'
+import { includeIgnoreFile } from '@eslint/compat'
 import pluginTs from '@typescript-eslint/eslint-plugin'
 import * as tsParser from '@typescript-eslint/parser'
 import * as pluginImport from 'eslint-plugin-import'
-import pluginNoForOfLoops from 'eslint-plugin-no-for-of-loops'
 import pluginImportAbsolute from 'eslint-plugin-no-relative-import-paths'
 import pluginPreferArrow from 'eslint-plugin-prefer-arrow'
 import pluginReact from 'eslint-plugin-react'
@@ -60,7 +59,6 @@ const base: ConfigWithExtends = {
     'simple-import-sort': pluginImportSort,
     'no-relative-import-paths': pluginImportAbsolute,
     'prefer-arrow': pluginPreferArrow,
-    'no-for-of-loops': fixupPluginRules(pluginNoForOfLoops as any),
     unicorn: pluginUnicorn,
   },
   rules: {
@@ -131,9 +129,6 @@ const nonFix: ConfigWithExtends = {
     'func-style': [warn, 'expression', { allowArrowFunctions: true }],
 
     'import/no-default-export': warn,
-
-    // TODO: discuss to choose the convention
-    'no-for-of-loops/no-for-of-loops': off,
   },
 }
 
@@ -165,7 +160,7 @@ const allowedDefaultExport: ConfigWithExtends = {
 }
 
 export default tseslint.config(
-  gitignore as any,
+  gitignore,
   base,
   noRelativeImport,
   nonFix,
