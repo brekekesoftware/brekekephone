@@ -565,21 +565,17 @@ export class UC extends EventEmitter {
       )
     })
 
-  acceptFile = (file: string) => {
-    const res = new Promise((resolve, reject) => {
+  acceptFile = (file: string) =>
+    new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
-
-      xhr.onload = function () {
-        if (this.status === 200) {
-          resolve(this['response'])
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          resolve(xhr.response)
         }
       }
-
       this.client.acceptFileWithXhr(file, xhr, reject)
     })
-    return res
-  }
 
   rejectFile = async (file: { id?: string; file_id_target?: string[] }) => {
     if (file.file_id_target) {
