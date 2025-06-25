@@ -6,8 +6,6 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +30,6 @@ import android.provider.Settings;
 import android.telecom.TelecomManager;
 import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
 import com.brekeke.phonedev.activity.IncomingCallActivity;
@@ -277,29 +274,24 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void onFcmMessageReceived(Context c, Map<String, String> data) {
-    //
     // check if it is a PN for incoming call
     if (data.get("x_pn-id") == null) {
       return;
     }
-    //
     // init services if not
     initStaticServices(c);
     acquireWakeLock();
-    //
     // generate new uuid and store it to the PN bundle
     String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     data.put("callkeepAt", now);
     String uuid = UUID.randomUUID().toString().toUpperCase();
     data.put("callkeepUuid", uuid);
-    //
     // check if the account exist and load the locale
     Context appCtx = c.getApplicationContext();
     if (!checkAccountExist(appCtx, data)) {
       return;
     }
     prepareLocale(appCtx);
-    //
     // show call
     String displayName = data.get("x_displayname");
     if (displayName == null || displayName.isEmpty()) {
@@ -308,7 +300,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (displayName == null || displayName.isEmpty()) {
       displayName = "Loading...";
     }
-    String callerName = displayName; // redeclare as final to put in nested class
+
+    // redeclare as final to put in nested class
+    String callerName = displayName;
     String avatar = data.get("x_image");
     String avatarSize = data.get("x_image_size");
     boolean autoAnswer = toBoolean(data.get("x_autoanswer"));
@@ -340,21 +334,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("autoAnswer", autoAnswer);
             c.startActivity(i);
 
-            if (LpcUtils.checkAppInBackground()) {
-              i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-              PendingIntent pi =
-                  PendingIntent.getActivity(appCtx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-              NotificationCompat.Builder b =
-                  new NotificationCompat.Builder(appCtx, "CALL_CHANNEL_ID")
-                      .setSmallIcon(R.drawable.exo_notification_small_icon)
-                      .setContentTitle(L.incomingCall())
-                      .setPriority(NotificationCompat.PRIORITY_HIGH)
-                      .setCategory(NotificationCompat.CATEGORY_CALL)
-                      .setFullScreenIntent(pi, true);
-              NotificationManager nm =
-                  (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
-              // declare a static const at the beginning of the file
-              nm.notify(LpcUtils.TAG, LpcUtils.NOTI_ID, b.build());
+            // check if incoming via lpc and show the notification
+            String fromLpc = data.get("fromLpc");
+            if (fromLpc != null && "true".equalsIgnoreCase(fromLpc)) {
+              LpcUtils.showIncomingCallNotification(appCtx, i);
             }
           }
         };
@@ -365,7 +348,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             onPassiveReject(uuid);
           }
         };
-    //
     // try to run onShowIncomingCallUi if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
@@ -375,8 +357,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false);
+    RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false, null);
   }
 
   private static void prepareLocale(Context appCtx) {

@@ -1,4 +1,4 @@
-import { isWeb } from '../config'
+import { isWeb } from '#/config'
 
 declare global {
   interface Window {

@@ -1,15 +1,14 @@
-import { AccountCreateForm } from '../components/AccountCreateForm'
-import type { Account } from '../stores/accountStore'
-import { accountStore } from '../stores/accountStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { AccountCreateForm } from '#/components/AccountCreateForm'
+import type { Account } from '#/stores/accountStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 
 export const PageAccountCreate = () => (
   <AccountCreateForm
-    onBack={Nav().backToPageAccountSignIn}
+    onBack={ctx.nav.backToPageAccountSignIn}
     onSave={(p: Account) => {
-      accountStore.upsertAccount(p)
-      Nav().backToPageAccountSignIn()
+      ctx.account.upsertAccount(p)
+      ctx.nav.backToPageAccountSignIn()
     }}
     title={intl`New Account`}
   />

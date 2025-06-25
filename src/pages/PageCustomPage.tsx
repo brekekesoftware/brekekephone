@@ -1,22 +1,21 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { buildCustomPageUrl } from '../api/pbx'
-import { getAuthStore } from '../stores/authStore'
+import { buildCustomPageUrl } from '#/api/pbx'
+import { ctx } from '#/stores/ctx'
 
 @observer
 export class PageCustomPage extends Component<{ id: string }> {
   componentDidMount = async () => {
     const { id } = this.props
-    const as = getAuthStore()
-    const cp = as.getCustomPageById(id)
+    const cp = ctx.auth.getCustomPageById(id)
     if (!cp) {
       return
     }
 
     const url = await buildCustomPageUrl(cp.url)
-    as.updateCustomPage({ ...cp, url })
-    as.customPageLoadings[cp.id] = true
+    ctx.auth.updateCustomPage({ ...cp, url })
+    ctx.auth.customPageLoadings[cp.id] = true
   }
 
   render() {

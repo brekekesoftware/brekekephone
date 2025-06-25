@@ -27,29 +27,27 @@ import {
   mdiVideoOff,
   mdiVolumeHigh,
   mdiVolumeMedium,
-} from '../assets/icons'
-import { BrekekeGradient } from '../components/BrekekeGradient'
-import { ButtonIcon } from '../components/ButtonIcon'
-import { IncomingItemWithTimer } from '../components/CallNotify'
-import { CallVideosCarousel } from '../components/CallVideosCarousel'
-import { FieldButton } from '../components/FieldButton'
-import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/Rn'
-import { RnText } from '../components/RnText'
-import { SmartImage } from '../components/SmartImage'
-import { v } from '../components/variables'
-import { VideoPlayer } from '../components/VideoPlayer'
-import { isAndroid, isWeb } from '../config'
-import { getAuthStore } from '../stores/authStore'
-import type { Call, CallConfigKey } from '../stores/Call'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { Duration } from '../stores/timerStore'
-import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { PageCallTransferAttend } from './PageCallTransferAttend'
+} from '#/assets/icons'
+import { BrekekeGradient } from '#/components/BrekekeGradient'
+import { ButtonIcon } from '#/components/ButtonIcon'
+import { IncomingItemWithTimer } from '#/components/CallNotify'
+import { CallVideosCarousel } from '#/components/CallVideosCarousel'
+import { FieldButton } from '#/components/FieldButton'
+import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/Rn'
+import { RnText } from '#/components/RnText'
+import { SmartImage } from '#/components/SmartImage'
+import { v } from '#/components/variables'
+import { VideoPlayer } from '#/components/VideoPlayer'
+import { isAndroid, isWeb } from '#/config'
+import { PageCallTransferAttend } from '#/pages/PageCallTransferAttend'
+import type { Call, CallConfigKey } from '#/stores/Call'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { Duration } from '#/stores/timerStore'
+import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 const { width, height } = Dimensions.get('window')
 const minSizeH = height * 0.4
@@ -206,24 +204,23 @@ const css = StyleSheet.create({
   },
 })
 export const backAction = () =>
-  getAuthStore().phoneappliEnabled()
-    ? Nav().backToPageCallKeypad()
-    : Nav().backToPageCallRecents()
+  ctx.auth.phoneappliEnabled()
+    ? ctx.nav.backToPageCallKeypad()
+    : ctx.nav.backToPageCallRecents()
 
 // render all the calls in App.tsx
 // the avatars will be kept even if we navigate between views
 @observer
 export class RenderAllCalls extends Component {
-  prevCallsLength = getCallStore().calls.length
+  prevCallsLength = ctx.call.calls.length
 
   componentDidMount = () => {
-    const s = getCallStore()
-    if (s.inPageCallManage && !s.calls.length) {
+    if (ctx.call.inPageCallManage && !ctx.call.calls.length) {
       backAction()
     }
   }
   componentDidUpdate = () => {
-    const l = getCallStore().calls.length
+    const l = ctx.call.calls.length
     if (this.prevCallsLength && !l) {
       backAction()
     }
@@ -231,8 +228,7 @@ export class RenderAllCalls extends Component {
   }
 
   render() {
-    const s = getCallStore()
-    if (s.inPageCallManage && !s.calls.length) {
+    if (ctx.call.inPageCallManage && !ctx.call.calls.length) {
       return (
         <Layout
           compact
@@ -244,7 +240,7 @@ export class RenderAllCalls extends Component {
     }
     return (
       <>
-        {s.calls.map(c => (
+        {ctx.call.calls.map(c => (
           <PageCallManage key={c.id} call={c} />
         ))}
       </>
@@ -274,15 +270,15 @@ class PageCallManage extends Component<{
     this.openJavaPnOnVisible()
   }
   componentWillUnmount = () => {
-    getCallStore().onCallKeepAction()
+    ctx.call.onCallKeepAction()
     this.appStateSubscription?.remove()
     const { call: c } = this.props
     if (c.incoming) {
       return
     }
-    const s = getCallStore()
-    if (s.ongoingCallId === c.id || s.displayingCallId === c.id) {
-      s.prevDisplayingCallId = ''
+
+    if (ctx.call.ongoingCallId === c.id || ctx.call.displayingCallId === c.id) {
+      ctx.call.prevDisplayingCallId = ''
     }
   }
 
@@ -293,7 +289,7 @@ class PageCallManage extends Component<{
   }
   @action private hideButtonsIfVideo = () => {
     if (
-      !getCallStore().inPageCallManage?.isFromCallBar &&
+      !ctx.call.inPageCallManage?.isFromCallBar &&
       !this.alreadySetShowButtonsInVideoCall &&
       this.props.call.remoteVideoEnabled
     ) {
@@ -307,7 +303,7 @@ class PageCallManage extends Component<{
     if (
       !isAndroid ||
       !this.props.call.incoming ||
-      !getAuthStore().getCurrentAccount()?.pushNotificationEnabled
+      !ctx.auth.getCurrentAccount()?.pushNotificationEnabled
     ) {
       runInAction(() => {
         this.hasJavaPn = false
@@ -339,15 +335,15 @@ class PageCallManage extends Component<{
   }
   private openJavaPnOnVisible = () => {
     const { call: c } = this.props
-    const s = getCallStore()
+
     if (
       this.hasJavaPn &&
       this.isVisible() &&
       c.callkeepUuid &&
       !c.transferring &&
-      s.prevDisplayingCallId !== c.id
+      ctx.call.prevDisplayingCallId !== c.id
     ) {
-      s.prevDisplayingCallId = c.id
+      ctx.call.prevDisplayingCallId = c.id
       BrekekeUtils.onPageCallManage(c.callkeepUuid)
     }
   }
@@ -362,15 +358,14 @@ class PageCallManage extends Component<{
         c.callkeepUuid &&
         !c.transferring
       ) {
-        getCallStore().inPageCallManage = undefined
+        ctx.call.inPageCallManage = undefined
       }
     }
   }
 
   private isVisible = () => {
-    const s = getCallStore()
     const { call: c } = this.props
-    return s.inPageCallManage && s.displayingCallId === c.id
+    return ctx.call.inPageCallManage && ctx.call.displayingCallId === c.id
   }
 
   private isBtnHidden = (k: CallConfigKey) => {
@@ -380,19 +375,18 @@ class PageCallManage extends Component<{
     if (callConfig?.[k]) {
       return callConfig[k] === 'false'
     }
-    const { pbxConfig } = getAuthStore()
-    return pbxConfig?.[`webphone.call.${k}`] === 'false'
+    return ctx.auth.pbxConfig?.[`webphone.call.${k}`] === 'false'
   }
 
   private renderLayout = () => {
     const { call: c } = this.props
     const navChatDetail = () => {
       if (c.partyNumber.startsWith('uc')) {
-        Nav().goToPageChatGroupDetail({
+        ctx.nav.goToPageChatGroupDetail({
           groupId: c.partyNumber.replace('uc', ''),
         })
       } else {
-        Nav().goToPageChatDetail({ buddy: c.partyNumber })
+        ctx.nav.goToPageChatDetail({ buddy: c.partyNumber })
       }
     }
     return (
@@ -545,7 +539,7 @@ class PageCallManage extends Component<{
 
   private renderBtns = () => {
     const { call: c } = this.props
-    const n = getCallStore().calls.filter(_ => _.id !== c.id).length
+    const n = ctx.call.calls.filter(_ => _.id !== c.id).length
     if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
@@ -566,9 +560,9 @@ class PageCallManage extends Component<{
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={Nav().goToPageCallBackgrounds}
+            onCreateBtnPress={ctx.nav.goToPageCallBackgrounds}
             textInputStyle={css.labelStyle}
-            disabled={getCallStore().isAnyHoldLoading}
+            disabled={ctx.call.isAnyHoldLoading}
             value={
               n > 1
                 ? intl`${n} other calls are in background`
@@ -586,7 +580,7 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={Nav().goToPageCallTransferChooseUser}
+              onPress={ctx.nav.goToPageCallTransferChooseUser}
               path={mdiCallSplit}
               size={40}
               textcolor='white'
@@ -600,7 +594,7 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`PARK`}
               noborder
-              onPress={Nav().goToPageCallParks2}
+              onPress={ctx.nav.goToPageCallParksOngoing}
               path={mdiAlphaPCircle}
               size={40}
               textcolor='white'
@@ -628,17 +622,13 @@ class PageCallManage extends Component<{
             <ButtonIcon
               styleContainer={css.BtnFuncCalls}
               disabled={c.sessionStatus === 'dialing'}
-              bgcolor={
-                getCallStore().isLoudSpeakerEnabled ? activeColor : 'white'
-              }
-              color={getCallStore().isLoudSpeakerEnabled ? 'white' : 'black'}
+              bgcolor={ctx.call.isLoudSpeakerEnabled ? activeColor : 'white'}
+              color={ctx.call.isLoudSpeakerEnabled ? 'white' : 'black'}
               name={intl`SPEAKER`}
               noborder
-              onPress={getCallStore().toggleLoudSpeaker}
+              onPress={ctx.call.toggleLoudSpeaker}
               path={
-                getCallStore().isLoudSpeakerEnabled
-                  ? mdiVolumeHigh
-                  : mdiVolumeMedium
+                ctx.call.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
               }
               size={40}
               textcolor='white'
@@ -681,7 +671,7 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`KEYPAD`}
               noborder
-              onPress={Nav().goToPageCallDtmfKeypad}
+              onPress={ctx.nav.goToPageCallDtmfKeypad}
               path={mdiDialpad}
               size={40}
               textcolor='white'

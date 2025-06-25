@@ -2,22 +2,18 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
 import {
   mdiArrowRight,
   mdiPhoneForward,
   mdiPhoneHangup,
   mdiPhoneOff,
-} from '../assets/icons'
-import { Avatar } from '../components/Avatar'
-import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { contactStore, getPartyName } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+} from '#/assets/icons'
+import { Avatar } from '#/components/Avatar'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 
 export const css = StyleSheet.create({
   Outer: {
@@ -111,21 +107,20 @@ export class PageCallTransferAttend extends Component {
   }
 
   getPhoneappliInfo = async () => {
-    const auth = getAuthStore()
-    if (!auth.phoneappliEnabled()) {
+    if (!ctx.auth.phoneappliEnabled()) {
       return
     }
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (!oc) {
       return
     }
     try {
-      const ca = auth.getCurrentAccount()
+      const ca = ctx.auth.getCurrentAccount()
       if (!ca) {
         return
       }
       const { pbxTenant, pbxUsername } = ca
-      const rs = await pbx.getPhoneappliContact(
+      const rs = await ctx.pbx.getPhoneappliContact(
         pbxTenant,
         pbxUsername,
         oc.partyNumber,
@@ -134,7 +129,7 @@ export class PageCallTransferAttend extends Component {
         avatar: rs?.image_url,
         username: rs?.display_name,
       }
-      const rt = await pbx.getPhoneappliContact(
+      const rt = await ctx.pbx.getPhoneappliContact(
         pbxTenant,
         pbxUsername,
         oc.transferring,
@@ -154,15 +149,15 @@ export class PageCallTransferAttend extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
-      Nav().backToPageCallManage()
+      ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
   }
 
   resolveMatch = (id: string) => {
-    const ucUser = contactStore.getUcUserById(id) || {}
+    const ucUser = ctx.contact.getUcUserById(id) || {}
     return {
       avatar: ucUser.avatar,
       number: id,
@@ -170,7 +165,7 @@ export class PageCallTransferAttend extends Component {
   }
 
   render() {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (!oc) {
       return null
     }
@@ -210,7 +205,7 @@ export class PageCallTransferAttend extends Component {
             <RnTouchableOpacity
               onPress={() => {
                 oc.stopTransferring()
-                Nav().backToPageCallManage()
+                ctx.nav.backToPageCallManage()
               }}
               style={[css.Btn, css.Btn__stop]}
             >
@@ -222,7 +217,7 @@ export class PageCallTransferAttend extends Component {
           </View>
           <View style={css.BtnOuter}>
             <RnTouchableOpacity
-              onPress={() => sip.hangupSession(oc.id)}
+              onPress={() => ctx.sip.hangupSession(oc.id)}
               style={[css.Btn, css.Btn__hangup]}
             >
               <RnIcon path={mdiPhoneHangup} />
@@ -235,7 +230,7 @@ export class PageCallTransferAttend extends Component {
             <RnTouchableOpacity
               onPress={() => {
                 oc.conferenceTransferring()
-                Nav().backToPageCallManage()
+                ctx.nav.backToPageCallManage()
               }}
               style={[css.Btn, css.Btn__conference]}
             >

@@ -3,13 +3,13 @@ import type { ViewProps } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 import type { FastImageProps } from 'react-native-fast-image'
 
-import avatarPlaceholder from '../assets/avatar-placeholder.png'
+import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 
-import { mdiRecord } from '../assets/icons'
-import { isWeb } from '../config'
-import { getAuthStore } from '../stores/authStore'
-import { RnIcon, RnImage } from './Rn'
-import { v } from './variables'
+import { mdiRecord } from '#/assets/icons'
+import { RnIcon, RnImage } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Avatar: {
@@ -58,7 +58,7 @@ export const Avatar = observer(
         <View style={css.ImageOuter}>
           <RnImage source={imgSource} style={css.Image} />
         </View>
-        {getAuthStore().getCurrentAccount()?.ucEnabled &&
+        {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
               color={statusMapColor[status as keyof typeof statusMapColor]}

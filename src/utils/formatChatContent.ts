@@ -1,9 +1,9 @@
 import { decode } from 'html-entities'
 
-import { getAuthStore } from '../stores/authStore'
-import type { ChatTarget } from '../stores/chatStore'
-import { intl } from '../stores/intl'
-import { formatDuration } from './formatDuration'
+import type { ChatTarget } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { formatDuration } from '#/utils/formatDuration'
 
 export const formatChatContent = (c: {
   text?: string
@@ -33,7 +33,7 @@ export const formatChatContent = (c: {
     if (typeof o.talklen === 'number' || typeof o.talklen === 'string') {
       text = !c.creatorId
         ? intl`Call duration: ${formatDuration(o.talklen)}`
-        : c.creatorId === getAuthStore().getCurrentAccount()?.pbxUsername
+        : c.creatorId === ctx.auth.getCurrentAccount()?.pbxUsername
           ? intl`Outgoing call, duration: ${formatDuration(o.talklen)}`
           : intl`Incoming call, duration: ${formatDuration(o.talklen)}`
     } else if (o.name && o.file_id) {

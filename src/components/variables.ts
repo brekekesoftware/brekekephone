@@ -1,7 +1,8 @@
 import { darken, lighten, transparentize } from 'polished'
 
+import { isWeb } from '#/config'
+
 import json from '../../package.json'
-import { isWeb } from '../config'
 
 export const v = {
   fontSize: 14,

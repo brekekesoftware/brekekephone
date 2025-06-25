@@ -2,10 +2,10 @@ import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
-import type { ToastType } from '../stores/ToastStore'
-import { toast } from '../stores/ToastStore'
-import { RnText } from './Rn'
-import { v } from './variables'
+import { RnText } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { ctx } from '#/stores/ctx'
+import type { ToastType } from '#/stores/toastStore'
 
 const getBg = (type: ToastType) => {
   switch (type) {
@@ -109,8 +109,8 @@ const Item = observer(
 
 export const ToastRoot = observer(() => (
   <View style={s.root}>
-    {toast.items.map(t => (
-      <Item key={t.id} data={t} onEnd={() => toast.hide(t.id)} />
+    {ctx.toast.items.map(t => (
+      <Item key={t.id} data={t} onEnd={() => ctx.toast.hide(t.id)} />
     ))}
   </View>
 ))

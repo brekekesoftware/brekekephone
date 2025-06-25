@@ -4,8 +4,8 @@ import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
-import { buildWebViewSource, isAndroid } from '../config'
-import { webviewInjectSendJsonToRnOnLoad } from './webviewInjectSendJsonToRnOnLoad'
+import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
+import { buildWebViewSource, isAndroid } from '#/config'
 
 const css = StyleSheet.create({
   image: {

@@ -5,26 +5,22 @@ import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
-import { uc } from '../api/uc'
-import type { Conference } from '../brekekejs'
-import { Constants } from '../brekekejs/ucclient'
-import { isAndroid, isIos, isWeb } from '../config'
-import { arrToMap } from '../utils/arrToMap'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { filterTextOnly } from '../utils/formatChatContent'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { rnVibrate } from '../utils/rnVibrate'
-import { saveBlobFile } from '../utils/saveBlob'
-import { webPlayDing } from '../utils/webPlayDing'
-import { webShowNotification } from '../utils/webShowNotification'
-import { accountStore } from './accountStore'
-import { getAuthStore, waitUc } from './authStore'
-import { getCallStore } from './callStore'
-import { getPartyName } from './contactStore'
-import { intl } from './intl'
-import { Nav } from './Nav'
-import { RnAlert } from './RnAlert'
-import { RnStacker } from './RnStacker'
+import type { Conference } from '#/brekekejs'
+import { Constants } from '#/brekekejs/ucclient'
+import { isAndroid, isIos, isWeb } from '#/config'
+import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnStacker } from '#/stores/RnStacker'
+import { arrToMap } from '#/utils/arrToMap'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { filterTextOnly } from '#/utils/formatChatContent'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { rnVibrate } from '#/utils/rnVibrate'
+import { saveBlobFile } from '#/utils/saveBlob'
+import { webPlayDing } from '#/utils/webPlayDing'
+import { webShowNotification } from '#/utils/webShowNotification'
 
 export type ChatMessage = {
   id: string
@@ -74,7 +70,7 @@ export const FileEvent = {
 export const TIMEOUT_TRANSFER_IMAGE = 60000
 export const TIMEOUT_TRANSFER_VIDEO = 180000
 
-class ChatStore {
+export class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
   @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
@@ -89,11 +85,10 @@ class ChatStore {
         return v.isUnread && this.getMessagesByThreadId(v.id).length
       }) as any,
     ).length
-    const as = getAuthStore()
-    const ca = as.getCurrentAccount()
-    const d = as.getCurrentData()
+    const ca = ctx.auth.getCurrentAccount()
+    const d = ctx.auth.getCurrentData()
     if (!d && ca) {
-      accountStore.findDataWithDefault(ca)
+      ctx.account.findDataWithDefault(ca)
     }
     const l2 = filterTextOnly(
       d?.recentChats.filter(c => !idMap[c.id] && c.unread),
@@ -227,7 +222,7 @@ class ChatStore {
     // show chat in-app notification
     let name = ''
     if (isGroup) {
-      name = chatStore.getGroupById(threadId)?.name
+      name = ctx.chat.getGroupById(threadId)?.name
     } else {
       // user not set username
       name =
@@ -244,10 +239,9 @@ class ChatStore {
       this.pushChatNotification(name, m[0]?.text || '', threadId, isGroup)
     }
     // play chat notification sound & vibration
-    const cs = getCallStore()
     const isTalking =
-      cs.calls.some(c => c.answered) ||
-      Object.values(cs.callkeepActionMap).some(a => a === 'answerCall')
+      ctx.call.calls.some(c => c.answered) ||
+      Object.values(ctx.call.callkeepActionMap).some(a => a === 'answerCall')
     const s = RnStacker.stacks[RnStacker.stacks.length - 1] as any as {
       groupId?: string
       buddy?: string
@@ -265,25 +259,23 @@ class ChatStore {
   }
 
   handleMoveToChatGroupDetail = async (groupId: string) => {
-    const as = getAuthStore()
-    const ca = as.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca?.ucEnabled) {
       // this should not happen
       const msg = !ca ? 'not signed in' : 'UC is disabled'
       throw new Error(`Failed to handle UC group chat: ${msg}`)
     }
-    if (as.ucState !== 'success') {
+    if (ctx.auth.ucState !== 'success') {
       RnAlert.prompt({
         title: '...',
         message: intl`Connecting to ${'UC'}...`,
         confirmText: 'OK',
         dismissText: false,
       })
-      await waitUc()
+      await ctx.auth.waitUc()
       RnAlert.dismiss()
     }
-    const nav = Nav()
-    const i: Conference = uc.getChatGroupInfo(groupId)
+    const i: Conference = ctx.uc.getChatGroupInfo(groupId)
     const status = i.conf_status
     const name = i.subject || groupId
     if (status === Constants.CONF_STATUS_INACTIVE) {
@@ -293,10 +285,10 @@ class ChatStore {
         confirmText: 'OK',
         dismissText: false,
       })
-      const d = await as.getCurrentDataAsync()
+      const d = await ctx.auth.getCurrentDataAsync()
       if (d) {
         d.recentChats = d.recentChats.filter(c => c.id !== groupId)
-        accountStore.saveAccountsToLocalStorageDebounced()
+        ctx.account.saveAccountsToLocalStorageDebounced()
       }
     } else if (status === Constants.CONF_STATUS_INVITED) {
       RnAlert.prompt({
@@ -304,17 +296,17 @@ class ChatStore {
         message: intl`Do you want to join this group?`,
         confirmText: intl`Join`,
         onConfirm: async () => {
-          await uc.joinChatGroup(groupId)
-          nav.customPageIndex = nav.goToPageChatGroupDetail
-          nav.goToPageChatGroupDetail({ groupId })
+          await ctx.uc.joinChatGroup(groupId)
+          ctx.nav.customPageIndex = ctx.nav.goToPageChatGroupDetail
+          ctx.nav.goToPageChatGroupDetail({ groupId })
         },
         onDismiss: () => {
-          uc.leaveChatGroup(groupId).catch(() => {})
+          ctx.uc.leaveChatGroup(groupId).catch(() => {})
         },
       })
     } else {
-      nav.customPageIndex = nav.goToPageChatGroupDetail
-      nav.goToPageChatGroupDetail({ groupId })
+      ctx.nav.customPageIndex = ctx.nav.goToPageChatGroupDetail
+      ctx.nav.goToPageChatGroupDetail({ groupId })
     }
   }
   @observable chatNotificationSoundRunning: boolean = false
@@ -378,7 +370,7 @@ class ChatStore {
 
   download = (f: ChatFile) => {
     Object.assign(f, { save: 'started' })
-    chatStore.upsertFile(f)
+    ctx.chat.upsertFile(f)
     saveBlobFile(f.id, f.topic_id, f.fileType)
       .then(url => {
         this.filesMap[f.id] = Object.assign(this.filesMap[f.id], {
@@ -398,7 +390,7 @@ class ChatStore {
       this.timeoutTransferImage[id] = BackgroundTimer.setTimeout(
         () => {
           this.clearTimeout(id)
-          uc.rejectFile({ id })
+          ctx.uc.rejectFile({ id })
         },
         fileType === 'video' ? TIMEOUT_TRANSFER_VIDEO : TIMEOUT_TRANSFER_IMAGE,
       )
@@ -480,4 +472,4 @@ class ChatStore {
   }
 }
 
-export const chatStore = new ChatStore()
+ctx.chat = new ChatStore()

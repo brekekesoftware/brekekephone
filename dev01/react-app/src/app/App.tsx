@@ -13,13 +13,39 @@ type Builds = {
   [v: string]: Build
 }
 
-export const App = () => {
-  const isPathInvoke = window.location.pathname.includes('invoke')
-  const invokeHyphen = isPathInvoke ? 'invoke-' : ''
-  const invokeSlash = isPathInvoke ? 'invoke/' : ''
-  const api = `https://dev01.brekeke.com/dev-api/${invokeHyphen}builds`
-  const plist = `itms-services://?action=download-manifest&url=https://dev01.brekeke.com/dev-api/${invokeHyphen}plist/`
+const isHrefInvoke = window.location.href.includes('invoke')
+const invokeHyphen = isHrefInvoke ? 'invoke-' : ''
+const invokeSlash = isHrefInvoke ? 'invoke/' : ''
+const api = `https://dev01.brekeke.com/dev-api/${invokeHyphen}builds`
+const plist = `itms-services://?action=download-manifest&url=https://dev01.brekeke.com/dev-api/${invokeHyphen}plist/`
 
+const fetchBuilds = () =>
+  window
+    .fetch(api)
+    .then(r => r.json())
+    .then((arr: string[]) => {
+      if (!Array.isArray(arr)) {
+        return
+      }
+      // [dev, prod, invoke]
+      const buildsArr: Builds[] = [{}, {}, {}]
+      arr.forEach(name => {
+        const matches = /(\d+\.\d+\.\d+)\.(ipa|apk|zip)/.exec(name)
+        if (!matches) {
+          return
+        }
+        const version = matches[1]
+        const env = matches[2]
+        const i = name.includes('invoke') ? 0 : name.includes('dev') ? 1 : 2
+        if (!buildsArr[i][version]) {
+          buildsArr[i][version] = { version }
+        }
+        Object.assign(buildsArr[i][version], { [env]: true })
+      })
+      return buildsArr
+    })
+
+export const App = () => {
   const [dev, setDev] = useState<Build[]>([])
   const [showExtraDev, setShowExtraDev] = useState(false)
   const [prod, setProd] = useState<Build[]>([])
@@ -29,38 +55,20 @@ export const App = () => {
   const [showExtraInvoke, setShowExtraInvoke] = useState(false)
   const prodM = prod.filter(b => b.ipa || b.apk)
   const prodW = prod.filter(b => b.zip)
+
   useEffect(() => {
-    window
-      .fetch(api)
-      .then(r => r.json())
-      .then((arr: string[]) => {
-        if (!Array.isArray(arr)) {
-          return
-        }
-        const buildsArr: Builds[] = [{}, {}, {}] // [dev, prod]
-        arr.forEach(name => {
-          const matches = /(\d+\.\d+\.\d+)\.(ipa|apk|zip)/.exec(name)
-          if (!matches) {
-            return
+    fetchBuilds().then(arr =>
+      arr
+        ?.map(builds => Object.values(builds))
+        .forEach((builds, i) => {
+          if (builds.length) {
+            const f = i === 0 ? setInvoke : i === 1 ? setDev : setProd
+            f(builds.sort((a, b) => semverCompare(b.version, a.version)))
           }
-          const version = matches[1]
-          const env = matches[2]
-          const i = name.includes('invoke') ? 0 : name.includes('dev') ? 1 : 2
-          if (!buildsArr[i][version]) {
-            buildsArr[i][version] = { version }
-          }
-          Object.assign(buildsArr[i][version], { [env]: true })
-        })
-        buildsArr
-          .map(builds => Object.values(builds))
-          .forEach((builds, i) => {
-            if (builds.length) {
-              const f = i === 0 ? setInvoke : i === 1 ? setDev : setProd
-              f(builds.sort((a, b) => semverCompare(b.version, a.version)))
-            }
-          })
-      })
+        }),
+    )
   }, [])
+
   return (
     <>
       {[invoke, dev, prodM, prodW].map((arr, i) => {
@@ -74,7 +82,7 @@ export const App = () => {
         const title = isInvoke
           ? 'Invoke Example'
           : isDev
-            ? `Brekeke Phone${isPathInvoke ? ' Ex App' : ''} Dev`
+            ? `Brekeke Phone${isHrefInvoke ? ' Ex App' : ''} Dev`
             : isProd
               ? 'Brekeke Phone'
               : 'Web Phone'

@@ -4,20 +4,15 @@ import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
-import { pbx } from '../api/pbx'
-import { isAndroid, isWeb } from '../config'
-import { getPartyName, getPartyNameAsync } from '../stores/contactStore'
-import { permForCallLog } from '../utils/permissions'
-import type { ParsedPn } from '../utils/PushNotification-parse'
-import { BrekekeUtils, CallLogType } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { accountStore } from './accountStore'
-import { authPBX } from './AuthPBX'
-import { authSIP } from './AuthSIP'
-import { getAuthStore } from './authStore'
-import { Call } from './Call'
-import { getCallStore } from './callStore'
-import { intl } from './intl'
+import { isAndroid, isWeb } from '#/config'
+import { Call } from '#/stores/Call'
+import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { permForCallLog } from '#/utils/permissions'
+import type { ParsedPn } from '#/utils/PushNotification-parse'
+import { BrekekeUtils, CallLogType } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const parseReasonCancelCall = (reason?: string) => {
@@ -82,20 +77,20 @@ export const addCallHistory = async (
     alreadyAddHistoryMap[pnId] = true
   }
 
-  if (!isTypeCall && !(await accountStore.findByPn(c))) {
+  if (!isTypeCall && !(await ctx.account.findByPn(c))) {
     console.log(
       'checkAndRemovePnTokenViaSip debug: do not add history account not exist',
     )
     return
   }
 
-  if (getAuthStore().pbxLoginFromAnotherPlace) {
+  if (ctx.auth.pbxLoginFromAnotherPlace) {
     console.log(
       'pbxLoginFromAnotherPlace debug: dispose authSIP and authPBX after call finished',
     )
-    authSIP.dispose()
-    authPBX.dispose()
-    getAuthStore().showMsgPbxLoginFromAnotherPlace = true
+    ctx.authSIP.dispose()
+    ctx.authPBX.dispose()
+    ctx.auth.showMsgPbxLoginFromAnotherPlace = true
   }
 
   const ms =
@@ -114,7 +109,7 @@ export const addCallHistory = async (
   // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
   const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
   const lineLabel = lineValue
-    ? getAuthStore().resourceLines?.find(item => item.value === lineValue)?.key
+    ? ctx.auth.resourceLines?.find(item => item.value === lineValue)?.key
     : undefined
 
   const info = isTypeCall
@@ -153,7 +148,7 @@ export const addCallHistory = async (
       }
 
   // do not show notification if rejected by callee
-  const m = getCallStore().calleeRejectedMap
+  const m = ctx.call.calleeRejectedMap
   const calleeRejected = m[c.callkeepUuid] || m[pnId]
 
   if (!calleeRejected) {
@@ -164,18 +159,18 @@ export const addCallHistory = async (
   // TODO:
   // add method based on the Account class
   // allow multiple accounts at the same time
-  const as = getAuthStore()
-  const current = as.getCurrentAccount()
+
+  const current = ctx.auth.getCurrentAccount()
   if (!current) {
     await waitTimeout()
   }
-  if (!as.getCurrentAccount()) {
+  if (!ctx.auth.getCurrentAccount()) {
     return
   }
-  if (as.phoneappliEnabled()) {
+  if (ctx.auth.phoneappliEnabled()) {
     return
   }
-  as.pushRecentCall(info)
+  ctx.auth.pushRecentCall(info)
   if (isAndroid) {
     addToCallLog(info)
   }
@@ -224,8 +219,7 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
     return c.partyName || c.partyNumber
   }
 
-  const auth = getAuthStore()
-  if (!auth.phoneappliEnabled()) {
+  if (!ctx.auth.phoneappliEnabled()) {
     return intl`The call from ${c.partyName || c.partyNumber} is ${c.reason}`
   }
 
@@ -234,13 +228,13 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
     c.partyName || c.partyNumber
   } is answered by someone else`
 
-  const ca = auth.getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
   if (!ca) {
     return r
   }
   const { pbxTenant, pbxUsername } = ca
   try {
-    const rs = await pbx.getPhoneappliContact(
+    const rs = await ctx.pbx.getPhoneappliContact(
       pbxTenant,
       pbxUsername,
       phoneNumber,

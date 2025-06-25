@@ -10930,10 +10930,10 @@ code.google.com/p/crypto-js/wiki/License
         a = this._hash
         k = a.words
         for (b = 0; 4 > b; b++) {
-          ;(h = k[b]),
+          ;((h = k[b]),
             (k[b] =
               (((h << 8) | (h >>> 24)) & 16711935) |
-              (((h << 24) | (h >>> 8)) & 4278255360))
+              (((h << 24) | (h >>> 8)) & 4278255360)))
         }
         return a
       },

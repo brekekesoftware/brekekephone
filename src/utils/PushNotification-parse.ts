@@ -1,18 +1,14 @@
-import jsonStableStringify from 'json-stable-stringify'
-import { get } from 'lodash'
 import { AppState } from 'react-native'
 
-import { checkAndRemovePnTokenViaSip } from '../api/sip'
-import { isAndroid, isIos } from '../config'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { chatStore } from '../stores/chatStore'
-import { Nav } from '../stores/Nav'
-import { openLinkSafely, urls } from './deeplink'
-import { PushNotification } from './PushNotification'
-import { BrekekeUtils } from './RnNativeModules'
-import { toBoolean } from './string'
-import { waitTimeout } from './waitTimeout'
+import { isAndroid, isIos } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { openLinkSafely, urls } from '#/utils/deeplink'
+import { jsonStable } from '#/utils/jsonStable'
+import { get } from '#/utils/lodash'
+import { PushNotification } from '#/utils/PushNotification'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { toBoolean } from '#/utils/string'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 const keysInCustomNotification = [
   'google.message_id',
@@ -81,7 +77,7 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       return map
     }, {})
   if (n.image) {
-    getCallStore().updateCallAvatar(n)
+    ctx.call.updateCallAvatar(n)
   }
   return n
 }
@@ -188,7 +184,7 @@ let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 // after pbx server reset, call id (number) on the server side will be reset to 1, 2, 3...
 // if the cache contain those ids previously, the new calls will be rejected
 export const resetProcessedPn = () => {
-  getCallStore().callkeepActionMap = {}
+  ctx.call.callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
 }
 
@@ -210,7 +206,7 @@ export const parse = async (
   // handle duplicated pn on android
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (isAndroid && n.callkeepUuid) {
-    const k = n.id || jsonStableStringify(raw)
+    const k = n.id || jsonStable(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(
         `SIP PN debug: PushNotification-parse: already processed k=${k}`,
@@ -220,7 +216,7 @@ export const parse = async (
     androidAlreadyProccessedPn[k] = true
   }
 
-  const acc = await checkAndRemovePnTokenViaSip(n)
+  const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)
   if (!acc) {
     console.log(
       'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
@@ -229,14 +225,12 @@ export const parse = async (
   }
 
   console.log('SIP PN debug: call signInByNotification')
-  const as = getAuthStore()
-  await as.signInByNotification(n)
+  await ctx.auth.signInByNotification(n)
 
-  const nav = Nav()
-  const navIndex = async (k: keyof typeof nav, params?: any) => {
-    nav.customPageIndex = nav[k]
+  const navIndex = async (k: keyof typeof ctx.nav, params?: any) => {
+    ctx.nav.customPageIndex = ctx.nav[k]
     await waitTimeout()
-    nav[k]?.(params)
+    ctx.nav[k]?.(params)
   }
 
   const rawId = raw['id'] as string | undefined
@@ -246,7 +240,7 @@ export const parse = async (
       'SIP PN debug: PushNotification-parse: local notification missed call',
     )
 
-    if (as.userExtensionProperties && as.phoneappliEnabled()) {
+    if (ctx.auth.userExtensionProperties && ctx.auth.phoneappliEnabled()) {
       navIndex('goToPageCallKeypad')
       if (isIos) {
         PushNotification.resetBadgeNumber()
@@ -285,13 +279,13 @@ export const parse = async (
       return
     }
     if ((isGroupChat || !senderId) && confId) {
-      nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(() => chatStore.handleMoveToChatGroupDetail(confId))
+      ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
+      waitTimeout().then(() => ctx.chat.handleMoveToChatGroupDetail(confId))
       return
     }
     if (senderId) {
-      nav.customPageIndex = nav.goToPageChatRecents
-      waitTimeout().then(() => nav.goToPageChatDetail({ buddy: senderId }))
+      ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
+      waitTimeout().then(() => ctx.nav.goToPageChatDetail({ buddy: senderId }))
       return
     }
     return
@@ -302,7 +296,7 @@ export const parse = async (
     console.log(
       `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
     )
-    getAuthStore().saveActionOpenCustomPage = true
+    ctx.auth.saveActionOpenCustomPage = true
   }
 
   // custom fork of react-native-voip-push-notification to get callkeepUuid
@@ -314,9 +308,8 @@ export const parse = async (
     )
     return
   }
-  const cs = getCallStore()
 
-  cs.calls
+  ctx.call.calls
     .filter(c => c.pnId === n.id && !c.callkeepUuid)
     .forEach(c => {
       Object.assign(c, { callkeepUuid: n.callkeepUuid })
@@ -324,15 +317,15 @@ export const parse = async (
 
   // continue handling incoming call in android
   if (isAndroid) {
-    cs.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
+    ctx.call.showIncomingCallUi({ callUUID: n.callkeepUuid, pnData: n })
     const action = await BrekekeUtils.getIncomingCallPendingUserAction(
       n.callkeepUuid,
     )
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
-      cs.onCallKeepAnswerCall(n.callkeepUuid)
+      ctx.call.onCallKeepAnswerCall(n.callkeepUuid)
     } else if (action === 'rejectCall') {
-      cs.onCallKeepEndCall(n.callkeepUuid)
+      ctx.call.onCallKeepEndCall(n.callkeepUuid)
     }
     // already invoke callkeep in java code
   }

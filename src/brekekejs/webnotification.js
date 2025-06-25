@@ -13,7 +13,7 @@ if (!Brekeke.WebNotification) {
 }
 const WebNotification = {}
 var debug = function () {}
-;(notificationIdCounter = 0), (notificationInfoTable = {})
+;((notificationIdCounter = 0), (notificationInfoTable = {}))
 /**
  * requestPermission function: request permission from the user to display notifications
  *  parameters:

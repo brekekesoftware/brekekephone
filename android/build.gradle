@@ -5,7 +5,8 @@ buildscript {
     compileSdkVersion = 34
     // https://developer.android.com/google/play/requirements/target-sdk
     targetSdkVersion = 34
-    ndkVersion = "23.1.7779620"
+    ndkVersion = "27.1.12297006"
+    kotlinVersion = "2.1.20"
   }
   repositories {
     google()
@@ -15,7 +16,9 @@ buildscript {
   dependencies {
     classpath("com.android.tools.build:gradle")
     classpath("com.facebook.react:react-native-gradle-plugin")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     // react-native-notifications
-    classpath("com.google.gms:google-services:4.3.15")
+    classpath("com.google.gms:google-services:4.4.2")
   }
 }
+apply plugin: "com.facebook.react.rootproject"

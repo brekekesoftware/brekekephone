@@ -1,4 +1,4 @@
-import { BackgroundTimer } from '../utils/BackgroundTimer'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export const waitTimeout = (time = 300) =>
   new Promise<undefined>(resolve => {

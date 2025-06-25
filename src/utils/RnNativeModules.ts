@@ -2,8 +2,8 @@ import { get, set } from 'lodash'
 import type { NativeModule } from 'react-native'
 import { NativeModules } from 'react-native'
 
-import { isWeb } from '../config'
-import type { TCallKeepAction } from '../stores/callStore2'
+import { isWeb } from '#/config'
+import type { TCallKeepAction } from '#/stores/callStore'
 
 export enum CallLogType {
   INCOMING_TYPE = 1,
@@ -75,8 +75,8 @@ type TBrekekeUtils = {
 
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
-  playRBT(): void
-  stopRBT(): void
+  playRBT(isLoudSpeaker: boolean): void
+  stopRBT(): Promise<void>
   setProximityMonitoring(enabled: boolean): void
 
   // these methods available on both
@@ -151,7 +151,7 @@ const Polyfill: TBrekekeUtils = {
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
-  stopRBT: () => undefined,
+  stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
 
   // these methods available on both

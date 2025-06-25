@@ -1,16 +1,15 @@
 import EventEmitter from 'eventemitter3'
-import { unmountComponentAtNode } from 'react-dom'
+import { AppRegistry } from 'react-native'
 
-import { parsePalParams } from '../api/parseParamsWithPrefix'
-import type { MakeCallFn, PbxGetProductInfoRes } from '../brekekejs'
-import type { Account } from '../stores/accountStore'
-import { accountStore, getAccountUniqueId } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { arrToMap } from '../utils/arrToMap'
-import { getAudioVideoPermission } from '../utils/getAudioVideoPermission'
-import { waitTimeout } from '../utils/waitTimeout'
-import { webPromptPermission } from '../utils/webPromptPermission'
+import { parsePalParams } from '#/api/parseParamsWithPrefix'
+import type { MakeCallFn, PbxGetProductInfoRes } from '#/brekekejs'
+import type { Account } from '#/stores/accountStore'
+import { getAccountUniqueId } from '#/stores/accountStore'
+import { ctx } from '#/stores/ctx'
+import { arrToMap } from '#/utils/arrToMap'
+import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
+import { waitTimeout } from '#/utils/waitTimeout'
+import { webPromptPermission } from '#/utils/webPromptPermission'
 
 type EmbedPbxConfig = Partial<
   Pick<
@@ -39,24 +38,24 @@ export class EmbedApi extends EventEmitter {
   promptBrowserPermission = webPromptPermission
   acceptBrowserPermission = getAudioVideoPermission
   setIncomingRingtone = (ringtone: string) => {
-    getCallStore().setIncomingRingtone(ringtone)
+    ctx.call.setIncomingRingtone(ringtone)
   }
 
-  getCurrentAccount = () => getAuthStore().getCurrentAccount()
+  getCurrentAccount = () => ctx.auth.getCurrentAccount()
 
-  call: MakeCallFn = (...args) => getCallStore().startCall(...args)
-  getRunningCalls = () => getCallStore().calls
+  call: MakeCallFn = (...args) => ctx.call.startCall(...args)
+  getRunningCalls = () => ctx.call.calls
 
   restart = async (options: EmbedSignInOptions) => {
-    getAuthStore().signOutWithoutSaving()
+    ctx.auth.signOutWithoutSaving()
     await waitTimeout()
     await this._signIn(options)
   }
 
   cleanup = () => {
-    getAuthStore().signOutWithoutSaving()
+    ctx.auth.signOutWithoutSaving()
     if (this._rootTag) {
-      unmountComponentAtNode(this._rootTag)
+      AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag as any)
     }
   }
 
@@ -71,19 +70,19 @@ export class EmbedApi extends EventEmitter {
   _pbxConfig: EmbedPbxConfig = {}
 
   _signIn = async (o: EmbedSignInOptions) => {
-    await accountStore.waitStorageLoaded()
+    await ctx.account.waitStorageLoaded()
     // reassign options on each sign in
     embedApi._palEvents = o.palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
     // check if cleanup existing account
     if (o.clearExistingAccount) {
-      accountStore.accounts = []
-      accountStore.accountData = []
+      ctx.account.accounts = []
+      ctx.account.accountData = []
     }
     // create map based on unique (host, port, tenant, user)
     const accountsMap = arrToMap(
-      accountStore.accounts,
+      ctx.account.accounts,
       getAccountUniqueId,
       (p: Account) => p,
     ) as { [k: string]: Account }
@@ -96,21 +95,20 @@ export class EmbedApi extends EventEmitter {
         copyToStorage(fr, to)
         firstAccountInOptions = firstAccountInOptions || to
       } else {
-        accountStore.accounts.push(fr)
+        ctx.account.accounts.push(fr)
         firstAccountInOptions = firstAccountInOptions || fr
       }
     })
-    await accountStore.saveAccountsToLocalStorageDebounced()
+    await ctx.account.saveAccountsToLocalStorageDebounced()
     // check if auto login
     if (!o.autoLogin) {
       return
     }
-    const as = getAuthStore()
     if (firstAccountInOptions) {
-      as.signIn(firstAccountInOptions)
+      ctx.auth.signIn(firstAccountInOptions)
       return
     }
-    await as.autoSignInEmbed()
+    await ctx.auth.autoSignInEmbed()
   }
 }
 
@@ -130,7 +128,7 @@ type EmbedAccount = {
   pushNotification?: boolean
 }
 const convertToStorage = (a: EmbedAccount): Account => {
-  const ea = accountStore.genEmptyAccount()
+  const ea = ctx.account.genEmptyAccount()
   ea.pbxHostname = a.hostname || ''
   ea.pbxPort = a.port || ''
   ea.pbxTenant = a.tenant || ''

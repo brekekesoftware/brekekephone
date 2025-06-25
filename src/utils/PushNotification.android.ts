@@ -1,4 +1,4 @@
-import './callkeep'
+import '#/utils/callkeep'
 
 import { isEmpty } from 'lodash'
 import { AppRegistry } from 'react-native'
@@ -9,11 +9,11 @@ import type {
 } from 'react-native-notifications'
 import { Notifications } from 'react-native-notifications'
 
-import { chatStore } from '../stores/chatStore'
-import { intl } from '../stores/intl'
-import { permNotifications } from './permissions'
-import { parse } from './PushNotification-parse'
-import { BrekekeUtils } from './RnNativeModules'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { permNotifications } from '#/utils/permissions'
+import { parse } from '#/utils/PushNotification-parse'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
 
 let fcmTokenFn: Function | undefined = undefined
 const fcmToken = new Promise<string>(resolve => {
@@ -191,7 +191,7 @@ const getInitialNotifications = async () => {
       }
       const senderId = payload?.senderUserId
       const confId = payload?.confId
-      chatStore.pushChatNotification(
+      ctx.chat.pushChatNotification(
         '',
         payload?.message || '',
         senderId || confId,

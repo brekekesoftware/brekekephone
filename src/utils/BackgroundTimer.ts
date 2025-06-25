@@ -1,6 +1,6 @@
 import BgTimer from 'react-native-background-timer'
 
-import { isWeb } from '../config'
+import { isWeb } from '#/config'
 
 export type TBackgroundTimer = {
   setTimeout(callback: () => void, timeout: number): number
