@@ -32,7 +32,6 @@ import { ctx } from '#/stores/ctx'
 import type { DropdownPosition } from '#/stores/RnDropdown'
 import { RnDropdown } from '#/stores/RnDropdown'
 import type { GroupUserSectionListData } from '#/stores/userStore'
-import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { filterTextOnly } from '#/utils/formatChatContent'
 
@@ -206,19 +205,19 @@ const RenderItemUser = observer(
       >
         {isEditMode ? (
           <RnTouchableOpacity
-            onPress={() => userStore.selectUserId(item.user_id)}
-            disabled={userStore.isSelectedAddAllUser}
+            onPress={() => ctx.user.selectUserId(item.user_id)}
+            disabled={ctx.user.isSelectedAddAllUser}
           >
             <UserItem
               id={item.user_id}
               name={item.name || item.user_id}
               avatar={item.profile_image_url}
-              disabled={userStore.isSelectedAddAllUser}
+              disabled={ctx.user.isSelectedAddAllUser}
               isSelected={
-                userStore.isSelectedAddAllUser ||
-                userStore.selectedUserIds[item.user_id]
+                ctx.user.isSelectedAddAllUser ||
+                ctx.user.selectedUserIds[item.user_id]
               }
-              onSelect={() => userStore.selectUserId(item.user_id)}
+              onSelect={() => ctx.user.selectUserId(item.user_id)}
               isSelection
             />
           </RnTouchableOpacity>
@@ -276,7 +275,7 @@ const RenderHeaderSection = observer(
   }: SectionHeader) => {
     const index = sectionListData.findIndex(i => i.title === title)
     const hidden = RnDropdown.hiddenIndexes.some(i => i === index)
-    const titleHeaderRender = userStore.getHeaderTitle(title, data, isEditMode)
+    const titleHeaderRender = ctx.user.getHeaderTitle(title, data, isEditMode)
 
     const isDisableMarginTop =
       !sectionListData[index - 1]?.data?.length ||

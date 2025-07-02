@@ -13,7 +13,6 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnDropdown } from '#/stores/RnDropdown'
-import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 @observer
@@ -47,7 +46,7 @@ export class PageContactGroupCreate extends Component {
           <ActivityIndicator style={css.loadingIcon} size='large' />
         ) : (
           <FlatList
-            data={userStore.dataListAllUser}
+            data={ctx.user.dataListAllUser}
             renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
               <RenderItem
                 item={item}
@@ -75,7 +74,7 @@ export class PageContactGroupCreate extends Component {
         message: intlDebug`Group name is required`,
       })
       return
-    } else if (userStore.groups.some(group => group.name === name.trim())) {
+    } else if (ctx.user.groups.some(group => group.name === name.trim())) {
       RnAlert.error({
         message: intlDebug`Group name is existed`,
       })
@@ -84,7 +83,7 @@ export class PageContactGroupCreate extends Component {
     // const selectedUsers = userStore.dataListAllUser.filter(
     //   u => this.selectedUsers[u.user_id],
     // )
-    userStore.addGroup(name, this.selectedUserItems)
+    ctx.user.addGroup(name, this.selectedUserItems)
     RnDropdown.setShouldUpdatePosition(true)
     ctx.nav.backToPageContactEdit()
   }

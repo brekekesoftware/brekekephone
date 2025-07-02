@@ -24,7 +24,7 @@ import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { isIos, isWeb } from '#/config'
+import { isEmbed, isIos, isWeb } from '#/config'
 import { getWebRootIdProps } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
@@ -39,7 +39,6 @@ import { RnAlertRoot } from '#/stores/RnAlertRoot'
 import { RnPickerRoot } from '#/stores/RnPickerRoot'
 import { RnStacker } from '#/stores/RnStacker'
 import { RnStackerRoot } from '#/stores/RnStackerRoot'
-import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { setupCallKeepEvents } from '#/utils/callkeep'
 import { getConnectionStatus } from '#/utils/getConnectionStatus'
@@ -147,7 +146,7 @@ const initApp = async () => {
   })
 
   if (isWeb) {
-    if (window._BrekekePhoneWebRoot) {
+    if (!isEmbed) {
       webPromptPermission()
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
@@ -190,7 +189,7 @@ const initApp = async () => {
     ctx.nav.goToPageIndex()
     ctx.chat.clearStore()
     ctx.contact.clearStore()
-    userStore.clearStore()
+    ctx.user.clearStore()
     if (ctx.auth.signedInId) {
       ctx.auth.resetFailureState()
       ctx.authPBX.auth()

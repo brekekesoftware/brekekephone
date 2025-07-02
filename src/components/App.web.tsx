@@ -16,7 +16,7 @@ import { App as RnApp } from '#/components/App.tsx'
 import { BrekekeGradient } from '#/components/BrekekeGradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { bundleIdentifier } from '#/config'
+import { bundleIdentifier, isEmbed, isWeb } from '#/config'
 import { getWebRootIdProps, webRootId } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
@@ -45,9 +45,7 @@ const css = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    position: window._BrekekePhoneWebRoot
-      ? ('fixed' as 'absolute')
-      : 'absolute',
+    position: isWeb && !isEmbed ? ('fixed' as 'absolute') : 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
