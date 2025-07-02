@@ -1,6 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
@@ -10,6 +11,10 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import {
+  getRingtoneList,
+  setRingtoneForAccount,
+} from '#/utils/RnRingtoneNativeModule'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -27,6 +32,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
+      ringtoneOptions: [] as { key: string; label: string }[],
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -111,6 +117,9 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       console.log({ account: $.account })
       props.onSave($.account, $.hasUnsavedChanges())
+      const { pbxUsername, pbxTenant, ringtoneIndex } = $.account
+      const accountId = pbxUsername + pbxTenant
+      setRingtoneForAccount(accountId, ringtoneIndex)
     },
   })
   type M0 = ReturnType<typeof m>
@@ -119,6 +128,38 @@ export const AccountCreateForm: FC<{
     ReturnType<typeof useStore>
   const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
+
+  const getLocalRingtone = async () => {
+    const ringtone = await getRingtoneList()
+    if (!!ringtone) {
+      const options = ringtone.map((file: string) => ({
+        key: file,
+        label: file,
+      }))
+      $.ringtoneOptions = options
+    }
+  }
+
+  useEffect(() => {
+    getLocalRingtone()
+  }, [])
+
+  const ringtoneField = isWeb
+    ? []
+    : [
+        {
+          isGroup: true,
+          label: intl`Ringtone`,
+          hasMargin: true,
+        },
+        {
+          disabled: props.footerLogout,
+          type: 'RnPicker',
+          name: 'ringtoneIndex',
+          options: $.ringtoneOptions,
+        },
+      ]
+
   return (
     <Layout
       description={
@@ -276,6 +317,7 @@ export const AccountCreateForm: FC<{
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),
+          ...ringtoneField,
         ]}
         k='account'
         onValidSubmit={$.onValidSubmit}

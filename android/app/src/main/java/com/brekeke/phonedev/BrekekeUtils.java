@@ -10,6 +10,7 @@ import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioDeviceInfo;
@@ -74,7 +75,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
-
+  private static String defaultRingtone = "incallmanager_ringtone";
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -332,6 +333,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
+
+            String accountId = data.get("x_to") + data.get("x_tenant");
+
+            i.putExtra("ringtone" , getRingtoneName(accountId));
             c.startActivity(i);
 
             // check if incoming via lpc and show the notification
@@ -593,7 +598,16 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   //
   public static MediaPlayer mp;
 
-  public static void staticStartRingtone() {
+  private static int getRingtoneFromRaw (String ringtoneName) {
+    int resId = ctx.getResources().getIdentifier(ringtoneName, "raw", ctx.getPackageName());
+    if (resId == 0) {
+      // fallback
+      resId = ctx.getResources().getIdentifier(defaultRingtone, "raw", ctx.getPackageName());
+    }
+    return resId;
+  }
+
+  public static void staticStartRingtone(String ringtoneName) {
     if (mp != null) {
       return;
     }
@@ -617,8 +631,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     am.setMode(AudioManager.MODE_RINGTONE);
     mp =
         MediaPlayer.create(
-            c,
-            R.raw.incallmanager_ringtone,
+            c, getRingtoneFromRaw(ringtoneName),
             new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
                 .setLegacyStreamType(AudioManager.STREAM_RING)
@@ -758,6 +771,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isUserAgentConfig() {
     return BrekekeUtils.userAgentConfig != null && !BrekekeUtils.userAgentConfig.equals("");
   }
+
+  // Handle ringtone
+
+  private static String getRingtoneName(String accountId) {
+    SharedPreferences prefs = ctx.getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
+    return prefs.getString(accountId, defaultRingtone);
+  }
+
 
   // ==========================================================================
   // react methods
@@ -938,7 +959,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRingtone() {
-    staticStartRingtone();
+    // TODO : need to confirm how this method works. 
+    // Currently this method is not executed when called
+    staticStartRingtone(BrekekeUtils.defaultRingtone);
   }
 
   @ReactMethod

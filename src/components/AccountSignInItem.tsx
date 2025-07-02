@@ -19,6 +19,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
+import { removeRingtoneForAccount } from '#/utils/RnRingtoneNativeModule'
 
 const css = StyleSheet.create({
   AccountSignInItem: {
@@ -151,7 +152,10 @@ export const AccountSignInItem: FC<{
                 </>
               ),
               onConfirm: () => {
-                ctx.account.removeAccount(a.id)
+                const { id, pbxUsername, pbxTenant } = a
+                ctx.account.removeAccount(id)
+                const accountId = pbxUsername + pbxTenant
+                removeRingtoneForAccount(accountId)
               },
             })
           }}
