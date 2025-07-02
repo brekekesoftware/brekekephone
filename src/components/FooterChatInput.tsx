@@ -5,9 +5,9 @@ import type {
 } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
-import { mdiEmoticon, mdiPaperclip, mdiSend } from '../assets/icons'
-import { RnIcon, RnTextInput, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
+import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   ChatInput: {

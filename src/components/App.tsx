@@ -1,6 +1,3 @@
-// api was a component but had been rewritten to a listener
-import '../api'
-
 import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
 import { reaction, runInAction } from 'mobx'
@@ -16,86 +13,71 @@ import {
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
-import { pbx } from '../api/pbx'
-import { sip } from '../api/sip'
-import { SyncPnToken } from '../api/syncPnToken'
-import { isIos, isWeb } from '../config'
-import { getWebRootIdProps } from '../embed/polyfill'
-import { RenderAllCalls } from '../pages/PageCallManage'
-import { PageCustomPageView } from '../pages/PageCustomPageView'
-import { accountStore, getLastSignedInId } from '../stores/accountStore'
+import { AnimatedSize } from '#/components/AnimatedSize'
+import { CallBar } from '#/components/CallBar'
+import { CallNotify } from '#/components/CallNotify'
+import { CallVideos } from '#/components/CallVideos'
+import { CallVoices } from '#/components/CallVoices'
+import { ChatGroupInvite, UnreadChatNoti } from '#/components/ChatGroupInvite'
+import { PhonebookAddItem } from '#/components/PhonebookAddItem'
+import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { ToastRoot } from '#/components/ToastRoot'
+import { v } from '#/components/variables'
+import { isIos, isWeb } from '#/config'
+import { getWebRootIdProps } from '#/embed/polyfill'
+import { RenderAllCalls } from '#/pages/PageCallManage'
+import { PageCustomPageView } from '#/pages/PageCustomPageView'
+import { getLastSignedInId } from '#/stores/accountStore'
 import {
   isFirstRunFromLocalStorage,
   saveFirstRunToLocalStorage,
-} from '../stores/appStore'
-import { authPBX } from '../stores/AuthPBX'
-import { authSIP } from '../stores/AuthSIP'
-import { getAuthStore } from '../stores/authStore'
-import { authUC } from '../stores/AuthUC'
-import { getCallStore } from '../stores/callStore'
-import { chatStore } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnAlertRoot } from '../stores/RnAlertRoot'
-import { RnPickerRoot } from '../stores/RnPickerRoot'
-import { RnStacker } from '../stores/RnStacker'
-import { RnStackerRoot } from '../stores/RnStackerRoot'
-import { userStore } from '../stores/userStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { setupCallKeepEvents } from '../utils/callkeep'
-import { getConnectionStatus } from '../utils/getConnectionStatus'
-import { checkPermForCall, permForCall } from '../utils/permissions'
-import { PushNotification } from '../utils/PushNotification'
-import { registerOnUnhandledError } from '../utils/registerOnUnhandledError'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { webPromptPermission } from '../utils/webPromptPermission'
-import { AnimatedSize } from './AnimatedSize'
-import { CallBar } from './CallBar'
-import { CallNotify } from './CallNotify'
-import { CallVideos } from './CallVideos'
-import { CallVoices } from './CallVoices'
-import { ChatGroupInvite, UnreadChatNoti } from './ChatGroupInvite'
-import { PhonebookAddItem } from './PhonebookAddItem'
-import { AudioPlayer, RnStatusBar, RnText } from './Rn'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { ToastRoot } from './ToastRoot'
-import { v } from './variables'
+} from '#/stores/appStore'
+import { ctx } from '#/stores/ctx'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnAlertRoot } from '#/stores/RnAlertRoot'
+import { RnPickerRoot } from '#/stores/RnPickerRoot'
+import { RnStacker } from '#/stores/RnStacker'
+import { RnStackerRoot } from '#/stores/RnStackerRoot'
+import { userStore } from '#/stores/userStore'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { setupCallKeepEvents } from '#/utils/callkeep'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
+import { checkPermForCall, permForCall } from '#/utils/permissions'
+import { PushNotification } from '#/utils/PushNotification'
+import { registerOnUnhandledError } from '#/utils/registerOnUnhandledError'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
+import { webPromptPermission } from '#/utils/webPromptPermission'
 
 const initApp = async () => {
-  await intlStore.wait()
-  const s = getAuthStore()
-  const cs = getCallStore()
-  const nav = Nav()
-  const pnToken = SyncPnToken()
+  await ctx.intl.wait()
 
   const checkHasCallOrWakeFromPN = () =>
-    Object.keys(cs.callkeepMap).length ||
-    sip.phone?.getSessionCount() ||
-    cs.calls.length ||
-    s.sipPn.sipAuth
+    Object.keys(ctx.call.callkeepMap).length ||
+    ctx.sip.phone?.getSessionCount() ||
+    ctx.call.calls.length ||
+    ctx.auth.sipPn.sipAuth
   const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
 
   const autoLogin = async () => {
     if (!(await checkPermForCall())) {
-      nav.goToPageAccountSignIn()
+      ctx.nav.goToPageAccountSignIn()
       return
     }
     const d = await getLastSignedInId(true)
-    const a = await accountStore.findByUniqueId(d.id)
-    if (d.autoSignInBrekekePhone && (await s.signIn(a, true))) {
+    const a = await ctx.account.findByUniqueId(d.id)
+    if (d.autoSignInBrekekePhone && (await ctx.auth.signIn(a, true))) {
       console.log('App navigated by auto signin')
       // already navigated
     } else {
       // skip move to page index if there is no account
       const screen = RnStacker.stacks[RnStacker.stacks.length - 1]
-      const ca = accountStore.accounts.length
+      const ca = ctx.account.accounts.length
       if (!ca && screen && screen.name === 'PageAccountCreate') {
         return
       }
-      nav.goToPageIndex()
+      ctx.nav.goToPageIndex()
     }
   }
 
@@ -108,38 +90,38 @@ const initApp = async () => {
   // android only, via incallmanager lib
   DeviceEventEmitter.addListener('Proximity', data => {
     if (!data?.isNear) {
-      pbx.ping()
+      ctx.pbx.ping()
     }
   })
 
   AppState.addEventListener('change', async () => {
     // to check and reconnect pbx
     if (AppState.currentState === 'active') {
-      cs.fgAt = Date.now()
+      ctx.call.fgAt = Date.now()
     } else if (AppState.currentState === 'background') {
-      cs.bgAt = Date.now()
+      ctx.call.bgAt = Date.now()
     }
 
     if (AppState.currentState !== 'active') {
       return
     }
 
-    s.resetFailureState()
-    cs.onCallKeepAction()
-    pbx.ping()
-    pnToken.syncForAllAccounts()
-    if (checkHasCallOrWakeFromPN() || (await s.handleUrlParams())) {
+    ctx.auth.resetFailureState()
+    ctx.call.onCallKeepAction()
+    ctx.pbx.ping()
+    ctx.pnToken.syncForAllAccounts()
+    if (checkHasCallOrWakeFromPN() || (await ctx.auth.handleUrlParams())) {
       return
     }
     if (
       !hasCallOrWakeFromPN &&
-      s.signedInId &&
+      ctx.auth.signedInId &&
       !(await checkPermForCall(
         false,
-        s.getCurrentAccount()?.pushNotificationEnabled,
+        ctx.auth.getCurrentAccount()?.pushNotificationEnabled,
       ))
     ) {
-      s.signOut()
+      ctx.auth.signOut()
       return
     }
     // with ios when wakekup app, currentState will be 'unknown' first then 'active'
@@ -151,17 +133,17 @@ const initApp = async () => {
   })
 
   NetInfo.addEventListener(({ isConnected }) => {
-    if (s.hasInternetConnected === isConnected) {
+    if (ctx.auth.hasInternetConnected === isConnected) {
       return
     }
-    s.hasInternetConnected = isConnected
+    ctx.auth.hasInternetConnected = isConnected
     if (!isConnected) {
       return
     }
-    s.resetFailureState()
-    authPBX.auth()
-    authSIP.auth()
-    authUC.auth()
+    ctx.auth.resetFailureState()
+    ctx.authPBX.auth()
+    ctx.authSIP.auth()
+    ctx.authUC.auth()
   })
 
   if (isWeb) {
@@ -184,7 +166,7 @@ const initApp = async () => {
 
   setupCallKeepEvents()
 
-  await accountStore.loadAccountsFromLocalStorage()
+  await ctx.account.loadAccountsFromLocalStorage()
 
   const clearConnectionReaction = reaction(
     () => getConnectionStatus(),
@@ -196,7 +178,7 @@ const initApp = async () => {
   void clearConnectionReaction
 
   const clearGetHoldLoadingReaction = reaction(
-    () => getCallStore().isAnyHoldLoading,
+    () => ctx.call.isAnyHoldLoading,
     isAnyHoldLoading => {
       BrekekeUtils.updateAnyHoldLoading(isAnyHoldLoading)
     },
@@ -205,24 +187,24 @@ const initApp = async () => {
   void clearGetHoldLoadingReaction
 
   const onAuthUpdate = debounce(() => {
-    nav.goToPageIndex()
-    chatStore.clearStore()
-    contactStore.clearStore()
+    ctx.nav.goToPageIndex()
+    ctx.chat.clearStore()
+    ctx.contact.clearStore()
     userStore.clearStore()
-    if (s.signedInId) {
-      s.resetFailureState()
-      authPBX.auth()
-      authSIP.auth()
-      authUC.auth()
+    if (ctx.auth.signedInId) {
+      ctx.auth.resetFailureState()
+      ctx.authPBX.auth()
+      ctx.authSIP.auth()
+      ctx.authUC.auth()
     } else {
-      authPBX.dispose()
-      authSIP.dispose()
-      authUC.dispose()
+      ctx.authPBX.dispose()
+      ctx.authSIP.dispose()
+      ctx.authUC.dispose()
     }
   }, 17)
-  const clearReaction = reaction(() => s.signedInId, onAuthUpdate)
+  const clearReaction = reaction(() => ctx.auth.signedInId, onAuthUpdate)
   void clearReaction
-  if (await s.handleUrlParams()) {
+  if (await ctx.auth.handleUrlParams()) {
     console.log('App navigated by url params')
     // already navigated
   } else if (
@@ -234,11 +216,11 @@ const initApp = async () => {
   ) {
     await autoLogin()
   } else {
-    nav.goToPageIndex()
+    ctx.nav.goToPageIndex()
   }
 
   if (AppState.currentState === 'active') {
-    pnToken.syncForAllAccounts()
+    ctx.pnToken.syncForAllAccounts()
   }
 }
 
@@ -251,7 +233,7 @@ PushNotification.register(async () => {
   await initApp().catch(console.error)
   await waitTimeout(100)
   runInAction(() => {
-    accountStore.appInitDone = true
+    ctx.account.appInitDone = true
   })
 })
 
@@ -302,11 +284,11 @@ export const App = observer(() => {
     onPress: onPressConnMessage,
   } = getConnectionStatus()
 
-  const cp = getAuthStore().listCustomPage[0]
+  const cp = ctx.auth.listCustomPage[0]
 
   return (
     <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
-      {chatStore.chatNotificationSoundRunning && <AudioPlayer />}
+      {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize
@@ -349,7 +331,7 @@ export const App = observer(() => {
       </View>
       {isIos && <KeyboardSpacer />}
 
-      {!accountStore.appInitDone && (
+      {!ctx.account.appInitDone && (
         <View style={css.LoadingFullscreen}>
           <ActivityIndicator size='large' color='white' />
         </View>
@@ -358,5 +340,4 @@ export const App = observer(() => {
   )
 })
 
-// eslint-disable-next-line no-restricted-syntax
 export default App

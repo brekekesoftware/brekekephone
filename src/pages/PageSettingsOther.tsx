@@ -1,16 +1,13 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { uc } from '../api/uc'
-import { mdiCheck, mdiTranslate } from '../assets/icons'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { isWeb } from '../config'
-import { getAuthStore } from '../stores/authStore'
-import { intl, intlDebug } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { mdiCheck, mdiTranslate } from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PageSettingsOther extends Component {
@@ -19,7 +16,7 @@ export class PageSettingsOther extends Component {
     statusText: '',
   }
   componentDidMount = () => {
-    const me = uc.me()
+    const me = ctx.uc.me()
     this.setState({
       status: me.status,
       statusText: me.statusText,
@@ -35,9 +32,10 @@ export class PageSettingsOther extends Component {
     this.setStatus(status, this.state.statusText)
   }
   setStatus = (status: string, statusText: string) => {
-    uc.setStatus(status, statusText)
+    ctx.uc
+      .setStatus(status, statusText)
       .then(() => {
-        const me = uc.me()
+        const me = ctx.uc.me()
         this.setState({
           status: me.status,
           statusText: me.statusText,
@@ -51,17 +49,16 @@ export class PageSettingsOther extends Component {
       })
   }
   render() {
-    const as = getAuthStore()
-    const ca = as.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
-          ...(as.isConnFailure()
+          ...(ctx.auth.isConnFailure()
             ? [
                 {
                   label: intl`Reconnect to server`,
-                  onPress: as.resetFailureStateIncludePbxOrUc,
+                  onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
                 },
               ]
             : []),
@@ -69,13 +66,13 @@ export class PageSettingsOther extends Component {
             ? [
                 {
                   label: intl`Open debug log`,
-                  onPress: Nav().goToPageSettingsDebugFiles,
+                  onPress: ctx.nav.goToPageSettingsDebugFiles,
                 },
               ]
             : []),
           {
             label: intl`Logout`,
-            onPress: as.signOut,
+            onPress: ctx.auth.signOut,
             danger: true,
           },
         ]}
@@ -87,9 +84,9 @@ export class PageSettingsOther extends Component {
         <Field
           icon={mdiTranslate}
           label={intl`LANGUAGE`}
-          onTouchPress={intlStore.selectLocale}
-          value={intlStore.locale}
-          valueRender={() => intlStore.getLocaleName()}
+          onTouchPress={ctx.intl.selectLocale}
+          value={ctx.intl.locale}
+          valueRender={() => ctx.intl.getLocaleName()}
         />
         {ca?.ucEnabled && (
           <>

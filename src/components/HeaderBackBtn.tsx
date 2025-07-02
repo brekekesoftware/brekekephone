@@ -1,9 +1,9 @@
 import type { FC } from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
-import { mdiKeyboardBackspace } from '../assets/icons'
-import { useAnimation } from '../utils/animation'
-import { RnIcon, RnTouchableOpacity } from './Rn'
+import { mdiKeyboardBackspace } from '#/assets/icons'
+import { RnIcon, RnTouchableOpacity } from '#/components/Rn'
+import { useAnimation } from '#/utils/animation'
 
 const css = StyleSheet.create({
   BackBtn: {

@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h b/node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
-index ea116a8..39884a0 100644
+index 054ef59..ab5069a 100644
 --- a/node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
 +++ b/node_modules/react-native-voip-push-notification/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
-@@ -19,7 +19,7 @@ typedef void (^RNVoipPushNotificationCompletion)(void);
+@@ -20,7 +20,7 @@ typedef void (^RNVoipPushNotificationCompletion)(void);
  
  + (void)voipRegistration;
  + (void)didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type;

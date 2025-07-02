@@ -1,22 +1,19 @@
 import { observer } from 'mobx-react'
 
-import { mdiPhone, mdiPhoneHangup } from '../assets/icons'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
-import type { Call } from '../stores/Call'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { Duration } from '../stores/timerStore'
+import { mdiPhone, mdiPhoneHangup } from '#/assets/icons'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import type { Call } from '#/stores/Call'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { Duration } from '#/stores/timerStore'
 
 export const PageCallBackgrounds = observer(() => {
-  const bg = getCallStore().calls.filter(
-    c => c.id !== getCallStore().ongoingCallId,
-  )
-  const oc = getCallStore().getOngoingCall()
+  const bg = ctx.call.calls.filter(c => c.id !== ctx.call.ongoingCallId)
+  const oc = ctx.call.getOngoingCall()
   const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
@@ -32,7 +29,7 @@ export const PageCallBackgrounds = observer(() => {
         ? [
             () => {
               c.answer()
-              getCallStore().onSelectBackgroundCall(c)
+              ctx.call.onSelectBackgroundCall(c)
             },
           ]
         : []),
@@ -66,14 +63,14 @@ export const PageCallBackgrounds = observer(() => {
   return (
     <Layout
       compact
-      onBack={Nav().backToPageCallManage}
+      onBack={ctx.nav.backToPageCallManage}
       title={intl`Background calls`}
     >
       <Field isGroup label={intl`CURRENT CALL`} />
       {(oc ? [oc] : []).map(c => (
         <RnTouchableOpacity
           key={c.id}
-          onPress={() => Nav().backToPageCallManage()}
+          onPress={() => ctx.nav.backToPageCallManage()}
         >
           {renderItemCall(c, true)}
         </RnTouchableOpacity>
@@ -87,7 +84,7 @@ export const PageCallBackgrounds = observer(() => {
           onPress={
             !c.answered && c.incoming
               ? undefined
-              : () => getCallStore().onSelectBackgroundCall(c)
+              : () => ctx.call.onSelectBackgroundCall(c)
           }
         >
           {renderItemCall(c)}

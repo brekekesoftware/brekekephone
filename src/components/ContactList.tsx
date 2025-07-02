@@ -2,10 +2,10 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { FlatList, View } from 'react-native'
 
-import type { UcBuddy } from '../brekekejs'
-import { userStore } from '../stores/userStore'
-import { UserItem } from './ContactUserItem'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
+import type { UcBuddy } from '#/brekekejs'
+import { UserItem } from '#/components/ContactUserItem'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { userStore } from '#/stores/userStore'
 
 type ContactListProps = {
   data: UcBuddy[]

@@ -4,40 +4,37 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { SectionList } from 'react-native'
 
-import { mdiMagnify, mdiPhone, mdiPhoneForward } from '../assets/icons'
-import { ContactSectionList } from '../components/ContactSectionList'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { setPageCallTransferChooseUser } from '../components/navigationConfig2'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { contactStore } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { userStore } from '../stores/userStore'
+import { mdiMagnify, mdiPhone, mdiPhoneForward } from '#/assets/icons'
+import { ContactSectionList } from '#/components/ContactSectionList'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { setPageCallTransferChooseUser } from '#/components/navigationConfig'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { userStore } from '#/stores/userStore'
 
 @observer
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
   @observable txtSearch: string = ''
   componentDidMount = () => {
-    if (!contactStore.pbxUsers.length) {
-      contactStore.getPbxUsers()
+    if (!ctx.contact.pbxUsers.length) {
+      ctx.contact.getPbxUsers()
     }
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
-      Nav().backToPageCallManage()
+      ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
   }
 
   resolveMatch = (id: string) => {
-    const match = contactStore.getPbxUserById(id)
-    const ucUser = contactStore.getUcUserById(id) || {}
+    const match = ctx.contact.getPbxUserById(id)
+    const ucUser = ctx.contact.getUcUserById(id) || {}
     return {
       name: match.name,
       avatar: ucUser.avatar,
@@ -54,11 +51,11 @@ export class PageCallTransferChooseUser extends Component {
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
   renderAllUserMode = () => {
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
-    const datas = contactStore.pbxUsers.map(u => u.id).map(this.resolveMatch)
+    const datas = ctx.contact.pbxUsers.map(u => u.id).map(this.resolveMatch)
     const users = datas.filter(i => {
       const name = i.name.toLowerCase()
       const txtSearch = this.txtSearch.toLowerCase()
@@ -106,17 +103,16 @@ export class PageCallTransferChooseUser extends Component {
     )
   }
   render() {
-    const s = getAuthStore()
-    const ca = s.getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
-    const isUserSelectionMode = s.isBigMode() || !ca.pbxLocalAllUsers
+    const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
 
     return (
       <Layout
         description={intl`Select target to start transfer`}
-        onBack={Nav().backToPageCallManage}
+        onBack={ctx.nav.backToPageCallManage}
         menu='call_transfer'
         subMenu='list_user'
         isTab
@@ -147,7 +143,7 @@ type ItemUser = {
   index: number
 }
 const RenderItemUser = observer(({ item, index }: ItemUser) => {
-  const oc = getCallStore().getOngoingCall()
+  const oc = ctx.call.getOngoingCall()
   return (
     <UserItem
       iconFuncs={[

@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs'
 
-import { uc } from '../api/uc'
+import { ctx } from '#/stores/ctx'
 
 export const saveBlob = (blob: Blob, name: string) => {
   const fr = new FileReader()
@@ -45,7 +45,7 @@ export const saveBlobFile = (id: string, topic_id: string, type?: string) =>
   new Promise(async (resolve, reject) => {
     try {
       type = type || 'image'
-      const data: Blob = (await uc.acceptFile(id)) as Blob
+      const data: Blob = (await ctx.uc.acceptFile(id)) as Blob
       const chunkSize = 1024 * 1024 * 4 // (4 Megabyte)
       const e = type === 'image' ? 'jpeg' : 'mp4'
       const p = `${RNFS.DocumentDirectoryPath}/${id}.${e}`

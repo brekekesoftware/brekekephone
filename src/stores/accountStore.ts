@@ -1,20 +1,21 @@
-import jsonStableStringify from 'json-stable-stringify'
 import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
-import { SyncPnToken } from '../api/syncPnToken'
-import type { UcBuddy, UcBuddyGroup } from '../brekekejs'
-import { RnAsyncStorage } from '../components/Rn'
-import { currentVersion } from '../components/variables'
-import { isWeb } from '../config'
-import { arrToMap } from '../utils/arrToMap'
-import type { ParsedPn } from '../utils/PushNotification-parse'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { compareSemVer } from './debugStore'
-import { intlDebug } from './intl'
-import { RnAlert } from './RnAlert'
+import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
+import { RnAsyncStorage } from '#/components/Rn'
+import { currentVersion } from '#/components/variables'
+import { isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { compareSemVer } from '#/stores/debugStore'
+import { intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { arrToMap } from '#/utils/arrToMap'
+import { jsonSafe } from '#/utils/jsonSafe'
+import { jsonStable } from '#/utils/jsonStable'
+import type { ParsedPn } from '#/utils/PushNotification-parse'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 let resolveFn: Function | undefined
 const storagePromise = new Promise(resolve => {
@@ -73,7 +74,7 @@ export type AccountData = {
   phoneappliEnabled?: boolean
 }
 
-class AccountStore {
+export class AccountStore {
   @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise
@@ -148,7 +149,7 @@ class AccountStore {
       }
       await RnAsyncStorage.setItem(
         '_api_profiles',
-        JSON.stringify({
+        jsonSafe({
           profiles,
           profileData: this.accountData,
         }),
@@ -198,7 +199,7 @@ class AccountStore {
       // delete pn token for old phone_index / account
       clonedA.pushNotificationEnabled = false
       clonedA.pushNotificationEnabledSynced = false
-      SyncPnToken().sync(clonedA, {
+      ctx.pnToken.sync(clonedA, {
         noUpsert: true,
       })
       if (wholeAccountChanged) {
@@ -211,7 +212,7 @@ class AccountStore {
         p.pushNotificationEnabled !== clonedA.pushNotificationEnabled)
     ) {
       a.pushNotificationEnabledSynced = false
-      SyncPnToken().sync(a, {
+      ctx.pnToken.sync(a, {
         onError: err => {
           RnAlert.error({
             message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
@@ -231,7 +232,7 @@ class AccountStore {
     this.saveAccountsToLocalStorageDebounced()
     if (a) {
       a.pushNotificationEnabled = false
-      SyncPnToken().sync(a, {
+      ctx.pnToken.sync(a, {
         noUpsert: true,
       })
     }
@@ -315,7 +316,7 @@ export type AccountUnique = Pick<
   'pbxUsername' | 'pbxTenant' | 'pbxHostname' | 'pbxPort'
 >
 export const getAccountUniqueId = (a: AccountUnique) =>
-  jsonStableStringify({
+  jsonStable({
     u: a.pbxUsername,
     t: a.pbxTenant || '-',
     h: a.pbxHostname,
@@ -344,7 +345,7 @@ export const compareAccountPartial = (
   compareFalsishField(p1, p2, 'pbxHostname') &&
   compareFalsishField(p1, p2, 'pbxPort')
 
-export const accountStore = new AccountStore()
+ctx.account = new AccountStore()
 export type RecentCall = AccountData['recentCalls'][0]
 
 type TAccountDataInStorage = {
@@ -395,10 +396,10 @@ export const saveLastSignedInId = async (id: string | false) => {
   if (id === false) {
     const d = await getLastSignedInId()
     d.logoutPressed = true
-    await RnAsyncStorage.setItem('lastSignedInId', JSON.stringify(d))
+    await RnAsyncStorage.setItem('lastSignedInId', jsonSafe(d))
     return
   }
-  const j = JSON.stringify({
+  const j = jsonSafe({
     id,
     at: Date.now(),
     version: currentVersion,

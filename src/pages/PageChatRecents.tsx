@@ -1,29 +1,25 @@
-import jsonStableStringify from 'json-stable-stringify'
 import { orderBy, uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import type { UcMessageLog } from '../brekekejs'
-import { Constants } from '../brekekejs/ucclient'
-import { ListUsers } from '../components/ChatListUsers'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText } from '../components/Rn'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import type { ChatGroup, ChatMessage } from '../stores/chatStore'
-import { chatStore } from '../stores/chatStore'
-import type { UcUser } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { arrToMap } from '../utils/arrToMap'
-import { filterTextOnly, formatChatContent } from '../utils/formatChatContent'
+import type { UcMessageLog } from '#/brekekejs'
+import { Constants } from '#/brekekejs/ucclient'
+import { ListUsers } from '#/components/ChatListUsers'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/Rn'
+import type { ChatGroup, ChatMessage } from '#/stores/chatStore'
+import type { UcUser } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { arrToMap } from '#/utils/arrToMap'
+import { filterTextOnly, formatChatContent } from '#/utils/formatChatContent'
+import { jsonStable } from '#/utils/jsonStable'
 
 @observer
 export class PageChatRecents extends Component {
   getLastChat = (id: string) => {
-    const chats = filterTextOnly(chatStore.getMessagesByThreadId(id))
+    const chats = filterTextOnly(ctx.chat.getMessagesByThreadId(id))
     return chats.length ? chats[chats.length - 1] : ({} as ChatMessage)
   }
   saveLastChatItem = async (
@@ -42,39 +38,38 @@ export class PageChatRecents extends Component {
     while (arr2.length > 20) {
       arr2.pop()
     }
-    const d = await getAuthStore().getCurrentDataAsync()
-    if (d && jsonStableStringify(arr2) !== jsonStableStringify(d.recentChats)) {
+    const d = await ctx.auth.getCurrentDataAsync()
+    if (d && jsonStable(arr2) !== jsonStable(d.recentChats)) {
       d.recentChats = arr2
-      accountStore.saveAccountsToLocalStorageDebounced()
+      ctx.account.saveAccountsToLocalStorageDebounced()
     }
   }
   handleGroupSelect = async (groupId: string) => {
-    chatStore.handleMoveToChatGroupDetail(groupId)
+    ctx.chat.handleMoveToChatGroupDetail(groupId)
   }
 
   render() {
-    const webchatInactive = chatStore.groups.filter(
+    const webchatInactive = ctx.chat.groups.filter(
       gr =>
         gr.webchat && gr.webchat.conf_status !== Constants.CONF_STATUS_JOINED,
     )
 
-    const groupIds = chatStore.groups.filter(gr => gr.jointed).map(gr => gr.id)
+    const groupIds = ctx.chat.groups.filter(gr => gr.jointed).map(gr => gr.id)
 
-    const threadIds = chatStore.threadIdsOrderedByRecent
+    const threadIds = ctx.chat.threadIdsOrderedByRecent
 
-    const groupById = arrToMap(chatStore.groups, 'id', (g: ChatGroup) => g) as {
+    const groupById = arrToMap(ctx.chat.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup
     }
-    const userById = arrToMap(contactStore.ucUsers, 'id', (u: UcUser) => u) as {
+    const userById = arrToMap(ctx.contact.ucUsers, 'id', (u: UcUser) => u) as {
       [k: string]: UcUser
     }
 
-    const as = getAuthStore()
-    const ca = as.getCurrentAccount()
-    const d = as.getCurrentData()
+    const ca = ctx.auth.getCurrentAccount()
+    const d = ctx.auth.getCurrentData()
     if (!d && ca) {
       // trigger async update
-      accountStore.findDataWithDefault(ca)
+      ctx.account.findDataWithDefault(ca)
     }
     const recentFromStorage =
       d?.recentChats.filter(
@@ -108,13 +103,13 @@ export class PageChatRecents extends Component {
         name: string
       }
       const name: string = x?.name || c.name || ''
-      let unread = chatStore.getThreadConfig(id).isUnread
+      let unread = ctx.chat.getThreadConfig(id).isUnread
       if (typeof unread !== 'boolean') {
         unread = c.unread || false
       }
       // check webchat inactive
-      const isWebchat = chatStore.isWebchat(id)
-      const isWebchatJoined = chatStore.isWebchatJoined(id)
+      const isWebchat = ctx.chat.isWebchat(id)
+      const isWebchatJoined = ctx.chat.isWebchatJoined(id)
       if (isWebchat && !isWebchatJoined) {
         unread = true
       }
@@ -162,7 +157,7 @@ export class PageChatRecents extends Component {
         dropdown={[
           {
             label: intl`Create group chat`,
-            onPress: Nav().goToPageChatGroupCreate,
+            onPress: ctx.nav.goToPageChatGroupCreate,
           },
         ]}
         menu='contact'
@@ -180,7 +175,7 @@ export class PageChatRecents extends Component {
           groupById={groupById}
           onGroupSelect={this.handleGroupSelect}
           userById={userById}
-          onUserSelect={id => Nav().goToPageChatDetail({ buddy: id })}
+          onUserSelect={id => ctx.nav.goToPageChatDetail({ buddy: id })}
         />
       </Layout>
     )

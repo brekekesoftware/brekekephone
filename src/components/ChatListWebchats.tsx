@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 
-import type { ChatGroup } from '../stores/chatStore'
-import { WebchatItem } from './WebchatItem'
+import { WebchatItem } from '#/components/WebchatItem'
+import type { ChatGroup } from '#/stores/chatStore'
 
 export const ListWebchats: FC<{
   datas: ChatGroup[]

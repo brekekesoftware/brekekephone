@@ -4,12 +4,11 @@ import { useCallback } from 'react'
 import type { ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
-import { chatStore } from '../stores/chatStore'
-import { css as fcss } from './FooterNavigation'
-import { getSubMenus } from './navigationConfig'
-import { getTabs } from './navigationConfig2'
-import { RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { css as fcss } from '#/components/FooterNavigation'
+import { getSubMenus, getTabs } from '#/components/navigationConfig'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Navigation: {
@@ -66,8 +65,8 @@ export const Navigation: FC<{
     <View style={css.Navigation}>
       {tabs.map(s => {
         const active = s.key === subMenu
-        const totalUnreadChat = chatStore.unreadCount
-        const totalNoticesWebchat = chatStore.getNumberWebchatNoti()
+        const totalUnreadChat = ctx.chat.unreadCount
+        const totalNoticesWebchat = ctx.chat.getNumberWebchatNoti()
 
         return (
           <RnTouchableOpacity

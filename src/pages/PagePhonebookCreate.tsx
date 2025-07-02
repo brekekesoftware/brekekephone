@@ -3,14 +3,11 @@ import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { pbx } from '../api/pbx'
-import { ContactsCreateForm } from '../components/ContactCreateForm'
-import { getAuthStore } from '../stores/authStore'
-import type { ContactInfo, Phonebook } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { ContactsCreateForm } from '#/components/ContactCreateForm'
+import type { ContactInfo, Phonebook } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PagePhonebookCreate extends Component<{
@@ -20,9 +17,9 @@ export class PagePhonebookCreate extends Component<{
     return (
       <ContactsCreateForm
         phonebook={this.props.phonebook}
-        onBack={Nav().backToPageContactPhonebook}
+        onBack={ctx.nav.backToPageContactPhonebook}
         onSave={(p: ContactInfo) => {
-          if (pbx.client && getAuthStore().pbxState === 'success') {
+          if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
             this.save(p)
           }
         }}
@@ -38,19 +35,19 @@ export class PagePhonebookCreate extends Component<{
     const phonebook = p.phonebook
     delete p.phonebook
     const contact = {
-      display_name: contactStore.getManagerContact(p.$lang)?.toDisplayName(p),
+      display_name: ctx.contact.getManagerContact(p.$lang)?.toDisplayName(p),
       phonebook,
       shared: false, // admin can't login on brekeke phone => share = false
       info: p,
     } as Phonebook
 
-    pbx
+    ctx.pbx
       .setContact(contact)
       .then(val => {
         if (!val) {
           return
         }
-        contactStore.upsertPhonebook(
+        ctx.contact.upsertPhonebook(
           Object.assign(contact, {
             id: val.aid,
           }),
@@ -60,7 +57,7 @@ export class PagePhonebookCreate extends Component<{
       .catch(this.onSaveFailure)
   }
   onSaveSuccess = () => {
-    Nav().goToPageContactPhonebook()
+    ctx.nav.goToPageContactPhonebook()
   }
   onSaveFailure = (err: Error) => {
     RnAlert.error({

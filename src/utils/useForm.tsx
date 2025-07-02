@@ -4,13 +4,13 @@ import { Fragment } from 'react'
 import type { Rules } from 'validatorjs'
 import Validator from 'validatorjs'
 
-import type { PbxBook } from '../brekekejs'
-import { Field } from '../components/Field'
-import { PhonebookAutoComplete } from '../components/PhonebookAutoComplete'
-import { isWeb } from '../config'
-import { arrToMap } from './arrToMap'
-import type { CreatedStore } from './createStore'
-import { useStore } from './useStore'
+import type { PbxBook } from '#/brekekejs'
+import { Field } from '#/components/Field'
+import { PhonebookAutoComplete } from '#/components/PhonebookAutoComplete'
+import { isWeb } from '#/config'
+import { arrToMap } from '#/utils/arrToMap'
+import type { CreatedStore } from '#/utils/createStore'
+import { useStore } from '#/utils/useStore'
 
 const noop = () => {}
 

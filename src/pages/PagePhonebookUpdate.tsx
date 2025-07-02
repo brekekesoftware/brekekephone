@@ -3,14 +3,11 @@ import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { pbx } from '../api/pbx'
-import { ContactsCreateForm } from '../components/ContactCreateForm'
-import { getAuthStore } from '../stores/authStore'
-import type { ContactInfo, Phonebook } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { ContactsCreateForm } from '#/components/ContactCreateForm'
+import type { ContactInfo, Phonebook } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PagePhonebookUpdate extends Component<{
@@ -19,9 +16,9 @@ export class PagePhonebookUpdate extends Component<{
   render() {
     return (
       <ContactsCreateForm
-        onBack={Nav().backToPageContactPhonebook}
+        onBack={ctx.nav.backToPageContactPhonebook}
         onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
-          if (pbx.client && getAuthStore().pbxState === 'success') {
+          if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
             this.save(p, hasUnsavedChanges)
           }
         }}
@@ -33,7 +30,7 @@ export class PagePhonebookUpdate extends Component<{
 
   @action save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
     if (!hasUnsavedChanges) {
-      Nav().goToPageContactPhonebook()
+      ctx.nav.goToPageContactPhonebook()
       return
     }
     if (isEmpty(p)) {
@@ -44,19 +41,19 @@ export class PagePhonebookUpdate extends Component<{
 
     const contactUpdate = {
       id: this.props.contact.id,
-      display_name: contactStore.getManagerContact(p.$lang)?.toDisplayName(p),
+      display_name: ctx.contact.getManagerContact(p.$lang)?.toDisplayName(p),
       phonebook,
       shared: !!this.props.contact?.shared,
       info: { ...p },
     } as Phonebook
-    pbx
+    ctx.pbx
       .setContact(contactUpdate)
       .then(() => this.onSaveSuccess(contactUpdate))
       .catch(this.onSaveFailure)
   }
   onSaveSuccess = (phonebook: Phonebook) => {
-    Nav().goToPageContactPhonebook()
-    contactStore.upsertPhonebook(phonebook)
+    ctx.nav.goToPageContactPhonebook()
+    ctx.contact.upsertPhonebook(phonebook)
   }
   onSaveFailure = (err: Error) => {
     RnAlert.error({

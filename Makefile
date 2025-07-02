@@ -50,22 +50,27 @@ patch:
 
 format:
 	yarn format && \
-	make -Bs format-objc && \
-	make -Bs format-swift && \
-	make -Bs format-java && \
-	make -Bs format-xml;
+	make -Bs format_objc && \
+	make -Bs format_swift && \
+	make -Bs format_java && \
+	make -Bs format_kotlin && \
+	make -Bs format_xml;
 
-format-objc:
+format_objc:
 	export EXT="h|m" && \
 	make -Bs ls | \
-	xargs clang-format -i -style=file;
-format-swift:
+	xargs clang-format-11 -i -style=file;
+format_swift:
 	swiftformat ios;
-format-java:
+format_java:
 	export EXT="java" && \
 	make -Bs ls | \
 	xargs google-java-format -i;
-format-xml:
+format_kotlin:
+	export EXT="kt" && \
+	make -Bs ls | \
+	xargs ktfmt -i;
+format_xml:
 	export EXT="xml|storyboard|xcscheme|xcworkspacedata" && \
 	make -Bs ls | \
 	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --log-level=error --write;

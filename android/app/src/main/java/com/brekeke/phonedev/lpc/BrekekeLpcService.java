@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 // main lpc service
 
 public class BrekekeLpcService extends Service {
-  private String CHANNEL_ID = "NOTIFICATION_CHANNEL";
   public static boolean isServiceStarted = false;
   public static LpcModel.Settings settings;
   private static Intent iService;
@@ -42,10 +41,11 @@ public class BrekekeLpcService extends Service {
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
     Notification notification =
-        new Notification.Builder(this, CHANNEL_ID)
+        new Notification.Builder(this, LpcUtils.NOTI_CHANNEL_ID)
+            // fix: the app will crash: "Invalid notification (no valid small icon)"
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(L.serviceIsRunning())
             .setContentText(L.serviceIsRunningInBackground())
-            .setSmallIcon(R.drawable.exo_notification_small_icon)
             .setContentIntent(pendingIntent)
             .build();
 
@@ -57,7 +57,8 @@ public class BrekekeLpcService extends Service {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       String appName = getString(R.string.app_name);
       NotificationChannel serviceChannel =
-          new NotificationChannel(CHANNEL_ID, appName, NotificationManager.IMPORTANCE_DEFAULT);
+          new NotificationChannel(
+              LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_DEFAULT);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
     }

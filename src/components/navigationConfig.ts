@@ -1,19 +1,21 @@
+import { action } from 'mobx'
+import type { ReactComponentLike } from 'prop-types'
+
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
   mdiPhoneOutline,
-} from '../assets/icons'
-import type { PbxCustomPage } from '../brekekejs'
-import { isIos } from '../config'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { intl } from '../stores/intl'
-import { intlStore } from '../stores/intlStore'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { arrToMap } from '../utils/arrToMap'
-import { openLinkSafely, urls } from '../utils/deeplink'
-import { PushNotification } from '../utils/PushNotification'
+} from '#/assets/icons'
+import type { PbxCustomPage } from '#/brekekejs'
+import { isIos } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import type { Nav } from '#/stores/Nav'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnStacker } from '#/stores/RnStacker'
+import { arrToMap } from '#/utils/arrToMap'
+import { openLinkSafely, urls } from '#/utils/deeplink'
+import { PushNotification } from '#/utils/PushNotification'
 
 export type Menu = {
   key: string
@@ -27,7 +29,7 @@ export type Menu = {
 export type SubMenu = {
   key: string
   label: string
-  navFnKey: keyof ReturnType<typeof Nav>
+  navFnKey: keyof Nav
   ucRequired?: boolean
   navFn(): void
 }
@@ -137,15 +139,14 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
       s.navFn = () => {
-        const as = getAuthStore()
-        const ca = as.getCurrentAccount()
+        const ca = ctx.auth.getCurrentAccount()
         if (s.ucRequired && !ca?.ucEnabled) {
           m.defaultSubMenu.navFn()
           return
         }
 
         // handle link to phoneappli app
-        if (as.phoneappliEnabled()) {
+        if (ctx.auth.phoneappliEnabled()) {
           if (s.navFnKey === 'goToPageContactPhonebook') {
             openLinkSafely(urls.phoneappli.USERS)
             return
@@ -162,12 +163,12 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           }
         }
         // @ts-ignore
-        Nav()[s.navFnKey]({ id: s.key })
+        ctx.nav[s.navFnKey]({ id: s.key })
         saveNavigation(i, s.key)
       }
     })
     m.navFn = () => {
-      let k = getAuthStore().getCurrentAccount()?.navSubMenus?.[i]
+      let k = ctx.auth.getCurrentAccount()?.navSubMenus?.[i]
       if (!k) {
         return
       }
@@ -180,20 +181,20 @@ const genMenus = (customPages: PbxCustomPage[]) => {
   return arr
 }
 
-let lastLocale = intlStore.locale
+let lastLocale = ctx.intl.locale
 let lastMenus = genMenus([])
 export const menus = () => {
-  if (lastLocale !== intlStore.locale) {
-    lastLocale = intlStore.locale
+  if (lastLocale !== ctx.intl.locale) {
+    lastLocale = ctx.intl.locale
   }
-  lastMenus = genMenus(getAuthStore().listCustomPage)
+  lastMenus = genMenus(ctx.auth.listCustomPage)
   return lastMenus
 }
 
 const saveNavigation = (i: number, k: string) => {
   const arr = menus()
   const m = arr[i]
-  const ca = getAuthStore().getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
   if (!m || !ca) {
     return
   }
@@ -205,11 +206,11 @@ const saveNavigation = (i: number, k: string) => {
     ca.navIndex = i
   }
   ca.navSubMenus[i] = k
-  accountStore.saveAccountsToLocalStorageDebounced()
+  ctx.account.saveAccountsToLocalStorageDebounced()
 }
 export const normalizeSavedNavigation = () => {
   const arr = menus()
-  const ca = getAuthStore().getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
   if (!ca) {
     return
   }
@@ -236,6 +237,86 @@ export const getSubMenus = (menu: string) => {
     return []
   }
   return m.subMenus.filter(
-    s => !(s.ucRequired && !getAuthStore().getCurrentAccount()?.ucEnabled),
+    s => !(s.ucRequired && !ctx.auth.getCurrentAccount()?.ucEnabled),
   )
+}
+
+let PageCallTransferChooseUser: ReactComponentLike
+export const setPageCallTransferChooseUser = (p: ReactComponentLike) => {
+  PageCallTransferChooseUser = p
+}
+let PageCallTransferDial: ReactComponentLike
+export const setPageCallTransferDial = (p: ReactComponentLike) => {
+  PageCallTransferDial = p
+}
+
+export const getTabs = (tab: string) => {
+  const subMenus = [
+    {
+      key: 'list_user',
+      label: intl`USER`,
+      navFnKey: { PageCallTransferChooseUser },
+    },
+    {
+      key: 'external_number',
+      label: intl`KEYPAD`,
+      navFnKey: { PageCallTransferDial },
+    },
+  ]
+  // add phonebook tab if phoneappli is enabled
+  if (ctx.auth.phoneappliEnabled()) {
+    subMenus.push({
+      key: 'phonebook',
+      label: intl`PHONEBOOK`,
+      navFnKey: {} as any,
+    })
+  }
+
+  const arr = [
+    {
+      key: 'call_transfer',
+      icon: null,
+      subMenus,
+      defaultSubMenuKey: 'list_user',
+    },
+  ] as any as Menu[]
+
+  const subMenuNames = arr[0].subMenus.map(s => Object.keys(s.navFnKey)[0])
+
+  arr.forEach((m, i) => {
+    m.subMenusMap = arrToMap(
+      m.subMenus,
+      (s: SubMenu) => s.key,
+      (s: SubMenu) => s,
+    ) as Menu['subMenusMap']
+    m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
+    m.subMenus.forEach(s => {
+      s.navFn = action(() => {
+        const name = Object.keys(s.navFnKey)[0]
+        // handle link to phoneappli app
+        if (!name || s.key === 'phonebook') {
+          openLinkSafely(urls.phoneappli.USERS)
+          return
+        }
+        // @ts-ignore
+        const Component: ReactComponentLike = s.navFnKey[name]
+        const lastStack = RnStacker.stacks.pop()
+        if (lastStack && !subMenuNames.includes(lastStack.name)) {
+          RnStacker.stacks.push(lastStack)
+        }
+        RnStacker.stacks.push({
+          name,
+          Component,
+        })
+      })
+    })
+  })
+  const m = arr.find(_ => _.key === tab)
+  if (!m) {
+    RnAlert.error({
+      unexpectedErr: new Error(intl`Can not find sub menus for ${tab}`),
+    })
+    return []
+  }
+  return m.subMenus as SubMenu[]
 }

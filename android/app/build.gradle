@@ -1,16 +1,21 @@
 apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+/**
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
+ */
 react {
   /* Folders */
-  //   The root of your project, i.e. where "package.json" lives. Default is '..'
-  // root = file("../")
-  //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-  // reactNativeDir = file("../node_modules/react-native")
-  //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-  // codegenDir = file("../node_modules/@react-native/codegen")
-  //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-  // cliFile = file("../node_modules/react-native/cli.js")
+  //   The root of your project, i.e. where "package.json" lives. Default is '../..'
+  // root = file("../../")
+  //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
+  // reactNativeDir = file("../../node_modules/react-native")
+  //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
+  // codegenDir = file("../../node_modules/@react-native/codegen")
+  //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
+  // cliFile = file("../../node_modules/react-native/cli.js")
 
   /* Variants */
   //   The list of variants to that are debuggable. For those we're going to
@@ -44,14 +49,33 @@ react {
   //
   //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
   // hermesFlags = ["-O", "-output-source-map"]
+
+  /* Autolinking */
+  autolinkLibrariesWithApp()
 }
 
+/**
+ * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+ */
 def enableProguardInReleaseBuilds = false
-def jscFlavor = "org.webkit:android-jsc:+"
+
+/**
+ * The preferred build flavor of JavaScriptCore (JSC)
+ *
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = io.github.react-native-community:jsc-android-intl:2026004.+`
+ *
+ * The international variant includes ICU i18n library and necessary data
+ * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
+ * give correct results when using with locales other than en-US. Note that
+ * this variant is about 6MiB larger per architecture than default.
+ */
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
   ndkVersion rootProject.ext.ndkVersion
-  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdk rootProject.ext.compileSdkVersion
   namespace "com.brekeke.phonedev"
 
   compileOptions {
@@ -86,7 +110,7 @@ android {
     }
   }
 
-  lintOptions {
+  lint {
     checkReleaseBuilds false
     abortOnError false
   }
@@ -94,7 +118,7 @@ android {
 
 dependencies {
   implementation("com.facebook.react:react-android")
-  implementation(jscFlavor)
+
   // java.lang.SecurityException: One of RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
   // https://medium.com/@siddhantshelake/fixing-broadcastreceiver-crashes-and-metro-server-issues-in-android-14-3b7d05939a43
   implementation("org.jetbrains:annotations:16.0.2")
@@ -108,11 +132,18 @@ dependencies {
   implementation("androidx.cardview:cardview:1.0.0")
   implementation("com.github.bumptech.glide:glide:4.11.0")
   annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
+
+  // android lpc dependencies
   implementation("com.google.code.gson:gson:2.9.0")
   implementation("com.github.marianobarrios:tls-channel:0.8.1")
-}
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+  // hermes / jsc
+  if (hermesEnabled.toBoolean()) {
+    implementation("com.facebook.react:hermes-android")
+  } else {
+    implementation("io.github.react-native-community:jsc-android:2026004.+")
+  }
+}
 
 // react-native-notifications
 apply plugin: "com.google.gms.google-services"

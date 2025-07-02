@@ -2,8 +2,8 @@ import { forwardRef } from 'react'
 import type { TextInputProps } from 'react-native'
 import { StyleSheet, TextInput } from 'react-native'
 
-import { isWeb } from '../config'
-import { v } from './variables'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
 
 const css = StyleSheet.create({
   RnTextInput: {

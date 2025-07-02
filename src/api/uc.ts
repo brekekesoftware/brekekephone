@@ -13,14 +13,15 @@ import type {
   UcSendFile,
   UcSendFiles,
   UcWebchatConferenceText,
-} from '../brekekejs'
-import { ChatClient, Constants, Logger } from '../brekekejs/ucclient'
-import { isWeb } from '../config'
-import type { Account } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import type { ChatFile } from '../stores/chatStore'
-import type { UcUser } from '../stores/contactStore'
-import { formatFileType } from '../utils/formatFileType'
+} from '#/brekekejs'
+import { ChatClient, Constants, Logger } from '#/brekekejs/ucclient'
+import { isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
+import type { ChatFile } from '#/stores/chatStore'
+import type { UcUser } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { formatFileType } from '#/utils/formatFileType'
+import { jsonSafe } from '#/utils/jsonSafe'
 
 export const isUcBuddy = (u: object): u is UcBuddy =>
   'user_id' in u && 'group' in u
@@ -320,11 +321,10 @@ export class UC extends EventEmitter {
   getProfile = () => this.client.getProfile()
 
   getConfigProperties = () => {
-    const s = getAuthStore()
-    if (!s.ucConfig) {
-      s.ucConfig = this.client.getConfigProperties()
+    if (!ctx.auth.ucConfig) {
+      ctx.auth.ucConfig = this.client.getConfigProperties()
     }
-    return s.ucConfig
+    return ctx.auth.ucConfig
   }
 
   readUnreadChats = async (id: string) => {
@@ -451,7 +451,7 @@ export class UC extends EventEmitter {
     )
 
   sendCallResult = (duration: number, target: string) => {
-    const text = JSON.stringify({ talklen: duration })
+    const text = jsonSafe({ talklen: duration })
     return new Promise((resolve, reject) =>
       this.client.sendCallResult(
         { user_id: target },
@@ -565,21 +565,17 @@ export class UC extends EventEmitter {
       )
     })
 
-  acceptFile = (file: string) => {
-    const res = new Promise((resolve, reject) => {
+  acceptFile = (file: string) =>
+    new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.responseType = 'blob'
-
-      xhr.onload = function () {
-        if (this.status === 200) {
-          resolve(this['response'])
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          resolve(xhr.response)
         }
       }
-
       this.client.acceptFileWithXhr(file, xhr, reject)
     })
-    return res
-  }
 
   rejectFile = async (file: { id?: string; file_id_target?: string[] }) => {
     if (file.file_id_target) {
@@ -765,4 +761,4 @@ export class UC extends EventEmitter {
   }
 }
 
-export const uc = new UC()
+ctx.uc = new UC()

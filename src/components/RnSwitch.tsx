@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
-import { v } from './variables'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   RnSwitch: {

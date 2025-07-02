@@ -1,4 +1,3 @@
-import { get } from 'lodash'
 import qs from 'qs'
 import Url from 'url-parse'
 
@@ -12,8 +11,7 @@ export const parse = (location: string | Url<any> | null) => {
   //
   const params: { [k: string]: string } = Object.assign(
     qs.parse(location.hash.replace(/^[^?]*\?*/, '')),
-    location.query || // type-coverage:ignore-line
-      qs.parse((get(location, 'search') as string).replace(/^\?*/, '')),
+    location.query || qs.parse((location as any).search.replace(/^\?*/, '')),
   )
   //
   if (params.url) {

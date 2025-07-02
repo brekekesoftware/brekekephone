@@ -21,7 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) -> Bool {
     let jsCodeLocation: URL
     jsCodeLocation = RCTBundleURLProvider.sharedSettings()
-      .jsBundleURL(forBundleRoot: "index")
+      .jsBundleURL(forBundleRoot: "index")!
     let rootView = RCTRootView(
       bundleURL: jsCodeLocation,
       moduleName: "BrekekePhone",
@@ -40,10 +40,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
 
   func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {
     #if DEBUG
-      return ()
-      RCTBundleURLProvider
-        .sharedSettings()
-        .jsBundleURLForBundleRoot("index", fallbackResource: nil)
+      return (
+        RCTBundleURLProvider
+          .sharedSettings()
+          .jsBundleURL(
+            forBundleRoot: "index",
+            fallbackExtension: nil
+          )
+      ) as NSURL?
     #else
       return Bundle
         .main
@@ -52,7 +56,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // deep links
-  internal func application(
+  func application(
     _ application: UIApplication,
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]
@@ -95,7 +99,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     // TODO:
   }
 
-  internal func pushRegistry(
+  func pushRegistry(
     _: PKPushRegistry,
     didReceiveIncomingPushWith payload: PKPushPayload,
     for type: PKPushType,
@@ -159,7 +163,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // process the user's response to a delivered notification
-  internal func userNotificationCenter(
+  func userNotificationCenter(
     _: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: () -> Void
@@ -169,7 +173,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   // manage notifications while app is in the foreground
-  internal func userNotificationCenter(
+  func userNotificationCenter(
     _: UNUserNotificationCenter,
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: (UNNotificationPresentationOptions)

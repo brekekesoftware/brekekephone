@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 
-import noPhoto from '../assets/no_photo.png'
+import noPhoto from '#/assets/no_photo.png'
 
-import { getAuthStore } from '../stores/authStore'
-import { checkImageUrl } from '../utils/checkImageUrl'
+import { ctx } from '#/stores/ctx'
+import { checkImageUrl } from '#/utils/checkImageUrl'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 const css = StyleSheet.create({
@@ -58,7 +58,7 @@ export const SmartImage = (p: {
   }
 
   const isImageUrl =
-    (getAuthStore().phoneappliEnabled() && !p.incoming) || checkImageUrl(p.uri)
+    (ctx.auth.phoneappliEnabled() && !p.incoming) || checkImageUrl(p.uri)
 
   return (
     <View

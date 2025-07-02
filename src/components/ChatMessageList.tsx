@@ -3,13 +3,13 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import type { ChatMessage } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
-import { Avatar } from './Avatar'
-import { groupByTimestamp } from './chatConfig'
-import { Message } from './ChatMessage'
-import { RnText } from './Rn'
-import { v } from './variables'
+import { Avatar } from '#/components/Avatar'
+import { groupByTimestamp } from '#/components/chatConfig'
+import { Message } from '#/components/ChatMessage'
+import { RnText } from '#/components/Rn'
+import { v } from '#/components/variables'
+import type { ChatMessage } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   DateGroup: {
@@ -89,7 +89,7 @@ export const MessageList: FC<{
               creatorId: string
             }
             const name = c0?.creatorName
-            const status = contactStore.getUcUserById(c0.creatorId)?.status
+            const status = ctx.contact.getUcUserById(c0.creatorId)?.status
             return (
               <View
                 key={`${time}${id}`}

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 import type { LinearGradientProps } from 'react-native-linear-gradient'
 import LinearGradient from 'react-native-linear-gradient'
 
-import { v } from './variables'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   BrekekeGradient: {

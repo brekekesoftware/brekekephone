@@ -1,16 +1,13 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { uc } from '../api/uc'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/Rn'
-import { chatStore } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/Rn'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 @observer
 export class PageChatGroupCreate extends Component {
@@ -25,10 +22,10 @@ export class PageChatGroupCreate extends Component {
   render() {
     return (
       <Layout
-        fabOnBack={Nav().goToPageChatRecents}
+        fabOnBack={ctx.nav.goToPageChatRecents}
         fabOnNext={this.create}
         fabOnNextText={intl`CREATE`}
-        onBack={Nav().backToPageChatRecents}
+        onBack={ctx.nav.backToPageChatRecents}
         title={intl`New Group`}
       >
         <Field
@@ -37,7 +34,7 @@ export class PageChatGroupCreate extends Component {
           value={this.state.name}
         />
         <Field isGroup label={intl`Members`} />
-        {contactStore.ucUsers.map((u, i) => (
+        {ctx.contact.ucUsers.map((u, i) => (
           <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(u.id)}>
             <UserItem
               key={u.id}
@@ -75,14 +72,15 @@ export class PageChatGroupCreate extends Component {
       })
       return
     }
-    uc.createChatGroup(name, members)
+    ctx.uc
+      .createChatGroup(name, members)
       .then(this.onCreateSuccess)
       .catch(this.onCreateFailure)
   }
   onCreateSuccess = (group: { id: string; name: string; jointed: boolean }) => {
-    chatStore.upsertGroup(group)
-    uc.joinChatGroup(group.id)
-    Nav().goToPageChatRecents()
+    ctx.chat.upsertGroup(group)
+    ctx.uc.joinChatGroup(group.id)
+    ctx.nav.goToPageChatRecents()
   }
   onCreateFailure = (err: Error) => {
     RnAlert.error({

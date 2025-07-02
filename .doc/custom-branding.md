@@ -4,7 +4,6 @@
 - First you need to follow the [README](../README.md) and make sure the app running well on your local environment
 
 - To update app name and bundle identifier, follow these steps with order:
-
   - Find and replace all the matches `Brekeke Phone Dev` with your new app name, this will be the display name of the app when user install on their phone
   - Find and replace all the mathces `Brekeke Phone` with your new app name, this will be the name displays inside the app after user open up
   - Find and replace all the matches `com.brekeke.phonedev` with your new app bundle
@@ -54,7 +53,6 @@ src/assets/logo.png
 ```
 
 - To update app branding color:
-
   - For splash screen:
     - Find and replace `#74bf53` with your new color
     - Update `ios/BrekekePhone/LaunchScreen.storyboard` at the node `<color key="backgroundColor"` with your new color
@@ -63,7 +61,6 @@ src/assets/logo.png
     - You can also update other colors their as you want
 
 - Keystores and other credentials keys:
-
   - `android/app/google-services.json`
     - Download from your Firebase console
     - https://support.google.com/firebase/answer/7015592
