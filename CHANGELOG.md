@@ -15,6 +15,9 @@
 - Fix android it should open app when press on the running in background notification (issue 1022, 1034)
 - Improve hold pal with pending cache and retry, add toast to show message on android incoming call
 - Fix it should prevent double quickly click hold button (issue 1031)
+- Embed:
+  - Disable webphone.resource-line from getProductInfo, allow to set it from embed login instead
+  - Add support for setProductName in embed api
 
 #### 2.16.2
 

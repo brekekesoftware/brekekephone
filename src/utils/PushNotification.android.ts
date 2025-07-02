@@ -83,9 +83,9 @@ export const PushNotification = {
         // have to set the default channel: channel_01
         // https://github.com/wix/react-native-notifications/issues/869#issuecomment-1157869452
         channelId: 'channel_01',
-        name: 'Brekeke Phone',
+        name: ctx.global.productName,
         importance: 5,
-        description: 'Brekeke Phone notification channel',
+        description: intl`${ctx.global.productName} notification channel`,
         // enableLights: true,
         enableVibration: true,
         // optional
@@ -101,9 +101,9 @@ export const PushNotification = {
       // set notification channel for chat
       Notifications.setNotificationChannel({
         channelId: 'brekeke_chat',
-        name: 'Brekeke Phone',
+        name: ctx.global.productName,
         importance: 5,
-        description: 'Brekeke Phone notification chat channel ',
+        description: intl`${ctx.global.productName} notification channel for chat`,
         // enableLights: true,
         enableVibration: true,
         // groupId: 'my-group',

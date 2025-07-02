@@ -11,7 +11,6 @@ import { Layout } from '#/components/Layout'
 import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { userStore } from '#/stores/userStore'
 import { DelayFlag } from '#/utils/DelayFlag'
 import { filterTextOnly } from '#/utils/formatChatContent'
 
@@ -98,7 +97,7 @@ export class PageContactUsers extends Component {
       const searchTxt = ctx.contact.usersSearchTerm.toLowerCase()
       const isShowOfflineUser =
         !ca.ucEnabled || this.displayOfflineUsers.enabled
-      const { totalContact = 0, totalOnlineContact = 0 } = userStore.filterUser(
+      const { totalContact = 0, totalOnlineContact = 0 } = ctx.user.filterUser(
         searchTxt,
         isShowOfflineUser,
       )
@@ -117,7 +116,7 @@ export class PageContactUsers extends Component {
     const isShowOfflineUser =
       !ctx.auth.getCurrentAccount()?.ucEnabled ||
       this.displayOfflineUsers.enabled
-    const { displayUsers } = userStore.filterUser(searchTxt, isShowOfflineUser)
+    const { displayUsers } = ctx.user.filterUser(searchTxt, isShowOfflineUser)
     return <ContactSectionList sectionListData={displayUsers} />
   }
   renderAllUserMode = () => {

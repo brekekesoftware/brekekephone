@@ -77,7 +77,7 @@ export class PageSettingsDebug extends Component {
               label={intl`UPDATE`}
               onCreateBtnPress={ctx.debug.openInStore}
               onTouchPress={ctx.debug.openInStore}
-              value={intl`Open Brekeke Phone on store`}
+              value={intl`Open ${ctx.global.productName} on store`}
             />
             <RnText
               normal
@@ -92,7 +92,7 @@ export class PageSettingsDebug extends Component {
                 ? intl`Checking for update...`
                 : isUpdateAvailable
                   ? intl`A new version is available: ${ctx.debug.remoteVersion}`
-                  : intl`Brekeke Phone is up-to-date, checked ${moment(
+                  : intl`${ctx.global.productName} is up-to-date, checked ${moment(
                       ctx.debug.remoteVersionLastCheck,
                     ).fromNow()}`}
             </RnText>
@@ -104,7 +104,7 @@ export class PageSettingsDebug extends Component {
               {intl`Current version: ${currentVersion}`}
             </RnText>
             <RnText normal warning small style={css.Text}>
-              {intl`You are running an in-browser version of Web Phone`}
+              {intl`You are running an in-browser version of ${ctx.global.productName}`}
             </RnText>
           </>
         )}

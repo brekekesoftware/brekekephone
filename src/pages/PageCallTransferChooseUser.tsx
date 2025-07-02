@@ -12,7 +12,6 @@ import { Layout } from '#/components/Layout'
 import { setPageCallTransferChooseUser } from '#/components/navigationConfig'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { userStore } from '#/stores/userStore'
 
 @observer
 export class PageCallTransferChooseUser extends Component {
@@ -47,7 +46,7 @@ export class PageCallTransferChooseUser extends Component {
     }
   }
   renderUserSelectionMode = () => {
-    const { displayUsers } = userStore.filterUser(this.txtSearch, true)
+    const { displayUsers } = ctx.user.filterUser(this.txtSearch, true)
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
   renderAllUserMode = () => {

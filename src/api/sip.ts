@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isWeb } from '#/config'
+import { isEmbed, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
@@ -38,7 +38,7 @@ export class SIP extends EventEmitter {
     this.phone = phone
 
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
+    if (isEmbed) {
       embedApi.emit('webrtcclient', phone)
     }
 

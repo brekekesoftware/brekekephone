@@ -5,7 +5,7 @@ import { FlatList, View } from 'react-native'
 import type { UcBuddy } from '#/brekekejs'
 import { UserItem } from '#/components/ContactUserItem'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
-import { userStore } from '#/stores/userStore'
+import { ctx } from '#/stores/ctx'
 
 type ContactListProps = {
   data: UcBuddy[]
@@ -24,19 +24,19 @@ export const ContactList: FC<ContactListProps> = observer(p => (
 const RenderItem = observer(({ item }: { item: UcBuddy }) => (
   <View key={item.user_id}>
     <RnTouchableOpacity
-      onPress={() => userStore.selectUserId(item.user_id)}
-      disabled={userStore.isSelectedAddAllUser}
+      onPress={() => ctx.user.selectUserId(item.user_id)}
+      disabled={ctx.user.isSelectedAddAllUser}
     >
       <UserItem
         id={item.user_id}
         name={item.name || item.user_id}
         avatar={item.profile_image_url}
-        disabled={userStore.isSelectedAddAllUser}
+        disabled={ctx.user.isSelectedAddAllUser}
         isSelected={
-          userStore.isSelectedAddAllUser ||
-          userStore.selectedUserIds[item.user_id]
+          ctx.user.isSelectedAddAllUser ||
+          ctx.user.selectedUserIds[item.user_id]
         }
-        onSelect={() => userStore.selectUserId(item.user_id)}
+        onSelect={() => ctx.user.selectUserId(item.user_id)}
         isSelection
       />
     </RnTouchableOpacity>

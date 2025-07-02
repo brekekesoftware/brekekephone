@@ -1,5 +1,7 @@
+import { isEmbed } from '#/config'
+
 export const registerOnUnhandledError = (fn: (err: ErrorEvent) => void) => {
-  if (!window._BrekekePhoneWebRoot) {
+  if (isEmbed) {
     return
   }
   window.addEventListener('error', fn)

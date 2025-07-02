@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3'
 import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parseParamsWithPrefix'
+import { _parseResourceLines } from '#/api/pbx'
 import type { MakeCallFn, PbxGetProductInfoRes } from '#/brekekejs'
 import type { Account } from '#/stores/accountStore'
 import { getAccountUniqueId } from '#/stores/accountStore'
@@ -14,7 +15,9 @@ import { webPromptPermission } from '#/utils/webPromptPermission'
 type EmbedPbxConfig = Partial<
   Pick<
     PbxGetProductInfoRes,
-    'webphone.useragent' | 'webphone.http.useragent.product'
+    | 'webphone.useragent'
+    | 'webphone.http.useragent.product'
+    | 'webphone.resource-line'
   >
 >
 type EmbedPalConfig = {
@@ -40,8 +43,13 @@ export class EmbedApi extends EventEmitter {
   setIncomingRingtone = (ringtone: string) => {
     ctx.call.setIncomingRingtone(ringtone)
   }
+  setProductName = (name: string) => {
+    ctx.global.productName = name
+  }
 
+  getGlobalCtx = () => ctx
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
+  getCurrentAccountCtx = () => ctx
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
@@ -75,6 +83,7 @@ export class EmbedApi extends EventEmitter {
     embedApi._palEvents = o.palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
+    _parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
     // check if cleanup existing account
     if (o.clearExistingAccount) {
       ctx.account.accounts = []

@@ -1,14 +1,11 @@
 import { RnAsyncStorage } from '#/components/Rn'
-import { jsonSafe } from '#/utils/jsonSafe'
 
+// TODO: review and improve
 export const saveFirstRunToLocalStorage = async () => {
   try {
     await RnAsyncStorage.setItem('_first_run', 'true')
   } catch (err) {
-    console.error(
-      'Failed to save Brekeke Phone first run to local storage ' +
-        jsonSafe(err),
-    )
+    console.error('saveFirstRunToLocalStorage error:', err)
   }
 }
 export const isFirstRunFromLocalStorage = async () => {
@@ -16,10 +13,7 @@ export const isFirstRunFromLocalStorage = async () => {
     const isFirstRun = await RnAsyncStorage.getItem('_first_run')
     return !!isFirstRun
   } catch (err) {
-    console.error(
-      'Failed to read Brekeke Phone first run from local storage ' +
-        jsonSafe(err),
-    )
+    console.error('isFirstRunFromLocalStorage error:', err)
     return false
   }
 }

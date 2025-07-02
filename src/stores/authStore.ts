@@ -26,7 +26,6 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnAppState } from '#/stores/RnAppState'
 import { RnStacker } from '#/stores/RnStacker'
-import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
@@ -161,7 +160,8 @@ export class AuthStore {
       web: 'Web',
     }
     const os = osMap[Platform.OS]
-    return `Brekeke Phone for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
+    const productName = ctx.global.productName
+    return `${productName} for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
   }
 
   // user agent for http request such as iframe webview smart avatar...
@@ -292,7 +292,7 @@ export class AuthStore {
     this.ucConfig = undefined
     this.listCustomPage = []
     this.customPageLoadings = {}
-    userStore.clearStore()
+    ctx.user.clearStore()
     ctx.contact.clearStore()
     ctx.chat.clearStore()
     this.userExtensionProperties = null

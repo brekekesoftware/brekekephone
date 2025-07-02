@@ -12,7 +12,6 @@ import { css } from '#/pages/PageContactEdit'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnDropdown } from '#/stores/RnDropdown'
-import { userStore } from '#/stores/userStore'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 @observer
@@ -26,7 +25,7 @@ export class PageContactGroupEdit extends Component<{
   }
   componentDidMount = () => {
     this.props.listItem.forEach(u => {
-      if (userStore.selectedUserIds[u.user_id]) {
+      if (ctx.user.selectedUserIds[u.user_id]) {
         this.selectedUserItems[u.user_id] = u
       }
     })
@@ -52,7 +51,7 @@ export class PageContactGroupEdit extends Component<{
           <ActivityIndicator size='large' />
         ) : (
           <FlatList
-            data={userStore.dataListAllUser}
+            data={ctx.user.dataListAllUser}
             renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
               <RenderItem
                 item={item}
@@ -79,7 +78,7 @@ export class PageContactGroupEdit extends Component<{
     const listItemRemoved = this.props.listItem.filter(
       itm => !this.selectedUserItems[itm.user_id],
     )
-    userStore.editGroup(
+    ctx.user.editGroup(
       this.props.groupName,
       listItemRemoved,
       this.selectedUserItems,
