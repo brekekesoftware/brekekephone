@@ -1,6 +1,7 @@
 import 'react-native-get-random-values'
-import './shared'
+import '#/polyfill/shared'
 
+import { View } from 'react-native'
 import BgTimer from 'react-native-background-timer'
 import {
   mediaDevices,
@@ -10,6 +11,14 @@ import {
   RTCPeerConnection,
   RTCSessionDescription,
 } from 'react-native-webrtc'
+
+// fix error viewPropTypes for keyboard-spacer
+if (
+  !View.hasOwnProperty('propTypes') &&
+  !('ViewPropTypes' in require('react-native'))
+) {
+  require('react-native').ViewPropTypes = {}
+}
 
 window.URL = window.URL || {}
 // @ts-ignore

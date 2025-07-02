@@ -1,11 +1,11 @@
 import type { FC } from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
-import { useAnimation } from '../utils/animation'
-import { trimDisplayName } from './CallBar'
-import { RnText } from './Rn'
-import { AnimatedText } from './RnText'
-import { v } from './variables'
+import { trimDisplayName } from '#/components/CallBar'
+import { RnText } from '#/components/Rn'
+import { AnimatedText } from '#/components/RnText'
+import { v } from '#/components/variables'
+import { useAnimation } from '#/utils/animation'
 
 const css = StyleSheet.create({
   Container: {

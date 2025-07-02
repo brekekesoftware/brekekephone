@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 
-import { arrToMap } from './arrToMap'
+import { arrToMap } from '#/utils/arrToMap'
 
 export const animationOption = {
   duration: 150,
@@ -16,7 +16,7 @@ export const useAnimation = <T extends AnimationProps>(
   props: T,
   options?: Animated.TimingAnimationConfig,
 ) => {
-  const r = useRef<Animated.Value>()
+  const r = useRef<Animated.Value>(undefined)
   if (!r.current) {
     r.current = new Animated.Value(0)
   }

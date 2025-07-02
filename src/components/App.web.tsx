@@ -7,19 +7,19 @@ import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import type Url from 'url-parse'
 
-import brand from '../assets/brand.png'
-import logo from '../assets/logo.png'
+import brand from '#/assets/brand.png'
+import logo from '#/assets/logo.png'
 
-import { mdiAndroid, mdiApple, mdiWeb } from '../assets/icons'
-import { bundleIdentifier } from '../config'
-import { getWebRootIdProps, webRootId } from '../embed/polyfill'
-import { intl } from '../stores/intl'
-import { parse } from '../utils/deeplink-parse'
+import { mdiAndroid, mdiApple, mdiWeb } from '#/assets/icons'
 // @ts-ignore
-import { App as RnApp } from './App.tsx'
-import { BrekekeGradient } from './BrekekeGradient'
-import { RnIcon, RnImage, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { App as RnApp } from '#/components/App.tsx'
+import { BrekekeGradient } from '#/components/BrekekeGradient'
+import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { bundleIdentifier } from '#/config'
+import { getWebRootIdProps, webRootId } from '#/embed/polyfill'
+import { intl } from '#/stores/intl'
+import { parse } from '#/utils/deeplink-parse'
 
 // only insert css that affect this root id
 const globalCss = `#${webRootId} * {
@@ -144,5 +144,4 @@ export const App = () => {
   )
 }
 
-// eslint-disable-next-line no-restricted-syntax
 export default App

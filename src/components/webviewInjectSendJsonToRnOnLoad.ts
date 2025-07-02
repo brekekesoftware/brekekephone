@@ -1,4 +1,4 @@
-import { isIos } from '../config'
+import { isIos } from '#/config'
 
 export const webviewInjectSendJsonToRnOnLoad = () =>
   isIos

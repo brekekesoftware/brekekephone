@@ -2,10 +2,10 @@ import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import type { DropdownPosition } from '../stores/RnDropdown'
-import type { DropdownItemProps } from './DropdownItem'
-import { DropdownItem } from './DropdownItem'
-import { v } from './variables'
+import type { DropdownItemProps } from '#/components/DropdownItem'
+import { DropdownItem } from '#/components/DropdownItem'
+import { v } from '#/components/variables'
+import type { DropdownPosition } from '#/stores/RnDropdown'
 
 type DropdownProps = {
   items?: DropdownItemProps[]

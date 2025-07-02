@@ -10,10 +10,10 @@ import {
   requestNotifications,
 } from 'react-native-permissions'
 
-import { isIos } from '../config'
-import { intl } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
-import { BrekekeUtils } from './RnNativeModules'
+import { isIos } from '#/config'
+import { intl } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
 
 const mergeMsg = (...msgs: unknown[]) => {
   let msg = msgs.filter(v => v).join('\n')

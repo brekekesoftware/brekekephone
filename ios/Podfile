@@ -1,14 +1,21 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+require_relative('../node_modules/react-native/scripts/react_native_pods')
+require_relative('../node_modules/react-native-permissions/scripts/setup')
 
+# use_modular_headers!
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-flipper_config = FlipperConfiguration.disabled
+# config for react-native-permissions
+setup_permissions([
+  "Camera",
+  "LocationAlways",
+  "LocationWhenInUse",
+  "Microphone",
+  "Notifications",
+  "PhotoLibrary",
+  "PhotoLibraryAddOnly"
+])
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -22,11 +29,15 @@ target 'BrekekePhone' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+    :new_arch_enabled => false,
     :hermes_enabled => false,
     :fabric_enabled => false,
-    :flipper_configuration => flipper_config,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
+  pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
+  pod 'react-native-document-picker', :path => '../node_modules/@react-native-documents/picker', :modular_headers => true
+  pod 'react-native-video', :path => '../node_modules/react-native-video', :modular_headers => true
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -35,7 +46,6 @@ target 'BrekekePhone' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
 
     installer.pods_project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"

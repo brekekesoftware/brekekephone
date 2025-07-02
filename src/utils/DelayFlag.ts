@@ -1,6 +1,6 @@
 import { action, observable } from 'mobx'
 
-import { BackgroundTimer } from './BackgroundTimer'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export class DelayFlag {
   @observable enabled = false

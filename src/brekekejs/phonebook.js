@@ -241,7 +241,7 @@ Brekeke.Phonebook = {
     m.getLang = function () {
       return 'ja'
     }
-    ;(m.toHiragana = function (s) {
+    ;((m.toHiragana = function (s) {
       s = s.toUpperCase()
       s = '' + s // in case of Java String..
       return s.replace(/[\u30a1-\u30f6]/g, function (match) {
@@ -253,7 +253,7 @@ Brekeke.Phonebook = {
         var ret = this.toDisplayName(map)
         ret = this.toHiragana(ret)
         return ret
-      })
+      }))
     m.toDisplayName = function (map) {
       Brekeke.Phonebook.toMap(map)
       var ret = this.firstValid([

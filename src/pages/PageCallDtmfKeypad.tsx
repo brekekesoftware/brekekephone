@@ -7,15 +7,12 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import { sip } from '../api/sip'
-import { KeyPad } from '../components/CallKeyPad'
-import { ShowNumber } from '../components/CallShowNumbers'
-import { Layout } from '../components/Layout'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnKeyboard } from '../stores/RnKeyboard'
+import { KeyPad } from '#/components/CallKeyPad'
+import { ShowNumber } from '#/components/CallShowNumbers'
+import { Layout } from '#/components/Layout'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 @observer
 export class PageCallDtmfKeypad extends Component {
@@ -24,9 +21,9 @@ export class PageCallDtmfKeypad extends Component {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
-      Nav().backToPageCallManage()
+      ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
   }
@@ -40,12 +37,12 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   sendKey = (key: string) => {
-    const oc = getCallStore().getOngoingCall()
-    const ca = getAuthStore().getCurrentAccount()
+    const oc = ctx.call.getOngoingCall()
+    const ca = ctx.auth.getCurrentAccount()
     if (!oc || !ca) {
       return
     }
-    sip.sendDTMF({
+    ctx.sip.sendDTMF({
       signal: key,
       sessionId: oc.id,
       tenant: oc.pbxTenant || ca.pbxTenant,
@@ -54,12 +51,12 @@ export class PageCallDtmfKeypad extends Component {
   }
 
   render() {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     return (
       <Layout
         title={oc?.getDisplayName()}
         description={intl`Keypad dial manually`}
-        onBack={Nav().backToPageCallManage}
+        onBack={ctx.nav.backToPageCallManage}
       >
         <ShowNumber
           refInput={this.txtRef}

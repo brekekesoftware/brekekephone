@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { ViewProps } from 'react-native'
 import { Animated, StyleSheet, View } from 'react-native'
 
-import { useAnimationOnDidMount } from '../utils/animation'
+import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = StyleSheet.create({
   Getter: {

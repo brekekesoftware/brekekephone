@@ -3,17 +3,17 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import type { UcBuddy } from '../brekekejs'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnDropdown } from '../stores/RnDropdown'
-import { userStore } from '../stores/userStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { css } from './PageContactEdit'
+import type { UcBuddy } from '#/brekekejs'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { css } from '#/pages/PageContactEdit'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { RnDropdown } from '#/stores/RnDropdown'
+import { userStore } from '#/stores/userStore'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 @observer
 export class PageContactGroupEdit extends Component<{
@@ -36,10 +36,10 @@ export class PageContactGroupEdit extends Component<{
   render() {
     return (
       <Layout
-        fabOnBack={Nav().goToPageContactEdit}
+        fabOnBack={ctx.nav.goToPageContactEdit}
         fabOnNext={this.create}
         fabOnNextText={intl`SAVE`}
-        onBack={Nav().backToPageContactEdit}
+        onBack={ctx.nav.backToPageContactEdit}
         title={intl`Add/Remove Contact`}
       >
         <Field
@@ -85,7 +85,7 @@ export class PageContactGroupEdit extends Component<{
       this.selectedUserItems,
     )
     RnDropdown.setShouldUpdatePosition(true)
-    Nav().backToPageContactEdit()
+    ctx.nav.backToPageContactEdit()
   }
 }
 

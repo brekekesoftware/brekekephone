@@ -2,30 +2,28 @@ import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText, RnTouchableOpacity } from '../components/Rn'
-import { getAuthStore } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 
 @observer
 export class PageCallParks extends Component<{
-  callParks2: boolean
+  ongoing: boolean
 }> {
   prevId?: string
   componentDidMount = () => {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
-    if (!this.props.callParks2) {
+    if (!this.props.ongoing) {
       return
     }
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (this.prevId && this.prevId !== oc?.id) {
-      Nav().backToPageCallManage()
+      ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
   }
@@ -43,13 +41,13 @@ export class PageCallParks extends Component<{
 
   park = () => {
     const p = this.state.selectedPark
-    return this.props.callParks2
-      ? getCallStore().getOngoingCall()?.park(p)
-      : getCallStore().startCall(p || '')
+    return this.props.ongoing
+      ? ctx.call.getOngoingCall()?.park(p)
+      : ctx.call.startCall(p || '')
   }
 
   render() {
-    const ca = getAuthStore().getCurrentAccount()
+    const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
@@ -62,13 +60,13 @@ export class PageCallParks extends Component<{
     const parks = uniqBy(arr, 'park')
 
     const sp = this.state.selectedPark
-    const cp2 = this.props.callParks2
-    void getCallStore().getOngoingCall() // trigger componentDidUpdate
+    const cp2 = this.props.ongoing
+    void ctx.call.getOngoingCall() // trigger componentDidUpdate
     const isDisable = (parkNumber: string) => {
       if (cp2) {
-        return !!getCallStore().parkNumbers[parkNumber]
+        return !!ctx.call.parkNumbers[parkNumber]
       }
-      return !getCallStore().parkNumbers[parkNumber]
+      return !ctx.call.parkNumbers[parkNumber]
     }
 
     return (
@@ -77,7 +75,7 @@ export class PageCallParks extends Component<{
         fabOnNext={sp && !isDisable(sp) ? this.park : undefined}
         fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={cp2 ? undefined : 'call'}
-        onBack={cp2 ? Nav().backToPageCallManage : undefined}
+        onBack={cp2 ? ctx.nav.backToPageCallManage : undefined}
         subMenu={cp2 ? undefined : 'parks'}
         title={intl`Park`}
       >

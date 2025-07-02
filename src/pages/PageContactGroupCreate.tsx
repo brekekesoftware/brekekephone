@@ -3,18 +3,18 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
-import type { UcBuddy } from '../brekekejs'
-import { UserItem } from '../components/ContactUserItem'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { RnDropdown } from '../stores/RnDropdown'
-import { userStore } from '../stores/userStore'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { css } from './PageContactEdit'
+import type { UcBuddy } from '#/brekekejs'
+import { UserItem } from '#/components/ContactUserItem'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { css } from '#/pages/PageContactEdit'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnDropdown } from '#/stores/RnDropdown'
+import { userStore } from '#/stores/userStore'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 @observer
 export class PageContactGroupCreate extends Component {
@@ -31,10 +31,10 @@ export class PageContactGroupCreate extends Component {
   render() {
     return (
       <Layout
-        fabOnBack={Nav().goToPageContactEdit}
+        fabOnBack={ctx.nav.goToPageContactEdit}
         fabOnNext={this.create}
         fabOnNextText={intl`CREATE`}
-        onBack={Nav().backToPageContactEdit}
+        onBack={ctx.nav.backToPageContactEdit}
         title={intl`New Group`}
       >
         <Field
@@ -86,7 +86,7 @@ export class PageContactGroupCreate extends Component {
     // )
     userStore.addGroup(name, this.selectedUserItems)
     RnDropdown.setShouldUpdatePosition(true)
-    Nav().backToPageContactEdit()
+    ctx.nav.backToPageContactEdit()
   }
 }
 

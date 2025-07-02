@@ -3,15 +3,15 @@ import moment from 'moment'
 import { Component } from 'react'
 import { StyleSheet } from 'react-native'
 
-import { mdiKeyboardBackspace } from '../assets/icons'
-import { Field } from '../components/Field'
-import { Layout } from '../components/Layout'
-import { RnText } from '../components/Rn'
-import { currentVersion } from '../components/variables'
-import { isWeb } from '../config'
-import { compareSemVer, debugStore } from '../stores/debugStore'
-import { intl } from '../stores/intl'
-import { Nav } from '../stores/Nav'
+import { mdiKeyboardBackspace } from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/Rn'
+import { currentVersion } from '#/components/variables'
+import { isWeb } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { compareSemVer } from '#/stores/debugStore'
+import { intl } from '#/stores/intl'
 
 const css = StyleSheet.create({
   BtnIcon: {
@@ -30,7 +30,7 @@ const css = StyleSheet.create({
 export class PageSettingsDebug extends Component {
   render() {
     const isUpdateAvailable =
-      !isWeb && compareSemVer(debugStore.remoteVersion, currentVersion) > 0
+      !isWeb && compareSemVer(ctx.debug.remoteVersion, currentVersion) > 0
     return (
       <Layout
         description={intl`App information and debugging`}
@@ -39,17 +39,17 @@ export class PageSettingsDebug extends Component {
             ? [
                 {
                   label: intl`Clear all log files`,
-                  onPress: debugStore.clearLogFiles,
+                  onPress: ctx.debug.clearLogFiles,
                   danger: true,
                 },
                 {
                   label: intl`Manually check for update`,
-                  onPress: debugStore.checkForUpdate,
+                  onPress: ctx.debug.checkForUpdate,
                 },
               ]
             : undefined
         }
-        onBack={Nav().backToPageAccountSignIn}
+        onBack={ctx.nav.backToPageAccountSignIn}
         title={intl`Debug`}
       >
         {!isWeb && (
@@ -57,17 +57,17 @@ export class PageSettingsDebug extends Component {
             <Field isGroup label={intl`DEBUG LOG`} />
             <Field
               label={intl`CAPTURE ALL DEBUG LOG`}
-              onValueChange={debugStore.toggleCaptureDebugLog}
+              onValueChange={ctx.debug.toggleCaptureDebugLog}
               type='Switch'
-              value={debugStore.captureDebugLog}
+              value={ctx.debug.captureDebugLog}
             />
             <Field
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`OPEN DEBUG LOG`}
-              onCreateBtnPress={Nav().goToPageSettingsDebugFiles}
-              onTouchPress={Nav().goToPageSettingsDebugFiles}
-              value={debugStore.getLogSizeStr()}
+              onCreateBtnPress={ctx.nav.goToPageSettingsDebugFiles}
+              onTouchPress={ctx.nav.goToPageSettingsDebugFiles}
+              value={ctx.debug.getLogSizeStr()}
             />
 
             <Field hasMargin isGroup label={intl`UPDATE`} />
@@ -75,8 +75,8 @@ export class PageSettingsDebug extends Component {
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`UPDATE`}
-              onCreateBtnPress={debugStore.openInStore}
-              onTouchPress={debugStore.openInStore}
+              onCreateBtnPress={ctx.debug.openInStore}
+              onTouchPress={ctx.debug.openInStore}
               value={intl`Open Brekeke Phone on store`}
             />
             <RnText
@@ -88,12 +88,12 @@ export class PageSettingsDebug extends Component {
             >
               {intl`Current version: ${currentVersion}`}
               {'\n'}
-              {debugStore.isCheckingForUpdate
+              {ctx.debug.isCheckingForUpdate
                 ? intl`Checking for update...`
                 : isUpdateAvailable
-                  ? intl`A new version is available: ${debugStore.remoteVersion}`
+                  ? intl`A new version is available: ${ctx.debug.remoteVersion}`
                   : intl`Brekeke Phone is up-to-date, checked ${moment(
-                      debugStore.remoteVersionLastCheck,
+                      ctx.debug.remoteVersionLastCheck,
                     ).fromNow()}`}
             </RnText>
           </>

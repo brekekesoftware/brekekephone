@@ -2,10 +2,10 @@ import type { FC } from 'react'
 import type { TextInputProps, TouchableOpacityProps } from 'react-native'
 import { Platform, StyleSheet, View } from 'react-native'
 
-import { mdiKeyboardBackspace } from '../assets/icons'
-import { Field } from './Field'
-import { RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { mdiKeyboardBackspace } from '#/assets/icons'
+import { Field } from '#/components/Field'
+import { RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   FieldButton: {

@@ -2,6 +2,7 @@ const path = require('path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const babel = require('./.babelrc')
+
 const nullAlias = path.join(__dirname, './src/polyfill/null.ts')
 
 module.exports = {
@@ -75,7 +76,7 @@ const disableEsm = c => {
   c.module.rules.forEach(pushRule)
   // modify the .test regex of those rules to remove esm extensions
   rules.forEach(r => {
-    const [_, source, flags] = /\/(.*)\/(.*)/.exec(r.test.toString())
+    const [, source, flags] = /\/(.*)\/(.*)/.exec(r.test.toString())
     const newSource = ['mjs'].reduce(
       (s, e) => s.replace(`|${e}`, '').replace(`${e}|`, '').replace(e, ''),
       source,

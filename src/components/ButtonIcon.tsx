@@ -4,10 +4,10 @@ import type { TouchableOpacityProps, ViewProps } from 'react-native'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
-import { isIos } from '../config'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isIos } from '#/config'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 const css = StyleSheet.create({
   ButtonIcon: {

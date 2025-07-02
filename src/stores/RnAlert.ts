@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 import type { ReactElement } from 'react'
 import { AppState } from 'react-native'
 
-import type { IntlDebug } from './intl'
+import type { IntlDebug } from '#/stores/intl'
 
 type CommonRnAlertFields = {
   confirmText?: string | boolean

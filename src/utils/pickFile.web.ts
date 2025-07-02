@@ -1,6 +1,6 @@
-import { mdiDotsHorizontal } from '../assets/icons'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
+import { mdiDotsHorizontal } from '#/assets/icons'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 
 // need to declare native intl here
 // so it will get bundled when build intl via web

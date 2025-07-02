@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 import type { TextProps } from 'react-native'
 import { Animated, StyleSheet, Text } from 'react-native'
 
-import { v } from './variables'
+import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
   RnText: {

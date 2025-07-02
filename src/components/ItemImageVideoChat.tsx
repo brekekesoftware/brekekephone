@@ -2,15 +2,15 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Dimensions, Platform, StyleSheet, View } from 'react-native'
 
-import { uc } from '../api/uc'
-import { mdiCloseCircle } from '../assets/icons'
-import type { ChatFile } from '../stores/chatStore'
-import { intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
-import { formatBytes } from '../utils/formatBytes'
-import { RnIcon, RnImageVideoLoader, RnText } from './Rn'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+import { mdiCloseCircle } from '#/assets/icons'
+import { RnIcon, RnImageVideoLoader, RnText } from '#/components/Rn'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import type { ChatFile } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
+import { intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { formatBytes } from '#/utils/formatBytes'
 
 const css = StyleSheet.create({
   vMessage: {
@@ -49,7 +49,7 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const styleText = !isStopped ? css.textFileInfo : css.textFileInfoLineThrough
 
   const onCancelFile = () => {
-    uc.rejectFile(p).catch(onRejectFileFailure)
+    ctx.uc.rejectFile(p).catch(onRejectFileFailure)
   }
   const onRejectFileFailure = (err: Error) => {
     RnAlert.error({

@@ -1,11 +1,14 @@
-import DocumentRnPicker from 'react-native-document-picker'
+import { isErrorWithCode, pick } from '@react-native-documents/picker'
 import RNFS from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
-import { isIos } from '../config'
-import { RnPicker } from '../stores/RnPicker'
-import { onPickFileNativeError, pickFileNativeOptions } from './pickFile.web'
+import { isIos } from '#/config'
+import { RnPicker } from '#/stores/RnPicker'
+import {
+  onPickFileNativeError,
+  pickFileNativeOptions,
+} from '#/utils/pickFile.web'
 
 const actionSheetHandlers = [
   () =>
@@ -55,10 +58,7 @@ const actionSheetHandlers = [
               : resolve(r.assets?.[0]),
       )
     }),
-  () =>
-    DocumentRnPicker.pick({
-      type: [DocumentRnPicker.types.allFiles],
-    }),
+  () => pick(),
 ]
 
 export const pickFile = (cb: Function) =>
@@ -91,7 +91,19 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       file = (await fn()) as File
     }
   } catch (err) {
-    if (!DocumentRnPicker.isCancel(err as object)) {
+    // https://react-native-documents.github.io/docs/sponsor-only/errors#error-codes
+    if (i === 3 && isErrorWithCode(err) && err.code === 'OPERATION_CANCELED') {
+      console.warn('pickFile cancelled by user')
+      return
+    }
+    if (
+      !(
+        err &&
+        typeof err === 'object' &&
+        'message' in err &&
+        (err as any).message === 'User canceled document picker'
+      )
+    ) {
       onPickFileNativeError(err as Error)
     }
   }

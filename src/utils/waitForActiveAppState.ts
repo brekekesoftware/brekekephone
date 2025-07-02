@@ -1,6 +1,6 @@
 import { AppState } from 'react-native'
 
-import { BackgroundTimer } from './BackgroundTimer'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export const waitForActiveAppState = () =>
   new Promise<boolean>(resolve => {

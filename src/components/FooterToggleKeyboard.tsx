@@ -2,12 +2,12 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Keyboard, StyleSheet } from 'react-native'
 
-import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '../assets/icons'
-import { isWeb } from '../config'
-import { RnKeyboard } from '../stores/RnKeyboard'
-import { AnimatedSize } from './AnimatedSize'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '#/assets/icons'
+import { AnimatedSize } from '#/components/AnimatedSize'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 const css = StyleSheet.create({
   ToggleKeyboard: {

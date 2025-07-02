@@ -9,12 +9,12 @@ import {
   View,
 } from 'react-native'
 
-import type { ItemPBForm, PickerItemOption } from '../stores/contactStore'
-import { contactStore } from '../stores/contactStore'
-import { intl } from '../stores/intl'
-import { useAnimationOnDidMount } from '../utils/animation'
-import { RnText, RnTextInput, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import type { ItemPBForm, PickerItemOption } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = StyleSheet.create({
   vBottom: {
@@ -160,7 +160,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
         style={[StyleSheet.absoluteFill, css.RnPicker_Backdrop, backdropCss]}
       >
         <RnTouchableOpacity
-          onPress={contactStore.dismissPicker}
+          onPress={ctx.contact.dismissPicker}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
@@ -194,7 +194,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
             <RnText style={css.RnPicker_Text__Ok}>OK</RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
-            onPress={contactStore.dismissPicker}
+            onPress={ctx.contact.dismissPicker}
             style={[css.RnPicker_Option, css.RnPicker_Option__cancel]}
           >
             <RnText style={css.RnPicker_Text__cancel}>{intl`Cancel`}</RnText>
@@ -206,7 +206,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
 }
 export const PhonebookAddItem = observer(
   () =>
-    contactStore.showPickerItem && (
-      <RNPickerInput {...contactStore.showPickerItem} />
+    ctx.contact.showPickerItem && (
+      <RNPickerInput {...ctx.contact.showPickerItem} />
     ),
 )

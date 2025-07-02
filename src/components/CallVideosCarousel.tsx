@@ -2,9 +2,9 @@ import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 
-import type { Call } from '../stores/Call'
-import { checkMutedRemoteUser } from '../utils/checkMutedRemoteUser'
-import { VideoViewItem } from './VideoViewItem'
+import { VideoViewItem } from '#/components/VideoViewItem'
+import type { Call } from '#/stores/Call'
+import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 
 type CallVideoCarouselProps = {
   call: Call

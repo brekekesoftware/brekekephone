@@ -1,11 +1,1 @@
-module.exports = {
-  dependencies: {
-    'react-native-video': {
-      platforms: {
-        android: {
-          sourceDir: '../node_modules/react-native-video/android-exoplayer',
-        },
-      },
-    },
-  },
-}
+// File intentionally left blank. No custom native module config needed.

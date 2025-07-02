@@ -93,6 +93,7 @@
     android:requestLegacyExternalStorage="true"
     android:theme="@style/AppTheme"
     android:largeHeap="true"
+    android:supportsRtl="true"
   >
     <activity
       android:name=".activity.IncomingCallActivity"
@@ -158,6 +159,7 @@
     />
 
     <!-- main -->
+    <!-- android:supportsPictureInPicture="true" for Picture-in-Picture of react-native-video latest version -->
     <activity
       android:name=".MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
@@ -167,6 +169,7 @@
       android:taskAffinity=""
       android:windowSoftInputMode="adjustResize"
       android:exported="true"
+      android:supportsPictureInPicture="true"
     >
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

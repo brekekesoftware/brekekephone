@@ -11,12 +11,12 @@ import type {
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 
-import { RnKeyboard } from '../stores/RnKeyboard'
-import { Footer } from './Footer'
-import { Header } from './Header'
-import type { HeaderDropdownItem } from './HeaderDropdown'
-import { Toast } from './Toast'
-import { v } from './variables'
+import { Footer } from '#/components/Footer'
+import { Header } from '#/components/Header'
+import type { HeaderDropdownItem } from '#/components/HeaderDropdown'
+import { Toast } from '#/components/Toast'
+import { v } from '#/components/variables'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 const DEFAULT_TOAST_MESSAGE = 'new message'
 

@@ -1,10 +1,10 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { RnText } from '../components/Rn'
-import type { TRnTextProps } from '../components/RnText'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { formatDuration } from '../utils/formatDuration'
+import { RnText } from '#/components/Rn'
+import type { TRnTextProps } from '#/components/RnText'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { formatDuration } from '#/utils/formatDuration'
 
 class TimerStore {
   @observable now = Date.now()

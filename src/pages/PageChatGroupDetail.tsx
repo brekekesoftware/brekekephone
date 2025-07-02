@@ -10,30 +10,25 @@ import type {
 import { StyleSheet, View } from 'react-native'
 import EmojiSelector, { Categories } from 'react-native-emoji-selector'
 
-import { uc } from '../api/uc'
-import { Constants } from '../brekekejs/ucclient'
-import { numberOfChatsPerLoad } from '../components/chatConfig'
-import { MessageList } from '../components/ChatMessageList'
-import { ChatInput } from '../components/FooterChatInput'
-import { Layout } from '../components/Layout'
-import { RnText } from '../components/RnText'
-import { RnTouchableOpacity } from '../components/RnTouchableOpacity'
-import { v } from '../components/variables'
-import { isWeb } from '../config'
-import { waitPbx, waitUc } from '../stores/authStore'
-import { getCallStore } from '../stores/callStore'
-import type { ChatFile, ChatGroup, ChatMessage } from '../stores/chatStore'
-import { chatStore } from '../stores/chatStore'
-import { contactStore } from '../stores/contactStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { arrToMap } from '../utils/arrToMap'
-import { BackgroundTimer } from '../utils/BackgroundTimer'
-import { formatFileType } from '../utils/formatFileType'
-import { pickFile } from '../utils/pickFile'
-import { saveBlob } from '../utils/saveBlob'
-import { saveBlobFile } from '../utils/saveBlob.web'
+import { Constants } from '#/brekekejs/ucclient'
+import { numberOfChatsPerLoad } from '#/components/chatConfig'
+import { MessageList } from '#/components/ChatMessageList'
+import { ChatInput } from '#/components/FooterChatInput'
+import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
+import type { ChatFile, ChatGroup, ChatMessage } from '#/stores/chatStore'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { arrToMap } from '#/utils/arrToMap'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { formatFileType } from '#/utils/formatFileType'
+import { pickFile } from '#/utils/pickFile'
+import { saveBlob } from '#/utils/saveBlob'
+import { saveBlobFile } from '#/utils/saveBlob.web'
 
 const css = StyleSheet.create({
   LoadMore: {
@@ -56,7 +51,7 @@ export class PageChatGroupDetail extends Component<{
 }> {
   @computed get chatById() {
     return arrToMap(
-      chatStore.getMessagesByThreadId(this.props.groupId),
+      ctx.chat.getMessagesByThreadId(this.props.groupId),
       'id',
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
@@ -85,14 +80,14 @@ export class PageChatGroupDetail extends Component<{
   componentDidMountAsync = async () => {
     const { groupId } = this.props
     this.setState({ loadingRecent: true })
-    await waitPbx()
-    await waitUc()
-    await uc
+    await ctx.auth.waitPbx()
+    await ctx.auth.waitUc()
+    await ctx.uc
       .getGroupChats(groupId, {
         max: numberOfChatsPerLoad,
       })
       .then(chats => {
-        chatStore.pushMessages(groupId, chats)
+        ctx.chat.pushMessages(groupId, chats)
         BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
       })
       .catch((err: Error) => {
@@ -102,14 +97,14 @@ export class PageChatGroupDetail extends Component<{
         })
       })
     this.setState({ loadingRecent: false })
-    chatStore.updateThreadConfig(groupId, true, {
+    ctx.chat.updateThreadConfig(groupId, true, {
       isUnread: false,
     })
   }
   componentDidUpdate = () => {
     const { groupId } = this.props
-    if (chatStore.getThreadConfig(groupId).isUnread) {
-      chatStore.updateThreadConfig(groupId, false, {
+    if (ctx.chat.getThreadConfig(groupId).isUnread) {
+      ctx.chat.updateThreadConfig(groupId, false, {
         isUnread: false,
       })
     }
@@ -137,10 +132,10 @@ export class PageChatGroupDetail extends Component<{
   )
   render() {
     const id = this.props.groupId
-    const gr = chatStore.getGroupById(id)
-    const { allMessagesLoaded } = chatStore.getThreadConfig(id)
+    const gr = ctx.chat.getGroupById(id)
+    const { allMessagesLoaded } = ctx.chat.getThreadConfig(id)
     const { loadingMore, loadingRecent } = this.state
-    const chats = chatStore.getMessagesByThreadId(this.props.groupId)
+    const chats = ctx.chat.getMessagesByThreadId(this.props.groupId)
     return (
       <Layout
         compact
@@ -167,14 +162,14 @@ export class PageChatGroupDetail extends Component<{
             danger: true,
           },
         ]}
-        onBack={Nav().backToPageChatRecents}
+        onBack={ctx.nav.backToPageChatRecents}
         title={gr?.name}
       >
         {loadingRecent ? (
           <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
           <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
-            {!chatStore.getMessagesByThreadId(this.props.groupId).length
+            {!ctx.chat.getMessagesByThreadId(this.props.groupId).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
           </RnText>
@@ -297,7 +292,7 @@ export class PageChatGroupDetail extends Component<{
     this.currentScrollPosition = contentHeight
   }
 
-  me = uc.me()
+  me = ctx.uc.me()
   resolveBuddy = (creator: string) => {
     if (creator === this.me.id) {
       return this.me
@@ -306,12 +301,12 @@ export class PageChatGroupDetail extends Component<{
       // check message come from guest
       return { id: creator.replace('#', ''), name: 'Guest', avatar: null }
     }
-    return contactStore.getUcUserById(creator) || {}
+    return ctx.contact.getUcUserById(creator) || {}
   }
   resolveChat = (id: string) => {
     const chat = this.chatById[id] as ChatMessage
     const text = chat.text
-    const file = chatStore.getFileById(chat.file)
+    const file = ctx.chat.getFileById(chat.file)
     const creator = this.resolveBuddy(chat.creator)
     return {
       id,
@@ -332,7 +327,7 @@ export class PageChatGroupDetail extends Component<{
     this.numberOfChatsPerLoadMore =
       this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
     const oldestChat =
-      chatStore.getMessagesByThreadId(this.props.groupId)[0] ||
+      ctx.chat.getMessagesByThreadId(this.props.groupId)[0] ||
       ({} as ChatMessage)
     const oldestCreated = oldestChat.created || 0
     const max = this.numberOfChatsPerLoadMore
@@ -341,9 +336,10 @@ export class PageChatGroupDetail extends Component<{
       max,
       end,
     }
-    uc.getGroupChats(this.props.groupId, query)
+    ctx.uc
+      .getGroupChats(this.props.groupId, query)
       .then(chats => {
-        chatStore.pushMessages(this.props.groupId, chats)
+        ctx.chat.pushMessages(this.props.groupId, chats)
       })
       .catch((err: Error) => {
         RnAlert.error({
@@ -356,9 +352,9 @@ export class PageChatGroupDetail extends Component<{
       })
       .then(() => {
         const id = this.props.groupId
-        const totalChatLoaded = chatStore.getMessagesByThreadId(id).length
+        const totalChatLoaded = ctx.chat.getMessagesByThreadId(id).length
         if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          chatStore.updateThreadConfig(id, true, {
+          ctx.chat.updateThreadConfig(id, true, {
             allMessagesLoaded: true,
           })
         }
@@ -384,9 +380,10 @@ export class PageChatGroupDetail extends Component<{
       this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
     }
     this.submitting = true
-    uc.sendGroupChatText(this.props.groupId, txt)
+    ctx.uc
+      .sendGroupChatText(this.props.groupId, txt)
       .then(chat => {
-        chatStore.pushMessages(this.props.groupId, [chat as ChatMessage])
+        ctx.chat.pushMessages(this.props.groupId, [chat as ChatMessage])
         this.setState({ editingText: '' })
       })
       .catch((err: Error) => {
@@ -400,7 +397,7 @@ export class PageChatGroupDetail extends Component<{
       })
   }
   updateConfStatus = (conf_id: string, isClose: boolean) => {
-    const g = chatStore.getGroupById(conf_id)
+    const g = ctx.chat.getGroupById(conf_id)
     const newItem = {
       ...g,
       webchat: {
@@ -410,21 +407,22 @@ export class PageChatGroupDetail extends Component<{
           : Constants.CONF_STATUS_INVITED,
       },
     } as ChatGroup
-    chatStore.upsertGroup(newItem)
+    ctx.chat.upsertGroup(newItem)
   }
   leave = () => {
     const conf_id = this.props.groupId
-    uc.leaveChatConference(conf_id, true)
+    ctx.uc
+      .leaveChatConference(conf_id, true)
       .then(res => {
-        const isWebchat = chatStore.isWebchat(conf_id)
+        const isWebchat = ctx.chat.isWebchat(conf_id)
         if (isWebchat) {
           // leave webchat then close conference
           // update conf_status
           this.updateConfStatus(conf_id, res.closes)
         } else {
-          chatStore.removeGroup(conf_id)
+          ctx.chat.removeGroup(conf_id)
         }
-        Nav().backToPageChatRecents()
+        ctx.nav.backToPageChatRecents()
       })
       .catch((err: Error) => {
         RnAlert.error({
@@ -435,13 +433,13 @@ export class PageChatGroupDetail extends Component<{
   }
 
   invite = () => {
-    Nav().goToPageChatGroupInvite({ groupId: this.props.groupId })
+    ctx.nav.goToPageChatGroupInvite({ groupId: this.props.groupId })
   }
   call = (target: string, bVideoEnabled: boolean) => {
     if (bVideoEnabled) {
-      getCallStore().startVideoCall(target)
+      ctx.call.startVideoCall(target)
     } else {
-      getCallStore().startCall(target)
+      ctx.call.startCall(target)
     }
   }
   callVoiceConference = () => {
@@ -467,7 +465,8 @@ export class PageChatGroupDetail extends Component<{
   sendFile = (file: { type: string; name: string; uri: string }) => {
     this.readFile(file)
     const groupId = this.props.groupId
-    uc.sendFiles(groupId, file as any as Blob)
+    ctx.uc
+      .sendFiles(groupId, file as any as Blob)
       .then(res => this.onSendFileSuccess(res, file as any as Blob))
       .catch(this.onSendFileFailure)
   }
@@ -485,8 +484,8 @@ export class PageChatGroupDetail extends Component<{
         data,
       )
       Object.assign(file, { url })
-      chatStore.upsertFile(file)
-      chatStore.pushMessages(groupId, chat)
+      ctx.chat.upsertFile(file)
+      ctx.chat.pushMessages(groupId, chat)
     } catch (err) {
       console.error('PageChatGroupDetail.handleSaveBlobFileWeb err', err)
     }
@@ -502,8 +501,8 @@ export class PageChatGroupDetail extends Component<{
     if (isWeb) {
       this.handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
     } else {
-      chatStore.upsertFile(res.file)
-      chatStore.pushMessages(groupId, res.chat)
+      ctx.chat.upsertFile(res.file)
+      ctx.chat.pushMessages(groupId, res.chat)
     }
   }
   onSendFileFailure = (err: Error) => {
@@ -513,7 +512,8 @@ export class PageChatGroupDetail extends Component<{
     })
   }
   acceptFile = (file: { id: string; name: string }) => {
-    uc.acceptFile(file.id)
+    ctx.uc
+      .acceptFile(file.id)
       .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
       .catch(this.onAcceptFileFailure)
   }
@@ -534,7 +534,7 @@ export class PageChatGroupDetail extends Component<{
     const reader = new FileReader()
     reader.onload = async event => {
       const url = event.target?.result
-      const f = chatStore.getFileById(file.id)
+      const f = ctx.chat.getFileById(file.id)
       if (!f) {
         return
       }
@@ -556,7 +556,7 @@ export class PageChatGroupDetail extends Component<{
     })
   }
   rejectFile = (file: { id: string }) => {
-    uc.rejectFile(file).catch(this.onRejectFileFailure)
+    ctx.uc.rejectFile(file).catch(this.onRejectFileFailure)
   }
   onRejectFileFailure = (err: Error) => {
     RnAlert.error({

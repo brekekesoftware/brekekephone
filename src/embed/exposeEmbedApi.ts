@@ -1,5 +1,5 @@
-import type { EmbedSignInOptions } from './embedApi'
-import { embedApi } from './embedApi'
+import type { EmbedSignInOptions } from '#/embed/embedApi'
+import { embedApi } from '#/embed/embedApi'
 
 export const exposeEmbedApi = (renderApp: (rootTag: HTMLElement) => void) => {
   window.Brekeke.Phone.render = (

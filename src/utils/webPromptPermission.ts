@@ -1,6 +1,6 @@
-import { intl } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
-import { getAudioVideoPermission } from './getAudioVideoPermission'
+import { intl } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
 
 let alreadyPrompted = false
 export const webPromptPermission = () => {

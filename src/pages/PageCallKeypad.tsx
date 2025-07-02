@@ -7,13 +7,13 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
-import { KeyPad } from '../components/CallKeyPad'
-import { ShowNumber } from '../components/CallShowNumbers'
-import { Layout } from '../components/Layout'
-import { getCallStore } from '../stores/callStore'
-import { intl, intlDebug } from '../stores/intl'
-import { RnAlert } from '../stores/RnAlert'
-import { RnKeyboard } from '../stores/RnKeyboard'
+import { KeyPad } from '#/components/CallKeyPad'
+import { ShowNumber } from '#/components/CallShowNumbers'
+import { Layout } from '#/components/Layout'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 
 @observer
 export class PageCallKeypad extends Component {
@@ -32,7 +32,7 @@ export class PageCallKeypad extends Component {
       })
       return
     }
-    getCallStore().startCall(this.txt)
+    ctx.call.startCall(this.txt)
   }
 
   render() {

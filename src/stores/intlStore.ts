@@ -1,15 +1,16 @@
-// import vi from '../assets/intl-vi.json'
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
 import { action, observable, runInAction } from 'mobx'
 import { NativeModules } from 'react-native'
 
-import en from '../assets/intl-en.json'
-import ja from '../assets/intl-ja.json'
-import { isIos } from '../config'
-import { arrToMap } from '../utils/arrToMap'
-import { BrekekeUtils } from '../utils/RnNativeModules'
-import { waitTimeout } from '../utils/waitTimeout'
-import { RnPicker } from './RnPicker'
+// import vi from '#/assets/intl-vi.json'
+import en from '#/assets/intl-en.json'
+import ja from '#/assets/intl-ja.json'
+import { isIos } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { RnPicker } from '#/stores/RnPicker'
+import { arrToMap } from '#/utils/arrToMap'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
 export const labels = {
   en,
@@ -106,4 +107,4 @@ export class IntlStore {
     return this.loadingPromise
   }
 }
-export const intlStore = new IntlStore() as Immutable<IntlStore>
+ctx.intl = new IntlStore()

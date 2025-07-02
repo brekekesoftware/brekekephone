@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '../assets/icons'
-import { RnIcon, RnText, RnTouchableOpacity } from '../components/Rn'
-import { v } from '../components/variables'
-import { useAnimationOnDidMount } from '../utils/animation'
-import { intl } from './intl'
-import type { RnPickerOption } from './RnPicker'
-import { RnPicker } from './RnPicker'
+import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { intl } from '#/stores/intl'
+import type { RnPickerOption } from '#/stores/RnPicker'
+import { RnPicker } from '#/stores/RnPicker'
+import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = StyleSheet.create({
   RnPicker: {

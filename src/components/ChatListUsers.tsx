@@ -2,13 +2,13 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { StyleSheet } from 'react-native'
 
+import { formatDateTimeSemantic } from '#/components/chatConfig'
+import { UserItem } from '#/components/ContactUserItem'
+import { RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
 // import {intl} from '../stores/intl'
-import { chatStore } from '../stores/chatStore'
-import { getPartyName } from '../stores/contactStore'
-import { formatDateTimeSemantic } from './chatConfig'
-import { UserItem } from './ContactUserItem'
-import { RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+import { getPartyName } from '#/stores/contactStore'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   Unread: {
@@ -35,7 +35,7 @@ export const ListUsers: FC<{
       <RnTouchableOpacity
         key={id}
         onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO: group
-        style={(unread || chatStore.getThreadConfig(id).isUnread) && css.Unread}
+        style={(unread || ctx.chat.getThreadConfig(id).isUnread) && css.Unread}
       >
         <UserItem
           key={id}

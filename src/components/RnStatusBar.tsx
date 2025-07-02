@@ -2,9 +2,9 @@ import type { FC } from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
-import { isWeb } from '../config'
-import { RnTouchableOpacity } from './RnTouchableOpacity'
-import { v } from './variables'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
 
 const css = StyleSheet.create({
   RnStatusBar: {

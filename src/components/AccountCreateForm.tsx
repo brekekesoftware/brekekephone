@@ -3,17 +3,15 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { View } from 'react-native'
 
-import { isWeb } from '../config'
-import type { Account } from '../stores/accountStore'
-import { accountStore } from '../stores/accountStore'
-import { getAuthStore } from '../stores/authStore'
-import { intl, intlDebug } from '../stores/intl'
-import { Nav } from '../stores/Nav'
-import { RnAlert } from '../stores/RnAlert'
-import { useForm } from '../utils/useForm'
-import { useStore } from '../utils/useStore'
-import { Layout } from './Layout'
-import { RnText } from './Rn'
+import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/Rn'
+import { isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
+import { ctx } from '#/stores/ctx'
+import { intl, intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
+import { useForm } from '#/utils/useForm'
+import { useStore } from '#/utils/useStore'
 
 export const AccountCreateForm: FC<{
   updating?: Account
@@ -25,7 +23,7 @@ export const AccountCreateForm: FC<{
   const m = () => ({
     observable: {
       account: {
-        ...accountStore.genEmptyAccount(),
+        ...ctx.account.genEmptyAccount(),
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
@@ -36,7 +34,7 @@ export const AccountCreateForm: FC<{
         message: intl`Do you want to reset the form to the original data?`,
         onConfirm: () => {
           $.set('account', (p: Account) => ({
-            ...accountStore.genEmptyAccount(),
+            ...ctx.account.genEmptyAccount(),
             ...cloneDeep(props.updating),
             id: p.id,
           }))
@@ -90,7 +88,7 @@ export const AccountCreateForm: FC<{
     },
     //
     hasUnsavedChanges: () => {
-      const a = props.updating || accountStore.genEmptyAccount()
+      const a = props.updating || ctx.account.genEmptyAccount()
       if (!props.updating) {
         Object.assign(a, {
           id: $.account.id,
@@ -121,7 +119,6 @@ export const AccountCreateForm: FC<{
     ReturnType<typeof useStore>
   const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
-  const as = getAuthStore()
   return (
     <Layout
       description={
@@ -132,11 +129,11 @@ export const AccountCreateForm: FC<{
       dropdown={
         props.footerLogout
           ? [
-              ...(as.isConnFailure()
+              ...(ctx.auth.isConnFailure()
                 ? [
                     {
                       label: intl`Reconnect to server`,
-                      onPress: as.resetFailureStateIncludePbxOrUc,
+                      onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
                     },
                   ]
                 : []),
@@ -144,13 +141,13 @@ export const AccountCreateForm: FC<{
                 ? [
                     {
                       label: intl`Open debug log`,
-                      onPress: Nav().goToPageSettingsDebugFiles,
+                      onPress: ctx.nav.goToPageSettingsDebugFiles,
                     },
                   ]
                 : []),
               {
                 label: intl`Logout`,
-                onPress: as.signOut,
+                onPress: ctx.auth.signOut,
                 danger: true,
               },
             ]

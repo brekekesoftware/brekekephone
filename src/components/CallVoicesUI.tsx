@@ -1,25 +1,18 @@
 import { Component, useEffect } from 'react'
-import { StyleSheet } from 'react-native'
 import IncallManager from 'react-native-incall-manager'
-import Video from 'react-native-video'
 
-import { sip } from '../api/sip'
-import { isAndroid } from '../config'
-import { getCallStore } from '../stores/callStore'
-import { BrekekeUtils } from '../utils/RnNativeModules'
+import { isAndroid } from '#/config'
+import { ctx } from '#/stores/ctx'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { waitTimeout } from '#/utils/waitTimeout'
 
-const css = StyleSheet.create({
-  video: {
-    width: 0,
-    height: 0,
-  },
-})
 export class IncomingItem extends Component {
   componentDidMount = () => {
     if (isAndroid) {
       BrekekeUtils.startRingtone()
     } else {
-      IncallManager.startRingtone('_BUNDLE_')
+      // old logic: only play ringtone without vibration and repeat the ringtone continuously
+      IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
     }
   }
   componentWillUnmount = () => {
@@ -36,9 +29,8 @@ export class IncomingItem extends Component {
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {
-    const { ongoingCallId } = getCallStore()
-    if (ongoingCallId) {
-      sip.disableMedia(ongoingCallId)
+    if (ctx.call.ongoingCallId) {
+      ctx.sip.disableMedia(ctx.call.ongoingCallId)
     }
     if (isAndroid) {
       IncallManager.startRingback('_BUNDLE_')
@@ -57,9 +49,8 @@ export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   componentDidMount = () => {
-    const { ongoingCallId } = getCallStore()
-    if (ongoingCallId) {
-      sip.enableMedia(ongoingCallId)
+    if (ctx.call.ongoingCallId) {
+      ctx.sip.enableMedia(ctx.call.ongoingCallId)
     }
   }
   render() {
@@ -70,9 +61,9 @@ export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   componentDidMount = () => {
-    const oc = getCallStore().getOngoingCall()
+    const oc = ctx.call.getOngoingCall()
     if (oc) {
-      sip.enableMedia(oc.id)
+      ctx.sip.enableMedia(oc.id)
     }
   }
   render() {
@@ -81,26 +72,17 @@ export class AnsweredItem extends Component<{
 }
 
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
-  // play local RBT without loud speaker
+  const stopRingbackAndSyncSpeaker = async () => {
+    await BrekekeUtils.stopRBT()
+    // make sure AVAudioSession deactivated
+    await waitTimeout()
+    IncallManager.setForceSpeakerphoneOn(p.isLoudSpeaker)
+  }
   useEffect(() => {
-    if (!p.isLoudSpeaker) {
-      BrekekeUtils.playRBT()
-    }
+    BrekekeUtils.playRBT(p.isLoudSpeaker)
     return () => {
-      BrekekeUtils.stopRBT()
+      stopRingbackAndSyncSpeaker()
     }
   }, [p.isLoudSpeaker])
-
-  // play local RBT with loud speaker
-  return (
-    <Video
-      source={require('../assets/incallmanager_ringback.mp3')}
-      style={css.video}
-      paused={!p.isLoudSpeaker}
-      repeat={true}
-      ignoreSilentSwitch='ignore'
-      playInBackground={true}
-      audioOnly
-    />
-  )
+  return null
 }

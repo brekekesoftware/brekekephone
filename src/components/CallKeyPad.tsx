@@ -5,10 +5,10 @@ import {
   mdiKeyboard,
   mdiPhone,
   mdiPhoneForward,
-} from '../assets/icons'
-import { isWeb } from '../config'
-import { RnIcon, RnText, RnTouchableOpacity } from './Rn'
-import { v } from './variables'
+} from '#/assets/icons'
+import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { v } from '#/components/variables'
+import { isWeb } from '#/config'
 
 const css = StyleSheet.create({
   KeyPad_Number: {

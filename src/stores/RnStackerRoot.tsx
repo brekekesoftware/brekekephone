@@ -3,9 +3,9 @@ import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import { v } from '../components/variables'
-import { useAnimationOnDidMount } from '../utils/animation'
-import { RnStacker } from './RnStacker'
+import { v } from '#/components/variables'
+import { RnStacker } from '#/stores/RnStacker'
+import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = StyleSheet.create({
   Stack: {
