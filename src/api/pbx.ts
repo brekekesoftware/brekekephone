@@ -1059,7 +1059,9 @@ export class PBX extends EventEmitter {
     let application_id = isAndroid ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
-      application_id += '.voip'
+      if (!isAndroid) {
+        application_id += '.voip'
+      }
       username += '@voip'
     }
     await this.client.call_pal('pnmanage', {
