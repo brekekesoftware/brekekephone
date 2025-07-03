@@ -3,7 +3,7 @@ import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
 import type { Session, SessionStatus } from '#/brekekejs'
-import { isIos } from '#/config'
+import { isEmbed, isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { CallStore } from '#/stores/callStore'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
@@ -422,7 +422,7 @@ export class Call {
   private _autorunEmitEmbed = false // check if autorun is already started
   private _disposeEmitEmbed?: IReactionDisposer // dispose autorun
   startEmitEmbed = () => {
-    if (window._BrekekePhoneWebRoot) {
+    if (!isEmbed) {
       return
     }
     embedApi.emit('call', this)
@@ -445,7 +445,7 @@ export class Call {
     this._disposeEmitEmbed = undefined
   }
   finishEmitEmbed = () => {
-    if (window._BrekekePhoneWebRoot) {
+    if (!isEmbed) {
       return
     }
     this.disposeEmitEmbed()

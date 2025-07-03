@@ -9,7 +9,6 @@ import { getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
-import { userStore } from '#/stores/userStore'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 
@@ -92,9 +91,9 @@ class Api {
     }
     if (ctx.auth.isBigMode() || !ca.pbxLocalAllUsers) {
       if (ca.ucEnabled) {
-        userStore.loadUcBuddyList()
+        ctx.user.loadUcBuddyList()
       } else {
-        userStore.loadPbxBuddyList()
+        ctx.user.loadPbxBuddyList()
       }
     } else {
       ctx.contact.getPbxUsers()
@@ -212,7 +211,7 @@ class Api {
     statusText: string
   }) => {
     ctx.contact.updateUcUser(ev)
-    userStore.updateStatusBuddy(ev.id, ev.status, ev.avatar)
+    ctx.user.updateStatusBuddy(ev.id, ev.status, ev.avatar)
   }
   onBuddyChatCreated = (chat: {
     id: string

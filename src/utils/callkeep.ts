@@ -43,15 +43,15 @@ const setupCallKeep = async () => {
   const option = {
     android: {
       alertTitle: intl`Permissions required`,
-      alertDescription: intl`Brekeke Phone needs to your permission to display calls`,
+      alertDescription: intl`${ctx.global.productName} needs to your permission to display calls`,
       cancelButton: intl`Cancel`,
       okButton: 'OK',
       imageName: 'phone_account_icon',
       additionalPermissions: [],
       foregroundService: {
         channelId: bundleIdentifier,
-        channelName: intl`Background service for Brekeke Phone`,
-        notificationTitle: intl`Brekeke Phone is running on background`,
+        channelName: intl`Background service for ${ctx.global.productName}`,
+        notificationTitle: intl`${ctx.global.productName} is running on background`,
         notificationIcon: 'ic_launcher',
       },
       selfManaged: true,

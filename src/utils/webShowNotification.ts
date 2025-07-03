@@ -9,7 +9,7 @@ export const webShowNotification = async (body: string, tag: string) => {
     document,
     timeout: 15000,
     interval: 15000,
-    title: 'Brekeke Phone',
+    title: ctx.global.productName,
     renotify: true,
     body,
     tag,
