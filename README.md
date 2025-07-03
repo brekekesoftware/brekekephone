@@ -1,8 +1,8 @@
 ### Quick access
 
-- Recommended OS version as of Nov 2024:
-  - [Android 13-14](https://developer.android.com/google/play/requirements/target-sdk)
-  - [iOS 17-18](https://developer.apple.com/ios/submit/)
+- Recommended OS version as of Jul 2025:
+  - [Android 14-15](https://developer.android.com/google/play/requirements/target-sdk)
+  - [iOS 18](https://developer.apple.com/ios/submit/)
 - [Custom branding build](./.doc/custom-branding.md)
 - [Network proxy setup](./.doc/network-proxy-setup.md)
 
