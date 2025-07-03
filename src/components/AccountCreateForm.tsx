@@ -1,22 +1,25 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import {
-  getRingtoneList,
-  setRingtoneForAccount,
-} from '#/utils/RnRingtoneNativeModule'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
+
+const staticRingtones = [
+  'incallmanager_ringtone',
+  'ding',
+  'incallmanager_ringback',
+]
 
 export const AccountCreateForm: FC<{
   updating?: Account
@@ -32,7 +35,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
-      ringtoneOptions: [] as { key: string; label: string }[],
+      ringtoneOptions: [] as { key: string; label: string; uri?: string }[],
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -92,7 +95,6 @@ export const AccountCreateForm: FC<{
         },
       })
     },
-    //
     hasUnsavedChanges: () => {
       const a = props.updating || ctx.account.genEmptyAccount()
       if (!props.updating) {
@@ -117,11 +119,22 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       console.log({ account: $.account })
       props.onSave($.account, $.hasUnsavedChanges())
-      const { pbxUsername, pbxTenant, ringtoneIndex } = $.account
-      const accountId = pbxUsername + pbxTenant
-      setRingtoneForAccount(accountId, ringtoneIndex)
+      if (!isWeb) {
+        const { pbxUsername, pbxTenant, ringtoneIndex } = $.account
+        const accountId = pbxUsername + pbxTenant
+        let ringtone = ringtoneIndex
+        if (isAndroid && !staticRingtones.includes(ringtoneIndex || '')) {
+          // is android and this is not a static ringtone
+          ringtone =
+            $.ringtoneOptions.filter((v, _) => v.key === ringtoneIndex)?.[0]
+              .uri || $.ringtoneOptions[0].uri // default uri
+        }
+
+        BrekekeUtils.setRingtoneForAccount(accountId, ringtone!)
+      }
     },
   })
+
   type M0 = ReturnType<typeof m>
   type M = Omit<M0, 'observable'> &
     M0['observable'] &
@@ -130,35 +143,29 @@ export const AccountCreateForm: FC<{
   const [Form, submitForm] = useForm()
 
   const getLocalRingtone = async () => {
-    const ringtone = await getRingtoneList()
+    const ringtone = await BrekekeUtils.getSystemRingtones()
     if (!!ringtone) {
-      const options = ringtone.map((file: string) => ({
-        key: file,
-        label: file,
+      const options = ringtone.map(file => ({
+        key: file.title,
+        label: file.title,
+        uri: isAndroid ? file.uri : '',
       }))
-      $.ringtoneOptions = options
+      $.ringtoneOptions = [
+        ...options,
+        ...staticRingtones.map(v => ({
+          key: v,
+          label: v,
+        })),
+      ]
     }
   }
 
   useEffect(() => {
-    getLocalRingtone()
+    if (!isWeb && !props.footerLogout) {
+      getLocalRingtone()
+      BrekekeUtils.setStaticRingtones(staticRingtones)
+    }
   }, [])
-
-  const ringtoneField = isWeb
-    ? []
-    : [
-        {
-          isGroup: true,
-          label: intl`Ringtone`,
-          hasMargin: true,
-        },
-        {
-          disabled: props.footerLogout,
-          type: 'RnPicker',
-          name: 'ringtoneIndex',
-          options: $.ringtoneOptions,
-        },
-      ]
 
   return (
     <Layout
@@ -317,7 +324,19 @@ export const AccountCreateForm: FC<{
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),
-          ...ringtoneField,
+          {
+            isGroup: true,
+            label: intl`Ringtone`,
+            hasMargin: true,
+            hidden: isWeb,
+          },
+          {
+            disabled: props.footerLogout,
+            type: 'RnPicker',
+            name: 'ringtoneIndex',
+            options: $.ringtoneOptions,
+            hidden: isWeb,
+          },
         ]}
         k='account'
         onValidSubmit={$.onValidSubmit}

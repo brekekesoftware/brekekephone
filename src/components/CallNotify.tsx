@@ -79,9 +79,13 @@ export const CallNotify = observer(() => {
   const n = ctx.call.calls.filter(
     _ => _.incoming && !_.answered && _.id !== c.id,
   ).length
+
+  const accountId = c.pbxUsername + c.pbxTenant
   return (
     <Wrapper>
-      {ctx.call.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
+      {ctx.call.shouldRingInNotify(c.callkeepUuid) && (
+        <IncomingItem accountId={accountId} />
+      )}
       <RnTouchableOpacity
         style={css.Notify}
         onPress={() => ctx.nav.goToPageCallManage()}
@@ -121,8 +125,8 @@ export const CallNotify = observer(() => {
   )
 })
 
-export const IncomingItemWithTimer = () => (
+export const IncomingItemWithTimer = ({ accountId }: { accountId: string }) => (
   <DidMountTimer>
-    <IncomingItem />
+    <IncomingItem accountId={accountId} />
   </DidMountTimer>
 )

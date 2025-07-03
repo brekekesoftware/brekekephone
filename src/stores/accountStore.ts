@@ -14,7 +14,7 @@ import { arrToMap } from '#/utils/arrToMap'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils, defaultRingtoneTitle } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let resolveFn: Function | undefined
@@ -103,7 +103,7 @@ export class AccountStore {
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
-    ringtoneIndex: 'incallmanager_ringtone',
+    ringtoneIndex: defaultRingtoneTitle,
   })
 
   loadAccountsFromLocalStorage = async () => {
