@@ -24,7 +24,13 @@ import type {
   PbxResourceLine,
   Request,
 } from '#/brekekejs'
-import { bundleIdentifier, fcmApplicationId, isAndroid, isWeb } from '#/config'
+import {
+  bundleIdentifier,
+  fcmApplicationId,
+  isAndroid,
+  isEmbed,
+  isWeb,
+} from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
@@ -341,12 +347,10 @@ export class PBX extends EventEmitter {
       })
 
     // emit to embed api
-    if (!window._BrekekePhoneWebRoot) {
-      embedApi.emit('pal', client)
-    }
     const embedListeners: { [k in keyof Pbx]?: Function } = {}
-    if (!window._BrekekePhoneWebRoot && embedApi._palEvents?.length) {
-      embedApi._palEvents.forEach(k => {
+    if (isEmbed) {
+      embedApi.emit('pal', client)
+      embedApi._palEvents?.forEach(k => {
         const listener = (...args: unknown[]) => {
           console.log(`Embed api emitting pal event ${k}`)
           embedApi.emit(`pal.${k}`, ...args)
@@ -652,7 +656,9 @@ export class PBX extends EventEmitter {
     }
 
     // get resource line
-    _parseResourceLines(config['webphone.resource-line'])
+    if (!isEmbed) {
+      _parseResourceLines(config['webphone.resource-line'])
+    }
 
     const d = await ctx.auth.getCurrentDataAsync()
     if (d) {
@@ -1117,7 +1123,7 @@ ctx.pbx = new PBX()
 
 // ----------------------------------------------------------------------------
 // parse resource line data
-const _parseResourceLines = (l: string | undefined) => {
+export const _parseResourceLines = (l: string | undefined) => {
   if (!l) {
     ctx.auth.resourceLines = []
     return

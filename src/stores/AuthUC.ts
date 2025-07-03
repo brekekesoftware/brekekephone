@@ -7,7 +7,6 @@ import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import { userStore } from '#/stores/userStore'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 export class AuthUC {
@@ -94,7 +93,7 @@ export class AuthUC {
       return
     }
     if (ctx.auth.isBigMode() || !ca.pbxLocalAllUsers) {
-      userStore.loadUcBuddyList()
+      ctx.user.loadUcBuddyList()
     }
     const users = ctx.uc.getUsers()
     ctx.contact.ucUsers = users

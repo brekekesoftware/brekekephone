@@ -9,11 +9,13 @@ import '#/stores/AuthUC'
 import '#/stores/callStore'
 import '#/stores/chatStore'
 import '#/stores/contactStore'
+import '#/stores/userStore'
 import '#/stores/debugStore'
 import '#/stores/intlStore'
 import '#/stores/Nav'
 import '#/stores/toastStore'
 import '#/api/syncPnToken'
+import '#/stores/global'
 // api was a component but had been rewritten to a listener
 // need to import this last since it requires other modules
 import '#/api'
@@ -31,9 +33,11 @@ import type { CallStore } from '#/stores/callStore'
 import type { ChatStore } from '#/stores/chatStore'
 import type { ContactStore } from '#/stores/contactStore'
 import type { DebugStore } from '#/stores/debugStore'
+import type { GlobalStore } from '#/stores/global'
 import type { IntlStore } from '#/stores/intlStore'
 import type { Nav } from '#/stores/Nav'
 import type { ToastStore } from '#/stores/toastStore'
+import type { UserStore } from '#/stores/userStore'
 
 export type Ctx = {
   pbx: PBX
@@ -48,8 +52,10 @@ export type Ctx = {
   call: CallStore
   chat: ChatStore
   contact: ContactStore
+  user: UserStore
   debug: DebugStore
   toast: ToastStore
   nav: Nav
   pnToken: SyncPnToken
+  global: GlobalStore
 }

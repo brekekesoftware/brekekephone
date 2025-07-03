@@ -608,7 +608,7 @@ export class CallStore {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
       if (isAndroid) {
-        RNCallKeep.startCall(uuid, 'Brekeke Phone', number)
+        RNCallKeep.startCall(uuid, ctx.global.productName, number)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // enable proximity monitoring for trigger proximity state to keep the call alive

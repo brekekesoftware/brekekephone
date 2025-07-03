@@ -15,7 +15,7 @@ export type GroupUserSectionListData = SectionListData<
 >
 export type BuddyType = 'PbxBuddy' | 'UcBuddy'
 
-class UserStore {
+export class UserStore {
   @observable dataGroupAllUser: GroupUserSectionListData[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax
@@ -406,4 +406,4 @@ class UserStore {
   }
 }
 
-export const userStore = new UserStore()
+ctx.user = new UserStore()
