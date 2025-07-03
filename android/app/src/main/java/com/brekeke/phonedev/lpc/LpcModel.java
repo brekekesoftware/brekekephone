@@ -5,7 +5,7 @@ public class LpcModel {
     String uuid;
     String uuid2;
     String deviceName;
-    final String appid = "com.brekeke.phonedev";
+    final String appid = "22177122297";
 
     User(String token, String token2, String userName) {
       this.uuid = token + "$pn-gw@" + userName;

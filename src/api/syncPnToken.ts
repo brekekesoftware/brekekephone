@@ -133,10 +133,11 @@ const syncPnTokenWithoutCatch = async (
           : pnEnabled
             ? pbx.setApnsToken
             : pbx.removeApnsToken
-        await Promise.all([
-          fn(params),
-          fn({ ...params, device_id: tvoip, voip: true }),
-        ])
+        const promises = [fn(params)]
+        if (!isAndroid) {
+          promises.push(fn({ ...params, device_id: tvoip, voip: true }))
+        }
+        await Promise.all(promises)
       }
       locationPerm = null
       return disconnectPbx(true)
