@@ -1,7 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
@@ -11,15 +11,11 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import type { RingtoneOptionsType } from '#/utils/handleRingtone'
+import { getRingtoneOptions, staticRingtones } from '#/utils/handleRingtone'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
-
-const staticRingtones = [
-  'incallmanager_ringtone',
-  'ding',
-  'incallmanager_ringback',
-]
 
 export const AccountCreateForm: FC<{
   updating?: Account
@@ -35,7 +31,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
-      ringtoneOptions: [] as { key: string; label: string; uri?: string }[],
+      ringtoneOptions: [] as RingtoneOptionsType,
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -120,8 +116,7 @@ export const AccountCreateForm: FC<{
       console.log({ account: $.account })
       props.onSave($.account, $.hasUnsavedChanges())
       if (!isWeb) {
-        const { pbxUsername, pbxTenant, ringtoneIndex } = $.account
-        const accountId = pbxUsername + pbxTenant
+        const { ringtoneIndex } = $.account
         let ringtone = ringtoneIndex
         if (isAndroid && !staticRingtones.includes(ringtoneIndex || '')) {
           // is android and this is not a static ringtone
@@ -129,8 +124,7 @@ export const AccountCreateForm: FC<{
             $.ringtoneOptions.filter((v, _) => v.key === ringtoneIndex)?.[0]
               .uri || $.ringtoneOptions[0].uri // default uri
         }
-
-        BrekekeUtils.setRingtoneForAccount(accountId, ringtone!)
+        $.account.ringtoneData = ringtone
       }
     },
   })
@@ -143,21 +137,7 @@ export const AccountCreateForm: FC<{
   const [Form, submitForm] = useForm()
 
   const getLocalRingtone = async () => {
-    const ringtone = await BrekekeUtils.getSystemRingtones()
-    if (!!ringtone) {
-      const options = ringtone.map(file => ({
-        key: file.title,
-        label: file.title,
-        uri: isAndroid ? file.uri : '',
-      }))
-      $.ringtoneOptions = [
-        ...options,
-        ...staticRingtones.map(v => ({
-          key: v,
-          label: v,
-        })),
-      ]
-    }
+    $.ringtoneOptions = await getRingtoneOptions()
   }
 
   useEffect(() => {
@@ -328,14 +308,14 @@ export const AccountCreateForm: FC<{
             isGroup: true,
             label: intl`Ringtone`,
             hasMargin: true,
-            hidden: isWeb,
+            hidden: isWeb || props.footerLogout,
           },
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
             name: 'ringtoneIndex',
             options: $.ringtoneOptions,
-            hidden: isWeb,
+            hidden: isWeb || props.footerLogout,
           },
         ]}
         k='account'

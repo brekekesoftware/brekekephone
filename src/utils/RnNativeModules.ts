@@ -23,7 +23,7 @@ type TBrekekeUtils = {
   checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  startRingtone(accountId: string): void
+  startRingtone(ringtoneId: string): void
   stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
@@ -102,8 +102,6 @@ type TBrekekeUtils = {
 
   // ringtone
   getSystemRingtones(): Promise<RingtoneSystemType[]>
-  setRingtoneForAccount(accountId: string, ringtone: string): void
-  removeRingtoneForAccount(accountId: string): void
   setStaticRingtones(array: string[]): void
 }
 
@@ -174,8 +172,6 @@ const Polyfill: TBrekekeUtils = {
 
   // ringtone
   getSystemRingtones: () => Promise.resolve([]),
-  setRingtoneForAccount: () => undefined,
-  removeRingtoneForAccount: () => undefined,
   setStaticRingtones: () => undefined,
 }
 

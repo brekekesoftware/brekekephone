@@ -41,6 +41,7 @@ export type Account = {
   navIndex: number
   navSubMenus: string[]
   ringtoneIndex?: string
+  ringtoneData?: string
 }
 export type AccountData = {
   id: string
@@ -104,6 +105,7 @@ export class AccountStore {
     navIndex: -1,
     navSubMenus: [],
     ringtoneIndex: defaultRingtoneTitle,
+    ringtoneData: '',
   })
 
   loadAccountsFromLocalStorage = async () => {

@@ -81,7 +81,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise disableBatteryOptimizationPromise;
   public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
-  private static String[] staticRingtones = null;
+  private static String[] staticRingtones = {"incallmanager_ringtone"};
   private static String TAG = "[BrekekeUtils]";
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
@@ -340,10 +340,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
-
-            String accountId = data.get("x_to") + data.get("x_tenant");
-
-            i.putExtra("ringtone" , getRingtoneName(accountId));
+            String ringtoneId = data.get("x_to") + data.get("x_tenant") + data.get("x_host");
+            i.putExtra("ringtone" , getRingtoneName(ringtoneId));
             c.startActivity(i);
 
             // check if incoming via lpc and show the notification
@@ -808,15 +806,38 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return resId;
   }
 
-  private static String getRingtoneName(String accountId) {
-    SharedPreferences prefs = ctx.getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
-    return prefs.getString(accountId, "");
-  }
+//  private static String getRingtoneName(String ringtoneId) {
+//    SharedPreferences prefs = ctx.getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
+//    return prefs.getString(ringtoneId, staticRingtones[0]);
+//  }
 
   private static Boolean checkCategoryRingtone(String ringtone) {
     return Arrays.asList(staticRingtones).contains(ringtone); // if true then it uses static ringtone
   }
 
+  public static String getRingtoneName(String ringtoneId) {
+    try {
+       String data = AsyncLocalStorageUtil.getItemImpl(
+                      ReactDatabaseSupplier.getInstance(ctx).getReadableDatabase(), "_api_profiles");
+      JSONObject jsonObject = new JSONObject(data);
+      JSONArray profilesArray = jsonObject.getJSONArray("profiles");
+
+      for (int i = 0; i < profilesArray.length(); i++) {
+        JSONObject profile = profilesArray.getJSONObject(i);
+
+        String tenant = profile.getString("pbxTenant");
+        String username = profile.getString("pbxUsername");
+        String host = profile.getString("pbxHostname");
+        String ringtoneIndex = profile.getString("ringtoneIndex");
+        String ringtoneData = profile.getString("ringtoneData");
+        String rId = username+ tenant +host;
+        if(rId.equals(ringtoneId)) {
+          return ringtoneData;
+        }
+      }
+    } catch (Exception e) {}
+    return staticRingtones[0];
+  }
 
   // ==========================================================================
   // react methods
@@ -996,8 +1017,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startRingtone(String accountId) {
-    staticStartRingtone(getRingtoneName(accountId));
+  public void startRingtone(String ringtoneId) {
+    staticStartRingtone(getRingtoneName(ringtoneId));
   }
 
   @ReactMethod
@@ -1460,20 +1481,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   // Ringtone
-
-  @ReactMethod
-  public void setRingtoneForAccount(String accountId, String ringtone) {
-    SharedPreferences prefs = getReactApplicationContext()
-            .getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
-    prefs.edit().putString(accountId, ringtone).apply();
-  }
-
-  @ReactMethod
-  public void removeRingtoneForAccount(String accountId) {
-    SharedPreferences prefs = getReactApplicationContext()
-            .getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
-    prefs.edit().remove(accountId).apply();
-  }
 
   @ReactMethod
   public void getSystemRingtones(Promise promise) {

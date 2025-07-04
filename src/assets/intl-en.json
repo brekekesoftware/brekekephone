@@ -295,5 +295,6 @@
   "{{$0}} total",
   "{{$0}}/{{$1}} online",
   "{{$0}}{{$1}}at {{$2}}",
-  "Ringtone"
+  "Ringtone",
+  "INCOMING CALL RINGTONE"
 ]

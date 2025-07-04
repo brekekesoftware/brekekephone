@@ -19,7 +19,6 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 
 const css = StyleSheet.create({
   AccountSignInItem: {
@@ -152,10 +151,8 @@ export const AccountSignInItem: FC<{
                 </>
               ),
               onConfirm: () => {
-                const { id, pbxUsername, pbxTenant } = a
+                const { id } = a
                 ctx.account.removeAccount(id)
-                const accountId = pbxUsername + pbxTenant
-                BrekekeUtils.removeRingtoneForAccount(accountId)
               },
             })
           }}

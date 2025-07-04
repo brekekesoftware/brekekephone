@@ -4,22 +4,28 @@ import { Component } from 'react'
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import type { RingtoneOptionsType } from '#/utils/handleRingtone'
+import { getRingtoneOptions, staticRingtones } from '#/utils/handleRingtone'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
 
 @observer
 export class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
+    ringtoneOptions: [] as RingtoneOptionsType,
+    ringtone: ctx.auth.getCurrentAccount()?.ringtoneIndex,
   }
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const me = ctx.uc.me()
     this.setState({
       status: me.status,
       statusText: me.statusText,
+      ringtoneOptions: isWeb ? [] : await getRingtoneOptions(),
     })
   }
   setStatusText = (statusText: string) => {
@@ -48,6 +54,29 @@ export class PageSettingsOther extends Component {
         })
       })
   }
+
+  onChangeRingtone = value => {
+    this.setState({ ringtone: value })
+    const account = ctx.auth.getCurrentAccount()
+    if (!!account) {
+      const { id } = account
+      let ringtone = value
+      if (isAndroid && !staticRingtones.includes(value || '')) {
+        // is android and this is not a static ringtone
+        ringtone =
+          this.state.ringtoneOptions.filter((v, _) => v.key === value)?.[0]
+            .uri || this.state.ringtoneOptions[0].uri // default uri
+      }
+      ctx.account.accounts.map(v => {
+        if (v.id === id) {
+          v.ringtoneIndex = value
+          v.ringtoneData = ringtone
+        }
+      })
+      ctx.account.saveAccountsToLocalStorageDebounced()
+    }
+  }
+
   render() {
     const ca = ctx.auth.getCurrentAccount()
     return (
@@ -111,6 +140,18 @@ export class PageSettingsOther extends Component {
               onSubmitEditing={this.submitStatusText}
               onValueChange={this.setStatusText}
               value={this.state.statusText}
+            />
+          </>
+        )}
+        {!isWeb && (
+          <>
+            <Field isGroup label={intl`Ringtone`} />
+            <Field
+              label={intl`INCOMING CALL RINGTONE`}
+              options={this.state.ringtoneOptions}
+              type='RnPicker'
+              value={this.state.ringtone}
+              onValueChange={this.onChangeRingtone}
             />
           </>
         )}
