@@ -705,7 +705,6 @@ class PageCallManage extends Component<{
     const isHangupBtnHidden =
       (incoming && this.isBtnHidden('hangup')) ||
       (!this.showButtonsInVideoCall && c.answered)
-    const accountId = c.pbxUsername + c.pbxTenant
     return (
       <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
         {c.holding && !c.rqLoadings['hold'] ? (
@@ -716,9 +715,7 @@ class PageCallManage extends Component<{
           </View>
         ) : (
           <View style={css.viewHangupBtn}>
-            {incoming && this.isVisible() && (
-              <IncomingItemWithTimer accountId={accountId} />
-            )}
+            {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (
               <ButtonIcon
                 bgcolor={v.colors.primary}
