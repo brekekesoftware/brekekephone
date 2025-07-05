@@ -151,7 +151,8 @@ export const AccountSignInItem: FC<{
                 </>
               ),
               onConfirm: () => {
-                ctx.account.removeAccount(a.id)
+                const { id } = a
+                ctx.account.removeAccount(id)
               },
             })
           }}

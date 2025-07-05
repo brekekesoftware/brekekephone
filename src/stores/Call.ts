@@ -41,6 +41,7 @@ export class Call {
     hold: false,
     record: false,
   }
+  @observable ringtoneFromSip = ''
 
   phoneappliUsername = ''
   phoneappliAvatar = ''

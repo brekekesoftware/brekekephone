@@ -3,13 +3,18 @@ import IncallManager from 'react-native-incall-manager'
 
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
+import { getIdToPlayRingtone } from '#/utils/handleRingtone'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
+/*
+  IncomingItem will mount when PN is disabled
+*/
 export class IncomingItem extends Component {
   componentDidMount = () => {
+    const ringtoneId = getIdToPlayRingtone()
     if (isAndroid) {
-      BrekekeUtils.startRingtone()
+      BrekekeUtils.startRingtone(ringtoneId)
     } else {
       // old logic: only play ringtone without vibration and repeat the ringtone continuously
       IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
