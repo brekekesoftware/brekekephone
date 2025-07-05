@@ -14,6 +14,7 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
+import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -67,6 +68,13 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
+
+      // This logic will be executed if the ringtone already exists on the SIP Header
+      const ringtone = m?.getHeader('x-Ringtone')
+      if (ev.sessionStatus === 'dialing' && !!ringtone) {
+        const ringtoneName = ringtone
+        BrekekeUtils.playRingtoneByName(ringtoneName)
+      }
 
       const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
       const xPbxRpi = extraHeaders.find(header =>

@@ -115,17 +115,6 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       console.log({ account: $.account })
       props.onSave($.account, $.hasUnsavedChanges())
-      if (!isWeb) {
-        const { ringtoneIndex } = $.account
-        let ringtone = ringtoneIndex
-        if (isAndroid && !staticRingtones.includes(ringtoneIndex || '')) {
-          // is android and this is not a static ringtone
-          ringtone =
-            $.ringtoneOptions.filter((v, _) => v.key === ringtoneIndex)?.[0]
-              .uri || $.ringtoneOptions[0].uri // default uri
-        }
-        $.account.ringtoneData = ringtone
-      }
     },
   })
 

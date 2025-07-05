@@ -59,18 +59,9 @@ export class PageSettingsOther extends Component {
     this.setState({ ringtone: value })
     const account = ctx.auth.getCurrentAccount()
     if (!!account) {
-      const { id } = account
-      let ringtone = value
-      if (isAndroid && !staticRingtones.includes(value || '')) {
-        // is android and this is not a static ringtone
-        ringtone =
-          this.state.ringtoneOptions.filter((v, _) => v.key === value)?.[0]
-            .uri || this.state.ringtoneOptions[0].uri // default uri
-      }
       ctx.account.accounts.map(v => {
-        if (v.id === id) {
+        if (v.id === account.id) {
           v.ringtoneIndex = value
-          v.ringtoneData = ringtone
         }
       })
       ctx.account.saveAccountsToLocalStorageDebounced()

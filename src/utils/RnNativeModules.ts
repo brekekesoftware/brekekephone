@@ -103,6 +103,7 @@ type TBrekekeUtils = {
   // ringtone
   getSystemRingtones(): Promise<RingtoneSystemType[]>
   setStaticRingtones(array: string[]): void
+  playRingtoneByName(name: string): void
 }
 
 export type TNativeModules = {
@@ -173,6 +174,7 @@ const Polyfill: TBrekekeUtils = {
   // ringtone
   getSystemRingtones: () => Promise.resolve([]),
   setStaticRingtones: () => undefined,
+  playRingtoneByName: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

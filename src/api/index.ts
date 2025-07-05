@@ -179,6 +179,7 @@ class Api {
     ctx.sip.stopWebRTC()
     ctx.authSIP.auth()
   }
+
   onSIPSessionStarted = async (c: Call) => {
     if (c.partyNumber === '8') {
       c.partyName = intl`Voicemail`
