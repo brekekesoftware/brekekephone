@@ -1,32 +1,27 @@
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
-
-export const staticRingtones = [
-  'incallmanager_ringtone',
-  'ding',
-  'incallmanager_ringback',
-]
 
 export type RingtoneOptionsType = { key: string; label: string; uri?: string }[]
 
 export const getRingtoneOptions = async (): Promise<RingtoneOptionsType> => {
-  const ringtone = await BrekekeUtils.getSystemRingtones()
-  let options: RingtoneOptionsType = []
+  const ringtone = await BrekekeUtils.getRingtoneOptions()
   if (!!ringtone) {
-    options = ringtone.map(file => ({
-      key: file.title,
-      label: file.title,
-      uri: isAndroid ? file.uri : '',
-    }))
+    return [
+      {
+        key: 'default',
+        label: intl`Use default`,
+        uri: '',
+      },
+      ...ringtone.map(file => ({
+        key: file.title,
+        label: file.title,
+        uri: isAndroid ? file.uri : '',
+      })),
+    ]
   }
-  return [
-    ...options,
-    ...staticRingtones.map(v => ({
-      key: v,
-      label: v,
-    })),
-  ]
+  return []
 }
 
 export const getIdToPlayRingtone = () => {
