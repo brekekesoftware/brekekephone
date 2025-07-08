@@ -210,7 +210,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
     if (!autoAnswer) {
-      Log.d("[RingtoneUtils]", "onCreate: " + ringtone);
       BrekekeUtils.staticStartRingtone(ringtone);
     }
 
