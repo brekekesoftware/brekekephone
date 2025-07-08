@@ -1,5 +1,4 @@
 import { isAndroid } from '#/config'
-import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 
@@ -22,13 +21,4 @@ export const getRingtoneOptions = async (): Promise<RingtoneOptionsType> => {
     ]
   }
   return []
-}
-
-export const getIdToPlayRingtone = () => {
-  const account = ctx.auth.getCurrentAccount()
-  const { pbxTenant, pbxUsername, pbxHostname } = account ?? {
-    pbxTenant: '',
-    pbxUsername: '',
-  }
-  return pbxUsername + pbxTenant + pbxHostname
 }
