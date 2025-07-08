@@ -3,7 +3,6 @@ import IncallManager from 'react-native-incall-manager'
 
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
-import { getIdToPlayRingtone } from '#/utils/handleRingtone'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 

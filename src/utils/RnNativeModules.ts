@@ -177,7 +177,7 @@ const Polyfill: TBrekekeUtils = {
 
   // ringtone
   getRingtoneOptions: () => Promise.resolve([]),
-  playRingtoneByName: () => Promise.resolve(false),
+  playRingtoneByName: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

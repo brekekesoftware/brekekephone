@@ -42,6 +42,7 @@ export type Account = {
   navSubMenus: string[]
   ringtoneName?: string
   ringtoneData?: string
+  pbxRingtone?: string
 }
 export type AccountData = {
   id: string

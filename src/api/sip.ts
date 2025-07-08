@@ -72,7 +72,10 @@ export class SIP extends EventEmitter {
       // This logic will be executed if the ringtone already exists on the SIP Header
       const ringtone = m?.getHeader('X-RINGTONE')
       if (ev.sessionStatus === 'dialing' && !!ringtone) {
-        if (isAndroid) {
+        const pnEnabled =
+          !ctx.auth.pbxLoginFromAnotherPlace &&
+          ctx.auth.getCurrentAccount()?.pushNotificationEnabled
+        if (isAndroid && !pnEnabled) {
           BrekekeUtils.playRingtoneByName(ringtone)
         }
       }
