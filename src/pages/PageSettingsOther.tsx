@@ -9,8 +9,8 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOptionsType } from '#/utils/handleRingtone'
-import { getRingtoneOptions, staticRingtones } from '#/utils/handleRingtone'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { getRingtoneOptions } from '#/utils/handleRingtone'
+import { defaultRingtone } from '#/utils/RnNativeModules'
 
 @observer
 export class PageSettingsOther extends Component {
@@ -18,7 +18,7 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOptionsType,
-    ringtone: ctx.auth.getCurrentAccount()?.ringtoneIndex,
+    ringtone: ctx.auth.getCurrentAccount()?.ringtoneName,
   }
   componentDidMount = async () => {
     const me = ctx.uc.me()
@@ -61,7 +61,10 @@ export class PageSettingsOther extends Component {
     if (!!account) {
       ctx.account.accounts.map(v => {
         if (v.id === account.id) {
-          v.ringtoneIndex = value
+          v.ringtoneName = value
+          v.ringtoneData =
+            this.state.ringtoneOptions.filter(v => v.key === value)?.[0].uri ??
+            defaultRingtone
         }
       })
       ctx.account.saveAccountsToLocalStorageDebounced()

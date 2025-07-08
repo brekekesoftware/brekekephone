@@ -16,7 +16,7 @@ export type RingtoneSystemType = {
   uri: string
 }
 
-export const defaultRingtoneTitle = 'incallmanager_ringtone'
+export const defaultRingtone = 'default'
 
 type TBrekekeUtils = {
   // these methods only available on android
@@ -101,8 +101,7 @@ type TBrekekeUtils = {
   systemUptimeMs(): Promise<number>
 
   // ringtone
-  getSystemRingtones(): Promise<RingtoneSystemType[]>
-  setStaticRingtones(array: string[]): void
+  getRingtoneOptions(): Promise<RingtoneSystemType[]>
   playRingtoneByName(name: string): void
 }
 
@@ -172,8 +171,7 @@ const Polyfill: TBrekekeUtils = {
   systemUptimeMs: () => Promise.resolve(-1),
 
   // ringtone
-  getSystemRingtones: () => Promise.resolve([]),
-  setStaticRingtones: () => undefined,
+  getRingtoneOptions: () => Promise.resolve([]),
   playRingtoneByName: () => Promise.resolve(false),
 }
 

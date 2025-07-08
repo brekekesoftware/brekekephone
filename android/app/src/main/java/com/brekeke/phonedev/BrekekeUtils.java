@@ -10,7 +10,6 @@ import android.app.role.RoleManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.AudioAttributes;
@@ -81,8 +80,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise disableBatteryOptimizationPromise;
   public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
-  private static String[] staticRingtones = {"incallmanager_ringtone"};
+  private static String[] staticRingtones = {"incallmanager_ringtone", "incallmanager_ringback", "ding"};
+  private static String pbxRingtone = "";
   private static String TAG = "[BrekekeUtils]";
+
   public static WritableMap parseParams(RemoteMessage message) {
     WritableMap params = Arguments.createMap();
     params.putString("from", message.getFrom());
@@ -344,11 +345,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             String ringtoneName = data.get("x_ringtone");
             if(ringtoneName == null) {
               String ringtoneId = data.get("x_to") + data.get("x_tenant") + data.get("x_host");
-              i.putExtra("ringtone" , getRingtoneName(ringtoneId));
-            }else {
+              i.putExtra("ringtone" , getRingtoneUri(ringtoneId));
+            } else {
               i.putExtra("ringtone" , ringtoneName);
             }
-
             c.startActivity(i);
 
             // check if incoming via lpc and show the notification
@@ -649,33 +649,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       return c;
   }
 
-  private static boolean playRingtone(String name, Context c) {
-    Cursor cursor = null;
+  private static boolean playRingtone(String ringtone, Context c) {
     try {
-      if(checkStaticRingtone(name)) {
-        playStaticRingtone(name, c);
+      if(checkStaticRingtone(ringtone)) {
+        playStaticRingtone(ringtone, c);
         return true;
       }
 
-      RingtoneManager ringtoneManager = new RingtoneManager(ctx);
-      ringtoneManager.setType(RingtoneManager.TYPE_RINGTONE);
-
-      cursor = ringtoneManager.getCursor();
-      while (cursor.moveToNext()) {
-        String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
-        if(title.equals(name)) {
-          Uri uri = ringtoneManager.getRingtoneUri(cursor.getPosition());
-          playSystemRingtone(uri.toString(), c);
-          return true;
-        }
-      }
-      return false;
+      playSystemRingtone(ringtone, c);
+      return true;
     } catch (Exception e) {
       return false;
-    } finally {
-      if (cursor != null && !cursor.isClosed()) {
-        cursor.close();
-      }
     }
   }
 
@@ -853,7 +837,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return Arrays.asList(staticRingtones).contains(ringtone); // if true then it uses static ringtone
   }
 
-  public static String getRingtoneName(String ringtoneId) {
+  public static String getRingtoneUri(String ringtoneId) {
     try {
        String data = AsyncLocalStorageUtil.getItemImpl(
                       ReactDatabaseSupplier.getInstance(ctx).getReadableDatabase(), "_api_profiles");
@@ -866,15 +850,28 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         String tenant = profile.getString("pbxTenant");
         String username = profile.getString("pbxUsername");
         String host = profile.getString("pbxHostname");
-        // String ringtoneData = profile.getString("ringtoneData");
-        String ringtoneName = profile.getString("ringtoneIndex");
-        String rId = username+ tenant +host;
+        String ringtoneData = profile.getString("ringtoneData");
+        String ringtoneName = profile.getString("ringtoneName");
+        String rId = username + tenant + host;
         if(rId.equals(ringtoneId)) {
-          return ringtoneName;
+          if(ringtoneName.equals("default")) {
+            return pbxRingtone != null
+                    && Arrays.asList(staticRingtones).contains(pbxRingtone)
+                    ? pbxRingtone
+                    : staticRingtones[0];
+          }
+          return ringtoneData;
         }
       }
     } catch (Exception e) {}
     return staticRingtones[0];
+  }
+
+  private static WritableMap handleRingtoneList(String title, String uri) {
+    WritableMap ringtone = new WritableNativeMap();
+    ringtone.putString("title", title);
+    ringtone.putString("uri", uri);
+    return ringtone;
   }
 
   // ==========================================================================
@@ -1056,7 +1053,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRingtone(String ringtoneId) {
-    staticStartRingtone(getRingtoneName(ringtoneId));
+    staticStartRingtone(getRingtoneUri(ringtoneId));
   }
 
   @ReactMethod
@@ -1109,6 +1106,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                 return;
               }
               JSONObject o = new JSONObject(jsonStr);
+              BrekekeUtils.pbxRingtone = o.getString("ringtone");
               for (IncomingCallActivity a : activities) {
                 try {
                   a.pbxConfig = o;
@@ -1521,7 +1519,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // Ringtone
 
   @ReactMethod
-  public void getSystemRingtones(Promise promise) {
+  public void getRingtoneOptions(Promise promise) {
     try {
       WritableArray ringtoneList = new WritableNativeArray();
       RingtoneManager ringtoneManager = new RingtoneManager(ctx);
@@ -1531,13 +1529,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       while (cursor.moveToNext()) {
         String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
         Uri uri = ringtoneManager.getRingtoneUri(cursor.getPosition());
-
-        WritableMap ringtone = new WritableNativeMap();
-        ringtone.putString("title", title);
-        ringtone.putString("uri", uri.toString());
-        ringtoneList.pushMap(ringtone);
+        ringtoneList.pushMap(handleRingtoneList(title, uri.toString()));
       }
       cursor.close();
+
+      for(String sRingtone : staticRingtones) {
+        ringtoneList.pushMap(handleRingtoneList(sRingtone,sRingtone));
+      }
+
       promise.resolve(ringtoneList);
     } catch (Exception e) {
       promise.reject("RINGTONE_ERROR", "Failed to get ringtones", e);
@@ -1545,32 +1544,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setStaticRingtones(ReadableArray array) {
-    if (array == null) {
-      staticRingtones = new String[0];
-      return;
-    }
-    int size = array.size();
-    String[] result = new String[size];
-
-    for (int i = 0; i < size; i++) {
-      result[i] = array.getString(i);
-    }
-    staticRingtones = result;
-  }
-
-  @ReactMethod
-  public void playRingtoneByName(String name , Promise promise) {
+  public void playRingtoneByName(String ringtoneUri , Promise promise) {
     Context c = prepareStartRingtone();
     if(c != null) {
-      boolean played = playRingtone(name, c);
-      if (played) {
-        promise.resolve(true);
-      }
-      else {
-        promise.resolve(false);
-      }
+      boolean played = playRingtone(ringtoneUri, c);
+      promise.resolve(played);
     }
-
   }
 }

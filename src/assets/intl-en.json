@@ -296,5 +296,6 @@
   "{{$0}}/{{$1}} online",
   "{{$0}}{{$1}}at {{$2}}",
   "Ringtone",
-  "INCOMING CALL RINGTONE"
+  "INCOMING CALL RINGTONE",
+  "Use default"
 ]

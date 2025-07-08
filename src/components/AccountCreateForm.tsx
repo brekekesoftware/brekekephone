@@ -6,14 +6,14 @@ import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
-import { isAndroid, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOptionsType } from '#/utils/handleRingtone'
-import { getRingtoneOptions, staticRingtones } from '#/utils/handleRingtone'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { getRingtoneOptions } from '#/utils/handleRingtone'
+import { defaultRingtone } from '#/utils/RnNativeModules'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -114,6 +114,11 @@ export const AccountCreateForm: FC<{
     },
     onValidSubmit: () => {
       console.log({ account: $.account })
+      if (!isWeb) {
+        $.account.ringtoneData =
+          $.ringtoneOptions.filter(v => v.key === $.account.ringtoneName)?.[0]
+            .uri ?? defaultRingtone
+      }
       props.onSave($.account, $.hasUnsavedChanges())
     },
   })
@@ -132,7 +137,6 @@ export const AccountCreateForm: FC<{
   useEffect(() => {
     if (!isWeb && !props.footerLogout) {
       getLocalRingtone()
-      BrekekeUtils.setStaticRingtones(staticRingtones)
     }
   }, [])
 
@@ -302,7 +306,7 @@ export const AccountCreateForm: FC<{
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
-            name: 'ringtoneIndex',
+            name: 'ringtoneName',
             options: $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
           },

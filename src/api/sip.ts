@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isEmbed, isWeb } from '#/config'
+import { isAndroid, isEmbed, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
@@ -70,10 +70,11 @@ export class SIP extends EventEmitter {
       const m = ev.incomingMessage
 
       // This logic will be executed if the ringtone already exists on the SIP Header
-      const ringtone = m?.getHeader('x-Ringtone')
+      const ringtone = m?.getHeader('X-RINGTONE')
       if (ev.sessionStatus === 'dialing' && !!ringtone) {
-        const ringtoneName = ringtone
-        BrekekeUtils.playRingtoneByName(ringtoneName)
+        if (isAndroid) {
+          BrekekeUtils.playRingtoneByName(ringtone)
+        }
       }
 
       const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
