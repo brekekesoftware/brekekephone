@@ -12,7 +12,8 @@ public class AccountUtils {
     return s == null || s.isEmpty();
   }
 
-  public static JSONObject findAccountPartial(JSONArray profilesArray, String username, String tenant, String host, String port) {
+  public static JSONObject findAccountPartial(
+      JSONArray profilesArray, String username, String tenant, String host, String port) {
     for (int i = 0; i < profilesArray.length(); i++) {
       JSONObject acc = profilesArray.optJSONObject(i);
       if (acc == null) continue;
@@ -21,9 +22,9 @@ public class AccountUtils {
       if (isNullOrEmpty(accUsername)) continue;
 
       if (accUsername.equals(username)
-              && compareFalsishField(acc.optString("pbxTenant", ""), tenant)
-              && compareFalsishField(acc.optString("pbxHostname", ""), host)
-              && compareFalsishField(acc.optString("pbxPort", ""), port)) {
+          && compareFalsishField(acc.optString("pbxTenant", ""), tenant)
+          && compareFalsishField(acc.optString("pbxHostname", ""), host)
+          && compareFalsishField(acc.optString("pbxPort", ""), port)) {
         return acc;
       }
     }
