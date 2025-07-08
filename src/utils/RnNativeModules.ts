@@ -23,7 +23,12 @@ type TBrekekeUtils = {
   checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  startRingtone(ringtoneId: string): void
+  startRingtone(
+    username: string,
+    tenant: string,
+    host: string,
+    port: string,
+  ): void
   stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>

@@ -1052,7 +1052,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startRingtone(String ringtoneId) {
+  public void startRingtone(String username, String tenant, String host, String port) {
     staticStartRingtone(getRingtoneUri(ringtoneId));
   }
 
