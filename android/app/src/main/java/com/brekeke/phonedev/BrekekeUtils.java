@@ -39,6 +39,7 @@ import com.brekeke.phonedev.lpc.BrekekeLpcService;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.RingtoneUtils;
 import com.brekeke.phonedev.utils.ToastType;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -61,7 +62,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -72,7 +72,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import com.brekeke.phonedev.utils.RingtoneUtils;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static RCTDeviceEventEmitter eventEmitter;
@@ -315,9 +314,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     boolean autoAnswer = toBoolean(data.get("x_autoanswer"));
     //  determine ringtone to use for the incoming call.
     String ringtoneName = data.get("x_ringtone");
-    String userName = data.getOrDefault("x_to","");
-    String tenant = data.getOrDefault("x_tenant","");
-    String host = data.getOrDefault("x_host","");
+    String userName = data.getOrDefault("x_to", "");
+    String tenant = data.getOrDefault("x_tenant", "");
+    String host = data.getOrDefault("x_host", "");
     RNCallKeepModule.registerPhoneAccount(appCtx);
     Runnable onShowIncomingCallUi =
         new Runnable() {
@@ -344,10 +343,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
 
-            if(ringtoneName == null) {
-              i.putExtra("ringtone" , RingtoneUtils.getRingtoneFromUser(userName, tenant, host,"", appCtx));
+            if (ringtoneName == null) {
+              i.putExtra(
+                  "ringtone",
+                  RingtoneUtils.getRingtoneFromUser(userName, tenant, host, "", appCtx));
             } else {
-              i.putExtra("ringtone" , RingtoneUtils.getRingtoneByName(ringtoneName, appCtx));
+              i.putExtra("ringtone", RingtoneUtils.getRingtoneByName(ringtoneName, appCtx));
             }
             c.startActivity(i);
 
@@ -613,7 +614,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static void staticStartRingtone(String ringtone) {
     try {
       Context c = prepareStartRingtone();
-      if(c != null) {
+      if (c != null) {
         playRingtone(RingtoneUtils.validateRingtone(ringtone), c);
       }
     } catch (Exception e) {
@@ -622,34 +623,34 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   private static Context prepareStartRingtone() {
-      if (mp != null) {
-        return null;
-      }
-      Context c = ctx != null ? ctx : fcm;
-      int mode = am.getRingerMode();
-      if (mode == AudioManager.RINGER_MODE_SILENT) {
-        return null;
-      }
-      if (vib == null) {
-        vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
-      }
-      long[] pattern = {0, 1000, 1000};
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
-      } else {
-        vib.vibrate(pattern, 0);
-      }
-      if (mode == AudioManager.RINGER_MODE_VIBRATE) {
-        return null;
-      }
-      am.setMode(AudioManager.MODE_RINGTONE);
-      return c;
+    if (mp != null) {
+      return null;
+    }
+    Context c = ctx != null ? ctx : fcm;
+    int mode = am.getRingerMode();
+    if (mode == AudioManager.RINGER_MODE_SILENT) {
+      return null;
+    }
+    if (vib == null) {
+      vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+    }
+    long[] pattern = {0, 1000, 1000};
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
+    } else {
+      vib.vibrate(pattern, 0);
+    }
+    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
+      return null;
+    }
+    am.setMode(AudioManager.MODE_RINGTONE);
+    return c;
   }
 
   private static void playRingtone(String ringtone, Context c) {
     try {
       Log.d(TAG, "playRingtone: " + ringtone);
-      if(RingtoneUtils.checkStaticRingtone(ringtone)) {
+      if (RingtoneUtils.checkStaticRingtone(ringtone)) {
         playStaticRingtone(ringtone, c);
       }
 
@@ -658,7 +659,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  private static void playSystemRingtone(String ringtoneUri , Context c) throws IOException {
+  private static void playSystemRingtone(String ringtoneUri, Context c) throws IOException {
     Uri uri = Uri.parse(ringtoneUri);
     mp = new MediaPlayer();
     mp.setAudioAttributes(createAudioAttributes());
@@ -671,10 +672,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   private static void playStaticRingtone(String ringtoneName, Context c) throws IOException {
     mp =
-            MediaPlayer.create(
-                    c, RingtoneUtils.getRingtoneFromRaw(ringtoneName, c),
-                    createAudioAttributes(),
-                    am.generateAudioSessionId());
+        MediaPlayer.create(
+            c,
+            RingtoneUtils.getRingtoneFromRaw(ringtoneName, c),
+            createAudioAttributes(),
+            am.generateAudioSessionId());
     mp.setVolume(1.0f, 1.0f);
     mp.setLooping(true);
     mp.start();
@@ -682,10 +684,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   private static AudioAttributes createAudioAttributes() {
     return new AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-            .setLegacyStreamType(AudioManager.STREAM_RING)
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-            .build();
+        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+        .setLegacyStreamType(AudioManager.STREAM_RING)
+        .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+        .build();
   }
 
   public static void staticStopRingtone() {
@@ -1474,8 +1476,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       }
       cursor.close();
 
-      for(String sRingtone : RingtoneUtils.staticRingtones) {
-        ringtoneList.pushMap(RingtoneUtils.handleRingtoneList(sRingtone,sRingtone));
+      for (String sRingtone : RingtoneUtils.staticRingtones) {
+        ringtoneList.pushMap(RingtoneUtils.handleRingtoneList(sRingtone, sRingtone));
       }
 
       promise.resolve(ringtoneList);
@@ -1486,6 +1488,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void playRingtoneByName(String ringtone) {
-      staticStartRingtone(RingtoneUtils.getRingtoneByName(ringtone, ctx));
+    staticStartRingtone(RingtoneUtils.getRingtoneByName(ringtone, ctx));
   }
 }

@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;

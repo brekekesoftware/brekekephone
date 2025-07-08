@@ -128,6 +128,7 @@
   "HOLD",
   "HOSTNAME",
   "Hide call menu buttons",
+  "INCOMING CALL RINGTONE",
   "Incoming Call",
   "Incoming call",
   "Incoming call blocked. Please allow phone permission in settings to receive calls",
@@ -208,6 +209,7 @@
   "Remove group",
   "Reset",
   "Reset form",
+  "Ringtone",
   "SAVE",
   "SEARCH CONTACTS",
   "SEARCH FOR USERS",
@@ -262,6 +264,7 @@
   "Uncheck all",
   "Update Account",
   "Update Phonebook",
+  "Use default",
   "Users",
   "Users, {{$0}} total",
   "VIDEO",
@@ -294,8 +297,5 @@
   "{{$0}} other calls are in background",
   "{{$0}} total",
   "{{$0}}/{{$1}} online",
-  "{{$0}}{{$1}}at {{$2}}",
-  "Ringtone",
-  "INCOMING CALL RINGTONE",
-  "Use default"
+  "{{$0}}{{$1}}at {{$2}}"
 ]
