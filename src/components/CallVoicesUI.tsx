@@ -6,10 +6,19 @@ import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
+/*
+  IncomingItem will mount when PN is disabled
+*/
 export class IncomingItem extends Component {
   componentDidMount = () => {
-    if (isAndroid) {
-      BrekekeUtils.startRingtone()
+    const a = ctx.auth.getCurrentAccount()
+    if (isAndroid && a) {
+      BrekekeUtils.startRingtone(
+        a.pbxUsername,
+        a.pbxTenant,
+        a.pbxHostname,
+        a.pbxPort,
+      )
     } else {
       // old logic: only play ringtone without vibration and repeat the ringtone continuously
       IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)

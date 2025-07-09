@@ -639,8 +639,15 @@ export class PBX extends EventEmitter {
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
+
     if (!this.isMainInstance) {
       return config
+    }
+
+    const account = ctx.auth.getCurrentAccount()
+    if (account) {
+      account.pbxRingtone = config['webphone.call.ringtone']
+      ctx.account.saveAccountsToLocalStorageDebounced()
     }
     BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))
 
@@ -1059,7 +1066,9 @@ export class PBX extends EventEmitter {
     let application_id = isAndroid ? fcmApplicationId : bundleIdentifier
     let { username } = d
     if (!pnmanageNew && d.voip) {
-      application_id += '.voip'
+      if (!isAndroid) {
+        application_id += '.voip'
+      }
       username += '@voip'
     }
     await this.client.call_pal('pnmanage', {

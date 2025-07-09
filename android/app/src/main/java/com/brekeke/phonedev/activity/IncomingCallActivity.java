@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -60,7 +59,6 @@ import org.json.JSONObject;
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
   private ToastManager toastManager;
   private LinearLayout toastContainer;
-  private static String ringtoneName = "";
   public RelativeLayout vWebrtc,
       vIncomingCall,
       vCallManage,
@@ -121,7 +119,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDurationCall,
       txtCallerNameHeader,
       txtConnectionStatus;
-  public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
+  public String uuid, callerName, avatar, avatarSize, talkingAvatar, ringtone = "";
   public boolean destroyed = false,
       paused = false,
       answered = false,
@@ -190,7 +188,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     avatar = b.getString("avatar");
     avatarSize = b.getString("avatarSize");
     autoAnswer = b.getBoolean("autoAnswer");
-    ringtoneName = b.getString("ringtone");
+    ringtone = b.getString("ringtone");
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
@@ -211,7 +209,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
     if (!autoAnswer) {
-      BrekekeUtils.staticStartRingtone(ringtoneName);
+      BrekekeUtils.staticStartRingtone(ringtone);
     }
 
     // initialize toast manager
@@ -371,7 +369,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     debug("onResume answered=" + answered);
     BrekekeUtils.emit("onResume", "");
     if (!answered) {
-      BrekekeUtils.staticStartRingtone(ringtoneName);
+      BrekekeUtils.staticStartRingtone(ringtone);
     } else {
       BrekekeUtils.emit("switchCall", uuid);
     }

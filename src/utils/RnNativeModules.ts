@@ -11,12 +11,24 @@ export enum CallLogType {
   MISSED_TYPE = 3,
 }
 
+export type RingtoneSystemType = {
+  title: string
+  uri: string
+}
+
+export const defaultRingtone = 'default'
+
 type TBrekekeUtils = {
   // these methods only available on android
   checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  startRingtone(): void
+  startRingtone(
+    username: string,
+    tenant: string,
+    host: string,
+    port: string,
+  ): void
   stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
@@ -92,6 +104,10 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+
+  // ringtone
+  getRingtoneOptions(): Promise<RingtoneSystemType[]>
+  playRingtoneByName(name: string): void
 }
 
 export type TNativeModules = {
@@ -158,6 +174,10 @@ const Polyfill: TBrekekeUtils = {
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+
+  // ringtone
+  getRingtoneOptions: () => Promise.resolve([]),
+  playRingtoneByName: () => undefined,
 }
 
 const M = NativeModules as TNativeModules
