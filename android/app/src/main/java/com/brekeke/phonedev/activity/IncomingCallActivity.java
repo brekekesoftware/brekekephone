@@ -16,6 +16,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -42,9 +43,9 @@ import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.L;
-import com.brekeke.phonedev.utils.ToastManager;
-import com.brekeke.phonedev.utils.ToastType;
+import com.brekeke.phonedev.utils.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.react.bridge.ReadableArray;
@@ -57,8 +58,12 @@ import org.json.JSONObject;
 
 // incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  private ToastManager toastManager;
-  private LinearLayout toastContainer;
+  private LinearLayout toast;
+
+  public void toast(String m, String d, String t) {
+    Toast.show(toast, m, d, t);
+  }
+
   public RelativeLayout vWebrtc,
       vIncomingCall,
       vCallManage,
@@ -156,17 +161,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     }
   }
 
-  public void showToast(String message, String error, ToastType type) {
-    if (toastManager == null) {
-      return;
-    }
-    if (error != null && !error.isEmpty()) {
-      toastManager.show(message, ToastType.ERROR, error, 6000);
-    } else {
-      toastManager.show(message, type);
-    }
-  }
-
   // ==========================================================================
   // activity lifecycles
   @Override
@@ -212,9 +206,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       BrekekeUtils.staticStartRingtone(ringtone);
     }
 
-    // initialize toast manager
-    toastContainer = (LinearLayout) findViewById(R.id.toast_container);
-    toastManager = ToastManager.getInstance(this, toastContainer);
+    toast = (LinearLayout) findViewById(R.id.toast_container);
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
@@ -504,7 +496,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtIncomingCall.setLayoutParams(params);
     }
     // handle avatar for incomming call
-    if (avatar == null || avatar.isEmpty()) {
+    if (TextUtils.isEmpty(avatar)) {
       vCardAvatar.getLayoutParams().height = 0;
     } else if (!BrekekeUtils.isImageUrl(avatar)) {
       webViewAvatar.setVisibility(View.VISIBLE);
@@ -581,7 +573,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (vWebrtcVideo != null) {
       return;
     }
-    vWebrtcVideo = new WebRTCView(BrekekeUtils.ctx);
+    vWebrtcVideo = new WebRTCView(Ctx.app());
     vWebrtcVideo.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -625,7 +617,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private WebRTCView createNewRTCView(String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
+    WebRTCView rtcView = new WebRTCView(Ctx.app());
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -658,7 +650,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItem(String streamUrl, boolean isActive) {
-    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    LinearLayout ln = new LinearLayout(Ctx.app());
     updateBgForStream(ln, isActive);
     updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
@@ -669,8 +661,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItemRelative(String streamUrl) {
-    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
-    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
+    LinearLayout ln = new LinearLayout(Ctx.app());
+    RelativeLayout rl = new RelativeLayout(Ctx.app());
     rl.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -813,13 +805,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     float scale = getResources().getDisplayMetrics().density;
     LinearLayout v = createStreamItemRelative(streamUrl);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-    LinearLayout rl = new LinearLayout(BrekekeUtils.ctx);
+    LinearLayout rl = new LinearLayout(Ctx.app());
     rl.setOrientation(LinearLayout.HORIZONTAL);
     rl.setGravity(Gravity.CENTER);
 
-    btnVideoItem = new Button(BrekekeUtils.ctx);
+    btnVideoItem = new Button(Ctx.app());
     btnVideoItem.setBackground(getDrawableFromResources(R.drawable.btn_video_item));
-    Button btnCameraRotate = new Button(BrekekeUtils.ctx);
+    Button btnCameraRotate = new Button(Ctx.app());
     btnCameraRotate.setBackground(getDrawableFromResources(R.drawable.btn_switch_camera));
     btnVideoItem.setOnClickListener(
         new View.OnClickListener() {

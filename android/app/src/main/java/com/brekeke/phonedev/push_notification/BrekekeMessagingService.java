@@ -5,6 +5,7 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.lpc.LpcUtils;
+import com.brekeke.phonedev.utils.Ctx;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
@@ -35,16 +36,17 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
 
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    if (!BrekekeUtils.checkNotificationPermission(this)) {
+    Ctx.wakeFromPn(this);
+    if (!BrekekeUtils.checkNotificationPermission()) {
       return;
     }
-    if (!BrekekeUtils.checkReadPhonePermission(this)) {
+    if (!BrekekeUtils.checkReadPhonePermission()) {
       BrekekeUtils.emit("phonePermission", "");
       return;
     }
     // it should close the default dialer permission popup when there is an incoming call
     BrekekeUtils.resolveDefaultDialer("The call is incoming");
-    BrekekeUtils.onFcmMessageReceived(this, remoteMessage.getData());
+    BrekekeUtils.onFcmMessageReceived(remoteMessage.getData());
 
     if (initialNotifications == null) {
       initialNotifications = new ArrayList<String>();

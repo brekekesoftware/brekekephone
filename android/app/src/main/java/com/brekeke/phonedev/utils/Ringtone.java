@@ -1,21 +1,16 @@
 package com.brekeke.phonedev.utils;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.util.Log;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
-import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import java.util.Arrays;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-public class RingtoneUtils {
+public class Ringtone {
   public static final String[] staticRingtones = {"incallmanager_ringtone"};
   public static final String defaultRingtone = staticRingtones[0];
-  private static final String TAG = "[RingtoneUtils]";
+  private static final String TAG = "[Ringtone]";
 
   public static String validateRingtone(String ringtone) {
     Log.d(TAG, "validateRingtone: " + ringtone);
@@ -26,20 +21,15 @@ public class RingtoneUtils {
   }
 
   public static String getRingtoneFromUser(
-      String username, String tenant, String host, String port, Context ctx) {
+      String username, String tenant, String host, String port) {
+    var ctx = Ctx.app();
     try {
-      String data =
-          AsyncLocalStorageUtil.getItemImpl(
-              ReactDatabaseSupplier.getInstance(ctx).getReadableDatabase(), "_api_profiles");
-      JSONObject jsonObject = new JSONObject(data);
-      JSONArray profilesArray = jsonObject.getJSONArray("profiles");
-      JSONObject account =
-          AccountUtils.findAccountPartial(profilesArray, username, tenant, host, port);
-      if (account != null) {
-        if (account.getString("ringtoneName").equalsIgnoreCase("default")) {
-          return getRingtoneByName(account.getString("pbxRingtone"), ctx);
+      var a = Account.find(username, tenant, host, port);
+      if (a != null) {
+        if (a.getString("ringtoneName").equalsIgnoreCase("default")) {
+          return getRingtoneByName(a.getString("pbxRingtone"));
         }
-        return account.getString("ringtoneData");
+        return a.getString("ringtoneData");
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -47,8 +37,9 @@ public class RingtoneUtils {
     return defaultRingtone;
   }
 
-  public static int getRingtoneFromRaw(String ringtoneName, Context ctx) {
-    int resId = ctx.getResources().getIdentifier(ringtoneName, "raw", ctx.getPackageName());
+  public static int getRingtoneFromRaw(String ringtoneName) {
+    var ctx = Ctx.app();
+    var resId = ctx.getResources().getIdentifier(ringtoneName, "raw", ctx.getPackageName());
     if (resId == 0) {
       // fallback
       resId = ctx.getResources().getIdentifier(staticRingtones[0], "raw", ctx.getPackageName());
@@ -56,17 +47,18 @@ public class RingtoneUtils {
     return resId;
   }
 
-  public static String getRingtoneByName(String ringtoneName, Context ctx) {
+  public static String getRingtoneByName(String ringtoneName) {
+    var ctx = Ctx.app();
     if (Arrays.asList(staticRingtones).contains(ringtoneName)) {
       return ringtoneName;
     }
     Cursor cursor = null;
     try {
-      RingtoneManager ringtoneManager = new RingtoneManager(ctx);
+      var ringtoneManager = new RingtoneManager(ctx);
       ringtoneManager.setType(RingtoneManager.TYPE_RINGTONE);
       cursor = ringtoneManager.getCursor();
       while (cursor.moveToNext()) {
-        String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
+        var title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
         if (ringtoneName.equalsIgnoreCase(title)) {
           return ringtoneManager.getRingtoneUri(cursor.getPosition()).toString();
         }
@@ -87,9 +79,9 @@ public class RingtoneUtils {
   }
 
   public static WritableMap handleRingtoneList(String title, String uri) {
-    WritableMap ringtone = new WritableNativeMap();
-    ringtone.putString("title", title);
-    ringtone.putString("uri", uri);
-    return ringtone;
+    var m = new WritableNativeMap();
+    m.putString("title", title);
+    m.putString("uri", uri);
+    return m;
   }
 }

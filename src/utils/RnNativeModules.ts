@@ -74,11 +74,11 @@ type TBrekekeUtils = {
   // android pending cache and retry pal
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
-  showToast(
+  toast(
     uuid: string,
-    msg: string,
-    type: 'success' | 'error' | 'warning' | 'info',
-    err: string | undefined,
+    m: string,
+    d: string,
+    t: 'success' | 'error' | 'warning' | 'info',
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
   // android lpc
@@ -158,7 +158,7 @@ const Polyfill: TBrekekeUtils = {
   // android pending cache and retry pal
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
-  showToast: () => undefined,
+  toast: () => undefined,
   updateAnyHoldLoading: () => undefined,
   // android lpc
   androidLpcIsPermGranted: () => Promise.resolve(false),

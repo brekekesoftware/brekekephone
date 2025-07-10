@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.L;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -131,9 +132,10 @@ public class LpcUtils {
 
   public static final int OP_BACKGROUND_START_ACTIVITY = 10021;
 
-  public static boolean androidLpcIsPermGranted(Context ctx) {
+  public static boolean androidLpcIsPermGranted() {
     try {
-      AppOpsManager mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
+      var c = Ctx.app();
+      AppOpsManager mgr = (AppOpsManager) c.getSystemService(Context.APP_OPS_SERVICE);
       Method m =
           AppOpsManager.class.getMethod("checkOpNoThrow", int.class, int.class, String.class);
       int r =
@@ -142,7 +144,7 @@ public class LpcUtils {
                   mgr,
                   OP_BACKGROUND_START_ACTIVITY,
                   android.os.Process.myUid(),
-                  ctx.getPackageName());
+                  c.getPackageName());
       return r == AppOpsManager.MODE_ALLOWED;
     } catch (Exception e) {
       Log.d(TAG, "isCustomPermissionGranted: " + e.getMessage());

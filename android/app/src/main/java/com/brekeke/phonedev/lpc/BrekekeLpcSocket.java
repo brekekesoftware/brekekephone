@@ -9,6 +9,7 @@ import android.os.NetworkOnMainThreadException;
 import android.util.Base64;
 import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
+import com.brekeke.phonedev.utils.Ctx;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -202,6 +203,7 @@ public class BrekekeLpcSocket {
     }
 
     private void handleResponse(ByteBuffer responseBuffer) {
+      Ctx.wakeFromPn(mContext.getApplicationContext());
       String json = utf8.decode(responseBuffer).toString().substring(4);
       Wrapper wr = new CodableHelper().decode(json, Wrapper.class);
       try {
@@ -213,10 +215,9 @@ public class BrekekeLpcSocket {
             Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
-            // check if the call is from lpc
-            m.put("fromLpc", "true");
+            m.put("lpc", "true");
             // start incoming call activity
-            BrekekeUtils.onFcmMessageReceived(mContext.getApplicationContext(), m);
+            BrekekeUtils.onFcmMessageReceived(m);
             // emit message to assign callKeepUuid to call store
             String e = LpcUtils.convertMapToString(m);
             BrekekeUtils.emit("lpcIncomingCall", e);

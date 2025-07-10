@@ -11,7 +11,7 @@ import java.util.List;
 class BrekekeUtilsReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
+    var modules = new ArrayList<NativeModule>();
     modules.add(new BrekekeUtils(reactContext));
     return modules;
   }

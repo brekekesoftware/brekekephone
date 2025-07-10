@@ -23,11 +23,10 @@ class MainActivity : ReactActivity() {
   override fun onResume() {
     super.onResume()
     // permissions
-    BrekekeUtils.resolveIgnoreBattery(
-        BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this))
-    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this))
+    BrekekeUtils.resolveIgnoreBattery(BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted())
+    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted())
     // android lpc
-    BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted(this))
+    BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted())
     // call history
     // TODO: temporary disabled
     if (true) return
