@@ -135,7 +135,7 @@ public class LpcUtils {
   public static boolean androidLpcIsPermGranted() {
     try {
       var ctx = Ctx.app();
-      AppOpsManager mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
+      var mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
       Method m =
           AppOpsManager.class.getMethod("checkOpNoThrow", int.class, int.class, String.class);
       int r =

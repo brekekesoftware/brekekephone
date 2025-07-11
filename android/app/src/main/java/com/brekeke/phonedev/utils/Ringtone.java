@@ -182,14 +182,14 @@ public class Ringtone {
   }
 
   private static void _play(String r) throws Exception {
-    var ctx = Ctx.app();
+    MediaPlayer mp;
     var attr =
         new AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
             .setLegacyStreamType(AudioManager.STREAM_RING)
             .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
             .build();
-    MediaPlayer mp;
+    var ctx = Ctx.app();
     if (_static(r)) {
       var res = ctx.getResources();
       var pkg = ctx.getPackageName();
@@ -256,11 +256,12 @@ public class Ringtone {
   // init
 
   public static void init() {
-    var ctx = Ctx.app();
-    if (am == null) {
-      am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-      debug();
+    if (am != null) {
+      return;
     }
+    var ctx = Ctx.app();
+    am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+    debug();
   }
 
   private static void debug() {
@@ -312,7 +313,8 @@ public class Ringtone {
                     + device.getProductName());
           }
         };
-    var e = Ctx.app().getMainExecutor();
+    var ctx = Ctx.app();
+    var e = ctx.getMainExecutor();
     am.addOnModeChangedListener(e, l1);
     am.addOnCommunicationDeviceChangedListener(e, l2);
   }

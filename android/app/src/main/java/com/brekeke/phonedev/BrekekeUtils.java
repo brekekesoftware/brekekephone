@@ -1059,8 +1059,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (LpcUtils.androidLpcIsPermGranted()) {
       return;
     }
-    var ctx = Ctx.app();
     Intent i = null;
+    var ctx = Ctx.app();
     if (LpcUtils.isMIUI()) {
       i = LpcUtils.getPermissionManagerIntent(ctx);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
