@@ -23,12 +23,8 @@ type TBrekekeUtils = {
   checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  startRingtone(
-    username: string,
-    tenant: string,
-    host: string,
-    port: string,
-  ): void
+  getRingtoneOptions(): Promise<SystemRingtone[]>
+  startRingtone(r: string, u: string, t: string, h: string, p: string): void
   stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
@@ -104,10 +100,6 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
-
-  // ringtone
-  getRingtoneOptions(): Promise<SystemRingtone[]>
-  playRingtoneByName(name: string): void
 }
 
 export type TNativeModules = {
@@ -118,6 +110,7 @@ const Polyfill: TBrekekeUtils = {
   checkPermissionDefaultDialer: () => Promise.resolve(''),
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
+  getRingtoneOptions: () => Promise.resolve([]),
   startRingtone: () => undefined,
   stopRingtone: () => undefined,
   backToBackground: () => undefined,
@@ -174,10 +167,6 @@ const Polyfill: TBrekekeUtils = {
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
-
-  // ringtone
-  getRingtoneOptions: () => Promise.resolve([]),
-  playRingtoneByName: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

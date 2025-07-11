@@ -1,24 +1,24 @@
-import { isAndroid } from '#/config'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils, defaultRingtone } from '#/utils/RnNativeModules'
 
-export type RingtoneOptionsType = { key: string; label: string; uri?: string }[]
+export type RingtoneOption = {
+  key: string
+  label: string
+  uri: string
+}
 
-export const getRingtoneOptions = async (): Promise<RingtoneOptionsType> => {
-  const ringtone = await BrekekeUtils.getRingtoneOptions()
-  if (!!ringtone) {
-    return [
-      {
-        key: defaultRingtone,
-        label: intl`Use default`,
-        uri: '',
-      },
-      ...ringtone.map(file => ({
-        key: file.title,
-        label: file.title,
-        uri: isAndroid ? file.uri : '',
-      })),
-    ]
-  }
-  return []
+export const getRingtoneOptions = async (): Promise<RingtoneOption[]> => {
+  const arr = await BrekekeUtils.getRingtoneOptions()
+  return [
+    {
+      key: defaultRingtone,
+      label: intl`Use default`,
+      uri: '',
+    },
+    ...arr.map(r => ({
+      key: r.title,
+      label: r.title,
+      uri: r.uri || '',
+    })),
+  ]
 }

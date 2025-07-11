@@ -12,8 +12,10 @@ import { waitTimeout } from '#/utils/waitTimeout'
 export class IncomingItem extends Component {
   componentDidMount = () => {
     const ca = ctx.auth.getCurrentAccount()
-    if (isAndroid && ca) {
+    const oc = ctx.call.getOngoingCall()
+    if (isAndroid && ca && oc) {
       BrekekeUtils.startRingtone(
+        oc.ringtoneFromSip,
         ca.pbxUsername,
         ca.pbxTenant,
         ca.pbxHostname,

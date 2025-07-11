@@ -723,8 +723,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startRingtone(String u, String t, String h, String p) {
-    Ringtone.play(Ringtone.get(u, t, h, p));
+  public void getRingtoneOptions(Promise p) {
+    try {
+      p.resolve(Ringtone.options());
+    } catch (Exception e) {
+      p.reject("RINGTONE_ERROR", "Failed to get ringtone options", e);
+    }
+  }
+
+  @ReactMethod
+  public void startRingtone(String r, String u, String t, String h, String p) {
+    Ringtone.play(Ringtone.get(r, u, t, h, p));
   }
 
   @ReactMethod
@@ -1175,21 +1184,5 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
           }
         });
-  }
-
-  // Ringtone
-
-  @ReactMethod
-  public void getRingtoneOptions(Promise p) {
-    try {
-      p.resolve(Ringtone.options());
-    } catch (Exception e) {
-      p.reject("RINGTONE_ERROR", "Failed to get ringtone options", e);
-    }
-  }
-
-  @ReactMethod
-  public void playRingtoneByName(String r) {
-    Ringtone.play(r);
   }
 }

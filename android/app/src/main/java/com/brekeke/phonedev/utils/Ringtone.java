@@ -185,7 +185,7 @@ public class Ringtone {
   }
 
   // get from account and validate
-  public static String get(String u, String t, String h, String p) {
+  private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
       var r = _validate(a.getString("ringtoneUri"));

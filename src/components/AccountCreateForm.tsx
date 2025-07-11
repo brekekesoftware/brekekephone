@@ -11,7 +11,7 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import type { RingtoneOptionsType } from '#/utils/handleRingtone'
+import type { RingtoneOption } from '#/utils/handleRingtone'
 import { getRingtoneOptions } from '#/utils/handleRingtone'
 import { defaultRingtone } from '#/utils/RnNativeModules'
 import { useForm } from '#/utils/useForm'
@@ -31,7 +31,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
-      ringtoneOptions: [] as RingtoneOptionsType,
+      ringtoneOptions: [] as RingtoneOption[],
     },
     resetAllFields: () => {
       RnAlert.prompt({

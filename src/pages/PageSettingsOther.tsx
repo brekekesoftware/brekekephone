@@ -8,7 +8,7 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import type { RingtoneOptionsType } from '#/utils/handleRingtone'
+import type { RingtoneOption } from '#/utils/handleRingtone'
 import { getRingtoneOptions } from '#/utils/handleRingtone'
 import { defaultRingtone } from '#/utils/RnNativeModules'
 
@@ -17,7 +17,7 @@ export class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
-    ringtoneOptions: [] as RingtoneOptionsType,
+    ringtoneOptions: [] as RingtoneOption[],
     ringtone: ctx.auth.getCurrentAccount()?.ringtone,
   }
   componentDidMount = async () => {
@@ -25,7 +25,7 @@ export class PageSettingsOther extends Component {
     this.setState({
       status: me.status,
       statusText: me.statusText,
-      ringtoneOptions: isWeb ? [] : await getRingtoneOptions(),
+      ringtoneOptions: await getRingtoneOptions(),
     })
   }
   setStatusText = (statusText: string) => {
