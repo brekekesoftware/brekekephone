@@ -1,5 +1,5 @@
 import { intl } from '#/stores/intl'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils, defaultRingtone } from '#/utils/RnNativeModules'
 
 export type RingtoneOptionsType = { key: string; label: string; uri?: string }[]
 
@@ -9,7 +9,7 @@ export const getRingtoneOptions = async (): Promise<RingtoneOptionsType> => {
   if (!!ringtone) {
     return [
       {
-        key: 'default',
+        key: defaultRingtone,
         label: intl`Use default`,
         uri: '',
       },

@@ -694,7 +694,7 @@ export class PBX extends EventEmitter {
     }
 
     const account = ctx.auth.getCurrentAccount()
-    if (account) {
+    if (!!account) {
       account.pbxRingtone = config['webphone.call.ringtone']
       ctx.account.saveAccountsToLocalStorageDebounced()
     }
