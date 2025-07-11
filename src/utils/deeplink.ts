@@ -25,6 +25,12 @@ export const openLinkSafely = async (url: string) => {
 
 let alreadyHandleFirstOpen = false
 let urlParams: Promise<UrlParams | null> | UrlParams | null = null
+export const isAlreadyHandleFirstOpen = () => alreadyHandleFirstOpen
+export const cleanUpDeepLink = () => {
+  alreadyHandleFirstOpen = false
+  urlParams = null
+  Linking.removeAllListeners('url')
+}
 export const getUrlParams = async () => {
   if (alreadyHandleFirstOpen) {
     return urlParams

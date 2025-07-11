@@ -41,6 +41,7 @@ class MainActivity : ReactActivity() {
   override fun onDestroy() {
     BrekekeUtils.main = null
     BrekekeUtils.staticStopRingtone()
+    BrekekeUtils.emit("onDestroyMainActivity", "")
     super.onDestroy()
   }
 
