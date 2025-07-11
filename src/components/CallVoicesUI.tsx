@@ -21,6 +21,7 @@ export class IncomingItem extends Component {
       )
     } else {
       // old logic: only play ringtone without vibration and repeat the ringtone continuously
+      console.log('Hoang: ???? IncomingItem ')
       IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
     }
   }

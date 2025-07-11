@@ -69,13 +69,15 @@ export class SIP extends EventEmitter {
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
 
-      // This logic will be executed if the ringtone already exists on the SIP Header
-      const ringtone = m?.getHeader('X-RINGTONE')
-      if (ev.sessionStatus === 'dialing' && !!ringtone) {
+      // This logic will be executed if the ringtone already exists on the SIP Header and pn is disabled
+      const ringtone = 'jinglebell'
+      // const ringtone = m?.getHeader('X-RINGTONE')
+      console.log(`Hoang:ev.sessionStatus ${ev.sessionStatus} `)
+      if (ev.sessionStatus === 'dialing' && !!ringtone && isAndroid) {
         const pnEnabled =
           !ctx.auth.pbxLoginFromAnotherPlace &&
           ctx.auth.getCurrentAccount()?.pushNotificationEnabled
-        if (isAndroid && !pnEnabled) {
+        if (!pnEnabled) {
           BrekekeUtils.playRingtoneByName(ringtone)
         }
       }
@@ -135,6 +137,7 @@ export class SIP extends EventEmitter {
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],
         pbxUsername: arr?.[3],
+        sipRingtone: ringtone || '',
       }
       if (!patch.pbxTalkerId) {
         delete patch.pbxTalkerId

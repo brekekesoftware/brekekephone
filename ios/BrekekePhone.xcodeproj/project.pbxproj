@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0ABA66A12E1E20FA003D9A1F /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */; };
+		0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */; };
+		0ABA66A52E1E537A003D9A1F /* AccountUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */; };
+		0AD70BC42E20B1C300CB4532 /* thucuoi.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		49A7AFD1F30B51E14C81D432 /* libPods-BrekekePhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3992CB1D96BC757A409C13FF /* libPods-BrekekePhone.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		89ED40C8602BB24F9E94A7C3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */; };
 		9C3747BB28E1935F00327869 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3747BA28E1935F00327869 /* NetworkExtension.framework */; };
@@ -75,7 +80,6 @@
 		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
 		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CBAD324D29F374A20057D82C /* ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBAD324C29F374A20057D82C /* ding.mp3 */; };
-		D350DEB38433C27219DABB7B /* libPods-BrekekePhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6030A14479A9BB192539F2C4 /* libPods-BrekekePhone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,13 +108,15 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		0FD028EC0242565B476E0807 /* Pods-BrekekePhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.release.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.release.xcconfig"; sourceTree = "<group>"; };
+		0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
+		0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = jinglebell.mp3; sourceTree = "<group>"; };
+		0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtils.swift; sourceTree = "<group>"; };
+		0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = thucuoi.mp3; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BrekekePhone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
-		6030A14479A9BB192539F2C4 /* libPods-BrekekePhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BrekekePhone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3992CB1D96BC757A409C13FF /* libPods-BrekekePhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BrekekePhone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BrekekePhone/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		82B77621A3702BB63CD347F5 /* Pods-BrekekePhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.debug.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.debug.xcconfig"; sourceTree = "<group>"; };
 		9C3747BA28E1935F00327869 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = BrekekePhone.entitlements; path = BrekekePhone/BrekekePhone.entitlements; sourceTree = "<group>"; };
 		9C4B210826FB8B71000FE077 /* libswiftDataDetection.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftDataDetection.tbd; path = usr/lib/swift/libswiftDataDetection.tbd; sourceTree = SDKROOT; };
@@ -152,11 +158,13 @@
 		9CF382FA28ED908E008FC490 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		9CF382FB28ED908E008FC490 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BrekekeLPCManager.swift; path = BrekekePhone/BrekekeLPCManager.swift; sourceTree = "<group>"; };
-		C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = BrekekePhone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BC72D51E0A40626044BE05DB /* Pods-BrekekePhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.release.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.release.xcconfig"; sourceTree = "<group>"; };
+		C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = BrekekePhone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CB2145662AF4EF5D004D2EAA /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F47F6FC07897D773FE0337A9 /* Pods-BrekekePhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.debug.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,7 +176,7 @@
 				9C4B210926FB8B71000FE077 /* libswiftDataDetection.tbd in Frameworks */,
 				9C92A07728E201AA00AF2311 /* Network.framework in Frameworks */,
 				9C3747BB28E1935F00327869 /* NetworkExtension.framework in Frameworks */,
-				D350DEB38433C27219DABB7B /* libPods-BrekekePhone.a in Frameworks */,
+				49A7AFD1F30B51E14C81D432 /* libPods-BrekekePhone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +191,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0ABA66A72E1E54F9003D9A1F /* BrekekeFeatureUtils */ = {
+			isa = PBXGroup;
+			children = (
+				0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */,
+				0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */,
+			);
+			path = BrekekeFeatureUtils;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* BrekekePhone */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +216,8 @@
 				CB8766BF28E83920002261CB /* Assets.xcassets */,
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
+				0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */,
+				0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
 				CBAD324C29F374A20057D82C /* ding.mp3 */,
 				C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */,
@@ -215,7 +234,7 @@
 				9C4B210A26FB8B85000FE077 /* libswiftFileProvider.tbd */,
 				9C4B210826FB8B71000FE077 /* libswiftDataDetection.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				6030A14479A9BB192539F2C4 /* libPods-BrekekePhone.a */,
+				3992CB1D96BC757A409C13FF /* libPods-BrekekePhone.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -223,8 +242,8 @@
 		79C57AF890EDEFC18471D005 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				82B77621A3702BB63CD347F5 /* Pods-BrekekePhone.debug.xcconfig */,
-				0FD028EC0242565B476E0807 /* Pods-BrekekePhone.release.xcconfig */,
+				F47F6FC07897D773FE0337A9 /* Pods-BrekekePhone.debug.xcconfig */,
+				BC72D51E0A40626044BE05DB /* Pods-BrekekePhone.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -232,6 +251,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				0ABA66A72E1E54F9003D9A1F /* BrekekeFeatureUtils */,
 				13B07FAE1A68108700A75B9A /* BrekekePhone */,
 				9CF3829C28ED8495008FC490 /* BrekekeLPC */,
 				9C972B8F28E1B34C00DD89B4 /* BrekekeLPCExtension */,
@@ -341,14 +361,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BrekekePhone" */;
 			buildPhases = (
-				80223B1A8558FC8DF2B8A724 /* [CP] Check Pods Manifest.lock */,
+				73F87AAB43AD0059C8DE4451 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				CB8766E428E87C5A002261CB /* Embed Foundation Extensions */,
-				8622E2919E5DB530DE5FAB65 /* [CP] Embed Pods Frameworks */,
-				FD601AD8371A50CA834297A5 /* [CP] Copy Pods Resources */,
+				9F8C38B4587DCC01283128F6 /* [CP] Embed Pods Frameworks */,
+				46711EB5A95F8EA8C4105145 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -425,10 +445,12 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				CB8766C028E83920002261CB /* Assets.xcassets in Resources */,
+				0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */,
 				9CD3B8F325AE45B200D8A122 /* callkit.png in Resources */,
 				9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */,
 				9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */,
 				CBAD324D29F374A20057D82C /* ding.mp3 in Resources */,
+				0AD70BC42E20B1C300CB4532 /* thucuoi.mp3 in Resources */,
 				89ED40C8602BB24F9E94A7C3 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -459,47 +481,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		80223B1A8558FC8DF2B8A724 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BrekekePhone-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8622E2919E5DB530DE5FAB65 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/JitsiWebRTC/WebRTC.framework/WebRTC",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FD601AD8371A50CA834297A5 /* [CP] Copy Pods Resources */ = {
+		46711EB5A95F8EA8C4105145 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -533,6 +515,46 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		73F87AAB43AD0059C8DE4451 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BrekekePhone-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9F8C38B4587DCC01283128F6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/JitsiWebRTC/WebRTC.framework/WebRTC",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -557,6 +579,8 @@
 				9CF382D428ED8495008FC490 /* Heartbeat.swift in Sources */,
 				9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */,
 				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
+				0ABA66A12E1E20FA003D9A1F /* RingtoneUtils.swift in Sources */,
+				0ABA66A52E1E537A003D9A1F /* AccountUtils.swift in Sources */,
 				9CF382FC28ED908E008FC490 /* Settings.swift in Sources */,
 				9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
 				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
@@ -617,7 +641,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 82B77621A3702BB63CD347F5 /* Pods-BrekekePhone.debug.xcconfig */;
+			baseConfigurationReference = F47F6FC07897D773FE0337A9 /* Pods-BrekekePhone.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -653,7 +677,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0FD028EC0242565B476E0807 /* Pods-BrekekePhone.release.xcconfig */;
+			baseConfigurationReference = BC72D51E0A40626044BE05DB /* Pods-BrekekePhone.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -747,10 +771,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -811,10 +832,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = false;

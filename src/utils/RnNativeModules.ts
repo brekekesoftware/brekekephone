@@ -108,6 +108,8 @@ type TBrekekeUtils = {
   // ringtone
   getRingtoneOptions(): Promise<RingtoneSystemType[]>
   playRingtoneByName(name: string): void
+  // method ringtone only available on ios
+  validateRingtone(ringtone: string): Promise<string>
 }
 
 export type TNativeModules = {
@@ -178,6 +180,7 @@ const Polyfill: TBrekekeUtils = {
   // ringtone
   getRingtoneOptions: () => Promise.resolve([]),
   playRingtoneByName: () => undefined,
+  validateRingtone: () => Promise.resolve(''),
 }
 
 const M = NativeModules as TNativeModules
