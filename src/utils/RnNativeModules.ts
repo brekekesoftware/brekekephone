@@ -11,12 +11,12 @@ export enum CallLogType {
   MISSED_TYPE = 3,
 }
 
-export type RingtoneSystemType = {
+export type SystemRingtone = {
   title: string
   uri: string
 }
-
-export const defaultRingtone = 'default'
+// same with default pbx tenant
+export const defaultRingtone = '-'
 
 type TBrekekeUtils = {
   // these methods only available on android
@@ -106,7 +106,7 @@ type TBrekekeUtils = {
   systemUptimeMs(): Promise<number>
 
   // ringtone
-  getRingtoneOptions(): Promise<RingtoneSystemType[]>
+  getRingtoneOptions(): Promise<SystemRingtone[]>
   playRingtoneByName(name: string): void
 }
 

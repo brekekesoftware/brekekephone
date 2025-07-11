@@ -5,6 +5,7 @@ import java.util.Map;
 
 // utils to parse push notification data
 // see the related part in rn js for reference
+
 public class PN {
   public static String id(Map<String, String> m) {
     return get(m, "pn-id", "pnId");
@@ -51,7 +52,7 @@ public class PN {
   }
 
   private static String get(Map<String, String> m, String k) {
-    // prioritize prefix: x_
+    // try to prioritize prefix: x_
     var v = m.get("x_" + k);
     if (!TextUtils.isEmpty(v)) {
       return v;

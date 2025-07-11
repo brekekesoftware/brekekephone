@@ -517,6 +517,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             }
           });
       if (BrekekeUtils.userAgentConfig != null) {
+        // TODO:
+        // webViewAvatar: BrekekeUtils.userAgentConfig != null
+        // webViewAvatarTalking: !isAvatarTalkingLoaded
         webViewAvatar.loadUrl(avatar);
       }
     } else {
@@ -1024,6 +1027,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             }
           });
       if (!isAvatarTalkingLoaded) {
+        // TODO:
+        // webViewAvatar: BrekekeUtils.userAgentConfig != null
+        // webViewAvatarTalking: !isAvatarTalkingLoaded
         webViewAvatarTalking.loadUrl(talkingAvatar);
       }
     }

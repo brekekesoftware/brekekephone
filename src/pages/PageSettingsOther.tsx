@@ -57,18 +57,15 @@ export class PageSettingsOther extends Component {
 
   onChangeRingtone = value => {
     this.setState({ ringtone: value })
-    const account = ctx.auth.getCurrentAccount()
-    if (!!account) {
-      ctx.account.accounts.map(v => {
-        if (v.id === account.id) {
-          v.ringtone = value
-          v.ringtoneUri =
-            this.state.ringtoneOptions.filter(v => v.key === value)?.[0].uri ??
-            defaultRingtone
-        }
-      })
-      ctx.account.saveAccountsToLocalStorageDebounced()
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return
     }
+    ca.ringtone = value
+    ca.ringtoneUri =
+      this.state.ringtoneOptions.filter(v => v.key === value)?.[0].uri ??
+      defaultRingtone
+    ctx.account.saveAccountsToLocalStorageDebounced()
   }
 
   render() {

@@ -9,6 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.brekeke.phonedev.R;
 
+// utils to show toasts with level colors
+// only used in incoming call activity
+
 public class Toast {
   public enum Type {
     SUCCESS,
@@ -18,6 +21,9 @@ public class Toast {
   }
 
   private static int duration = 5000;
+
+  // ==========================================================================
+  // show with native type Type
 
   public static void show(LinearLayout container, String m, String d, Type t) {
     var h = new Handler(Looper.getMainLooper());
@@ -64,6 +70,9 @@ public class Toast {
         return r.getColor(R.color.toast_info);
     }
   }
+
+  // ==========================================================================
+  // show with string type from rn
 
   public static void show(LinearLayout container, String m, String d, String t) {
     show(container, m, d, type(t));

@@ -472,7 +472,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public void checkDefaultDialer() {
+  public static void checkDefaultDialer() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || main == null) {
       resolveDefaultDialer("Not supported on this Anrdoid version");
       return;

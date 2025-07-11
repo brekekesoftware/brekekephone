@@ -5,8 +5,13 @@ import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+// utils to quickly access async local storage
+// see the related part in rn js for reference
+
 public class Storage {
-  // see account store on rn js for reference
+  // ==========================================================================
+  // accounts
+
   private static String kAccountsAndData = "_api_profiles";
   private static String kAccounts = "profiles";
   private static String kData = "profileData";
@@ -30,7 +35,9 @@ public class Storage {
     return accountsAndData().optJSONArray(kData);
   }
 
-  // see intl store on rn js for reference
+  // ==========================================================================
+  // locale
+
   private static String kLocale = "locale";
 
   public static String locale() throws Exception {

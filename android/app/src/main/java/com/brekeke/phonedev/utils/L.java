@@ -1,7 +1,12 @@
 package com.brekeke.phonedev.utils;
 
-// labels for multi langues
+// utils to support multiple languages
+// see the related part in rn js for reference
+
 public class L {
+  // ==========================================================================
+  // init
+
   private static String l = null;
 
   public static void init() {
@@ -20,6 +25,9 @@ public class L {
       l = "en";
     }
   }
+
+  // ==========================================================================
+  // labels to be used in native java code
 
   public static String unlock() {
     return "ja".equals(l) ? "ロック解除" : "UNLOCK";

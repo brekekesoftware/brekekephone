@@ -11,13 +11,13 @@ import { waitTimeout } from '#/utils/waitTimeout'
 */
 export class IncomingItem extends Component {
   componentDidMount = () => {
-    const a = ctx.auth.getCurrentAccount()
-    if (isAndroid && !!a) {
+    const ca = ctx.auth.getCurrentAccount()
+    if (isAndroid && ca) {
       BrekekeUtils.startRingtone(
-        a.pbxUsername,
-        a.pbxTenant,
-        a.pbxHostname,
-        a.pbxPort,
+        ca.pbxUsername,
+        ca.pbxTenant,
+        ca.pbxHostname,
+        ca.pbxPort,
       )
     } else {
       // old logic: only play ringtone without vibration and repeat the ringtone continuously

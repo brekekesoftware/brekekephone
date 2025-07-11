@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 // utils to handle account from local storage
 // see the related part in rn js for reference
+
 public class Account {
   public static JSONObject find(String u, String t, String h, String p) {
     try {

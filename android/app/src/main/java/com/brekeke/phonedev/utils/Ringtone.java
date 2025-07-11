@@ -30,6 +30,73 @@ import java.util.stream.StreamSupport;
 
 public class Ringtone {
   // ==========================================================================
+  // init
+
+  public static void init() {
+    if (am != null) {
+      return;
+    }
+    var ctx = Ctx.app();
+    am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+    debug();
+  }
+
+  private static void debug() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      return;
+    }
+    var l1 =
+        new OnModeChangedListener() {
+          @Override
+          public void onModeChanged(int m) {
+            var k1 = "onModeChanged:mode::";
+            var k2 = k1 + "AudioManager.";
+            switch (m) {
+              case AudioManager.MODE_NORMAL:
+                Emitter.debug(k2 + "MODE_NORMAL");
+                break;
+              case AudioManager.MODE_INVALID:
+                Emitter.debug(k2 + "MODE_INVALID");
+                break;
+              case AudioManager.MODE_CURRENT:
+                Emitter.debug(k2 + "MODE_CURRENT");
+                break;
+              case AudioManager.MODE_RINGTONE:
+                Emitter.debug(k2 + "MODE_RINGTONE");
+                break;
+              case AudioManager.MODE_IN_CALL:
+                Emitter.debug(k2 + "MODE_IN_CALL");
+                break;
+              case AudioManager.MODE_IN_COMMUNICATION:
+                Emitter.debug(k2 + "MODE_IN_COMMUNICATION");
+                break;
+              case AudioManager.MODE_CALL_SCREENING:
+                Emitter.debug(k2 + "MODE_CALL_SCREENING");
+                break;
+              default:
+                Emitter.debug(k1 + m);
+                break;
+            }
+          }
+        };
+    var l2 =
+        new OnCommunicationDeviceChangedListener() {
+          @Override
+          public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
+            Emitter.debug(
+                "onCommunicationDeviceChanged:AudioDeviceInfo::"
+                    + device.getType()
+                    + "::"
+                    + device.getProductName());
+          }
+        };
+    var ctx = Ctx.app();
+    var e = ctx.getMainExecutor();
+    am.addOnModeChangedListener(e, l1);
+    am.addOnCommunicationDeviceChangedListener(e, l2);
+  }
+
+  // ==========================================================================
   // get all ringtone options
 
   public static NativeArray options() {
@@ -152,8 +219,8 @@ public class Ringtone {
     if (mp != null) {
       return;
     }
-    int mode = am.getRingerMode();
-    if (mode == AudioManager.RINGER_MODE_SILENT) {
+    int m = am.getRingerMode();
+    if (m == AudioManager.RINGER_MODE_SILENT) {
       return;
     }
     var ctx = Ctx.app();
@@ -166,7 +233,7 @@ public class Ringtone {
     } else {
       vib.vibrate(pattern, 0);
     }
-    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
+    if (m == AudioManager.RINGER_MODE_VIBRATE) {
       return;
     }
     am.setMode(AudioManager.MODE_RINGTONE);
@@ -223,7 +290,7 @@ public class Ringtone {
   }
 
   // ==========================================================================
-  // helpers
+  // rn helpers
 
   public static void setAudioMode(int m) {
     switch (m) {
@@ -250,72 +317,5 @@ public class Ringtone {
 
   public static int getRingerMode() {
     return am.getRingerMode();
-  }
-
-  // ==========================================================================
-  // init
-
-  public static void init() {
-    if (am != null) {
-      return;
-    }
-    var ctx = Ctx.app();
-    am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-    debug();
-  }
-
-  private static void debug() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      return;
-    }
-    var l1 =
-        new OnModeChangedListener() {
-          @Override
-          public void onModeChanged(int mode) {
-            var k1 = "onModeChanged:mode::";
-            var k2 = k1 + "AudioManager.";
-            switch (mode) {
-              case AudioManager.MODE_NORMAL:
-                Emitter.debug(k2 + "MODE_NORMAL");
-                break;
-              case AudioManager.MODE_INVALID:
-                Emitter.debug(k2 + "MODE_INVALID");
-                break;
-              case AudioManager.MODE_CURRENT:
-                Emitter.debug(k2 + "MODE_CURRENT");
-                break;
-              case AudioManager.MODE_RINGTONE:
-                Emitter.debug(k2 + "MODE_RINGTONE");
-                break;
-              case AudioManager.MODE_IN_CALL:
-                Emitter.debug(k2 + "MODE_IN_CALL");
-                break;
-              case AudioManager.MODE_IN_COMMUNICATION:
-                Emitter.debug(k2 + "MODE_IN_COMMUNICATION");
-                break;
-              case AudioManager.MODE_CALL_SCREENING:
-                Emitter.debug(k2 + "MODE_CALL_SCREENING");
-                break;
-              default:
-                Emitter.debug(k1 + mode);
-                break;
-            }
-          }
-        };
-    var l2 =
-        new OnCommunicationDeviceChangedListener() {
-          @Override
-          public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
-            Emitter.debug(
-                "onCommunicationDeviceChanged:AudioDeviceInfo::"
-                    + device.getType()
-                    + "::"
-                    + device.getProductName());
-          }
-        };
-    var ctx = Ctx.app();
-    var e = ctx.getMainExecutor();
-    am.addOnModeChangedListener(e, l1);
-    am.addOnCommunicationDeviceChangedListener(e, l2);
   }
 }

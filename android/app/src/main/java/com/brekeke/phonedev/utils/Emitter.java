@@ -3,8 +3,12 @@ package com.brekeke.phonedev.utils;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 public class Emitter {
+  // ==========================================================================
+  // init
+
   private static RCTDeviceEventEmitter ee;
 
+  // should also be called in BrekekeUtils.initialize
   public static void init() {
     if (ee != null) {
       return;
@@ -18,6 +22,9 @@ public class Emitter {
     } catch (Exception e) {
     }
   }
+
+  // ==========================================================================
+  // emit and aliases
 
   public static boolean emit(String k, String d) {
     try {
