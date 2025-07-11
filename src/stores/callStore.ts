@@ -467,11 +467,19 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
+      console.log(`Hoang:ev.sessionStatus displayIncomingCall ${p.sipRingtone}`)
+      // TODO Hoang : check ios and using validateRingtone
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
         await c.getDisplayNameAsync(),
         'generic',
+        undefined,
+        {
+          ios: {
+            ringtone: p.sipRingtone,
+          },
+        },
       )
     }
     // get and check callkeep if pending incoming call
@@ -615,6 +623,7 @@ export class CallStore {
     if (!isWeb) {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
+      console.log('Hoang: start call in call store ')
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
       } else {

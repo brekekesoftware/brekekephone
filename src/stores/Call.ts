@@ -72,7 +72,7 @@ export class Call {
   callkeepUuid = ''
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
-
+  sipRingtone = ''
   @action
   answer = async (
     options?: { ignoreNav?: boolean },

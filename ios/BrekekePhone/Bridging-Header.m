@@ -23,6 +23,14 @@ RCT_EXTERN_METHOD(setProximityMonitoring : (BOOL)enabled)
 RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(getRingtoneOptions
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(validateRingtone
+                  : (NSString *)ringtone ringtone
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+
 @end
 
 @interface RCT_EXTERN_MODULE (BrekekeEmitter, RCTEventEmitter)

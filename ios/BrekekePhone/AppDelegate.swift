@@ -115,7 +115,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       .didReceiveIncomingPush(with: payload,
                               forType: (type as NSString) as String,
                               callkeepUuid: uuid)
+    
+    //ringtone
+    
+    
     // config RNCallKeep
+    print("Hoang apns \(payload.dictionaryPayload)")
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload.dictionaryPayload,
@@ -200,6 +205,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   ) {
     let aps: NSDictionary! = payload["aps"] as? NSDictionary
     var from: String! = payload["x_from"] as? String
+    // ringtone
+    let ringtoneName = payload["x_ringtone"] as? String
+    var ringtone : String = ""
+    
     if from == nil, aps != nil {
       from = aps.value(forKey: "x_from") as? String
     }
@@ -216,6 +225,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     if name == nil {
       name = "Loading..."
     }
+    
+    if(ringtoneName != nil) {
+      ringtone = ringtoneName ?? ""
+    } else {
+      let username = payload["x_to"] as? String ?? ""
+      let tenant = payload["x_tenant"] as? String ?? ""
+      let host = payload["x_host"] as? String ?? ""
+      ringtone = AccountUtils.getRingtoneFromUser(username: username, tenant: tenant, host: host, port: "")
+    }
+    
+    print("Hoang: reportNewIncomingCall \(ringtone)" )
     RNCallKeep.reportNewIncomingCall(uuid,
                                      handle: from,
                                      handleType: "generic",
@@ -227,6 +247,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                      supportsUngrouping: false,
                                      fromPushKit: true,
                                      payload: payload,
-                                     withCompletionHandler: handler)
+                                     withCompletionHandler: handler,
+                                     ringtone: RingtoneUtils.validateRingtone(ringtone: ringtone))
   }
 }
