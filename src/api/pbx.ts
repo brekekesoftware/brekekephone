@@ -693,9 +693,9 @@ export class PBX extends EventEmitter {
       return config
     }
 
-    const account = ctx.auth.getCurrentAccount()
-    if (!!account) {
-      account.pbxRingtone = config['webphone.call.ringtone']
+    const ca = ctx.auth.getCurrentAccount()
+    if (ca) {
+      ca.pbxRingtone = config['webphone.call.ringtone']
       ctx.account.saveAccountsToLocalStorageDebounced()
     }
     BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))

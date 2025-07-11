@@ -34,7 +34,6 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
-    Ctx.wakeFromMainRn(this)
     loadReactNative(this)
     Ctx.wakeFromMainRn(this)
   }
