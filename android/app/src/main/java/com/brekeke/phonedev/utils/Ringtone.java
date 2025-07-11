@@ -175,7 +175,7 @@ public class Ringtone {
       try {
         _play(_default);
       } catch (Exception e2) {
-        Emitter.error("Ringtone play", e2.getMessage());
+        Emitter.error("Ringtone play2", e2.getMessage());
       }
       Emitter.error("Ringtone play", e.getMessage());
     }
@@ -271,30 +271,32 @@ public class Ringtone {
         new OnModeChangedListener() {
           @Override
           public void onModeChanged(int mode) {
+            var k1 = "onModeChanged:mode::";
+            var k2 = k1 + "AudioManager.";
             switch (mode) {
               case AudioManager.MODE_NORMAL:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_NORMAL");
+                Emitter.debug(k2 + "MODE_NORMAL");
                 break;
               case AudioManager.MODE_INVALID:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_INVALID");
+                Emitter.debug(k2 + "MODE_INVALID");
                 break;
               case AudioManager.MODE_CURRENT:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_CURRENT");
+                Emitter.debug(k2 + "MODE_CURRENT");
                 break;
               case AudioManager.MODE_RINGTONE:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_RINGTONE");
+                Emitter.debug(k2 + "MODE_RINGTONE");
                 break;
               case AudioManager.MODE_IN_CALL:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_IN_CALL");
+                Emitter.debug(k2 + "MODE_IN_CALL");
                 break;
               case AudioManager.MODE_IN_COMMUNICATION:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
+                Emitter.debug(k2 + "MODE_IN_COMMUNICATION");
                 break;
               case AudioManager.MODE_CALL_SCREENING:
-                Emitter.debug("onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
+                Emitter.debug(k2 + "MODE_CALL_SCREENING");
                 break;
               default:
-                Emitter.debug("onModeChanged:mode::" + mode);
+                Emitter.debug(k1 + mode);
                 break;
             }
           }

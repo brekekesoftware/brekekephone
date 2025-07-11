@@ -21,7 +21,6 @@ import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
-import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
@@ -682,13 +681,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               try {
                 for (var a : activities) {
                   try {
-                    a.updateUserAgentConfig(userAgentConfig);
+                    a.setUserAgentConfig(userAgentConfig);
                   } catch (Exception e) {
-                    Emitter.debug("IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                    Emitter.error("a.setUserAgentConfig", e.getMessage());
                   }
                 }
               } catch (Exception e) {
-                Emitter.debug("IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                Emitter.error("setUserAgentConfig", e.getMessage());
               }
             }
           });
@@ -1065,7 +1064,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         ctx.unbindService(LpcUtils.connection);
       }
     } catch (Exception e) {
-      Log.d(TAG, "disableLPC: " + e.getMessage());
+      Emitter.error("disableLPC", e.getMessage());
     }
   }
 

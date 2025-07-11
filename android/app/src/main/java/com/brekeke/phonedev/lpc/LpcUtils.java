@@ -163,7 +163,7 @@ public class LpcUtils {
     try {
       Class p = Class.forName("android.os.SystemProperties");
       return (String) p.getMethod("get", String.class).invoke(null, key);
-    } catch (Exception ignore) {
+    } catch (Exception e) {
     }
     return null;
   }

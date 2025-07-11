@@ -403,7 +403,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     openMainActivity();
   }
 
-  public void updateUserAgentConfig(String userAgent) {
+  public void setUserAgentConfig(String userAgent) {
     if (!userAgent.equals("")) {
       webViewAvatar.getSettings().setUserAgentString(userAgent);
       webViewAvatarTalking.getSettings().setUserAgentString(userAgent);
@@ -464,7 +464,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       webViewAvatar.getSettings().setJavaScriptEnabled(false);
       webViewAvatar.destroy();
     } catch (Exception e) {
-      debug("destroyAvatarWebView: " + e.toString());
+      error("destroyAvatarWebView", e.getMessage());
     }
   }
 
@@ -473,7 +473,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
       webViewAvatarTalking.destroy();
     } catch (Exception e) {
-      debug("destroyAvatarTalkingWebView: " + e.toString());
+      error("destroyAvatarTalkingWebView", e.getMessage());
     }
   }
 
@@ -1446,7 +1446,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      debug("forceFinish catch: " + e.getLocalizedMessage());
+      error("forceFinish", e.getMessage());
     }
   }
 
@@ -1455,7 +1455,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finishAndRemoveTask();
     } catch (Exception e) {
-      debug("finishRemoveTask catch: " + e.getLocalizedMessage());
+      error("finishRemoveTask", e.getMessage());
     }
   }
 
@@ -1472,7 +1472,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
     int a = e.getAction();
-    Emitter.debug("IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
+    debug("onKeyDown k=" + k + " a=" + a);
     // stop ringtone if any of the hardware key press
     Ringtone.stop();
     // handle back btn press, remember that this event fire twice, down/up
@@ -1532,7 +1532,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // ==========================================================================
   // private utils
-  private void debug(String message) {
-    Emitter.debug("IncomingCallActivity " + callerName + " " + message);
+
+  private void debug(String d) {
+    Emitter.debug("IncomingCallActivity " + callerName + " " + d);
+  }
+
+  private void error(String k, String d) {
+    Emitter.error("IncomingCallActivity " + callerName + " " + k, d);
   }
 }
