@@ -44,6 +44,7 @@ import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
 import com.brekeke.phonedev.utils.Ctx;
+import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.Toast;
 import com.bumptech.glide.Glide;
@@ -58,10 +59,10 @@ import org.json.JSONObject;
 
 // incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  private LinearLayout toast;
+  private LinearLayout vToast;
 
   public void toast(String m, String d, String t) {
-    Toast.show(toast, m, d, t);
+    Toast.show(vToast, m, d, t);
   }
 
   public RelativeLayout vWebrtc,
@@ -134,9 +135,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isMuted = false;
 
   class StreamData {
+    int id;
     String vId;
     String streamUrl;
-    int id;
 
     StreamData(int id, String vId, String streamUrl) {
       this.id = id;
@@ -206,7 +207,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       BrekekeUtils.staticStartRingtone(ringtone);
     }
 
-    toast = (LinearLayout) findViewById(R.id.toast_container);
+    vToast = (LinearLayout) findViewById(R.id.toast_container);
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
@@ -359,11 +360,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onResume() {
     super.onResume();
     debug("onResume answered=" + answered);
-    BrekekeUtils.emit("onResume", "");
+    Emitter.emit("onResume", "");
     if (!answered) {
       BrekekeUtils.staticStartRingtone(ringtone);
     } else {
-      BrekekeUtils.emit("switchCall", uuid);
+      Emitter.emit("switchCall", uuid);
     }
     paused = false;
   }
@@ -398,7 +399,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBackPressed() {
     debug("onBackPressed");
-    BrekekeUtils.emit("onIncomingCallActivityBackPressed", "");
+    Emitter.emit("onIncomingCallActivityBackPressed", "");
     openMainActivity();
   }
 
@@ -791,7 +792,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void updateStreamActive(String vId, String streamUrl) {
     activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
-    BrekekeUtils.emit("updateStreamActive", vId);
+    Emitter.emit("updateStreamActive", vId);
   }
 
   public void setLocalStream(String streamUrl) {
@@ -855,7 +856,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnSwitchCamera(View v) {
-    BrekekeUtils.emit("switchCamera", uuid);
+    Emitter.emit("switchCamera", uuid);
   }
 
   // show/hide call manage controls in video call
@@ -1124,13 +1125,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnRejectClick(View v) {
     BrekekeUtils.putUserActionRejectCall(uuid);
-    BrekekeUtils.emit("rejectCall", "CalleeClickReject-" + uuid);
+    Emitter.emit("rejectCall", "CalleeClickReject-" + uuid);
     answered = false;
     BrekekeUtils.remove(uuid);
   }
 
   public void onBtnChatClick(View v) {
-    BrekekeUtils.emit("navChat", uuid);
+    Emitter.emit("navChat", uuid);
     openMainActivity();
   }
 
@@ -1151,7 +1152,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             ? BrekekeUtils.jsCallsSize
             : BrekekeUtils.activitiesSize;
     if (n > 1) {
-      BrekekeUtils.emit("showBackgroundCall", uuid);
+      Emitter.emit("showBackgroundCall", uuid);
       openMainActivity();
     }
   }
@@ -1161,45 +1162,45 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnTransferClick(View v) {
-    BrekekeUtils.emit("transfer", uuid);
+    Emitter.emit("transfer", uuid);
     openMainActivity();
   }
 
   public void onBtnParkClick(View v) {
-    BrekekeUtils.emit("park", uuid);
+    Emitter.emit("park", uuid);
     openMainActivity();
   }
 
   public void onBtnVideoClick(View v) {
-    BrekekeUtils.emit("video", uuid);
+    Emitter.emit("video", uuid);
     updateUILayoutManagerCall(!isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
     btnSpeaker.setSelected(!v.isSelected());
-    BrekekeUtils.emit("speaker", uuid);
+    Emitter.emit("speaker", uuid);
   }
 
   public void onBtnMuteClick(View v) {
     btnMute.setSelected(!v.isSelected());
     updateMuteBtnLabel();
-    BrekekeUtils.emit("mute", uuid);
+    Emitter.emit("mute", uuid);
   }
 
   public void onBtnRecordClick(View v) {
     if (!v.isActivated()) {
-      BrekekeUtils.emit("record", uuid);
+      Emitter.emit("record", uuid);
     }
   }
 
   public void onBtnDtmfClick(View v) {
-    BrekekeUtils.emit("dtmf", uuid);
+    Emitter.emit("dtmf", uuid);
     openMainActivity();
   }
 
   public void onBtnHoldClick(View v) {
     if (!v.isActivated()) {
-      BrekekeUtils.emit("hold", uuid);
+      Emitter.emit("hold", uuid);
     }
   }
 
@@ -1278,7 +1279,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   private void setCallAnswered() {
     answered = true;
     BrekekeUtils.putUserActionAnswerCall(uuid);
-    BrekekeUtils.emit("answerCall", uuid);
+    Emitter.emit("answerCall", uuid);
     BrekekeUtils.staticStopRingtone();
     vIncomingCall.setVisibility(View.GONE);
     vHeaderIncomingCall.setVisibility(View.GONE);
@@ -1470,7 +1471,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
     int a = e.getAction();
-    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
+    Emitter.debug("IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
     // stop ringtone if any of the hardware key press
     BrekekeUtils.staticStopRingtone();
     // handle back btn press, remember that this event fire twice, down/up
@@ -1530,7 +1531,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // ==========================================================================
   // private utils
-  public void debug(String message) {
-    BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
+  private void debug(String message) {
+    Emitter.debug("IncomingCallActivity " + callerName + " " + message);
   }
 }

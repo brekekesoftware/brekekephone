@@ -6,6 +6,7 @@ import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.utils.Ctx;
+import com.brekeke.phonedev.utils.Emitter;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.messaging.RemoteMessage;
@@ -41,7 +42,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
       return;
     }
     if (!BrekekeUtils.checkReadPhonePermission()) {
-      BrekekeUtils.emit("phonePermission", "");
+      Emitter.emit("phonePermission", "");
       return;
     }
     // it should close the default dialer permission popup when there is an incoming call

@@ -39,6 +39,7 @@ import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
 import com.brekeke.phonedev.utils.Account;
 import com.brekeke.phonedev.utils.Ctx;
+import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.Ringtone;
 import com.facebook.react.bridge.Arguments;
@@ -51,7 +52,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.google.firebase.messaging.RemoteMessage;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
@@ -68,7 +68,6 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
-  public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
   public static Promise androidLpcPermPromise;
@@ -90,25 +89,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return p;
   }
 
-  public static void emit(String name, String data) {
-    try {
-      eventEmitter.emit(name, data);
-    } catch (Exception e) {
-    }
-  }
-
   public static WakeLock wl;
 
   public static void acquireWakeLock() {
     if (!wl.isHeld()) {
-      emit("debug", "calling wl.acquire()");
+      Emitter.debug("calling wl.acquire()");
       wl.acquire();
     }
   }
 
   public static void releaseWakeLock() {
     if (wl.isHeld()) {
-      emit("debug", "calling wl.release()");
+      Emitter.debug("calling wl.release()");
       wl.release();
     }
   }
@@ -142,28 +134,28 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           public void onModeChanged(int mode) {
             switch (mode) {
               case AudioManager.MODE_NORMAL:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_NORMAL");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_NORMAL");
                 break;
               case AudioManager.MODE_INVALID:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_INVALID");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_INVALID");
                 break;
               case AudioManager.MODE_CURRENT:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_CURRENT");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_CURRENT");
                 break;
               case AudioManager.MODE_RINGTONE:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_RINGTONE");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_RINGTONE");
                 break;
               case AudioManager.MODE_IN_CALL:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_CALL");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_IN_CALL");
                 break;
               case AudioManager.MODE_IN_COMMUNICATION:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
                 break;
               case AudioManager.MODE_CALL_SCREENING:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
+                Emitter.debug("onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
                 break;
               default:
-                emit("debug", "onModeChanged:mode::" + mode);
+                Emitter.debug("onModeChanged:mode::" + mode);
                 break;
             }
           }
@@ -172,8 +164,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new OnCommunicationDeviceChangedListener() {
           @Override
           public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
-            emit(
-                "debug",
+            Emitter.debug(
                 "onCommunicationDeviceChanged:AudioDeviceInfo::"
                     + device.getType()
                     + "::"
@@ -188,8 +179,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @Override
   public void initialize() {
     super.initialize();
-    var c = Ctx.main();
-    eventEmitter = c.getJSModule(RCTDeviceEventEmitter.class);
+    Emitter.init();
   }
 
   @Override
@@ -375,8 +365,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // we will manually fire the rejectCall event here
   // there may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
-    emit("debug", "onPassiveReject uuid=" + uuid);
-    emit("rejectCall", uuid);
+    Emitter.debug("onPassiveReject uuid=" + uuid);
+    Emitter.emit("rejectCall", uuid);
     staticCloseIncomingCall(uuid);
   }
 
@@ -430,7 +420,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static void remove(String uuid) {
     removeCallKeepCallbacks(uuid);
     var a = at(uuid);
-    emit("debug", "remove a==null " + (a == null));
+    Emitter.debug("remove a==null " + (a == null));
     if (a == null) {
       return;
     }
@@ -448,7 +438,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void removeAll() {
-    emit("debug", "removeAll");
+    Emitter.debug("removeAll");
     staticStopRingtone();
     if (activities.size() <= 0) {
       return;
@@ -469,7 +459,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void staticCloseIncomingCall(String uuid) {
-    emit("debug", "staticCloseIncomingCall");
+    Emitter.debug("staticCloseIncomingCall");
     try {
       at(uuid).answered = false;
     } catch (Exception e) {
@@ -877,13 +867,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                   try {
                     a.updateUserAgentConfig(userAgentConfig);
                   } catch (Exception e) {
-                    BrekekeUtils.emit(
-                        "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                    Emitter.debug("IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
                   }
                 }
               } catch (Exception e) {
-                BrekekeUtils.emit(
-                    "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                Emitter.debug("IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
               }
             }
           });
@@ -963,13 +951,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void closeIncomingCall(String uuid) {
-    emit("debug", "closeIncomingCall uuid=" + uuid);
+    Emitter.debug("closeIncomingCall uuid=" + uuid);
     staticCloseIncomingCall(uuid);
   }
 
   @ReactMethod
   public void closeAllIncomingCalls() {
-    emit("debug", "closeAllIncomingCalls");
+    Emitter.debug("closeAllIncomingCalls");
     removeAll();
   }
 
@@ -1055,7 +1043,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRecordingStatus(String uuid, boolean isRecording) {
-    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
+    Emitter.debug("setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -1195,7 +1183,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             var toFront = at(uuid);
-            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+            Emitter.debug("onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
             if (toFront != null) {
               toFront.reorderToFront();
             }
@@ -1211,7 +1199,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     try {
       p.resolve(am.getRingerMode());
     } catch (Exception e) {
-      emit("debug", "getRingerMode error: " + e.getMessage());
+      Emitter.debug("getRingerMode error: " + e.getMessage());
       p.resolve(-1);
     }
   }

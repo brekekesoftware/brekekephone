@@ -11,6 +11,7 @@ import com.brekeke.phonedev.lpc.LpcUtils
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import io.wazo.callkeep.RNCallKeepModule
+import com.brekeke.phonedev.utils.Emitter
 
 class MainActivity : ReactActivity() {
   // ==========================================================================
@@ -61,11 +62,11 @@ class MainActivity : ReactActivity() {
   override fun dispatchKeyEvent(e: KeyEvent): Boolean {
     val k = e.keyCode
     val a = e.action
-    BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=$k a=$a")
+    Emitter.debug("MainActivity.onKeyDown k=$k a=$a")
     BrekekeUtils.staticStopRingtone()
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
-        BrekekeUtils.emit("onBackPressed", "")
+        Emitter.emit("onBackPressed", "")
       }
       return true
     }
@@ -114,12 +115,10 @@ class MainActivity : ReactActivity() {
   }
 
   private fun handleMakeCall(phone: String) {
-    if (BrekekeUtils.eventEmitter != null) {
-      BrekekeUtils.emit("makeCall", phone)
+    if (Emitter.emit("makeCall", phone)) {
       return
     }
-    val handler = Handler()
-    handler.postDelayed({ BrekekeUtils.emit("makeCall", phone) }, 5000)
+    Handler().postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
   }
 
   private fun checkSetDefaultDialerResult(resultCode: Int) {

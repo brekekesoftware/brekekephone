@@ -19,7 +19,7 @@ public class Toast {
 
   private static int duration = 5000;
 
-  public static void show(LinearLayout ll, String m, String d, Type t) {
+  public static void show(LinearLayout container, String m, String d, Type t) {
     var h = new Handler(Looper.getMainLooper());
     h.post(
         () -> {
@@ -36,11 +36,11 @@ public class Toast {
             } else {
               dv.setVisibility(View.GONE);
             }
-            ll.addView(v, 0);
+            container.addView(v, 0);
             h.postDelayed(
                 () -> {
                   try {
-                    ll.removeView(v);
+                    container.removeView(v);
                   } catch (Exception e) {
                   }
                 },
@@ -65,8 +65,8 @@ public class Toast {
     }
   }
 
-  public static void show(LinearLayout ll, String m, String d, String t) {
-    show(ll, m, d, type(t));
+  public static void show(LinearLayout container, String m, String d, String t) {
+    show(container, m, d, type(t));
   }
 
   private static Type type(String t) {
