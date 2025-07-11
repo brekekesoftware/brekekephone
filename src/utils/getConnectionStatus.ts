@@ -31,5 +31,6 @@ export const getConnectionStatus = () => {
     message,
     isFailure,
     onPress: isFailure ? ctx.auth.resetFailureStateIncludePbxOrUc : undefined,
+    serviceConnectingOrFailure,
   }
 }
