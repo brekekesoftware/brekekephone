@@ -19,7 +19,7 @@ import org.json.JSONArray;
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   @Override
   public void onMessageReceived(RemoteMessage m) {
-    Ctx.wakeFromPn(this.getApplicationContext());
+    Ctx.wakeFromPn(this);
     if (!BrekekeUtils.checkNotificationPermission()) {
       Emitter.error("onMessageReceived", "!checkNotificationPermission");
       return;
