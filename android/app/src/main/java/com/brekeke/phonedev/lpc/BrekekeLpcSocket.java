@@ -204,7 +204,6 @@ public class BrekekeLpcSocket {
     }
 
     private void handleResponse(ByteBuffer responseBuffer) {
-      Ctx.wakeFromPn(mContext);
       String json = utf8.decode(responseBuffer).toString().substring(4);
       Wrapper wr = new CodableHelper().decode(json, Wrapper.class);
       try {
@@ -218,6 +217,7 @@ public class BrekekeLpcSocket {
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
             m.put("lpc", "true");
             // start incoming call activity
+            Ctx.wakeFromPn(mContext);
             BrekekeUtils.onFcmMessageReceived(m);
             // emit message to assign callKeepUuid to call store
             String e = LpcUtils.convertMapToString(m);

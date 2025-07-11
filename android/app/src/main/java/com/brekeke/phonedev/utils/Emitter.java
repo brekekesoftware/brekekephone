@@ -27,6 +27,12 @@ public class Emitter {
   // emit and aliases
 
   public static boolean emit(String k, String d) {
+    // TODO:
+    // retry if failed to emit, maximum 10s?
+    return _emit(k, d);
+  }
+
+  private static boolean _emit(String k, String d) {
     try {
       ee.emit(k, d);
       return true;

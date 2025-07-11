@@ -61,10 +61,9 @@ export class PageSettingsOther extends Component {
     if (!ca) {
       return
     }
-    ca.ringtone = value
-    ca.ringtoneUri =
-      this.state.ringtoneOptions.filter(v => v.key === value)?.[0].uri ??
-      defaultRingtone
+    const uri = this.state.ringtoneOptions.find(v => v.key === value)?.uri
+    ca.ringtone = uri ? value : defaultRingtone
+    ca.ringtoneUri = uri ? uri : defaultRingtone
     ctx.account.saveAccountsToLocalStorageDebounced()
   }
 
