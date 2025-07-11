@@ -170,6 +170,16 @@ const initApp = async () => {
   const clearConnectionReaction = reaction(
     () => getConnectionStatus(),
     status => {
+      // UC only logs in when the app is active,
+      // Do not display the message if it is a UC connect failed error on IncomingCallActivity
+      if (
+        status.isFailure &&
+        status.message &&
+        status.serviceConnectingOrFailure === 'UC'
+      ) {
+        BrekekeUtils.updateConnectionStatus('', false)
+        return
+      }
       BrekekeUtils.updateConnectionStatus(status.message, status.isFailure)
     },
     { fireImmediately: true },
