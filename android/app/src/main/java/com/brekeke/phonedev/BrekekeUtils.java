@@ -34,7 +34,6 @@ import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.PN;
 import com.brekeke.phonedev.utils.Ringtone;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -42,8 +41,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.messaging.RemoteMessage;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
 import java.net.URL;
@@ -63,21 +60,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
-
-  public static WritableMap parseParams(RemoteMessage m) {
-    var p = Arguments.createMap();
-    p.putString("from", m.getFrom());
-    p.putString("google.message_id", m.getMessageId());
-    p.putString("google.to", m.getTo());
-    p.putDouble("google.sent_time", m.getSentTime());
-    if (m.getData() != null) {
-      var d = m.getData();
-      for (var k : d.keySet()) {
-        p.putString(k, d.get(k));
-      }
-    }
-    return p;
-  }
 
   public static WakeLock wl;
 
@@ -198,6 +180,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       return;
     }
     if (Account.find(m) == null) {
+      Emitter.error("onFcmMessageReceived", "account 404");
       return;
     }
     // init services if not
