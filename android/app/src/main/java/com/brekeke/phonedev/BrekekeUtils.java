@@ -519,6 +519,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       return true;
     }
     var ctx = Ctx.app();
+    if(ctx == null) {
+      return false;
+    }
     var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
     return pm.isIgnoringBatteryOptimizations(ctx.getPackageName());
   }
@@ -544,6 +547,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       return true;
     }
     var ctx = Ctx.app();
+    if(ctx == null) {
+      return false;
+    }
     return Settings.canDrawOverlays(ctx);
   }
 

@@ -4,13 +4,12 @@ import { Component } from 'react'
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { isAndroid, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOptionsType } from '#/utils/handleRingtone'
 import { getRingtoneOptions } from '#/utils/handleRingtone'
-import { defaultRingtone } from '#/utils/RnNativeModules'
 
 @observer
 export class PageSettingsOther extends Component {

@@ -12,7 +12,7 @@ import { waitTimeout } from '#/utils/waitTimeout'
 export class IncomingItem extends Component {
   componentDidMount = () => {
     const a = ctx.auth.getCurrentAccount()
-    if (isAndroid && a) {
+    if (isAndroid && !!a) {
       BrekekeUtils.startRingtone(
         a.pbxUsername,
         a.pbxTenant,

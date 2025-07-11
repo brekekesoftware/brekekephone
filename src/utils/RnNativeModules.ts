@@ -16,7 +16,7 @@ export type RingtoneSystemType = {
   uri: string
 }
 
-export const defaultRingtone = '-'
+export const defaultRingtone = 'default'
 
 type TBrekekeUtils = {
   // these methods only available on android

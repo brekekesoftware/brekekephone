@@ -150,10 +150,7 @@ export const AccountSignInItem: FC<{
                   <RnText>{intl`Do you want to remove this account?`}</RnText>
                 </>
               ),
-              onConfirm: () => {
-                const { id } = a
-                ctx.account.removeAccount(id)
-              },
+              onConfirm: () => ctx.account.removeAccount(a.id),
             })
           }}
           onBackIcon={mdiClose}

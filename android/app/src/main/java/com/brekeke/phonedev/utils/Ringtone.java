@@ -69,6 +69,7 @@ public class Ringtone {
             return new Pair<>(title, uri);
           }
         };
+        
     Spliterator<Pair<String, String>> spliterator =
         Spliterators.spliteratorUnknownSize(iterator, 0);
     return StreamSupport.stream(spliterator, false).onClose(c::close);
@@ -77,8 +78,8 @@ public class Ringtone {
   // ==========================================================================
   // validate
 
-  private static String[] _static = {"incallmanager_ringtone"};
-  private static String _default = _static[0];
+  private static final String[] _static = {"incallmanager_ringtone"};
+  private static final String _default = _static[0];
 
   public static String validate(String r) {
     var v = _validate(r);
@@ -170,7 +171,7 @@ public class Ringtone {
     }
     am.setMode(AudioManager.MODE_RINGTONE);
     try {
-      play(r);
+      _play(r);
     } catch (Exception e) {
       try {
         _play(_default);
@@ -182,14 +183,13 @@ public class Ringtone {
   }
 
   private static void _play(String r) throws Exception {
-    MediaPlayer mp;
+    var ctx = Ctx.app();
     var attr =
         new AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
             .setLegacyStreamType(AudioManager.STREAM_RING)
             .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
             .build();
-    var ctx = Ctx.app();
     if (_static(r)) {
       var res = ctx.getResources();
       var pkg = ctx.getPackageName();

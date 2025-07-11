@@ -1,5 +1,6 @@
 package com.brekeke.phonedev.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -23,7 +24,8 @@ public class Ctx {
   }
 
   public static void wakeFromPn(Context ctx) {
-    pn = ctx;
+    // Using application context to avoid leaks
+    pn = ctx.getApplicationContext();
     init();
   }
 

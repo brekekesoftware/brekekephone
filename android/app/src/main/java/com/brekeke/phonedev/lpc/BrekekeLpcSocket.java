@@ -204,7 +204,7 @@ public class BrekekeLpcSocket {
     }
 
     private void handleResponse(ByteBuffer responseBuffer) {
-      Ctx.wakeFromPn(mContext.getApplicationContext());
+      Ctx.wakeFromPn(mContext);
       String json = utf8.decode(responseBuffer).toString().substring(4);
       Wrapper wr = new CodableHelper().decode(json, Wrapper.class);
       try {
