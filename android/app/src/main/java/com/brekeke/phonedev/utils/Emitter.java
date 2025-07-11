@@ -9,7 +9,7 @@ public class Emitter {
     if (ee != null) {
       return;
     }
-    var ctx = Ctx.main();
+    var ctx = Ctx.rn();
     if (ctx == null) {
       return;
     }
