@@ -26,7 +26,8 @@ public class Account {
           return a;
         }
       }
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
     return null;
   }
 

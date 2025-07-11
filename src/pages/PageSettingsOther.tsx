@@ -10,6 +10,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOptionsType } from '#/utils/handleRingtone'
 import { getRingtoneOptions } from '#/utils/handleRingtone'
+import { defaultRingtone } from '#/utils/RnNativeModules'
 
 @observer
 export class PageSettingsOther extends Component {

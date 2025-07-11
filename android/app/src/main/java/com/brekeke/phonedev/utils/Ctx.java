@@ -8,11 +8,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 // on push notification wake up, the react native js might not be available yet
 public class Ctx {
   private static ReactApplicationContext rn;
+
   // Using application context to avoid memory leaks
   @SuppressLint("StaticFieldLeak")
   private static Context pn;
+
   @SuppressLint("StaticFieldLeak")
   private static Context main;
+
   private static boolean initialized = false;
 
   // This ensures that native code always has access to a valid Context, regardless of whether
@@ -33,7 +36,7 @@ public class Ctx {
 
   public static Context app() {
     // try to prioritize main react native context
-      return rn != null ? rn.getApplicationContext() : (main != null ? main : pn);
+    return rn != null ? rn.getApplicationContext() : (main != null ? main : pn);
   }
 
   public static ReactApplicationContext rn() {

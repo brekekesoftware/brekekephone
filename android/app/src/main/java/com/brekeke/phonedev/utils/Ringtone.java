@@ -69,7 +69,7 @@ public class Ringtone {
             return new Pair<>(title, uri);
           }
         };
-        
+
     Spliterator<Pair<String, String>> spliterator =
         Spliterators.spliteratorUnknownSize(iterator, 0);
     return StreamSupport.stream(spliterator, false).onClose(c::close);
