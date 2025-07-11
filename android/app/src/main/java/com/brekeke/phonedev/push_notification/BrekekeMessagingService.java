@@ -18,7 +18,7 @@ import org.json.JSONArray;
 // custom push notification
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   @Override
-  public void onMessageReceived(RemoteMessage remoteMessage) {
+  public void onMessageReceived(RemoteMessage m) {
     Ctx.wakeFromPn(this.getApplicationContext());
     if (!BrekekeUtils.checkNotificationPermission()) {
       Emitter.error("onMessageReceived", "!checkNotificationPermission");
