@@ -40,8 +40,8 @@ export type Account = {
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]
-  ringtoneName?: string
-  ringtoneData?: string
+  ringtone?: string
+  ringtoneUri?: string
   pbxRingtone?: string
 }
 export type AccountData = {
@@ -105,8 +105,9 @@ export class AccountStore {
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
-    ringtoneName: defaultRingtone,
-    ringtoneData: '',
+    ringtone: defaultRingtone,
+    ringtoneUri: defaultRingtone,
+    pbxRingtone: defaultRingtone,
   })
 
   loadAccountsFromLocalStorage = async () => {

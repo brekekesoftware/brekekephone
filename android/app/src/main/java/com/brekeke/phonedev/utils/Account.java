@@ -4,6 +4,8 @@ import android.text.TextUtils;
 import java.util.Map;
 import org.json.JSONObject;
 
+// utils to handle account from local storage
+// see the related part in rn js for reference
 public class Account {
   public static JSONObject find(String u, String t, String h, String p) {
     try {
@@ -31,15 +33,14 @@ public class Account {
 
   // find from pn data map
   public static JSONObject find(Map<String, String> m) {
-    var u = m.get("x_to");
-    var t = m.get("x_tenant");
-    var h = m.get("x_host");
-    var p = m.get("x_port");
+    var u = PN.username(m);
+    var t = PN.tenant(m);
+    var h = PN.host(m);
+    var p = PN.port(m);
     return find(u, t, h, p);
   }
 
   // compare strings with falsish check
-  // see account store on rn js for reference
   private static boolean equals(String v1, String v2) {
     return TextUtils.isEmpty(v1) || TextUtils.isEmpty(v2) || v1.equals(v2);
   }

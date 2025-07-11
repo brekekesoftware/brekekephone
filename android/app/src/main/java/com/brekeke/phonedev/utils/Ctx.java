@@ -9,20 +9,20 @@ public class Ctx {
   private static ReactApplicationContext main;
   private static Context pn;
 
-  public static void wakeFromMainRn(ReactApplicationContext c) {
-    main = c;
+  public static void wakeFromMainRn(ReactApplicationContext ctx) {
+    main = ctx;
     init();
   }
 
-  public static void wakeFromPn(Context c) {
-    pn = c;
+  public static void wakeFromPn(Context ctx) {
+    pn = ctx;
     init();
   }
 
   public static Context app() {
     // try to prioritize main react native context
-    var c = main != null ? main : pn;
-    return c.getApplicationContext();
+    var ctx = main != null ? main : pn;
+    return ctx.getApplicationContext();
   }
 
   public static ReactApplicationContext main() {
@@ -31,5 +31,6 @@ public class Ctx {
 
   private static void init() {
     L.init();
+    Ringtone.init();
   }
 }

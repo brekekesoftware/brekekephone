@@ -115,8 +115,8 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       console.log({ account: $.account })
       if (!isWeb) {
-        $.account.ringtoneData =
-          $.ringtoneOptions.filter(v => v.key === $.account.ringtoneName)?.[0]
+        $.account.ringtoneUri =
+          $.ringtoneOptions.filter(v => v.key === $.account.ringtone)?.[0]
             .uri ?? defaultRingtone
       }
       props.onSave($.account, $.hasUnsavedChanges())
@@ -306,7 +306,7 @@ export const AccountCreateForm: FC<{
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
-            name: 'ringtoneName',
+            name: 'ringtone',
             options: $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
           },

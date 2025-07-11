@@ -12,8 +12,8 @@ public class Storage {
   private static String kData = "profileData";
 
   private static String read(String k) throws Exception {
-    var c = Ctx.app();
-    var d = ReactDatabaseSupplier.getInstance(c).getReadableDatabase();
+    var ctx = Ctx.app();
+    var d = ReactDatabaseSupplier.getInstance(ctx).getReadableDatabase();
     return AsyncLocalStorageUtil.getItemImpl(d, k);
   }
 

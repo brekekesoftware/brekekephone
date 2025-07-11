@@ -43,9 +43,9 @@ import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
-import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.Ringtone;
 import com.brekeke.phonedev.utils.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -204,7 +204,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
     if (!autoAnswer) {
-      BrekekeUtils.staticStartRingtone(ringtone);
+      Ringtone.play(ringtone);
     }
 
     vToast = (LinearLayout) findViewById(R.id.toast_container);
@@ -362,7 +362,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     debug("onResume answered=" + answered);
     Emitter.emit("onResume", "");
     if (!answered) {
-      BrekekeUtils.staticStartRingtone(ringtone);
+      Ringtone.play(ringtone);
     } else {
       Emitter.emit("switchCall", uuid);
     }
@@ -574,7 +574,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (vWebrtcVideo != null) {
       return;
     }
-    vWebrtcVideo = new WebRTCView(Ctx.app());
+    vWebrtcVideo = new WebRTCView(this);
     vWebrtcVideo.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -618,7 +618,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private WebRTCView createNewRTCView(String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(Ctx.app());
+    WebRTCView rtcView = new WebRTCView(this);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -651,7 +651,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItem(String streamUrl, boolean isActive) {
-    LinearLayout ln = new LinearLayout(Ctx.app());
+    LinearLayout ln = new LinearLayout(this);
     updateBgForStream(ln, isActive);
     updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
@@ -662,8 +662,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItemRelative(String streamUrl) {
-    LinearLayout ln = new LinearLayout(Ctx.app());
-    RelativeLayout rl = new RelativeLayout(Ctx.app());
+    LinearLayout ln = new LinearLayout(this);
+    RelativeLayout rl = new RelativeLayout(this);
     rl.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -677,43 +677,44 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRemoteStreams(ReadableArray streams) {
-    for (int i = 0; i < streams.size(); i++) {
-      ReadableMap streamItem = streams.getMap(i);
-      String streamUrl = streamItem.getString("streamUrl");
-      LinearLayout v = createStreamItem(streamUrl, false);
+    for (var i = 0; i < streams.size(); i++) {
+      var streamItem = streams.getMap(i);
+      var streamUrl = streamItem.getString("streamUrl");
+      var v = createStreamItem(streamUrl, false);
       vScrollViewStreams.addView(v);
     }
     vRemoteStreams.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
   }
 
   public void addStreamToView(ReadableMap stream) {
-    String vId = stream.getString("vId");
-    String streamUrl = stream.getString("streamUrl");
+    var vId = stream.getString("vId");
+    var streamUrl = stream.getString("streamUrl");
 
     if (vId != "") {
-      boolean isExist = arrayStreams.containsKey(vId);
+      var isExist = arrayStreams.containsKey(vId);
       if (!isExist) {
-        int id = View.generateViewId();
-        StreamData sData = new StreamData(id, vId, streamUrl);
+        var id = View.generateViewId();
+        var sData = new StreamData(id, vId, streamUrl);
         arrayStreams.put(vId, sData);
-        LinearLayout v = createStreamItem(streamUrl, false);
+        var v = createStreamItem(streamUrl, false);
         v.setId(id);
         v.setTag(vId);
         v.setOnClickListener(
             new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                String tag = (String) v.getTag();
-                StreamData sDNew = arrayStreams.get(tag);
+                var ll = (LinearLayout) v;
+                var tag = (String) ll.getTag();
+                var sDNew = arrayStreams.get(tag);
                 if (activeStreamId == "") {
-                  updateBgForStream((LinearLayout) v, true);
+                  updateBgForStream(ll, true);
                   updateStreamActive(sDNew.vId, sDNew.streamUrl);
                 } else {
-                  StreamData sD = arrayStreams.get(activeStreamId);
-                  LinearLayout l = findViewById(sD.id);
+                  var sD = arrayStreams.get(activeStreamId);
+                  var l = (LinearLayout) findViewById(sD.id);
                   updateBgForStream(l, false);
-                  updateBgForStream((LinearLayout) v, true);
-                  if (((LinearLayout) v).getChildAt(0) != null) {
+                  updateBgForStream(ll, true);
+                  if (ll.getChildAt(0) != null) {
                     updateStreamActive(sDNew.vId, sDNew.streamUrl);
                   } else {
                     updateStreamActive(sDNew.vId, "");
@@ -806,13 +807,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     float scale = getResources().getDisplayMetrics().density;
     LinearLayout v = createStreamItemRelative(streamUrl);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-    LinearLayout rl = new LinearLayout(Ctx.app());
+    LinearLayout rl = new LinearLayout(this);
     rl.setOrientation(LinearLayout.HORIZONTAL);
     rl.setGravity(Gravity.CENTER);
 
-    btnVideoItem = new Button(Ctx.app());
+    btnVideoItem = new Button(this);
     btnVideoItem.setBackground(getDrawableFromResources(R.drawable.btn_video_item));
-    Button btnCameraRotate = new Button(Ctx.app());
+    Button btnCameraRotate = new Button(this);
     btnCameraRotate.setBackground(getDrawableFromResources(R.drawable.btn_switch_camera));
     btnVideoItem.setOnClickListener(
         new View.OnClickListener() {
@@ -1280,7 +1281,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     answered = true;
     BrekekeUtils.putUserActionAnswerCall(uuid);
     Emitter.emit("answerCall", uuid);
-    BrekekeUtils.staticStopRingtone();
+    Ringtone.stop();
     vIncomingCall.setVisibility(View.GONE);
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
@@ -1473,7 +1474,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     int a = e.getAction();
     Emitter.debug("IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
     // stop ringtone if any of the hardware key press
-    BrekekeUtils.staticStopRingtone();
+    Ringtone.stop();
     // handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {

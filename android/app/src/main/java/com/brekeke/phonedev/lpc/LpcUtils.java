@@ -134,8 +134,8 @@ public class LpcUtils {
 
   public static boolean androidLpcIsPermGranted() {
     try {
-      var c = Ctx.app();
-      AppOpsManager mgr = (AppOpsManager) c.getSystemService(Context.APP_OPS_SERVICE);
+      var ctx = Ctx.app();
+      AppOpsManager mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
       Method m =
           AppOpsManager.class.getMethod("checkOpNoThrow", int.class, int.class, String.class);
       int r =
@@ -144,7 +144,7 @@ public class LpcUtils {
                   mgr,
                   OP_BACKGROUND_START_ACTIVITY,
                   android.os.Process.myUid(),
-                  c.getPackageName());
+                  ctx.getPackageName());
       return r == AppOpsManager.MODE_ALLOWED;
     } catch (Exception e) {
       Log.d(TAG, "isCustomPermissionGranted: " + e.getMessage());

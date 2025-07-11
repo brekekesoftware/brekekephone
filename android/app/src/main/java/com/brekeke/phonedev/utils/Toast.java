@@ -24,8 +24,8 @@ public class Toast {
     h.post(
         () -> {
           try {
-            var c = Ctx.app();
-            var v = LayoutInflater.from(c).inflate(R.layout.toast, null, true);
+            var ctx = Ctx.app();
+            var v = LayoutInflater.from(ctx).inflate(R.layout.toast, null, true);
             v.setBackgroundColor(color(t));
             var mv = (TextView) v.findViewById(R.id.toast_message);
             mv.setText(m);
@@ -51,8 +51,8 @@ public class Toast {
   }
 
   private static int color(Type t) {
-    var c = Ctx.app();
-    var r = c.getResources();
+    var ctx = Ctx.app();
+    var r = ctx.getResources();
     switch (t) {
       case SUCCESS:
         return r.getColor(R.color.toast_success);

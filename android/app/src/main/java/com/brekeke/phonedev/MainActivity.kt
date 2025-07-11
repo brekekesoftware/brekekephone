@@ -8,10 +8,11 @@ import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
 import com.brekeke.phonedev.lpc.LpcUtils
+import com.brekeke.phonedev.utils.Emitter
+import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import io.wazo.callkeep.RNCallKeepModule
-import com.brekeke.phonedev.utils.Emitter
 
 class MainActivity : ReactActivity() {
   // ==========================================================================
@@ -40,7 +41,7 @@ class MainActivity : ReactActivity() {
 
   override fun onDestroy() {
     BrekekeUtils.main = null
-    BrekekeUtils.staticStopRingtone()
+    Ringtone.stop()
     super.onDestroy()
   }
 
@@ -63,7 +64,7 @@ class MainActivity : ReactActivity() {
     val k = e.keyCode
     val a = e.action
     Emitter.debug("MainActivity.onKeyDown k=$k a=$a")
-    BrekekeUtils.staticStopRingtone()
+    Ringtone.stop()
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
         Emitter.emit("onBackPressed", "")

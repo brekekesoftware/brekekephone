@@ -18,7 +18,7 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOptionsType,
-    ringtone: ctx.auth.getCurrentAccount()?.ringtoneName,
+    ringtone: ctx.auth.getCurrentAccount()?.ringtone,
   }
   componentDidMount = async () => {
     const me = ctx.uc.me()
@@ -61,8 +61,8 @@ export class PageSettingsOther extends Component {
     if (!!account) {
       ctx.account.accounts.map(v => {
         if (v.id === account.id) {
-          v.ringtoneName = value
-          v.ringtoneData =
+          v.ringtone = value
+          v.ringtoneUri =
             this.state.ringtoneOptions.filter(v => v.key === value)?.[0].uri ??
             defaultRingtone
         }

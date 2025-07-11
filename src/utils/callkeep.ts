@@ -361,6 +361,9 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
   )
+  eventEmitter.addListener('error', (m: string) =>
+    console.error(`Android error: ${m}`),
+  )
   // android native video conference
   eventEmitter.addListener('navChat', async (uuid: string) => {
     await waitTimeoutNav()

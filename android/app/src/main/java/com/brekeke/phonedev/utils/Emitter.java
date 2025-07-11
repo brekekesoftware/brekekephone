@@ -9,26 +9,34 @@ public class Emitter {
     if (ee != null) {
       return;
     }
-    var c = Ctx.main();
-    if (c == null) {
+    var ctx = Ctx.main();
+    if (ctx == null) {
       return;
     }
     try {
-      ee = c.getJSModule(RCTDeviceEventEmitter.class);
+      ee = ctx.getJSModule(RCTDeviceEventEmitter.class);
     } catch (Exception e) {
     }
   }
 
-  public static boolean debug(String data) {
-    return emit("debug", data);
-  }
-
-  public static boolean emit(String name, String data) {
+  public static boolean emit(String k, String d) {
     try {
-      ee.emit(name, data);
+      ee.emit(k, d);
       return true;
     } catch (Exception e) {
       return false;
     }
+  }
+
+  public static boolean debug(String d) {
+    return emit("debug", d);
+  }
+
+  public static boolean error(String d) {
+    return emit("error", d);
+  }
+
+  public static boolean error(String k, String d) {
+    return error(k + " error: " + d);
   }
 }
