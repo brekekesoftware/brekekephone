@@ -7,8 +7,8 @@ import android.os.Handler
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
-import com.brekeke.phonedev.lpc.LpcUtils
 import com.brekeke.phonedev.utils.Emitter
+import com.brekeke.phonedev.utils.Perm
 import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -25,10 +25,7 @@ class MainActivity : ReactActivity() {
   override fun onResume() {
     super.onResume()
     // permissions
-    BrekekeUtils.resolveIgnoreBattery(BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted())
-    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted())
-    // android lpc
-    BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted())
+    Perm.resolve()
     // call history
     // TODO: temporary disabled
     if (true) return

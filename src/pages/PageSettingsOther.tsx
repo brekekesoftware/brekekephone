@@ -8,9 +8,9 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import type { RingtoneOption } from '#/utils/handleRingtone'
-import { getRingtoneOptions } from '#/utils/handleRingtone'
-import { defaultRingtone } from '#/utils/RnNativeModules'
+import { defaultRingtone } from '#/utils/BrekekeUtils'
+import type { RingtoneOption } from '#/utils/getRingtoneOptions'
+import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 
 @observer
 export class PageSettingsOther extends Component {

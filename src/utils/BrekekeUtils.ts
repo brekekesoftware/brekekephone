@@ -5,27 +5,22 @@ import { NativeModules } from 'react-native'
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/callStore'
 
-export enum CallLogType {
-  INCOMING_TYPE = 1,
-  OUTGOING_TYPE = 2,
-  MISSED_TYPE = 3,
-}
-
-export type SystemRingtone = {
-  title: string
-  uri: string
-}
-// same with default pbx tenant
-export const defaultRingtone = '-'
-
 type TBrekekeUtils = {
+  // ==========================================================================
   // these methods only available on android
-  checkPermissionDefaultDialer(): Promise<string>
+  // android permissions
+  permCheckOverlay(): Promise<boolean>
+  permRequestOverlay(): Promise<boolean>
+  permCheckIgnoringBatteryOptimizations(): Promise<boolean>
+  permRequestIgnoringBatteryOptimizations(): Promise<boolean>
+  permCheckAndroidLpc(): Promise<boolean>
+  permRequestAndroidLpc(): Promise<boolean>
+  permDefaultDialer(): Promise<string>
+  // android initial notifications
+  // rn might not be available yet so need to cache and get from js side
   getInitialNotifications(): Promise<string | null>
+  //
   isLocked(): Promise<boolean>
-  getRingtoneOptions(): Promise<SystemRingtone[]>
-  startRingtone(r: string, u: string, t: string, h: string, p: string): void
-  stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
@@ -48,45 +43,44 @@ type TBrekekeUtils = {
   onPageCallManage(uuid: string): void
   getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
-  isOverlayPermissionGranted(): Promise<boolean>
-  isDisableBatteryOptimizationGranted(): Promise<boolean>
-  permDisableBatteryOptimization(): Promise<boolean>
-  permOverlay(): Promise<boolean>
   setUserAgentConfig(userAgentConfig: string): void
   setAudioMode: (mode: number) => void
   // android video conference
-  setRemoteStreams: (
-    uuid: string,
-    streams: Array<{ vId: string; streamUrl: string }>,
-  ) => void
-  setStreamActive: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  setRemoteStreams: (uuid: string, streams: RemoteStream[]) => void
+  setStreamActive: (uuid: string, s: RemoteStream) => void
   setLocalStream: (uuid: string, streamUrl: string) => void
-  addStreamToView: (uuid: string, s: { vId: string; streamUrl: string }) => void
+  addStreamToView: (uuid: string, s: RemoteStream) => void
   removeStreamFromView: (uuid: string, vId: string) => void
-  setOptionsRemoteStream: (
-    uuid: string,
-    d: Array<{ vId: string; enableVideo: boolean }>,
-  ) => void
+  setOptionsRemoteStream: (uuid: string, d: RemoteStreamOption[]) => void
+  // android ringtone
+  getRingtoneOptions(): Promise<SystemRingtone[]>
+  startRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<boolean>
+  stopRingtone(): Promise<boolean>
   // android pending cache and retry pal
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
+  updateAnyHoldLoading(isAnyHoldLoading: boolean): void
   toast(
     uuid: string,
     m: string,
     d: string,
     t: 'success' | 'error' | 'warning' | 'info',
   ): void
-  updateAnyHoldLoading(isAnyHoldLoading: boolean): void
-  // android lpc
-  androidLpcIsPermGranted(): Promise<boolean>
-  androidLpcPermIncomingCall(): Promise<boolean>
 
+  // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
   playRBT(isLoudSpeaker: boolean): void
   stopRBT(): Promise<void>
   setProximityMonitoring(enabled: boolean): void
 
+  // ==========================================================================
   // these methods available on both
   enableLPC(
     token: string,
@@ -107,12 +101,21 @@ export type TNativeModules = {
 }
 
 const Polyfill: TBrekekeUtils = {
-  checkPermissionDefaultDialer: () => Promise.resolve(''),
+  // ==========================================================================
+  // these methods only available on android
+  // android permissions
+  permCheckOverlay: () => Promise.resolve(false),
+  permRequestOverlay: () => Promise.resolve(false),
+  permCheckIgnoringBatteryOptimizations: () => Promise.resolve(false),
+  permRequestIgnoringBatteryOptimizations: () => Promise.resolve(false),
+  permCheckAndroidLpc: () => Promise.resolve(false),
+  permRequestAndroidLpc: () => Promise.resolve(false),
+  permDefaultDialer: () => Promise.resolve(''),
+  // android initial notifications
+  // rn might not be available yet so need to cache and get from js side
   getInitialNotifications: () => Promise.resolve(null),
+  //
   isLocked: () => Promise.resolve(false),
-  getRingtoneOptions: () => Promise.resolve([]),
-  startRingtone: () => undefined,
-  stopRingtone: () => undefined,
   backToBackground: () => undefined,
   hasIncomingCallActivity: () => Promise.resolve(false),
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
@@ -135,10 +138,6 @@ const Polyfill: TBrekekeUtils = {
   onPageCallManage: () => undefined,
   getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
-  isOverlayPermissionGranted: () => Promise.resolve(false),
-  isDisableBatteryOptimizationGranted: () => Promise.resolve(false),
-  permDisableBatteryOptimization: () => Promise.resolve(false),
-  permOverlay: () => Promise.resolve(false),
   setUserAgentConfig: () => undefined,
   setAudioMode: () => undefined,
   // android video conference
@@ -148,21 +147,24 @@ const Polyfill: TBrekekeUtils = {
   addStreamToView: () => undefined,
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
+  // android ringtone
+  getRingtoneOptions: () => Promise.resolve([]),
+  startRingtone: () => Promise.resolve(false),
+  stopRingtone: () => Promise.resolve(false),
   // android pending cache and retry pal
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
-  toast: () => undefined,
   updateAnyHoldLoading: () => undefined,
-  // android lpc
-  androidLpcIsPermGranted: () => Promise.resolve(false),
-  androidLpcPermIncomingCall: () => Promise.resolve(false),
+  toast: () => undefined,
 
+  // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
   playRBT: () => undefined,
   stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
 
+  // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
   disableLPC: () => undefined,
@@ -186,3 +188,24 @@ Object.keys(Polyfill)
   .forEach(k => {
     set(BrekekeUtils, k, get(Polyfill, k))
   })
+
+export enum CallLogType {
+  INCOMING_TYPE = 1,
+  OUTGOING_TYPE = 2,
+  MISSED_TYPE = 3,
+}
+
+export type SystemRingtone = {
+  title: string
+  uri: string
+}
+// same with default pbx tenant
+export const defaultRingtone = '-'
+
+export type RemoteStream = {
+  vId: string
+  streamUrl: string
+}
+export type RemoteStreamOption = Pick<RemoteStream, 'vId'> & {
+  enableVideo: boolean
+}

@@ -14,8 +14,8 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false

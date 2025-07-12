@@ -1,5 +1,5 @@
 import { intl } from '#/stores/intl'
-import { BrekekeUtils, defaultRingtone } from '#/utils/RnNativeModules'
+import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
 
 export type RingtoneOption = {
   key: string

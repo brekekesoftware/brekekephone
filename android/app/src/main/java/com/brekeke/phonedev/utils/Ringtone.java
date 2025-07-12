@@ -136,9 +136,8 @@ public class Ringtone {
             return new Pair<>(title, uri);
           }
         };
-
-    Spliterator<Pair<String, String>> spliterator =
-        Spliterators.spliteratorUnknownSize(iterator, 0);
+    var spliterator =
+        (Spliterator<Pair<String, String>>) Spliterators.spliteratorUnknownSize(iterator, 0);
     return StreamSupport.stream(spliterator, false).onClose(c::close);
   }
 
@@ -175,8 +174,9 @@ public class Ringtone {
   // get from push notification and validate
   public static String get(String r, String u, String t, String h, String p) {
     try {
-      if (!TextUtils.isEmpty(r)) {
-        return validate(r);
+      var v = _validate(r);
+      if (!TextUtils.isEmpty(v)) {
+        return v;
       }
       return get(u, t, h, p);
     } catch (Exception e) {
@@ -189,15 +189,15 @@ public class Ringtone {
     try {
       var a = Account.find(u, t, h, p);
       var r = _validate(a.getString("ringtoneUri"));
-      if (r != null) {
+      if (!TextUtils.isEmpty(r)) {
         return r;
       }
       r = _validate(a.getString("ringtone"));
-      if (r != null) {
+      if (!TextUtils.isEmpty(r)) {
         return r;
       }
       r = _validate(a.getString("pbxRingtone"));
-      if (r != null) {
+      if (!TextUtils.isEmpty(r)) {
         return r;
       }
     } catch (Exception e) {

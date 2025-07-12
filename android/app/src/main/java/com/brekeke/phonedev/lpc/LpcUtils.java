@@ -2,7 +2,6 @@ package com.brekeke.phonedev.lpc;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.AppOpsManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,7 +15,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.brekeke.phonedev.R;
-import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.L;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -29,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -126,30 +123,6 @@ public class LpcUtils {
     public static void setLpcCallback(callbackInterface c) {
       cb = c;
     }
-  }
-
-  // check perm
-
-  public static final int OP_BACKGROUND_START_ACTIVITY = 10021;
-
-  public static boolean androidLpcIsPermGranted() {
-    try {
-      var ctx = Ctx.app();
-      var mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
-      Method m =
-          AppOpsManager.class.getMethod("checkOpNoThrow", int.class, int.class, String.class);
-      int r =
-          (int)
-              m.invoke(
-                  mgr,
-                  OP_BACKGROUND_START_ACTIVITY,
-                  android.os.Process.myUid(),
-                  ctx.getPackageName());
-      return r == AppOpsManager.MODE_ALLOWED;
-    } catch (Exception e) {
-      Log.d(TAG, "isCustomPermissionGranted: " + e.getMessage());
-    }
-    return true;
   }
 
   // utils to get MIUI

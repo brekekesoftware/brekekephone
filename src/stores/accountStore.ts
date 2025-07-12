@@ -11,10 +11,10 @@ import { compareSemVer } from '#/stores/debugStore'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
+import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils, defaultRingtone } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let resolveFn: Function | undefined

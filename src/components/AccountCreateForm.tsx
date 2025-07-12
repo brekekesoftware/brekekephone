@@ -11,9 +11,9 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import type { RingtoneOption } from '#/utils/handleRingtone'
-import { getRingtoneOptions } from '#/utils/handleRingtone'
-import { defaultRingtone } from '#/utils/RnNativeModules'
+import { defaultRingtone } from '#/utils/BrekekeUtils'
+import type { RingtoneOption } from '#/utils/getRingtoneOptions'
+import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -113,12 +113,9 @@ export const AccountCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
-      console.log({ account: $.account })
       if (!isWeb) {
-        const uri = $.ringtoneOptions.find(
-          v => v.key === $.account.ringtone,
-        )?.uri
-        $.account.ringtoneUri = uri ? uri : defaultRingtone
+        const r = $.ringtoneOptions.find(v => v.key === $.account.ringtone)
+        $.account.ringtoneUri = r?.uri ? r.uri : defaultRingtone
       }
       props.onSave($.account, $.hasUnsavedChanges())
     },

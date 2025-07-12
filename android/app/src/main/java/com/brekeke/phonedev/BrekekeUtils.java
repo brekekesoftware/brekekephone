@@ -11,14 +11,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.CallLog;
-import android.provider.Settings;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
 import androidx.activity.result.ActivityResultLauncher;
@@ -33,6 +31,7 @@ import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.PN;
+import com.brekeke.phonedev.utils.Perm;
 import com.brekeke.phonedev.utils.Ringtone;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -56,9 +55,6 @@ import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Promise defaultDialerPromise;
-  public static Promise disableBatteryOptimizationPromise;
-  public static Promise androidLpcPermPromise;
-  public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
 
   public static WakeLock wl;
@@ -307,7 +303,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   //
   // manage all IncomingCallActivity
-  public static ArrayList<IncomingCallActivity> activities = new ArrayList<IncomingCallActivity>();
+  public static ArrayList<IncomingCallActivity> activities = new ArrayList<>();
   // manually manage activities size:
   // try to increase BEFORE contructing the intent, the above activities is add AFTER constructing
   public static int activitiesSize = 0;
@@ -513,85 +509,53 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return l.equals("on") || l.equals("true") || l.equals("1") || Boolean.parseBoolean(l);
   }
 
-  // perm Ignoring Battery Optimization
-  public static boolean isIgnoringBatteryOptimizationPermissionGranted() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return true;
-    }
-    var ctx = Ctx.app();
-    if (ctx == null) {
-      return false;
-    }
-    var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-    return pm.isIgnoringBatteryOptimizations(ctx.getPackageName());
-  }
-
-  public static void resolveIgnoreBattery(boolean result) {
-    if (disableBatteryOptimizationPromise != null) {
-      disableBatteryOptimizationPromise.resolve(result);
-      disableBatteryOptimizationPromise = null;
-    }
-  }
-
-  public static void requestDisableBatteryOptimization() {
-    var ctx = Ctx.app();
-    var i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-    i.setData(Uri.parse("package:" + ctx.getPackageName()));
-    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    ctx.startActivity(i);
-  }
-
-  // overlay screen permission
-  public static boolean isOverlayPermissionGranted() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return true;
-    }
-    var ctx = Ctx.app();
-    if (ctx == null) {
-      return false;
-    }
-    return Settings.canDrawOverlays(ctx);
-  }
-
-  public static void requestOverlayScreenOptimization() {
-    var ctx = Ctx.app();
-    var i =
-        new Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:" + ctx.getPackageName()));
-    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    ctx.startActivity(i);
-  }
-
-  public static void resolveOverlayScreen(boolean result) {
-    if (overlayScreenPromise != null) {
-      overlayScreenPromise.resolve(result);
-      overlayScreenPromise = null;
-    }
-  }
-
   public static boolean isUserAgentConfig() {
     return BrekekeUtils.userAgentConfig != null && !BrekekeUtils.userAgentConfig.equals("");
   }
 
   // ==========================================================================
   // react methods
+
+  // ==========================================================================
+  // permissions
+
   @ReactMethod
-  public void setAudioMode(int mode) {
-    try {
-      Ringtone.setAudioMode(mode);
-    } catch (Exception e) {
-    }
+  public void permCheckOverlay(Promise p) {
+    p.resolve(Perm.check(Perm.Overlay));
   }
 
   @ReactMethod
-  public void getRingerMode(Promise p) {
-    try {
-      p.resolve(Ringtone.getRingerMode());
-    } catch (Exception e) {
-      Emitter.error("getRingerMode", e.getMessage());
-      p.resolve(-1);
-    }
+  public void permRequestOverlay(Promise p) {
+    Perm.request(Perm.Overlay, p);
+  }
+
+  @ReactMethod
+  public void permCheckIgnoringBatteryOptimizations(Promise p) {
+    p.resolve(Perm.check(Perm.IgnoringBatteryOptimizations));
+  }
+
+  @ReactMethod
+  public void permRequestIgnoringBatteryOptimizations(Promise p) {
+    Perm.request(Perm.IgnoringBatteryOptimizations, p);
+  }
+
+  // "Show on lock screen"
+  // "Open new window when running in background"
+  // "Displaying popup windows while running in the background"
+  @ReactMethod
+  public void permCheckAndroidLpc(Promise p) {
+    Perm.check(Perm.AndroidLpc);
+  }
+
+  @ReactMethod
+  void permRequestAndroidLpc(Promise p) {
+    Perm.request(Perm.AndroidLpc, p);
+  }
+
+  @ReactMethod
+  public void permDefaultDialer(Promise p) {
+    defaultDialerPromise = p;
+    checkDefaultDialer();
   }
 
   @ReactMethod
@@ -685,34 +649,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void isOverlayPermissionGranted(Promise p) {
-    p.resolve(isOverlayPermissionGranted());
-  }
-
-  @ReactMethod
-  public void isDisableBatteryOptimizationGranted(Promise p) {
-    p.resolve(isIgnoringBatteryOptimizationPermissionGranted());
-  }
-
-  @ReactMethod
-  public void permDisableBatteryOptimization(Promise p) {
-    disableBatteryOptimizationPromise = p;
-    requestDisableBatteryOptimization();
-  }
-
-  @ReactMethod
-  public void permOverlay(Promise p) {
-    overlayScreenPromise = p;
-    requestOverlayScreenOptimization();
-  }
-
-  @ReactMethod
-  public void checkPermissionDefaultDialer(Promise p) {
-    defaultDialerPromise = p;
-    checkDefaultDialer();
-  }
-
-  @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
   }
@@ -732,13 +668,33 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startRingtone(String r, String u, String t, String h, String p) {
-    Ringtone.play(Ringtone.get(r, u, t, h, p));
+  public void startRingtone(String r, String u, String t, String h, String p, Promise promise) {
+    var v = Ringtone.play(Ringtone.get(r, u, t, h, p));
+    promise.resolve(v);
   }
 
   @ReactMethod
-  public void stopRingtone() {
-    Ringtone.stop();
+  public void stopRingtone(Promise p) {
+    var v = Ringtone.stop();
+    p.resolve(v);
+  }
+
+  @ReactMethod
+  public void setAudioMode(int mode) {
+    try {
+      Ringtone.setAudioMode(mode);
+    } catch (Exception e) {
+    }
+  }
+
+  @ReactMethod
+  public void getRingerMode(Promise p) {
+    try {
+      p.resolve(Ringtone.getRingerMode());
+    } catch (Exception e) {
+      Emitter.error("getRingerMode", e.getMessage());
+      p.resolve(-1);
+    }
   }
 
   @ReactMethod
@@ -1063,40 +1019,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       }
     } catch (Exception e) {
       Emitter.error("disableLPC", e.getMessage());
-    }
-  }
-
-  // "Show on lock screen"
-  // "Open new window when running in background"
-  // "Displaying popup windows while running in the background"
-  @ReactMethod
-  void androidLpcPermIncomingCall(Promise p) {
-    if (LpcUtils.androidLpcIsPermGranted()) {
-      return;
-    }
-    Intent i = null;
-    var ctx = Ctx.app();
-    if (LpcUtils.isMIUI()) {
-      i = LpcUtils.getPermissionManagerIntent(ctx);
-      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-    } else {
-      // TODO: check for other OS
-      p.resolve(true);
-      return;
-    }
-    androidLpcPermPromise = p;
-    ctx.startActivity(i);
-  }
-
-  @ReactMethod
-  public void androidLpcIsPermGranted(Promise p) {
-    p.resolve(LpcUtils.androidLpcIsPermGranted());
-  }
-
-  public static void androidLpcResolvePerm(boolean result) {
-    if (androidLpcPermPromise != null) {
-      androidLpcPermPromise.resolve(result);
-      androidLpcPermPromise = null;
     }
   }
 
