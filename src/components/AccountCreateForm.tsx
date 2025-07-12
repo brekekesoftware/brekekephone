@@ -115,9 +115,10 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       console.log({ account: $.account })
       if (!isWeb) {
-        $.account.ringtoneUri =
-          $.ringtoneOptions.filter(v => v.key === $.account.ringtone)?.[0]
-            .uri ?? defaultRingtone
+        const uri = $.ringtoneOptions.find(
+          v => v.key === $.account.ringtone,
+        )?.uri
+        $.account.ringtoneUri = uri ? uri : defaultRingtone
       }
       props.onSave($.account, $.hasUnsavedChanges())
     },
