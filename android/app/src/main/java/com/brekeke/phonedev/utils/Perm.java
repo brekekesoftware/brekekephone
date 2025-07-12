@@ -26,6 +26,7 @@ public class Perm {
     boolean check();
 
     // return true if already open activity and wait for main activity on resume
+    // it should add the promise to the pending array and wait for on resume
     // otherwise, it will resolve the promise as true immediately
     boolean request();
   }

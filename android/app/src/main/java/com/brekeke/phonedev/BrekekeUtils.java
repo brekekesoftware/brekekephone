@@ -675,8 +675,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void stopRingtone(Promise p) {
-    var v = Ringtone.stop();
-    p.resolve(v);
+    Ringtone.stop();
+    p.resolve(true);
   }
 
   @ReactMethod

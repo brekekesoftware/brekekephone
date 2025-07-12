@@ -215,13 +215,14 @@ public class Ringtone {
   private static Vibrator vib;
   private static MediaPlayer mp;
 
-  public static void play(String r) {
+  public static boolean play(String r) {
     if (mp != null) {
-      return;
+      // return false if already playing
+      return false;
     }
     int m = am.getRingerMode();
     if (m == AudioManager.RINGER_MODE_SILENT) {
-      return;
+      return true;
     }
     var ctx = Ctx.app();
     if (vib == null) {
@@ -234,7 +235,7 @@ public class Ringtone {
       vib.vibrate(pattern, 0);
     }
     if (m == AudioManager.RINGER_MODE_VIBRATE) {
-      return;
+      return true;
     }
     am.setMode(AudioManager.MODE_RINGTONE);
     try {
@@ -247,6 +248,7 @@ public class Ringtone {
       }
       Emitter.error("Ringtone play", e.getMessage());
     }
+    return true;
   }
 
   private static void _play(String r) throws Exception {
