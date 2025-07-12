@@ -1,6 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
@@ -10,6 +11,9 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import type { RingtoneOption } from '#/utils/handleRingtone'
+import { getRingtoneOptions } from '#/utils/handleRingtone'
+import { defaultRingtone } from '#/utils/RnNativeModules'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -27,6 +31,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
+      ringtoneOptions: [] as RingtoneOption[],
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -86,7 +91,6 @@ export const AccountCreateForm: FC<{
         },
       })
     },
-    //
     hasUnsavedChanges: () => {
       const a = props.updating || ctx.account.genEmptyAccount()
       if (!props.updating) {
@@ -110,15 +114,32 @@ export const AccountCreateForm: FC<{
     },
     onValidSubmit: () => {
       console.log({ account: $.account })
+      if (!isWeb) {
+        $.account.ringtoneUri =
+          $.ringtoneOptions.filter(v => v.key === $.account.ringtone)?.[0]
+            .uri ?? defaultRingtone
+      }
       props.onSave($.account, $.hasUnsavedChanges())
     },
   })
+
   type M0 = ReturnType<typeof m>
   type M = Omit<M0, 'observable'> &
     M0['observable'] &
     ReturnType<typeof useStore>
   const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
+
+  const getLocalRingtone = async () => {
+    $.ringtoneOptions = await getRingtoneOptions()
+  }
+
+  useEffect(() => {
+    if (!isWeb && !props.footerLogout) {
+      getLocalRingtone()
+    }
+  }, [])
+
   return (
     <Layout
       description={
@@ -276,6 +297,19 @@ export const AccountCreateForm: FC<{
                   onCreateBtnPress: $.onAddingParkSubmit,
                 },
               ]),
+          {
+            isGroup: true,
+            label: intl`Ringtone`,
+            hasMargin: true,
+            hidden: isWeb || props.footerLogout,
+          },
+          {
+            disabled: props.footerLogout,
+            type: 'RnPicker',
+            name: 'ringtone',
+            options: $.ringtoneOptions,
+            hidden: isWeb || props.footerLogout,
+          },
         ]}
         k='account'
         onValidSubmit={$.onValidSubmit}

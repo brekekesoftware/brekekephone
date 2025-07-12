@@ -79,6 +79,7 @@ export const CallNotify = observer(() => {
   const n = ctx.call.calls.filter(
     _ => _.incoming && !_.answered && _.id !== c.id,
   ).length
+
   return (
     <Wrapper>
       {ctx.call.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}

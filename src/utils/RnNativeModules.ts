@@ -11,12 +11,20 @@ export enum CallLogType {
   MISSED_TYPE = 3,
 }
 
+export type SystemRingtone = {
+  title: string
+  uri: string
+}
+// same with default pbx tenant
+export const defaultRingtone = '-'
+
 type TBrekekeUtils = {
   // these methods only available on android
   checkPermissionDefaultDialer(): Promise<string>
   getInitialNotifications(): Promise<string | null>
   isLocked(): Promise<boolean>
-  startRingtone(): void
+  getRingtoneOptions(): Promise<SystemRingtone[]>
+  startRingtone(r: string, u: string, t: string, h: string, p: string): void
   stopRingtone(): void
   backToBackground(): void
   hasIncomingCallActivity(uuid: string): Promise<boolean>
@@ -62,11 +70,11 @@ type TBrekekeUtils = {
   // android pending cache and retry pal
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
-  showToast(
+  toast(
     uuid: string,
-    msg: string,
-    type: 'success' | 'error' | 'warning' | 'info',
-    err: string | undefined,
+    m: string,
+    d: string,
+    t: 'success' | 'error' | 'warning' | 'info',
   ): void
   updateAnyHoldLoading(isAnyHoldLoading: boolean): void
   // android lpc
@@ -102,6 +110,7 @@ const Polyfill: TBrekekeUtils = {
   checkPermissionDefaultDialer: () => Promise.resolve(''),
   getInitialNotifications: () => Promise.resolve(null),
   isLocked: () => Promise.resolve(false),
+  getRingtoneOptions: () => Promise.resolve([]),
   startRingtone: () => undefined,
   stopRingtone: () => undefined,
   backToBackground: () => undefined,
@@ -142,7 +151,7 @@ const Polyfill: TBrekekeUtils = {
   // android pending cache and retry pal
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
-  showToast: () => undefined,
+  toast: () => undefined,
   updateAnyHoldLoading: () => undefined,
   // android lpc
   androidLpcIsPermGranted: () => Promise.resolve(false),

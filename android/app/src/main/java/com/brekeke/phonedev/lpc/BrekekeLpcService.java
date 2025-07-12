@@ -91,9 +91,9 @@ public class BrekekeLpcService extends Service {
     createConnection(settings);
   }
 
-  private static void stopLPCService(Context c) {
+  private static void stopLPCService(Context ctx) {
     if (iService != null) {
-      c.stopService(iService);
+      ctx.stopService(iService);
     }
   }
 

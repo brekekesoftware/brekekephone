@@ -8,22 +8,22 @@ clean:
 	cd android && ./gradlew clean;
 
 start:
-	make -Bs rm-babel-cache && \
+	make -Bs rm_babel_cache && \
 	yarn craco start;
 
 build:
-	make -Bs rm-babel-cache && \
+	make -Bs rm_babel_cache && \
 	yarn craco build && \
 	node .embed;
 
 intl:
-	make -Bs rm-babel-cache && \
+	make -Bs rm_babel_cache && \
 	export EXTRACT_INTL=1 && \
 	yarn babel src -x .js,.ts,.tsx -d build && \
 	rm -rf build && \
 	node .intlBuild;
 
-rm-babel-cache:
+rm_babel_cache:
 	rm -rf node_modules/.cache/babel* .intlNewEn.json;
 
 ###
@@ -48,29 +48,29 @@ patch:
 ###
 # format
 
-format:
-	yarn format && \
-	make -Bs format_objc && \
-	make -Bs format_swift && \
-	make -Bs format_java && \
-	make -Bs format_kotlin && \
-	make -Bs format_xml;
+fmt:
+	yarn lint && \
+	make -Bs fmt_objc && \
+	make -Bs fmt_swift && \
+	make -Bs fmt_java && \
+	make -Bs fmt_kotlin && \
+	make -Bs fmt_xml;
 
-format_objc:
+fmt_objc:
 	export EXT="h|m" && \
 	make -Bs ls | \
 	xargs clang-format-11 -i -style=file;
-format_swift:
+fmt_swift:
 	swiftformat ios;
-format_java:
+fmt_java:
 	export EXT="java" && \
 	make -Bs ls | \
 	xargs google-java-format -i;
-format_kotlin:
+fmt_kotlin:
 	export EXT="kt" && \
 	make -Bs ls | \
 	xargs ktfmt -i;
-format_xml:
+fmt_xml:
 	export EXT="xml|storyboard|xcscheme|xcworkspacedata" && \
 	make -Bs ls | \
 	xargs yarn -s prettier --plugin=@prettier/plugin-xml --parser=xml --xml-whitespace-sensitivity=ignore --log-level=error --write;

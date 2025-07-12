@@ -11,24 +11,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioAttributes;
-import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
-import android.media.AudioManager.OnCommunicationDeviceChangedListener;
-import android.media.AudioManager.OnModeChangedListener;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
-import android.util.Log;
+import android.text.TextUtils;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
@@ -36,9 +28,12 @@ import com.brekeke.phonedev.activity.IncomingCallActivity;
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
+import com.brekeke.phonedev.utils.Account;
+import com.brekeke.phonedev.utils.Ctx;
+import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
-import com.brekeke.phonedev.utils.ToastType;
-import com.facebook.react.bridge.Arguments;
+import com.brekeke.phonedev.utils.PN;
+import com.brekeke.phonedev.utils.Ringtone;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -46,11 +41,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-import com.google.firebase.messaging.RemoteMessage;
-import com.reactnativecommunity.asyncstorage.AsyncLocalStorageUtil;
-import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
 import java.net.URL;
@@ -60,66 +50,36 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BrekekeUtils extends ReactContextBaseJavaModule {
-  public static RCTDeviceEventEmitter eventEmitter;
   public static Promise defaultDialerPromise;
   public static Promise disableBatteryOptimizationPromise;
   public static Promise androidLpcPermPromise;
   public static Promise overlayScreenPromise;
   private static String TAG = "[BrekekeUtils]";
 
-  public static WritableMap parseParams(RemoteMessage message) {
-    WritableMap params = Arguments.createMap();
-    params.putString("from", message.getFrom());
-    params.putString("google.message_id", message.getMessageId());
-    params.putString("google.to", message.getTo());
-    params.putDouble("google.sent_time", message.getSentTime());
-    if (message.getData() != null) {
-      Map<String, String> data = message.getData();
-      Set<String> keysIterator = data.keySet();
-      for (String key : keysIterator) {
-        params.putString(key, data.get(key));
-      }
-    }
-    return params;
-  }
-
-  public static void emit(String name, String data) {
-    try {
-      eventEmitter.emit(name, data);
-    } catch (Exception e) {
-    }
-  }
-
   public static WakeLock wl;
 
   public static void acquireWakeLock() {
     if (!wl.isHeld()) {
-      emit("debug", "calling wl.acquire()");
+      Emitter.debug("calling wl.acquire()");
       wl.acquire();
     }
   }
 
   public static void releaseWakeLock() {
     if (wl.isHeld()) {
-      emit("debug", "calling wl.release()");
+      Emitter.debug("calling wl.release()");
       wl.release();
     }
   }
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
-  public static ReactApplicationContext ctx;
   public static KeyguardManager km;
-  public static AudioManager am;
-  public static Vibrator vib;
 
   public static boolean isAppActive = false;
   public static boolean isAppActiveLocked = false;
@@ -127,69 +87,16 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean phoneappliEnabled = false;
   public static String userAgentConfig = null;
 
-  BrekekeUtils(ReactApplicationContext c) {
-    super(c);
-    ctx = c;
-    initStaticServices(c);
-    debugAudioListener();
-  }
-
-  private void debugAudioListener() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      return;
-    }
-    OnModeChangedListener l1 =
-        new OnModeChangedListener() {
-          @Override
-          public void onModeChanged(int mode) {
-            switch (mode) {
-              case AudioManager.MODE_NORMAL:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_NORMAL");
-                break;
-              case AudioManager.MODE_INVALID:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_INVALID");
-                break;
-              case AudioManager.MODE_CURRENT:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_CURRENT");
-                break;
-              case AudioManager.MODE_RINGTONE:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_RINGTONE");
-                break;
-              case AudioManager.MODE_IN_CALL:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_CALL");
-                break;
-              case AudioManager.MODE_IN_COMMUNICATION:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_IN_COMMUNICATION");
-                break;
-              case AudioManager.MODE_CALL_SCREENING:
-                emit("debug", "onModeChanged:mode::AudioManager.MODE_CALL_SCREENING");
-                break;
-              default:
-                emit("debug", "onModeChanged:mode::" + mode);
-                break;
-            }
-          }
-        };
-    OnCommunicationDeviceChangedListener l2 =
-        new OnCommunicationDeviceChangedListener() {
-          @Override
-          public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
-            emit(
-                "debug",
-                "onCommunicationDeviceChanged:AudioDeviceInfo::"
-                    + device.getType()
-                    + "::"
-                    + device.getProductName());
-          }
-        };
-    am.addOnModeChangedListener(ctx.getMainExecutor(), l1);
-    am.addOnCommunicationDeviceChangedListener(ctx.getMainExecutor(), l2);
+  BrekekeUtils(ReactApplicationContext ctx) {
+    super(ctx);
+    Ctx.wakeFromMainRn(ctx);
+    initStaticServices();
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    eventEmitter = ctx.getJSModule(RCTDeviceEventEmitter.class);
+    Emitter.init();
   }
 
   @Override
@@ -199,21 +106,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // [callkeepUuid] -> display/answerCall/rejectCall
   public static Map<String, String> userActions = new HashMap<String, String>();
-  public static Context fcm;
 
-  public static void initStaticServices(Context c) {
+  public static void initStaticServices() {
+    var ctx = Ctx.app();
     if (wl == null) {
-      PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
+      var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
       wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::BrekekeUtils");
     }
     if (km == null) {
-      km = (KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE);
-    }
-    if (am == null) {
-      am = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
-    }
-    if (ctx == null) {
-      fcm = c;
+      km = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
     }
   }
 
@@ -238,9 +139,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       return true;
     }
     try {
-      URL aURL = new URL(url.toLowerCase());
-      Pattern p = Pattern.compile(".(jpeg|jpg|gif|png)$");
-      Matcher m = p.matcher(aURL.getPath());
+      var aURL = new URL(url.toLowerCase());
+      var p = Pattern.compile(".(jpeg|jpg|gif|png)$");
+      var m = p.matcher(aURL.getPath());
       return m.find();
     } catch (Exception e) {
       e.printStackTrace();
@@ -252,7 +153,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Map<String, String> destroyedUuids = new HashMap<String, String>();
 
   public static void intervalCheckRejectCall(String uuid) {
-    Handler h = new Handler();
+    var h = new Handler();
     h.postDelayed(
         new Runnable() {
           @Override
@@ -273,49 +174,49 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         1000);
   }
 
-  public static void onFcmMessageReceived(Context c, Map<String, String> data) {
+  public static void onFcmMessageReceived(Map<String, String> m) {
     // check if it is a PN for incoming call
-    if (data.get("x_pn-id") == null) {
+    if (PN.id(m) == null) {
+      return;
+    }
+    if (Account.find(m) == null) {
+      Emitter.error("onFcmMessageReceived", "account 404");
       return;
     }
     // init services if not
-    initStaticServices(c);
+    initStaticServices();
     acquireWakeLock();
     // generate new uuid and store it to the PN bundle
-    String now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
-    data.put("callkeepAt", now);
-    String uuid = UUID.randomUUID().toString().toUpperCase();
-    data.put("callkeepUuid", uuid);
-    // check if the account exist and load the locale
-    Context appCtx = c.getApplicationContext();
-    if (!checkAccountExist(appCtx, data)) {
-      return;
+    var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
+    m.put("callkeepAt", now);
+    var uuid = UUID.randomUUID().toString().toUpperCase();
+    m.put("callkeepUuid", uuid);
+    // get caller display name to display the incoming call
+    var displayName = PN.displayName(m);
+    if (TextUtils.isEmpty(displayName)) {
+      displayName = PN.from(m);
     }
-    prepareLocale(appCtx);
-    // show call
-    String displayName = data.get("x_displayname");
-    if (displayName == null || displayName.isEmpty()) {
-      displayName = data.get("x_from");
-    }
-    if (displayName == null || displayName.isEmpty()) {
+    if (TextUtils.isEmpty(displayName)) {
       displayName = "Loading...";
     }
-
+    var ctx = Ctx.app();
+    RNCallKeepModule.registerPhoneAccount(ctx);
     // redeclare as final to put in nested class
-    String callerName = displayName;
-    String avatar = data.get("x_image");
-    String avatarSize = data.get("x_image_size");
-    boolean autoAnswer = toBoolean(data.get("x_autoanswer"));
-    RNCallKeepModule.registerPhoneAccount(appCtx);
-
-    Runnable onShowIncomingCallUi =
+    final var lpc = toBoolean(m.get("lpc"));
+    final var callerName = displayName;
+    final var avatar = PN.image(m);
+    final var avatarSize = PN.imageSize(m);
+    final var autoAnswer = toBoolean(PN.autoAnswer(m));
+    final var ringtone =
+        Ringtone.get(PN.ringtone(m), PN.username(m), PN.tenant(m), PN.host(m), PN.port(m));
+    var onShowIncomingCall =
         new Runnable() {
           @Override
           public void run() {
-            String a = userActions.get(uuid);
+            var a = userActions.get(uuid);
             if (a != null) {
               if ("rejectCall".equals(a)) {
-                RNCallKeepModule.staticEndCall(uuid, appCtx);
+                RNCallKeepModule.staticEndCall(uuid, ctx);
               }
               return;
             }
@@ -324,83 +225,36 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             if (activitiesSize == 1) {
               firstShowCallAppActive = isAppActive || isAppActiveLocked;
             }
-            Intent i = new Intent(appCtx, IncomingCallActivity.class);
-
+            var i = new Intent(ctx, IncomingCallActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             i.putExtra("uuid", uuid);
             i.putExtra("callerName", callerName);
             i.putExtra("avatar", avatar);
             i.putExtra("avatarSize", avatarSize);
             i.putExtra("autoAnswer", autoAnswer);
-            c.startActivity(i);
-
-            // check if incoming via lpc and show the notification
-            String fromLpc = data.get("fromLpc");
-            if (fromLpc != null && "true".equalsIgnoreCase(fromLpc)) {
-              LpcUtils.showIncomingCallNotification(appCtx, i);
+            i.putExtra("ringtone", ringtone);
+            ctx.startActivity(i);
+            if (lpc) {
+              LpcUtils.showIncomingCallNotification(ctx, i);
             }
           }
         };
-    Runnable onReject =
+    var onReject =
         new Runnable() {
           @Override
           public void run() {
             onPassiveReject(uuid);
           }
         };
-    // try to run onShowIncomingCallUi if there is already an ongoing call
+    // try to run onShowIncomingCall if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
         || activitiesSize > 0) {
-      onShowIncomingCallUi.run();
+      onShowIncomingCall.run();
     }
-
-    RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCallUi);
+    RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCall);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
     RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false, null);
-  }
-
-  private static void prepareLocale(Context appCtx) {
-    if (L.l == null) {
-      try {
-        L.l =
-            AsyncLocalStorageUtil.getItemImpl(
-                ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "locale");
-      } catch (Exception e) {
-      }
-    }
-    if (L.l == null) {
-      L.l = "en";
-    }
-    if (!"en".equals(L.l) && !"ja".equals(L.l)) {
-      L.l = "en";
-    }
-  }
-
-  private static boolean checkAccountExist(Context appCtx, Map<String, String> data) {
-    try {
-      String pbxUsername = data.get("x_to");
-      if (pbxUsername == null || pbxUsername.isEmpty()) {
-        return false;
-      }
-      String pbxHostname = data.get("x_host");
-      String pbxTenant = data.get("x_tenant");
-      String jsonStr =
-          AsyncLocalStorageUtil.getItemImpl(
-              ReactDatabaseSupplier.getInstance(appCtx).getReadableDatabase(), "_api_profiles");
-      JSONArray accounts = (new JSONObject(jsonStr)).getJSONArray("profiles");
-      for (int i = 0; i < accounts.length(); i++) {
-        JSONObject a = accounts.getJSONObject(i);
-        // same logic compareAccount in js code authStore
-        if (pbxUsername.equals(a.getString("pbxUsername"))
-            && (pbxHostname == null || pbxHostname.equals(a.getString("pbxHostname")))
-            && (pbxTenant == null || pbxTenant.equals(a.getString("pbxTenant")))) {
-          return true;
-        }
-      }
-    } catch (Exception e) {
-    }
-    return false;
   }
 
   // when an incoming GSM call is ringing
@@ -409,8 +263,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // we will manually fire the rejectCall event here
   // there may be duplicated events in some cases, need to test more
   public static void onPassiveReject(String uuid) {
-    emit("debug", "onPassiveReject uuid=" + uuid);
-    emit("rejectCall", uuid);
+    Emitter.debug("onPassiveReject uuid=" + uuid);
+    Emitter.emit("rejectCall", uuid);
     staticCloseIncomingCall(uuid);
   }
 
@@ -436,7 +290,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       }
     }
     if (main == null) {
-      Intent i = new Intent(ctx, ExitActivity.class);
+      var ctx = Ctx.app();
+      var i = new Intent(ctx, ExitActivity.class);
       i.addFlags(
           Intent.FLAG_ACTIVITY_NEW_TASK
               | Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -462,8 +317,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void remove(String uuid) {
     removeCallKeepCallbacks(uuid);
-    IncomingCallActivity a = at(uuid);
-    emit("debug", "remove a==null " + (a == null));
+    var a = at(uuid);
+    Emitter.debug("remove a==null " + (a == null));
     if (a == null) {
       return;
     }
@@ -481,14 +336,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void removeAll() {
-    emit("debug", "removeAll");
-    staticStopRingtone();
+    Emitter.debug("removeAll");
+    Ringtone.stop();
     if (activities.size() <= 0) {
       return;
     }
-    boolean atLeastOneAnswerPressed = false;
+    var atLeastOneAnswerPressed = false;
     try {
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         atLeastOneAnswerPressed = atLeastOneAnswerPressed || a.answered;
         a.forceFinish();
         removeCallKeepCallbacks(a.uuid);
@@ -502,7 +357,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void staticCloseIncomingCall(String uuid) {
-    emit("debug", "staticCloseIncomingCall");
+    Emitter.debug("staticCloseIncomingCall");
     try {
       at(uuid).answered = false;
     } catch (Exception e) {
@@ -513,7 +368,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   private static IncomingCallActivity at(String uuid) {
     try {
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         if (a.uuid.equals(uuid)) {
           return a;
         }
@@ -526,7 +381,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   private static int index(String uuid) {
     try {
       int i = 0;
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         if (a.uuid.equals(uuid)) {
           return i;
         }
@@ -539,7 +394,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   private static boolean activitesAnyAnswered() {
     try {
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         if (a.answered) {
           return true;
         }
@@ -551,7 +406,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   private static boolean activitesAllDestroyed() {
     try {
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         if (!a.destroyed) {
           return false;
         }
@@ -569,7 +424,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     } catch (Exception e) {
     }
     if (activitiesSize == 0 || activitesAnyAnswered() || activitesAllDestroyed()) {
-      staticStopRingtone();
+      Ringtone.stop();
     }
     if (activitiesSize == 0 && jsCallsSize == 0) {
       releaseWakeLock();
@@ -578,7 +433,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void updateBtnUnlockLabels() {
     try {
-      for (IncomingCallActivity a : activities) {
+      for (var a : activities) {
         try {
           a.updateBtnUnlockLabel();
         } catch (Exception e) {
@@ -591,62 +446,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   //
   // move start/stop ringtone here
   //
-  public static MediaPlayer mp;
 
-  public static void staticStartRingtone() {
-    if (mp != null) {
-      return;
-    }
-    Context c = ctx != null ? ctx : fcm;
-    int mode = am.getRingerMode();
-    if (mode == AudioManager.RINGER_MODE_SILENT) {
-      return;
-    }
-    if (vib == null) {
-      vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
-    }
-    long[] pattern = {0, 1000, 1000};
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      vib.vibrate(VibrationEffect.createWaveform(pattern, new int[] {0, 255, 0}, 0));
-    } else {
-      vib.vibrate(pattern, 0);
-    }
-    if (mode == AudioManager.RINGER_MODE_VIBRATE) {
-      return;
-    }
-    am.setMode(AudioManager.MODE_RINGTONE);
-    mp =
-        MediaPlayer.create(
-            c,
-            R.raw.incallmanager_ringtone,
-            new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .setLegacyStreamType(AudioManager.STREAM_RING)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .build(),
-            am.generateAudioSessionId());
-    mp.setVolume(1.0f, 1.0f);
-    mp.setLooping(true);
-    mp.start();
-  }
-
-  public static void staticStopRingtone() {
-    try {
-      vib.cancel();
-      vib = null;
-    } catch (Exception e) {
-      vib = null;
-    }
-    try {
-      mp.stop();
-      mp.release();
-      mp = null;
-    } catch (Exception e) {
-      mp = null;
-    }
-  }
-
-  public static boolean checkReadPhonePermission(Context ctx) {
+  public static boolean checkReadPhonePermission() {
+    var ctx = Ctx.app();
     if (checkSelfPermission(ctx, permission.READ_PHONE_NUMBERS)
         == PackageManager.PERMISSION_GRANTED) {
       return true;
@@ -654,7 +456,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return false;
   }
 
-  public static boolean checkNotificationPermission(Context ctx) {
+  public static boolean checkNotificationPermission() {
+    var ctx = Ctx.app();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       return checkSelfPermission(ctx, permission.POST_NOTIFICATIONS)
           == PackageManager.PERMISSION_GRANTED;
@@ -669,22 +472,23 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  public void checkDefaultDialer() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ctx == null || main == null) {
+  public static void checkDefaultDialer() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || main == null) {
       resolveDefaultDialer("Not supported on this Anrdoid version");
       return;
     }
-    TelecomManager tm = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
+    var ctx = Ctx.app();
+    var tm = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
     if (tm == null) {
       resolveDefaultDialer("TelecomManager is null");
       return;
     }
-    String packageName = ctx.getPackageName();
+    var packageName = ctx.getPackageName();
     if (packageName.equals(tm.getDefaultDialerPackage())) {
       resolveDefaultDialer("Already the default dialer");
       return;
     }
-    Intent intent =
+    var intent =
         new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName);
     if (intent.resolveActivity(ctx.getPackageManager()) == null) {
@@ -694,7 +498,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
       defaultDialerLauncher.launch(intent);
     } else {
-      RoleManager rm = main.getSystemService(RoleManager.class);
+      var rm = main.getSystemService(RoleManager.class);
       if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_DIALER)) {
         defaultDialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER));
       }
@@ -702,19 +506,24 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static boolean toBoolean(String s) {
-    if (s != null) {
-      return s.equals("on") || s.equals("true") || s.equals("1") || Boolean.parseBoolean(s);
+    if (TextUtils.isEmpty(s)) {
+      return false;
     }
-    return false;
+    var l = s.toLowerCase();
+    return l.equals("on") || l.equals("true") || l.equals("1") || Boolean.parseBoolean(l);
   }
 
   // perm Ignoring Battery Optimization
-  public static boolean isIgnoringBatteryOptimizationPermissionGranted(Context context) {
+  public static boolean isIgnoringBatteryOptimizationPermissionGranted() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;
     }
-    PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-    return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+    var ctx = Ctx.app();
+    if (ctx == null) {
+      return false;
+    }
+    var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+    return pm.isIgnoringBatteryOptimizations(ctx.getPackageName());
   }
 
   public static void resolveIgnoreBattery(boolean result) {
@@ -725,27 +534,33 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void requestDisableBatteryOptimization() {
-    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-    intent.setData(Uri.parse("package:" + ctx.getPackageName()));
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    ctx.startActivity(intent);
+    var ctx = Ctx.app();
+    var i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+    i.setData(Uri.parse("package:" + ctx.getPackageName()));
+    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(i);
   }
 
   // overlay screen permission
-  public static boolean isOverlayPermissionGranted(Context context) {
+  public static boolean isOverlayPermissionGranted() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return true;
     }
-    return Settings.canDrawOverlays(context);
+    var ctx = Ctx.app();
+    if (ctx == null) {
+      return false;
+    }
+    return Settings.canDrawOverlays(ctx);
   }
 
   public static void requestOverlayScreenOptimization() {
-    Intent intent =
+    var ctx = Ctx.app();
+    var i =
         new Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:" + ctx.getPackageName()));
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    ctx.startActivity(intent);
+    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    ctx.startActivity(i);
   }
 
   public static void resolveOverlayScreen(boolean result) {
@@ -763,28 +578,19 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
   @ReactMethod
   public void setAudioMode(int mode) {
-    if (am == null) {
-      return;
+    try {
+      Ringtone.setAudioMode(mode);
+    } catch (Exception e) {
     }
-    switch (mode) {
-      case AudioManager.MODE_NORMAL:
-        am.setMode(AudioManager.MODE_NORMAL);
-        break;
-      case AudioManager.MODE_RINGTONE:
-        am.setMode(AudioManager.MODE_RINGTONE);
-        break;
-      case AudioManager.MODE_IN_CALL:
-        am.setMode(AudioManager.MODE_IN_CALL);
-        break;
-      case AudioManager.MODE_IN_COMMUNICATION:
-        am.setMode(AudioManager.MODE_IN_COMMUNICATION);
-        break;
-      case AudioManager.MODE_CALL_SCREENING:
-        am.setMode(AudioManager.MODE_CALL_SCREENING);
-        break;
-      default:
-        am.setMode(AudioManager.MODE_NORMAL);
-        break;
+  }
+
+  @ReactMethod
+  public void getRingerMode(Promise p) {
+    try {
+      p.resolve(Ringtone.getRingerMode());
+    } catch (Exception e) {
+      Emitter.error("getRingerMode", e.getMessage());
+      p.resolve(-1);
     }
   }
 
@@ -795,7 +601,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             try {
-              for (IncomingCallActivity a : activities) {
+              for (var a : activities) {
                 try {
                   a.updateEnableSwitchCall(!isAnyHoldLoading);
                 } catch (Exception e) {
@@ -808,31 +614,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void showToast(String uuid, String msg, String type, String error) {
+  public void toast(String uuid, String m, String d, String t) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              ToastType toastType;
-              switch (type.toLowerCase()) {
-                case "success":
-                  toastType = ToastType.SUCCESS;
-                  break;
-                case "error":
-                  toastType = ToastType.ERROR;
-                  break;
-                case "warning":
-                  toastType = ToastType.WARNING;
-                  break;
-                case "info":
-                  toastType = ToastType.INFO;
-                  break;
-                default:
-                  toastType = ToastType.INFO;
-                  break;
-              }
-              at(uuid).showToast(msg, error, toastType);
+              at(uuid).toast(m, d, t);
             } catch (Exception e) {
             }
           }
@@ -846,7 +634,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             try {
-              for (IncomingCallActivity a : activities) {
+              for (var a : activities) {
                 try {
                   a.updateConnectionStatus(msg, isConnFailure);
                 } catch (Exception e) {
@@ -880,17 +668,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             @Override
             public void run() {
               try {
-                for (IncomingCallActivity a : activities) {
+                for (var a : activities) {
                   try {
-                    a.updateUserAgentConfig(userAgentConfig);
+                    a.setUserAgentConfig(userAgentConfig);
                   } catch (Exception e) {
-                    BrekekeUtils.emit(
-                        "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                    Emitter.error("a.setUserAgentConfig", e.getMessage());
                   }
                 }
               } catch (Exception e) {
-                BrekekeUtils.emit(
-                    "debug", "IncomingCallActivity::updateUserAgentConfig " + e.getMessage());
+                Emitter.error("setUserAgentConfig", e.getMessage());
               }
             }
           });
@@ -900,12 +686,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void isOverlayPermissionGranted(Promise p) {
-    p.resolve(isOverlayPermissionGranted(ctx));
+    p.resolve(isOverlayPermissionGranted());
   }
 
   @ReactMethod
   public void isDisableBatteryOptimizationGranted(Promise p) {
-    p.resolve(isIgnoringBatteryOptimizationPermissionGranted(ctx));
+    p.resolve(isIgnoringBatteryOptimizationPermissionGranted());
   }
 
   @ReactMethod
@@ -937,13 +723,22 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void startRingtone() {
-    staticStartRingtone();
+  public void getRingtoneOptions(Promise p) {
+    try {
+      p.resolve(Ringtone.options());
+    } catch (Exception e) {
+      p.reject("RINGTONE_ERROR", "Failed to get ringtone options", e);
+    }
+  }
+
+  @ReactMethod
+  public void startRingtone(String r, String u, String t, String h, String p) {
+    Ringtone.play(Ringtone.get(r, u, t, h, p));
   }
 
   @ReactMethod
   public void stopRingtone() {
-    staticStopRingtone();
+    Ringtone.stop();
   }
 
   @ReactMethod
@@ -970,13 +765,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void closeIncomingCall(String uuid) {
-    emit("debug", "closeIncomingCall uuid=" + uuid);
+    Emitter.debug("closeIncomingCall uuid=" + uuid);
     staticCloseIncomingCall(uuid);
   }
 
   @ReactMethod
   public void closeAllIncomingCalls() {
-    emit("debug", "closeAllIncomingCalls");
+    Emitter.debug("closeAllIncomingCalls");
     removeAll();
   }
 
@@ -990,8 +785,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               if (!jsonStr.startsWith("{")) {
                 return;
               }
-              JSONObject o = new JSONObject(jsonStr);
-              for (IncomingCallActivity a : activities) {
+              var o = new JSONObject(jsonStr);
+              for (var a : activities) {
                 try {
                   a.pbxConfig = o;
                   a.updateCallConfig();
@@ -1014,7 +809,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               if (!jsonStr.startsWith("{")) {
                 return;
               }
-              IncomingCallActivity a = at(uuid);
+              var a = at(uuid);
               a.callConfig = new JSONObject(jsonStr);
               a.updateCallConfig();
             } catch (Exception e) {
@@ -1062,7 +857,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setRecordingStatus(String uuid, boolean isRecording) {
-    emit("debug", "setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
+    Emitter.debug("setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -1124,7 +919,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             try {
-              for (IncomingCallActivity a : activities) {
+              for (var a : activities) {
                 try {
                   a.setBtnSpeakerSelected(isSpeakerOn);
                 } catch (Exception e) {
@@ -1138,13 +933,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setLocale(String locale) {
-    L.l = locale;
+    L.set(locale);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             try {
-              for (IncomingCallActivity a : activities) {
+              for (var a : activities) {
                 try {
                   a.updateLabels();
                 } catch (Exception e) {
@@ -1183,7 +978,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           public void run() {
             try {
               if ("answerCall".equals(action)) {
-                IncomingCallActivity a = at(uuid);
+                var a = at(uuid);
                 a.onBtnAnswerClick(null);
                 a.reorderToFront();
               } else if ("rejectCall".equals(action)) {
@@ -1201,8 +996,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         new Runnable() {
           @Override
           public void run() {
-            IncomingCallActivity toFront = at(uuid);
-            emit("debug", "onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+            var toFront = at(uuid);
+            Emitter.debug("onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
             if (toFront != null) {
               toFront.reorderToFront();
             }
@@ -1211,26 +1006,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getRingerMode(Promise p) {
-    if (am == null) {
-      p.resolve(-1);
-    }
-    try {
-      p.resolve(am.getRingerMode());
-    } catch (Exception e) {
-      emit("debug", "getRingerMode error: " + e.getMessage());
-      p.resolve(-1);
-    }
-  }
-
-  @ReactMethod
   public void insertCallLog(String number, int type) {
-    ContentValues values = new ContentValues();
-    values.put(CallLog.Calls.NUMBER, number);
-    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.TYPE, type);
-    values.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
-    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+    var ctx = Ctx.app();
+    var v = new ContentValues();
+    v.put(CallLog.Calls.NUMBER, number);
+    v.put(CallLog.Calls.DATE, System.currentTimeMillis());
+    v.put(CallLog.Calls.TYPE, type);
+    v.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
+    ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, v);
   }
 
   @ReactMethod
@@ -1254,7 +1037,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
-    Intent i =
+    var ctx = Ctx.app();
+    var i =
         LpcUtils.putConfigToIntent(
             host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
     ctx.startForegroundService(i);
@@ -1274,37 +1058,39 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void disableLPC() {
     try {
       if (BrekekeLpcService.isServiceStarted) {
+        var ctx = Ctx.app();
         ctx.unbindService(LpcUtils.connection);
       }
     } catch (Exception e) {
-      Log.d(TAG, "disableLPC: " + e.getMessage());
+      Emitter.error("disableLPC", e.getMessage());
     }
   }
 
-  // handle opening the settings for the user to accept permission for Incoming Call
-  // eg: "Show on lock screen" and "Open new window when running in background"
+  // "Show on lock screen"
+  // "Open new window when running in background"
+  // "Displaying popup windows while running in the background"
   @ReactMethod
   void androidLpcPermIncomingCall(Promise p) {
-    // check "Displaying popup windows while running in the background" to start activity from
-    // background
-    if (!LpcUtils.androidLpcIsPermGranted(ctx)) {
-      Intent i = null;
-      if (LpcUtils.isMIUI()) {
-        i = LpcUtils.getPermissionManagerIntent(ctx);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-      } else {
-        // TODO: check for other OS
-        p.resolve(true);
-        return;
-      }
-      androidLpcPermPromise = p;
-      ctx.startActivity(i);
+    if (LpcUtils.androidLpcIsPermGranted()) {
+      return;
     }
+    Intent i = null;
+    var ctx = Ctx.app();
+    if (LpcUtils.isMIUI()) {
+      i = LpcUtils.getPermissionManagerIntent(ctx);
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+    } else {
+      // TODO: check for other OS
+      p.resolve(true);
+      return;
+    }
+    androidLpcPermPromise = p;
+    ctx.startActivity(i);
   }
 
   @ReactMethod
   public void androidLpcIsPermGranted(Promise p) {
-    p.resolve(LpcUtils.androidLpcIsPermGranted(ctx));
+    p.resolve(LpcUtils.androidLpcIsPermGranted());
   }
 
   public static void androidLpcResolvePerm(boolean result) {

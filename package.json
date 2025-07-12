@@ -6,12 +6,13 @@
   "scripts": {
     "start": "make -Bs start",
     "build": "make -Bs build",
-    "clean": "react-native clean-project-auto && make -Bs clean",
+    "clean": "make -Bs clean",
     "intl": "make -Bs intl",
     "rn": "react-native start --reset-cache",
     "android": "react-native run-android --no-packager",
     "ios": "react-native run-ios",
-    "format": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
+    "lint": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
+    "fmt": "make -Bs fmt",
     "postinstall": "husky && patch-package"
   },
   "dependencies": {
@@ -141,7 +142,6 @@
     "metro-react-native-babel-preset": "0.77.0",
     "patch-package": "8.0.0",
     "prettier": "3.6.2",
-    "react-native-clean-project": "4.0.3",
     "react-scripts": "5.0.1",
     "type-coverage": "2.29.7",
     "typescript": "5.8.3",
@@ -161,7 +161,7 @@
   "cracoConfig": ".cracorc.js",
   "browserslist": "ie 10-11",
   "engines": {
-    "node": ">=20"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+    "node": ">=22",
+    "yarn": "1.22"
+  }
 }

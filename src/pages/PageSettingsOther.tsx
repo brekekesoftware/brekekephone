@@ -8,18 +8,24 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import type { RingtoneOption } from '#/utils/handleRingtone'
+import { getRingtoneOptions } from '#/utils/handleRingtone'
+import { defaultRingtone } from '#/utils/RnNativeModules'
 
 @observer
 export class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
+    ringtoneOptions: [] as RingtoneOption[],
+    ringtone: ctx.auth.getCurrentAccount()?.ringtone,
   }
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const me = ctx.uc.me()
     this.setState({
       status: me.status,
       statusText: me.statusText,
+      ringtoneOptions: await getRingtoneOptions(),
     })
   }
   setStatusText = (statusText: string) => {
@@ -48,6 +54,19 @@ export class PageSettingsOther extends Component {
         })
       })
   }
+
+  onChangeRingtone = value => {
+    this.setState({ ringtone: value })
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return
+    }
+    const uri = this.state.ringtoneOptions.find(v => v.key === value)?.uri
+    ca.ringtone = uri ? value : defaultRingtone
+    ca.ringtoneUri = uri ? uri : defaultRingtone
+    ctx.account.saveAccountsToLocalStorageDebounced()
+  }
+
   render() {
     const ca = ctx.auth.getCurrentAccount()
     return (
@@ -111,6 +130,18 @@ export class PageSettingsOther extends Component {
               onSubmitEditing={this.submitStatusText}
               onValueChange={this.setStatusText}
               value={this.state.statusText}
+            />
+          </>
+        )}
+        {!isWeb && (
+          <>
+            <Field isGroup label={intl`Ringtone`} />
+            <Field
+              label={intl`INCOMING CALL RINGTONE`}
+              options={this.state.ringtoneOptions}
+              type='RnPicker'
+              value={this.state.ringtone}
+              onValueChange={this.onChangeRingtone}
             />
           </>
         )}
