@@ -29,6 +29,10 @@ public class L {
   // ==========================================================================
   // labels to be used in native java code
 
+  public static String loading() {
+    return "ja".equals(l) ? "読込中..." : "Loading...";
+  }
+
   public static String unlock() {
     return "ja".equals(l) ? "ロック解除" : "UNLOCK";
   }

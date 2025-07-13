@@ -45,6 +45,7 @@ import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.PN;
 import com.brekeke.phonedev.utils.Ringtone;
 import com.brekeke.phonedev.utils.Toast;
 import com.bumptech.glide.Glide;
@@ -53,6 +54,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
@@ -125,7 +127,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDurationCall,
       txtCallerNameHeader,
       txtConnectionStatus;
-  public String uuid, callerName, avatar, avatarSize, talkingAvatar, ringtone = "";
+
+  public Map<String, String> data;
+  public String uuid,
+      callerName,
+      avatar,
+      avatarSize,
+      talkingAvatar,
+      ringtone,
+      username,
+      tenant,
+      host,
+      port;
   public boolean destroyed = false,
       paused = false,
       answered = false,
@@ -172,18 +185,27 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
-      debug("onCreate bundle=null");
+      error("onCreate", "bundle=null");
+      forceFinish();
+      return;
+    }
+    data = (Map<String, String>) b.getSerializable("data");
+    if (data == null) {
+      error("onCreate", "data=null");
       forceFinish();
       return;
     }
 
     timer = new Timer();
-    uuid = b.getString("uuid");
-    callerName = b.getString("callerName");
-    avatar = b.getString("avatar");
-    avatarSize = b.getString("avatarSize");
-    autoAnswer = b.getBoolean("autoAnswer");
-    ringtone = b.getString("ringtone");
+    uuid = data.get("callkeepUuid");
+    callerName = PN.callerName(data);
+    avatar = PN.avatar(data);
+    avatarSize = PN.avatarSize(data);
+    ringtone = PN.ringtone(data);
+    username = PN.username(data);
+    tenant = PN.tenant(data);
+    host = PN.host(data);
+    port = PN.port(data);
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
@@ -204,7 +226,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
     if (!autoAnswer) {
-      Ringtone.play(ringtone);
+      Ringtone.play(ringtone, username, tenant, host, port);
     }
 
     vToast = (LinearLayout) findViewById(R.id.toast_container);
@@ -362,7 +384,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     debug("onResume answered=" + answered);
     Emitter.emit("onResume", "");
     if (!answered) {
-      Ringtone.play(ringtone);
+      Ringtone.play(ringtone, username, tenant, host, port);
     } else {
       Emitter.emit("switchCall", uuid);
     }

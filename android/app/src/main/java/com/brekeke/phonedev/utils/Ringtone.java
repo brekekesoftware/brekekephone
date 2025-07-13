@@ -172,7 +172,7 @@ public class Ringtone {
   }
 
   // get from push notification and validate
-  public static String get(String r, String u, String t, String h, String p) {
+  private static String get(String r, String u, String t, String h, String p) {
     try {
       var v = _validate(r);
       if (!TextUtils.isEmpty(v)) {
@@ -215,7 +215,7 @@ public class Ringtone {
   private static Vibrator vib;
   private static MediaPlayer mp;
 
-  public static boolean play(String r) {
+  public static boolean play(String r, String u, String t, String h, String p) {
     if (mp != null) {
       // return false if already playing
       return false;
@@ -239,11 +239,16 @@ public class Ringtone {
     }
     am.setMode(AudioManager.MODE_RINGTONE);
     try {
-      _play(r);
+      _play(get(r, u, t, h, p));
     } catch (Exception e) {
       try {
-        _play(_default);
+        _play(get(u, t, h, p));
       } catch (Exception e2) {
+        try {
+          _play(_default);
+        } catch (Exception e3) {
+          Emitter.error("Ringtone play3", e3.getMessage());
+        }
         Emitter.error("Ringtone play2", e2.getMessage());
       }
       Emitter.error("Ringtone play", e.getMessage());

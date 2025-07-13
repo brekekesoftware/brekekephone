@@ -11,6 +11,33 @@ public class PN {
     return get(m, "pn-id", "pnId");
   }
 
+  public static String autoAnswer(Map<String, String> m) {
+    return get(m, "autoanswer", "autoAnswer");
+  }
+
+  public static String callerName(Map<String, String> m) {
+    var v = get(m, "displayname", "displayName");
+    if (TextUtils.isEmpty(v)) {
+      v = get(m, "from");
+    }
+    if (TextUtils.isEmpty(v)) {
+      v = L.loading();
+    }
+    return v;
+  }
+
+  public static String avatar(Map<String, String> m) {
+    return get(m, "image");
+  }
+
+  public static String avatarSize(Map<String, String> m) {
+    return get(m, "image_size", "imageSize");
+  }
+
+  public static String ringtone(Map<String, String> m) {
+    return get(m, "ringtone");
+  }
+
   public static String username(Map<String, String> m) {
     return get(m, "to", "pbxUsername");
   }
@@ -25,30 +52,6 @@ public class PN {
 
   public static String port(Map<String, String> m) {
     return get(m, "pbxPort", "port");
-  }
-
-  public static String displayName(Map<String, String> m) {
-    return get(m, "displayname", "displayName");
-  }
-
-  public static String from(Map<String, String> m) {
-    return get(m, "from");
-  }
-
-  public static String image(Map<String, String> m) {
-    return get(m, "image");
-  }
-
-  public static String imageSize(Map<String, String> m) {
-    return get(m, "image_size", "imageSize");
-  }
-
-  public static String autoAnswer(Map<String, String> m) {
-    return get(m, "autoanswer", "autoAnswer");
-  }
-
-  public static String ringtone(Map<String, String> m) {
-    return get(m, "ringtone");
   }
 
   private static String get(Map<String, String> m, String k) {

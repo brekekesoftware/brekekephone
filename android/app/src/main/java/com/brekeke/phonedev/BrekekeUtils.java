@@ -42,6 +42,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
+import java.io.Serializable;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -187,24 +188,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     m.put("callkeepAt", now);
     var uuid = UUID.randomUUID().toString().toUpperCase();
     m.put("callkeepUuid", uuid);
-    // get caller display name to display the incoming call
-    var displayName = PN.displayName(m);
-    if (TextUtils.isEmpty(displayName)) {
-      displayName = PN.from(m);
-    }
-    if (TextUtils.isEmpty(displayName)) {
-      displayName = "Loading...";
-    }
+    // setup callkeep and display
     var ctx = Ctx.app();
     RNCallKeepModule.registerPhoneAccount(ctx);
-    // redeclare as final to put in nested class
-    final var lpc = toBoolean(m.get("lpc"));
-    final var callerName = displayName;
-    final var avatar = PN.image(m);
-    final var avatarSize = PN.imageSize(m);
-    final var autoAnswer = toBoolean(PN.autoAnswer(m));
-    final var ringtone =
-        Ringtone.get(PN.ringtone(m), PN.username(m), PN.tenant(m), PN.host(m), PN.port(m));
+
     var onShowIncomingCall =
         new Runnable() {
           @Override
@@ -223,14 +210,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             var i = new Intent(ctx, IncomingCallActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            i.putExtra("uuid", uuid);
-            i.putExtra("callerName", callerName);
-            i.putExtra("avatar", avatar);
-            i.putExtra("avatarSize", avatarSize);
-            i.putExtra("autoAnswer", autoAnswer);
-            i.putExtra("ringtone", ringtone);
+            i.putExtra("data", (Serializable) m);
             ctx.startActivity(i);
-            if (lpc) {
+            if (toBoolean(m.get("lpc"))) {
               LpcUtils.showIncomingCallNotification(ctx, i);
             }
           }
@@ -242,6 +224,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             onPassiveReject(uuid);
           }
         };
+
     // try to run onShowIncomingCall if there is already an ongoing call
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
@@ -250,7 +233,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCall);
     RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
-    RNCallKeepModule.staticDisplayIncomingCall(uuid, "Brekeke Phone", callerName, false, null);
+    RNCallKeepModule.staticDisplayIncomingCall(
+        uuid, "Brekeke Phone", PN.callerName(m), false, null);
   }
 
   // when an incoming GSM call is ringing
@@ -669,7 +653,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRingtone(String r, String u, String t, String h, String p, Promise promise) {
-    var v = Ringtone.play(Ringtone.get(r, u, t, h, p));
+    var v = Ringtone.play(r, u, t, h, p);
     promise.resolve(v);
   }
 
