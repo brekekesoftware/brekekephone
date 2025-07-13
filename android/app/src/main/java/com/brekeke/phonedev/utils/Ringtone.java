@@ -159,6 +159,9 @@ public class Ringtone {
     if (_static(r)) {
       return r;
     }
+    if (r.startsWith("data:audio") || r.startsWith("https://")) {
+      return r;
+    }
     try (var s = system()) {
       return s.filter(p -> p.first.equals(r) || p.second.equals(r))
           .map(p -> p.second)
