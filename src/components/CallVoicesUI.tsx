@@ -40,7 +40,7 @@ const IncomingItemAndroid = observer(() => {
   )
   return null
 })
-const IncomingItemIosWeb = () => {
+const IncomingItemIos = () => {
   useEffect(() => {
     // old logic: only play ringtone without vibration and repeat the ringtone continuously
     IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
@@ -49,7 +49,7 @@ const IncomingItemIosWeb = () => {
   return null
 }
 // IncomingItem will mount when PN is disabled
-export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIosWeb
+export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIos
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {

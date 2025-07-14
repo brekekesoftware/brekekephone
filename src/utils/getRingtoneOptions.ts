@@ -4,7 +4,6 @@ import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
 export type RingtoneOption = {
   key: string
   label: string
-  uri: string
 }
 
 export const getRingtoneOptions = async (): Promise<RingtoneOption[]> => {
@@ -13,12 +12,10 @@ export const getRingtoneOptions = async (): Promise<RingtoneOption[]> => {
     {
       key: defaultRingtone,
       label: intl`Use default`,
-      uri: '',
     },
     ...arr.map(r => ({
-      key: r.title,
-      label: r.title,
-      uri: r.uri || '',
+      key: r,
+      label: r,
     })),
   ]
 }

@@ -53,7 +53,7 @@ type TBrekekeUtils = {
   removeStreamFromView: (uuid: string, vId: string) => void
   setOptionsRemoteStream: (uuid: string, d: RemoteStreamOption[]) => void
   // android ringtone
-  getRingtoneOptions(): Promise<SystemRingtone[]>
+  getRingtoneOptions(): Promise<string[]>
   startRingtone(
     r: string,
     u: string,
@@ -195,10 +195,6 @@ export enum CallLogType {
   MISSED_TYPE = 3,
 }
 
-export type SystemRingtone = {
-  title: string
-  uri: string
-}
 // same with default pbx tenant
 export const defaultRingtone = '-'
 

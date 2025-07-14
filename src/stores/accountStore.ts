@@ -41,7 +41,6 @@ export type Account = {
   navIndex: number
   navSubMenus: string[]
   ringtone?: string
-  ringtoneUri?: string
   pbxRingtone?: string
 }
 export type AccountData = {
@@ -106,7 +105,6 @@ export class AccountStore {
     navIndex: -1,
     navSubMenus: [],
     ringtone: defaultRingtone,
-    ringtoneUri: defaultRingtone,
     pbxRingtone: defaultRingtone,
   })
 

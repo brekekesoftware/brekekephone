@@ -102,10 +102,10 @@ public class Ringtone {
   public static NativeArray options() {
     var arr = new WritableNativeArray();
     for (var r : _static) {
-      arr.pushMap(option(r, r));
+      arr.pushString(r);
     }
     try (var s = system()) {
-      s.forEach(p -> arr.pushMap(option(p.first, p.second)));
+      s.forEach(p -> arr.pushString(p.first));
     }
     return arr;
   }
@@ -159,7 +159,7 @@ public class Ringtone {
     if (_static(r)) {
       return r;
     }
-    if (r.startsWith("data:audio") || r.startsWith("https://")) {
+    if (r.startsWith("https://")) {
       return r;
     }
     try (var s = system()) {
@@ -191,11 +191,7 @@ public class Ringtone {
   private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
-      var r = _validate(a.getString("ringtoneUri"));
-      if (!TextUtils.isEmpty(r)) {
-        return r;
-      }
-      r = _validate(a.getString("ringtone"));
+      var r = _validate(a.getString("ringtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
