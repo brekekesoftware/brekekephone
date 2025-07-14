@@ -4,10 +4,12 @@ import { Component, createRef, useEffect, useState } from 'react'
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
 import { ctx } from '#/stores/ctx'
+import type { staticRingtones } from '#/utils/BrekekeUtils'
 
 // all options are static on web
 const ringtoneOptions: {
-  [k: string]: string
+  // strong typing to make sure not missing static ringtone mp3
+  [k in (typeof staticRingtones)[number]]: string
 } = {
   incallmanager_ringtone: ringtone,
 }

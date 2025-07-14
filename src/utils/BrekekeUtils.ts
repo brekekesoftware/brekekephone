@@ -148,7 +148,7 @@ const Polyfill: TBrekekeUtils = {
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
   // android ringtone
-  getRingtoneOptions: () => Promise.resolve([]),
+  getRingtoneOptions: () => Promise.resolve(staticRingtones as any),
   startRingtone: () => Promise.resolve(false),
   stopRingtone: () => Promise.resolve(false),
   // android pending cache and retry pal
@@ -195,8 +195,13 @@ export enum CallLogType {
   MISSED_TYPE = 3,
 }
 
-// same with default pbx tenant
+// same convention with default pbx tenant
 export const defaultRingtone = '-'
+// same with _static in native Ringtone.java
+export const staticRingtones = [
+  'incallmanager_ringtone',
+  // strong typing to make sure not missing static ringtone mp3
+] as const
 
 export type RemoteStream = {
   vId: string

@@ -11,7 +11,6 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 import { useForm } from '#/utils/useForm'
@@ -129,7 +128,7 @@ export const AccountCreateForm: FC<{
   }
 
   useEffect(() => {
-    if (!isWeb && !props.footerLogout) {
+    if (!props.footerLogout) {
       getLocalRingtone()
     }
   }, [])
@@ -295,14 +294,14 @@ export const AccountCreateForm: FC<{
             isGroup: true,
             label: intl`Ringtone`,
             hasMargin: true,
-            hidden: isWeb || props.footerLogout,
+            hidden: props.footerLogout,
           },
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
             name: 'ringtone',
             options: $.ringtoneOptions,
-            hidden: isWeb || props.footerLogout,
+            hidden: props.footerLogout,
           },
         ]}
         k='account'
