@@ -528,7 +528,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // "Displaying popup windows while running in the background"
   @ReactMethod
   public void permCheckAndroidLpc(Promise p) {
-    Perm.check(Perm.AndroidLpc);
+    p.resolve(Perm.check(Perm.AndroidLpc));
   }
 
   @ReactMethod
