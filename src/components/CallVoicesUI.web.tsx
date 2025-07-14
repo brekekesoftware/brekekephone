@@ -1,13 +1,79 @@
 import { observer } from 'mobx-react'
-import { Component, createRef } from 'react'
+import { Component, createRef, useEffect, useState } from 'react'
 
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
 import { ctx } from '#/stores/ctx'
 
-export const IncomingItem = observer(() => (
-  <audio autoPlay loop src={ctx.call.ringtone || ringtone} muted={false} />
-))
+// all options are static on web
+const ringtoneOptions: {
+  [k: string]: string
+} = {
+  incallmanager_ringtone: ringtone,
+}
+const _default = ringtoneOptions.incallmanager_ringtone
+
+export const IncomingItem = observer(() => {
+  // reset to make sure it will rerender
+  const [loading, setLoading] = useState(false)
+  const reset = () => {
+    setLoading(true)
+    setTimeout(() => setLoading(false))
+  }
+  // catch error
+  const [error, setError] = useState<{ [k: string]: boolean }>({})
+  const onError = (k: string) => {
+    setError(e => (typeof e[k] === 'boolean' ? e : { ...e, [k]: true }))
+    reset()
+  }
+  const onPlay = (k: string) => setError(e => ({ ...e, [k]: false }))
+  // similar to validate in Ringtone.java
+  const validate = (r?: string) => {
+    if (!r) {
+      return
+    }
+    if (r.startsWith('https://')) {
+      return r
+    }
+    if (ringtoneOptions[r]) {
+      return ringtoneOptions[r]
+    }
+    return
+  }
+  const validateWithError = (r?: string) => {
+    r = validate(r)
+    if (!r) {
+      return
+    }
+    if (error[r]) {
+      return
+    }
+    return r
+  }
+  // try each with the same priority in Ringtone.java
+  const ca = ctx.auth.getCurrentAccount()
+  const c = ctx.call.getCallInNotify()
+  const priority = [
+    c?.ringtoneFromSip,
+    ctx.call.ringtone,
+    ca?.ringtone,
+    ca?.pbxRingtone,
+  ]
+  const r = priority.map(validateWithError).find(v => v) || _default
+  // reset to make sure it will rerender
+  useEffect(reset, [r])
+  // render
+  return loading ? null : (
+    <audio
+      src={r}
+      autoPlay
+      loop
+      muted={false}
+      onPlay={() => onPlay(r)}
+      onError={() => onError(r)}
+    />
+  )
+})
 export const OutgoingItem = () => (
   <audio autoPlay loop src={ringback} muted={false} />
 )

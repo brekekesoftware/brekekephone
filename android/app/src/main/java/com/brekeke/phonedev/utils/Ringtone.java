@@ -147,12 +147,7 @@ public class Ringtone {
   private static final String[] _static = {"incallmanager_ringtone"};
   private static final String _default = _static[0];
 
-  public static String validate(String r) {
-    var v = _validate(r);
-    return TextUtils.isEmpty(v) ? _default : v;
-  }
-
-  private static String _validate(String r) {
+  private static String validate(String r) {
     if (TextUtils.isEmpty(r)) {
       return null;
     }
@@ -177,7 +172,7 @@ public class Ringtone {
   // get from push notification and validate
   private static String get(String r, String u, String t, String h, String p) {
     try {
-      var v = _validate(r);
+      var v = validate(r);
       if (!TextUtils.isEmpty(v)) {
         return v;
       }
@@ -191,11 +186,11 @@ public class Ringtone {
   private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
-      var r = _validate(a.getString("ringtone"));
+      var r = validate(a.getString("ringtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
-      r = _validate(a.getString("pbxRingtone"));
+      r = validate(a.getString("pbxRingtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }

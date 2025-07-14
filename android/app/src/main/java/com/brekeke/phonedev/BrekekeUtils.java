@@ -42,7 +42,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import io.wazo.callkeep.RNCallKeepModule;
 import io.wazo.callkeep.VoiceConnectionService;
-import java.io.Serializable;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
