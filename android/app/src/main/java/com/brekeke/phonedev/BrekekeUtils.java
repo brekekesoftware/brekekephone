@@ -210,7 +210,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
             var i = new Intent(ctx, IncomingCallActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            i.putExtra("data", (Serializable) m);
+            i.putExtra("data", new HashMap<>(m));
             ctx.startActivity(i);
             if (toBoolean(m.get("lpc"))) {
               LpcUtils.showIncomingCallNotification(ctx, i);
@@ -528,7 +528,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // "Displaying popup windows while running in the background"
   @ReactMethod
   public void permCheckAndroidLpc(Promise p) {
-    Perm.check(Perm.AndroidLpc);
+    p.resolve(Perm.check(Perm.AndroidLpc));
   }
 
   @ReactMethod
