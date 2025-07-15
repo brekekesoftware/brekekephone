@@ -1,8 +1,37 @@
 package com.brekeke.phonedev.utils;
 
-// labels for multi langues
+// utils to support multiple languages
+// see the related part in rn js for reference
+
 public class L {
-  public static String l = null;
+  // ==========================================================================
+  // init
+
+  private static String l = null;
+
+  public static void init() {
+    try {
+      set(Storage.locale());
+    } catch (Exception e) {
+    }
+  }
+
+  public static void set(String newL) {
+    l = newL;
+    if (l == null) {
+      l = "en";
+    }
+    if (!"en".equals(l) && !"ja".equals(l)) {
+      l = "en";
+    }
+  }
+
+  // ==========================================================================
+  // labels to be used in native java code
+
+  public static String loading() {
+    return "ja".equals(l) ? "読込中..." : "Loading...";
+  }
 
   public static String unlock() {
     return "ja".equals(l) ? "ロック解除" : "UNLOCK";
@@ -76,10 +105,6 @@ public class L {
         ? "Brekeke Phone がマイク、カメラ、および通話を続行するためのその他の権限にアクセスできるようにします。"
         : "Allow Brekeke Phone to access the microphone, camera, and other permissions to continue"
             + " the call.";
-  }
-
-  public static String titlePermissionSetDefaultPhoneApp() {
-    return "ja".equals(l) ? "必要な権限" : "Set Default Phone App";
   }
 
   public static String close() {

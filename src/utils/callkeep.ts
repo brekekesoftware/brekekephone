@@ -14,8 +14,8 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false
@@ -360,6 +360,9 @@ export const setupCallKeepEvents = async () => {
   })
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
+  )
+  eventEmitter.addListener('error', (m: string) =>
+    console.error(`Android error: ${m}`),
   )
   // android native video conference
   eventEmitter.addListener('navChat', async (uuid: string) => {

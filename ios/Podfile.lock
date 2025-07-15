@@ -1588,7 +1588,7 @@ PODS:
     - SocketRocket
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-document-picker (10.1.3):
+  - react-native-document-picker (10.1.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -1652,7 +1652,7 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-video (6.16.0):
+  - react-native-video (6.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -1670,7 +1670,7 @@ PODS:
     - React-ImageManager
     - React-jsc
     - React-jsi
-    - react-native-video/Video (= 6.16.0)
+    - react-native-video/Video (= 6.16.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1681,7 +1681,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-video/Video (6.16.0):
+  - react-native-video/Video (6.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2583,13 +2583,13 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 9a7c65078c6851397c1999068989e4fc239d0c80
   React-microtasksnativemodule: df9aabcab28ceded524c9ad510a83c3457d8ec9f
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-document-picker: debe8df955aec69fc808d946565f93aef64e3910
+  react-native-document-picker: 27d9807738857081ae4d46a11dffc3534e53ac01
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-image-picker: cb9f98f35ab33d86c426a347ec15057e1abe5952
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-notifications: 4601a5a8db4ced6ae7cfc43b44d35fe437ac50c4
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-video: c32a6d28aab39f4fb3ffb87090c84292a81adbe0
+  react-native-video: 432ebcda896cd5db9d89f8118f43c645c97ccc90
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
   react-native-webview: ad9df17b6be0df4d20f4d5ad3ef56bf50d1892ab
   React-NativeModulesApple: 1493fb61e1f8b1ecf9575a676aff1ea8b454d514

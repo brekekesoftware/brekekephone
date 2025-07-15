@@ -11,10 +11,10 @@ import { compareSemVer } from '#/stores/debugStore'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
+import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let resolveFn: Function | undefined
@@ -40,6 +40,8 @@ export type Account = {
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]
+  ringtone?: string
+  pbxRingtone?: string
 }
 export type AccountData = {
   id: string
@@ -102,6 +104,8 @@ export class AccountStore {
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
+    ringtone: defaultRingtone,
+    pbxRingtone: defaultRingtone,
   })
 
   loadAccountsFromLocalStorage = async () => {

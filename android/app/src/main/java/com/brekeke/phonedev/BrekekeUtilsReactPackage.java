@@ -10,14 +10,14 @@ import java.util.List;
 
 class BrekekeUtilsReactPackage implements ReactPackage {
   @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-    modules.add(new BrekekeUtils(reactContext));
-    return modules;
+  public List<NativeModule> createNativeModules(ReactApplicationContext ctx) {
+    var l = new ArrayList<NativeModule>();
+    l.add(new BrekekeUtils(ctx));
+    return l;
   }
 
   @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+  public List<ViewManager> createViewManagers(ReactApplicationContext ctx) {
     return Collections.emptyList();
   }
 }

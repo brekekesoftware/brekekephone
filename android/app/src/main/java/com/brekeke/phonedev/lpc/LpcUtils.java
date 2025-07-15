@@ -2,7 +2,6 @@ package com.brekeke.phonedev.lpc;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.AppOpsManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -28,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -127,29 +125,6 @@ public class LpcUtils {
     }
   }
 
-  // check perm
-
-  public static final int OP_BACKGROUND_START_ACTIVITY = 10021;
-
-  public static boolean androidLpcIsPermGranted(Context ctx) {
-    try {
-      AppOpsManager mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
-      Method m =
-          AppOpsManager.class.getMethod("checkOpNoThrow", int.class, int.class, String.class);
-      int r =
-          (int)
-              m.invoke(
-                  mgr,
-                  OP_BACKGROUND_START_ACTIVITY,
-                  android.os.Process.myUid(),
-                  ctx.getPackageName());
-      return r == AppOpsManager.MODE_ALLOWED;
-    } catch (Exception e) {
-      Log.d(TAG, "isCustomPermissionGranted: " + e.getMessage());
-    }
-    return true;
-  }
-
   // utils to get MIUI
 
   public static boolean isMIUI() {
@@ -161,7 +136,7 @@ public class LpcUtils {
     try {
       Class p = Class.forName("android.os.SystemProperties");
       return (String) p.getMethod("get", String.class).invoke(null, key);
-    } catch (Exception ignore) {
+    } catch (Exception e) {
     }
     return null;
   }

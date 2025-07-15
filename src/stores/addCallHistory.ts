@@ -9,9 +9,9 @@ import { Call } from '#/stores/Call'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { BrekekeUtils, CallLogType } from '#/utils/BrekekeUtils'
 import { permForCallLog } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils, CallLogType } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 const alreadyAddHistoryMap: { [pnId: string]: true } = {}

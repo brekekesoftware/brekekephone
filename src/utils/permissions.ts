@@ -13,7 +13,7 @@ import {
 import { isIos } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 
 const mergeMsg = (...msgs: unknown[]) => {
   let msg = msgs.filter(v => v).join('\n')
@@ -124,9 +124,9 @@ const checkPermForCallAndroid = async (
     return true
   }
 
-  const rBattery = await BrekekeUtils.isDisableBatteryOptimizationGranted()
-  const rOverlay = await BrekekeUtils.isOverlayPermissionGranted()
-  const rAndroidLpc = await BrekekeUtils.androidLpcIsPermGranted()
+  const rBattery = await BrekekeUtils.permCheckIgnoringBatteryOptimizations()
+  const rOverlay = await BrekekeUtils.permCheckOverlay()
+  const rAndroidLpc = await BrekekeUtils.permCheckAndroidLpc()
 
   let rNotify = true
   if (isNotifyPermNeeded) {
@@ -218,7 +218,7 @@ export const permNotifications = async () => {
 }
 
 const permDisableBatteryOptimization = async () => {
-  if (await BrekekeUtils.isDisableBatteryOptimizationGranted()) {
+  if (await BrekekeUtils.permCheckIgnoringBatteryOptimizations()) {
     return true
   }
   console.log('Permission debug permDisableBatteryOptimization')
@@ -227,7 +227,7 @@ const permDisableBatteryOptimization = async () => {
       title: '',
       message: intl`To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed.`,
       onConfirm: async () => {
-        const r = await BrekekeUtils.permDisableBatteryOptimization()
+        const r = await BrekekeUtils.permRequestIgnoringBatteryOptimizations()
         resolve(r)
       },
       onDismiss: () => resolve(false),
@@ -238,7 +238,7 @@ const permDisableBatteryOptimization = async () => {
 }
 
 const permAndroidLpcForIncomingCall = async () => {
-  if (await BrekekeUtils.androidLpcIsPermGranted()) {
+  if (await BrekekeUtils.permCheckAndroidLpc()) {
     return true
   }
   console.log('Permission debug permDisableBatteryOptimization')
@@ -247,7 +247,7 @@ const permAndroidLpcForIncomingCall = async () => {
       title: '',
       message: intl`To ensure the best user experience, the application requires the "Show on Lock screen" and "Display pop-up windows while running in the background" permissions. Please enable these two permissions in your device settings to proceed.`,
       onConfirm: async () => {
-        const r = await BrekekeUtils.androidLpcPermIncomingCall()
+        const r = await BrekekeUtils.permRequestAndroidLpc()
         resolve(r)
       },
       onDismiss: () => resolve(false),
@@ -268,7 +268,7 @@ export const checkFineLocation = async () => {
 }
 
 const permOverlayPermission = async () => {
-  if (await BrekekeUtils.isOverlayPermissionGranted()) {
+  if (await BrekekeUtils.permCheckOverlay()) {
     return true
   }
   return await new Promise<void | boolean>(resolve => {
@@ -277,7 +277,7 @@ const permOverlayPermission = async () => {
       title: '',
       message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.`,
       onConfirm: async () => {
-        const r = await BrekekeUtils.permOverlay()
+        const r = await BrekekeUtils.permRequestOverlay()
         resolve(r)
       },
       onDismiss: () => resolve(false),

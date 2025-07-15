@@ -2,6 +2,7 @@
 
 - Upgrade react-native to 0.80 and other available dependencies
 - Upgrade android sdk 35 and ios sdk 18
+- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
 - Initial implementation of android lpc
 - Improve video conference according to feedbacks
 - Improve debug log with multiples files, and mark for login logout

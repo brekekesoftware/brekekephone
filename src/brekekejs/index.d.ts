@@ -241,6 +241,7 @@ export type PbxGetProductInfoRes = {
   'webphone.call.speaker': string
   'webphone.call.transfer': string
   'webphone.call.video': string
+  'webphone.call.ringtone': string
   'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
   'webphone.lpc.keyhash': string

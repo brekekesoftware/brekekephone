@@ -37,8 +37,8 @@ import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -639,9 +639,11 @@ export class PBX extends EventEmitter {
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
+
     if (!this.isMainInstance) {
       return config
     }
+
     BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))
 
     ctx.auth.pbxConfig = config
@@ -660,6 +662,11 @@ export class PBX extends EventEmitter {
       _parseResourceLines(config['webphone.resource-line'])
     }
 
+    const ca = ctx.auth.getCurrentAccount()
+    if (ca) {
+      ca.pbxRingtone = config['webphone.call.ringtone']
+      ctx.account.saveAccountsToLocalStorageDebounced()
+    }
     const d = await ctx.auth.getCurrentDataAsync()
     if (d) {
       d.palParams = parsePalParams(ctx.auth.pbxConfig)

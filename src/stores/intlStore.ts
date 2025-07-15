@@ -9,7 +9,7 @@ import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { RnPicker } from '#/stores/RnPicker'
 import { arrToMap } from '#/utils/arrToMap'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 export const labels = {

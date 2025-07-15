@@ -45,8 +45,8 @@ import type { Call, CallConfigKey } from '#/stores/Call'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timerStore'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 const { width, height } = Dimensions.get('window')

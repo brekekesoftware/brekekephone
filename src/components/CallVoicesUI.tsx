@@ -1,31 +1,55 @@
-import { Component, useEffect } from 'react'
+import { observer } from 'mobx-react'
+import { Component, useEffect, useRef } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { waitTimeout } from '#/utils/waitTimeout'
 
-export class IncomingItem extends Component {
-  componentDidMount = () => {
-    if (isAndroid) {
-      BrekekeUtils.startRingtone()
-    } else {
-      // old logic: only play ringtone without vibration and repeat the ringtone continuously
-      IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
+const IncomingItemAndroid = observer(() => {
+  const ca = ctx.auth.getCurrentAccount()
+  const c = ctx.call.getCallInNotify()
+  const r = useRef<Promise<boolean>>(undefined)
+  useEffect(() => {
+    if (!ca || !c) {
+      return
     }
-  }
-  componentWillUnmount = () => {
-    if (isAndroid) {
-      BrekekeUtils.stopRingtone()
-    } else {
-      IncallManager.stopRingtone()
-    }
-  }
-  render() {
-    return null
-  }
+    const pending = r.current
+    r.current = (async () => {
+      await pending
+      await waitTimeout()
+      return BrekekeUtils.startRingtone(
+        c.ringtoneFromSip,
+        ca.pbxUsername,
+        ca.pbxTenant,
+        ca.pbxHostname,
+        ca.pbxPort,
+      )
+    })()
+  }, [ca, c])
+  useEffect(
+    () => () => {
+      const pending = r.current
+      r.current = (async () => {
+        await pending
+        return BrekekeUtils.stopRingtone()
+      })()
+    },
+    [],
+  )
+  return null
+})
+const IncomingItemIos = () => {
+  useEffect(() => {
+    // old logic: only play ringtone without vibration and repeat the ringtone continuously
+    IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
+    return () => IncallManager.stopRingtone()
+  }, [])
+  return null
 }
+// IncomingItem will mount when PN is disabled
+export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIos
 
 export class OutgoingItem extends Component {
   componentDidMount = () => {
