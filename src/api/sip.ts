@@ -67,13 +67,11 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
-
       const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
       const xPbxRpi = extraHeaders.find(header =>
         header.startsWith('X-PBX-RPI:'),
       )
       const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
-
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
@@ -123,6 +121,7 @@ export class SIP extends EventEmitter {
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],
         pbxUsername: arr?.[3],
+        ringtoneFromSip: m?.getHeader('X-Ringtone'),
       }
       if (!patch.pbxTalkerId) {
         delete patch.pbxTalkerId

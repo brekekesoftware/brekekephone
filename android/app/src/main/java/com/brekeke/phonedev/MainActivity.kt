@@ -3,11 +3,13 @@ package com.brekeke.phonedev
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
-import com.brekeke.phonedev.lpc.LpcUtils
+import com.brekeke.phonedev.utils.Ctx
+import com.brekeke.phonedev.utils.Emitter
+import com.brekeke.phonedev.utils.Perm
+import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import io.wazo.callkeep.RNCallKeepModule
@@ -23,11 +25,7 @@ class MainActivity : ReactActivity() {
   override fun onResume() {
     super.onResume()
     // permissions
-    BrekekeUtils.resolveIgnoreBattery(
-        BrekekeUtils.isIgnoringBatteryOptimizationPermissionGranted(this))
-    BrekekeUtils.resolveOverlayScreen(BrekekeUtils.isOverlayPermissionGranted(this))
-    // android lpc
-    BrekekeUtils.androidLpcResolvePerm(LpcUtils.androidLpcIsPermGranted(this))
+    Perm.resolve()
     // call history
     // TODO: temporary disabled
     if (true) return
@@ -40,7 +38,7 @@ class MainActivity : ReactActivity() {
 
   override fun onDestroy() {
     BrekekeUtils.main = null
-    BrekekeUtils.staticStopRingtone()
+    Ringtone.stop()
     super.onDestroy()
   }
 
@@ -62,11 +60,11 @@ class MainActivity : ReactActivity() {
   override fun dispatchKeyEvent(e: KeyEvent): Boolean {
     val k = e.keyCode
     val a = e.action
-    BrekekeUtils.emit("debug", "MainActivity.onKeyDown k=$k a=$a")
-    BrekekeUtils.staticStopRingtone()
+    Emitter.debug("MainActivity.onKeyDown k=$k a=$a")
+    Ringtone.stop()
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
-        BrekekeUtils.emit("onBackPressed", "")
+        Emitter.emit("onBackPressed", "")
       }
       return true
     }
@@ -115,12 +113,11 @@ class MainActivity : ReactActivity() {
   }
 
   private fun handleMakeCall(phone: String) {
-    if (BrekekeUtils.eventEmitter != null) {
-      BrekekeUtils.emit("makeCall", phone)
+    if (Emitter.emit("makeCall", phone)) {
       return
     }
-    val handler = Handler()
-    handler.postDelayed({ BrekekeUtils.emit("makeCall", phone) }, 5000)
+    var h = Ctx.h()
+    h.postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
   }
 
   private fun checkSetDefaultDialerResult(resultCode: Int) {

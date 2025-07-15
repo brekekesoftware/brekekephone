@@ -36,7 +36,7 @@ import type { CallStore } from '#/stores/callStore'
 import { ctx } from '#/stores/ctx'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnStacker } from '#/stores/RnStacker'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 
 export class Nav {
   // root account/login
