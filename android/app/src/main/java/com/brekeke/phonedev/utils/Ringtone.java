@@ -242,9 +242,14 @@ public class Ringtone {
     am.setMode(AudioManager.MODE_RINGTONE);
     try {
       if(_validateHttps(r) != null) {
-        timeoutRunnable = () -> _playFallback(u, t, h, p);
+        timeoutRunnable = () -> {
+          _releaseMediaPLayer();
+          _playFallback(u, t, h, p);
+        };
+        _play(r);
+      } else{
+        _play(get(r, u, t, h, p));
       }
-      _play(get(r, u, t, h, p));
     } catch (Exception e) {
       _playFallback(u, t, h, p);
       Emitter.error("Ringtone play", e.getMessage());
@@ -309,6 +314,11 @@ public class Ringtone {
     } catch (Exception e) {
       vib = null;
     }
+    _releaseMediaPLayer();
+    timeoutRunnable = null;
+  }
+
+  private static void _releaseMediaPLayer() {
     try {
       mp.stop();
       mp.release();
@@ -316,7 +326,6 @@ public class Ringtone {
     } catch (Exception e) {
       mp = null;
     }
-    timeoutRunnable = null;
   }
 
   // ==========================================================================
