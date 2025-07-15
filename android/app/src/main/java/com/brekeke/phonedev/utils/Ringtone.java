@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -19,6 +21,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Spliterator;
@@ -149,7 +152,7 @@ public class Ringtone {
   private static String _default = _static[0];
 
   // map ringtone url -> 1 (true) / 0 (false)
-  private static Map<String, String> errors;
+  private static Map<String, String> errors = new HashMap<>();
 
   private static String validate(String r) {
     if (TextUtils.isEmpty(r)) {
@@ -225,8 +228,9 @@ public class Ringtone {
   private static Vibrator vib;
   private static MediaPlayer mp;
 
-  private static int PLAY_TIMEOUT = 1000;
+  private static int PLAY_TIMEOUT = 3000;
   private static Runnable onError;
+  private static Handler h;
 
   private static Data d = new Data();
 
@@ -300,11 +304,14 @@ public class Ringtone {
     mp = new MediaPlayer();
     mp.setAudioAttributes(attr);
     mp.setDataSource(ctx, Uri.parse(r));
+    mp.setVolume(1.0f, 1.0f);
+    mp.setLooping(true);
     if (!https(r)) {
       mp.prepare();
       mp.start();
       return;
     }
+    h = new Handler(Looper.getMainLooper());
     // https uri
     onError =
         () -> {
@@ -320,8 +327,15 @@ public class Ringtone {
           errors.put(r, "0");
           stopOnError();
         });
+    mp.setOnErrorListener(
+        (v, w, s) -> {
+          if (onError != null) {
+            onError.run();
+          }
+          return true;
+        });
     mp.prepareAsync();
-    Ctx.h.postDelayed(onError, PLAY_TIMEOUT);
+    h.postDelayed(onError, PLAY_TIMEOUT);
   }
 
   public static void stop() {
@@ -355,10 +369,11 @@ public class Ringtone {
   private static void stopOnError() {
     if (onError != null) {
       try {
-        Ctx.h.removeCallbacks(onError);
+        h.removeCallbacks(onError);
       } catch (Exception e) {
       }
       onError = null;
+      h = null;
     }
   }
 
