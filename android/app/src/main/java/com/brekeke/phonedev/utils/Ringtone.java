@@ -10,6 +10,8 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -31,6 +33,8 @@ import java.util.stream.StreamSupport;
 public class Ringtone {
   // ==========================================================================
   // init
+  private final static int TIMEOUT_PLAY_HTTPS = 3000;
+  private static Runnable timeoutRunnable;
 
   public static void init() {
     if (am != null) {
@@ -147,6 +151,10 @@ public class Ringtone {
   private static final String[] _static = {"incallmanager_ringtone"};
   private static final String _default = _static[0];
 
+  private static  String _validateHttps(String r) {
+    return r.startsWith("https://") ? r : null;
+  }
+
   private static String validate(String r) {
     if (TextUtils.isEmpty(r)) {
       return null;
@@ -154,7 +162,7 @@ public class Ringtone {
     if (_static(r)) {
       return r;
     }
-    if (r.startsWith("https://")) {
+    if (_validateHttps(r) != null) {
       return r;
     }
     try (var s = system()) {
@@ -233,21 +241,28 @@ public class Ringtone {
     }
     am.setMode(AudioManager.MODE_RINGTONE);
     try {
+      if(_validateHttps(r) != null) {
+        timeoutRunnable = () -> _playFallback(u, t, h, p);
+      }
       _play(get(r, u, t, h, p));
     } catch (Exception e) {
-      try {
-        _play(get(u, t, h, p));
-      } catch (Exception e2) {
-        try {
-          _play(_default);
-        } catch (Exception e3) {
-          Emitter.error("Ringtone play3", e3.getMessage());
-        }
-        Emitter.error("Ringtone play2", e2.getMessage());
-      }
+      _playFallback(u, t, h, p);
       Emitter.error("Ringtone play", e.getMessage());
     }
     return true;
+  }
+
+  private static void _playFallback(String u, String t, String h, String p) {
+    try {
+      _play(get(u, t, h, p));
+    } catch (Exception e2) {
+      try {
+        _play(_default);
+      } catch (Exception e3) {
+        Emitter.error("Ringtone play3", e3.getMessage());
+      }
+      Emitter.error("Ringtone play2", e2.getMessage());
+    }
   }
 
   private static void _play(String r) throws Exception {
@@ -258,7 +273,8 @@ public class Ringtone {
             .setLegacyStreamType(AudioManager.STREAM_RING)
             .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
             .build();
-    if (_static(r)) {
+    var  isStatic = _static(r);
+    if (isStatic) {
       var res = ctx.getResources();
       var pkg = ctx.getPackageName();
       var id = res.getIdentifier(r, "raw", pkg);
@@ -267,10 +283,22 @@ public class Ringtone {
       mp = new MediaPlayer();
       mp.setAudioAttributes(attr);
       mp.setDataSource(ctx, Uri.parse(r));
-      mp.prepare();
     }
     mp.setVolume(1.0f, 1.0f);
     mp.setLooping(true);
+
+    if(_validateHttps(r) != null) {
+      var timeoutHandler = new Handler(Looper.getMainLooper());
+      mp.setOnPreparedListener(m -> {
+        timeoutHandler.removeCallbacks(timeoutRunnable);
+        mp.start();
+      });
+      mp.prepareAsync();
+      timeoutHandler.postDelayed(timeoutRunnable, TIMEOUT_PLAY_HTTPS);
+      return;
+    } else if (!isStatic) {
+      mp.prepare();
+    }
     mp.start();
   }
 
@@ -288,6 +316,7 @@ public class Ringtone {
     } catch (Exception e) {
       mp = null;
     }
+    timeoutRunnable = null;
   }
 
   // ==========================================================================
