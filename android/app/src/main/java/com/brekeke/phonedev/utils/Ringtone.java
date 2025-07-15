@@ -243,7 +243,7 @@ public class Ringtone {
     try {
       if(_validateHttps(r) != null) {
         timeoutRunnable = () -> {
-          _releaseMediaPLayer();
+          _releaseMediaPlayer();
           _playFallback(u, t, h, p);
         };
         _play(r);
@@ -314,11 +314,11 @@ public class Ringtone {
     } catch (Exception e) {
       vib = null;
     }
-    _releaseMediaPLayer();
+    _releaseMediaPlayer();
     timeoutRunnable = null;
   }
 
-  private static void _releaseMediaPLayer() {
+  private static void _releaseMediaPlayer() {
     try {
       mp.stop();
       mp.release();
