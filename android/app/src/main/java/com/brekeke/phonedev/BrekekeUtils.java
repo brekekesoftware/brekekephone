@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -149,8 +148,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Map<String, String> destroyedUuids = new HashMap<String, String>();
 
   public static void intervalCheckRejectCall(String uuid) {
-    var h = new Handler();
-    h.postDelayed(
+    Ctx.h.postDelayed(
         new Runnable() {
           @Override
           public void run() {
@@ -161,7 +159,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               return;
             }
             elapsed += 1000;
-            h.postDelayed(this, 1000);
+            Ctx.h.postDelayed(this, 1000);
           }
 
           // check in 60s

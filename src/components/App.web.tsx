@@ -22,23 +22,25 @@ import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
 // only insert css that affect this root id
-const globalCss = `#${webRootId} * {
+const globalCss = `
+#${webRootId} {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+#${webRootId} * {
   outline: none !important;
   box-sizing: border-box;
 }
 #${webRootId} a {
   text-decoration: none;
 }
-#${webRootId} {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-}`
+`
 
 requestAnimationFrame(() => {
   const s = document.createElement('style')
   s.type = 'text/css'
-  s.appendChild(document.createTextNode(globalCss))
+  s.appendChild(document.createTextNode(globalCss.trim()))
   const h = document.head || document.getElementsByTagName('head')[0]
   h.appendChild(s)
 })

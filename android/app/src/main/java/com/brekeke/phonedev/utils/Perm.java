@@ -22,21 +22,22 @@ public class Perm {
   public static String IgnoringBatteryOptimizations = "IgnoringBatteryOptimizations";
   public static String AndroidLpc = "AndroidLpc";
 
-  private interface PermissionHandler {
+  private interface Handler {
     boolean check();
 
     // return true if already open activity and wait for main activity on resume
     // it should add the promise to the pending array and wait for on resume
     // otherwise, it will resolve the promise as true immediately
+    // TODO: should handle in react native on app state change and check() again
     boolean request();
   }
 
-  private static final Map<String, PermissionHandler> handlers = new HashMap<>();
+  private static final Map<String, Handler> handlers = new HashMap<>();
 
   static {
     handlers.put(
         Overlay,
-        new PermissionHandler() {
+        new Handler() {
           @Override
           public boolean check() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -61,7 +62,7 @@ public class Perm {
 
     handlers.put(
         IgnoringBatteryOptimizations,
-        new PermissionHandler() {
+        new Handler() {
           @Override
           public boolean check() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -88,7 +89,7 @@ public class Perm {
 
     handlers.put(
         AndroidLpc,
-        new PermissionHandler() {
+        new Handler() {
           private static final int OP_BACKGROUND_START_ACTIVITY = 10021;
 
           @Override

@@ -10,8 +10,6 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -22,6 +20,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -33,8 +32,6 @@ import java.util.stream.StreamSupport;
 public class Ringtone {
   // ==========================================================================
   // init
-  private final static int TIMEOUT_PLAY_HTTPS = 3000;
-  private static Runnable timeoutRunnable;
 
   public static void init() {
     if (am != null) {
@@ -148,12 +145,11 @@ public class Ringtone {
   // ==========================================================================
   // validate
 
-  private static final String[] _static = {"incallmanager_ringtone"};
-  private static final String _default = _static[0];
+  private static String[] _static = {"incallmanager_ringtone"};
+  private static String _default = _static[0];
 
-  private static  String _validateHttps(String r) {
-    return r.startsWith("https://") ? r : null;
-  }
+  // map ringtone url -> 1 (true) / 0 (false)
+  private static Map<String, String> errors;
 
   private static String validate(String r) {
     if (TextUtils.isEmpty(r)) {
@@ -162,25 +158,37 @@ public class Ringtone {
     if (_static(r)) {
       return r;
     }
-    if (_validateHttps(r) != null) {
+    if (https(r)) {
       return r;
     }
     try (var s = system()) {
-      return s.filter(p -> p.first.equals(r) || p.second.equals(r))
-          .map(p -> p.second)
-          .findFirst()
-          .orElse(null);
+      return s.filter(p -> p.first.equals(r)).map(p -> p.second).findFirst().orElse(null);
     }
+  }
+
+  private static String validateWithError(String r) {
+    r = validate(r);
+    if (TextUtils.isEmpty(r)) {
+      return null;
+    }
+    if ("1".equals(errors.get(r))) {
+      return null;
+    }
+    return r;
   }
 
   private static boolean _static(String r) {
     return Arrays.asList(_static).contains(r);
   }
 
+  private static boolean https(String r) {
+    return r.startsWith("https://");
+  }
+
   // get from push notification and validate
   private static String get(String r, String u, String t, String h, String p) {
     try {
-      var v = validate(r);
+      var v = validateWithError(r);
       if (!TextUtils.isEmpty(v)) {
         return v;
       }
@@ -194,11 +202,11 @@ public class Ringtone {
   private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
-      var r = validate(a.getString("ringtone"));
+      var r = validateWithError(a.getString("ringtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
-      r = validate(a.getString("pbxRingtone"));
+      r = validateWithError(a.getString("pbxRingtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
@@ -217,11 +225,17 @@ public class Ringtone {
   private static Vibrator vib;
   private static MediaPlayer mp;
 
+  private static int PLAY_TIMEOUT = 1000;
+  private static Runnable onError;
+
+  private static Data d = new Data();
+
   public static boolean play(String r, String u, String t, String h, String p) {
     if (mp != null) {
       // return false if already playing
       return false;
     }
+    d.set(r, u, t, h, p);
     int m = am.getRingerMode();
     if (m == AudioManager.RINGER_MODE_SILENT) {
       return true;
@@ -240,37 +254,30 @@ public class Ringtone {
       return true;
     }
     am.setMode(AudioManager.MODE_RINGTONE);
-    try {
-      if(_validateHttps(r) != null) {
-        timeoutRunnable = () -> {
-          _releaseMediaPlayer();
-          _playFallback(u, t, h, p);
-        };
-        _play(r);
-      } else{
-        _play(get(r, u, t, h, p));
-      }
-    } catch (Exception e) {
-      _playFallback(u, t, h, p);
-      Emitter.error("Ringtone play", e.getMessage());
-    }
+    playMp();
     return true;
   }
 
-  private static void _playFallback(String u, String t, String h, String p) {
+  private static void playMp() {
     try {
-      _play(get(u, t, h, p));
-    } catch (Exception e2) {
+      playMpWithoutCatch(get(d.r, d.u, d.t, d.h, d.p));
+    } catch (Exception e) {
       try {
-        _play(_default);
-      } catch (Exception e3) {
-        Emitter.error("Ringtone play3", e3.getMessage());
+        playMpWithoutCatch(get(d.u, d.t, d.h, d.p));
+      } catch (Exception e2) {
+        try {
+          playMpWithoutCatch(_default);
+        } catch (Exception e3) {
+          Emitter.error("Ringtone playMp 3", e3.getMessage());
+        }
+        Emitter.error("Ringtone playMp 2", e2.getMessage());
       }
-      Emitter.error("Ringtone play2", e2.getMessage());
+      Emitter.error("Ringtone playMp 1", e.getMessage());
     }
   }
 
-  private static void _play(String r) throws Exception {
+  private static void playMpWithoutCatch(String r) throws Exception {
+    stopMp();
     var ctx = Ctx.app();
     var attr =
         new AudioAttributes.Builder()
@@ -278,53 +285,80 @@ public class Ringtone {
             .setLegacyStreamType(AudioManager.STREAM_RING)
             .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
             .build();
-    var  isStatic = _static(r);
-    if (isStatic) {
+    // static
+    if (_static(r)) {
       var res = ctx.getResources();
       var pkg = ctx.getPackageName();
       var id = res.getIdentifier(r, "raw", pkg);
       mp = MediaPlayer.create(ctx, id, attr, am.generateAudioSessionId());
-    } else {
-      mp = new MediaPlayer();
-      mp.setAudioAttributes(attr);
-      mp.setDataSource(ctx, Uri.parse(r));
-    }
-    mp.setVolume(1.0f, 1.0f);
-    mp.setLooping(true);
-
-    if(_validateHttps(r) != null) {
-      var timeoutHandler = new Handler(Looper.getMainLooper());
-      mp.setOnPreparedListener(m -> {
-        timeoutHandler.removeCallbacks(timeoutRunnable);
-        mp.start();
-      });
-      mp.prepareAsync();
-      timeoutHandler.postDelayed(timeoutRunnable, TIMEOUT_PLAY_HTTPS);
+      mp.setVolume(1.0f, 1.0f);
+      mp.setLooping(true);
+      mp.start();
       return;
-    } else if (!isStatic) {
-      mp.prepare();
     }
-    mp.start();
+    // uri
+    mp = new MediaPlayer();
+    mp.setAudioAttributes(attr);
+    mp.setDataSource(ctx, Uri.parse(r));
+    if (!https(r)) {
+      mp.prepare();
+      mp.start();
+      return;
+    }
+    // https uri
+    onError =
+        () -> {
+          if (!errors.containsKey(r)) {
+            errors.put(r, "1");
+          }
+          playMp();
+          stopOnError();
+        };
+    mp.setOnPreparedListener(
+        m -> {
+          m.start();
+          errors.put(r, "0");
+          stopOnError();
+        });
+    mp.prepareAsync();
+    Ctx.h.postDelayed(onError, PLAY_TIMEOUT);
   }
 
   public static void stop() {
-    try {
-      vib.cancel();
-      vib = null;
-    } catch (Exception e) {
-      vib = null;
-    }
-    _releaseMediaPlayer();
-    timeoutRunnable = null;
+    d = new Data();
+    stopVib();
+    stopMp();
+    stopOnError();
   }
 
-  private static void _releaseMediaPlayer() {
-    try {
-      mp.stop();
-      mp.release();
+  private static void stopVib() {
+    if (vib != null) {
+      try {
+        vib.cancel();
+      } catch (Exception e) {
+      }
+      vib = null;
+    }
+  }
+
+  private static void stopMp() {
+    if (mp != null) {
+      try {
+        mp.stop();
+        mp.release();
+      } catch (Exception e) {
+      }
       mp = null;
-    } catch (Exception e) {
-      mp = null;
+    }
+  }
+
+  private static void stopOnError() {
+    if (onError != null) {
+      try {
+        Ctx.h.removeCallbacks(onError);
+      } catch (Exception e) {
+      }
+      onError = null;
     }
   }
 
@@ -356,5 +390,21 @@ public class Ringtone {
 
   public static int getRingerMode() {
     return am.getRingerMode();
+  }
+}
+
+class Data {
+  public String r;
+  public String u;
+  public String t;
+  public String h;
+  public String p;
+
+  public void set(String r, String u, String t, String h, String p) {
+    this.r = r;
+    this.u = u;
+    this.t = t;
+    this.h = h;
+    this.p = p;
   }
 }

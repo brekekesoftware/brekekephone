@@ -1,7 +1,5 @@
 package com.brekeke.phonedev.utils;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +24,7 @@ public class Toast {
   // show with native type Type
 
   public static void show(LinearLayout container, String m, String d, Type t) {
-    var h = new Handler(Looper.getMainLooper());
-    h.post(
+    Ctx.h.post(
         () -> {
           try {
             var ctx = Ctx.app();
@@ -43,7 +40,7 @@ public class Toast {
               dv.setVisibility(View.GONE);
             }
             container.addView(v, 0);
-            h.postDelayed(
+            Ctx.h.postDelayed(
                 () -> {
                   try {
                     container.removeView(v);

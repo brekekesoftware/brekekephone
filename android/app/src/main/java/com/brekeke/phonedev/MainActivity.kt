@@ -3,10 +3,10 @@ package com.brekeke.phonedev
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
+import com.brekeke.phonedev.utils.Ctx
 import com.brekeke.phonedev.utils.Emitter
 import com.brekeke.phonedev.utils.Perm
 import com.brekeke.phonedev.utils.Ringtone
@@ -116,7 +116,7 @@ class MainActivity : ReactActivity() {
     if (Emitter.emit("makeCall", phone)) {
       return
     }
-    Handler().postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
+    Ctx.h.postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
   }
 
   private fun checkSetDefaultDialerResult(resultCode: Int) {
