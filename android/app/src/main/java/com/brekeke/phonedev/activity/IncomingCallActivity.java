@@ -1531,13 +1531,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           @Override
           public void run() {
             runOnUiThread(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    long now = System.currentTimeMillis();
-                    long ms = now - answeredAt;
-                    txtDurationCall.setText(getTimerText(ms));
-                  }
+                () -> {
+                  long now = System.currentTimeMillis();
+                  long ms = now - answeredAt;
+                  txtDurationCall.setText(getTimerText(ms));
                 });
           }
         };

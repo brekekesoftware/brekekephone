@@ -11,7 +11,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -228,7 +227,7 @@ public class Ringtone {
   private static Vibrator vib;
   private static MediaPlayer mp;
 
-  private static int PLAY_TIMEOUT = 3000;
+  private static int PLAY_TIMEOUT = 1000;
   private static Runnable onError;
   private static Handler h;
 
@@ -311,7 +310,6 @@ public class Ringtone {
       mp.start();
       return;
     }
-    h = new Handler(Looper.getMainLooper());
     // https uri
     onError =
         () -> {
@@ -335,6 +333,7 @@ public class Ringtone {
           return true;
         });
     mp.prepareAsync();
+    h = Ctx.h();
     h.postDelayed(onError, PLAY_TIMEOUT);
   }
 

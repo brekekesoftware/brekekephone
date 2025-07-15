@@ -148,7 +148,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static Map<String, String> destroyedUuids = new HashMap<String, String>();
 
   public static void intervalCheckRejectCall(String uuid) {
-    Ctx.h.postDelayed(
+    var h = Ctx.h();
+    h.postDelayed(
         new Runnable() {
           @Override
           public void run() {
@@ -159,7 +160,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               return;
             }
             elapsed += 1000;
-            Ctx.h.postDelayed(this, 1000);
+            h.postDelayed(this, 1000);
           }
 
           // check in 60s
@@ -188,48 +189,37 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     // setup callkeep and display
     var ctx = Ctx.app();
     RNCallKeepModule.registerPhoneAccount(ctx);
-
-    var onShowIncomingCall =
-        new Runnable() {
-          @Override
-          public void run() {
-            var a = userActions.get(uuid);
-            if (a != null) {
-              if ("rejectCall".equals(a)) {
-                RNCallKeepModule.staticEndCall(uuid, ctx);
-              }
-              return;
-            }
-            userActions.put(uuid, "display");
-            activitiesSize++;
-            if (activitiesSize == 1) {
-              firstShowCallAppActive = isAppActive || isAppActiveLocked;
-            }
-            var i = new Intent(ctx, IncomingCallActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            i.putExtra("data", new HashMap<>(m));
-            ctx.startActivity(i);
-            if (toBoolean(m.get("lpc"))) {
-              LpcUtils.showIncomingCallNotification(ctx, i);
-            }
-          }
-        };
-    var onReject =
-        new Runnable() {
-          @Override
-          public void run() {
-            onPassiveReject(uuid);
-          }
-        };
-
     // try to run onShowIncomingCall if there is already an ongoing call
+    var onShowIncomingCall =
+        (Runnable)
+            () -> {
+              var a = userActions.get(uuid);
+              if (a != null) {
+                if ("rejectCall".equals(a)) {
+                  RNCallKeepModule.staticEndCall(uuid, ctx);
+                }
+                return;
+              }
+              userActions.put(uuid, "display");
+              activitiesSize++;
+              if (activitiesSize == 1) {
+                firstShowCallAppActive = isAppActive || isAppActiveLocked;
+              }
+              var i = new Intent(ctx, IncomingCallActivity.class);
+              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+              i.putExtra("data", new HashMap<>(m));
+              ctx.startActivity(i);
+              if (toBoolean(m.get("lpc"))) {
+                LpcUtils.showIncomingCallNotification(ctx, i);
+              }
+            };
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
         || activitiesSize > 0) {
       onShowIncomingCall.run();
     }
     RNCallKeepModule.onShowIncomingCallUiCallbacks.put(uuid, onShowIncomingCall);
-    RNCallKeepModule.onRejectCallbacks.put(uuid, onReject);
+    RNCallKeepModule.onRejectCallbacks.put(uuid, () -> onPassiveReject(uuid));
     RNCallKeepModule.staticDisplayIncomingCall(
         uuid, "Brekeke Phone", PN.callerName(m), false, null);
   }
@@ -420,10 +410,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     }
   }
 
-  //
-  // move start/stop ringtone here
-  //
-
   public static boolean checkReadPhonePermission() {
     var ctx = Ctx.app();
     if (checkSelfPermission(ctx, permission.READ_PHONE_NUMBERS)
@@ -542,18 +528,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void updateAnyHoldLoading(boolean isAnyHoldLoading) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (var a : activities) {
-                try {
-                  a.updateEnableSwitchCall(!isAnyHoldLoading);
-                } catch (Exception e) {
-                }
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.updateEnableSwitchCall(!isAnyHoldLoading);
+              } catch (Exception e) {
               }
-            } catch (Exception e) {
             }
+          } catch (Exception e) {
           }
         });
   }
@@ -561,13 +544,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void toast(String uuid, String m, String d, String t) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).toast(m, d, t);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).toast(m, d, t);
+          } catch (Exception e) {
           }
         });
   }
@@ -575,18 +555,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void updateConnectionStatus(String msg, boolean isConnFailure) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (var a : activities) {
-                try {
-                  a.updateConnectionStatus(msg, isConnFailure);
-                } catch (Exception e) {
-                }
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.updateConnectionStatus(msg, isConnFailure);
+              } catch (Exception e) {
               }
-            } catch (Exception e) {
             }
+          } catch (Exception e) {
           }
         });
   }
@@ -594,13 +571,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void updateRqStatus(String uuid, String name, boolean isLoading) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).updateBtnRqStatus(name, isLoading);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).updateBtnRqStatus(name, isLoading);
+          } catch (Exception e) {
           }
         });
   }
@@ -609,20 +583,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void setUserAgentConfig(String userAgentConfig) {
     if (BrekekeUtils.userAgentConfig == null) {
       UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              try {
-                for (var a : activities) {
-                  try {
-                    a.setUserAgentConfig(userAgentConfig);
-                  } catch (Exception e) {
-                    Emitter.error("a.setUserAgentConfig", e.getMessage());
-                  }
+          () -> {
+            try {
+              for (var a : activities) {
+                try {
+                  a.setUserAgentConfig(userAgentConfig);
+                } catch (Exception e) {
+                  Emitter.error("a.setUserAgentConfig", e.getMessage());
                 }
-              } catch (Exception e) {
-                Emitter.error("setUserAgentConfig", e.getMessage());
               }
+            } catch (Exception e) {
+              Emitter.error("setUserAgentConfig", e.getMessage());
             }
           });
     }
@@ -715,23 +686,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setPbxConfig(String jsonStr) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              if (!jsonStr.startsWith("{")) {
-                return;
-              }
-              var o = new JSONObject(jsonStr);
-              for (var a : activities) {
-                try {
-                  a.pbxConfig = o;
-                  a.updateCallConfig();
-                } catch (Exception e) {
-                }
-              }
-            } catch (Exception e) {
+        () -> {
+          try {
+            if (!jsonStr.startsWith("{")) {
+              return;
             }
+            var o = new JSONObject(jsonStr);
+            for (var a : activities) {
+              try {
+                a.pbxConfig = o;
+                a.updateCallConfig();
+              } catch (Exception e) {
+              }
+            }
+          } catch (Exception e) {
           }
         });
   }
@@ -739,18 +707,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setCallConfig(String uuid, String jsonStr) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              if (!jsonStr.startsWith("{")) {
-                return;
-              }
-              var a = at(uuid);
-              a.callConfig = new JSONObject(jsonStr);
-              a.updateCallConfig();
-            } catch (Exception e) {
+        () -> {
+          try {
+            if (!jsonStr.startsWith("{")) {
+              return;
             }
+            var a = at(uuid);
+            a.callConfig = new JSONObject(jsonStr);
+            a.updateCallConfig();
+          } catch (Exception e) {
           }
         });
   }
@@ -764,13 +729,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setTalkingAvatar(String uuid, String url, boolean isLarge) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setImageTalkingUrl(url, isLarge);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setImageTalkingUrl(url, isLarge);
+          } catch (Exception e) {
           }
         });
   }
@@ -783,26 +745,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       releaseWakeLock();
     }
     jsCallsSize = n;
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            updateBtnUnlockLabels();
-          }
-        });
+    UiThreadUtil.runOnUiThread(() -> updateBtnUnlockLabels());
   }
 
   @ReactMethod
   public void setRecordingStatus(String uuid, boolean isRecording) {
     Emitter.debug("setRecordingStatus uuid=" + uuid + " isRecording=" + isRecording);
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRecordingStatus(isRecording);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setRecordingStatus(isRecording);
+          } catch (Exception e) {
           }
         });
   }
@@ -810,13 +763,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setIsVideoCall(String uuid, boolean isVideoCall, boolean isMuted) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setBtnVideoSelected(isVideoCall, isMuted);
+          } catch (Exception e) {
           }
         });
   }
@@ -824,13 +774,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setOnHold(String uuid, boolean holding) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnHoldSelected(holding);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setBtnHoldSelected(holding);
+          } catch (Exception e) {
           }
         });
   }
@@ -838,13 +785,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setIsMute(String uuid, boolean isMute) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setBtnMuteSelected(isMute);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setBtnMuteSelected(isMute);
+          } catch (Exception e) {
           }
         });
   }
@@ -852,18 +796,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setSpeakerStatus(Boolean isSpeakerOn) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (var a : activities) {
-                try {
-                  a.setBtnSpeakerSelected(isSpeakerOn);
-                } catch (Exception e) {
-                }
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.setBtnSpeakerSelected(isSpeakerOn);
+              } catch (Exception e) {
               }
-            } catch (Exception e) {
             }
+          } catch (Exception e) {
           }
         });
   }
@@ -872,18 +813,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void setLocale(String locale) {
     L.set(locale);
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              for (var a : activities) {
-                try {
-                  a.updateLabels();
-                } catch (Exception e) {
-                }
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.updateLabels();
+              } catch (Exception e) {
               }
-            } catch (Exception e) {
             }
+          } catch (Exception e) {
           }
         });
   }
@@ -896,13 +834,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onCallConnected(String uuid) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).onCallConnected();
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).onCallConnected();
+          } catch (Exception e) {
           }
         });
   }
@@ -910,19 +845,16 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onCallKeepAction(String uuid, String action) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              if ("answerCall".equals(action)) {
-                var a = at(uuid);
-                a.onBtnAnswerClick(null);
-                a.reorderToFront();
-              } else if ("rejectCall".equals(action)) {
-                at(uuid).onBtnRejectClick(null);
-              }
-            } catch (Exception e) {
+        () -> {
+          try {
+            if ("answerCall".equals(action)) {
+              var a = at(uuid);
+              a.onBtnAnswerClick(null);
+              a.reorderToFront();
+            } else if ("rejectCall".equals(action)) {
+              at(uuid).onBtnRejectClick(null);
             }
+          } catch (Exception e) {
           }
         });
   }
@@ -930,14 +862,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onPageCallManage(String uuid) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            var toFront = at(uuid);
-            Emitter.debug("onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
-            if (toFront != null) {
-              toFront.reorderToFront();
-            }
+        () -> {
+          var toFront = at(uuid);
+          Emitter.debug("onPageCallManage uuid=" + uuid + " toFront==null " + (toFront == null));
+          if (toFront != null) {
+            toFront.reorderToFront();
           }
         });
   }
@@ -1008,13 +937,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setRemoteStreams(String uuid, ReadableArray streams) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setRemoteStreams(streams);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setRemoteStreams(streams);
+          } catch (Exception e) {
           }
         });
   }
@@ -1022,13 +948,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setStreamActive(String uuid, ReadableMap stream) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setStreamActive(stream);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setStreamActive(stream);
+          } catch (Exception e) {
           }
         });
   }
@@ -1036,13 +959,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setLocalStream(String uuid, String streamUrl) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setLocalStream(streamUrl);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setLocalStream(streamUrl);
+          } catch (Exception e) {
           }
         });
   }
@@ -1050,13 +970,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void addStreamToView(String uuid, ReadableMap stream) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).addStreamToView(stream);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).addStreamToView(stream);
+          } catch (Exception e) {
           }
         });
   }
@@ -1064,13 +981,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void removeStreamFromView(String uuid, String vId) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).removeStreamFromView(vId);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).removeStreamFromView(vId);
+          } catch (Exception e) {
           }
         });
   }
@@ -1078,13 +992,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setOptionsRemoteStream(String uuid, ReadableArray arr) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              at(uuid).setOptionsRemoteStream(arr);
-            } catch (Exception e) {
-            }
+        () -> {
+          try {
+            at(uuid).setOptionsRemoteStream(arr);
+          } catch (Exception e) {
           }
         });
   }

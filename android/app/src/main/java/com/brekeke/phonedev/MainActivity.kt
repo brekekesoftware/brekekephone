@@ -116,7 +116,8 @@ class MainActivity : ReactActivity() {
     if (Emitter.emit("makeCall", phone)) {
       return
     }
-    Ctx.h.postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
+    var h = Ctx.h()
+    h.postDelayed({ Emitter.emit("makeCall", phone) }, 5000)
   }
 
   private fun checkSetDefaultDialerResult(resultCode: Int) {

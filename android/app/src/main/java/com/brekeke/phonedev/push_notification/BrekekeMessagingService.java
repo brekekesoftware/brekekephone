@@ -58,13 +58,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     // AssertionException: Expected to run on UI thread
     // wake up from lpc will run on a diffrent thread, need to switch to the main thread
     var r = (ReactApplication) getApplication();
-    runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            LpcUtils.createReactContextInBackground(r);
-          }
-        });
+    runOnUiThread(() -> LpcUtils.createReactContextInBackground(r));
   }
 
   // when app wake from push notification, rn modules might not available yet
