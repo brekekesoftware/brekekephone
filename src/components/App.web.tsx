@@ -28,6 +28,11 @@ const globalCss = `#${webRootId} * {
 }
 #${webRootId} a {
   text-decoration: none;
+}
+#${webRootId} {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
 }`
 
 requestAnimationFrame(() => {
