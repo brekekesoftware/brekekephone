@@ -64,6 +64,15 @@ const getNoCacheUri = (uri: string) => {
   return `${uri}${sep}nocache=${Date.now()}`
 }
 
+// This updates the "no-cache" URI whenever the input `uri` changes.
+const useNoCacheUri = (uri: string) => {
+  const [nocacheUri, setNocacheUri] = useState(getNoCacheUri(uri))
+  useEffect(() => {
+    setNocacheUri(getNoCacheUri(uri))
+  }, [uri])
+  return nocacheUri
+}
+
 export const SmartImage = ({
   uri,
   style,
@@ -129,6 +138,7 @@ export const SmartImage = ({
   const isImageUrl =
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
+  const nocacheUri = useNoCacheUri(uri)
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (
@@ -157,7 +167,7 @@ export const SmartImage = ({
       ) : (
         <Image
           source={{
-            uri: getNoCacheUri(uri),
+            uri: nocacheUri,
           }}
           style={[css.image, css.full]}
           onError={onImageLoadError}
