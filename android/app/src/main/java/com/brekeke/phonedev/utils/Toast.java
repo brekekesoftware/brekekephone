@@ -24,7 +24,8 @@ public class Toast {
   // show with native type Type
 
   public static void show(LinearLayout container, String m, String d, Type t) {
-    Ctx.h.post(
+    var h = Ctx.h();
+    h.post(
         () -> {
           try {
             var ctx = Ctx.app();
@@ -40,7 +41,7 @@ public class Toast {
               dv.setVisibility(View.GONE);
             }
             container.addView(v, 0);
-            Ctx.h.postDelayed(
+            h.postDelayed(
                 () -> {
                   try {
                     container.removeView(v);
