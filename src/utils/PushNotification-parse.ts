@@ -2,11 +2,11 @@ import { AppState } from 'react-native'
 
 import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
 import { jsonStable } from '#/utils/jsonStable'
 import { get } from '#/utils/lodash'
 import { PushNotification } from '#/utils/PushNotification'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 

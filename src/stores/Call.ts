@@ -10,9 +10,9 @@ import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { checkPermForCall } from '#/utils/permissions'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 export class Call {
@@ -297,23 +297,23 @@ export class Call {
     if (err === true) {
       return true
     }
+    if (!err) {
+      return false
+    }
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHoldWithCallkeep(prevFn === 'unhold')
-    if (typeof err !== 'boolean') {
-      const message =
-        prevFn === 'unhold'
-          ? intlDebug`Failed to unhold the call`
-          : intlDebug`Failed to hold the call`
-      ctx.toast.error({ message, err }, 8000)
-      BrekekeUtils.showToast(
-        this.callkeepUuid,
-        message.label,
-        'error',
-        err?.message,
-      )
-      return true
-    }
-    return false
+    const message =
+      prevFn === 'unhold'
+        ? intlDebug`Failed to unhold the call`
+        : intlDebug`Failed to hold the call`
+    ctx.toast.error({ message, err }, 8000)
+    BrekekeUtils.toast(
+      this.callkeepUuid,
+      message.label,
+      err.message || '',
+      'error',
+    )
+    return true
   }
   private setHoldWithCallkeep = (holding: boolean) => {
     this.holding = holding

@@ -82,7 +82,7 @@ export const CallNotify = observer(() => {
 
   return (
     <Wrapper>
-      {ctx.call.shouldRingInNotify(c.callkeepUuid) && <IncomingItem />}
+      {ctx.call.shouldRingInNotify() && <IncomingItem />}
       <RnTouchableOpacity
         style={css.Notify}
         onPress={() => ctx.nav.goToPageCallManage()}

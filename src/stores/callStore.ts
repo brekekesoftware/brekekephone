@@ -21,12 +21,12 @@ import { RnStacker } from '#/stores/RnStacker'
 import { timerStore } from '#/stores/timerStore'
 import { arrToMap } from '#/utils/arrToMap'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import type { TEvent } from '#/utils/callkeep'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webShowNotification } from '#/utils/webShowNotification'
 
@@ -942,7 +942,7 @@ export class CallStore {
       )
     })
 
-  shouldRingInNotify = (uuid?: string) => {
+  shouldRingInNotify = () => {
     if (isWeb) {
       return true
     }
@@ -1092,6 +1092,7 @@ export class CallStore {
   // style in CallVideosUI to save the previous video position
   @observable videoPositionT = 25
   @observable videoPositionL = 5
+  // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
   @observable ringtone = ''
   @action setIncomingRingtone = (ringtone: string) => {

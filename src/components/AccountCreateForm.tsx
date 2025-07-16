@@ -11,9 +11,8 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import type { RingtoneOptionsType } from '#/utils/handleRingtone'
-import { getRingtoneOptions } from '#/utils/handleRingtone'
-import { defaultRingtone } from '#/utils/RnNativeModules'
+import type { RingtoneOption } from '#/utils/getRingtoneOptions'
+import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -31,7 +30,7 @@ export const AccountCreateForm: FC<{
         ...cloneDeep(props.updating),
       },
       addingPark: { name: '', number: '' },
-      ringtoneOptions: [] as RingtoneOptionsType,
+      ringtoneOptions: [] as RingtoneOption[],
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -113,12 +112,6 @@ export const AccountCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
-      console.log({ account: $.account })
-      if (!isWeb) {
-        $.account.ringtoneData =
-          $.ringtoneOptions.filter(v => v.key === $.account.ringtoneName)?.[0]
-            .uri ?? defaultRingtone
-      }
       props.onSave($.account, $.hasUnsavedChanges())
     },
   })
@@ -135,7 +128,7 @@ export const AccountCreateForm: FC<{
   }
 
   useEffect(() => {
-    if (!isWeb && !props.footerLogout) {
+    if (!props.footerLogout) {
       getLocalRingtone()
     }
   }, [])
@@ -301,14 +294,14 @@ export const AccountCreateForm: FC<{
             isGroup: true,
             label: intl`Ringtone`,
             hasMargin: true,
-            hidden: isWeb || props.footerLogout,
+            hidden: props.footerLogout,
           },
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
-            name: 'ringtoneName',
+            name: 'ringtone',
             options: $.ringtoneOptions,
-            hidden: isWeb || props.footerLogout,
+            hidden: props.footerLogout,
           },
         ]}
         k='account'

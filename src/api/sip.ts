@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isAndroid, isEmbed, isWeb } from '#/config'
+import { isEmbed, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
@@ -14,7 +14,6 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -68,26 +67,11 @@ export class SIP extends EventEmitter {
 
     const computeCallPatch = async (ev: Session) => {
       const m = ev.incomingMessage
-
-      // This logic will be executed if the ringtone already exists on the SIP Header and pn is disabled
-      const ringtone = 'jinglebell'
-      // const ringtone = m?.getHeader('X-RINGTONE')
-      console.log(`Hoang:ev.sessionStatus ${ev.sessionStatus} `)
-      if (ev.sessionStatus === 'dialing' && !!ringtone && isAndroid) {
-        const pnEnabled =
-          !ctx.auth.pbxLoginFromAnotherPlace &&
-          ctx.auth.getCurrentAccount()?.pushNotificationEnabled
-        if (!pnEnabled) {
-          BrekekeUtils.playRingtoneByName(ringtone)
-        }
-      }
-
       const extraHeaders = ev.rtcSession?._request?.extraHeaders || []
       const xPbxRpi = extraHeaders.find(header =>
         header.startsWith('X-PBX-RPI:'),
       )
       const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
-
       const withSDP =
         ev.rtcSession.direction === 'outgoing' &&
         ev.sessionStatus === 'progress' &&
@@ -137,7 +121,7 @@ export class SIP extends EventEmitter {
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],
         pbxUsername: arr?.[3],
-        sipRingtone: ringtone || '',
+        ringtoneFromSip: m?.getHeader('X-Ringtone'),
       }
       if (!patch.pbxTalkerId) {
         delete patch.pbxTalkerId
