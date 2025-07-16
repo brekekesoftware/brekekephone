@@ -27,9 +27,13 @@ RCT_EXTERN_METHOD(getRingtoneOptions
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(validateRingtone
-                  : (NSString *)ringtone ringtone
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject)
+                  : (NSString *)ringtone
+                  username: (NSString *)username
+                  tenant: (NSString *)tenant
+                  host: (NSString *)host
+                  port: (NSString *)port
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
 
 @end
 

@@ -467,19 +467,30 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
-      console.log(`Hoang:ev.sessionStatus displayIncomingCall ${p.sipRingtone}`)
+      console.log(
+        `Hoang:ev.sessionStatus displayIncomingCall ${p.ringtoneFromSip}`,
+      )
       // TODO Hoang : check ios and using validateRingtone
+      const op = isAndroid
+        ? {}
+        : {
+            ios: {
+              ringtone: await BrekekeUtils.validateRingtone(
+                p.ringtoneFromSip ?? '',
+                ca?.pbxUsername ?? '',
+                ca?.pbxTenant ?? '',
+                ca?.pbxHostname ?? '',
+                ca?.pbxPort ?? '',
+              ),
+            },
+          }
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
         await c.getDisplayNameAsync(),
         'generic',
         undefined,
-        {
-          ios: {
-            ringtone: p.sipRingtone,
-          },
-        },
+        op,
       )
     }
     // get and check callkeep if pending incoming call
