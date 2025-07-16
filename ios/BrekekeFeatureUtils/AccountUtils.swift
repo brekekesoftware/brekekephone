@@ -1,11 +1,10 @@
 import Foundation
 
-
 extension String {
-  func toJSON(options: JSONSerialization.ReadingOptions = .mutableContainers) -> Any? {
-    guard let data = self.data(using: .utf8 , allowLossyConversion: false) else { return nil }
-    return try? JSONSerialization.jsonObject(with: data, options: options)
-  }
+  func toModel<T: Decodable>(_ type: T.Type) -> T? {
+      guard let data = self.data(using: .utf8) else { return nil }
+      return try? JSONDecoder().decode(T.self, from: data)
+    }
   
   func md5() -> String {
     let data = Data(self.utf8)
@@ -17,48 +16,65 @@ extension String {
   }
 }
 
+struct Profile: Codable {
+  let pbxUsername: String
+  let pbxTenant: String?
+  let pbxHostname: String?
+  let pbxPort: String?
+  let ringtone: String?
+  let pbxRingtone: String?
+  let ringtoneData: String?
+}
+
+struct ProfilesWrapper: Codable {
+  let profiles: [Profile]
+}
+
+
 public class AccountUtils {
   
   @objc static func getRingtoneFromUser(username : String, tenant : String, host: String, port : String) -> String {
     let fileManager = FileManager.default
-    
+
     guard let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
           let bundleId = Bundle.main.bundleIdentifier else {
       return ""
     }
-    
+
     let supportDirectory = appSupportDirectory.appendingPathComponent(bundleId)
     let storageDirectory = supportDirectory.appendingPathComponent("RCTAsyncLocalStorage_V1")
     let storageFile = storageDirectory.appendingPathComponent("_api_profiles".md5())
+    
     if fileManager.fileExists(atPath: storageFile.path) {
       do {
-        
         let apiProfiles = try String(contentsOf: storageFile, encoding: .utf8)
-//        print("[getTokenFromReactNative] apiProfiles file content: \(apiProfiles)")
-        
-        guard let dictApiProfiles = apiProfiles.toJSON() as? [String : Any],
-              let profilesArray = dictApiProfiles["profiles"] as? [[String: Any]] else {
-          print("[getTokenFromReactNative] failed init.")
+
+        guard let profileWrapper = apiProfiles.toModel(ProfilesWrapper.self) else {
+          print("[getTokenFromReactNative] failed to decode.")
           return ""
         }
-        
-        if let account = findAccountPartial(profilesArray: profilesArray, username: username, tenant: tenant, host: host, port: port) {
-          let ringtoneName = account["ringtoneName"] as? String
-          print("[getTokenFromReactNative] \(ringtoneName)")
-          print("[getTokenFromReactNative] pbxRingtone \(account["pbxRingtone"])")
-          print("[getTokenFromReactNative] ringtoneData \(account["ringtoneData"])")
-          if(ringtoneName == "default") {
-            return account["pbxRingtone"] as? String ?? ""
+
+        if let account = findAccountPartial(profiles: profileWrapper.profiles, username: username, tenant: tenant, host: host, port: port) {
+          var ringtone = RingtoneUtils._validate(ringtone: account.ringtone ?? "")
+          print("[getTokenFromReactNative] \(ringtone)")
+          print("[getTokenFromReactNative] pbxRingtone \(account.pbxRingtone ?? "")")
+          print("[getTokenFromReactNative] ringtoneData \(account.ringtoneData ?? "")")
+          
+          if ringtone != "" {
+            return ringtone
           }
-          return account["ringtoneData"] as? String ?? ""
+
+          ringtone = RingtoneUtils._validate(ringtone: account.pbxRingtone ?? "")
+          if ringtone != "" {
+            return ringtone
+          }
         }
-        
+
       } catch {
         print("[getTokenFromReactNative] Error while reading or parsing JSON: \(error)")
-        return ""
       }
     }
-    return ""
+    return RingtoneUtils.defaultRingtone
   }
   
   static func compareFalsishField(v1 :String ,v2 : String ) -> Bool {
@@ -68,14 +84,16 @@ public class AccountUtils {
     return v1.isEmpty || v2.isEmpty || v1 == v2
   }
   
-  static func findAccountPartial(profilesArray : [[String: Any]], username : String, tenant : String, host: String, port : String) -> [String: Any]? {
-    for p in profilesArray {
-      let pbxUsername = p["pbxUsername"] as? String ?? ""
-      if(pbxUsername.isEmpty) {
+  static func findAccountPartial(profiles: [Profile], username: String, tenant: String, host: String, port: String) -> Profile? {
+    for p in profiles {
+      if p.pbxUsername.isEmpty {
         continue
       }
-      
-      if(pbxUsername == username) && compareFalsishField(v1: p["pbxTenant"] as? String ?? "", v2: tenant) && compareFalsishField(v1: p["pbxHostname"] as? String ?? "", v2: host) && compareFalsishField(v1: p["pbxPort"] as? String ?? "", v2: port) {
+
+      if p.pbxUsername == username &&
+          compareFalsishField(v1: p.pbxTenant ?? "", v2: tenant) &&
+          compareFalsishField(v1: p.pbxHostname ?? "", v2: host) &&
+          compareFalsishField(v1: p.pbxPort ?? "", v2: port) {
         return p
       }
     }

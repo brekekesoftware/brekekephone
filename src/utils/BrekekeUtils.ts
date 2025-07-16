@@ -94,10 +94,16 @@ type TBrekekeUtils = {
   disableLPC(): void
   systemUptimeMs(): Promise<number>
 
-  // ringtone
+  // ringtone on android and ios
   getRingtoneOptions(): Promise<string[]>
   // method ringtone only available on ios
-  validateRingtone(ringtone: string): Promise<string>
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
 }
 
 export type TNativeModules = {
@@ -173,8 +179,9 @@ const Polyfill: TBrekekeUtils = {
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
 
-  // ringtone
+  // ringtone on android and ios
   getRingtoneOptions: () => Promise.resolve(staticRingtones as any),
+  // method ringtone only available on ios
   validateRingtone: () => Promise.resolve(''),
 }
 
