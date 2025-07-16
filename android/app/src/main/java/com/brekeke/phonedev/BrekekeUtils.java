@@ -160,7 +160,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               return;
             }
             elapsed += 1000;
-            Ctx.h.postDelayed(this, 1000);
+            h.postDelayed(this, 1000);
           }
 
           // check in 60s

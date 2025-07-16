@@ -47,11 +47,11 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
 
     // build a new RemoteMessage with the updated data for callkeepAt and callkeepUuid
     var m2 =
-        new RemoteMessage.Builder(m.getFrom())
-            .setMessageId(m.getMessageId())
-            .setTtl(m.getTtl())
-            .setData(m.getData())
-            .build();
+            new RemoteMessage.Builder(m.getFrom())
+                    .setMessageId(m.getMessageId())
+                    .setTtl(m.getTtl())
+                    .setData(m.getData())
+                    .build();
     super.onMessageReceived(m2);
 
     // android lpc
@@ -59,42 +59,6 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     // wake up from lpc will run on a diffrent thread, need to switch to the main thread
     var r = (ReactApplication) getApplication();
     runOnUiThread(() -> LpcUtils.createReactContextInBackground(r));
-  }
-
-  // when app wake from push notification, rn modules might not available yet
-  // need to store those notifications and emit to the main rn later
-  private static ArrayList<String> initialNotifications = null;
-
-  public static void getInitialNotifications(Promise p) {
-    if (initialNotifications == null) {
-      p.resolve(null);
-      return;
-    }
-    try {
-      var arr = new String[initialNotifications.size()];
-      arr = initialNotifications.toArray(arr);
-      initialNotifications = null;
-      p.resolve(new JSONArray(arr).toString());
-    } catch (Exception e) {
-      p.resolve(null);
-      Emitter.error("getInitialNotifications", e.getMessage());
-    }
-  }
-
-  private static WritableMap parse(RemoteMessage m) {
-    var p = Arguments.createMap();
-    p.putString("from", m.getFrom());
-    p.putString("google.message_id", m.getMessageId());
-    p.putString("google.to", m.getTo());
-    p.putDouble("google.sent_time", m.getSentTime());
-    var d = m.getData();
-    if (d == null) {
-      return p;
-    }
-    for (var k : d.keySet()) {
-      p.putString(k, d.get(k));
-    }
-    return p;
   }
 
   // when app wake from push notification, rn modules might not available yet
