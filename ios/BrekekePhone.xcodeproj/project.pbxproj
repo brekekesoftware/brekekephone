@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A9D0EB82E28DC5A0003BC5A /* silent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */; };
 		0ABA66A12E1E20FA003D9A1F /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */; };
 		0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */; };
 		0ABA66A52E1E537A003D9A1F /* AccountUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */; };
@@ -108,6 +109,7 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
 		0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
 		0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = jinglebell.mp3; sourceTree = "<group>"; };
 		0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtils.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
 				CBAD324C29F374A20057D82C /* ding.mp3 */,
+				0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */,
 				C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */,
 			);
 			name = BrekekePhone;
@@ -449,6 +452,7 @@
 				9CD3B8F325AE45B200D8A122 /* callkit.png in Resources */,
 				9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */,
 				9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */,
+				0A9D0EB82E28DC5A0003BC5A /* silent.mp3 in Resources */,
 				CBAD324D29F374A20057D82C /* ding.mp3 in Resources */,
 				0AD70BC42E20B1C300CB4532 /* thucuoi.mp3 in Resources */,
 				89ED40C8602BB24F9E94A7C3 /* PrivacyInfo.xcprivacy in Resources */,
@@ -771,10 +775,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -835,10 +836,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = false;

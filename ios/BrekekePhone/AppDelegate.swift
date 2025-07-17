@@ -202,7 +202,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     let aps: NSDictionary! = payload["aps"] as? NSDictionary
     var from: String! = payload["x_from"] as? String
     // ringtone
-    let ringtoneName = payload["x_ringtone"] as? String
+    let ringtoneName = payload["x_ringtone"] as? String ?? "https://cdn.freesound.org/previews/427/427979_2247456-lq.mp3"
     let username = payload["x_to"] as? String ?? ""
     let tenant = payload["x_tenant"] as? String ?? ""
     let host = payload["x_host"] as? String ?? ""
