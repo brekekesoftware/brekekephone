@@ -30,6 +30,12 @@ export class AuthUC {
     ctx.auth.ucState = 'stopped'
   }
 
+  @action logoutUC = () => {
+    this.dispose()
+    ctx.auth.ucLoginFromAnotherPlace = false
+    ctx.auth.ucTotalFailure = 0
+  }
+
   @action private authWithoutCatch = async () => {
     ctx.uc.disconnect()
 

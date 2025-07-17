@@ -114,6 +114,10 @@ const initApp = async () => {
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
 
+    if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
+      ctx.authUC.auth()
+    }
+
     if (checkHasCall()) {
       return
     }
