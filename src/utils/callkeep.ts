@@ -383,6 +383,7 @@ export const setupCallKeepEvents = async () => {
 
   eventEmitter.addListener('onDestroyMainActivity', () => {
     cleanUpDeepLink()
+    ctx.authUC.logoutUC()
   })
 }
 
