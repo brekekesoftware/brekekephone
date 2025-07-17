@@ -151,8 +151,6 @@ export class AccountStore {
           'saveAccountsToLocalStorage error missing id or pbxUsername',
         )
       }
-
-      // console.log(`Hoang: ${JSON.stringify(profiles)} `)
       await RnAsyncStorage.setItem(
         '_api_profiles',
         jsonSafe({

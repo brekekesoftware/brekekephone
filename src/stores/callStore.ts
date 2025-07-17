@@ -467,10 +467,6 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
-      console.log(
-        `Hoang:ev.sessionStatus displayIncomingCall ${p.ringtoneFromSip}`,
-      )
-      // TODO Hoang : check ios and using validateRingtone
       const op = isAndroid
         ? {}
         : {
