@@ -51,7 +51,7 @@ import { webPromptPermission } from '#/utils/webPromptPermission'
 
 const initApp = async () => {
   await ctx.intl.wait()
-
+  BrekekeUtils.setBackgroundRootView()
   const checkHasCallOrWakeFromPN = () =>
     Object.keys(ctx.call.callkeepMap).length ||
     ctx.sip.phone?.getSessionCount() ||
@@ -104,7 +104,7 @@ const initApp = async () => {
     if (AppState.currentState !== 'active') {
       return
     }
-
+    BrekekeUtils.setBackgroundRootView()
     ctx.auth.resetFailureState()
     ctx.call.onCallKeepAction()
     ctx.pbx.ping()
