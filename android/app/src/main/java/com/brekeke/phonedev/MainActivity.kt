@@ -46,6 +46,9 @@ class MainActivity : ReactActivity() {
   // check if notification pressed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    BrekekeUtils.applySystemBarStyle(this)
+
     // handle default dialer
     BrekekeUtils.defaultDialerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

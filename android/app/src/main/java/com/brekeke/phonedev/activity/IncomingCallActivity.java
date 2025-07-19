@@ -229,6 +229,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       Ringtone.play(ringtone, username, tenant, host, port);
     }
 
+    BrekekeUtils.applySystemBarStyle(this);
+
     vToast = (LinearLayout) findViewById(R.id.toast_container);
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);

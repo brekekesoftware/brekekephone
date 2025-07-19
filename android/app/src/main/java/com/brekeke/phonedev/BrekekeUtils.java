@@ -18,8 +18,13 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
+import android.view.WindowManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
 import com.brekeke.phonedev.activity.IncomingCallActivity;
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
@@ -97,6 +102,29 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "BrekekeUtils";
+  }
+
+  public static void applySystemBarStyle(Activity a) {
+    if (a == null) return;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      var w = a.getWindow();
+      WindowCompat.setDecorFitsSystemWindows(w, false);
+      w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+      var inset = new WindowInsetsControllerCompat(w, w.getDecorView());
+      inset.setAppearanceLightStatusBars(true);
+      inset.setAppearanceLightNavigationBars(true);
+
+      var rv = a.findViewById(android.R.id.content);
+      ViewCompat.setOnApplyWindowInsetsListener(
+          rv,
+          (v, i) -> {
+            var type = WindowInsetsCompat.Type.systemBars();
+            var systemBars = i.getInsets(type);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+          });
+    }
   }
 
   // [callkeepUuid] -> display/answerCall/rejectCall
@@ -485,6 +513,19 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   // ==========================================================================
   // permissions
+
+  @ReactMethod
+  public void setBackgroundRootView() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && main != null) {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            var rv = main.findViewById(android.R.id.content);
+            if (rv != null) {
+              rv.setBackgroundResource(R.color.white_darken);
+            }
+          });
+    }
+  }
 
   @ReactMethod
   public void permCheckOverlay(Promise p) {
