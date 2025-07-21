@@ -42,7 +42,6 @@ const IncomingItemAndroid = observer(() => {
 })
 const IncomingItemIos = () => {
   useEffect(() => {
-    console.log('Hoang: IncomingItemIos ')
     // old logic: only play ringtone without vibration and repeat the ringtone continuously
     IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
     return () => IncallManager.stopRingtone()

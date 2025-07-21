@@ -191,7 +191,9 @@ public class BrekekeUtils: NSObject {
     for ringtone in RingtoneUtils.staticRingtones {
       results.append(ringtone)
     }
-    resolve(results)
+    
+    let r = RingtoneUtils.getRingtonePicker()
+    resolve(results + r)
   }
   
   @objc
