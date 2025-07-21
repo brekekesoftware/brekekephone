@@ -2,9 +2,9 @@ import Foundation
 
 extension String {
   func toModel<T: Decodable>(_ type: T.Type) -> T? {
-      guard let data = self.data(using: .utf8) else { return nil }
-      return try? JSONDecoder().decode(T.self, from: data)
-    }
+    guard let data = self.data(using: .utf8) else { return nil }
+    return try? JSONDecoder().decode(T.self, from: data)
+  }
   
   func md5() -> String {
     let data = Data(self.utf8)
@@ -23,7 +23,6 @@ struct Profile: Codable {
   let pbxPort: String?
   let ringtone: String?
   let pbxRingtone: String?
-  let ringtoneData: String?
 }
 
 struct ProfilesWrapper: Codable {
@@ -34,53 +33,27 @@ struct ProfilesWrapper: Codable {
 public class AccountUtils {
   
   @objc static func getRingtoneFromUser(username : String, tenant : String, host: String, port : String) -> String {
-    let fileManager = FileManager.default
-
-    guard let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
-          let bundleId = Bundle.main.bundleIdentifier else {
-      return ""
-    }
-
-    let supportDirectory = appSupportDirectory.appendingPathComponent(bundleId)
-    let storageDirectory = supportDirectory.appendingPathComponent("RCTAsyncLocalStorage_V1")
-    let storageFile = storageDirectory.appendingPathComponent("_api_profiles".md5())
     
-    if fileManager.fileExists(atPath: storageFile.path) {
-      do {
-        let apiProfiles = try String(contentsOf: storageFile, encoding: .utf8)
-
-        guard let profileWrapper = apiProfiles.toModel(ProfilesWrapper.self) else {
-          print("[getTokenFromReactNative] failed to decode.")
-          return ""
+    if let apiProfiles = prepareProfile(),
+       let profileWrapper = apiProfiles.toModel(ProfilesWrapper.self) {
+      
+      if let account = findAccountPartial(profiles: profileWrapper.profiles, username: username, tenant: tenant, host: host, port: port) {
+        var ringtone = RingtoneUtils.validateRingtoneFromUser(ringtone: account.ringtone ?? "")
+        if ringtone != "" {
+          return ringtone
         }
-
-        if let account = findAccountPartial(profiles: profileWrapper.profiles, username: username, tenant: tenant, host: host, port: port) {
-          var ringtone = RingtoneUtils._validate(ringtone: account.ringtone ?? "")
-          print("[getTokenFromReactNative] \(ringtone)")
-          print("[getTokenFromReactNative] pbxRingtone \(account.pbxRingtone ?? "")")
-          print("[getTokenFromReactNative] ringtoneData \(account.ringtoneData ?? "")")
-          
-          if ringtone != "" {
-            return ringtone
-          }
-
-          ringtone = RingtoneUtils._validate(ringtone: account.pbxRingtone ?? "")
-          if ringtone != "" {
-            return ringtone
-          }
+        
+        ringtone = RingtoneUtils.validateRingtoneFromUser(ringtone: account.pbxRingtone ?? "")
+        if ringtone != "" {
+          return ringtone
         }
-
-      } catch {
-        print("[getTokenFromReactNative] Error while reading or parsing JSON: \(error)")
       }
     }
+    
     return RingtoneUtils.defaultRingtone
   }
   
   static func compareFalsishField(v1 :String ,v2 : String ) -> Bool {
-    print("[compareFalsishField] v1 \(v1)")
-    print("[compareFalsishField] v2 \(v2)")
-    print("[compareFalsishField] bool \(v1 == v2)")
     return v1.isEmpty || v2.isEmpty || v1 == v2
   }
   
@@ -89,7 +62,7 @@ public class AccountUtils {
       if p.pbxUsername.isEmpty {
         continue
       }
-
+      
       if p.pbxUsername == username &&
           compareFalsishField(v1: p.pbxTenant ?? "", v2: tenant) &&
           compareFalsishField(v1: p.pbxHostname ?? "", v2: host) &&
@@ -99,4 +72,30 @@ public class AccountUtils {
     }
     return nil
   }
+  
+  
+  static func prepareProfile() -> String? {
+    let f = FileManager.default
+    
+    guard let a = f.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
+          let bundleId = Bundle.main.bundleIdentifier else {
+      return nil
+    }
+    
+    let st = a.appendingPathComponent(bundleId).appendingPathComponent("RCTAsyncLocalStorage_V1")
+    let storageFile = st.appendingPathComponent("_api_profiles".md5())
+    
+    if f.fileExists(atPath: storageFile.path) {
+      do {
+        let apiProfiles = try String(contentsOf: storageFile, encoding: .utf8)
+        return apiProfiles
+      } catch {
+        print("[AccountUtils] Error while reading or parsing JSON: \(error)")
+      }
+    }
+    print("[AccountUtils] can not get file")
+    return nil
+  }
+  
+
 }
