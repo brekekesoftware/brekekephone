@@ -72,6 +72,7 @@ type TBrekekeUtils = {
     d: string,
     t: 'success' | 'error' | 'warning' | 'info',
   ): void
+  setBackgroundRootView(): void
 
   // ==========================================================================
   // these methods only available on ios
@@ -156,7 +157,7 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   updateAnyHoldLoading: () => undefined,
   toast: () => undefined,
-
+  setBackgroundRootView: () => undefined,
   // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
