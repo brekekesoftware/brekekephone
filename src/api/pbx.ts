@@ -616,6 +616,9 @@ export class PBX extends EventEmitter {
       this.client.close()
       this.client = undefined
       console.log('PBX PN debug: pbx.client set to null in pbx.disconnect')
+      // In some cases, client.close() does NOT trigger onClose (e.g. server restart),
+      // so we must emit 'connection-stopped' manually if not already emitted.
+      this.emit('connection-stopped')
     }
     this.stopPingInterval()
     this.clearConnectTimeoutId()
