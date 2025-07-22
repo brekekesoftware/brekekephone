@@ -204,6 +204,6 @@ public class BrekekeUtils: NSObject {
                         port : String,
                         resolver resolve: RCTPromiseResolveBlock,
                         rejecter reject: RCTPromiseRejectBlock) {
-      resolve(RingtoneUtils.validateRingtone(ringtone: ringtone, username: username, tenant: tenant, host: host, port: port))
+      resolve(RingtoneUtils.getRingtone(ringtone: ringtone, username: username, tenant: tenant, host: host, port: port))
   }
 }

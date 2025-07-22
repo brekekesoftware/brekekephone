@@ -11,9 +11,16 @@ export const pickRingtone = async () => {
       type: [types.audio],
       allowMultiSelection: false,
     })
+    console.log(`Hoang: res ${res} `)
     const { error, uri, size, name } = res[0]
     if (error || !name) {
       // show toast
+      return false
+    }
+
+    if (!name.endsWith('.mp3')) {
+      // show toast
+      ctx.toast.warning('Only support mp3', 2000)
       return false
     }
 

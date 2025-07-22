@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A82E1F42E2F73C4001D50AC /* PN.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82E1F32E2F73C4001D50AC /* PN.swift */; };
+		0A82E1F62E2F74A0001D50AC /* L.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82E1F52E2F74A0001D50AC /* L.swift */; };
+		0A82E1F82E2F7FF7001D50AC /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82E1F72E2F7FF7001D50AC /* Storage.swift */; };
 		0A9D0EB82E28DC5A0003BC5A /* silent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */; };
 		0ABA66A12E1E20FA003D9A1F /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */; };
 		0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */; };
@@ -109,6 +112,9 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		0A82E1F32E2F73C4001D50AC /* PN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PN.swift; sourceTree = "<group>"; };
+		0A82E1F52E2F74A0001D50AC /* L.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L.swift; sourceTree = "<group>"; };
+		0A82E1F72E2F7FF7001D50AC /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
 		0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
 		0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = jinglebell.mp3; sourceTree = "<group>"; };
@@ -198,6 +204,9 @@
 			children = (
 				0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */,
 				0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */,
+				0A82E1F32E2F73C4001D50AC /* PN.swift */,
+				0A82E1F52E2F74A0001D50AC /* L.swift */,
+				0A82E1F72E2F7FF7001D50AC /* Storage.swift */,
 			);
 			path = BrekekeFeatureUtils;
 			sourceTree = "<group>";
@@ -567,6 +576,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CF382C628ED8495008FC490 /* ConnectionOptions.swift in Sources */,
+				0A82E1F42E2F73C4001D50AC /* PN.swift in Sources */,
 				9CF382EE28ED8496008FC490 /* Decodable+JSON.swift in Sources */,
 				9CF382D828ED8495008FC490 /* Directory.swift in Sources */,
 				9CF382CE28ED8495008FC490 /* LengthPrefixedFramer.swift in Sources */,
@@ -580,6 +590,7 @@
 				9CF382D228ED8495008FC490 /* TextMessage.swift in Sources */,
 				9CF382E828ED8496008FC490 /* Dictionary+Mutation.swift in Sources */,
 				9CF382DE28ED8495008FC490 /* User.swift in Sources */,
+				0A82E1F82E2F7FF7001D50AC /* Storage.swift in Sources */,
 				9CF382D428ED8495008FC490 /* Heartbeat.swift in Sources */,
 				9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */,
 				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
@@ -592,6 +603,7 @@
 				9CF382EC28ED8496008FC490 /* KeyCodable.swift in Sources */,
 				9CF382EA28ED8496008FC490 /* Publisher+Unfailable.swift in Sources */,
 				9CF382D628ED8495008FC490 /* Invite.swift in Sources */,
+				0A82E1F62E2F74A0001D50AC /* L.swift in Sources */,
 				9CF382CC28ED8495008FC490 /* RequestResponseSession.swift in Sources */,
 				9CF382E228ED8496008FC490 /* CallAction.swift in Sources */,
 				9CF382FE28ED908E008FC490 /* SettingsManager.swift in Sources */,
@@ -775,10 +787,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -839,10 +848,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = false;

@@ -199,30 +199,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?
   ) {
-    let aps: NSDictionary! = payload["aps"] as? NSDictionary
-    var from: String! = payload["x_from"] as? String
+    if(AccountUtils.find(m: payload) == nil) {
+      print("Account 404")
+      return;
+    }
+    var from: String! = PN.callerName(payload)
     // ringtone
-    let ringtoneName = payload["x_ringtone"] as? String
-    let username = payload["x_to"] as? String ?? ""
-    let tenant = payload["x_tenant"] as? String ?? ""
-    let host = payload["x_host"] as? String ?? ""
-    
-    if from == nil, aps != nil {
-      from = aps.value(forKey: "x_from") as? String
-    }
-    var name: String! = payload["x_displayname"] as? String
-    if name == nil, aps != nil {
-      name = aps.value(forKey: "x_displayname") as? String
-    }
-    if name == nil, from != nil {
-      name = from
-    }
-    if from == nil {
-      from = "Brekeke Phone"
-    }
-    if name == nil {
-      name = "Loading..."
-    }
+    let ringtoneName = PN.ringtone(payload) ?? ""
+    let username = PN.username(payload) ?? ""
+    let tenant = PN.tenant(payload) ?? ""
+    let host = PN.host(payload) ?? ""
+    let port = PN.port(payload) ?? ""
+    var name: String! = from
+
     
     RNCallKeep.reportNewIncomingCall(uuid,
                                      handle: from,
@@ -236,6 +225,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                      fromPushKit: true,
                                      payload: payload,
                                      withCompletionHandler: handler,
-                                     ringtone:RingtoneUtils.validateRingtone(ringtone: ringtoneName ?? "",username: username, tenant: tenant, host: host, port: ""))
+                                     ringtone:RingtoneUtils.getRingtone(ringtone: ringtoneName, username: username, tenant: tenant, host: host, port: port))
   }
 }
