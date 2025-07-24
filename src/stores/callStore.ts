@@ -630,7 +630,6 @@ export class CallStore {
     if (!isWeb) {
       uuid = newUuid().toUpperCase()
       this.callkeepUuidPending = uuid
-      console.log('Hoang: start call in call store ')
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
       } else {

@@ -1,4 +1,3 @@
-
 struct RingtonePicker : Codable {
   let ringtonePicker : [String: RingtoneItem]
   
@@ -7,14 +6,12 @@ struct RingtoneItem: Codable {
   let uri: String
 }
 
-
 public class RingtoneUtils {
-  static let staticRingtones : [String] = ["incallmanager_ringtone", "jinglebell" ,"thucuoi"]
+  static let staticRingtones : [String] = ["incallmanager_ringtone"]
   static let defaultRingtone : String = staticRingtones.first! + defaultFormat
   static let defaultFormat = ".mp3"
   static var audioPlayer: AVAudioPlayer?
   private static var downloadingFiles = Set<String>()
-  
   
   // get ringtone from account
   @objc static func getRingtone(ringtone: String, username : String, tenant : String, host: String, port : String) -> String {
@@ -43,7 +40,6 @@ public class RingtoneUtils {
   
   
   @objc static func _validate(ringtone : String) -> String {
-    print("[RingtoneUtils]:validateRingtone \(ringtone)")
     if(ringtone.isEmpty){
       return ""
     }
@@ -53,10 +49,8 @@ public class RingtoneUtils {
     }
     // https and file picker
     if let url = getSavedRingtonePath(from: ringtone) {
-      print("RingtoneUtils:url?.absoluteString \(url.absoluteString)")
       return url.absoluteString
     }
-
     return ""
   }
   
@@ -103,15 +97,11 @@ public class RingtoneUtils {
       guard let url = URL(string: u) else { return nil }
       fileName = url.lastPathComponent.replacingOccurrences(of: " ", with: "_")
     }
-    
     let fileURL = getDestinationURL(for : fileName)
-    print("[RingtoneUtils]:fileURL \(fileURL)")
-    
     let isExist = FileManager.default.fileExists(atPath: fileURL.path)
     if(isExist) {
       return fileURL
     }
-    
     if(downloadingFiles.contains(fileName)) {
       return nil
     }

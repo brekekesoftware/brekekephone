@@ -1,6 +1,7 @@
 import { keepLocalCopy, pick, types } from '@react-native-documents/picker'
 
 import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
 
 const MAX_ACCEPTABLE_SIZE = 1024 * 1024 // 1MB
 
@@ -11,22 +12,19 @@ export const pickRingtone = async () => {
       type: [types.audio],
       allowMultiSelection: false,
     })
-    console.log(`Hoang: res ${res} `)
     const { error, uri, size, name } = res[0]
     if (error || !name) {
-      // show toast
+      ctx.toast.warning(intl`This file cannot be selected`, 2000)
       return false
     }
 
     if (!name.endsWith('.mp3')) {
-      // show toast
-      ctx.toast.warning('Only support mp3', 2000)
+      ctx.toast.warning(intl`Only mp3 format supported`, 2000)
       return false
     }
 
     if ((size ?? 0) > MAX_ACCEPTABLE_SIZE) {
-      // show toast
-      ctx.toast.warning('File size too large', 2000)
+      ctx.toast.warning(intl`File size must not exceed 1MB`, 2000)
       return false
     }
 
@@ -36,7 +34,7 @@ export const pickRingtone = async () => {
         uri: s,
       }
       ctx.account.saveAccountsToLocalStorageDebounced()
-      ctx.toast.success('Pick file ' + getFilenameWithoutExtension(name), 2000)
+      ctx.toast.success(intl`Select mp3 file successfully`, 2000)
       return true
     }
   } catch (err) {}
@@ -54,8 +52,6 @@ const saveToCache = async (f: string, uri: string) => {
     destination: 'documentDirectory',
   })
   if (r.status === 'success') {
-    // do something with the local copy:
-    console.log('Hoang: r.localUri ', r.localUri)
     return r.localUri
   }
   return ''
