@@ -13,6 +13,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
+import { pickRingtone } from '#/utils/ringtonePicker'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -114,6 +115,15 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       props.onSave($.account, $.hasUnsavedChanges())
     },
+    onUploadRingtone: async () => {
+      const u = await pickRingtone()
+      if (u) {
+        setTimeout(
+          async () => ($.ringtoneOptions = await getRingtoneOptions()),
+          1000,
+        )
+      }
+    },
   })
 
   type M0 = ReturnType<typeof m>
@@ -166,6 +176,11 @@ export const AccountCreateForm: FC<{
               },
             ]
           : [
+              {
+                label: intl`Upload ringtone`,
+                onPress: $.onUploadRingtone,
+                primary: true,
+              },
               {
                 label: intl`Reset form`,
                 onPress: $.resetAllFields,

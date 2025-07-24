@@ -11,6 +11,7 @@ import { RnAlert } from '#/stores/RnAlert'
 import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
+import { pickRingtone } from '#/utils/ringtonePicker'
 
 @observer
 export class PageSettingsOther extends Component {
@@ -65,12 +66,30 @@ export class PageSettingsOther extends Component {
     ctx.account.saveAccountsToLocalStorageDebounced()
   }
 
+  onUploadRingtone = async () => {
+    const u = await pickRingtone()
+    if (u) {
+      setTimeout(
+        async () =>
+          this.setState({
+            ringtoneOptions: await getRingtoneOptions(),
+          }),
+        1000,
+      )
+    }
+  }
+
   render() {
     const ca = ctx.auth.getCurrentAccount()
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
         dropdown={[
+          {
+            label: intl`Upload ringtone`,
+            onPress: this.onUploadRingtone,
+            primary: true,
+          },
           ...(ctx.auth.isConnFailure()
             ? [
                 {
