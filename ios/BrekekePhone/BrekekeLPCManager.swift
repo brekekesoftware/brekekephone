@@ -264,8 +264,6 @@ extension BrekekeLPCManager: NEAppPushDelegate {
       return
     }
   
-   
-    print("Hoang: LPC")
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload,

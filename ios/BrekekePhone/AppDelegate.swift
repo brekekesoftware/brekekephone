@@ -116,7 +116,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                               callkeepUuid: uuid)
     
     // config RNCallKeep
-    print("Hoang apns \(payload.dictionaryPayload)")
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload.dictionaryPayload,
@@ -203,16 +202,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       print("Account 404")
       return;
     }
-    var from: String! = PN.callerName(payload)
+    let from: String! = PN.callerName(payload)
     // ringtone
     let ringtoneName = PN.ringtone(payload) ?? ""
     let username = PN.username(payload) ?? ""
     let tenant = PN.tenant(payload) ?? ""
     let host = PN.host(payload) ?? ""
     let port = PN.port(payload) ?? ""
-    var name: String! = from
-
-    
+    let name: String! = from
     RNCallKeep.reportNewIncomingCall(uuid,
                                      handle: from,
                                      handleType: "generic",

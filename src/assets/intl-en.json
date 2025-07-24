@@ -298,5 +298,9 @@
   "{{$0}} total",
   "{{$0}}/{{$1}} online",
   "{{$0}}{{$1}}at {{$2}}",
-  "Upload ringtone"
+  "Upload ringtone",
+  "Only mp3 format supported",
+  "File size must not exceed 1MB",
+  "This file cannot be selected",
+  "Select mp3 file successfully"
 ]

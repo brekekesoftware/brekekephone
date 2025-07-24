@@ -12,9 +12,7 @@
 		0A82E1F82E2F7FF7001D50AC /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82E1F72E2F7FF7001D50AC /* Storage.swift */; };
 		0A9D0EB82E28DC5A0003BC5A /* silent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */; };
 		0ABA66A12E1E20FA003D9A1F /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */; };
-		0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */; };
 		0ABA66A52E1E537A003D9A1F /* AccountUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */; };
-		0AD70BC42E20B1C300CB4532 /* thucuoi.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2893AB00620A2E2F16AE5EFF /* libPods-BrekekePhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C50A739AEDCBD74DB02B3E9 /* libPods-BrekekePhone.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -117,9 +115,7 @@
 		0A82E1F72E2F7FF7001D50AC /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
 		0ABA66A02E1E20F1003D9A1F /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
-		0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = jinglebell.mp3; sourceTree = "<group>"; };
 		0ABA66A42E1E5370003D9A1F /* AccountUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtils.swift; sourceTree = "<group>"; };
-		0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = thucuoi.mp3; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BrekekePhone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
@@ -227,8 +223,6 @@
 				CB8766BF28E83920002261CB /* Assets.xcassets */,
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
-				0ABA66A22E1E2916003D9A1F /* jinglebell.mp3 */,
-				0AD70BC32E20B1C300CB4532 /* thucuoi.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
 				CBAD324C29F374A20057D82C /* ding.mp3 */,
 				0A9D0EB72E28DC5A0003BC5A /* silent.mp3 */,
@@ -457,13 +451,11 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				CB8766C028E83920002261CB /* Assets.xcassets in Resources */,
-				0ABA66A32E1E2916003D9A1F /* jinglebell.mp3 in Resources */,
 				9CD3B8F325AE45B200D8A122 /* callkit.png in Resources */,
 				9CE4DA042565F16E00512187 /* incallmanager_ringback.mp3 in Resources */,
 				9CE4DA052565F16E00512187 /* incallmanager_ringtone.mp3 in Resources */,
 				0A9D0EB82E28DC5A0003BC5A /* silent.mp3 in Resources */,
 				CBAD324D29F374A20057D82C /* ding.mp3 in Resources */,
-				0AD70BC42E20B1C300CB4532 /* thucuoi.mp3 in Resources */,
 				89ED40C8602BB24F9E94A7C3 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
