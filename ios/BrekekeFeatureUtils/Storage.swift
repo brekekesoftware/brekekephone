@@ -14,6 +14,7 @@ struct ProfilesWrapper: Codable {
 }
 
 public class Storage {
+  private static let KEY = "_api_profiles"
   
   static func read() -> String? {
     let f = FileManager.default
@@ -24,17 +25,20 @@ public class Storage {
     }
     
     let st = a.appendingPathComponent(bundleId).appendingPathComponent("RCTAsyncLocalStorage_V1")
-    let storageFile = st.appendingPathComponent("_api_profiles".md5())
+    var p = st.appendingPathComponent("manifest.json")
     
-    if f.fileExists(atPath: storageFile.path) {
-      do {
-        let apiProfiles = try String(contentsOf: storageFile, encoding: .utf8)
-        return apiProfiles
-      } catch {
-        print("[AccountUtils] Error while reading or parsing JSON: \(error)")
+    if f.fileExists(atPath: p.path) {
+      let pr = readManifest(path: p)
+      if pr != nil {
+        return pr
       }
     }
-    print("[AccountUtils] can not get file")
+    
+    p = st.appendingPathComponent(KEY.md5())
+    if f.fileExists(atPath: p.path) {
+      return readMd5(path : p)
+    }
+    print("[Storage] No files exist")
     return nil
   }
   
@@ -45,4 +49,31 @@ public class Storage {
     }
     return nil
   }
+  
+  static func readManifest(path : URL) -> String? {
+    do {
+      let data = try Data(contentsOf: path)
+      let json = try JSONSerialization.jsonObject(with: data, options: [])
+      if let dict = json as? [AnyHashable: Any],
+         let profile = dict[KEY] as? String {
+          return profile
+      }
+    } catch {
+      print("[Storage] Parse errors in manifest.json: \(error)")
+    }
+    print("[Storage] manifest can not get file")
+    return nil
+  }
+  
+  static func readMd5(path : URL) -> String? {
+    do {
+      let profile = try String(contentsOf: path, encoding: .utf8)
+      return profile
+    } catch {
+      print("[Storage] Error while reading or parsing JSON: \(error)")
+    }
+    print("[Storage] md5 can not get file")
+    return nil
+  }
+  
 }

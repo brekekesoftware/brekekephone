@@ -37,8 +37,6 @@ public class RingtoneUtils {
   }
   
   // validate
-  
-  
   @objc static func _validate(ringtone : String) -> String {
     if(ringtone.isEmpty){
       return ""
@@ -62,17 +60,21 @@ public class RingtoneUtils {
     return staticRingtones.contains(r)
   }
   
+  static func _audio(r : String) -> Bool {
+    return r.lowercased().hasSuffix(".mp3")
+  }
   
   // handle save file to local
   static func downloadAndSaveRingtone(from urlString: String , fileName : String , completion: @escaping (Bool) -> Void) {
     guard let remoteURL = URL(string: urlString) else {
-      print("[[RingtoneUtils]] Invalid URL")
+      print("[RingtoneUtils] Invalid URL")
       completion(false)
       return
     }
+    
     let task = URLSession.shared.downloadTask(with: remoteURL) { location, response, error in
       guard let location = location, error == nil else {
-        print("[[RingtoneUtils]] Download error: \(error?.localizedDescription ?? "Unknown error")")
+        print("[RingtoneUtils] Download error: \(error?.localizedDescription ?? "Unknown error")")
         completion(false)
         return
       }
@@ -82,10 +84,10 @@ public class RingtoneUtils {
       
       do {
         try FileManager.default.moveItem(at: location, to: destinationURL)
-        print("[[RingtoneUtils]] Saved to: \(destinationURL.path)")
+        print("[RingtoneUtils] Saved to: \(destinationURL.path)")
         completion(true)
       } catch {
-        print("[[RingtoneUtils]] Failed to move file: \(error.localizedDescription)")
+        print("[RingtoneUtils] Failed to move file: \(error.localizedDescription)")
         completion(false)
       }
     }.resume()
@@ -94,12 +96,14 @@ public class RingtoneUtils {
   static func getSavedRingtonePath(from u: String) -> URL? {
     var fileName = u + defaultFormat
     if(https(r: u)) {
+      if !_audio(r: u) {
+        return nil
+      }
       guard let url = URL(string: u) else { return nil }
       fileName = url.lastPathComponent.replacingOccurrences(of: " ", with: "_")
     }
     let fileURL = getDestinationURL(for : fileName)
-    let isExist = FileManager.default.fileExists(atPath: fileURL.path)
-    if(isExist) {
+    if(FileManager.default.fileExists(atPath: fileURL.path)) {
       return fileURL
     }
     if(downloadingFiles.contains(fileName)) {
@@ -115,6 +119,7 @@ public class RingtoneUtils {
   }
   
   static func getDestinationURL(for fileName: String) -> URL {
+    //Use the `Ringtones` folder name to sync with the @react-native-documents/picker library patch
     let doc = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Ringtones")
     if(!FileManager.default.fileExists(atPath:doc.path)) {
       try? FileManager.default.createDirectory(at: doc, withIntermediateDirectories: true, attributes: nil)
@@ -128,7 +133,6 @@ public class RingtoneUtils {
     if let a = Storage.read(),
        let p = a.toModel(RingtonePicker.self)
     {
-      print("[RingtoneUtils] pickerData \(p.ringtonePicker)")
       for item in p.ringtonePicker {
         results.append(item.key)
       }

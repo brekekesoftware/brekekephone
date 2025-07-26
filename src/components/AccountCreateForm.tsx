@@ -143,6 +143,25 @@ export const AccountCreateForm: FC<{
     }
   }, [])
 
+  const getDropDown = () => {
+    let d = [
+      {
+        label: intl`Reset form`,
+        onPress: $.resetAllFields,
+      },
+    ]
+    if (props.updating) {
+      d = [
+        {
+          label: intl`Upload ringtone`,
+          onPress: $.onUploadRingtone,
+        },
+        ...d,
+      ]
+    }
+    return d
+  }
+
   return (
     <Layout
       description={
@@ -175,17 +194,7 @@ export const AccountCreateForm: FC<{
                 danger: true,
               },
             ]
-          : [
-              {
-                label: intl`Upload ringtone`,
-                onPress: $.onUploadRingtone,
-                primary: true,
-              },
-              {
-                label: intl`Reset form`,
-                onPress: $.resetAllFields,
-              },
-            ]
+          : getDropDown()
       }
       fabOnBack={props.footerLogout ? undefined : $.onBackBtnPress}
       fabOnNext={props.footerLogout ? undefined : (submitForm as () => void)}
