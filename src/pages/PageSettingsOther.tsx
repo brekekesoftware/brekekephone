@@ -88,7 +88,6 @@ export class PageSettingsOther extends Component {
           {
             label: intl`Upload ringtone`,
             onPress: this.onUploadRingtone,
-            primary: true,
           },
           ...(ctx.auth.isConnFailure()
             ? [
