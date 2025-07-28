@@ -1135,7 +1135,7 @@ index c8e7bbd..da97158 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..b57878e 100644
+index 786045f..2580941 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,9 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1414,13 +1414,13 @@ index 786045f..b57878e 100644
      callUpdate.hasVideo = hasVideo;
      callUpdate.localizedCallerName = localizedCallerName;
 +    NSLog(@"[RNCallKeep][reportNewIncomingCall] ringtone = %@", ringtone);
-+    if(ringtone != nil) {
++    if(ringtone != nil && [RNCallKeep hasCall] == NO) {
 +        NSString *r = ringtone;
 +        ringtoneUrl = nil;
 +        if([RNCallKeep localFile:r]) {
 +            r = @"silent.mp3";
 +            ringtoneUrl = [NSURL URLWithString:ringtone];
-+            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:false];
++            [RNCallKeep playRingtoneWithURL:ringtoneUrl];
 +        }
 +        if(![lastRingtone isEqualToString:r]) {
 +            NSLog(@"[RNCallKeep][initCallKitProviderWithRingtone] reportNew");
@@ -1600,19 +1600,15 @@ index 786045f..b57878e 100644
  }
  
  -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAction *)action
-@@ -1154,4 +1123,90 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1123,96 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
 +// play local ringtone file
 +static AVAudioPlayer *audioPlayer = nil;
 +
-++ (void)playRingtoneWithURL:(NSURL *)url replay:(bool)replay {
+++ (void)playRingtoneWithURL:(NSURL *)url {
 +    
-+    if(audioPlayer != nil && !replay) {
-+        NSLog(@"[RNCallKeep] Audio is playing ");
-+        return;
-+    }
 +    NSError *error = nil;
 +    [RNCallKeep configAudioSessionForAudioPlayer];
 +    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
@@ -1659,7 +1655,7 @@ index 786045f..b57878e 100644
 +    AVAudioSessionInterruptionType type = [userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
 +    if (type == AVAudioSessionInterruptionTypeBegan) {
 +        if(audioPlayer != nil && ringtoneUrl != nil) {
-+            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:true];
++            [RNCallKeep playRingtoneWithURL:ringtoneUrl];
 +        }
 +    }
 +}
@@ -1683,10 +1679,20 @@ index 786045f..b57878e 100644
 +
 ++ (BOOL)hasIncomingCallUI {
 +    CXCallObserver *observer = [[CXCallObserver alloc] init];
++    NSLog(@"[RNCallKeep] observer.calls %@ " , observer.calls);
 +    for (CXCall *call in observer.calls) {
 +        if (!call.hasConnected && !call.hasEnded) {
 +            return YES;
 +        }
++    }
++    return NO;
++}
++
+++ (BOOL)hasCall {
++    CXCallObserver *observer = [[CXCallObserver alloc] init];
++    NSArray<CXCall *> *calls = observer.calls;
++    if(calls.count > 0) {
++        return YES;
 +    }
 +    return NO;
 +}
