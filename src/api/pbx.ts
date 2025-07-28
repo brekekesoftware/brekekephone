@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
+import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -375,6 +376,8 @@ export class PBX extends EventEmitter {
       resolveFn = r
     })
 
+    // Timeout increased to 15s for Android to handle delayed login callback during Tomcat restart.
+    const timeout = Platform.OS === 'android' ? 15000 : 10000
     const newTimeoutPromise = () => {
       this.clearConnectTimeoutId()
       return new Promise<boolean>(resolve => {
@@ -387,7 +390,7 @@ export class PBX extends EventEmitter {
           } else {
             client.close()
           }
-        }, 10000)
+        }, timeout)
       })
     }
     const login = new Promise<boolean>((resolve, reject) => {
@@ -616,9 +619,6 @@ export class PBX extends EventEmitter {
       this.client.close()
       this.client = undefined
       console.log('PBX PN debug: pbx.client set to null in pbx.disconnect')
-      // In some cases, client.close() does NOT trigger onClose (e.g. server restart),
-      // so we must emit 'connection-stopped' manually if not already emitted.
-      this.emit('connection-stopped')
     }
     this.stopPingInterval()
     this.clearConnectTimeoutId()
