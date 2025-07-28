@@ -8,7 +8,7 @@ const MAX_ACCEPTABLE_SIZE = 1024 * 1024 // 1MB
 export const pickRingtone = async () => {
   try {
     const res = await pick({
-      mode: 'open',
+      mode: 'import',
       type: [types.audio],
       allowMultiSelection: false,
     })
