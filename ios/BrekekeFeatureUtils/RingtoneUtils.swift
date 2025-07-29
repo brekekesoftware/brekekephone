@@ -133,10 +133,20 @@ public class RingtoneUtils {
     if let a = Storage.read(),
        let p = a.toModel(RingtonePicker.self)
     {
+      print("Hoang: data \(a)")
       for item in p.ringtonePicker {
         results.append(item.key)
       }
     }
     return results
+  }
+  
+  static func checkRingtonePickerExist(_ key: String) -> Bool {
+    var fileName = key + defaultFormat
+    let fileURL = getDestinationURL(for : fileName)
+    if(FileManager.default.fileExists(atPath: fileURL.path)) {
+      return true
+    }
+    return false
   }
 }
