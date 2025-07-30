@@ -15,6 +15,7 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -377,6 +378,14 @@ export const setupCallKeepEvents = async () => {
       ctx.nav.goToPageChatDetail({ buddy: chatId })
     }
   })
+
+  eventEmitter.addListener('connectionRequest', () => {
+    const { onPress } = getConnectionStatus()
+    if (onPress) {
+      onPress()
+    }
+  })
+
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
 }

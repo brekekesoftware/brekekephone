@@ -172,6 +172,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtConnectionStatus.setText(msg);
     if (isFailure) {
       txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_error));
+    } else {
+      txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_warning));
     }
   }
 
@@ -336,6 +338,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     txtCallerNameHeader.setText(callerName);
+    txtConnectionStatus.setOnClickListener(this);
 
     updateLabels();
     if (autoAnswer) {
@@ -1266,7 +1269,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnVideoClick(v);
     } else if (id == R.id.btn_back) {
       onBtnBackPress(v);
+    } else if (id == R.id.txt_conection_status) {
+      onConnectionStatusClick(v);
     }
+  }
+
+  public void onConnectionStatusClick(View v) {
+    Emitter.emit("connectionRequest", "");
   }
 
   @Override
@@ -1302,6 +1311,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnRejectClick(v);
     } else if (id == R.id.btn_chat) {
       onBtnChatClick(v);
+    } else if (id == R.id.txt_conection_status) {
+      onRequestUnlock(v);
     }
   }
 

@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
+import { observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -35,7 +36,7 @@ import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intl } from '#/stores/intl'
+import { intl, intlDebug } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
@@ -51,7 +52,7 @@ export class PBX extends EventEmitter {
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
   private RETRY_DELAY = 300
-
+  @observable retryingRequests: string[] = []
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
@@ -149,12 +150,15 @@ export class PBX extends EventEmitter {
       }
       if (request.retryCount >= this.MAX_RETRY) {
         request.reject(new Error('Maximum number of retries reached'))
+        this.emit('pal-retry-end', request)
         continue
       }
       const params = request?.params as PalMethodParams<typeof request.method>
+      this.emit('pal-retrying', request)
       this.client
         ?.call_pal(request.method, ...params)
         .then(result => {
+          this.emit('pal-retry-end', request)
           if (request.cancelled) {
             request.reject(this.msgErrorCancelRequest(request))
           } else {
@@ -162,6 +166,7 @@ export class PBX extends EventEmitter {
           }
         })
         .catch(err => {
+          this.emit('pal-retry-end', request)
           if (request.cancelled) {
             request.reject(this.msgErrorCancelRequest(request))
             return
@@ -241,6 +246,7 @@ export class PBX extends EventEmitter {
     if (err === true) {
       return
     }
+    ctx.toast.error({ message: intlDebug`Internet connection failure` }, 5000)
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
