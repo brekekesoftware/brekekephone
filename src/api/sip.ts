@@ -28,7 +28,7 @@ export class SIP extends EventEmitter {
   phone?: Sip
   currentCamera: string | undefined = '1'
   cameraIds?: DeviceInputWeb[] = []
-  sessionIdMap = new Map()
+  sessionIdMap = {}
   private init = async (o: SipLoginOption) => {
     this.cameraIds = await getCameraSourceIds()
 
@@ -164,14 +164,14 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
-        this.sessionIdMap.delete(ev.sessionId)
+        delete this.sessionIdMap[ev.sessionId]
         this.emit('session-stopped', ev)
         return
       }
-      this.sessionIdMap.set(ev.sessionId, true)
+      this.sessionIdMap[ev.sessionId] = true
       const p = await computeCallPatch(ev)
-      if (this.sessionIdMap.get(ev.sessionId)) {
-        this.sessionIdMap.delete(ev.sessionId)
+      if (this.sessionIdMap[ev.sessionId]) {
+        delete this.sessionIdMap[ev.sessionId]
         this.emit('session-updated', p)
       }
     })
