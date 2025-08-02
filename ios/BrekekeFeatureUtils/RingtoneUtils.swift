@@ -1,9 +1,5 @@
 struct RingtonePicker : Codable {
-  let ringtonePicker : [String: RingtoneItem]
-  
-}
-struct RingtoneItem: Codable {
-  let uri: String
+  let ringtonePicker : [String: Bool]
 }
 
 public class RingtoneUtils {
@@ -16,6 +12,7 @@ public class RingtoneUtils {
   // get ringtone from account
   @objc static func getRingtone(ringtone: String, username : String, tenant : String, host: String, port : String) -> String {
     let r = _validate(ringtone: ringtone)
+    print("Hoang: validated getRingtone r \(r)")
     if r != "" {
       return r
     }
@@ -25,10 +22,12 @@ public class RingtoneUtils {
   @objc static func getRingtone(username : String, tenant : String, host: String, port : String) -> String {
     if let a = AccountUtils.find(username: username, tenant: tenant, host: host, port: port) {
       var r = _validate(ringtone: a.ringtone ?? "")
+      print("Hoang: validated r \(r)")
       if !r.isEmpty {
         return r
       }
       r = _validate(ringtone: a.pbxRingtone ?? "")
+      print("Hoang: validated pbx r \(r)")
       if !r.isEmpty {
         return r
       }
@@ -133,16 +132,19 @@ public class RingtoneUtils {
     if let a = Storage.read(),
        let p = a.toModel(RingtonePicker.self)
     {
-      print("Hoang: data \(a)")
-      for item in p.ringtonePicker {
-        results.append(item.key)
+//      print("Hoang: data \(a)")
+      for (key, value) in p.ringtonePicker {
+        if checkPickerExist(key) {
+          results.append(key)
+        }
+        
       }
     }
     return results
   }
   
-  static func checkRingtonePickerExist(_ key: String) -> Bool {
-    var fileName = key + defaultFormat
+  static func checkPickerExist(_ key: String) -> Bool {
+    let fileName = key + defaultFormat
     let fileURL = getDestinationURL(for : fileName)
     if(FileManager.default.fileExists(atPath: fileURL.path)) {
       return true

@@ -4,7 +4,7 @@ import { Component } from 'react'
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { isWeb } from '#/config'
+import { isIos, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -21,6 +21,7 @@ export class PageSettingsOther extends Component {
     ringtoneOptions: [] as RingtoneOption[],
     ringtone: ctx.auth.getCurrentAccount()?.ringtone,
   }
+
   componentDidMount = async () => {
     const me = ctx.uc.me()
     this.setState({
@@ -29,6 +30,7 @@ export class PageSettingsOther extends Component {
       ringtoneOptions: await getRingtoneOptions(),
     })
   }
+
   setStatusText = (statusText: string) => {
     this.setState({ statusText })
   }
@@ -56,7 +58,7 @@ export class PageSettingsOther extends Component {
       })
   }
 
-  onChangeRingtone = value => {
+  onChangeRingtone = async value => {
     this.setState({ ringtone: value })
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
