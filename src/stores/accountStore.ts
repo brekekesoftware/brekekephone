@@ -371,10 +371,8 @@ type LastSignedInId = {
   autoSignInBrekekePhone?: boolean
 }
 
-type RingtonePickerType = {
-  [fileName: string]: {
-    uri: string
-  }
+export type RingtonePickerType = {
+  [fileName: string]: boolean
 }
 
 export const getLastSignedInId = async (

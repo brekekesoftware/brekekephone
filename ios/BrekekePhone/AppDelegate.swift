@@ -5,7 +5,8 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
-  UNUserNotificationCenterDelegate, ObservableObject {
+                   UNUserNotificationCenterDelegate, ObservableObject {
+  
   override init() {
     super.init()
     BrekekeLPCManager.shared.initialize()
