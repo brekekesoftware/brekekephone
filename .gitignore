@@ -17,7 +17,6 @@ DerivedData
 *.ipa
 *.xcuserstate
 **/ios/.xcode.env.local
-*.pbxproj
 
 # Android/IntelliJ
 #
