@@ -145,9 +145,6 @@ public class RingtoneUtils {
   static func checkPickerExist(_ key: String) -> Bool {
     let fileName = key + defaultFormat
     let fileURL = getDestinationURL(for : fileName)
-    if(FileManager.default.fileExists(atPath: fileURL.path)) {
-      return true
-    }
-    return false
+    return FileManager.default.fileExists(atPath: fileURL.path)Ï
   }
 }
