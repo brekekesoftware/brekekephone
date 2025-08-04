@@ -12,7 +12,7 @@ public class RingtoneUtils {
   // get ringtone from account
   @objc static func getRingtone(ringtone: String, username : String, tenant : String, host: String, port : String) -> String {
     let r = _validate(ringtone: ringtone)
-    print("Hoang: validated getRingtone r \(r)")
+    print("[RingtoneUtils]: validated getRingtone r \(r)")
     if r != "" {
       return r
     }
@@ -22,12 +22,12 @@ public class RingtoneUtils {
   @objc static func getRingtone(username : String, tenant : String, host: String, port : String) -> String {
     if let a = AccountUtils.find(username: username, tenant: tenant, host: host, port: port) {
       var r = _validate(ringtone: a.ringtone ?? "")
-      print("Hoang: validated r \(r)")
+      print("[RingtoneUtils]: validated r \(r)")
       if !r.isEmpty {
         return r
       }
       r = _validate(ringtone: a.pbxRingtone ?? "")
-      print("Hoang: validated pbx r \(r)")
+      print("[RingtoneUtils]: validated pbx r \(r)")
       if !r.isEmpty {
         return r
       }
@@ -132,10 +132,9 @@ public class RingtoneUtils {
     if let a = Storage.read(),
        let p = a.toModel(RingtonePicker.self)
     {
-//      print("Hoang: data \(a)")
-      for (key, value) in p.ringtonePicker {
-        if checkPickerExist(key) {
-          results.append(key)
+      for item in p.ringtonePicker {
+        if checkPickerExist(item.key) {
+          results.append(item.key)
         }
         
       }
