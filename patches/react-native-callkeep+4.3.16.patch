@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..0fc4a5c 100644
+index 786045f..900af20 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1076,7 +1076,7 @@ index 786045f..0fc4a5c 100644
  }
  
  -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAction *)action
-@@ -1154,4 +1130,144 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1130,149 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1084,6 +1084,10 @@ index 786045f..0fc4a5c 100644
 +static AVAudioPlayer *audioPlayer = nil;
 +
 ++ (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL *)replay {
++    if(!url) {
++        NSLog(@"[RNCallKeep] url does not exist");
++        return;
++    }
 +    if (audioPlayer != nil && replay == NO) {
 +        NSLog(@"[RNCallKeep] Ringtone is playing");
 +        return;
@@ -1204,6 +1208,7 @@ index 786045f..0fc4a5c 100644
 +    }
 +    
 +    if(callMap[uuid] && gsmCallMap.count == 0 && hasOutgoing == NO) {
++        NSLog(@"[RNCallKeep] play ringtone");
 +        [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:NO];
 +    }
 +}
