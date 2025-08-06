@@ -107,9 +107,9 @@ public class Ringtone {
     for (var r : _static) {
       arr.pushString(r);
     }
-    var p = _picker();
-    while (p.hasNext()) {
-      arr.pushString(p.next());
+    var pp = _picker();
+    while (pp.hasNext()) {
+      arr.pushString(pp.next());
     }
     try (var s = system()) {
       s.forEach(p -> arr.pushString(p.first));
