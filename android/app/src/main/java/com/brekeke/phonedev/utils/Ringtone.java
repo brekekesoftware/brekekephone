@@ -16,10 +16,10 @@ import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Pair;
 import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
+import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -107,17 +107,14 @@ public class Ringtone {
     for (var r : _static) {
       arr.pushString(r);
     }
+    var p = _picker();
+    while (p.hasNext()) {
+      arr.pushString(p.next());
+    }
     try (var s = system()) {
       s.forEach(p -> arr.pushString(p.first));
     }
     return arr;
-  }
-
-  private static WritableMap option(String title, String uri) {
-    var m = new WritableNativeMap();
-    m.putString("title", title);
-    m.putString("uri", uri);
-    return m;
   }
 
   private static Stream<Pair<String, String>> system() {
@@ -149,6 +146,7 @@ public class Ringtone {
 
   private static String[] _static = {"incallmanager_ringtone"};
   private static String _default = _static[0];
+  private static String defaultFormat = ".mp3";
 
   // map ringtone url -> 1 (true) / 0 (false)
   private static Map<String, String> errors = new HashMap<>();
@@ -162,6 +160,10 @@ public class Ringtone {
     }
     if (https(r)) {
       return r;
+    }
+    var pp = pickerPath(r);
+    if (!pp.isEmpty()) {
+      return pp;
     }
     try (var s = system()) {
       return s.filter(p -> p.first.equals(r)).map(p -> p.second).findFirst().orElse(null);
@@ -185,6 +187,17 @@ public class Ringtone {
 
   private static boolean https(String r) {
     return r.startsWith("https://");
+  }
+
+  private static String pickerPath(String filename) {
+    var ctx = Ctx.app();
+    // use the `Ringtones` folder name to sync with the @react-native-documents/picker library patch
+    File file = new File(ctx.getFilesDir(), "Ringtones");
+    File des = new File(file, filename + defaultFormat);
+    if (!des.exists()) {
+      return "";
+    }
+    return des.getAbsolutePath();
   }
 
   // get from push notification and validate
@@ -404,6 +417,17 @@ public class Ringtone {
 
   public static int getRingerMode() {
     return am.getRingerMode();
+  }
+
+  // ==========================================================================
+  // picker
+  private static Iterator<String> _picker() {
+    try {
+      var p = Storage.picker();
+      return p.keys();
+    } catch (Exception e) {
+    }
+    return Collections.emptyIterator();
   }
 }
 
