@@ -26,6 +26,7 @@ import com.brekeke.phonedev.lpc.BrekekeLpcService;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.push_notification.BrekekeMessagingService;
 import com.brekeke.phonedev.utils.Account;
+import com.brekeke.phonedev.utils.Call;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
@@ -169,23 +170,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
         1000);
   }
 
-  public static void onFcmMessageReceived(Map<String, String> m) {
-    // check if it is a PN for incoming call
-    if (PN.id(m) == null) {
-      return;
-    }
-    if (Account.find(m) == null) {
-      Emitter.error("onFcmMessageReceived", "account 404");
-      return;
-    }
+  public static void displayIncomingCall(Map<String, String> m) {
     // init services if not
     initStaticServices();
     acquireWakeLock();
-    // generate new uuid and store it to the PN bundle
-    var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
-    m.put("callkeepAt", now);
-    var uuid = UUID.randomUUID().toString().toUpperCase();
-    m.put("callkeepUuid", uuid);
+    var uuid = m.get("callkeepUuid");
     // setup callkeep and display
     var ctx = Ctx.app();
     RNCallKeepModule.registerPhoneAccount(ctx);
@@ -222,6 +211,22 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     RNCallKeepModule.onRejectCallbacks.put(uuid, () -> onPassiveReject(uuid));
     RNCallKeepModule.staticDisplayIncomingCall(
         uuid, "Brekeke Phone", PN.callerName(m), false, null);
+  }
+
+  public static void onFcmMessageReceived(Map<String, String> m) {
+    // Validate incoming call push notification
+    if (PN.id(m) == null) return;
+    if (Account.find(m) == null) {
+      Emitter.error("onFcmMessageReceived", "account 404");
+      return;
+    }
+    // generate new uuid and store it to the PN bundle
+    var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
+    m.put("callkeepAt", now);
+    var uuid = UUID.randomUUID().toString().toUpperCase();
+    m.put("callkeepUuid", uuid);
+
+    Call.onIncoming(m);
   }
 
   // when an incoming GSM call is ringing
@@ -484,6 +489,39 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // react methods
 
   // ==========================================================================
+
+  // Pending incoming call
+  @ReactMethod
+  public void isPnIdInPending(String pnId, Promise p) {
+    try {
+      p.resolve(Call.isPnIdInPending(pnId));
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void onHandedIncomingCall(String pnId) {
+    if (pnId == null || pnId.isEmpty()) {
+      return;
+    }
+    Call.onHandled(pnId);
+  }
+
+  @ReactMethod
+  public void getCurrentIncomingCall(Promise p) {
+    try {
+      var c = Call.getCurrent();
+      if (c == null) {
+        p.resolve(null);
+        return;
+      }
+      p.resolve(new JSONObject(c).toString());
+    } catch (Exception e) {
+      p.resolve(null);
+    }
+  }
+
   // permissions
 
   @ReactMethod
@@ -856,6 +894,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             }
           } catch (Exception e) {
           }
+          Call.onHandled(uuid);
         });
   }
 

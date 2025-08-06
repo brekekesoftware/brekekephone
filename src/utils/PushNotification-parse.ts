@@ -203,6 +203,13 @@ export const parse = async (
     return
   }
 
+  if (isAndroid && (await BrekekeUtils.isPnIdInPending(n.id))) {
+    console.log(
+      `SIP PN debug: PushNotification-parse: PnId ${n.id} is in pending incoming call`,
+    )
+    return
+  }
+
   // handle duplicated pn on android
   // sometimes getInitialNotifications not update callkeepUuid yet
   if (isAndroid && n.callkeepUuid) {

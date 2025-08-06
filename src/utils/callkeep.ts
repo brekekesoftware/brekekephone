@@ -339,6 +339,18 @@ export const setupCallKeepEvents = async () => {
       )
     }
   })
+
+  eventEmitter.addListener('showIncomingCall', (m: string) => {
+    try {
+      parse(JSON.parse(m), false)
+    } catch (err) {
+      console.error(
+        'CallKeep debug: Failed to parse showIncomingCall data:',
+        err,
+      )
+    }
+  })
+
   // other utils
   eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
     if (!RnStacker.stacks.length) {
