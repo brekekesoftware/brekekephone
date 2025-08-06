@@ -1,5 +1,7 @@
 package com.brekeke.phonedev.utils;
 
+import android.os.Handler;
+import android.os.Looper;
 import com.brekeke.phonedev.BrekekeUtils;
 import java.util.LinkedList;
 import java.util.Map;
@@ -56,7 +58,15 @@ public class Call {
     current = pending.poll();
     if (current != null) {
       Emitter.emit("showIncomingCall", new JSONObject(current).toString());
-      BrekekeUtils.displayIncomingCall(current);
+      new Handler(Looper.getMainLooper())
+          .postDelayed(
+              () -> {
+                BrekekeUtils.displayIncomingCall(current);
+              },
+              // To ensure deinitConnection completes before
+              // creating new incoming voice connection
+              // when incoming call is rejected
+              300);
     }
   }
 
