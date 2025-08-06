@@ -150,7 +150,7 @@ export const AccountCreateForm: FC<{
         onPress: $.resetAllFields,
       },
     ]
-    if (props.updating) {
+    if (props.updating && !isWeb) {
       d = [
         {
           label: intl`Upload ringtone`,

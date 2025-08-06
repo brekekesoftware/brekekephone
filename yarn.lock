@@ -2177,7 +2177,7 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-documents/picker@^10.1.5":
+"@react-native-documents/picker@10.1.5":
   version "10.1.5"
   resolved "https://registry.yarnpkg.com/@react-native-documents/picker/-/picker-10.1.5.tgz#3b9cd338210e70602a30d739f2c3ee919177c6a9"
   integrity sha512-ajn55rNyxUqbQbz5gmm9gYFI1ifHBmMLH4jVWViA7IFqk1EiEM+pJcpoHizWr5hetR6tzQsaoI4vzCNv/WyA7w==

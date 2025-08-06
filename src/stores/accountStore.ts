@@ -140,7 +140,7 @@ export class AccountStore {
           )
         }
         this.accountData = uniqBy(accountData, 'id')
-        this.ringtonePicker = ringtonePicker
+        this.ringtonePicker = ringtonePicker ?? {}
       })
     }
     resolveFn?.()

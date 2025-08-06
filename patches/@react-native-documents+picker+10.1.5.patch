@@ -1,3 +1,27 @@
+diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
+index 7e1f98b..043b3b5 100644
+--- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
++++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
+@@ -102,12 +102,15 @@ class FileOperations(private val uriMap: MutableMap<String, Uri>) {
+     val baseDir =
+       if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
+ 
+-    val randomDir = File(baseDir, UUID.randomUUID().toString())
+-    val didCreateDir = randomDir.mkdir()
++    val ringtoneDir = File(baseDir, "Ringtones")
++    var didCreateDir = true
++    if(!ringtoneDir.exists()) {
++      didCreateDir = ringtoneDir.mkdir()
++    }
+     if (!didCreateDir) {
+-      throw IOException("Failed to create directory at ${randomDir.absolutePath}")
++      throw IOException("Failed to create directory at ${ringtoneDir.absolutePath}")
+     }
+-    return randomDir
++    return ringtoneDir
+   }
+ 
+   private fun copyFile(
 diff --git a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift b/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
 index 6f1682f..9ddf3d6 100644
 --- a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift

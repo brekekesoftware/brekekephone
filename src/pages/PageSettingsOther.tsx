@@ -130,7 +130,7 @@ export class PageSettingsOther extends Component {
         danger: true,
       },
     ]
-    if (isIos) {
+    if (!isWeb) {
       d = [
         {
           label: intl`Upload ringtone`,
