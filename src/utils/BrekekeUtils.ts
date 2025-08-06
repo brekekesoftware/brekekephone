@@ -72,7 +72,10 @@ type TBrekekeUtils = {
     d: string,
     t: 'success' | 'error' | 'warning' | 'info',
   ): void
-
+  // Android pending incoming call
+  isPnIdInPending(pnId: string): Promise<boolean>
+  onHandedIncomingCall(pnId: string): void
+  getCurrentIncomingCall(): Promise<string | null>
   // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled(enabled: boolean): void
@@ -156,7 +159,10 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   updateAnyHoldLoading: () => undefined,
   toast: () => undefined,
-
+  // Android pending incoming call
+  isPnIdInPending: () => Promise.resolve(false),
+  onHandedIncomingCall: () => undefined,
+  getCurrentIncomingCall: () => Promise.resolve(null),
   // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
