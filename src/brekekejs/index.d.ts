@@ -74,6 +74,7 @@ export type GetPalOptions = {
   secure_login_password: boolean
   phonetype: string
   callrecording: string
+  ctype: number
 }
 
 export type PalMethodParams<K extends keyof PbxPal> = Parameters<

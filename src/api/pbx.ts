@@ -303,6 +303,9 @@ export class PBX extends EventEmitter {
       callrecording: 'self',
       ...d.palParams,
       ...embedApi._palParams,
+      // From the version 2.14.x, please add ctype=2 to the URL for PAL.
+      // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
+      ctype: 2,
     })
     this.client = client
 
