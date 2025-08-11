@@ -350,7 +350,11 @@ export const UserItem: FC<
           </View>
         )}
         {icons?.map((_, i) => (
-          <RnTouchableOpacity key={i} onPress={e => onPressIcons(i)}>
+          <RnTouchableOpacity
+            useDebounce={!!iconFuncs}
+            key={i}
+            onPress={e => onPressIcons(i)}
+          >
             <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
         ))}
