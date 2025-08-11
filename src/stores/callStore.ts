@@ -977,7 +977,7 @@ export class CallStore {
           timerStore.now - _.createdAt > 1000)
       )
     })
-  getCallInNotifyForAndroid = () => {
+  @action getCallInNotifyForAndroid = () => {
     const calls = this.calls.filter(_ => {
       const k = this.callkeepMap[_.callkeepUuid]
       return (
@@ -992,6 +992,17 @@ export class CallStore {
     return calls[0]
   }
 
+  @action getBgCalls = (c: Call) => {
+    let arr = this.calls.filter(x => x.id !== c.id)
+    if (isAndroid) {
+      const incomings = arr.filter(x => x.incoming && !x.answered)
+      if (incomings.length > 1) {
+        const [first] = incomings.sort((a, b) => a.createdAt - b.createdAt)
+        arr = arr.filter(x => !(x.incoming && !x.answered) || x.id === first.id)
+      }
+    }
+    return arr
+  }
   shouldRingInNotify = () => {
     if (isWeb) {
       return true

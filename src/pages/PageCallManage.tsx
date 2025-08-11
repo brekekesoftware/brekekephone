@@ -539,7 +539,7 @@ class PageCallManage extends Component<{
 
   private renderBtns = () => {
     const { call: c } = this.props
-    const n = ctx.call.calls.filter(_ => _.id !== c.id).length
+    const n = ctx.call.getBgCalls(c).length
     if (c.localVideoEnabled && !this.showButtonsInVideoCall) {
       return null
     }
