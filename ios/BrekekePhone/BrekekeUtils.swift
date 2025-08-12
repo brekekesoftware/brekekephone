@@ -12,12 +12,15 @@ public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
-
+  var debounceWorkItem: DispatchWorkItem?
+  
   override init() {
+    super.init()
     audio = nil
     audioSession = AVAudioSession.sharedInstance()
     rtcAudioSession = RTCAudioSession.sharedInstance()
     rtcAudioSession.useManualAudio = true
+    listenAudioSessionRoute()
     print("BrekekeUtils.init(): initialized")
   }
 
@@ -180,5 +183,81 @@ public class BrekekeUtils: NSObject {
     } catch {
       resolve(-1)
     }
+  }
+  
+  // listener audio session event
+  private func listenAudioSessionRoute() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleAudioRouteChange(_:)),
+      name: AVAudioSession.routeChangeNotification,
+      object: nil
+    )
+  }
+
+  @objc private func handleAudioRouteChange(_ notification: Notification) {
+    let session = AVAudioSession.sharedInstance()
+    debounceWorkItem?.cancel()
+    debounceWorkItem = DispatchWorkItem { [weak self] in
+      
+      do {
+        if let o = session.currentRoute.outputs.first {
+          if o.portType == .builtInSpeaker {
+            try session.overrideOutputAudioPort(.speaker)
+          } else if o.portType == .builtInReceiver {
+            try session.overrideOutputAudioPort(.none)
+          }
+          print("[AudioSession] - handleAudioRouteChange: \(o.portType)")
+          
+          BrekekeEmitter.emit(name: "onAudioRouteChange", data: ["isSpeakerOn" : o.portType == .builtInSpeaker])
+        }
+        
+       if session.mode == .voiceChat {
+         try session.setMode(.default)
+         try session.setActive(true)
+         print("[AudioSession] - mode: \(session.mode)")
+       }
+        
+      }
+      catch {
+        let nsError = error as NSError
+        print("[AudioSession] ❌ Error: \(error.localizedDescription)")
+        print("[AudioSession] ❌ Domain: \(nsError.domain), Code: \(nsError.code)")
+        print("[AudioSession] ❌ Full error: \(error)")
+      }
+//      BrekekeUtils.logAudioSessionInfo()
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: debounceWorkItem!)
+  }
+  
+  static func logAudioSessionInfo(tag: String = "[AudioSession]") {
+      let session = AVAudioSession.sharedInstance()
+      
+      print("\(tag) --------------------")
+      print("\(tag) Category: \(session.category.rawValue)")
+      print("\(tag) Mode: \(session.mode.rawValue)")
+      print("\(tag) SampleRate: \(session.sampleRate)")
+      print("\(tag) IOBufferDuration: \(session.ioBufferDuration)")
+      
+      // Current Route
+      let route = session.currentRoute
+      print("\(tag) Current Route:")
+      for output in route.outputs {
+          print("\(tag)  🔊 Output: \(output.portName) (\(output.portType.rawValue))")
+      }
+      for input in route.inputs {
+          print("\(tag)  🎤 Input: \(input.portName) (\(input.portType.rawValue))")
+      }
+      
+      // Available Inputs
+      if let availableInputs = session.availableInputs {
+          print("\(tag) Available Inputs:")
+          for input in availableInputs {
+              print("\(tag)  🎤 \(input.portName) (\(input.portType.rawValue))")
+          }
+      }
+      
+      print("\(tag) --------------------")
   }
 }
