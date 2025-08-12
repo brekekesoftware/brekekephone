@@ -10,39 +10,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   override init() {
     super.init()
     BrekekeLPCManager.shared.initialize()
-    listenAudioSessionRoute()
   }
   
-  var debounceWorkItem: DispatchWorkItem?
   var window: UIWindow?
   var bridge: RCTBridge!
-  
-  private func listenAudioSessionRoute() {
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleAudioRouteChange(_:)),
-      name: AVAudioSession.routeChangeNotification,
-      object: nil
-    )
-  }
-
-  @objc private func handleAudioRouteChange(_ notification: Notification) {
-    debounceWorkItem?.cancel()
-    debounceWorkItem = DispatchWorkItem { [weak self] in
-      let session = AVAudioSession.sharedInstance()
-      let outputs = session.currentRoute.outputs
-      do {
-        if session.mode == .voiceChat {
-          try session.setMode(.default)
-          try session.setActive(true)
-          print("[AudioSession] Audio session reset after debounce")
-        }
-      } catch {
-      }
-    }
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: debounceWorkItem!)
-  }
   
   func application(
     _: UIApplication,
