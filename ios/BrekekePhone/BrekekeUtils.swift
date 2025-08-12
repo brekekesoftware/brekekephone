@@ -185,7 +185,6 @@ public class BrekekeUtils: NSObject {
       resolve(-1)
     }
   }
-
   // listener audio session event
   private func listenAudioSessionRoute() {
     NotificationCenter.default.addObserver(
