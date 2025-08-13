@@ -2,12 +2,12 @@ import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { FooterActions } from '#/components/FooterActions'
 import { Navigation } from '#/components/FooterNavigation'
 import { ToggleKeyboard } from '#/components/FooterToggleKeyboard'
 import { v } from '#/components/variables'
+import { isIos } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { arrToMap } from '#/utils/arrToMap'
 
@@ -19,7 +19,7 @@ const css = StyleSheet.create({
   },
   Footer__noKeyboard: {
     left: 0,
-    paddingBottom: getBottomSpace(),
+    paddingBottom: isIos ? 34 : 0,
     backgroundColor: v.bg,
     ...v.boxShadow,
   },

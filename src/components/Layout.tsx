@@ -9,13 +9,13 @@ import type {
   ViewStyle,
 } from 'react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { Footer } from '#/components/Footer'
 import { Header } from '#/components/Header'
 import type { HeaderDropdownItem } from '#/components/HeaderDropdown'
 import { Toast } from '#/components/Toast'
 import { v } from '#/components/variables'
+import { isIos } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 
 const DEFAULT_TOAST_MESSAGE = 'new message'
@@ -129,7 +129,7 @@ export const Layout: FC<
   }
 
   // TODO: put more document here
-  let headerSpace = 86 + 15
+  let headerSpace = isIos ? 80 : 86 + 15
   if (props.menu) {
     headerSpace += 35
   }
@@ -137,7 +137,7 @@ export const Layout: FC<
     headerSpace -= 46
   }
   // TODO: put more document here
-  let footerSpace = getBottomSpace()
+  let footerSpace = isIos ? 50 : 0
   if (props.fabRender) {
     footerSpace += 40
   } else if (!RnKeyboard.isKeyboardShowing) {

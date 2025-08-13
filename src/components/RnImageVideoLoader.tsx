@@ -5,12 +5,12 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
-import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
@@ -22,7 +22,7 @@ import {
 import { RnIcon } from '#/components/RnIcon'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isAndroid } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import type { ChatFile } from '#/stores/chatStore'
 
 const css = StyleSheet.create({
@@ -80,7 +80,7 @@ const css = StyleSheet.create({
   },
   btnClose: {
     position: 'absolute',
-    top: getStatusBarHeight(true),
+    top: isWeb ? 0 : isAndroid ? StatusBar.currentHeight : 20,
     right: 15,
     zIndex: 10,
     elevation: 2,
