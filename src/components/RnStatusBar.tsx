@@ -3,7 +3,7 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 
 const css = StyleSheet.create({
   RnStatusBar: {
@@ -11,7 +11,7 @@ const css = StyleSheet.create({
     ...v.backdropZindex,
     ...Platform.select({
       ios: {
-        height: isIos ? 50 : isAndroid ? StatusBar.currentHeight : 0,
+        height: isAndroid ? StatusBar.currentHeight : 0,
       },
     }),
   },

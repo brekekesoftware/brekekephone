@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   AppState,
   DeviceEventEmitter,
+  SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native'
@@ -284,9 +285,12 @@ export const App = observer(() => {
   } = getConnectionStatus()
 
   const cp = ctx.auth.listCustomPage[0]
-
+  const RootView = isIos ? SafeAreaView : View
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
+    <RootView
+      style={[StyleSheet.absoluteFill, css.App]}
+      {...getWebRootIdProps()}
+    >
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
@@ -335,7 +339,7 @@ export const App = observer(() => {
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
-    </View>
+    </RootView>
   )
 })
 

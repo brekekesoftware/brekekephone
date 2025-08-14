@@ -4,6 +4,13 @@ import { isWeb } from '#/config'
 
 import json from '../../package.json'
 
+const boxShadow = {
+  shadowColor: 'black',
+  shadowOpacity: 0.1,
+  shadowRadius: 2,
+  elevation: 3, // android
+}
+
 export const v = {
   fontSize: 14,
   lineHeight: 20,
@@ -44,16 +51,8 @@ export const v = {
   layerBg: transparentize(0.2, 'black'),
   layerBgVideo: '#00000080',
   //
-  boxShadow: {
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3, // android
-  },
+  boxShadow: { ...boxShadow, shadowOffset: { width: 0, height: 1 } },
+  bottomBoxShadow: { ...boxShadow, shadowOffset: { width: 0, height: -2 } },
   //
   backdropZindex: {
     zIndex: 999,
