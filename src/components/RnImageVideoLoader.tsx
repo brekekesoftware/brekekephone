@@ -22,7 +22,7 @@ import {
 import { RnIcon } from '#/components/RnIcon'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isAndroid, isWeb } from '#/config'
+import { isAndroid } from '#/config'
 import type { ChatFile } from '#/stores/chatStore'
 
 const css = StyleSheet.create({
@@ -80,7 +80,7 @@ const css = StyleSheet.create({
   },
   btnClose: {
     position: 'absolute',
-    top: isWeb ? 0 : isAndroid ? StatusBar.currentHeight : 20,
+    top: isAndroid ? StatusBar.currentHeight : 0,
     right: 15,
     zIndex: 10,
     elevation: 2,

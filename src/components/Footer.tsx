@@ -7,7 +7,6 @@ import { FooterActions } from '#/components/FooterActions'
 import { Navigation } from '#/components/FooterNavigation'
 import { ToggleKeyboard } from '#/components/FooterToggleKeyboard'
 import { v } from '#/components/variables'
-import { isIos } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { arrToMap } from '#/utils/arrToMap'
 
@@ -19,9 +18,9 @@ const css = StyleSheet.create({
   },
   Footer__noKeyboard: {
     left: 0,
-    paddingBottom: isIos ? 34 : 0,
+    paddingBottom: 0,
     backgroundColor: v.bg,
-    ...v.boxShadow,
+    ...v.bottomBoxShadow,
   },
   //
   // fix bug margin auto can not be used
