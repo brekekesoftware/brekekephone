@@ -15,7 +15,6 @@ import { Header } from '#/components/Header'
 import type { HeaderDropdownItem } from '#/components/HeaderDropdown'
 import { Toast } from '#/components/Toast'
 import { v } from '#/components/variables'
-import { isIos } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 
 const DEFAULT_TOAST_MESSAGE = 'new message'
@@ -137,7 +136,7 @@ export const Layout: FC<
     headerSpace -= 46
   }
   // TODO: put more document here
-  let footerSpace = isIos ? 50 : 0
+  let footerSpace = 0
   if (props.fabRender) {
     footerSpace += 40
   } else if (!RnKeyboard.isKeyboardShowing) {
