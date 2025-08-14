@@ -129,7 +129,7 @@ export const Layout: FC<
   }
 
   // TODO: put more document here
-  let headerSpace = isIos ? 80 : 86 + 15
+  let headerSpace = 86 + 15
   if (props.menu) {
     headerSpace += 35
   }
