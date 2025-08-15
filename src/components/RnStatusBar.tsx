@@ -11,7 +11,7 @@ const css = StyleSheet.create({
     ...v.backdropZindex,
     ...Platform.select({
       ios: {
-        height: isAndroid ? StatusBar.currentHeight : 0,
+        height: 0,
       },
     }),
   },

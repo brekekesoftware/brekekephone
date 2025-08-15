@@ -118,7 +118,7 @@ export const Layout: FC<
       }
       originalProps.containerOnScroll?.(e)
     }
-    containerProps.scrollEventThrottle = 170
+    containerProps.scrollEventThrottle = 16
     containerProps.showsVerticalScrollIndicator = false
   }
 
