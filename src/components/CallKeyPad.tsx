@@ -7,7 +7,6 @@ import {
   mdiPhoneForward,
 } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
-import { DEFAULT_MS_DELAY } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 

@@ -4,8 +4,6 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import type { GestureResponderEvent, TouchableOpacityProps } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
-export const DEFAULT_MS_DELAY = 300
-
 export const RnTouchableOpacity: FC<
   TouchableOpacityProps & { loading?: number }
 > = forwardRef(({ onPress, loading, disabled, ...props }, ref) => {
