@@ -1000,7 +1000,7 @@ export class CallStore {
     return calls[0]
   }
 
-  @action getBgCalls = (c: Call) => {
+  getBgCalls = (c: Call) => {
     let arr = this.calls.filter(x => x.id !== c.id)
     if (isAndroid) {
       const incomings = arr.filter(x => x.incoming && !x.answered)
