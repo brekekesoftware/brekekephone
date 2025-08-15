@@ -207,7 +207,6 @@ public class BrekekeUtils: NSObject {
           } else if o.portType == .builtInReceiver {
             try session.overrideOutputAudioPort(.none)
           }
-          print("[AudioSession] - handleAudioRouteChange: \(o.portType)")
           
           BrekekeEmitter.emit(name: "onAudioRouteChange", data: ["isSpeakerOn" : o.portType == .builtInSpeaker])
         }
@@ -215,49 +214,11 @@ public class BrekekeUtils: NSObject {
        if session.mode == .voiceChat {
          try session.setMode(.default)
          try session.setActive(true)
-         print("[AudioSession] - mode: \(session.mode)")
        }
         
       }
-      catch {
-        let nsError = error as NSError
-        print("[AudioSession] ❌ Error: \(error.localizedDescription)")
-        print("[AudioSession] ❌ Domain: \(nsError.domain), Code: \(nsError.code)")
-        print("[AudioSession] ❌ Full error: \(error)")
-      }
-//      BrekekeUtils.logAudioSessionInfo()
+      catch {}
     }
-    
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: debounceWorkItem!)
-  }
-  
-  static func logAudioSessionInfo(tag: String = "[AudioSession]") {
-      let session = AVAudioSession.sharedInstance()
-      
-      print("\(tag) --------------------")
-      print("\(tag) Category: \(session.category.rawValue)")
-      print("\(tag) Mode: \(session.mode.rawValue)")
-      print("\(tag) SampleRate: \(session.sampleRate)")
-      print("\(tag) IOBufferDuration: \(session.ioBufferDuration)")
-      
-      // Current Route
-      let route = session.currentRoute
-      print("\(tag) Current Route:")
-      for output in route.outputs {
-          print("\(tag)  🔊 Output: \(output.portName) (\(output.portType.rawValue))")
-      }
-      for input in route.inputs {
-          print("\(tag)  🎤 Input: \(input.portName) (\(input.portType.rawValue))")
-      }
-      
-      // Available Inputs
-      if let availableInputs = session.availableInputs {
-          print("\(tag) Available Inputs:")
-          for input in availableInputs {
-              print("\(tag)  🎤 \(input.portName) (\(input.portType.rawValue))")
-          }
-      }
-      
-      print("\(tag) --------------------")
   }
 }
