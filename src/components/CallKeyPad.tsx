@@ -7,6 +7,7 @@ import {
   mdiPhoneForward,
 } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { DEFAULT_MS_DELAY } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 
@@ -101,6 +102,7 @@ export const KeyPad = (p: {
                 ? css.KeyPad_Btn__call
                 : css.KeyPad_Btn__call_2,
             ]}
+            msDelay={DEFAULT_MS_DELAY}
           >
             <RnIcon path={mdiPhone} />
           </RnTouchableOpacity>

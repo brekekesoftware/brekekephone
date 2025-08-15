@@ -17,6 +17,7 @@ import { Constants } from '#/brekekejs/ucclient'
 import { Avatar } from '#/components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { RnCheckBox } from '#/components/RnCheckbox'
+import { DEFAULT_MS_DELAY } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contactStore'
@@ -351,7 +352,7 @@ export const UserItem: FC<
         )}
         {icons?.map((_, i) => (
           <RnTouchableOpacity
-            useDebounce={!!iconFuncs}
+            msDelay={!!iconFuncs ? DEFAULT_MS_DELAY : undefined}
             key={i}
             onPress={e => onPressIcons(i)}
           >

@@ -4,18 +4,20 @@ import { forwardRef, useCallback, useEffect } from 'react'
 import type { GestureResponderEvent, TouchableOpacityProps } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
+export const DEFAULT_MS_DELAY = 300
+
 export const RnTouchableOpacity: FC<
-  TouchableOpacityProps & { useDebounce?: boolean }
-> = forwardRef(({ onPress, useDebounce, ...props }, ref) => {
+  TouchableOpacityProps & { msDelay?: number }
+> = forwardRef(({ onPress, msDelay, ...props }, ref) => {
   const onPressDebounce = useCallback(
-    debounce((event: GestureResponderEvent) => onPress?.(event), 200),
+    debounce((event: GestureResponderEvent) => onPress?.(event), msDelay),
     [onPress],
   )
 
-  // Cancle debounce when unmount
   useEffect(
     () => () => {
-      useDebounce && onPressDebounce.cancel()
+      // Cancel debounce when unmount
+      msDelay && onPressDebounce.cancel()
     },
     [onPressDebounce],
   )
@@ -24,7 +26,7 @@ export const RnTouchableOpacity: FC<
     <TouchableOpacity
       activeOpacity={0.8}
       ref={ref as (instance: unknown) => void}
-      onPress={useDebounce ? onPressDebounce : onPress}
+      onPress={msDelay ? onPressDebounce : onPress}
       {...props}
     />
   )
