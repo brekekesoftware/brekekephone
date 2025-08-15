@@ -27,6 +27,7 @@ export class PageVoicemail extends Component {
           icons={[mdiPhone]}
           name={intl`Voicemail`}
           isVoicemail
+          loadings={[300]}
         />
       </Layout>
     )

@@ -90,6 +90,7 @@ export class PageCallRecents extends Component {
                 () => ctx.call.startCall(c.partyNumber, option, true),
                 () => ctx.call.startCall(c.partyNumber, option),
               ]}
+              loadings={[300, 300]}
               {...ctx.contact.getUcUserById(c.partyNumber)}
               icons={[mdiVideo, mdiPhone]}
               isRecentCall

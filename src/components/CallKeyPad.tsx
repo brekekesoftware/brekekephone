@@ -102,7 +102,7 @@ export const KeyPad = (p: {
                 ? css.KeyPad_Btn__call
                 : css.KeyPad_Btn__call_2,
             ]}
-            msDelay={DEFAULT_MS_DELAY}
+            loading={300}
           >
             <RnIcon path={mdiPhone} />
           </RnTouchableOpacity>

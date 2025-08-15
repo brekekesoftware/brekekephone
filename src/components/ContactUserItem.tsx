@@ -113,6 +113,7 @@ export const UserItem: FC<
     icons: string[]
     iconColors: string[]
     iconFuncs: Function[]
+    loadings?: number[]
     id: string
     incoming: boolean
     isRecentCall: boolean
@@ -146,6 +147,7 @@ export const UserItem: FC<
     icons,
     iconColors,
     iconFuncs,
+    loadings,
     id,
     incoming,
     isRecentCall,
@@ -352,7 +354,7 @@ export const UserItem: FC<
         )}
         {icons?.map((_, i) => (
           <RnTouchableOpacity
-            msDelay={!!iconFuncs ? DEFAULT_MS_DELAY : undefined}
+            loading={loadings?.[i]}
             key={i}
             onPress={e => onPressIcons(i)}
           >
