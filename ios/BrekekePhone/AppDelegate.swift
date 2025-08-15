@@ -1,8 +1,8 @@
+import AVFoundation
 import Combine
 import Foundation
 import SwiftUI
 import UIKit
-import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
@@ -11,10 +11,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     super.init()
     BrekekeLPCManager.shared.initialize()
   }
-  
+
   var window: UIWindow?
   var bridge: RCTBridge!
-  
+
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication

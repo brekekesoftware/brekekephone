@@ -13,7 +13,7 @@ public class BrekekeUtils: NSObject {
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
   var debounceWorkItem: DispatchWorkItem?
-  
+
   override init() {
     super.init()
     audio = nil
@@ -184,7 +184,7 @@ public class BrekekeUtils: NSObject {
       resolve(-1)
     }
   }
-  
+
   // listener audio session event
   private func listenAudioSessionRoute() {
     NotificationCenter.default.addObserver(
@@ -195,11 +195,10 @@ public class BrekekeUtils: NSObject {
     )
   }
 
-  @objc private func handleAudioRouteChange(_ notification: Notification) {
+  @objc private func handleAudioRouteChange(_: Notification) {
     let session = AVAudioSession.sharedInstance()
     debounceWorkItem?.cancel()
     debounceWorkItem = DispatchWorkItem { [weak self] in
-      
       do {
         if let o = session.currentRoute.outputs.first {
           if o.portType == .builtInSpeaker {
@@ -207,18 +206,22 @@ public class BrekekeUtils: NSObject {
           } else if o.portType == .builtInReceiver {
             try session.overrideOutputAudioPort(.none)
           }
-          
-          BrekekeEmitter.emit(name: "onAudioRouteChange", data: ["isSpeakerOn" : o.portType == .builtInSpeaker])
+
+          BrekekeEmitter.emit(
+            name: "onAudioRouteChange",
+            data: ["isSpeakerOn": o.portType == .builtInSpeaker]
+          )
         }
-        
-       if session.mode == .voiceChat {
-         try session.setMode(.default)
-         try session.setActive(true)
-       }
-        
-      }
-      catch {}
+
+        if session.mode == .voiceChat {
+          try session.setMode(.default)
+          try session.setActive(true)
+        }
+      } catch {}
     }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: debounceWorkItem!)
+    DispatchQueue.main.asyncAfter(
+      deadline: .now() + 0.4,
+      execute: debounceWorkItem!
+    )
   }
 }
