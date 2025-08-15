@@ -80,7 +80,7 @@ const css = StyleSheet.create({
   },
   btnClose: {
     position: 'absolute',
-    top: isAndroid ? StatusBar.currentHeight : 0,
+    top: isAndroid ? StatusBar.currentHeight : 44,
     right: 15,
     zIndex: 10,
     elevation: 2,
