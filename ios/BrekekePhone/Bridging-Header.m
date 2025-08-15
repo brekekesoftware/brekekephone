@@ -25,5 +25,5 @@ RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseRejectBlock)reject)
 @end
 
-@interface RCT_EXTERN_MODULE(BrekekeEmitter, RCTEventEmitter)
+@interface RCT_EXTERN_MODULE (BrekekeEmitter, RCTEventEmitter)
 @end
