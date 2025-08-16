@@ -13,7 +13,8 @@ public class BrekekeUtils: NSObject {
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
   var debounceWorkItem: DispatchWorkItem?
-
+  static var output : [String : AVAudioSession.Port] = [:]
+  
   override init() {
     super.init()
     audio = nil
@@ -197,31 +198,31 @@ public class BrekekeUtils: NSObject {
 
   @objc private func handleAudioRouteChange(_: Notification) {
     let session = AVAudioSession.sharedInstance()
-    debounceWorkItem?.cancel()
-    debounceWorkItem = DispatchWorkItem { [weak self] in
-      do {
-        if let o = session.currentRoute.outputs.first {
-          if o.portType == .builtInSpeaker {
-            try session.overrideOutputAudioPort(.speaker)
-          } else if o.portType == .builtInReceiver {
-            try session.overrideOutputAudioPort(.none)
-          }
-
-          BrekekeEmitter.emit(
-            name: "onAudioRouteChange",
-            data: ["isSpeakerOn": o.portType == .builtInSpeaker]
-          )
+    do {
+      if session.mode == .voiceChat {
+        try session.setMode(.default)
+        try session.setActive(true)
+      }
+      
+      if let o = session.currentRoute.outputs.first {
+        if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o.portType {
+          return
+        }
+        BrekekeUtils.output["output"] = o.portType
+        if o.portType == .builtInSpeaker {
+          try session.overrideOutputAudioPort(.speaker)
+        } else if o.portType == .builtInReceiver {
+          try session.overrideOutputAudioPort(.none)
         }
 
-        if session.mode == .voiceChat {
-          try session.setMode(.default)
-          try session.setActive(true)
-        }
-      } catch {}
+        BrekekeEmitter.emit(
+          name: "onAudioRouteChange",
+          data: ["isSpeakerOn": o.portType == .builtInSpeaker]
+        )
+      }
+
+    } catch {
+      BrekekeUtils.output.removeAll()
     }
-    DispatchQueue.main.asyncAfter(
-      deadline: .now() + 0.4,
-      execute: debounceWorkItem!
-    )
   }
 }
