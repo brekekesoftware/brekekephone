@@ -38,7 +38,6 @@ public class Storage {
     if f.fileExists(atPath: p.path) {
       return readMd5(path : p)
     }
-    print("[Storage] No files exist")
     return nil
   }
   
@@ -58,10 +57,7 @@ public class Storage {
          let profile = dict[KEY] as? String {
           return profile
       }
-    } catch {
-      print("[Storage] Parse errors in manifest.json: \(error)")
-    }
-    print("[Storage] manifest can not get file")
+    } catch {}
     return nil
   }
   
@@ -69,10 +65,7 @@ public class Storage {
     do {
       let profile = try String(contentsOf: path, encoding: .utf8)
       return profile
-    } catch {
-      print("[Storage] Error while reading or parsing JSON: \(error)")
-    }
-    print("[Storage] md5 can not get file")
+    } catch {}
     return nil
   }
   

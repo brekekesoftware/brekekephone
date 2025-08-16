@@ -12,7 +12,6 @@ public class RingtoneUtils {
   // get ringtone from account
   @objc static func getRingtone(ringtone: String, username : String, tenant : String, host: String, port : String) -> String {
     let r = _validate(ringtone: ringtone)
-    print("[RingtoneUtils]: validated getRingtone r \(r)")
     if r != "" {
       return r
     }
@@ -22,12 +21,10 @@ public class RingtoneUtils {
   @objc static func getRingtone(username : String, tenant : String, host: String, port : String) -> String {
     if let a = AccountUtils.find(username: username, tenant: tenant, host: host, port: port) {
       var r = _validate(ringtone: a.ringtone ?? "")
-      print("[RingtoneUtils]: validated r \(r)")
       if !r.isEmpty {
         return r
       }
       r = _validate(ringtone: a.pbxRingtone ?? "")
-      print("[RingtoneUtils]: validated pbx r \(r)")
       if !r.isEmpty {
         return r
       }
@@ -66,14 +63,12 @@ public class RingtoneUtils {
   // handle save file to local
   static func downloadAndSaveRingtone(from urlString: String , fileName : String , completion: @escaping (Bool) -> Void) {
     guard let remoteURL = URL(string: urlString) else {
-      print("[RingtoneUtils] Invalid URL")
       completion(false)
       return
     }
     
     let task = URLSession.shared.downloadTask(with: remoteURL) { location, response, error in
       guard let location = location, error == nil else {
-        print("[RingtoneUtils] Download error: \(error?.localizedDescription ?? "Unknown error")")
         completion(false)
         return
       }
@@ -83,10 +78,8 @@ public class RingtoneUtils {
       
       do {
         try FileManager.default.moveItem(at: location, to: destinationURL)
-        print("[RingtoneUtils] Saved to: \(destinationURL.path)")
         completion(true)
       } catch {
-        print("[RingtoneUtils] Failed to move file: \(error.localizedDescription)")
         completion(false)
       }
     }.resume()
@@ -136,7 +129,6 @@ public class RingtoneUtils {
         if checkPickerExist(item.key) {
           results.append(item.key)
         }
-        
       }
     }
     return results
