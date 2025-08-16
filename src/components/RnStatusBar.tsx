@@ -3,7 +3,7 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native'
 
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isAndroid, isWeb } from '#/config'
+import { isWeb } from '#/config'
 
 const css = StyleSheet.create({
   RnStatusBar: {
