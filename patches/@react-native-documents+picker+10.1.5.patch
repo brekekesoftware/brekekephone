@@ -1,39 +1,469 @@
 diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
-index 7e1f98b..043b3b5 100644
+index 7e1f98b..770d5d4 100644
 --- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
 +++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
-@@ -102,12 +102,15 @@ class FileOperations(private val uriMap: MutableMap<String, Uri>) {
-     val baseDir =
-       if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
+@@ -24,180 +24,218 @@ import java.io.OutputStream
+ import java.util.UUID
  
+ class FileOperations(private val uriMap: MutableMap<String, Uri>) {
+-  suspend fun copyFilesToLocalStorage(
+-    context: ReactContext,
+-    filesToCopy: ReadableArray,
+-    copyTo: CopyDestination,
+-  ): ReadableArray =
+-    withContext(Dispatchers.IO) {
+-      /**
+-       * export type LocalCopyResponse = | { status: 'success'; localUri: string; sourceUri: string } |
+-       * { status: 'error'; copyError: string; sourceUri: string }
+-       */
+-      val destinationDir = getUniqueDir(context, copyTo)
+-
+-      val copyJobs = (0 until filesToCopy.size()).map { i ->
+-        async {
+-          val oneResult = Arguments.createMap()
+-          val map = filesToCopy.getMap(i)
+-
+-          try {
+-            val nonNullMap = map ?: throw IllegalArgumentException("keepLocalCopy: The file argument is null at index $i")
+-            val newFile = copySingleFile(nonNullMap, context, destinationDir)
+-            oneResult.merge(newFile)
+-          } catch (e: Exception) {
+-            val message: String = e.localizedMessage ?: e.message ?: "Unknown error"
+-            oneResult.putString("status", "error")
+-            oneResult.putString("copyError", message)
+-            oneResult.putString("sourceUri", map?.getString("uri"))
+-          }
+-          return@async oneResult
++    suspend fun copyFilesToLocalStorage(
++        context: ReactContext,
++        filesToCopy: ReadableArray,
++        copyTo: CopyDestination, folderName: String?
++    ): ReadableArray =
++        withContext(Dispatchers.IO) {
++            /**
++             * export type LocalCopyResponse = | { status: 'success'; localUri: string; sourceUri: string } |
++             * { status: 'error'; copyError: string; sourceUri: string }
++             */
++            val destinationDir: File = if (folderName != null) {
++                getUniqueDir(context, copyTo, folderName)
++            } else {
++                getUniqueDir(context, copyTo)
++            }
++
++            val copyJobs = (0 until filesToCopy.size()).map { i ->
++                async {
++                    val oneResult = Arguments.createMap()
++                    val map = filesToCopy.getMap(i)
++
++                    try {
++                        val nonNullMap = map
++                            ?: throw IllegalArgumentException("keepLocalCopy: The file argument is null at index $i")
++                        val newFile = copySingleFile(nonNullMap, context, destinationDir)
++                        oneResult.merge(newFile)
++                    } catch (e: Exception) {
++                        val message: String = e.localizedMessage ?: e.message ?: "Unknown error"
++                        oneResult.putString("status", "error")
++                        oneResult.putString("copyError", message)
++                        oneResult.putString("sourceUri", map?.getString("uri"))
++                    }
++                    return@async oneResult
++                }
++            }
++
++            val results = Arguments.createArray()
++            copyJobs.awaitAll().forEach { result ->
++                results.pushMap(result)
++            }
++
++            return@withContext results
+         }
+-      }
+ 
+-      val results = Arguments.createArray()
+-      copyJobs.awaitAll().forEach { result ->
+-        results.pushMap(result)
+-      }
++    private fun copySingleFile(
++        map: ReadableMap,
++        context: ReactContext,
++        destinationDir: File
++    ): ReadableMap {
++        val sourceUriAsString: String =
++            map.getString("uri") ?: throw IllegalArgumentException("URI is missing")
++        val fileName: String =
++            map.getString("fileName") ?: throw IllegalArgumentException("fileName is missing")
++        val convertVirtualFileAsType = map.getString("convertVirtualFileToType")
++
++        val sourceUriInstance = uriMap[sourceUriAsString]
++        if (sourceUriInstance == null) {
++            RNLog.w(
++                context,
++                // https://developer.android.com/guide/components/intents-common#GetFile
++                "keepLocalCopy: You're trying to copy a file \"$fileName\" that wasn't picked with this module. " +
++                        "This can lead to permission errors because the file reference is transient to your activity's current lifecycle. See https://developer.android.com/guide/components/intents-common#GetFile . " +
++                        "Please use the result from the picker directly."
++            )
++        }
+ 
+-      return@withContext results
++        val copiedFile =
++            copyFile(
++                context,
++                sourceUriInstance ?: Uri.parse(sourceUriAsString),
++                destinationDir,
++                fileName,
++                convertVirtualFileAsType
++            )
++
++        val singleFileCopy = Arguments.createMap()
++        singleFileCopy.putString("status", "success")
++        // NOTE this url-encodes the path, consistent with the iOS implementation and with the response of not-copied files
++        singleFileCopy.putString("localUri", Uri.fromFile(copiedFile).toString())
++        singleFileCopy.putString("sourceUri", sourceUriAsString)
++        return singleFileCopy
+     }
+ 
+-  private fun copySingleFile(
+-    map: ReadableMap,
+-    context: ReactContext,
+-    destinationDir: File
+-  ): ReadableMap {
+-    val sourceUriAsString: String = map.getString("uri") ?: throw IllegalArgumentException("URI is missing")
+-    val fileName: String = map.getString("fileName") ?: throw IllegalArgumentException("fileName is missing")
+-    val convertVirtualFileAsType = map.getString("convertVirtualFileToType")
+-
+-    val sourceUriInstance = uriMap[sourceUriAsString]
+-    if (sourceUriInstance == null) {
+-      RNLog.w(
+-        context,
+-        // https://developer.android.com/guide/components/intents-common#GetFile
+-        "keepLocalCopy: You're trying to copy a file \"$fileName\" that wasn't picked with this module. " +
+-          "This can lead to permission errors because the file reference is transient to your activity's current lifecycle. See https://developer.android.com/guide/components/intents-common#GetFile . " +
+-          "Please use the result from the picker directly.")
+-    }
++    private fun getUniqueDir(context: Context, copyTo: CopyDestination): File {
++        val baseDir =
++            if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
+ 
+-    val copiedFile =
+-      copyFile(
+-        context,
+-        sourceUriInstance ?: Uri.parse(sourceUriAsString),
+-        destinationDir,
+-        fileName,
+-        convertVirtualFileAsType)
+-
+-    val singleFileCopy = Arguments.createMap()
+-    singleFileCopy.putString("status", "success")
+-    // NOTE this url-encodes the path, consistent with the iOS implementation and with the response of not-copied files
+-    singleFileCopy.putString("localUri", Uri.fromFile(copiedFile).toString())
+-    singleFileCopy.putString("sourceUri", sourceUriAsString)
+-    return singleFileCopy
+-  }
+-
+-  private fun getUniqueDir(context: Context, copyTo: CopyDestination): File {
+-    val baseDir =
+-      if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
+-
 -    val randomDir = File(baseDir, UUID.randomUUID().toString())
 -    val didCreateDir = randomDir.mkdir()
-+    val ringtoneDir = File(baseDir, "Ringtones")
-+    var didCreateDir = true
-+    if(!ringtoneDir.exists()) {
-+      didCreateDir = ringtoneDir.mkdir()
-+    }
-     if (!didCreateDir) {
+-    if (!didCreateDir) {
 -      throw IOException("Failed to create directory at ${randomDir.absolutePath}")
-+      throw IOException("Failed to create directory at ${ringtoneDir.absolutePath}")
-     }
+-    }
 -    return randomDir
-+    return ringtoneDir
-   }
+-  }
+-
+-  private fun copyFile(
+-    context: Context,
+-    from: Uri,
+-    destinationDir: File,
+-    fileName: String,
+-    convertVirtualFileAsType: String?
+-  ): File {
+-    val attemptedDestFile = File(destinationDir, fileName)
+-    val destFileSafe = safeGetDestination(attemptedDestFile, destinationDir)
+-
+-    val copyStreamToFile: (InputStream?) -> Unit = { inputStream ->
+-      inputStream ?: throw FileNotFoundException("No input stream was found for the source file")
+-      val bytesCopied = copyStreamToAnother(inputStream, FileOutputStream(destFileSafe))
+-      if (bytesCopied == 0L) {
+-        throw IOException("No data was copied to the destination file")
+-      }
++        val randomDir = File(baseDir, UUID.randomUUID().toString())
++        val didCreateDir = randomDir.mkdir()
++        if (!didCreateDir) {
++            throw IOException("Failed to create directory at ${randomDir.absolutePath}")
++        }
++        return randomDir
+     }
  
-   private fun copyFile(
+-    if (convertVirtualFileAsType == null) {
+-      copyStreamToFile(context.contentResolver.openInputStream(from))
+-    } else {
+-      copyStreamToFile(getInputStreamForVirtualFile(context.contentResolver, from, convertVirtualFileAsType))
++    private fun copyFile(
++        context: Context,
++        from: Uri,
++        destinationDir: File,
++        fileName: String,
++        convertVirtualFileAsType: String?
++    ): File {
++        val attemptedDestFile = File(destinationDir, fileName)
++        val destFileSafe = safeGetDestination(attemptedDestFile, destinationDir)
++
++        val copyStreamToFile: (InputStream?) -> Unit = { inputStream ->
++            inputStream
++                ?: throw FileNotFoundException("No input stream was found for the source file")
++            val bytesCopied = copyStreamToAnother(inputStream, FileOutputStream(destFileSafe))
++            if (bytesCopied == 0L) {
++                throw IOException("No data was copied to the destination file")
++            }
++        }
++
++        if (convertVirtualFileAsType == null) {
++            copyStreamToFile(context.contentResolver.openInputStream(from))
++        } else {
++            copyStreamToFile(
++                getInputStreamForVirtualFile(
++                    context.contentResolver,
++                    from,
++                    convertVirtualFileAsType
++                )
++            )
++        }
++
++        return destFileSafe
+     }
+ 
+-    return destFileSafe
+-  }
+-
+-  private fun getInputStreamForVirtualFile(
+-    contentResolver: ContentResolver,
+-    from: Uri,
+-    convertVirtualFileAsType: String
+-  ): InputStream? {
+-    return contentResolver
+-      .openTypedAssetFileDescriptor(from, convertVirtualFileAsType, null)
+-      ?.createInputStream()
+-  }
+-
+-  private fun safeGetDestination(destFile: File, expectedDir: File): File {
+-    val canonicalPath = destFile.canonicalPath
+-    if (!canonicalPath.startsWith(expectedDir.canonicalPath)) {
+-      throw IllegalArgumentException(
+-        "The copied file is attempting to write outside of the target directory.")
++    private fun getInputStreamForVirtualFile(
++        contentResolver: ContentResolver,
++        from: Uri,
++        convertVirtualFileAsType: String
++    ): InputStream? {
++        return contentResolver
++            .openTypedAssetFileDescriptor(from, convertVirtualFileAsType, null)
++            ?.createInputStream()
+     }
+-    return destFile
+-  }
+-
+-  fun writeDocumentImpl(sourceUri: Uri?, targetUriString: String?, context: ReactApplicationContext): DocumentMetadataBuilder {
+-    sourceUri ?:  throw IllegalArgumentException("The source URI is null. Call saveDocument() before writeDocument()")
+-    val targetUri: Uri? = uriMap[targetUriString]
+-
+-    if (targetUri == null) {
+-      RNLog.e(
+-        context,
+-        "writeDocument: You're trying to write from Uri \"$targetUriString\" that wasn't picked with this module. " +
+-          "Please use the result from saveDocument()")
+-      throw IllegalArgumentException("The provided URI is not known")
++
++    private fun safeGetDestination(destFile: File, expectedDir: File): File {
++        val canonicalPath = destFile.canonicalPath
++        if (!canonicalPath.startsWith(expectedDir.canonicalPath)) {
++            throw IllegalArgumentException(
++                "The copied file is attempting to write outside of the target directory."
++            )
++        }
++        return destFile
+     }
+ 
+-    val metadataBuilder = DocumentMetadataBuilder(targetUri)
++    fun writeDocumentImpl(
++        sourceUri: Uri?,
++        targetUriString: String?,
++        context: ReactApplicationContext
++    ): DocumentMetadataBuilder {
++        sourceUri
++            ?: throw IllegalArgumentException("The source URI is null. Call saveDocument() before writeDocument()")
++        val targetUri: Uri? = uriMap[targetUriString]
++
++        if (targetUri == null) {
++            RNLog.e(
++                context,
++                "writeDocument: You're trying to write from Uri \"$targetUriString\" that wasn't picked with this module. " +
++                        "Please use the result from saveDocument()"
++            )
++            throw IllegalArgumentException("The provided URI is not known")
++        }
++
++        val metadataBuilder = DocumentMetadataBuilder(targetUri)
++
++        val contentResolver = context.contentResolver
++        val mimeFromUri = contentResolver.getType(targetUri)
++        metadataBuilder.mimeType(mimeFromUri)
++
++        val inputStream = contentResolver.openInputStream(sourceUri)
++            ?: return metadataBuilder.metadataReadingError("No input stream found for source file")
+ 
+-    val contentResolver = context.contentResolver
+-    val mimeFromUri = contentResolver.getType(targetUri)
+-    metadataBuilder.mimeType(mimeFromUri)
++        val outputStream = contentResolver.openOutputStream(targetUri)
++            ?: return metadataBuilder.metadataReadingError("No output stream found for destination file")
+ 
+-    val inputStream = contentResolver.openInputStream(sourceUri)
+-      ?: return metadataBuilder.metadataReadingError("No input stream found for source file")
++        val bytesCopied = copyStreamToAnother(inputStream, outputStream)
++        if (bytesCopied == 0L) {
++            metadataBuilder.metadataReadingError("No data was copied to the destination file")
++        }
+ 
+-    val outputStream = contentResolver.openOutputStream(targetUri)
+-      ?: return metadataBuilder.metadataReadingError("No output stream found for destination file")
++        return metadataBuilder
++    }
+ 
+-    val bytesCopied = copyStreamToAnother(inputStream, outputStream)
+-    if (bytesCopied == 0L) {
+-      metadataBuilder.metadataReadingError("No data was copied to the destination file")
++    val copyStreamToAnother: (InputStream, OutputStream) -> Long = { inputStream, outputStream ->
++        inputStream.use { input ->
++            outputStream.use { output ->
++                val bytesCopied = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
++                    FileUtils.copy(inputStream, outputStream)
++                } else {
++                    inputStream.copyTo(outputStream)
++                }
++                return@use bytesCopied
++            }
++        }
+     }
+ 
+-    return metadataBuilder
+-  }
++    private fun getUniqueDir(context: Context, copyTo: CopyDestination, folderName: String): File {
++        val baseDir =
++            if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
+ 
+-  val copyStreamToAnother: (InputStream, OutputStream) -> Long = { inputStream, outputStream ->
+-    inputStream.use { input ->
+-      outputStream.use { output ->
+-        val bytesCopied = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+-          FileUtils.copy(inputStream, outputStream)
+-        } else {
+-          inputStream.copyTo(outputStream)
++        val customDir = File(baseDir, folderName)
++        var didCreateDir = true
++        if (!customDir.exists()) {
++            didCreateDir = customDir.mkdir()
++        }
++        if (!didCreateDir) {
++            throw IOException("Failed to create directory at ${customDir.absolutePath}")
+         }
+-        return@use bytesCopied
+-      }
++        return customDir
+     }
+-  }
+ }
+\ No newline at end of file
+diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
+index e79951c..6aa268c 100644
+--- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
++++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
+@@ -188,7 +188,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
+       val results = fileOps.copyFilesToLocalStorage(
+               reactApplicationContext,
+               filesToCopy,
+-              CopyDestination.fromPath(copyTo),
++              CopyDestination.fromPath(copyTo), options.getString("folderName")
+           )
+       promise.resolve(results)
+     }
+diff --git a/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm b/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
+index d787525..64a0da5 100644
+--- a/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
++++ b/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
+@@ -86,8 +86,12 @@ RCT_EXPORT_METHOD(keepLocalCopy:
+                   (RCTPromiseRejectBlock) reject) {
+   NSArray *uris = options[@"files"];
+   NSString *destination = options[@"destination"];
++  NSString *folderName = nil;
++  if (options[@"folderName"] != nil) {
++     folderName = options[@"folderName"];
++  }
+   
+-  [[FileOperations class] keepLocalCopyAtUniqueDestinationFrom:uris destinationPreset:destination resolve:resolve];
++  [[FileOperations class] keepLocalCopyAtUniqueDestinationFrom:uris destinationPreset:destination resolve:resolve folderName:folderName];
+ }
+ 
+ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, isKnownType:(NSString *)kind value:(NSString *)value) {
 diff --git a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift b/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
-index 6f1682f..9ddf3d6 100644
+index 6f1682f..8875e14 100644
 --- a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
 +++ b/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
-@@ -13,8 +13,8 @@ import Foundation
+@@ -4,18 +4,18 @@ import Foundation
+ 
+ @objc public class FileOperations: NSObject {
    
-   static func moveFiles(from: [[String: String]], destinationPreset: String) -> [[String: String?]] {
+-  @objc public static func keepLocalCopyAtUniqueDestination(from: [[String: String]], destinationPreset: String, resolve: @escaping RNDPPromiseResolveBlock) {
++  @objc public static func keepLocalCopyAtUniqueDestination(from: [[String: String]], destinationPreset: String, resolve: @escaping RNDPPromiseResolveBlock, folderName: String?) {
+     DispatchQueue.global(qos: .utility).async {
+-      let results = moveFiles(from: from, destinationPreset: destinationPreset)
++      let results = moveFiles(from: from, destinationPreset: destinationPreset, folderName: folderName)
+       resolve(results)
+     }
+   }
+   
+-  static func moveFiles(from: [[String: String]], destinationPreset: String) -> [[String: String?]] {
++  static func moveFiles(from: [[String: String]], destinationPreset: String, folderName: String?) -> [[String: String?]] {
      let destinationRootDir = getDirectoryForFileDestination(destinationPreset)
 -    let uniqueSubDirName = UUID().uuidString
 -    let destinationDir = destinationRootDir.appendingPathComponent(uniqueSubDirName, isDirectory: true)
-+//    let uniqueSubDirName = UUID().uuidString
-+    let destinationDir = destinationRootDir.appendingPathComponent("Ringtones", isDirectory: true)
++    let subDirName = folderName ?? UUID().uuidString
      
++    let destinationDir = destinationRootDir.appendingPathComponent(subDirName, isDirectory: true)
      do {
        try FileManager.default.createDirectory(at: destinationDir, withIntermediateDirectories: true, attributes: nil)
+     } catch {
+diff --git a/node_modules/@react-native-documents/picker/lib/typescript/keepLocalCopy.d.ts b/node_modules/@react-native-documents/picker/lib/typescript/keepLocalCopy.d.ts
+index 361f812..f6e3ff5 100644
+--- a/node_modules/@react-native-documents/picker/lib/typescript/keepLocalCopy.d.ts
++++ b/node_modules/@react-native-documents/picker/lib/typescript/keepLocalCopy.d.ts
+@@ -28,6 +28,10 @@ export type FileToCopy = {
+ export type KeepLocalCopyOptions = {
+     files: NonEmptyArray<FileToCopy>;
+     destination: 'cachesDirectory' | 'documentDirectory';
++    /**
++    * The name of the root directory. For easier access.
++    * */
++    folderName? : string
+ };
+ /**
+  * Result of the call to {@link keepLocalCopy}. Please note the promise always resolves, even if there was an error processing any uri(s) (as indicated by the `status` field, and `copyError` field).
+diff --git a/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts b/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
+index 8aa8d13..1896093 100644
+--- a/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
++++ b/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
+@@ -28,7 +28,11 @@ export type FileToCopy = {
+  * */
+ export type KeepLocalCopyOptions = {
+   files: NonEmptyArray<FileToCopy>
+-  destination: 'cachesDirectory' | 'documentDirectory'
++  destination: 'cachesDirectory' | 'documentDirectory',
++  /**
++   * The name of the root directory. For easier access.
++   * */
++  folderName? : string
+ }
+ 
+ /**
