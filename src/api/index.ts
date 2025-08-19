@@ -3,6 +3,7 @@ import { action } from 'mobx'
 import { updatePhoneAppli } from '#/api/updatePhoneIndex'
 import type { Conference, PbxEvent, Session } from '#/brekekejs'
 import { successConnectCheckPeriod } from '#/config'
+import { clearAlreadyHistoryMap } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
 import { FileEvent } from '#/stores/chatStore'
 import { getPartyNameAsync } from '#/stores/contactStore'
@@ -46,6 +47,7 @@ class Api {
 
   @action onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
+    clearAlreadyHistoryMap()
     ctx.auth.pbxState = 'success'
     ctx.auth.pbxTotalFailure = 0
 
