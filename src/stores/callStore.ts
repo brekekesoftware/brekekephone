@@ -467,19 +467,17 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
-      const op = isAndroid
-        ? {}
-        : {
-            ios: {
-              ringtone: await BrekekeUtils.validateRingtone(
-                p.ringtoneFromSip ?? '',
-                ca?.pbxUsername ?? '',
-                ca?.pbxTenant ?? '',
-                ca?.pbxHostname ?? '',
-                ca?.pbxPort ?? '',
-              ),
-            },
-          }
+      const op = {
+        ios: {
+          ringtone: await BrekekeUtils.validateRingtone(
+            p.ringtoneFromSip ?? '',
+            ca?.pbxUsername ?? '',
+            ca?.pbxTenant ?? '',
+            ca?.pbxHostname ?? '',
+            ca?.pbxPort ?? '',
+          ),
+        },
+      }
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
