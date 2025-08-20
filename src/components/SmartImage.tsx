@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
@@ -62,15 +62,6 @@ enum StatusImage {
 const getNoCacheUri = (uri: string) => {
   const sep = uri.includes('?') ? '&' : '?'
   return `${uri}${sep}nocache=${Date.now()}`
-}
-
-// This updates the "no-cache" URI whenever the input `uri` changes.
-const useNoCacheUri = (uri: string) => {
-  const [nocacheUri, setNocacheUri] = useState(getNoCacheUri(uri))
-  useEffect(() => {
-    setNocacheUri(getNoCacheUri(uri))
-  }, [uri])
-  return nocacheUri
 }
 
 export const SmartImage = ({
@@ -138,7 +129,7 @@ export const SmartImage = ({
   const isImageUrl =
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
-  const nocacheUri = useNoCacheUri(uri)
+  const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (
