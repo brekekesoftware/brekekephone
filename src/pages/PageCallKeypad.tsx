@@ -37,7 +37,6 @@ export class PageCallKeypad extends Component {
   }
 
   clearAll = () => {
-    this.txtRef.current?.clear()
     this.txt = ''
     this.txtSelection = { start: 0, end: 0 }
   }
