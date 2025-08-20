@@ -288,6 +288,15 @@ export class CallStore {
     )
   }
 
+  @action private shouldHandleOutgoing = (uuid: string) => {
+    const ca = ctx.auth.getCurrentAccount()
+    if (!isAndroid) {
+      return
+    }
+    if (ca?.pushNotificationEnabled) {
+      BrekekeUtils.onHandedOutgoingCall(uuid)
+    }
+  }
   @action private shouldCreateCallkeepUuid = () => {
     const ca = ctx.auth.getCurrentAccount()
     if (!isAndroid || ca?.pushNotificationEnabled) {
@@ -373,6 +382,8 @@ export class CallStore {
         }
         if (e.incoming) {
           this.shouldCreateCallkeepUuid()
+        } else {
+          this.shouldHandleOutgoing(e.callkeepUuid)
         }
       }
       // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
@@ -542,6 +553,8 @@ export class CallStore {
     // ================================
     if (c.incoming) {
       this.shouldCreateCallkeepUuid()
+    } else {
+      this.shouldHandleOutgoing(c.callkeepUuid)
     }
 
     // should handle next incoming call with callkeep uuid
@@ -662,6 +675,7 @@ export class CallStore {
       this.callkeepUuidPending = uuid
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
+        BrekekeUtils.onOutgoing(uuid)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // enable proximity monitoring for trigger proximity state to keep the call alive
@@ -986,6 +1000,11 @@ export class CallStore {
       )
     })
   @action getCallInNotifyForAndroid = () => {
+    // Do not display incoming call if there is any outgoing call currently dialing
+    const co = this.calls.find(_ => !_.incoming && !_.answered)
+    if (co) {
+      return
+    }
     const calls = this.calls.filter(_ => {
       const k = this.callkeepMap[_.callkeepUuid]
       return (
@@ -994,6 +1013,7 @@ export class CallStore {
         (!k || k.hasAction || timerStore.now - _.createdAt > 1000)
       )
     })
+
     if (calls.length > 1) {
       return calls.sort((a, b) => a.createdAt - b.createdAt)[0]
     }
@@ -1003,10 +1023,19 @@ export class CallStore {
   getBgCalls = (c: Call) => {
     let arr = this.calls.filter(x => x.id !== c.id)
     if (isAndroid) {
-      const incomings = arr.filter(x => x.incoming && !x.answered)
-      if (incomings.length > 1) {
-        const [first] = incomings.sort((a, b) => a.createdAt - b.createdAt)
-        arr = arr.filter(x => !(x.incoming && !x.answered) || x.id === first.id)
+      const od = this.calls.find(x => !x.incoming && !x.answered)
+      if (od) {
+        arr = arr.filter(
+          x =>
+            x.answered ||
+            !x.incoming ||
+            (x.incoming && x.createdAt <= od.createdAt && !x.answered),
+        )
+      } else {
+        const [f] = this.calls
+          .filter(c => c.incoming && !c.answered)
+          .sort((a, b) => a.createdAt - b.createdAt)
+        arr = arr.filter(x => x.answered || !x.incoming || x.id === f.id)
       }
     }
     return arr

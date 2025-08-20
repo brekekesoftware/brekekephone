@@ -5,11 +5,10 @@ import android.os.Looper;
 import com.brekeke.phonedev.BrekekeUtils;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 import org.json.JSONObject;
 
 public class Call {
-  private static Queue<Map<String, String>> pending;
+  private static LinkedList<Map<String, String>> pending;
   private static Map<String, String> current;
 
   static {
@@ -40,6 +39,24 @@ public class Call {
     if (current == null) {
       current = m;
       BrekekeUtils.displayIncomingCall(current);
+    } else {
+      pending.add(m);
+    }
+  }
+
+  public static void onOutgoing(Map<String, String> m) {
+    if (m == null) {
+      return;
+    }
+    var uuid = m.get("callkeepUuid");
+    if (uuid == null) {
+      return;
+    }
+    if ((current != null && uuid.equals(current.get("callkeepUuid")))) {
+      return;
+    }
+    if (current == null) {
+      current = m;
     } else {
       pending.add(m);
     }
