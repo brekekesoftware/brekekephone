@@ -112,7 +112,7 @@ export const UserItem: FC<
     icons: string[]
     iconColors: string[]
     iconFuncs: Function[]
-    loadings?: number[]
+    loadings?: number[] | true
     id: string
     incoming: boolean
     isRecentCall: boolean
@@ -353,9 +353,9 @@ export const UserItem: FC<
         )}
         {icons?.map((_, i) => (
           <RnTouchableOpacity
-            loading={loadings?.[i]}
+            loading={loadings === true || loadings?.[i]}
             key={i}
-            onPress={e => onPressIcons(i)}
+            onPress={() => onPressIcons(i)}
           >
             <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
           </RnTouchableOpacity>
