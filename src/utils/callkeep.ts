@@ -382,8 +382,9 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
 
   eventEmitter.addListener('onDestroyMainActivity', () => {
+    console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()
-    ctx.authUC.logoutUC()
+    ctx.auth.signOut()
   })
 }
 

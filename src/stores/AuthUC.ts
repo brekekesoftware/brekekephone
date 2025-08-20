@@ -30,12 +30,6 @@ export class AuthUC {
     ctx.auth.ucState = 'stopped'
   }
 
-  @action logoutUC = () => {
-    this.dispose()
-    ctx.auth.ucLoginFromAnotherPlace = false
-    ctx.auth.ucTotalFailure = 0
-  }
-
   @action private authWithoutCatch = async () => {
     ctx.uc.disconnect()
 
@@ -93,7 +87,6 @@ export class AuthUC {
   }
   @action private loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
-
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return

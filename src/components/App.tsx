@@ -58,9 +58,7 @@ const initApp = async () => {
     Object.keys(ctx.call.callkeepMap).length ||
     ctx.sip.phone?.getSessionCount() ||
     ctx.call.calls.length
-
   const checkWakeFromPN = () => ctx.auth.sipPn.sipAuth
-
   const hasCallOrWakeFromPN = checkHasCall() || checkWakeFromPN()
 
   const autoLogin = async () => {
@@ -122,8 +120,8 @@ const initApp = async () => {
       return
     }
     if (checkWakeFromPN()) {
-      // For Android, to ensure the Linking listener is re-registered and handle deeplink
-      // after MainActivity is destroyed and the app is reopened.
+      // ensure Linking listener is re-registered and handle deeplink
+      // after MainActivity is destroyed and the app is reopened
       if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
         await ctx.auth.handleUrlParams()
       }
