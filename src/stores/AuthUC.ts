@@ -87,7 +87,6 @@ export class AuthUC {
   }
   @action private loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
-
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return

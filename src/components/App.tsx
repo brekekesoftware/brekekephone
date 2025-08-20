@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   AppState,
   DeviceEventEmitter,
+  Platform,
   StyleSheet,
   View,
 } from 'react-native'
@@ -42,6 +43,7 @@ import { RnStackerRoot } from '#/stores/RnStackerRoot'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { setupCallKeepEvents } from '#/utils/callkeep'
+import { isAlreadyHandleFirstOpen } from '#/utils/deeplink'
 import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
@@ -52,12 +54,12 @@ import { webPromptPermission } from '#/utils/webPromptPermission'
 const initApp = async () => {
   await ctx.intl.wait()
 
-  const checkHasCallOrWakeFromPN = () =>
+  const checkHasCall = () =>
     Object.keys(ctx.call.callkeepMap).length ||
     ctx.sip.phone?.getSessionCount() ||
-    ctx.call.calls.length ||
-    ctx.auth.sipPn.sipAuth
-  const hasCallOrWakeFromPN = checkHasCallOrWakeFromPN()
+    ctx.call.calls.length
+  const checkWakeFromPN = () => ctx.auth.sipPn.sipAuth
+  const hasCallOrWakeFromPN = checkHasCall() || checkWakeFromPN()
 
   const autoLogin = async () => {
     if (!(await checkPermForCall())) {
@@ -109,9 +111,26 @@ const initApp = async () => {
     ctx.call.onCallKeepAction()
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
-    if (checkHasCallOrWakeFromPN() || (await ctx.auth.handleUrlParams())) {
+
+    if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
+      ctx.authUC.auth()
+    }
+
+    if (checkHasCall()) {
       return
     }
+    if (checkWakeFromPN()) {
+      // ensure Linking listener is re-registered and handle deeplink
+      // after MainActivity is destroyed and the app is reopened
+      if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
+        await ctx.auth.handleUrlParams()
+      }
+      return
+    }
+    if (await ctx.auth.handleUrlParams()) {
+      return
+    }
+
     if (
       !hasCallOrWakeFromPN &&
       ctx.auth.signedInId &&
