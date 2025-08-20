@@ -5,6 +5,7 @@
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
 - Fix it should save logs when the device is locked (issue 1040)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
+- Fix it should connect to sip after restart tomcat (issue 1043)
 - Fix it should not show notification with LPC service (issue 1044)
 - Fix it should not reload avatar when rerender (issue 1046)
 - Fix it should logout when app is closed from task manager (issue 1050)

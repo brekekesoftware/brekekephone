@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
+import { Platform } from 'react-native'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -380,6 +381,8 @@ export class PBX extends EventEmitter {
       return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
           resolve(false)
+          resolveFn?.(false)
+          resolveFn = undefined
           console.warn('PAL login connection timed out')
           // fix case already reconnected
           if (client === this.client) {
@@ -466,11 +469,14 @@ export class PBX extends EventEmitter {
       this.clearConnectTimeoutId()
       return r
     }
+    if (!(await isConnected())) {
+      return false
+    }
 
     // in syncPnToken, isMainInstance = false
     // we will not proceed further in that case
     if (!this.isMainInstance) {
-      return isConnected()
+      return true
     }
 
     // check again webphone.pal.param.user
@@ -478,7 +484,6 @@ export class PBX extends EventEmitter {
       // TODO:
       // any function get pbxConfig on this time may get undefined
       ctx.auth.pbxConfig = undefined
-      await isConnected()
       await this.getConfig(true)
       const newPalParamUser = ctx.auth.pbxConfig?.['webphone.pal.param.user']
       if (newPalParamUser !== oldPalParamUser) {
@@ -500,7 +505,7 @@ export class PBX extends EventEmitter {
 
     this.startPingInterval()
 
-    return connected
+    return true
   }
 
   // pal client direct event handlers
