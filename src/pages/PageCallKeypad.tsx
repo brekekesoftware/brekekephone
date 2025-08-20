@@ -33,6 +33,13 @@ export class PageCallKeypad extends Component {
       return
     }
     ctx.call.startCall(this.txt)
+    this.clearAll()
+  }
+
+  clearAll = () => {
+    this.txtRef.current?.clear()
+    this.txt = ''
+    this.txtSelection = { start: 0, end: 0 }
   }
 
   render() {
