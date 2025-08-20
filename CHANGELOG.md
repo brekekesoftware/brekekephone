@@ -3,6 +3,7 @@
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
+- Fix it should prevent button quickly double press
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
 - Fix it should save logs when the device is locked (issue 1040)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
