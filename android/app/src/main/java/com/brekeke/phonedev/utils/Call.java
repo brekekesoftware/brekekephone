@@ -75,10 +75,11 @@ public class Call {
     current = pending.poll();
     if (current != null) {
       Emitter.emit("showIncomingCall", new JSONObject(current).toString());
+      var c = current;
       new Handler(Looper.getMainLooper())
           .postDelayed(
               () -> {
-                BrekekeUtils.displayIncomingCall(current);
+                BrekekeUtils.displayIncomingCall(c);
               },
               // To ensure deinitConnection completes before
               // creating new incoming voice connection

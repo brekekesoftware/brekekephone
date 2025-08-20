@@ -171,6 +171,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static void displayIncomingCall(Map<String, String> m) {
+    if (m == null || m.isEmpty()) {
+      return;
+    }
     // init services if not
     initStaticServices();
     acquireWakeLock();
