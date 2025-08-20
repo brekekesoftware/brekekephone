@@ -311,8 +311,6 @@ export const App = observer(() => {
     onPress: onPressConnMessage,
   } = getConnectionStatus()
 
-  const cp = ctx.auth.listCustomPage[0]
-
   return (
     <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
@@ -345,7 +343,11 @@ export const App = observer(() => {
       <View style={css.App_Inner}>
         <RnStackerRoot />
         <RenderAllCalls />
-        {cp && <PageCustomPageView id={cp.id} />}
+        <View>
+          {ctx.auth.listCustomPage.map(cp => (
+            <PageCustomPageView key={cp.id} id={cp.id} />
+          ))}
+        </View>
         <RnPickerRoot />
         <PhonebookAddItem />
         <RnAlertRoot />
