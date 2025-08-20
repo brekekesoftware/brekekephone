@@ -53,6 +53,7 @@ export class PBX extends EventEmitter {
   private MAX_RETRY = 3
   private RETRY_DELAY = 300
   @observable retryingRequests: string[] = []
+
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
@@ -242,11 +243,11 @@ export class PBX extends EventEmitter {
     },
   )
 
-  private checkTimeoutToReconnectPbx = async (err: Error | boolean) => {
+  private checkTimeoutToReconnectPbx = async (err: Error | true) => {
     if (err === true) {
       return
     }
-    ctx.toast.error({ message: intlDebug`Internet connection failed` }, 5000)
+    ctx.toast.internet(err)
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
