@@ -170,8 +170,7 @@ const initApp = async () => {
   const clearConnectionReaction = reaction(
     () => getConnectionStatus(),
     status => {
-      // UC only logs in when the app is active,
-      // Do not display the message if it is a UC connect failed error on IncomingCallActivity
+      // should not display error message UC connection failure in incoming call
       if (
         status.isFailure &&
         status.message &&
