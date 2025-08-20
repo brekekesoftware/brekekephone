@@ -501,6 +501,24 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void onOutgoing(String uuid) {
+    if (uuid == null || uuid.isEmpty()) {
+      return;
+    }
+    var m = new HashMap<String, String>();
+    m.put("callkeepUuid", uuid);
+    Call.onOutgoing(m);
+  }
+
+  @ReactMethod
+  public void onHandedOutgoingCall(String uuid) {
+    if (uuid == null || uuid.isEmpty()) {
+      return;
+    }
+    Call.onHandled(uuid);
+  }
+
+  @ReactMethod
   public void onHandedIncomingCall(String pnId) {
     if (pnId == null || pnId.isEmpty()) {
       return;
