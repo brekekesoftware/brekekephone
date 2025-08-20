@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
@@ -129,6 +129,7 @@ export const SmartImage = ({
   const isImageUrl =
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
+  const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (
@@ -157,7 +158,7 @@ export const SmartImage = ({
       ) : (
         <Image
           source={{
-            uri: getNoCacheUri(uri),
+            uri: nocacheUri,
           }}
           style={[css.image, css.full]}
           onError={onImageLoadError}

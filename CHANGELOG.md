@@ -1,12 +1,24 @@
+#### 2.16.4
+
+- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
+- Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
+- Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
+- Fix it should save logs when the device is locked (issue 1040)
+- Fix it should not display error message UC connection failure in incoming call (issue 1042)
+- Fix it should connect to sip after restart tomcat (issue 1043)
+- Fix it should not show notification with LPC service (issue 1044)
+- Fix it should not reload avatar when rerender (issue 1046)
+- Fix it should logout when app is closed from task manager (issue 1050)
+- Fix it should load video in video call (issue 1052)
+
 #### 2.16.3
 
 - Upgrade react-native to 0.80 and other available dependencies
 - Upgrade android sdk 35 and ios sdk 18
-- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
 - Initial implementation of android lpc
 - Improve video conference according to feedbacks
 - Improve debug log with multiples files, and mark for login logout
-- Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
+- Improve hold pal with pending cache and retry, add toast to show message on android incoming call
 - Fix it should login into the correct account when press on the missed call notification (issue 955)
 - Fix it should update avatar without cache in the next call (issue 958)
 - Fix it should display name from phone book in calls (issue 960)
@@ -16,7 +28,6 @@
 - Fix it should remove PN token if login from another device even if there is an ongoing call (issue 1003)
 - Fix android it should resolve dialer permission automatically when there is an incoming call (issue 1006)
 - Fix android it should open app when press on the running in background notification (issue 1022, 1034)
-- Improve hold pal with pending cache and retry, add toast to show message on android incoming call
 - Fix it should prevent double quickly click hold button (issue 1031)
 - Embed:
   - Disable webphone.resource-line from getProductInfo, allow to set it from embed login instead
