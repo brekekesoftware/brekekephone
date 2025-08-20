@@ -246,7 +246,7 @@ export class PBX extends EventEmitter {
     if (err === true) {
       return
     }
-    ctx.toast.error({ message: intlDebug`Internet connection failure` }, 5000)
+    ctx.toast.error({ message: intlDebug`Internet connection failed` }, 5000)
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared

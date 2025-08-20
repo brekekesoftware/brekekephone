@@ -33,11 +33,11 @@ export const getConnectionStatus = () => {
     } else if (ctx.auth.ucLoginFromAnotherPlace) {
       message = intl`UC signed in from another location`
     } else {
-      message = intl`Internet connection failure`
+      message = intl`Internet connection failed`
     }
   } else if (!serviceConnectingOrFailure) {
     if (isRequestRetrying) {
-      message = intl`Internet connection failure`
+      message = intl`Internet connection failed`
     }
   } else {
     message = intl`Connecting to ${serviceConnectingOrFailure}...`
