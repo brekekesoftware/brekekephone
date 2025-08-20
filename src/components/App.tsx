@@ -170,6 +170,15 @@ const initApp = async () => {
   const clearConnectionReaction = reaction(
     () => getConnectionStatus(),
     status => {
+      // should not display error message UC connection failure in incoming call
+      if (
+        status.isFailure &&
+        status.message &&
+        status.serviceConnectingOrFailure === 'UC'
+      ) {
+        BrekekeUtils.updateConnectionStatus('', false)
+        return
+      }
       BrekekeUtils.updateConnectionStatus(status.message, status.isFailure)
     },
     { fireImmediately: true },
