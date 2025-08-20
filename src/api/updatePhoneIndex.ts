@@ -120,10 +120,6 @@ export const updatePhoneIndex = async (
               resolve(phone)
             })
             .catch((err: Error) => {
-              RnAlert.error({
-                message: intlDebug`Failed to set extension properties`,
-                err,
-              })
               resolve(null)
             })
         },

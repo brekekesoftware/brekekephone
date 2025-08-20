@@ -75,12 +75,7 @@ export class PageContactPhonebook extends Component {
         ctx.contact.upsertPhonebook(x as Phonebook)
         cb(x)
       })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to load contact detail for ${id}`,
-          err,
-        })
-      })
+      .catch((err: Error) => {})
   }
 
   callRequest = (number: string, u: Phonebook) => {
@@ -177,12 +172,7 @@ export class PageContactPhonebook extends Component {
         ctx.contact.removeContacts(result.succeeded)
       }
       ctx.contact.selectedContactIds = {}
-    } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to delete contact`,
-        err: err as Error,
-      })
-    }
+    } catch (err) {}
   }
   onCancel = () => {
     ctx.contact.isDeleteState = false

@@ -54,15 +54,8 @@ export class PagePhonebookCreate extends Component<{
         )
       })
       .then(this.onSaveSuccess)
-      .catch(this.onSaveFailure)
   }
   onSaveSuccess = () => {
     ctx.nav.goToPageContactPhonebook()
-  }
-  onSaveFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to save the contact`,
-      err,
-    })
   }
 }
