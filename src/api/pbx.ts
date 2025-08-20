@@ -376,13 +376,13 @@ export class PBX extends EventEmitter {
       resolveFn = r
     })
 
-    // Timeout increased to 15s for Android to handle delayed login callback during Tomcat restart.
-    const timeout = Platform.OS === 'android' ? 15000 : 10000
     const newTimeoutPromise = () => {
       this.clearConnectTimeoutId()
       return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
           resolve(false)
+          resolveFn?.(false)
+          resolveFn = undefined
           console.warn('PAL login connection timed out')
           // fix case already reconnected
           if (client === this.client) {
@@ -390,7 +390,7 @@ export class PBX extends EventEmitter {
           } else {
             client.close()
           }
-        }, timeout)
+        }, 10000)
       })
     }
     const login = new Promise<boolean>((resolve, reject) => {
