@@ -10,27 +10,47 @@ export const getConnectionStatus = () => {
       : ctx.auth.ucConnectingOrFailure()
         ? 'UC'
         : ''
+  const isRequestRetrying = ctx.pbx.retryingRequests.length > 0
 
   const isFailure = ctx.auth.isConnFailure()
-  const message =
+  let message = ''
+  if (
     ctx.auth.pbxLoginFromAnotherPlace &&
     !ctx.auth.showMsgPbxLoginFromAnotherPlace
-      ? ''
-      : isFailure && ctx.auth.showMsgPbxLoginFromAnotherPlace
-        ? intl`Logged in from another location as the same phone`
-        : isFailure && ctx.auth.ucLoginFromAnotherPlace
-          ? intl`UC signed in from another location`
-          : !serviceConnectingOrFailure
-            ? ''
-            : isFailure
-              ? intl`${serviceConnectingOrFailure} connection failed`
-              : intl`Connecting to ${serviceConnectingOrFailure}...`
+  ) {
+    // Case: logged in from another location but the notification has not been shown yet
+    return {
+      signedInId,
+      message,
+      isFailure: isFailure || isRequestRetrying,
+      onPress: undefined,
+    }
+  }
+
+  if (isFailure) {
+    if (ctx.auth.showMsgPbxLoginFromAnotherPlace) {
+      message = intl`Logged in from another location as the same phone`
+    } else if (ctx.auth.ucLoginFromAnotherPlace) {
+      message = intl`UC signed in from another location`
+    } else {
+      message = intl`Internet connection failed`
+    }
+  } else if (!serviceConnectingOrFailure) {
+    if (isRequestRetrying) {
+      message = intl`Internet connection failed`
+    }
+  } else {
+    message = intl`Connecting to ${serviceConnectingOrFailure}...`
+  }
 
   return {
     signedInId,
     message,
-    isFailure,
-    onPress: isFailure ? ctx.auth.resetFailureStateIncludePbxOrUc : undefined,
+    isFailure: isFailure || isRequestRetrying,
+    onPress:
+      isFailure && !isRequestRetrying
+        ? ctx.auth.resetFailureStateIncludePbxOrUc
+        : undefined,
     serviceConnectingOrFailure,
   }
 }

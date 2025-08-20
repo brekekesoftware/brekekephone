@@ -8,7 +8,7 @@ import { embedApi } from '#/embed/embedApi'
 import type { CallStore } from '#/stores/callStore'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intlDebug } from '#/stores/intl'
+import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
@@ -240,12 +240,6 @@ export class Call {
       return
     }
     this.recording = !this.recording
-    if (typeof err !== 'boolean') {
-      const message = this.recording
-        ? intlDebug`Failed to stop recording the call`
-        : intlDebug`Failed to start recording the call`
-      RnAlert.error({ message, err })
-    }
   }
 
   @observable holding = false
@@ -302,15 +296,10 @@ export class Call {
     }
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHoldWithCallkeep(prevFn === 'unhold')
-    const message =
-      prevFn === 'unhold'
-        ? intlDebug`Failed to unhold the call`
-        : intlDebug`Failed to hold the call`
-    ctx.toast.error({ message, err }, 8000)
     BrekekeUtils.toast(
       this.callkeepUuid,
-      message.label,
-      err.message || '',
+      intl`Internet connection failed`,
+      '',
       'error',
     )
     return true
@@ -367,10 +356,6 @@ export class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    RnAlert.error({
-      message: intlDebug`Failed to transfer the call`,
-      err,
-    })
   }
 
   @action stopTransferring = () => {
@@ -385,10 +370,6 @@ export class Call {
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
-    RnAlert.error({
-      message: intlDebug`Failed to stop the transfer`,
-      err,
-    })
   }
 
   @action conferenceTransferring = () => {
@@ -403,10 +384,6 @@ export class Call {
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
-    RnAlert.error({
-      message: intlDebug`Failed to make conference for the transfer`,
-      err,
-    })
   }
 
   @action park = (number: string) =>
