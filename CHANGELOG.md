@@ -19,6 +19,7 @@
 - Improve hold pal with pending cache and retry, add toast to show message on android incoming call
 - Fix it should prevent double quickly click hold button (issue 1031)
 - Fix it should save logs when the device is locked (issue 1040)
+- Fix it should not show notification with LPC service (issue 1044)
 - Embed:
   - Disable webphone.resource-line from getProductInfo, allow to set it from embed login instead
   - Add support for setProductName in embed api
