@@ -43,6 +43,7 @@ import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.PN;
@@ -599,7 +600,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (vWebrtcVideo != null) {
       return;
     }
-    vWebrtcVideo = new WebRTCView(this);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return;
+    }
+    vWebrtcVideo = new WebRTCView(ctx);
     vWebrtcVideo.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -643,7 +648,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private WebRTCView createNewRTCView(String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(this);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return null;
+    }
+    WebRTCView rtcView = new WebRTCView(ctx);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
