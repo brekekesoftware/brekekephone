@@ -72,6 +72,7 @@ type TBrekekeUtils = {
     d: string,
     t: 'success' | 'error' | 'warning' | 'info',
   ): void
+  // android bug status bar sdk 35
   setBackgroundRootView(): void
 
   // ==========================================================================
@@ -157,7 +158,9 @@ const Polyfill: TBrekekeUtils = {
   updateConnectionStatus: () => undefined,
   updateAnyHoldLoading: () => undefined,
   toast: () => undefined,
+  // android bug status bar sdk 35
   setBackgroundRootView: () => undefined,
+
   // ==========================================================================
   // these methods only available on ios
   webrtcSetAudioEnabled: () => undefined,
