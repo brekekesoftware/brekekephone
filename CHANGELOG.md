@@ -8,6 +8,7 @@
 - Fix it should not show notification with LPC service (issue 1044)
 - Fix it should not reload avatar when rerender (issue 1046)
 - Fix it should logout when app is closed from task manager (issue 1050)
+- Fix it should load video in video call (issue 1052)
 
 #### 2.16.3
 
