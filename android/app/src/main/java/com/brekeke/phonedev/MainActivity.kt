@@ -39,6 +39,7 @@ class MainActivity : ReactActivity() {
   override fun onDestroy() {
     BrekekeUtils.main = null
     Ringtone.stop()
+    Emitter.emit("onDestroyMainActivity", "")
     super.onDestroy()
   }
 
