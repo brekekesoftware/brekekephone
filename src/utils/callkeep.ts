@@ -15,6 +15,7 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
 import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
+import { cleanUpDeepLink } from '#/utils/deeplink'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -390,6 +391,12 @@ export const setupCallKeepEvents = async () => {
   })
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
+
+  eventEmitter.addListener('onDestroyMainActivity', () => {
+    console.log('clean up because of onDestroyMainActivity')
+    cleanUpDeepLink()
+    ctx.auth.signOut()
+  })
 }
 
 export const onBackPressed = () => {
