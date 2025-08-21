@@ -290,12 +290,10 @@ export class CallStore {
 
   @action private shouldHandleOutgoing = (uuid: string) => {
     const ca = ctx.auth.getCurrentAccount()
-    if (!isAndroid) {
+    if (!isAndroid || !ca?.pushNotificationEnabled) {
       return
     }
-    if (ca?.pushNotificationEnabled) {
-      BrekekeUtils.onHandedOutgoingCall(uuid)
-    }
+    BrekekeUtils.onHandedOutgoingCall(uuid)
   }
   @action private shouldCreateCallkeepUuid = () => {
     const ca = ctx.auth.getCurrentAccount()
@@ -499,7 +497,11 @@ export class CallStore {
     }
     const hasOtherIncoming =
       isAndroid &&
-      this.calls.some(i => i.incoming && i.pnId !== c.pnId && !i.answered)
+      this.calls.some(
+        i =>
+          (!i.incoming && !i.answered) ||
+          (i.incoming && i.pnId !== c.pnId && !i.answered),
+      )
     if (
       !isWeb &&
       c.incoming &&
