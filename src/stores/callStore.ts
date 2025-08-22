@@ -14,6 +14,7 @@ import { Call } from '#/stores/Call'
 import type { CancelRecentPn } from '#/stores/cancelRecentPn'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
+import { keypadEmitter } from '#/stores/keypadEmitter'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnAppState } from '#/stores/RnAppState'
 import { RnPicker } from '#/stores/RnPicker'
@@ -627,6 +628,8 @@ export class CallStore {
         await waitTimeout(1000)
       }
       this.setAutoEndCallKeepTimer(uuid)
+      // clear all keypad text
+      keypadEmitter.emit('clear-all')
     }
     const sipCreateSession = () => {
       // do not make call if the callkeep ended

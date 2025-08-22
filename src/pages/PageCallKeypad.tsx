@@ -12,6 +12,7 @@ import { ShowNumber } from '#/components/CallShowNumbers'
 import { Layout } from '#/components/Layout'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
+import { keypadEmitter } from '#/stores/keypadEmitter'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 
@@ -20,6 +21,14 @@ export class PageCallKeypad extends Component {
   @observable txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
+
+  componentDidMount(): void {
+    keypadEmitter.on('clear-all', this.clearAll)
+  }
+
+  componentWillUnmount(): void {
+    keypadEmitter.off('clear-all')
+  }
 
   showKeyboard = () => {
     this.txtRef.current?.focus()
@@ -33,7 +42,6 @@ export class PageCallKeypad extends Component {
       return
     }
     ctx.call.startCall(this.txt)
-    this.clearAll()
   }
 
   clearAll = () => {
