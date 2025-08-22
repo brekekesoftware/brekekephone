@@ -16,7 +16,7 @@ import { ChatInput } from '#/components/FooterChatInput'
 import { Layout } from '#/components/Layout'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
+import { DEFAULT_TIMEOUT, isWeb } from '#/config'
 import type { ChatFile, ChatMessage } from '#/stores/chatStore'
 import { getPartyName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
@@ -85,7 +85,7 @@ export class PageChatDetail extends Component<{
       .getBuddyChats(id, { max: numberOfChatsPerLoad })
       .then(chats => {
         ctx.chat.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, DEFAULT_TIMEOUT)
       })
       .catch((err: Error) => {
         RnAlert.error({

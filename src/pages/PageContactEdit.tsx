@@ -17,6 +17,7 @@ import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { SelectionItem } from '#/components/SelectionItem'
+import { DEFAULT_TIMEOUT } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -59,7 +60,10 @@ export class PageContactEdit extends Component {
     } else {
       ctx.user.loadPbxBuddyList(true)
     }
-    BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
+    BackgroundTimer.setTimeout(
+      () => this.setState({ didMount: true }),
+      DEFAULT_TIMEOUT,
+    )
   }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => [
     {

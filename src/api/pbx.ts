@@ -30,6 +30,7 @@ import {
   isAndroid,
   isEmbed,
   isWeb,
+  RETRY_DELAY,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
@@ -50,7 +51,6 @@ export class PBX extends EventEmitter {
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  private RETRY_DELAY = 300
 
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
@@ -170,7 +170,7 @@ export class PBX extends EventEmitter {
             request.retryCount++
             setTimeout(() => {
               this.pendingRequests.push(request)
-            }, this.RETRY_DELAY)
+            }, RETRY_DELAY)
           } else {
             request.reject(err)
           }

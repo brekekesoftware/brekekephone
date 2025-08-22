@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
+import { DEFAULT_TIMEOUT } from '#/config'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 class RnKeyboardStore {
@@ -22,7 +23,7 @@ class RnKeyboardStore {
       this.waitKeyboardTimeoutId = BackgroundTimer.setTimeout(() => {
         this.waitKeyboardTimeoutId = 0
         fn(...args)
-      }, 300)
+      }, DEFAULT_TIMEOUT)
     }
 
   keyboardAnimatingTimeoutId = 0
@@ -36,7 +37,7 @@ class RnKeyboardStore {
         this.keyboardAnimatingTimeoutId = 0
         this.isKeyboardAnimating = false
       }),
-      300,
+      DEFAULT_TIMEOUT,
     )
   }
 }

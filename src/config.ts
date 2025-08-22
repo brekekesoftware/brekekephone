@@ -16,3 +16,7 @@ export const isAndroid = Platform.OS === 'android'
 export const isIos = Platform.OS === 'ios'
 export const isWeb = Platform.OS === 'web'
 export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
+
+// timeout
+export const DEFAULT_TIMEOUT = 300 // 0.3 seconds
+export const RETRY_DELAY = 300 // 0.3 seconds

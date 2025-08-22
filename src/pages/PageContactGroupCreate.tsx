@@ -8,6 +8,7 @@ import { UserItem } from '#/components/ContactUserItem'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { DEFAULT_TIMEOUT } from '#/config'
 import { css } from '#/pages/PageContactEdit'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -24,7 +25,10 @@ export class PageContactGroupCreate extends Component {
     didMount: false,
   }
   componentDidMount = () => {
-    BackgroundTimer.setTimeout(() => this.setState({ didMount: true }), 300)
+    BackgroundTimer.setTimeout(
+      () => this.setState({ didMount: true }),
+      DEFAULT_TIMEOUT,
+    )
   }
 
   render() {
