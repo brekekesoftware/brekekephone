@@ -25,7 +25,7 @@ import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { isEmbed, isIos, isWeb } from '#/config'
+import { DEFAULT_TIMEOUT, isEmbed, isIos, isWeb } from '#/config'
 import { getWebRootIdProps } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
@@ -84,7 +84,10 @@ const initApp = async () => {
 
   registerOnUnhandledError(unexpectedErr => {
     // must wrap in setTimeout avoid mobx error state change when rendering
-    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
+    BackgroundTimer.setTimeout(
+      () => RnAlert.error({ unexpectedErr }),
+      DEFAULT_TIMEOUT,
+    )
     return false
   })
 

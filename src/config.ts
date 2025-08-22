@@ -17,5 +17,6 @@ export const isIos = Platform.OS === 'ios'
 export const isWeb = Platform.OS === 'web'
 export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
 
-export const btnLoadingTimeout = 700
-// TODO: move all timeout config here
+// timeout
+export const DEFAULT_TIMEOUT = 300 // 0.3 seconds
+export const RETRY_DELAY = 300 // 0.3 seconds
