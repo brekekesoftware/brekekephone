@@ -2,6 +2,7 @@ import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
 import { reaction, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
+import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 import {
   ActivityIndicator,
@@ -12,6 +13,7 @@ import {
   View,
 } from 'react-native'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import SplashScreen from 'react-native-splash-screen'
 
 import { AnimatedSize } from '#/components/AnimatedSize'
@@ -312,12 +314,26 @@ export const App = observer(() => {
   } = getConnectionStatus()
 
   const cp = ctx.auth.listCustomPage[0]
-  const RootView = isIos ? SafeAreaView : View
+  const RootView = ({ children }: { children: ReactNode }) => {
+    const s = [StyleSheet.absoluteFill, css.App]
+
+    if (isWeb) {
+      return (
+        <View style={s} {...getWebRootIdProps()}>
+          {children}
+        </View>
+      )
+    }
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={s} {...getWebRootIdProps()}>
+          {children}
+        </SafeAreaView>
+      </SafeAreaProvider>
+    )
+  }
   return (
-    <RootView
-      style={[StyleSheet.absoluteFill, css.App]}
-      {...getWebRootIdProps()}
-    >
+    <RootView>
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
