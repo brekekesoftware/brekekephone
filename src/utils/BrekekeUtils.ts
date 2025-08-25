@@ -53,7 +53,6 @@ type TBrekekeUtils = {
   removeStreamFromView: (uuid: string, vId: string) => void
   setOptionsRemoteStream: (uuid: string, d: RemoteStreamOption[]) => void
   // android ringtone
-  getRingtoneOptions(): Promise<string[]>
   startRingtone(
     r: string,
     u: string,
@@ -94,6 +93,17 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+
+  // ringtone on android and ios
+  getRingtoneOptions(): Promise<string[]>
+  // method ringtone only available on ios
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
 }
 
 export type TNativeModules = {
@@ -148,7 +158,6 @@ const Polyfill: TBrekekeUtils = {
   removeStreamFromView: () => undefined,
   setOptionsRemoteStream: () => undefined,
   // android ringtone
-  getRingtoneOptions: () => Promise.resolve(staticRingtones as any),
   startRingtone: () => Promise.resolve(false),
   stopRingtone: () => Promise.resolve(false),
   // android pending cache and retry pal
@@ -169,6 +178,11 @@ const Polyfill: TBrekekeUtils = {
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+
+  // ringtone on android and ios
+  getRingtoneOptions: () => Promise.resolve(staticRingtones as any),
+  // method ringtone only available on ios
+  validateRingtone: () => Promise.resolve(''),
 }
 
 const M = NativeModules as TNativeModules
