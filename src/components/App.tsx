@@ -53,6 +53,8 @@ import { webPromptPermission } from '#/utils/webPromptPermission'
 
 const initApp = async () => {
   await ctx.intl.wait()
+  // android bug status bar sdk 35
+  BrekekeUtils.setBackgroundRootView()
 
   const checkHasCall = () =>
     Object.keys(ctx.call.callkeepMap).length ||
@@ -102,11 +104,12 @@ const initApp = async () => {
     } else if (AppState.currentState === 'background') {
       ctx.call.bgAt = Date.now()
     }
-
     if (AppState.currentState !== 'active') {
       return
     }
 
+    // android bug status bar sdk 35
+    BrekekeUtils.setBackgroundRootView()
     ctx.auth.resetFailureState()
     ctx.call.onCallKeepAction()
     ctx.pbx.ping()
