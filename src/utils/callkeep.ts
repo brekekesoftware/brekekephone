@@ -348,14 +348,29 @@ export const setupCallKeepEvents = async () => {
     }
     ctx.call.inPageCallManage = undefined
   })
-  eventEmitter.addListener('onBackPressed', onBackPressed)
-  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
-    if (!RnStacker.stacks.length) {
-      ctx.nav.goToPageIndex()
-    } else {
-      RnStacker.stacks = [RnStacker.stacks[0]]
+  eventEmitter.addListener('onBackPressed', () => {
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+      return true
     }
-    ctx.call.inPageCallManage = undefined
+    if (RnAlert.alerts.length) {
+      RnAlert.dismiss()
+      return true
+    }
+    if (RnPicker.currentRnPicker) {
+      RnPicker.dismiss()
+      return true
+    }
+    if (ctx.call.inPageCallManage) {
+      ctx.call.inPageCallManage = undefined
+      return true
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.stacks.pop()
+      return true
+    }
+    BrekekeUtils.backToBackground()
+    return true
   })
   eventEmitter.addListener('updateStreamActive', (vId: string) => {
     ctx.call.getOngoingCall()?.updateVideoStreamFromNative(vId)
@@ -393,31 +408,6 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('onDestroyMainActivity', () => {
     console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()
-    ctx.auth.signOut()
+    ctx.auth.signOutWithoutSaving()
   })
-}
-
-export const onBackPressed = () => {
-  if (RnKeyboard.isKeyboardShowing) {
-    Keyboard.dismiss()
-    return true
-  }
-  if (RnAlert.alerts.length) {
-    RnAlert.dismiss()
-    return true
-  }
-  if (RnPicker.currentRnPicker) {
-    RnPicker.dismiss()
-    return true
-  }
-  if (ctx.call.inPageCallManage) {
-    ctx.call.inPageCallManage = undefined
-    return true
-  }
-  if (RnStacker.stacks.length > 1) {
-    RnStacker.stacks.pop()
-    return true
-  }
-  BrekekeUtils.backToBackground()
-  return true
 }
