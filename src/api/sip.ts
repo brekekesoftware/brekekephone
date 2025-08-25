@@ -51,6 +51,20 @@ export class SIP extends EventEmitter {
         return
       }
       const s = ev.phoneStatus
+
+      if (s === 'stopping') {
+        const count = phone.getSessionCount()
+        if (count > 0) {
+          console.log(
+            `SIP PN debug: phoneStatusChanged: phoneStatus is 'stopping' but ${count} session(s) are active. Deferring stop action.`,
+          )
+          return
+        }
+        console.log(
+          "SIP PN debug: phoneStatusChanged: phoneStatus is 'stopping' with no active sessions. Proceeding to stop.",
+        )
+      }
+
       if (s === 'stopping' || s === 'stopped') {
         phone._removeEventListenerPhoneStatusChange?.()
         this.emit('connection-stopped', ev)
