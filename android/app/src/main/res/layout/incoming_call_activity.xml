@@ -9,6 +9,7 @@
   android:background="@drawable/bg_incoming_call_screen"
   android:orientation="vertical"
   tools:context=".activity.IncomingCallActivity"
+  android:fitsSystemWindows="true"
 >
   <LinearLayout
     android:layout_width="match_parent"

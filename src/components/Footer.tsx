@@ -7,6 +7,7 @@ import { FooterActions } from '#/components/FooterActions'
 import { Navigation } from '#/components/FooterNavigation'
 import { ToggleKeyboard } from '#/components/FooterToggleKeyboard'
 import { v } from '#/components/variables'
+import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { arrToMap } from '#/utils/arrToMap'
 
@@ -21,6 +22,7 @@ const css = StyleSheet.create({
     paddingBottom: 0,
     backgroundColor: v.bg,
     ...v.bottomBoxShadow,
+    ...(isAndroid && v.borderTopStyles),
   },
   //
   // fix bug margin auto can not be used
