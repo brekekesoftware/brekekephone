@@ -176,7 +176,7 @@ export const Layout: FC<
         />
       )}
       {!props.isTab && <View style={{ height: footerSpace }} />}
-      {<Footer {...props} menu={props.menu as string} />}
+      <Footer {...props} menu={props.menu as string} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </View>
   )
