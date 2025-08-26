@@ -171,7 +171,7 @@ export const Layout: FC<
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
           containerStyles={{
             marginTop: headerSpace,
-            backgroundColor: 'yellow',
+            backgroundColor: v.colors.warning,
           }}
         />
       )}
