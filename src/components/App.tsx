@@ -25,6 +25,7 @@ import { ChatGroupInvite, UnreadChatNoti } from '#/components/ChatGroupInvite'
 import { PhonebookAddItem } from '#/components/PhonebookAddItem'
 import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
 import { isEmbed, isIos, isWeb } from '#/config'
@@ -267,9 +268,6 @@ PushNotification.register(async () => {
 })
 
 const css = StyleSheet.create({
-  App: {
-    backgroundColor: v.bg,
-  },
   App_Inner: {
     flex: 1,
   },
@@ -314,24 +312,6 @@ export const App = observer(() => {
   } = getConnectionStatus()
 
   const cp = ctx.auth.listCustomPage[0]
-  const RootView = ({ children }: { children: ReactNode }) => {
-    const s = [StyleSheet.absoluteFill, css.App]
-
-    if (isWeb) {
-      return (
-        <View style={s} {...getWebRootIdProps()}>
-          {children}
-        </View>
-      )
-    }
-    return (
-      <SafeAreaProvider>
-        <SafeAreaView style={s} {...getWebRootIdProps()}>
-          {children}
-        </SafeAreaView>
-      </SafeAreaProvider>
-    )
-  }
   return (
     <RootView>
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
