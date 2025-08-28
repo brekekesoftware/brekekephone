@@ -1,3 +1,4 @@
+import '#/utils/captureConsoleOutput'
 import '#/embed/polyfill'
 import '#/polyfill'
 import '#/polyfill/mobx-configure'
@@ -6,7 +7,6 @@ import '#/brekekejs/webrtcclient'
 import '#/brekekejs/phonebook'
 import '#/brekekejs/webnotification'
 import '#/stores/ctx-imports'
-import '#/utils/captureConsoleOutput'
 
 import { AppRegistry } from 'react-native'
 
