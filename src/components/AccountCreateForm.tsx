@@ -13,6 +13,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
+import { pickRingtone } from '#/utils/ringtonePicker'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -114,6 +115,15 @@ export const AccountCreateForm: FC<{
     onValidSubmit: () => {
       props.onSave($.account, $.hasUnsavedChanges())
     },
+    onUploadRingtone: async () => {
+      const u = await pickRingtone()
+      if (u) {
+        setTimeout(
+          async () => ($.ringtoneOptions = await getRingtoneOptions()),
+          1000,
+        )
+      }
+    },
   })
 
   type M0 = ReturnType<typeof m>
@@ -132,6 +142,25 @@ export const AccountCreateForm: FC<{
       getLocalRingtone()
     }
   }, [])
+
+  const getDropDown = () => {
+    let d = [
+      {
+        label: intl`Reset form`,
+        onPress: $.resetAllFields,
+      },
+    ]
+    if (props.updating && !isWeb) {
+      d = [
+        {
+          label: intl`Upload ringtone`,
+          onPress: $.onUploadRingtone,
+        },
+        ...d,
+      ]
+    }
+    return d
+  }
 
   return (
     <Layout
@@ -165,12 +194,7 @@ export const AccountCreateForm: FC<{
                 danger: true,
               },
             ]
-          : [
-              {
-                label: intl`Reset form`,
-                onPress: $.resetAllFields,
-              },
-            ]
+          : getDropDown()
       }
       fabOnBack={props.footerLogout ? undefined : $.onBackBtnPress}
       fabOnNext={props.footerLogout ? undefined : (submitForm as () => void)}
