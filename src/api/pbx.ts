@@ -322,11 +322,16 @@ export class PBX extends EventEmitter {
       const serverReady = await new Promise<boolean>(resolve => {
         const testWs = new WebSocket(`${wsUri}?status=true`)
         let timeoutId: number | undefined
+        let isResolved = false
 
         const cleanup = (result: boolean) => {
+          if (isResolved) {
+            return
+          }
+          isResolved = true
+
           if (timeoutId) {
             BackgroundTimer.clearTimeout(timeoutId)
-            timeoutId = undefined
           }
           try {
             testWs.close()
