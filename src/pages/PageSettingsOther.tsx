@@ -187,14 +187,16 @@ export class PageSettingsOther extends Component {
             />
           </>
         )}
-        <Field isGroup label={intl`Ringtone`} />
-        <Field
-          label={intl`INCOMING CALL RINGTONE`}
-          options={this.state.ringtoneOptions}
-          type='RnPicker'
-          value={this.state.ringtone}
-          onValueChange={this.onChangeRingtone}
-        />
+        {!isWeb && <Field isGroup label={intl`Ringtone`} />}
+        {!isWeb && (
+          <Field
+            label={intl`INCOMING CALL RINGTONE`}
+            options={this.state.ringtoneOptions}
+            type='RnPicker'
+            value={this.state.ringtone}
+            onValueChange={this.onChangeRingtone}
+          />
+        )}
         {isIos && (
           <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
         )}
