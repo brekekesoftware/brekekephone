@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '#/api/customPage'
 import {
@@ -31,6 +31,13 @@ const css = StyleSheet.create({
     opacity: 1,
   },
 })
+
+const getVisibleStyle = () => {
+  if (Platform.OS === 'web') {
+    return [css.visible, { height: '100vh' } as any]
+  }
+  return css.visible
+}
 
 @observer
 export class PageCustomPageView extends Component<{
@@ -150,7 +157,7 @@ export class PageCustomPageView extends Component<{
           },
         ]}
         isFullContent
-        style={isVisible ? css.visible : css.invisible}
+        style={isVisible ? getVisibleStyle() : css.invisible}
       >
         {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
           <CustomPageWebView
