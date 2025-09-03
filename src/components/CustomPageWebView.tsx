@@ -92,16 +92,28 @@ export const CustomPageWebView = ({
   }
 
   const onShouldStartLoadWithRequest = (event: { url: string }) => {
-    const callScheme = 'brekekephone://call?number='
-    const url = event.url
-    if (url.startsWith(callScheme)) {
-      const number = url.slice(callScheme.length)
-      if (number) {
-        ctx.call.startCall(number)
-      }
-      return false
+    const callScheme = 'brekekephone://call'
+    if (!event || !event.url) {
+      return true
     }
-    return true
+
+    const url = event.url.toLowerCase()
+    if (!url.startsWith(callScheme)) {
+      return true
+    }
+
+    try {
+      const urlObj = new URL(url)
+      const number = urlObj.searchParams.get('number')
+      if (number && ctx.call) {
+        const decodedNumber = decodeURIComponent(number.trim())
+        ctx.call.startCall(decodedNumber)
+      }
+    } catch (error) {
+      return true
+    }
+
+    return false
   }
 
   return (
