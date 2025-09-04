@@ -2,6 +2,7 @@ import { action, observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import { ctx } from '#/stores/ctx'
+import { intlDebug } from '#/stores/intl'
 import type { ErrorRnAlert } from '#/stores/RnAlert'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -18,12 +19,12 @@ export class ToastStore {
   @observable items: Toast[] = []
 
   @action
-  show(
+  show = (
     msg: string | undefined,
     type: ToastType = 'info',
     time: number = 3000,
     err?: Error,
-  ) {
+  ) => {
     const id = newUuid()
     const toast: Toast = { id, msg, type, time, err }
     this.items.push(toast)
@@ -33,17 +34,17 @@ export class ToastStore {
   }
 
   @action
-  hide(id: string) {
+  hide = (id: string) => {
     this.items = this.items.filter(t => t.id !== id)
   }
 
   @action
-  success(msg: string, time?: number) {
+  success = (msg: string, time?: number) => {
     this.show(msg, 'success', time)
   }
 
   @action
-  error(a: ErrorRnAlert, time?: number) {
+  error = (a: ErrorRnAlert, time?: number) => {
     // log error to save it to the debug log
     // convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err
@@ -57,13 +58,17 @@ export class ToastStore {
   }
 
   @action
-  warning(msg: string, time?: number) {
+  warning = (msg: string, time?: number) => {
     this.show(msg, 'warning', time)
   }
 
   @action
-  info(msg: string, time?: number) {
+  info = (msg: string, time?: number) => {
     this.show(msg, 'info', time)
+  }
+
+  internet = (err?: Error) => {
+    this.error({ message: intlDebug`Internet connection failed`, err }, 5000)
   }
 }
 

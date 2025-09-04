@@ -178,6 +178,7 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
+        ctx.call.callTerminated[ev.sessionId] = true
         this.emit('session-stopped', ev)
         return
       }
@@ -313,6 +314,7 @@ export class SIP extends EventEmitter {
     }
   }
   stopWebRTC = () => {
+    ctx.call.callTerminated = {}
     const count = this.phone?.getSessionCount()
     if (count) {
       console.error(

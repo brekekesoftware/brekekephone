@@ -14,7 +14,9 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
-import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
+import { cleanUpDeepLink } from '#/utils/deeplink'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -238,19 +240,30 @@ export const setupCallKeepEvents = async () => {
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
 
-  // android self-managed connection service
-  if (!isAndroid) {
+  // ios self-managed audio session
+  if (isIos) {
+    if (!BrekekeEmitter) {
+      return
+    }
+    const eventEmitterIos = new NativeEventEmitter(BrekekeEmitter)
+    // listen audio session route change event
+    eventEmitterIos.addListener(
+      'onAudioRouteChange',
+      ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
+        ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+      },
+    )
     return
   }
+  // android self-managed connection service
+  // events from our custom BrekekeUtils module
+  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   // in killed state, the event handler may fire before the nav object has init
   const waitTimeoutNav = async () => {
     const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
     await waitTimeout(t)
   }
-
-  // events from our custom BrekekeUtils module
-  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   eventEmitter.addListener('lpcIncomingCall', (v: string) => {
     parse(JSON.parse(v))
@@ -346,14 +359,29 @@ export const setupCallKeepEvents = async () => {
     }
     ctx.call.inPageCallManage = undefined
   })
-  eventEmitter.addListener('onBackPressed', onBackPressed)
-  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
-    if (!RnStacker.stacks.length) {
-      ctx.nav.goToPageIndex()
-    } else {
-      RnStacker.stacks = [RnStacker.stacks[0]]
+  eventEmitter.addListener('onBackPressed', () => {
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+      return true
     }
-    ctx.call.inPageCallManage = undefined
+    if (RnAlert.alerts.length) {
+      RnAlert.dismiss()
+      return true
+    }
+    if (RnPicker.currentRnPicker) {
+      RnPicker.dismiss()
+      return true
+    }
+    if (ctx.call.inPageCallManage) {
+      ctx.call.inPageCallManage = undefined
+      return true
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.stacks.pop()
+      return true
+    }
+    BrekekeUtils.backToBackground()
+    return true
   })
   eventEmitter.addListener('updateStreamActive', (vId: string) => {
     ctx.call.getOngoingCall()?.updateVideoStreamFromNative(vId)
@@ -377,31 +405,20 @@ export const setupCallKeepEvents = async () => {
       ctx.nav.goToPageChatDetail({ buddy: chatId })
     }
   })
+
+  eventEmitter.addListener('connectionRequest', () => {
+    const { onPress } = getConnectionStatus()
+    if (onPress) {
+      onPress()
+    }
+  })
+
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
-}
 
-export const onBackPressed = () => {
-  if (RnKeyboard.isKeyboardShowing) {
-    Keyboard.dismiss()
-    return true
-  }
-  if (RnAlert.alerts.length) {
-    RnAlert.dismiss()
-    return true
-  }
-  if (RnPicker.currentRnPicker) {
-    RnPicker.dismiss()
-    return true
-  }
-  if (ctx.call.inPageCallManage) {
-    ctx.call.inPageCallManage = undefined
-    return true
-  }
-  if (RnStacker.stacks.length > 1) {
-    RnStacker.stacks.pop()
-    return true
-  }
-  BrekekeUtils.backToBackground()
-  return true
+  eventEmitter.addListener('onDestroyMainActivity', () => {
+    console.log('clean up because of onDestroyMainActivity')
+    cleanUpDeepLink()
+    ctx.auth.signOutWithoutSaving()
+  })
 }
