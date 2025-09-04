@@ -81,9 +81,11 @@ export class AuthStore {
 
   sipShouldAuth = () =>
     this.sipState !== 'waiting' &&
-    !this.pbxLoginFromAnotherPlace &&
     this.sipState !== 'connecting' &&
     this.sipState !== 'success' &&
+    !this.pbxLoginFromAnotherPlace &&
+    !ctx.call.calls.length &&
+    !ctx.sip.phone?.getSessionCount() &&
     ((this.signedInId && this.sipPn.sipAuth) ||
       (this.pbxState === 'success' &&
         (this.sipState === 'stopped' ||

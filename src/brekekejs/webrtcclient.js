@@ -731,7 +731,7 @@ if (!Brekeke.WebrtcClient) {
         session = this._sessionTable[sessionId]
         if (session.sessionStatus !== 'terminated') {
           if (force) {
-            this._logger.log('debug', 'force session terminate')
+            this._logger.log('error', 'force session terminate')
             this._terminateRtcSession(session.rtcSession)
           }
           setTimeout(by(this, this.stopWebRTC, [force]), this.STOP_WEBRTC_WAIT)
