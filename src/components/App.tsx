@@ -26,7 +26,7 @@ import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { isEmbed, isIos, isWeb } from '#/config'
+import { defaultTimeout, isEmbed, isIos, isWeb } from '#/config'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -84,7 +84,10 @@ const initApp = async () => {
 
   registerOnUnhandledError(unexpectedErr => {
     // must wrap in setTimeout avoid mobx error state change when rendering
-    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
+    BackgroundTimer.setTimeout(
+      () => RnAlert.error({ unexpectedErr }),
+      defaultTimeout,
+    )
     return false
   })
 
