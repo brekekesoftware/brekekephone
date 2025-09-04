@@ -31,6 +31,7 @@ import {
   isAndroid,
   isEmbed,
   isWeb,
+  retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
@@ -51,7 +52,6 @@ export class PBX extends EventEmitter {
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  private RETRY_DELAY = 300
   @observable retryingRequests: string[] = []
 
   private generateRequestId = (): string => newUuid()
@@ -176,7 +176,7 @@ export class PBX extends EventEmitter {
             request.retryCount++
             setTimeout(() => {
               this.pendingRequests.push(request)
-            }, this.RETRY_DELAY)
+            }, retryInterval)
           } else {
             request.reject(err)
           }
@@ -315,8 +315,43 @@ export class PBX extends EventEmitter {
       ctype: 2,
     })
     this.client = client
-
     client.debugLevel = 2
+
+    // Check server availability before login
+    if (isAndroid) {
+      const serverReady = await new Promise<boolean>(resolve => {
+        const testWs = new WebSocket(`${wsUri}?status=true`)
+        let timeoutId: number | undefined
+        let isResolved = false
+
+        const cleanup = (result: boolean) => {
+          if (isResolved) {
+            return
+          }
+          isResolved = true
+
+          if (timeoutId) {
+            BackgroundTimer.clearTimeout(timeoutId)
+          }
+          try {
+            testWs.close()
+          } catch {}
+          resolve(result)
+        }
+
+        timeoutId = BackgroundTimer.setTimeout(() => cleanup(false), 5000)
+        testWs.onopen = () => cleanup(true)
+        testWs.onerror = () => cleanup(false)
+        testWs.onclose = e => cleanup(e.wasClean || e.code === 1000)
+      })
+
+      if (!serverReady) {
+        this.logMainInstance('PAL Server not ready - aborting login')
+        this.disconnect()
+        return false
+      }
+      this.logMainInstance('PAL Server available - proceeding with login')
+    }
     client.call_pal = (method: keyof Pbx, params?: object) =>
       new Promise((resolve, reject) => {
         const start = Date.now()
@@ -1196,9 +1231,9 @@ const _parseListCustomPage = () => {
       return
     }
     url = addFromNumberNonce(url)
-    const title = c[`${id}.title`] || intl`PBX user settings`
-    const pos = c[`${id}.pos`] || 'setting,right,1'
-    const incoming = c[`${id}.incoming`]
+    const title = c[`${id}.title`]?.trim() || intl`PBX user settings`
+    const pos = c[`${id}.pos`]?.trim() || 'setting,right,1'
+    const incoming = c[`${id}.incoming`]?.trim()
     results.push({
       id,
       url,

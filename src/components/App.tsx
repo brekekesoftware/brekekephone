@@ -23,10 +23,10 @@ import { ChatGroupInvite, UnreadChatNoti } from '#/components/ChatGroupInvite'
 import { PhonebookAddItem } from '#/components/PhonebookAddItem'
 import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { isEmbed, isIos, isWeb } from '#/config'
-import { getWebRootIdProps } from '#/embed/polyfill'
+import { defaultTimeout, isEmbed, isIos, isWeb } from '#/config'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -84,7 +84,10 @@ const initApp = async () => {
 
   registerOnUnhandledError(unexpectedErr => {
     // must wrap in setTimeout avoid mobx error state change when rendering
-    BackgroundTimer.setTimeout(() => RnAlert.error({ unexpectedErr }), 300)
+    BackgroundTimer.setTimeout(
+      () => RnAlert.error({ unexpectedErr }),
+      defaultTimeout,
+    )
     return false
   })
 
@@ -113,7 +116,7 @@ const initApp = async () => {
     ctx.pnToken.syncForAllAccounts()
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
-      ctx.authUC.auth()
+      await autoLogin()
     }
 
     if (checkHasCall()) {
@@ -265,9 +268,6 @@ PushNotification.register(async () => {
 })
 
 const css = StyleSheet.create({
-  App: {
-    backgroundColor: v.bg,
-  },
   App_Inner: {
     flex: 1,
   },
@@ -311,10 +311,8 @@ export const App = observer(() => {
     onPress: onPressConnMessage,
   } = getConnectionStatus()
 
-  const cp = ctx.auth.listCustomPage[0]
-
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
+    <RootView>
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
@@ -345,7 +343,11 @@ export const App = observer(() => {
       <View style={css.App_Inner}>
         <RnStackerRoot />
         <RenderAllCalls />
-        {cp && <PageCustomPageView id={cp.id} />}
+        <View>
+          {ctx.auth.listCustomPage.map(cp => (
+            <PageCustomPageView key={cp.id} id={cp.id} />
+          ))}
+        </View>
         <RnPickerRoot />
         <PhonebookAddItem />
         <RnAlertRoot />
@@ -363,7 +365,7 @@ export const App = observer(() => {
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
-    </View>
+    </RootView>
   )
 })
 

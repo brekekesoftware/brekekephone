@@ -24,7 +24,7 @@ export class PageCallKeypad extends Component {
   showKeyboard = () => {
     this.txtRef.current?.focus()
   }
-  callVoice = () => {
+  callVoice = async () => {
     this.txt = this.txt.trim()
     if (!this.txt) {
       RnAlert.error({
@@ -32,7 +32,11 @@ export class PageCallKeypad extends Component {
       })
       return
     }
-    ctx.call.startCall(this.txt)
+    if (await ctx.call.startCall(this.txt)) {
+      // clear text after call
+      this.txt = ''
+      this.txtSelection = { start: 0, end: 0 }
+    }
   }
 
   render() {

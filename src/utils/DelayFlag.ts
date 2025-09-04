@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx'
 
+import { defaultTimeout } from '#/config'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export class DelayFlag {
@@ -15,7 +16,7 @@ export class DelayFlag {
         this.enabled = !!enabled
         this.timeoutId = 0
       }),
-      300,
+      defaultTimeout,
     )
   }
 }
