@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '#/api/customPage'
 import {
@@ -11,19 +11,38 @@ import {
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/CustomPageWebView'
 import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/RnText'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/RnStacker'
 
 const css = StyleSheet.create({
   invisible: {
-    top: '-100%',
-    left: '-100%',
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    opacity: 0,
+    overflow: 'hidden',
+  },
+  visible: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    opacity: 1,
   },
 })
 
+const getVisibleStyle = () => {
+  if (Platform.OS === 'web') {
+    return [css.visible, { height: '100vh' } as any]
+  }
+  return css.visible
+}
+
 @observer
-export class PageCustomPageView extends Component<{ id: string }> {
+export class PageCustomPageView extends Component<{
+  id: string
+}> {
   state = {
     webviewLoading: false,
     webviewError: false,
@@ -93,6 +112,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
         // update stacker flow
         ctx.nav.customPageIndex = ctx.nav.goToPageCustomPage
         ctx.nav.goToPageCustomPage({ id: cp.id })
+        ctx.auth.activeCustomPageId = cp.id
       }
       this.reloadPage(cp)
     }
@@ -106,8 +126,8 @@ export class PageCustomPageView extends Component<{ id: string }> {
       cp &&
       s.isRoot &&
       s.name == 'PageCustomPage' &&
-      RnStacker.stacks.length == 1
-
+      RnStacker.stacks.length == 1 &&
+      cp.id === ctx.auth.activeCustomPageId
     // onLoadEnd not fire with website load image from url camera
     // so, should be check loading like bellow
     const loaded = !this.state.jsLoading || !this.state.webviewLoading
@@ -137,7 +157,7 @@ export class PageCustomPageView extends Component<{ id: string }> {
           },
         ]}
         isFullContent
-        style={isVisible ? undefined : css.invisible}
+        style={isVisible ? getVisibleStyle() : css.invisible}
       >
         {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
           <CustomPageWebView

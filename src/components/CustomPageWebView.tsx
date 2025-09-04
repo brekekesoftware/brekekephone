@@ -6,6 +6,7 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { buildWebViewSource, isAndroid } from '#/config'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   image: {
@@ -90,6 +91,31 @@ export const CustomPageWebView = ({
     }
   }
 
+  const onShouldStartLoadWithRequest = (event: { url: string }) => {
+    const callScheme = 'brekekephone://call'
+    if (!event || !event.url) {
+      return true
+    }
+
+    const url = event.url.toLowerCase()
+    if (!url.startsWith(callScheme)) {
+      return true
+    }
+
+    try {
+      const urlObj = new URL(url)
+      const number = urlObj.searchParams.get('number')
+      if (number && ctx.call) {
+        const decodedNumber = decodeURIComponent(number.trim())
+        ctx.call.startCall(decodedNumber)
+      }
+    } catch (error) {
+      return true
+    }
+
+    return false
+  }
+
   return (
     <WebView
       source={buildWebViewSource(url)}
@@ -105,6 +131,7 @@ export const CustomPageWebView = ({
       onLoadEnd={onLoadEnd}
       onError={onError}
       cacheEnabled={true}
+      onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
     />
   )
 }

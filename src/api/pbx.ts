@@ -1196,9 +1196,9 @@ const _parseListCustomPage = () => {
       return
     }
     url = addFromNumberNonce(url)
-    const title = c[`${id}.title`] || intl`PBX user settings`
-    const pos = c[`${id}.pos`] || 'setting,right,1'
-    const incoming = c[`${id}.incoming`]
+    const title = c[`${id}.title`]?.trim() || intl`PBX user settings`
+    const pos = c[`${id}.pos`]?.trim() || 'setting,right,1'
+    const incoming = c[`${id}.incoming`]?.trim()
     results.push({
       id,
       url,
