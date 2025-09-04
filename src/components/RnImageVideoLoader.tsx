@@ -5,12 +5,12 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
-import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
@@ -80,7 +80,7 @@ const css = StyleSheet.create({
   },
   btnClose: {
     position: 'absolute',
-    top: getStatusBarHeight(true),
+    top: isAndroid ? StatusBar.currentHeight : 44,
     right: 15,
     zIndex: 10,
     elevation: 2,

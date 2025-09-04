@@ -13,8 +13,8 @@ public class BrekekeUtils: NSObject {
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
   var debounceWorkItem: DispatchWorkItem?
-  static var output : [String : AVAudioSession.Port] = [:]
-  
+  static var output: [String: AVAudioSession.Port] = [:]
+
   override init() {
     super.init()
     audio = nil
@@ -185,6 +185,7 @@ public class BrekekeUtils: NSObject {
       resolve(-1)
     }
   }
+
   // listener audio session event
   private func listenAudioSessionRoute() {
     NotificationCenter.default.addObserver(
@@ -202,9 +203,10 @@ public class BrekekeUtils: NSObject {
         try session.setMode(.default)
         try session.setActive(true)
       }
-      
+
       if let o = session.currentRoute.outputs.first {
-        if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o.portType {
+        if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o
+          .portType {
           return
         }
         BrekekeUtils.output["output"] = o.portType

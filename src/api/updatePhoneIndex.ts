@@ -1,6 +1,6 @@
 import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
-import { intl, intlDebug } from '#/stores/intl'
+import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnStacker } from '#/stores/RnStacker'
 import { openLinkSafely, urls } from '#/utils/deeplink'

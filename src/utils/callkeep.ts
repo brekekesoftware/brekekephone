@@ -14,9 +14,9 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
+import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
 import { cleanUpDeepLink } from '#/utils/deeplink'
 import { getConnectionStatus } from '#/utils/getConnectionStatus'
-import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -359,14 +359,29 @@ export const setupCallKeepEvents = async () => {
     }
     ctx.call.inPageCallManage = undefined
   })
-  eventEmitter.addListener('onBackPressed', onBackPressed)
-  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
-    if (!RnStacker.stacks.length) {
-      ctx.nav.goToPageIndex()
-    } else {
-      RnStacker.stacks = [RnStacker.stacks[0]]
+  eventEmitter.addListener('onBackPressed', () => {
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+      return true
     }
-    ctx.call.inPageCallManage = undefined
+    if (RnAlert.alerts.length) {
+      RnAlert.dismiss()
+      return true
+    }
+    if (RnPicker.currentRnPicker) {
+      RnPicker.dismiss()
+      return true
+    }
+    if (ctx.call.inPageCallManage) {
+      ctx.call.inPageCallManage = undefined
+      return true
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.stacks.pop()
+      return true
+    }
+    BrekekeUtils.backToBackground()
+    return true
   })
   eventEmitter.addListener('updateStreamActive', (vId: string) => {
     ctx.call.getOngoingCall()?.updateVideoStreamFromNative(vId)
@@ -404,31 +419,6 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('onDestroyMainActivity', () => {
     console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()
-    ctx.auth.signOut()
+    ctx.auth.signOutWithoutSaving()
   })
-}
-
-export const onBackPressed = () => {
-  if (RnKeyboard.isKeyboardShowing) {
-    Keyboard.dismiss()
-    return true
-  }
-  if (RnAlert.alerts.length) {
-    RnAlert.dismiss()
-    return true
-  }
-  if (RnPicker.currentRnPicker) {
-    RnPicker.dismiss()
-    return true
-  }
-  if (ctx.call.inPageCallManage) {
-    ctx.call.inPageCallManage = undefined
-    return true
-  }
-  if (RnStacker.stacks.length > 1) {
-    RnStacker.stacks.pop()
-    return true
-  }
-  BrekekeUtils.backToBackground()
-  return true
 }
