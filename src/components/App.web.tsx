@@ -104,8 +104,8 @@ export const App = () => {
     const params = parse(window.location as any as Url<any>)
     const q = qs.stringify(params)
     const appUrl = isIOS
-      ? `brekekephonedev://open?${q}`
-      : `intent://open?${q}#Intent;scheme=brekekephonedev;package=${bundleIdentifier};end`
+      ? `brekekephone://open?${q}`
+      : `intent://open?${q}#Intent;scheme=brekekephone;package=${bundleIdentifier};end`
     child = (
       <>
         <RnImage
