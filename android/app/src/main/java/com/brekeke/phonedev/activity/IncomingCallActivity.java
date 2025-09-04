@@ -1479,6 +1479,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setImageTalkingUrl(String url, boolean _isLarge) {
+    if (url.equalsIgnoreCase(talkingAvatar)) {
+      return;
+    }
     talkingAvatar = url;
     isLarge = _isLarge;
     handleShowAvatarTalking();
