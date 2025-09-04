@@ -98,6 +98,7 @@
     "@react-native-community/cli-platform-ios": "19.0.0",
     "@react-native/babel-preset": "0.80.1",
     "@react-native/eslint-config": "0.80.1",
+    "@react-native/gradle-plugin": "0.80.1",
     "@react-native/metro-config": "0.80.1",
     "@types/handlebars": "4.1.0",
     "@types/json-stable-stringify": "1.2.0",
