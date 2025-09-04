@@ -3,8 +3,6 @@ import { action, computed, observable } from 'mobx'
 
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'
-import { intlDebug } from '#/stores/intl'
-import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
 
 export type PbxUser = {

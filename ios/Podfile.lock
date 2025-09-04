@@ -1650,6 +1650,8 @@ PODS:
     - React-Core
   - react-native-notifications (5.1.0):
     - React-Core
+  - react-native-safe-area-context (5.6.1):
+    - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
   - react-native-video (6.16.1):
@@ -2291,6 +2293,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-notifications (from `../node_modules/react-native-notifications`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
@@ -2442,6 +2445,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-notifications:
     :path: "../node_modules/react-native-notifications"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-video:
@@ -2588,6 +2593,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: cb9f98f35ab33d86c426a347ec15057e1abe5952
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-notifications: 4601a5a8db4ced6ae7cfc43b44d35fe437ac50c4
+  react-native-safe-area-context: aac2745e96999c8633d2f6119e4e39b499c2ac8b
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-video: 432ebcda896cd5db9d89f8118f43c645c97ccc90
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b

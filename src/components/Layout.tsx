@@ -9,7 +9,6 @@ import type {
   ViewStyle,
 } from 'react-native'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { getBottomSpace } from 'react-native-iphone-x-helper'
 
 import { Footer } from '#/components/Footer'
 import { Header } from '#/components/Header'
@@ -119,7 +118,7 @@ export const Layout: FC<
       }
       originalProps.containerOnScroll?.(e)
     }
-    containerProps.scrollEventThrottle = 170
+    containerProps.scrollEventThrottle = 16
     containerProps.showsVerticalScrollIndicator = false
   }
 
@@ -137,7 +136,7 @@ export const Layout: FC<
     headerSpace -= 46
   }
   // TODO: put more document here
-  let footerSpace = getBottomSpace()
+  let footerSpace = 0
   if (props.fabRender) {
     footerSpace += 40
   } else if (!RnKeyboard.isKeyboardShowing) {
@@ -172,12 +171,12 @@ export const Layout: FC<
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
           containerStyles={{
             marginTop: headerSpace,
-            backgroundColor: 'yellow',
+            backgroundColor: v.colors.warning,
           }}
         />
       )}
       {!props.isTab && <View style={{ height: footerSpace }} />}
-      {<Footer {...props} menu={props.menu as string} />}
+      <Footer {...props} menu={props.menu as string} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </View>
   )

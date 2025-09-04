@@ -23,10 +23,10 @@ import { ChatGroupInvite, UnreadChatNoti } from '#/components/ChatGroupInvite'
 import { PhonebookAddItem } from '#/components/PhonebookAddItem'
 import { AudioPlayer, RnStatusBar, RnText } from '#/components/Rn'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
 import { isEmbed, isIos, isWeb } from '#/config'
-import { getWebRootIdProps } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -265,9 +265,6 @@ PushNotification.register(async () => {
 })
 
 const css = StyleSheet.create({
-  App: {
-    backgroundColor: v.bg,
-  },
   App_Inner: {
     flex: 1,
   },
@@ -312,7 +309,7 @@ export const App = observer(() => {
   } = getConnectionStatus()
 
   return (
-    <View style={[StyleSheet.absoluteFill, css.App]} {...getWebRootIdProps()}>
+    <RootView>
       {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
@@ -365,7 +362,7 @@ export const App = observer(() => {
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
-    </View>
+    </RootView>
   )
 })
 
