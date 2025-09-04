@@ -8,6 +8,7 @@
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
 - Fix it should have layout display well with status bar (issue 1020, 1049)
 - Fix it should save logs when the device is locked (issue 1040)
+- Fix ios loud speaker it should toggle well (1041)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
 - Fix it should connect to sip after restart tomcat (issue 1043)
 - Fix it should not show notification with LPC service (issue 1044)

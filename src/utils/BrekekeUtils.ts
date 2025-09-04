@@ -98,6 +98,7 @@ type TBrekekeUtils = {
 
 export type TNativeModules = {
   BrekekeUtils: NativeModule & TBrekekeUtils
+  BrekekeEmitter: NativeModule | null
 }
 
 const Polyfill: TBrekekeUtils = {
@@ -173,6 +174,7 @@ const Polyfill: TBrekekeUtils = {
 
 const M = NativeModules as TNativeModules
 export const BrekekeUtils = M.BrekekeUtils || Polyfill
+export const BrekekeEmitter = M.BrekekeEmitter || null
 
 if (__DEV__ && !isWeb) {
   const k = Object.keys(M.BrekekeUtils || {})

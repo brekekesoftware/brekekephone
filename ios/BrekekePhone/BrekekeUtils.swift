@@ -12,12 +12,16 @@ public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
+  var debounceWorkItem: DispatchWorkItem?
+  static var output: [String: AVAudioSession.Port] = [:]
 
   override init() {
+    super.init()
     audio = nil
     audioSession = AVAudioSession.sharedInstance()
     rtcAudioSession = RTCAudioSession.sharedInstance()
     rtcAudioSession.useManualAudio = true
+    listenAudioSessionRoute()
     print("BrekekeUtils.init(): initialized")
   }
 
@@ -179,6 +183,47 @@ public class BrekekeUtils: NSObject {
       }
     } catch {
       resolve(-1)
+    }
+  }
+
+  // listener audio session event
+  private func listenAudioSessionRoute() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleAudioRouteChange(_:)),
+      name: AVAudioSession.routeChangeNotification,
+      object: nil
+    )
+  }
+
+  @objc private func handleAudioRouteChange(_: Notification) {
+    let session = AVAudioSession.sharedInstance()
+    do {
+      if session.mode == .voiceChat {
+        try session.setMode(.default)
+        try session.setActive(true)
+      }
+
+      if let o = session.currentRoute.outputs.first {
+        if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o
+          .portType {
+          return
+        }
+        BrekekeUtils.output["output"] = o.portType
+        if o.portType == .builtInSpeaker {
+          try session.overrideOutputAudioPort(.speaker)
+        } else if o.portType == .builtInReceiver {
+          try session.overrideOutputAudioPort(.none)
+        }
+
+        BrekekeEmitter.emit(
+          name: "onAudioRouteChange",
+          data: ["isSpeakerOn": o.portType == .builtInSpeaker]
+        )
+      }
+
+    } catch {
+      BrekekeUtils.output.removeAll()
     }
   }
 }
