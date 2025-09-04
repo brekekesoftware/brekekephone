@@ -3,7 +3,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react'
 import type { GestureResponderEvent, TouchableOpacityProps } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
-import { btnLoadingTimeout } from '#/config'
+import { defaultTimeout } from '#/config'
 
 export const RnTouchableOpacity: FC<
   TouchableOpacityProps & { loading?: number | true }
@@ -14,7 +14,7 @@ export const RnTouchableOpacity: FC<
     if (!isLoading && !disabled) {
       onPress?.(event)
       if (loading) {
-        loading = typeof loading === 'number' ? loading : btnLoadingTimeout
+        loading = typeof loading === 'number' ? loading : defaultTimeout
         setIsLoading(true)
         timeoutRef.current = setTimeout(() => setIsLoading(false), loading)
       }

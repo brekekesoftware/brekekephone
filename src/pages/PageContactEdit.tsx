@@ -17,7 +17,7 @@ import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { SelectionItem } from '#/components/SelectionItem'
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -62,7 +62,7 @@ export class PageContactEdit extends Component {
     }
     BackgroundTimer.setTimeout(
       () => this.setState({ didMount: true }),
-      DEFAULT_TIMEOUT,
+      defaultTimeout,
     )
   }
   getDDOptions = (ddIndex: number): DropdownItemProps[] => [

@@ -8,7 +8,7 @@ import { UserItem } from '#/components/ContactUserItem'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import { css } from '#/pages/PageContactEdit'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -32,7 +32,7 @@ export class PageContactGroupEdit extends Component<{
     })
     BackgroundTimer.setTimeout(
       () => this.setState({ didMount: true }),
-      DEFAULT_TIMEOUT,
+      defaultTimeout,
     )
   }
 

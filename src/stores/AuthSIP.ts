@@ -5,7 +5,7 @@ import { action, reaction } from 'mobx'
 import type { SipLoginOption } from '#/api/sip'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
 import type { PbxGetProductInfoRes } from '#/brekekejs'
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
 import { jsonSafe } from '#/utils/jsonSafe'
@@ -165,7 +165,7 @@ export class AuthSIP {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, DEFAULT_TIMEOUT)
+  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authSIP = new AuthSIP()

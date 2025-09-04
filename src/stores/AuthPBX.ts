@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -63,7 +63,7 @@ export class AuthPBX {
         }),
       )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, DEFAULT_TIMEOUT)
+  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authPBX = new AuthPBX()

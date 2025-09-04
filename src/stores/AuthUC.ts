@@ -3,7 +3,7 @@ import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
 import { Errors } from '#/brekekejs/ucclient'
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
@@ -78,7 +78,7 @@ export class AuthUC {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, DEFAULT_TIMEOUT)
+  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 
   @action private onConnectionStopped = (e: { code: number }) => {
     ctx.auth.ucState = 'failure'

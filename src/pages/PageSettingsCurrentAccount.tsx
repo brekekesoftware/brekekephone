@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 
 import { AccountCreateForm } from '#/components/AccountCreateForm'
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -22,7 +22,7 @@ export const PageSettingsCurrentAccount = observer(() => (
         onConfirm: () => {
           ctx.account.upsertAccount(p)
           ctx.nav.goToPageAccountSignIn()
-          BackgroundTimer.setTimeout(() => ctx.auth.signIn(p), DEFAULT_TIMEOUT)
+          BackgroundTimer.setTimeout(() => ctx.auth.signIn(p), defaultTimeout)
         },
         confirmText: intl`SAVE`,
       })

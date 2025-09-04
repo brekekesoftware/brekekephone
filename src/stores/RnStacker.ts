@@ -2,7 +2,7 @@ import { action, observable } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 import type { SyntheticEvent } from 'react'
 
-import { DEFAULT_TIMEOUT } from '#/config'
+import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
@@ -58,7 +58,7 @@ export class RnStackerStore {
           this.stackAnimating = true
           BackgroundTimer.setTimeout(() => {
             this.stackAnimating = false
-          }, DEFAULT_TIMEOUT)
+          }, defaultTimeout)
         }
         //
         const stack0 = {} as RnStack

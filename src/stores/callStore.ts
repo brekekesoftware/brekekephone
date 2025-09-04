@@ -7,7 +7,7 @@ import { v4 as newUuid } from 'uuid'
 
 import { mdiPhone } from '#/assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '#/brekekejs'
-import { DEFAULT_TIMEOUT, isAndroid, isIos, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
 import { addCallHistory } from '#/stores/addCallHistory'
 import type { ConnectionState } from '#/stores/authStore'
 import { Call } from '#/stores/Call'
@@ -725,7 +725,7 @@ export class CallStore {
   }
   private updateBackgroundCallsDebounce = debounce(
     this.updateBackgroundCalls,
-    DEFAULT_TIMEOUT,
+    defaultTimeout,
     { maxWait: 1000 },
   )
   @action private updateCurrentCall = () => {
@@ -744,7 +744,7 @@ export class CallStore {
   }
   private updateCurrentCallDebounce = debounce(
     this.updateCurrentCall,
-    DEFAULT_TIMEOUT,
+    defaultTimeout,
     {
       maxWait: 1000,
     },
@@ -1059,7 +1059,7 @@ export class CallStore {
         if (await BrekekeUtils.isLocked()) {
           BrekekeUtils.setIsAppActive(false, true)
         }
-      }, DEFAULT_TIMEOUT)
+      }, defaultTimeout)
     })
   }
 
