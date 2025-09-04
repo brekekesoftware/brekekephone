@@ -11,19 +11,11 @@ const css = StyleSheet.create({
     left: 0,
     top: 10,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
-    padding: 10,
-    backgroundColor: '#000',
-    maxWidth: '50%',
-    opacity: 0.8,
-    borderRadius: 5,
-  },
-  textStyle: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
+    paddingHorizontal: 5,
+    paddingTop: 4,
+    paddingBottom: 5,
   },
 })
 
@@ -62,7 +54,9 @@ export const Toast: FC<ToastProps> = ({
   return (
     <View style={[css.container, containerStyles]}>
       <Animated.View style={[css.content, { opacity: fadeAnim }]}>
-        <RnText style={css.textStyle}>{validTitle}</RnText>
+        <RnText normal white>
+          {validTitle}
+        </RnText>
       </Animated.View>
     </View>
   )
