@@ -431,7 +431,7 @@ export type MakeCallFn = (
   videoEnabled?: boolean,
   videoOptions?: object,
   exInfo?: string,
-) => void
+) => Promise<boolean>
 
 export type VideoOptions = {
   call: {

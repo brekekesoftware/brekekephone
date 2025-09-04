@@ -16,6 +16,7 @@
 - Fix it should logout when app is closed from task manager (issue 1050)
 - Fix it should load video in video call (issue 1052)
 - Fix it should not hangup call when sip disconnect (issue 1056)
+- Fix it should clear keypad after hangup (issue 1057)
 
 #### 2.16.3
 
