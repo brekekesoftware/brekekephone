@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
+import { observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -35,7 +36,7 @@ import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intl } from '#/stores/intl'
+import { intl, intlDebug } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
@@ -51,6 +52,7 @@ export class PBX extends EventEmitter {
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
   private RETRY_DELAY = 300
+  @observable retryingRequests: string[] = []
 
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
@@ -149,12 +151,15 @@ export class PBX extends EventEmitter {
       }
       if (request.retryCount >= this.MAX_RETRY) {
         request.reject(new Error('Maximum number of retries reached'))
+        this.emit('pal-retry-end', request)
         continue
       }
       const params = request?.params as PalMethodParams<typeof request.method>
+      this.emit('pal-retrying', request)
       this.client
         ?.call_pal(request.method, ...params)
         .then(result => {
+          this.emit('pal-retry-end', request)
           if (request.cancelled) {
             request.reject(this.msgErrorCancelRequest(request))
           } else {
@@ -162,6 +167,7 @@ export class PBX extends EventEmitter {
           }
         })
         .catch(err => {
+          this.emit('pal-retry-end', request)
           if (request.cancelled) {
             request.reject(this.msgErrorCancelRequest(request))
             return
@@ -237,10 +243,11 @@ export class PBX extends EventEmitter {
     },
   )
 
-  private checkTimeoutToReconnectPbx = async (err: Error | boolean) => {
+  private checkTimeoutToReconnectPbx = async (err: Error | true) => {
     if (err === true) {
       return
     }
+    ctx.toast.internet(err)
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
@@ -380,6 +387,8 @@ export class PBX extends EventEmitter {
       return new Promise<boolean>(resolve => {
         this.connectTimeoutId = BackgroundTimer.setTimeout(() => {
           resolve(false)
+          resolveFn?.(false)
+          resolveFn = undefined
           console.warn('PAL login connection timed out')
           // fix case already reconnected
           if (client === this.client) {
@@ -466,11 +475,14 @@ export class PBX extends EventEmitter {
       this.clearConnectTimeoutId()
       return r
     }
+    if (!(await isConnected())) {
+      return false
+    }
 
     // in syncPnToken, isMainInstance = false
     // we will not proceed further in that case
     if (!this.isMainInstance) {
-      return isConnected()
+      return true
     }
 
     // check again webphone.pal.param.user
@@ -478,7 +490,6 @@ export class PBX extends EventEmitter {
       // TODO:
       // any function get pbxConfig on this time may get undefined
       ctx.auth.pbxConfig = undefined
-      await isConnected()
       await this.getConfig(true)
       const newPalParamUser = ctx.auth.pbxConfig?.['webphone.pal.param.user']
       if (newPalParamUser !== oldPalParamUser) {
@@ -500,7 +511,7 @@ export class PBX extends EventEmitter {
 
     this.startPingInterval()
 
-    return connected
+    return true
   }
 
   // pal client direct event handlers
