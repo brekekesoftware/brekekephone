@@ -113,7 +113,7 @@ const initApp = async () => {
     ctx.pnToken.syncForAllAccounts()
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
-      ctx.authUC.auth()
+      await autoLogin()
     }
 
     if (checkHasCall()) {
