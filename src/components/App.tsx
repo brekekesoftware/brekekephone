@@ -2,7 +2,6 @@ import NetInfo from '@react-native-community/netinfo'
 import { debounce } from 'lodash'
 import { reaction, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
-import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 import {
   ActivityIndicator,
@@ -13,7 +12,6 @@ import {
   View,
 } from 'react-native'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import SplashScreen from 'react-native-splash-screen'
 
 import { AnimatedSize } from '#/components/AnimatedSize'
@@ -29,7 +27,6 @@ import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
 import { isEmbed, isIos, isWeb } from '#/config'
-import { getWebRootIdProps } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
