@@ -339,7 +339,7 @@ export const UserItem: FC<
               <RnText normal small style={css.CallCreatedAt}>
                 {isVoicemail
                   ? intl`Voicemail`
-                  : intl`${reason}${reason ? ' ' : ''}at ${created}`}
+                  : intl`${reason} at ${created}`.trim()}
               </RnText>
             </View>
           )}

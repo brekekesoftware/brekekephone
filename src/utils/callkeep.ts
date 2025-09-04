@@ -14,7 +14,7 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
-import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
 import { cleanUpDeepLink } from '#/utils/deeplink'
 import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
@@ -240,19 +240,30 @@ export const setupCallKeepEvents = async () => {
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
 
-  // android self-managed connection service
-  if (!isAndroid) {
+  // ios self-managed audio session
+  if (isIos) {
+    if (!BrekekeEmitter) {
+      return
+    }
+    const eventEmitterIos = new NativeEventEmitter(BrekekeEmitter)
+    // listen audio session route change event
+    eventEmitterIos.addListener(
+      'onAudioRouteChange',
+      ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
+        ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+      },
+    )
     return
   }
+  // android self-managed connection service
+  // events from our custom BrekekeUtils module
+  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   // in killed state, the event handler may fire before the nav object has init
   const waitTimeoutNav = async () => {
     const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
     await waitTimeout(t)
   }
-
-  // events from our custom BrekekeUtils module
-  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   eventEmitter.addListener('lpcIncomingCall', (v: string) => {
     parse(JSON.parse(v))
