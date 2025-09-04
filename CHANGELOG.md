@@ -1,6 +1,7 @@
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
+- Initial implementation of multiple custom pages
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
 - Fix it should prevent button quickly double press
