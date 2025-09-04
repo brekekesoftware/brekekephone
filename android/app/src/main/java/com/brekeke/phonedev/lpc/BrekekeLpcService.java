@@ -59,6 +59,7 @@ public class BrekekeLpcService extends Service {
       NotificationChannel serviceChannel =
           new NotificationChannel(
               LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_DEFAULT);
+      serviceChannel.setShowBadge(false);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
     }
@@ -91,9 +92,9 @@ public class BrekekeLpcService extends Service {
     createConnection(settings);
   }
 
-  private static void stopLPCService(Context c) {
+  private static void stopLPCService(Context ctx) {
     if (iService != null) {
-      c.stopService(iService);
+      ctx.stopService(iService);
     }
   }
 

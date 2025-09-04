@@ -27,9 +27,9 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnAppState } from '#/stores/RnAppState'
 import { RnStacker } from '#/stores/RnStacker'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { toBoolean } from '#/utils/string'
 import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -131,6 +131,7 @@ export class AuthStore {
   @observable ucConfig?: UcConfig
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
+  @observable activeCustomPageId?: string
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
   getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)

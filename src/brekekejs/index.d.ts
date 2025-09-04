@@ -74,6 +74,7 @@ export type GetPalOptions = {
   secure_login_password: boolean
   phonetype: string
   callrecording: string
+  ctype: number
 }
 
 export type PalMethodParams<K extends keyof PbxPal> = Parameters<
@@ -241,6 +242,7 @@ export type PbxGetProductInfoRes = {
   'webphone.call.speaker': string
   'webphone.call.transfer': string
   'webphone.call.video': string
+  'webphone.call.ringtone': string
   'webphone.desktop.notification': string
   'webphone.dtmf.send.pal': string
   'webphone.lpc.keyhash': string

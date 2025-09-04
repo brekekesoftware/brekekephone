@@ -11,9 +11,9 @@ import { Notifications } from 'react-native-notifications'
 
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { permNotifications } from '#/utils/permissions'
 import { parse } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 
 let fcmTokenFn: Function | undefined = undefined
 const fcmToken = new Promise<string>(resolve => {
@@ -59,7 +59,7 @@ const onNotification = async (
 export const PushNotification = {
   register: async (initApp: Function) => {
     try {
-      await BrekekeUtils.checkPermissionDefaultDialer()
+      await BrekekeUtils.permDefaultDialer()
       await permNotifications()
       initApp()
       const hasPermissions: boolean =

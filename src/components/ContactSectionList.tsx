@@ -227,6 +227,7 @@ const RenderItemUser = observer(
               () => ctx.call.startVideoCall(item.user_id),
               () => ctx.call.startCall(item.user_id),
             ]}
+            loadings
             icons={[mdiVideo, mdiPhone]}
             lastMessage={getLastMessageChat(item.user_id)?.text}
             id={item.user_id}

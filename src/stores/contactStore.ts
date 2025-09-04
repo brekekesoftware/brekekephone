@@ -3,8 +3,6 @@ import { action, computed, observable } from 'mobx'
 
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'
-import { intlDebug } from '#/stores/intl'
-import { RnAlert } from '#/stores/RnAlert'
 import { arrToMap } from '#/utils/arrToMap'
 
 export type PbxUser = {
@@ -88,12 +86,6 @@ export class ContactStore {
         }
         this.setPhonebook(arr as Phonebook[])
         this.hasLoadmore = arr.length === this.numberOfContactsPerPage
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to load contact list`,
-          err,
-        })
       })
     this.loading = false
   }
@@ -182,12 +174,7 @@ export class ContactStore {
       this.pbxUsers = res
         .filter(u => u[0] !== ca.pbxUsername)
         .map(id => ({ id: id[0], name: id[1] }))
-    } catch (err) {
-      RnAlert.error({
-        message: intlDebug`Failed to load PBX users`,
-        err: err as Error,
-      })
-    }
+    } catch (err) {}
   }
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const u = this.getPbxUserById(userId)

@@ -21,12 +21,12 @@ import { RnStacker } from '#/stores/RnStacker'
 import { timerStore } from '#/stores/timerStore'
 import { arrToMap } from '#/utils/arrToMap'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import type { TEvent } from '#/utils/callkeep'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webShowNotification } from '#/utils/webShowNotification'
 
@@ -420,6 +420,11 @@ export class CallStore {
       return
     }
 
+    // bug call update event come after terminated, due to this async function
+    if (this.callTerminated[p.id]) {
+      return
+    }
+
     //
     // construct a new call
     const c = new Call(this)
@@ -498,7 +503,10 @@ export class CallStore {
     }
   }
 
+  callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
+    this.callTerminated[rawSession.sessionId] = true
+
     this.updateCurrentCallDebounce()
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(_ => _.id === rawSession.sessionId)
@@ -518,7 +526,7 @@ export class CallStore {
       this.endCallKeep(c.callkeepUuid)
     }
 
-    this.calls = this.calls.filter(c0 => c0 !== c)
+    this.calls = this.calls.filter(c0 => c0.id !== c.id)
     // set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // when if this is a outgoing call, try to insert a call history to uc chat
@@ -933,7 +941,7 @@ export class CallStore {
       )
     })
 
-  shouldRingInNotify = (uuid?: string) => {
+  shouldRingInNotify = () => {
     if (isWeb) {
       return true
     }
@@ -1083,6 +1091,7 @@ export class CallStore {
   // style in CallVideosUI to save the previous video position
   @observable videoPositionT = 25
   @observable videoPositionL = 5
+  // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
   @observable ringtone = ''
   @action setIncomingRingtone = (ringtone: string) => {

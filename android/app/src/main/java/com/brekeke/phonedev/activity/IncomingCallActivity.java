@@ -16,6 +16,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -42,23 +43,30 @@ import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
+import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
-import com.brekeke.phonedev.utils.ToastManager;
-import com.brekeke.phonedev.utils.ToastType;
+import com.brekeke.phonedev.utils.PN;
+import com.brekeke.phonedev.utils.Ringtone;
+import com.brekeke.phonedev.utils.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.oney.WebRTCModule.WebRTCView;
 import io.wazo.callkeep.RNCallKeepModule;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONObject;
 
 // incoming call screen
 public class IncomingCallActivity extends Activity implements View.OnClickListener {
-  private ToastManager toastManager;
-  private LinearLayout toastContainer;
+  private LinearLayout vToast;
+
+  public void toast(String m, String d, String t) {
+    Toast.show(vToast, m, d, t);
+  }
 
   public RelativeLayout vWebrtc,
       vIncomingCall,
@@ -120,7 +128,18 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtDurationCall,
       txtCallerNameHeader,
       txtConnectionStatus;
-  public String uuid, callerName, avatar, avatarSize, talkingAvatar = "";
+
+  public Map<String, String> data;
+  public String uuid,
+      callerName,
+      avatar,
+      avatarSize,
+      talkingAvatar,
+      ringtone,
+      username,
+      tenant,
+      host,
+      port;
   public boolean destroyed = false,
       paused = false,
       answered = false,
@@ -130,9 +149,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       isMuted = false;
 
   class StreamData {
+    int id;
     String vId;
     String streamUrl;
-    int id;
 
     StreamData(int id, String vId, String streamUrl) {
       this.id = id;
@@ -154,17 +173,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtConnectionStatus.setText(msg);
     if (isFailure) {
       txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_error));
-    }
-  }
-
-  public void showToast(String message, String error, ToastType type) {
-    if (toastManager == null) {
-      return;
-    }
-    if (error != null && !error.isEmpty()) {
-      toastManager.show(message, ToastType.ERROR, error, 6000);
     } else {
-      toastManager.show(message, type);
+      txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_warning));
     }
   }
 
@@ -178,17 +188,27 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       b = savedInstanceState;
     }
     if (b == null) {
-      debug("onCreate bundle=null");
+      error("onCreate", "bundle=null");
+      forceFinish();
+      return;
+    }
+    data = (Map<String, String>) b.getSerializable("data");
+    if (data == null) {
+      error("onCreate", "data=null");
       forceFinish();
       return;
     }
 
     timer = new Timer();
-    uuid = b.getString("uuid");
-    callerName = b.getString("callerName");
-    avatar = b.getString("avatar");
-    avatarSize = b.getString("avatarSize");
-    autoAnswer = b.getBoolean("autoAnswer");
+    uuid = data.get("callkeepUuid");
+    callerName = PN.callerName(data);
+    avatar = PN.avatar(data);
+    avatarSize = PN.avatarSize(data);
+    ringtone = PN.ringtone(data);
+    username = PN.username(data);
+    tenant = PN.tenant(data);
+    host = PN.host(data);
+    port = PN.port(data);
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
@@ -209,12 +229,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     setContentView(R.layout.incoming_call_activity);
     BrekekeUtils.activities.add(this);
     if (!autoAnswer) {
-      BrekekeUtils.staticStartRingtone();
+      Ringtone.play(ringtone, username, tenant, host, port);
     }
 
-    // initialize toast manager
-    toastContainer = (LinearLayout) findViewById(R.id.toast_container);
-    toastManager = ToastManager.getInstance(this, toastContainer);
+    vToast = (LinearLayout) findViewById(R.id.toast_container);
 
     imgAvatarLoadingProgress = new CircularProgressDrawable(this);
     imgAvatarLoadingProgress.setColorSchemeColors(R.color.black, R.color.black, R.color.black);
@@ -321,6 +339,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     txtCallerNameHeader.setText(callerName);
+    txtConnectionStatus.setOnClickListener(this);
 
     updateLabels();
     if (autoAnswer) {
@@ -367,11 +386,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   protected void onResume() {
     super.onResume();
     debug("onResume answered=" + answered);
-    BrekekeUtils.emit("onResume", "");
+    Emitter.emit("onResume", "");
     if (!answered) {
-      BrekekeUtils.staticStartRingtone();
+      Ringtone.play(ringtone, username, tenant, host, port);
     } else {
-      BrekekeUtils.emit("switchCall", uuid);
+      Emitter.emit("switchCall", uuid);
     }
     paused = false;
   }
@@ -406,11 +425,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBackPressed() {
     debug("onBackPressed");
-    BrekekeUtils.emit("onIncomingCallActivityBackPressed", "");
+    Emitter.emit("onIncomingCallActivityBackPressed", "");
     openMainActivity();
   }
 
-  public void updateUserAgentConfig(String userAgent) {
+  public void setUserAgentConfig(String userAgent) {
     if (!userAgent.equals("")) {
       webViewAvatar.getSettings().setUserAgentString(userAgent);
       webViewAvatarTalking.getSettings().setUserAgentString(userAgent);
@@ -471,7 +490,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       webViewAvatar.getSettings().setJavaScriptEnabled(false);
       webViewAvatar.destroy();
     } catch (Exception e) {
-      debug("destroyAvatarWebView: " + e.toString());
+      error("destroyAvatarWebView", e.getMessage());
     }
   }
 
@@ -480,7 +499,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       webViewAvatarTalking.getSettings().setJavaScriptEnabled(false);
       webViewAvatarTalking.destroy();
     } catch (Exception e) {
-      debug("destroyAvatarTalkingWebView: " + e.toString());
+      error("destroyAvatarTalkingWebView", e.getMessage());
     }
   }
 
@@ -504,7 +523,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       txtIncomingCall.setLayoutParams(params);
     }
     // handle avatar for incomming call
-    if (avatar == null || avatar.isEmpty()) {
+    if (TextUtils.isEmpty(avatar)) {
       vCardAvatar.getLayoutParams().height = 0;
     } else if (!BrekekeUtils.isImageUrl(avatar)) {
       webViewAvatar.setVisibility(View.VISIBLE);
@@ -524,6 +543,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             }
           });
       if (BrekekeUtils.userAgentConfig != null) {
+        // TODO:
+        // webViewAvatar: BrekekeUtils.userAgentConfig != null
+        // webViewAvatarTalking: !isAvatarTalkingLoaded
         webViewAvatar.loadUrl(avatar);
       }
     } else {
@@ -581,7 +603,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (vWebrtcVideo != null) {
       return;
     }
-    vWebrtcVideo = new WebRTCView(BrekekeUtils.ctx);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return;
+    }
+    vWebrtcVideo = new WebRTCView(ctx);
     vWebrtcVideo.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -625,7 +651,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private WebRTCView createNewRTCView(String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(BrekekeUtils.ctx);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return null;
+    }
+    WebRTCView rtcView = new WebRTCView(ctx);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -658,7 +688,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItem(String streamUrl, boolean isActive) {
-    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
+    LinearLayout ln = new LinearLayout(this);
     updateBgForStream(ln, isActive);
     updateSizeStreamItem(ln);
     WebRTCView rtcView = createNewRTCView(streamUrl);
@@ -669,8 +699,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private LinearLayout createStreamItemRelative(String streamUrl) {
-    LinearLayout ln = new LinearLayout(BrekekeUtils.ctx);
-    RelativeLayout rl = new RelativeLayout(BrekekeUtils.ctx);
+    LinearLayout ln = new LinearLayout(this);
+    RelativeLayout rl = new RelativeLayout(this);
     rl.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -684,43 +714,44 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setRemoteStreams(ReadableArray streams) {
-    for (int i = 0; i < streams.size(); i++) {
-      ReadableMap streamItem = streams.getMap(i);
-      String streamUrl = streamItem.getString("streamUrl");
-      LinearLayout v = createStreamItem(streamUrl, false);
+    for (var i = 0; i < streams.size(); i++) {
+      var streamItem = streams.getMap(i);
+      var streamUrl = streamItem.getString("streamUrl");
+      var v = createStreamItem(streamUrl, false);
       vScrollViewStreams.addView(v);
     }
     vRemoteStreams.setVisibility(streams.size() == 0 ? View.GONE : View.VISIBLE);
   }
 
   public void addStreamToView(ReadableMap stream) {
-    String vId = stream.getString("vId");
-    String streamUrl = stream.getString("streamUrl");
+    var vId = stream.getString("vId");
+    var streamUrl = stream.getString("streamUrl");
 
     if (vId != "") {
-      boolean isExist = arrayStreams.containsKey(vId);
+      var isExist = arrayStreams.containsKey(vId);
       if (!isExist) {
-        int id = View.generateViewId();
-        StreamData sData = new StreamData(id, vId, streamUrl);
+        var id = View.generateViewId();
+        var sData = new StreamData(id, vId, streamUrl);
         arrayStreams.put(vId, sData);
-        LinearLayout v = createStreamItem(streamUrl, false);
+        var v = createStreamItem(streamUrl, false);
         v.setId(id);
         v.setTag(vId);
         v.setOnClickListener(
             new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                String tag = (String) v.getTag();
-                StreamData sDNew = arrayStreams.get(tag);
+                var ll = (LinearLayout) v;
+                var tag = (String) ll.getTag();
+                var sDNew = arrayStreams.get(tag);
                 if (activeStreamId == "") {
-                  updateBgForStream((LinearLayout) v, true);
+                  updateBgForStream(ll, true);
                   updateStreamActive(sDNew.vId, sDNew.streamUrl);
                 } else {
-                  StreamData sD = arrayStreams.get(activeStreamId);
-                  LinearLayout l = findViewById(sD.id);
+                  var sD = arrayStreams.get(activeStreamId);
+                  var l = (LinearLayout) findViewById(sD.id);
                   updateBgForStream(l, false);
-                  updateBgForStream((LinearLayout) v, true);
-                  if (((LinearLayout) v).getChildAt(0) != null) {
+                  updateBgForStream(ll, true);
+                  if (ll.getChildAt(0) != null) {
                     updateStreamActive(sDNew.vId, sDNew.streamUrl);
                   } else {
                     updateStreamActive(sDNew.vId, "");
@@ -799,7 +830,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public void updateStreamActive(String vId, String streamUrl) {
     activeStreamId = vId;
     setRemoteVideoStreamUrl(streamUrl);
-    BrekekeUtils.emit("updateStreamActive", vId);
+    Emitter.emit("updateStreamActive", vId);
   }
 
   public void setLocalStream(String streamUrl) {
@@ -813,13 +844,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     float scale = getResources().getDisplayMetrics().density;
     LinearLayout v = createStreamItemRelative(streamUrl);
     RelativeLayout r = (RelativeLayout) v.getChildAt(0);
-    LinearLayout rl = new LinearLayout(BrekekeUtils.ctx);
+    LinearLayout rl = new LinearLayout(this);
     rl.setOrientation(LinearLayout.HORIZONTAL);
     rl.setGravity(Gravity.CENTER);
 
-    btnVideoItem = new Button(BrekekeUtils.ctx);
+    btnVideoItem = new Button(this);
     btnVideoItem.setBackground(getDrawableFromResources(R.drawable.btn_video_item));
-    Button btnCameraRotate = new Button(BrekekeUtils.ctx);
+    Button btnCameraRotate = new Button(this);
     btnCameraRotate.setBackground(getDrawableFromResources(R.drawable.btn_switch_camera));
     btnVideoItem.setOnClickListener(
         new View.OnClickListener() {
@@ -863,7 +894,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnSwitchCamera(View v) {
-    BrekekeUtils.emit("switchCamera", uuid);
+    Emitter.emit("switchCamera", uuid);
   }
 
   // show/hide call manage controls in video call
@@ -1030,6 +1061,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             }
           });
       if (!isAvatarTalkingLoaded) {
+        // TODO:
+        // webViewAvatar: BrekekeUtils.userAgentConfig != null
+        // webViewAvatarTalking: !isAvatarTalkingLoaded
         webViewAvatarTalking.loadUrl(talkingAvatar);
       }
     }
@@ -1132,13 +1166,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   public void onBtnRejectClick(View v) {
     BrekekeUtils.putUserActionRejectCall(uuid);
-    BrekekeUtils.emit("rejectCall", "CalleeClickReject-" + uuid);
+    Emitter.emit("rejectCall", "CalleeClickReject-" + uuid);
     answered = false;
     BrekekeUtils.remove(uuid);
   }
 
   public void onBtnChatClick(View v) {
-    BrekekeUtils.emit("navChat", uuid);
+    Emitter.emit("navChat", uuid);
     openMainActivity();
   }
 
@@ -1159,7 +1193,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             ? BrekekeUtils.jsCallsSize
             : BrekekeUtils.activitiesSize;
     if (n > 1) {
-      BrekekeUtils.emit("showBackgroundCall", uuid);
+      Emitter.emit("showBackgroundCall", uuid);
       openMainActivity();
     }
   }
@@ -1169,45 +1203,45 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void onBtnTransferClick(View v) {
-    BrekekeUtils.emit("transfer", uuid);
+    Emitter.emit("transfer", uuid);
     openMainActivity();
   }
 
   public void onBtnParkClick(View v) {
-    BrekekeUtils.emit("park", uuid);
+    Emitter.emit("park", uuid);
     openMainActivity();
   }
 
   public void onBtnVideoClick(View v) {
-    BrekekeUtils.emit("video", uuid);
+    Emitter.emit("video", uuid);
     updateUILayoutManagerCall(!isVideoCall);
   }
 
   public void onBtnSpeakerClick(View v) {
     btnSpeaker.setSelected(!v.isSelected());
-    BrekekeUtils.emit("speaker", uuid);
+    Emitter.emit("speaker", uuid);
   }
 
   public void onBtnMuteClick(View v) {
     btnMute.setSelected(!v.isSelected());
     updateMuteBtnLabel();
-    BrekekeUtils.emit("mute", uuid);
+    Emitter.emit("mute", uuid);
   }
 
   public void onBtnRecordClick(View v) {
     if (!v.isActivated()) {
-      BrekekeUtils.emit("record", uuid);
+      Emitter.emit("record", uuid);
     }
   }
 
   public void onBtnDtmfClick(View v) {
-    BrekekeUtils.emit("dtmf", uuid);
+    Emitter.emit("dtmf", uuid);
     openMainActivity();
   }
 
   public void onBtnHoldClick(View v) {
     if (!v.isActivated()) {
-      BrekekeUtils.emit("hold", uuid);
+      Emitter.emit("hold", uuid);
     }
   }
 
@@ -1244,7 +1278,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnVideoClick(v);
     } else if (id == R.id.btn_back) {
       onBtnBackPress(v);
+    } else if (id == R.id.txt_conection_status) {
+      onConnectionStatusClick(v);
     }
+  }
+
+  public void onConnectionStatusClick(View v) {
+    Emitter.emit("connectionRequest", "");
   }
 
   @Override
@@ -1280,14 +1320,16 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnRejectClick(v);
     } else if (id == R.id.btn_chat) {
       onBtnChatClick(v);
+    } else if (id == R.id.txt_conection_status) {
+      onRequestUnlock(v);
     }
   }
 
   private void setCallAnswered() {
     answered = true;
     BrekekeUtils.putUserActionAnswerCall(uuid);
-    BrekekeUtils.emit("answerCall", uuid);
-    BrekekeUtils.staticStopRingtone();
+    Emitter.emit("answerCall", uuid);
+    Ringtone.stop();
     vIncomingCall.setVisibility(View.GONE);
     vHeaderIncomingCall.setVisibility(View.GONE);
     vCallManage.setVisibility(View.VISIBLE);
@@ -1452,7 +1494,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finish();
     } catch (Exception e) {
-      debug("forceFinish catch: " + e.getLocalizedMessage());
+      error("forceFinish", e.getMessage());
     }
   }
 
@@ -1461,7 +1503,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     try {
       finishAndRemoveTask();
     } catch (Exception e) {
-      debug("finishRemoveTask catch: " + e.getLocalizedMessage());
+      error("finishRemoveTask", e.getMessage());
     }
   }
 
@@ -1478,9 +1520,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean dispatchKeyEvent(KeyEvent e) {
     int k = e.getKeyCode();
     int a = e.getAction();
-    BrekekeUtils.emit("debug", "IncomingCallActivity.onKeyDown k=" + k + " a=" + a);
+    debug("onKeyDown k=" + k + " a=" + a);
     // stop ringtone if any of the hardware key press
-    BrekekeUtils.staticStopRingtone();
+    Ringtone.stop();
     // handle back btn press, remember that this event fire twice, down/up
     if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_SOFT_LEFT) {
       if (a == KeyEvent.ACTION_DOWN) {
@@ -1509,13 +1551,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
           @Override
           public void run() {
             runOnUiThread(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    long now = System.currentTimeMillis();
-                    long ms = now - answeredAt;
-                    txtDurationCall.setText(getTimerText(ms));
-                  }
+                () -> {
+                  long now = System.currentTimeMillis();
+                  long ms = now - answeredAt;
+                  txtDurationCall.setText(getTimerText(ms));
                 });
           }
         };
@@ -1538,7 +1577,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   // ==========================================================================
   // private utils
-  public void debug(String message) {
-    BrekekeUtils.emit("debug", "IncomingCallActivity " + callerName + " " + message);
+
+  private void debug(String d) {
+    Emitter.debug("IncomingCallActivity " + callerName + " " + d);
+  }
+
+  private void error(String k, String d) {
+    Emitter.error("IncomingCallActivity " + callerName + " " + k, d);
   }
 }

@@ -14,8 +14,10 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { cleanUpDeepLink } from '#/utils/deeplink'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
-import { BrekekeUtils } from '#/utils/RnNativeModules'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false
@@ -346,20 +348,38 @@ export const setupCallKeepEvents = async () => {
     }
     ctx.call.inPageCallManage = undefined
   })
-  eventEmitter.addListener('onBackPressed', onBackPressed)
-  eventEmitter.addListener('onIncomingCallActivityBackPressed', () => {
-    if (!RnStacker.stacks.length) {
-      ctx.nav.goToPageIndex()
-    } else {
-      RnStacker.stacks = [RnStacker.stacks[0]]
+  eventEmitter.addListener('onBackPressed', () => {
+    if (RnKeyboard.isKeyboardShowing) {
+      Keyboard.dismiss()
+      return true
     }
-    ctx.call.inPageCallManage = undefined
+    if (RnAlert.alerts.length) {
+      RnAlert.dismiss()
+      return true
+    }
+    if (RnPicker.currentRnPicker) {
+      RnPicker.dismiss()
+      return true
+    }
+    if (ctx.call.inPageCallManage) {
+      ctx.call.inPageCallManage = undefined
+      return true
+    }
+    if (RnStacker.stacks.length > 1) {
+      RnStacker.stacks.pop()
+      return true
+    }
+    BrekekeUtils.backToBackground()
+    return true
   })
   eventEmitter.addListener('updateStreamActive', (vId: string) => {
     ctx.call.getOngoingCall()?.updateVideoStreamFromNative(vId)
   })
   eventEmitter.addListener('debug', (m: string) =>
     console.log(`Android debug: ${m}`),
+  )
+  eventEmitter.addListener('error', (m: string) =>
+    console.error(`Android error: ${m}`),
   )
   // android native video conference
   eventEmitter.addListener('navChat', async (uuid: string) => {
@@ -374,31 +394,20 @@ export const setupCallKeepEvents = async () => {
       ctx.nav.goToPageChatDetail({ buddy: chatId })
     }
   })
+
+  eventEmitter.addListener('connectionRequest', () => {
+    const { onPress } = getConnectionStatus()
+    if (onPress) {
+      onPress()
+    }
+  })
+
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
-}
 
-export const onBackPressed = () => {
-  if (RnKeyboard.isKeyboardShowing) {
-    Keyboard.dismiss()
-    return true
-  }
-  if (RnAlert.alerts.length) {
-    RnAlert.dismiss()
-    return true
-  }
-  if (RnPicker.currentRnPicker) {
-    RnPicker.dismiss()
-    return true
-  }
-  if (ctx.call.inPageCallManage) {
-    ctx.call.inPageCallManage = undefined
-    return true
-  }
-  if (RnStacker.stacks.length > 1) {
-    RnStacker.stacks.pop()
-    return true
-  }
-  BrekekeUtils.backToBackground()
-  return true
+  eventEmitter.addListener('onDestroyMainActivity', () => {
+    console.log('clean up because of onDestroyMainActivity')
+    cleanUpDeepLink()
+    ctx.auth.signOutWithoutSaving()
+  })
 }

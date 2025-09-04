@@ -8,18 +8,24 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { defaultRingtone } from '#/utils/BrekekeUtils'
+import type { RingtoneOption } from '#/utils/getRingtoneOptions'
+import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 
 @observer
 export class PageSettingsOther extends Component {
   state = {
     status: '',
     statusText: '',
+    ringtoneOptions: [] as RingtoneOption[],
+    ringtone: ctx.auth.getCurrentAccount()?.ringtone,
   }
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const me = ctx.uc.me()
     this.setState({
       status: me.status,
       statusText: me.statusText,
+      ringtoneOptions: await getRingtoneOptions(),
     })
   }
   setStatusText = (statusText: string) => {
@@ -48,6 +54,17 @@ export class PageSettingsOther extends Component {
         })
       })
   }
+
+  onChangeRingtone = value => {
+    this.setState({ ringtone: value })
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return
+    }
+    ca.ringtone = value || defaultRingtone
+    ctx.account.saveAccountsToLocalStorageDebounced()
+  }
+
   render() {
     const ca = ctx.auth.getCurrentAccount()
     return (
@@ -114,6 +131,14 @@ export class PageSettingsOther extends Component {
             />
           </>
         )}
+        <Field isGroup label={intl`Ringtone`} />
+        <Field
+          label={intl`INCOMING CALL RINGTONE`}
+          options={this.state.ringtoneOptions}
+          type='RnPicker'
+          value={this.state.ringtone}
+          onValueChange={this.onChangeRingtone}
+        />
       </Layout>
     )
   }
