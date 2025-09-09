@@ -943,7 +943,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
-        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+        R.id.txt_header_caller_name,
+        ConstraintSet.TOP,
+        R.id.card_avatar_talking,
+        ConstraintSet.BOTTOM,
+        5);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.txt_count_timer, ConstraintSet.BOTTOM, 10);
     constraintSet.connect(
         R.id.view_call_manage_controls,
         ConstraintSet.BOTTOM,
