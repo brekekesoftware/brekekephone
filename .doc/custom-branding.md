@@ -64,7 +64,6 @@ src/assets/logo.png
   - `android/app/google-services.json`
     - Download from your Firebase console
     - https://support.google.com/firebase/answer/7015592
-  - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
     - Generate from terminal or Android Studio if you dont have any existing app. Must keep it and use the same keystore every time you build your app
     - If you have the existing app and you want to use the old bundle identifier then reuse those keystore from that existing app
