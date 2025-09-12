@@ -1343,7 +1343,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
     btnChat.setVisibility(View.VISIBLE);
-    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
     } else {
       vCardAvatarTalking.setVisibility(View.VISIBLE);
