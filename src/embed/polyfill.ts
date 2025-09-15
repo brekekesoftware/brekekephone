@@ -1,3 +1,5 @@
+import { Platform } from 'react-native'
+
 import { isWeb } from '#/config'
 
 declare global {
@@ -26,3 +28,5 @@ if (!window.Brekeke.Phone) {
   // type-coverage:ignore-next-line
   window.Brekeke.Phone = {} as any
 }
+
+export const isEmbed = Platform.OS === 'web' && !window._BrekekePhoneWebRoot

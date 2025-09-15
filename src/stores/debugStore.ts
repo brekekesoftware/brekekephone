@@ -211,7 +211,7 @@ export class DebugStore {
       const b64 = Buffer.from(content).toString('base64')
       url = `data:text/plain;base64,${b64}` // only works with base64
     }
-    Share.open({ title, url, subject: title })
+    Share.open({ title, url, subject: title, isNewTask: true })
   }
 
   clearLogFiles = () => {

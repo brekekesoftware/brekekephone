@@ -1,4 +1,4 @@
-import { isEmbed } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 
 export const registerOnUnhandledError = (fn: (err: ErrorEvent) => void) => {
   if (isEmbed) {

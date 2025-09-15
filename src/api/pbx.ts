@@ -29,11 +29,11 @@ import {
   bundleIdentifier,
   fcmApplicationId,
   isAndroid,
-  isEmbed,
   isWeb,
   retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
@@ -1225,7 +1225,7 @@ const _parseListCustomPage = () => {
       return
     }
     let url = c[`${id}.url`]
-    if (!validator.isURL(url)) {
+    if (!url || !validator.isURL(url)) {
       // ignore if not url
       console.log(`CustomPage debug: ${url} is not valid url`)
       return

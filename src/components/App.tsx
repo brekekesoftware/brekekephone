@@ -26,7 +26,8 @@ import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { defaultTimeout, isEmbed, isIos, isWeb } from '#/config'
+import { defaultTimeout, isIos, isWeb } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -117,6 +118,7 @@ const initApp = async () => {
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
       await autoLogin()
+      await BrekekeUtils.permDefaultDialer()
     }
 
     if (checkHasCall()) {

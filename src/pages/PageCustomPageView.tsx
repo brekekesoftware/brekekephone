@@ -29,6 +29,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
     opacity: 1,
+    overflow: 'hidden',
   },
 })
 
@@ -127,6 +128,7 @@ export class PageCustomPageView extends Component<{
       s.isRoot &&
       s.name == 'PageCustomPage' &&
       RnStacker.stacks.length == 1 &&
+      !ctx.call.inPageCallManage &&
       cp.id === ctx.auth.activeCustomPageId
     // onLoadEnd not fire with website load image from url camera
     // so, should be check loading like bellow
