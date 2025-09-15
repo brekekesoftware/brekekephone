@@ -15,7 +15,7 @@ module.exports = {
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
         'react-native-svg': 'react-native-svg-web',
         'react-native-callkeep': nullAlias,
-        'react-native-fs': nullAlias,
+        '@dr.pogodin/react-native-fs': nullAlias,
         'react-native-incall-manager': nullAlias,
         'react-native-share': nullAlias,
         'react-native-splash-screen': nullAlias,

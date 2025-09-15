@@ -186,6 +186,30 @@ public class BrekekeUtils: NSObject {
     }
   }
 
+  // ringtone
+  @objc
+  func getRingtoneOptions(_ resolve: RCTPromiseResolveBlock,
+                          rejecter _: RCTPromiseRejectBlock) {
+    var results : [String] = []
+    for ringtone in RingtoneUtils.staticRingtones {
+      results.append(ringtone)
+    }
+
+    let r = RingtoneUtils.getRingtonePicker()
+    resolve(results + r)
+  }
+
+  @objc
+  func validateRingtone(_ ringtone : String,
+                        username : String,
+                        tenant : String,
+                        host: String,
+                        port : String,
+                        resolver resolve: RCTPromiseResolveBlock,
+                        rejecter reject: RCTPromiseRejectBlock) {
+      resolve(RingtoneUtils.getRingtone(ringtone: ringtone, username: username, tenant: tenant, host: host, port: port))
+  }
+  
   // listener audio session event
   private func listenAudioSessionRoute() {
     NotificationCenter.default.addObserver(
