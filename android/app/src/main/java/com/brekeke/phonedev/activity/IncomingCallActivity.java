@@ -935,7 +935,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
-    boolean isLargeDevice = height > 1200;
+    boolean isLargeDevice = height > 1280;
     int flexValue = height / 7;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
@@ -943,25 +943,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
-        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+        R.id.view_time, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 5);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.view_time, ConstraintSet.BOTTOM, 10);
     constraintSet.connect(
         R.id.view_call_manage_controls,
         ConstraintSet.BOTTOM,
         R.id.view_button_end,
         ConstraintSet.TOP,
-        isLargeDevice ? flexValue / 2 : 30);
-    constraintSet.connect(
-        R.id.card_avatar_talking,
-        ConstraintSet.TOP,
-        ConstraintSet.PARENT_ID,
-        ConstraintSet.TOP,
-        (int) (flexValue / 1.1));
+        isLargeDevice ? flexValue / 2 : 10);
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-        isLargeDevice ? flexValue / 2 : 30);
+        isLargeDevice ? flexValue / 2 : 10);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1347,7 +1343,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
     btnChat.setVisibility(View.VISIBLE);
-    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
     } else {
       vCardAvatarTalking.setVisibility(View.VISIBLE);

@@ -15,7 +15,6 @@ export const buildWebViewSource = (uri: string): WebViewSource => ({
 export const isAndroid = Platform.OS === 'android'
 export const isIos = Platform.OS === 'ios'
 export const isWeb = Platform.OS === 'web'
-export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
 
 // timeout
 export const defaultTimeout = 300 // 0.3 seconds
