@@ -26,7 +26,7 @@ const css = StyleSheet.create({
     ...v.boxShadow,
   },
   Circle__enabled: {
-    left: null as any,
+    left: 'auto',
     right: -1,
     backgroundColor: v.colors.primary,
   },

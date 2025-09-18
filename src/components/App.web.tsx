@@ -17,7 +17,7 @@ import { BrekekeGradient } from '#/components/BrekekeGradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { bundleIdentifier, isWeb } from '#/config'
-import { getWebRootIdProps, isEmbed, webRootId } from '#/embed/polyfill'
+import { isEmbed, webRootId } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
@@ -57,6 +57,7 @@ const css = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    overflow: 'hidden',
   },
   WebApp_Logo: {
     width: 80,
@@ -142,11 +143,7 @@ export const App = () => {
     )
   }
   const Container = isBrowser ? View : BrekekeGradient
-  return (
-    <Container style={css.WebApp} {...getWebRootIdProps()}>
-      {child}
-    </Container>
-  )
+  return <Container style={css.WebApp}>{child}</Container>
 }
 
 export default App

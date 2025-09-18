@@ -5,7 +5,6 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-import { getWebRootIdProps } from '#/embed/polyfill'
 
 interface RootViewProps {
   children: ReactNode
@@ -20,20 +19,13 @@ const css = StyleSheet.create({
 export const RootView = memo(({ children }: RootViewProps) => {
   const s = [StyleSheet.absoluteFill, css.App]
 
-  const webRootProps = getWebRootIdProps()
   if (isWeb) {
-    return (
-      <View style={s} {...webRootProps}>
-        {children}
-      </View>
-    )
+    return <View style={s}>{children}</View>
   }
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={s} {...webRootProps}>
-        {children}
-      </SafeAreaView>
+      <SafeAreaView style={s}>{children}</SafeAreaView>
     </SafeAreaProvider>
   )
 })

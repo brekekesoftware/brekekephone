@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { buildCustomPageUrl } from '#/api/pbx'
 import { ctx } from '#/stores/ctx'
 
 @observer
@@ -13,7 +12,7 @@ export class PageCustomPage extends Component<{ id: string }> {
       return
     }
 
-    const url = await buildCustomPageUrl(cp.url)
+    const url = await ctx.pbx.buildCustomPageUrl(cp.url)
     ctx.auth.updateCustomPage({ ...cp, url })
     ctx.auth.customPageLoadings[cp.id] = true
   }

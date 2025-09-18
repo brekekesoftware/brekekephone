@@ -3,11 +3,6 @@ import { Component } from 'react'
 import { Platform, StyleSheet } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '#/api/customPage'
-import {
-  buildCustomPageUrl,
-  rebuildCustomPageUrlNonce,
-  rebuildCustomPageUrlPbxToken,
-} from '#/api/pbx'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/CustomPageWebView'
 import { Layout } from '#/components/Layout'
@@ -60,7 +55,7 @@ export class PageCustomPageView extends Component<{
     if (!cp) {
       return
     }
-    const url = rebuildCustomPageUrlNonce(cp.url)
+    const url = ctx.pbx.rebuildCustomPageUrlNonce(cp.url)
     ctx.auth.updateCustomPage({ ...cp, url })
   }
   reloadPageWithNewToken = async () => {
@@ -75,12 +70,12 @@ export class PageCustomPageView extends Component<{
 
     // should check if the url is not built in case pbx reconnect
     if (!isCustomPageUrlBuilt(cp.url)) {
-      const url = await buildCustomPageUrl(cp.url)
+      const url = await ctx.pbx.buildCustomPageUrl(cp.url)
       ctx.auth.updateCustomPage({ ...cp, url })
       return
     }
 
-    const url = await rebuildCustomPageUrlPbxToken(cp.url)
+    const url = await ctx.pbx.rebuildCustomPageUrlPbxToken(cp.url)
     ctx.auth.updateCustomPage({ ...cp, url })
   }
 
