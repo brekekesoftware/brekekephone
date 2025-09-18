@@ -19,3 +19,4 @@ export const isWeb = Platform.OS === 'web'
 // timeout
 export const defaultTimeout = 300 // 0.3 seconds
 export const retryInterval = 300 // 0.3 seconds
+export const holdingTimeout = 500 // 0.5 seconds
