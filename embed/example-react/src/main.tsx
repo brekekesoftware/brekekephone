@@ -1,0 +1,89 @@
+import './main.css'
+
+declare global {
+  interface Window {
+    Brekeke: any
+    _BrekekePhoneEmbedImports: any
+  }
+}
+
+const { observer } = window._BrekekePhoneEmbedImports['mobx-react']
+const { useEffect, useRef } = window._BrekekePhoneEmbedImports['react']
+const { createRoot } = window._BrekekePhoneEmbedImports['react-dom/client']
+
+const brekekePhoneDiv = document.getElementById('brekeke_phone')
+const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
+  autoLogin: true,
+  clearExistingAccounts: false,
+  accounts: [
+    {
+      hostname: 'YOUR_PBX_HOSTNAME',
+      port: 'YOUR_PBX_PORT',
+      tenant: 'TENANT',
+      username: 'USERNAME',
+      password: 'PASSWORD',
+      uc: true,
+    },
+  ],
+})
+const ctx = phone.getCurrentAccountCtx()
+const version = phone.getCurrentVersion()
+
+const App = observer(() => (
+  <div className='app'>
+    <span>Web Phone - {version.webphone} | </span>
+    <span>JsSIP - {version.jssip} | </span>
+    <span>{version.bundleIdentifier} </span>
+    <hr />
+    <span>Status: </span>
+    <span>PBX - {ctx.auth.pbxState} | </span>
+    <span>SIP - {ctx.auth.sipState} | </span>
+    <span>Calls - {ctx.call.calls.length} </span>
+    <hr />
+    {ctx.call.calls.map(c => (
+      <Call call={c} />
+    ))}
+  </div>
+))
+
+const reactRootDiv = document.getElementById('root')
+createRoot(reactRootDiv).render(<App />)
+
+const Call = observer(({ call }) => (
+  <div className='call-item'>
+    <span className='call-from'>
+      Call Display Name: {call.getDisplayName()}
+    </span>
+    {call.incoming && !call.answered && (
+      <button className='call-answer' onClick={() => call.answer()}>
+        Answer
+      </button>
+    )}
+    <button className='call-hangup' onClick={() => call.hangupWithUnhold()}>
+      Hangup
+    </button>
+    <div className='call-video-items'>
+      <div>
+        My camera:
+        <Video stream={call.localStreamObject} />
+      </div>
+      {call.videoClientSessionTable.map(v => (
+        <div>
+          {v.user}'s camera:
+          <Video stream={v.remoteStreamObject} />
+        </div>
+      ))}
+    </div>
+    <hr />
+  </div>
+))
+
+const Video = observer(({ stream }) => {
+  const r = useRef()
+  useEffect(() => {
+    if (r.current && stream) {
+      r.current.srcObject = stream
+    }
+  }, [r.current, stream])
+  return <video className='video-item' ref={r} playsInline autoPlay />
+})

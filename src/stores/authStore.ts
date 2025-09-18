@@ -10,8 +10,7 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '#/brekekejs'
-import { currentVersion } from '#/components/variables'
-import { bundleIdentifier, isIos, isWeb } from '#/config'
+import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account, AccountUnique, RecentCall } from '#/stores/accountStore'
 import {
