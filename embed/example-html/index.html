@@ -3,74 +3,72 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Embed Example</title>
+    <title>Brekeke Phone Embed - Example HTML</title>
 
     <style>
-      #web_phone_embed_div {
-        /* must display flex */
-        display: flex;
-        /* others are customizable */
+      #root,
+      #brekeke_phone {
         position: fixed;
         top: 0;
         bottom: 0;
-        left: 0;
-        width: 100%;
-        max-width: 500px;
       }
-      .brekeke_phone_component_hidden {
-        visibility: hidden;
-        pointer-events: none;
+      #root {
+        left: 0;
+        right: 50%;
+        border-right: 1px solid black;
+      }
+      #brekeke_phone {
+        left: 50%;
+        right: 0;
+        display: flex;
+      }
+
+      .app {
+        margin: 10px;
+      }
+
+      .call-answer {
+        color: green;
+      }
+      .call-hangup {
+        color: red;
+      }
+      .call-answer,
+      .call-hangup {
+        margin-left: 10px;
+      }
+
+      .video-item {
+        display: block;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 3px;
+        overflow: hidden;
+        background-color: black;
+        margin-bottom: 10px;
       }
     </style>
+
+    <script type="text/javascript">
+      window._BrekekePhoneCaptureConsole = true
+    </script>
+    <script
+      type="text/javascript"
+      src="./brekeke_phone2.16.4/webphone.js"
+    ></script>
   </head>
 
   <body>
-    <div id="web_phone_embed_div"></div>
+    <div id="brekeke_phone"></div>
+    <div id="root"></div>
   </body>
 
-  <!-- here you can globally configure some property
-      need to inject this snippet BEFORE webphone.js -->
   <script type="text/javascript">
-    window._BrekekePhoneCaptureConsole = true
-  </script>
-  <script type="text/javascript" src="./webphone.js"></script>
-
-  <!-- here the actual code to use the embed webphone.js -->
-  <script type="text/javascript">
-    // you need to create div in your html code like this example and get it
-    var div = document.getElementById('web_phone_embed_div')
-
-    // init a new Brekeke Phone instance to use
-    var phone = window.Brekeke.Phone.render(div, {
-      // login automatically, default false
-      // using the first one in the accounts list you specified
-      // when accounts are not specified and it has existing accounts
-      //    it will login to the last recently used
+    var brekekePhoneDiv = document.getElementById('brekeke_phone')
+    var phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
       autoLogin: true,
-      // clear all the existing accounts, default false
-      // if false, the new specified accounts will overwrite the duplicated entries
-      //    based on unique (host, port, tenant, user)
       clearExistingAccounts: false,
-      // specify which pal events you want to listen
-      // see further below for detailed handler implementation
-      palEvents: [
-        'notify_serverstatus',
-        'onClose',
-        'onError',
-        'notify_status',
-        // ...
-      ],
-      // hostname:              string
-      // port:                  string
-      // tenant:                string - optional
-      // username:              string
-      // password:              string
-      // phoneIndex:            number 1-4 - optional - default 4
-      // uc:                    boolean - optional - default false
-      // ucDisplayOfflineUsers: boolean - optional - default false
-      // parks:                 string[] - optional
-      // parkNames:             string[] - optional
-      // pushNotification:      boolean - optional - default false
       accounts: [
         {
           hostname: 'YOUR_PBX_HOSTNAME',
@@ -78,142 +76,126 @@
           tenant: 'TENANT',
           username: 'USERNAME',
           password: 'PASSWORD',
+          uc: true,
         },
       ],
-      // pal params
-      'webphone.pal.param.user': 'user1,user2,user3',
-      'webphone.pal.param.line': 'line1,line2,line3',
-      'webphone.pal.param.foo': 'bar',
     })
+    var ctx = phone.getCurrentAccountCtx()
+    var version = phone.getCurrentVersion()
 
-    // note: MULTIPLE INSTANCES WILL NOT WORK. NOT SUPPORTED YET:
-    // var phone1 = window.Brekeke.Phone.render(div1, options1)
-    // var phone2 = window.Brekeke.Phone.render(div2, options2)
+    var imports = window._BrekekePhoneEmbedImports
+    var { observer } = imports['mobx-react']
+    var { useEffect, useRef, createElement: jsx } = imports['react']
+    var { createRoot } = imports['react-dom/client']
 
-    // prompt for permission if needed
-    phone.promptBrowserPermission()
+    var App = observer(() =>
+      jsx('div', {
+        className: 'app',
+        children: [
+          // version
+          jsx('span', {
+            children: ['Web Phone - ', version.webphone, ' | '],
+          }),
+          jsx('span', {
+            children: ['JsSIP - ', version.jssip, ' | '],
+          }),
+          jsx('span', {
+            children: [version.bundleIdentifier, ' '],
+          }),
+          jsx('hr'),
 
-    // set custom ringtone url
-    var ringtoneUrl = ''
-    phone.setIncomingRingtone(ringtoneUrl)
+          // connection status
+          jsx('span', {
+            children: 'Status: ',
+          }),
+          jsx('span', {
+            children: ['PBX - ', ctx.auth.pbxState, ' | '],
+          }),
+          jsx('span', {
+            children: ['SIP - ', ctx.auth.sipState, ' | '],
+          }),
+          jsx('span', {
+            children: ['Calls - ', ctx.call.calls.length, ' '],
+          }),
+          jsx('hr'),
 
-    // or if we manually show the prompt, we can accept the permission on user click
-    // phone.acceptBrowserPermission()
+          // display all calls
+          ctx.call.calls.map(c => jsx(Call, { call: c })),
+        ],
+      }),
+    )
 
-    // hide/show the instance via the div, using the above example css in <style> tag
-    div.classList.add('brekeke_phone_component_hidden')
-    div.classList.remove('brekeke_phone_component_hidden')
+    var reactRootDiv = document.getElementById('root')
+    createRoot(reactRootDiv).render(jsx(App))
 
-    // get the raw pal instance from pbx
-    // when login, it will construct the pal and you can access via this event
-    // note: THIS EVENT CAN FIRE MULTIPLE TIMES: if retry on login failed
-    //    or pal params changed
-    phone.on('pal', async pal => {
-      // pal is from window.Brekeke.pbx.getPal
-      // console log to see all details
-      console.log('phone.on.pal', pal)
-      // get the current account to see which account has been logged in
-      // account fields can be found github Brekeke Phone src/stores/accountStore.ts
-      var currentAccount = phone.getCurrentAccount()
-      console.log('phone.on.pal currentAccount:', currentAccount.pbxUsername)
-      // you can call pal method from this instance using promise:
-      var exampleCallPalMethodCondition = false
-      if (exampleCallPalMethodCondition) {
-        var res = await pal.call_pal('name', {
-          foo: 'bar',
-        })
-        console.log('pal.call_pal res:', res)
-      }
+    var Call = observer(({ call }) =>
+      jsx('div', {
+        className: 'call-item',
+        children: [
+          // call title
+          jsx('span', {
+            className: 'call-from',
+            children: ['Call Display Name: ', call.getDisplayName()],
+          }),
+
+          // answer, hangup this call
+          call.incoming &&
+            !call.answered &&
+            jsx('button', {
+              className: 'call-answer',
+              onClick: () => call.answer(),
+              children: 'Answer',
+            }),
+          jsx('button', {
+            className: 'call-hangup',
+            onClick: () => call.hangupWithUnhold(),
+            children: 'Hangup',
+          }),
+
+          // all participants' video in this call
+          jsx('div', {
+            className: 'call-video-items',
+            children: [
+              jsx('div', {
+                children: [
+                  'My camera:',
+                  jsx(Video, {
+                    stream: call.localStreamObject,
+                  }),
+                ],
+              }),
+              call.videoClientSessionTable.map(v =>
+                jsx('div', {
+                  children: [
+                    v.user,
+                    "'s camera:",
+                    jsx(Video, {
+                      stream: v.remoteStreamObject,
+                    }),
+                  ],
+                }),
+              ),
+            ],
+          }),
+
+          jsx('hr'),
+        ],
+      }),
+    )
+
+    var Video = observer(({ stream }) => {
+      var r = useRef()
+      useEffect(() => {
+        if (r.current && stream) {
+          r.current.srcObject = stream
+        }
+      }, [r.current, stream])
+      return jsx('video', {
+        className: 'video-item',
+        ref: r,
+        playsInline: true,
+        autoPlay: true,
+      })
     })
-
-    // listen to pal events like: notify_serverstatus...
-    // note: THESE EVENTS MUST BE REGISTERED in the above palEvents param
-    var notify_serverstatus = e => {
-      // your logic here...
-      console.log('pal.notify_serverstatus', e)
-    }
-    phone.on('pal.notify_serverstatus', notify_serverstatus)
-
-    var notify_status = e => {
-      // your logic here...
-      console.log('pal.notify_status', e)
-    }
-    phone.on('pal.notify_status', notify_status)
-
-    // later you can cleanup those listeners
-    var exampleCleanupListenersCondition = false
-    if (exampleCleanupListenersCondition) {
-      // remove listener individually
-      phone.removeListener('pal.notify_serverstatus', notify_serverstatus)
-      // remove all listeners for this event
-      phone.removeAllListeners('pal.notify_serverstatus')
-      // remove all listeners for all possible events:
-      // pal, webrtcclient, call, call_update, call_end, pal.notify_serverstatus, ...
-      phone.removeAllListeners()
-    }
-
-    // get the raw instance from webrtcclient.js
-    // when account login, it will construct the client and you can access via this event
-    phone.on('webrtcclient', async client => {
-      // client is an instance of window.Brekeke.WebrtcClient.Phone
-      // console log to see all details
-      console.log('phone.on.webrtcclient', client)
-      // here you can access to inner sip object:
-      console.log('client._ua', client._ua)
-    })
-
-    phone.on('call', c => {
-      // console log to see all details
-      console.log('phone.on.call', c)
-      // here you manually can show the UI
-      div.classList.remove('brekeke_phone_component_hidden')
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
-    phone.on('call_update', c => {
-      // all fields same with the above, identified by c.id
-      console.log('phone.on.call_update', c)
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
-    phone.on('call_end', c => {
-      // all fields same with the above, identified by c.id
-      console.log('phone.on.call_end', c)
-      // here you can manually hide the UI if no running call
-      if (!phone.getRunningCalls().length) {
-        div.classList.add('brekeke_phone_component_hidden')
-      }
-      // access to the raw session to get more data
-      c.rawSession.incomingMessage.getHeader('X-PBX-Session-Info')
-    })
-
-    // make outgoing call
-    // the new call will be notified via above event phone.on('call', ...)
-    var exampleMakeCallCondition = false
-    if (exampleMakeCallCondition) {
-      var options = {
-        extraHeaders: ['X-Foo: foo', 'X-Bar: bar'],
-      }
-      var withVideo = true
-      phone.call('number', options, withVideo)
-    }
-
-    // restart the instance
-    // it will logout the current account if any, and relogin with the new options
-    // same options shape from window.Brekeke.Phone.render(div, options)
-    var exampleRestartCondition = false
-    if (exampleRestartCondition) {
-      phone.restart(options)
-    }
-
-    // cleanup the instance
-    // it will logout the current account if any, and unmount all the dom nodes from the div
-    var exampleCleanupCondition = false
-    if (exampleCleanupCondition) {
-      phone.cleanup()
-    }
-
-    // attach to window so you can test and debug in devtool
-    window._brekeke_phone = phone
   </script>
 </html>
