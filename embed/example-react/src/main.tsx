@@ -7,10 +7,6 @@ declare global {
   }
 }
 
-const { observer } = window._BrekekePhoneEmbedImports['mobx-react']
-const { useEffect, useRef } = window._BrekekePhoneEmbedImports['react']
-const { createRoot } = window._BrekekePhoneEmbedImports['react-dom/client']
-
 const brekekePhoneDiv = document.getElementById('brekeke_phone')
 const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
   autoLogin: true,
@@ -29,17 +25,24 @@ const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
 const ctx = phone.getCurrentAccountCtx()
 const version = phone.getCurrentVersion()
 
+const imports = window._BrekekePhoneEmbedImports
+const { observer } = imports['mobx-react']
+const { useEffect, useRef } = imports['react']
+const { createRoot } = imports['react-dom/client']
+
 const App = observer(() => (
   <div className='app'>
     <span>Web Phone - {version.webphone} | </span>
     <span>JsSIP - {version.jssip} | </span>
     <span>{version.bundleIdentifier} </span>
     <hr />
+
     <span>Status: </span>
     <span>PBX - {ctx.auth.pbxState} | </span>
     <span>SIP - {ctx.auth.sipState} | </span>
     <span>Calls - {ctx.call.calls.length} </span>
     <hr />
+
     {ctx.call.calls.map(c => (
       <Call call={c} />
     ))}
@@ -54,6 +57,7 @@ const Call = observer(({ call }) => (
     <span className='call-from'>
       Call Display Name: {call.getDisplayName()}
     </span>
+
     {call.incoming && !call.answered && (
       <button className='call-answer' onClick={() => call.answer()}>
         Answer
@@ -62,6 +66,7 @@ const Call = observer(({ call }) => (
     <button className='call-hangup' onClick={() => call.hangupWithUnhold()}>
       Hangup
     </button>
+
     <div className='call-video-items'>
       <div>
         My camera:
