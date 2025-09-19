@@ -203,25 +203,17 @@ public class BrekekeUtils: NSObject {
         try session.setMode(.default)
         try session.setActive(true)
       }
-
       if let o = session.currentRoute.outputs.first {
         if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o
           .portType {
           return
         }
         BrekekeUtils.output["output"] = o.portType
-        if o.portType == .builtInSpeaker {
-          try session.overrideOutputAudioPort(.speaker)
-        } else if o.portType == .builtInReceiver {
-          try session.overrideOutputAudioPort(.none)
-        }
-
         BrekekeEmitter.emit(
           name: "onAudioRouteChange",
           data: ["isSpeakerOn": o.portType == .builtInSpeaker]
         )
       }
-
     } catch {
       BrekekeUtils.output.removeAll()
     }
