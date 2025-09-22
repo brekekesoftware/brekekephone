@@ -255,21 +255,6 @@ export const Field: FC<
     maxLength?: number
   }>
 > = observer(({ ...props }) => {
-  if (props.isGroup) {
-    return (
-      <View
-        style={[
-          css.Field,
-          css.Field__group,
-          props.hasMargin && css.Field__groupMargin,
-        ]}
-      >
-        <RnText small style={css.Field_LabelTextGroup}>
-          {props.label}
-        </RnText>
-      </View>
-    )
-  }
   // handle enable/disable input Park
   const disablePark = props.type === 'PARK' && props.disabled
 
@@ -296,6 +281,23 @@ export const Field: FC<
   if (!inputRefName.current && $.isParkNameFocusing) {
     $.set('isParkNameFocusing', false)
   }
+
+  if (props.isGroup) {
+    return (
+      <View
+        style={[
+          css.Field,
+          css.Field__group,
+          props.hasMargin && css.Field__groupMargin,
+        ]}
+      >
+        <RnText small style={css.Field_LabelTextGroup}>
+          {props.label}
+        </RnText>
+      </View>
+    )
+  }
+
   if (props.onCreateBtnPress) {
     Object.assign(props, {
       iconRender: () => (
