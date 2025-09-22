@@ -275,14 +275,15 @@ export const Field: FC<
   }
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
-  if (!inputRef.current && $.isFocusing) {
+  const isGroup = props.isGroup
+  if (!inputRef.current && $.isFocusing && !isGroup) {
     $.set('isFocusing', false)
   }
-  if (!inputRefName.current && $.isParkNameFocusing) {
+  if (!inputRefName.current && $.isParkNameFocusing && !isGroup) {
     $.set('isParkNameFocusing', false)
   }
 
-  if (props.isGroup) {
+  if (isGroup) {
     return (
       <View
         style={[
