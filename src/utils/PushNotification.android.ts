@@ -55,6 +55,7 @@ const onNotification = async (
     console.error('PushNotification.android.ts onNotification error:', err)
   }
 }
+const notificationCounter = 0
 
 export const PushNotification = {
   register: async (initApp: Function) => {
@@ -123,7 +124,10 @@ export const PushNotification = {
 
       events.registerNotificationOpened(
         (n: Notification, completion: Function, action: any) => {
-          const payload = n.payload?.payload || n.payload
+          const payload =
+            n.payload?.payload ||
+            n.payload?.pushNotification?.payload ||
+            n.payload
           onNotification(payload, initApp, true)
         },
       )

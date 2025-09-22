@@ -13,6 +13,29 @@ index f9c858b..94ea188 100644
  
  public abstract class NotificationManagerCompatFacade {
      public static NotificationManagerCompat from(@NonNull Context context) {
+diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
+index 1e7e871..52c8939 100644
+--- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
++++ b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
+@@ -19,11 +19,15 @@ public class NotificationIntentAdapter {
+             intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
+             return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+         } else {
++            // Modified: Removed TaskStackBuilder to avoid recreating MainActivity when tapping notification from background.
++            // TaskStackBuilder can cause the existing activity to be destroyed and recreated, leading to app restart.
++            // Using PendingIntent.getActivity directly simplifies the process and allows the existing activity to resume if possible.
+             Intent mainActivityIntent = appContext.getPackageManager().getLaunchIntentForPackage(appContext.getPackageName());
+             mainActivityIntent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
+-            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(appContext);
+-            taskStackBuilder.addNextIntentWithParentStack(mainActivityIntent);
+-            return taskStackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
++            
++            // Direct PendingIntent creation without TaskStackBuilder to prevent unnecessary activity recreation.
++            // FLAG_UPDATE_CURRENT ensures the PendingIntent is updated if it exists, and FLAG_IMMUTABLE for security on Android 12+.
++            return PendingIntent.getActivity(appContext, (int) System.currentTimeMillis(), mainActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+         }  
+     }
+ 
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
 index ac04274..d6741c3 100644
 --- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
