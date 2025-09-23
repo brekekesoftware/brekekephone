@@ -255,21 +255,6 @@ export const Field: FC<
     maxLength?: number
   }>
 > = observer(({ ...props }) => {
-  if (props.isGroup) {
-    return (
-      <View
-        style={[
-          css.Field,
-          css.Field__group,
-          props.hasMargin && css.Field__groupMargin,
-        ]}
-      >
-        <RnText small style={css.Field_LabelTextGroup}>
-          {props.label}
-        </RnText>
-      </View>
-    )
-  }
   // handle enable/disable input Park
   const disablePark = props.type === 'PARK' && props.disabled
 
@@ -290,12 +275,34 @@ export const Field: FC<
   }
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
+  const isGroup = props.isGroup
+  // Fix: Move this conditional rendering logic outside of any hooks
+  // React hooks must be called in the same order every time the component renders
+  // This early return prevents hooks that come after it from being called consistently
+  // causing the "Rules of Hooks" violation https://react.dev/warnings/invalid-hook-call-warning
+  if (isGroup) {
+    return (
+      <View
+        style={[
+          css.Field,
+          css.Field__group,
+          props.hasMargin && css.Field__groupMargin,
+        ]}
+      >
+        <RnText small style={css.Field_LabelTextGroup}>
+          {props.label}
+        </RnText>
+      </View>
+    )
+  }
+
   if (!inputRef.current && $.isFocusing) {
     $.set('isFocusing', false)
   }
   if (!inputRefName.current && $.isParkNameFocusing) {
     $.set('isParkNameFocusing', false)
   }
+
   if (props.onCreateBtnPress) {
     Object.assign(props, {
       iconRender: () => (
