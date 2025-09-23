@@ -107,6 +107,8 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
+  @observable ringtonePicker: RingtonePickerType = {}
+
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
     let d: TAccountDataInStorage | undefined
@@ -118,7 +120,7 @@ export class AccountStore {
       }
     }
     if (d) {
-      let { profileData: accountData, profiles: accounts } = d
+      let { profileData: accountData, profiles: accounts, ringtonePicker } = d
       if (Array.isArray(d)) {
         // lower version compatible
         accounts = d
@@ -137,6 +139,7 @@ export class AccountStore {
           )
         }
         this.accountData = uniqBy(accountData, 'id')
+        this.ringtonePicker = ringtonePicker ?? {}
       })
     }
     resolveFn?.()
@@ -155,6 +158,7 @@ export class AccountStore {
         jsonSafe({
           profiles,
           profileData: this.accountData,
+          ringtonePicker: this.ringtonePicker,
         }),
       )
     } catch (err) {
@@ -290,8 +294,12 @@ export class AccountStore {
     if (d) {
       return d
     }
+    const uniqueId = getAccountUniqueId(a)
+    if (!uniqueId) {
+      throw new Error('Account unique id is undefined')
+    }
     const newD = {
-      id: getAccountUniqueId(a),
+      id: uniqueId,
       accessToken: '',
       recentCalls: [],
       recentChats: [],
@@ -354,6 +362,7 @@ export type RecentCall = AccountData['recentCalls'][0]
 type TAccountDataInStorage = {
   profiles: Account[]
   profileData: AccountData[]
+  ringtonePicker: RingtonePickerType
 }
 
 type LastSignedInId = {
@@ -363,6 +372,10 @@ type LastSignedInId = {
   logoutPressed?: boolean
   uptime?: number
   autoSignInBrekekePhone?: boolean
+}
+
+export type RingtonePickerType = {
+  [fileName: string]: boolean
 }
 
 export const getLastSignedInId = async (

@@ -1,11 +1,21 @@
+import type { ReadDirResItemT } from '@dr.pogodin/react-native-fs'
+import {
+  appendFile,
+  DocumentDirectoryPath,
+  exists,
+  mkdir,
+  readDir,
+  readFile,
+  stat,
+  unlink,
+  writeFile,
+} from '@dr.pogodin/react-native-fs'
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
-import type { ReadDirItem } from 'react-native-fs'
-import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '#/components/Rn'
@@ -22,8 +32,10 @@ declare global {
   }
 }
 
+type ReadDirItem = ReadDirResItemT
+
 let store = null as any as DebugStore
-const LOG_DIR = !isWeb ? `${RNFS.DocumentDirectoryPath}` : ''
+const LOG_DIR = !isWeb ? `${DocumentDirectoryPath}` : ''
 const LOG_PREFIX = 'brekeke_phone_log_'
 
 const maximumBytes = 300000 // 300KB
@@ -53,18 +65,18 @@ export class DebugStore {
       return
     }
     const path = getFilePath(rootPath, fileName)
-    const fileExists = await RNFS.exists(path)
+    const fileExists = await exists(path)
     if (!fileExists) {
       // create the file with initial content
-      await RNFS.writeFile(path, '', 'utf8')
+      await writeFile(path, '', 'utf8')
       if (this.logFiles.length === maxFiles) {
         const f = this.logFiles.pop()
         if (f) {
-          await RNFS.unlink(f.path)
+          await unlink(f.path)
         }
       }
     }
-    const file = (await RNFS.stat(path)) as unknown as ReadDirItem
+    const file = (await stat(path)) as unknown as ReadDirItem
     // update the file info
     Object.assign(file, { path, name: fileName })
 
@@ -79,14 +91,14 @@ export class DebugStore {
   getLogFiles = async () => {
     try {
       // check if the directory exists
-      const dirExists = await RNFS.exists(LOG_DIR)
+      const dirExists = await exists(LOG_DIR)
       if (!dirExists) {
-        await RNFS.mkdir(LOG_DIR)
+        await mkdir(LOG_DIR)
         await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
         return
       }
       // get the list of files in the directory
-      const files = await RNFS.readDir(LOG_DIR)
+      const files = await readDir(LOG_DIR)
       const sortedFiles = files.filter(
         file => file.isFile() && file.name.startsWith(LOG_PREFIX),
       )
@@ -175,8 +187,8 @@ export class DebugStore {
     }
     const msg = this.logQueue.join('\n')
     this.logQueue = []
-    await RNFS.appendFile(this.currentFile.path, msg + '\n', 'utf8')
-    const { size } = (await RNFS.stat(
+    await appendFile(this.currentFile.path, msg + '\n', 'utf8')
+    const { size } = (await stat(
       this.currentFile.path,
     )) as unknown as ReadDirItem
     this.totalLogFiles = this.totalLogFiles + (size - this.currentFile.size)
@@ -197,7 +209,7 @@ export class DebugStore {
       })
     })
   openLogFileWithoutCatch = async (file: ReadDirItem) => {
-    const isFileExists = await RNFS.exists(file.path)
+    const isFileExists = await exists(file.path)
     if (!isFileExists) {
       return
     }
@@ -207,7 +219,7 @@ export class DebugStore {
     if (isIos) {
       url = file.path // only works with `file://...`
     } else {
-      const content = await RNFS.readFile(file.path, 'utf8')
+      const content = await readFile(file.path, 'utf8')
       const b64 = Buffer.from(content).toString('base64')
       url = `data:text/plain;base64,${b64}` // only works with base64
     }
@@ -232,7 +244,7 @@ export class DebugStore {
   clearLogFilesWithoutCatch = () =>
     Promise.all(
       this.logFiles.map((l, i) =>
-        RNFS.exists(l.path).then(e => (e ? RNFS.unlink(l.path) : undefined)),
+        exists(l.path).then(e => (e ? unlink(l.path) : undefined)),
       ),
     ).then(() => {
       this.logFiles = []

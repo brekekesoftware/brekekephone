@@ -15,6 +15,7 @@ public class Storage {
   private static String kAccountsAndData = "_api_profiles";
   private static String kAccounts = "profiles";
   private static String kData = "profileData";
+  private static String kPicker = "ringtonePicker";
 
   private static String read(String k) throws Exception {
     var ctx = Ctx.app();
@@ -33,6 +34,10 @@ public class Storage {
 
   public static JSONArray data() throws Exception {
     return accountsAndData().optJSONArray(kData);
+  }
+
+  public static JSONObject picker() throws Exception {
+    return accountsAndData().optJSONObject(kPicker);
   }
 
   // ==========================================================================
