@@ -201,7 +201,6 @@ public class BrekekeUtils: NSObject {
         try audioSession.setActive(true)
         return
       }
-
       if let o = rtcAudioSession.currentRoute.outputs.first {
         if !output.isEmpty && output["output"] == o
           .portType {
