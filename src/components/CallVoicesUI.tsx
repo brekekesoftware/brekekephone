@@ -104,9 +104,12 @@ export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
   }
   useEffect(() => {
     BrekekeUtils.playRBT(p.isLoudSpeaker)
-    return () => {
-      stopRingbackAndSyncSpeaker()
-    }
   }, [p.isLoudSpeaker])
+  useEffect(
+    () => () => {
+      stopRingbackAndSyncSpeaker()
+    },
+    [],
+  )
   return null
 }
