@@ -12,9 +12,7 @@ public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
   var audioSession: AVAudioSession!
   var rtcAudioSession: RTCAudioSession!
-  var debounceWorkItem: DispatchWorkItem?
-  static var output: [String: AVAudioSession.Port] = [:]
-
+  var output: [String: AVAudioSession.Port] = [:]
   override init() {
     super.init()
     audio = nil
@@ -27,6 +25,9 @@ public class BrekekeUtils: NSObject {
 
   @objc
   func webrtcSetAudioEnabled(_ enabled: Bool) {
+    if enabled == rtcAudioSession.isAudioEnabled {
+      return
+    }
     if enabled {
       rtcAudioSession.audioSessionDidActivate(audioSession)
     } else {
@@ -97,11 +98,9 @@ public class BrekekeUtils: NSObject {
     do {
       if audio != nil {
         if audio.isPlaying {
-          return ()
-        } else {
-          audio.stop()
-          audio = nil
+          audio?.volume = isLoudSpeaker ? 1.0 : 0.3
         }
+        return
       }
 
       // load ringback tone mp3 file
@@ -122,15 +121,13 @@ public class BrekekeUtils: NSObject {
       audio?.numberOfLoops = -1
       audio?.volume = isLoudSpeaker ? 1.0 : 0.3
       audio?.prepareToPlay()
-
       try audioSession.setCategory(
         .playAndRecord,
-        mode: .voiceChat,
-        options: [.allowBluetooth, .defaultToSpeaker, .mixWithOthers]
+        mode: .default,
+        options: [.allowBluetooth, .allowBluetoothA2DP]
       )
       try audioSession.setActive(true)
       try audioSession.overrideOutputAudioPort(isLoudSpeaker ? .speaker : .none)
-
       audio?.play()
       print("BrekekeUtils.playRBT: Playing, loudspeaker=\(isLoudSpeaker)")
     } catch {
@@ -196,26 +193,27 @@ public class BrekekeUtils: NSObject {
     )
   }
 
-  @objc private func handleAudioRouteChange(_: Notification) {
-    let session = AVAudioSession.sharedInstance()
+  @objc private func handleAudioRouteChange(_ notification: Notification) {
     do {
-      if session.mode == .voiceChat {
-        try session.setMode(.default)
-        try session.setActive(true)
+      if rtcAudioSession.mode == AVAudioSession.Mode.voiceChat.rawValue {
+        try audioSession.setMode(.default)
+        try audioSession.setActive(true)
+        return
       }
-      if let o = session.currentRoute.outputs.first {
-        if !BrekekeUtils.output.isEmpty && BrekekeUtils.output["output"] == o
+      if let o = rtcAudioSession.currentRoute.outputs.first {
+        if !output.isEmpty && output["output"] == o
           .portType {
           return
         }
-        BrekekeUtils.output["output"] = o.portType
+
+        output["output"] = o.portType
         BrekekeEmitter.emit(
           name: "onAudioRouteChange",
           data: ["isSpeakerOn": o.portType == .builtInSpeaker]
         )
       }
     } catch {
-      BrekekeUtils.output.removeAll()
+      output.removeAll()
     }
   }
 }
