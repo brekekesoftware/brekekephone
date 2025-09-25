@@ -1,3 +1,8 @@
+#### 2.16.5
+
+- Embed
+  - Fix it should cleanup
+
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)

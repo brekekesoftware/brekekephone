@@ -50,7 +50,7 @@ export class EmbedApi extends EventEmitter {
   cleanup = () => {
     ctx.auth.signOutWithoutSaving()
     if (this._rootTag) {
-      AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag as any)
+      AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag)
     }
   }
 
@@ -58,7 +58,7 @@ export class EmbedApi extends EventEmitter {
    * private properties/methods
    */
 
-  _rootTag?: HTMLElement
+  _rootTag?: any
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
