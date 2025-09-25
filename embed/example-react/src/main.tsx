@@ -72,12 +72,19 @@ const Call = observer(({ call }) => (
         My camera:
         <Video stream={call.localStreamObject} />
       </div>
-      {call.videoClientSessionTable.map(v => (
-        <div>
-          {v.user}'s camera:
-          <Video stream={v.remoteStreamObject} />
-        </div>
-      ))}
+      {call.videoClientSessionTable.map(v => {
+        const audioEnabled = !call.remoteUserOptionsTable?.[v.user]?.muted?.main
+        const videoEnabled =
+          !call.remoteUserOptionsTable?.[v.user]?.muted?.videoClient
+        return (
+          <div>
+            <span>{v.user}'s camera:</span>
+            <span> audio={audioEnabled.toString()}</span>
+            <span> video={videoEnabled.toString()}</span>
+            <Video stream={v.remoteStreamObject} />
+          </div>
+        )
+      })}
     </div>
     <hr />
   </div>
