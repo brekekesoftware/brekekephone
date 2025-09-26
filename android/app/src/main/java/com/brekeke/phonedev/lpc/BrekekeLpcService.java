@@ -29,7 +29,7 @@ public class BrekekeLpcService extends Service {
   public static LpcModel.Settings settings;
   private static Intent iService;
   private static ConnectivityManager cm;
-
+  private ConnectivityManager.NetworkCallback networkCallback;
   @Override
   public void onCreate() {
     isServiceStarted = true;
@@ -115,20 +115,19 @@ public class BrekekeLpcService extends Service {
     stopForeground(true);
     // clear local config
     LpcUtils.writeConfig(this, "");
+    clearNetworkCallback();
   }
 
   @Override
   public boolean onUnbind(Intent intent) {
     stopLPCService(this);
-    clearNetworkCallback();
     return super.onUnbind(intent);
   }
 
   private void registerNetworkCallback() {
     cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     if (cm != null) {
-      cm.registerDefaultNetworkCallback(
-          new ConnectivityManager.NetworkCallback() {
+      cm.registerDefaultNetworkCallback(networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
               super.onAvailable(network);
@@ -158,9 +157,10 @@ public class BrekekeLpcService extends Service {
   }
 
   private void clearNetworkCallback() {
-    if (cm != null) {
-      cm.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback());
+    if (cm != null && networkCallback != null) {
+      cm.unregisterNetworkCallback(networkCallback);
       cm = null;
+      networkCallback = null;
     }
   }
 }
