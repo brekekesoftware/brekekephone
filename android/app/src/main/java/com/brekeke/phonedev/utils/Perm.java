@@ -101,7 +101,6 @@ public class Perm {
             // Permission check skipped: Non-MIUI device
             if (!LpcUtils.isMIUI()) {
               Emitter.debug("Permission check skipped: Non-MIUI device");
-                Log.d("Hoang", "Permission check skipped: Non-MIUI device");
               return true;
             }
             try {
