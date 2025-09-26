@@ -7,12 +7,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.bridge.Promise;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 // utils to manage permissions
 // see the related part in rn js for reference
@@ -90,10 +93,12 @@ public class Perm {
     handlers.put(
         AndroidLpc,
         new Handler() {
-          private static final int OP_BACKGROUND_START_ACTIVITY_MI_UI = 10021;
+          // ROM/Version: MIUI (Xiaomi)
+          private static final int OP_BACKGROUND_START_ACTIVITY = 10021;
 
           @Override
           public boolean check() {
+            // Permission check skipped: Non-MIUI device
             if (!LpcUtils.isMIUI()) {
               Emitter.debug("Permission check skipped: Non-MIUI device");
               return true;
