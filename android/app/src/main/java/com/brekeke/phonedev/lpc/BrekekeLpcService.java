@@ -122,7 +122,6 @@ public class BrekekeLpcService extends Service {
   @Override
   public boolean onUnbind(Intent intent) {
     stopLPCService(this);
-    clearNetworkCallback();
     return super.onUnbind(intent);
   }
 
