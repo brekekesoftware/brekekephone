@@ -25,7 +25,6 @@ export const AudioPlayer = observer(() => {
       videoRef.current.seek(0)
     }
   }, [isPlaying])
-
   return (
     <Video
       ref={videoRef}
