@@ -26,6 +26,11 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
+  func resetAudioSession() {
+    audioSessionManager.resetAudioConfiguration()
+  }
+
+  @objc
   func setProximityMonitoring(_ enabled: Bool) {
     DispatchQueue.main.async {
       if UIDevice.current.isProximityMonitoringEnabled != enabled {

@@ -4,21 +4,21 @@ import WebRTC
 @available(iOS 13.0, *)
 class AudioSessionManager: NSObject {
   static let shared = AudioSessionManager()
-
+  private let logger = Logger(
+    prependString: "AudioSessionManager",
+    subsystem: .general
+  )
   private var audioSession: AVAudioSession
   private var rtcAudioSession: RTCAudioSession
   private var output: [String: AVAudioSession.Port] = [:]
-  private var firstRtcAudioActived = false
 
   override init() {
     audioSession = AVAudioSession.sharedInstance()
     rtcAudioSession = RTCAudioSession.sharedInstance()
     super.init()
-
     rtcAudioSession.useManualAudio = true
     listenAudioSessionRoute()
-    firstRtcAudioActived = false
-    print("AudioSessionManager: initialized")
+    logger.log("initialized")
   }
 
   deinit {
@@ -26,10 +26,9 @@ class AudioSessionManager: NSObject {
   }
 
   func setupCorrectAudioConfiguration() {
-    print("AudioSessionManager: setupCorrectAudioConfiguration")
+    logger.log("setupCorrectAudioConfiguration")
     rtcAudioSession.lockForConfiguration()
     defer { rtcAudioSession.unlockForConfiguration() }
-
     let configuration = RTCAudioSessionConfiguration.webRTC()
     configuration.categoryOptions = [
       .allowBluetooth,
@@ -40,63 +39,67 @@ class AudioSessionManager: NSObject {
 
     do {
       try rtcAudioSession.setConfiguration(configuration)
-      print("AudioSessionManager: setupCorrectAudioConfiguration completed")
+      logger.log("setupCorrectAudioConfiguration completed")
     } catch {
-      print(
-        "AudioSessionManager: setupCorrectAudioConfiguration error: \(error)"
+      logger.log(
+        "setupCorrectAudioConfiguration error: \(error)"
       )
     }
   }
 
   func setAudioSessionActive(_ active: Bool) {
-    print("AudioSessionManager: setAudioSessionActive: \(active)")
+    logger.log("setAudioSessionActive: \(active)")
     rtcAudioSession.lockForConfiguration()
+    defer { rtcAudioSession.unlockForConfiguration() }
     do {
       try rtcAudioSession.setActive(active)
       rtcAudioSession.isAudioEnabled = active
-      print("AudioSessionManager: setAudioSessionActive completed")
+      logger.log("setAudioSessionActive completed")
     } catch {
-      print("AudioSessionManager: setAudioSessionActive error: \(error)")
+      logger.log("setAudioSessionActive error: \(error)")
     }
-    rtcAudioSession.unlockForConfiguration()
   }
 
   func resetAudioConfiguration() {
     do {
       try audioSession.setCategory(
-        .playAndRecord,
+        .playback,
         mode: .default,
-        options: [
-          .allowBluetooth,
-          .allowBluetoothA2DP,
-          .duckOthers,
-          .mixWithOthers,
-        ]
+        options: [.mixWithOthers]
       )
       try audioSession.setActive(true)
-      print("AudioSessionManager: resetAudioConfiguration completed")
+      logger.log("resetAudioConfiguration completed")
     } catch {
-      print("AudioSessionManager: resetAudioConfiguration error: \(error)")
+      logger.log("resetAudioConfiguration error: \(error)")
     }
   }
 
   func activateAudioSession() {
-    print("AudioSessionManager: activateAudioSession")
-    if !firstRtcAudioActived {
-      resetAudioConfiguration()
+    logger.log("activateAudioSession")
+    logger.log("rtcAudioSession.category: \(rtcAudioSession.category)")
+    let needsConfiguration = rtcAudioSession.category != AVAudioSession.Category
+      .playAndRecord.rawValue ||
+      !rtcAudioSession.categoryOptions.contains([
+        .allowBluetooth,
+        .allowBluetoothA2DP,
+        .duckOthers,
+        .mixWithOthers,
+      ])
+
+    if needsConfiguration {
+      logger.log("needsConfiguration")
       setupCorrectAudioConfiguration()
-      firstRtcAudioActived = true
     }
     setAudioSessionActive(true)
   }
 
   func deactivateAudioSession() {
-    print("AudioSessionManager: deactivateAudioSession")
+    logger.log("deactivateAudioSession")
     setAudioSessionActive(false)
   }
 
   func setAudioEnabled(_ enabled: Bool) {
-    print("AudioSessionManager: setAudioEnabled: \(enabled)")
+    logger.log("setAudioEnabled: \(enabled)")
     if enabled {
       activateAudioSession()
     } else {
@@ -122,7 +125,7 @@ class AudioSessionManager: NSObject {
   @objc private func handleAudioRouteChange(_: Notification) {
     if let o = audioSession.currentRoute.outputs.first {
       let outputType = o.portType.rawValue
-      print("AudioSessionManager: Audio route changed to \(outputType)")
+      logger.log("Audio route changed to \(outputType)")
 
       if !output.isEmpty && output["output"] == o.portType {
         return
@@ -134,7 +137,7 @@ class AudioSessionManager: NSObject {
       )
     } else {
       output.removeAll()
-      print("AudioSessionManager: No output found in current route")
+      logger.log("No output found in current route")
     }
   }
 }
