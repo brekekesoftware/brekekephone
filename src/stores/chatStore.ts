@@ -232,7 +232,7 @@ export class ChatStore {
     // show desktop notification for Web platform
     if (isWeb && this.getThreadConfig(threadId).isUnread && m.length === 1) {
       const messageNotification = name + ': ' + m[0]?.text || ''
-      webShowNotification(messageNotification, name)
+      webShowNotification(messageNotification, name, 15000)
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {

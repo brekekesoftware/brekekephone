@@ -272,6 +272,8 @@
   "answered by {{$0}}",
   "label",
   "park number",
+  "Voice call",
+  "Video call",
   "{{$0}} accounts in total",
   "{{$0}} at {{$1}}",
   "{{$0}} in background",

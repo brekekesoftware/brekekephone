@@ -1,13 +1,17 @@
 import { ctx } from '#/stores/ctx'
 
-export const webShowNotification = async (body: string, tag: string) => {
+export const webShowNotification = async (
+  body: string,
+  tag: string,
+  timeout?: number,
+) => {
   if (ctx.auth.pbxConfig?.['webphone.desktop.notification'] === 'false') {
     return
   }
   const notification = window.Brekeke.WebNotification
   const id = notification.showNotification({
     document,
-    timeout: 15000,
+    timeout,
     interval: 15000,
     title: ctx.global.productName,
     renotify: true,
