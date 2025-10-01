@@ -152,6 +152,17 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
+  @observable mutedVideo = false
+  getLocalVideoEnabled = () => this.localVideoEnabled && !this.mutedVideo
+  getRemoteVideoEnabled = (user?: string) => {
+    if (user) {
+      return !this.remoteUserOptionsTable?.[user]?.muted?.videoClient
+    }
+    return this.videoClientSessionTable.some(
+      v => !this.remoteUserOptionsTable?.[v.user]?.muted?.videoClient,
+    )
+  }
+
   toggleVideo = () => {
     const pbxUser = ctx.contact.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -208,7 +219,6 @@ export class Call {
   }
 
   @observable muted = false
-  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
