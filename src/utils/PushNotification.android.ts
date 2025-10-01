@@ -55,7 +55,6 @@ const onNotification = async (
     console.error('PushNotification.android.ts onNotification error:', err)
   }
 }
-const notificationCounter = 0
 
 export const PushNotification = {
   register: async (initApp: Function) => {
