@@ -1,3 +1,7 @@
+#### 2.16.6
+
+- Update web browser notification to match with UC desktop
+
 #### 2.16.5
 
 - Embed
