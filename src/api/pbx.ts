@@ -344,9 +344,9 @@ export class PBX extends EventEmitter {
     if (err === true) {
       return
     }
-    ctx.toast.internet(err)
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
+      ctx.toast.internet()
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
       ctx.authPBX.auth()
