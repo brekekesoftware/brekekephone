@@ -454,7 +454,7 @@ export class CallStore {
     if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
       webShowNotification(
-        intl`${c.remoteVideoEnabled ? 'Video call' : 'Voice call'}`,
+        c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
         name,
         name,
       )
