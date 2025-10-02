@@ -50,8 +50,8 @@ import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 const { width, height } = Dimensions.get('window')
-const minSizeH = height * 0.4
-const minSizeW = width * 0.9
+const minSizeH = height * 0.35
+const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 const css = StyleSheet.create({
@@ -88,7 +88,7 @@ const css = StyleSheet.create({
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
-    width: Dimensions.get('screen').width,
+    width,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
@@ -493,7 +493,7 @@ class PageCallManage extends Component<{
     const isShowAvatar =
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
-      ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
+      ? { flex: 1, maxHeight: height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
