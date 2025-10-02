@@ -340,19 +340,28 @@ export class PBX extends EventEmitter {
     },
   )
 
-  private checkTimeoutToReconnectPbx = async (err: Error | true) => {
+  private checkTimeoutToReconnectPbx = async (
+    err: Error | true,
+    method: keyof Pbx,
+  ) => {
     if (err === true) {
       return
     }
+    const isPingMethod = method === 'ping'
+    if (!isPingMethod) {
+      ctx.toast.internet(err)
+    }
     if (this.isPalTimeoutError(err)) {
       ctx.authPBX.dispose()
-      ctx.toast.internet()
+      if (isPingMethod) {
+        ctx.toast.internet()
+      }
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
       ctx.authPBX.auth()
-    } else {
-      this.pingActivityAt = Date.now()
+      return
     }
+    this.pingActivityAt = Date.now()
   }
 
   private wrapListenersWithLog = <T extends (...args: any[]) => void>(
@@ -481,7 +490,7 @@ export class PBX extends EventEmitter {
                 `PAL call error - method: ${method}, duration: ${end - start}ms, error:`,
                 err,
               )
-              this.checkTimeoutToReconnectPbx(err)
+              this.checkTimeoutToReconnectPbx(err, method)
             }
             reject(err)
           },
