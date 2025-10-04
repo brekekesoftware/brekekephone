@@ -566,7 +566,7 @@ index c8e7bbd..052f0ac 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..ced1257 100644
+index 786045f..d7fa591 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -47,7 +47,6 @@ @implementation RNCallKeep
@@ -577,7 +577,15 @@ index 786045f..ced1257 100644
  static CXProvider* sharedProvider;
  
  // should initialise in AppDelegate.m
-@@ -171,24 +170,22 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+@@ -59,6 +58,7 @@ - (instancetype)init
+     NSLog(@"[RNCallKeep][init]");
+ #endif
+     if (self = [super init]) {
++        _version = [[NSProcessInfo processInfo] operatingSystemVersion];
+         _isStartCallActionEventListenerAdded = NO;
+         _isReachable = NO;
+         if (_delayedEvents == nil) _delayedEvents = [NSMutableArray array];
+@@ -171,24 +171,22 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
              body, @"data",
              nil
          ];
@@ -778,10 +786,11 @@ index 786045f..ced1257 100644
      return providerConfiguration;
  }
  
-@@ -916,24 +849,10 @@ - (void)configureAudioSession
+@@ -915,31 +849,25 @@ - (void)configureAudioSession
+ #ifdef DEBUG
      NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
  #endif
- 
+-
 -    NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
 -    NSString *mode = AVAudioSessionModeDefault;
 -
@@ -798,14 +807,33 @@ index 786045f..ced1257 100644
 -
      AVAudioSession* audioSession = [AVAudioSession sharedInstance];
 -    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
-+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
++    NSString *currentCategory = audioSession.category;
++    AVAudioSessionCategoryOptions currentOptions = audioSession.categoryOptions;
++    AVAudioSessionCategoryOptions desiredOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionDuckOthers | AVAudioSessionCategoryOptionMixWithOthers;
  
 -    [audioSession setMode:mode error:nil];
-+    [audioSession setMode:AVAudioSessionModeDefault error:nil];
++    BOOL categoryMatches = [currentCategory isEqualToString:AVAudioSessionCategoryPlayAndRecord];
++    if (!categoryMatches) {
++        NSLog(@"[RNCallKeep][configureAudioSession] Setting category and options");
++        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:desiredOptions error:nil];
++        [audioSession setMode:AVAudioSessionModeDefault error:nil];
+             
+-    double sampleRate = 44100.0;
+-    [audioSession setPreferredSampleRate:sampleRate error:nil];
++        double sampleRate = 44100.0;
++        [audioSession setPreferredSampleRate:sampleRate error:nil];
+             
+-    NSTimeInterval bufferDuration = .005;
+-    [audioSession setPreferredIOBufferDuration:bufferDuration error:nil];
++        NSTimeInterval bufferDuration = .005;
++        [audioSession setPreferredIOBufferDuration:bufferDuration error:nil];
++    } else {
++        NSLog(@"[RNCallKeep][configureAudioSession] Category and options already correct, only activating");
++    }
+     [audioSession setActive:TRUE error:nil];
+ }
  
-     double sampleRate = 44100.0;
-     [audioSession setPreferredSampleRate:sampleRate error:nil];
-@@ -969,7 +888,7 @@ + (BOOL)application:(UIApplication *)application
+@@ -969,7 +897,7 @@ + (BOOL)application:(UIApplication *)application
  
  + (BOOL)application:(UIApplication *)application
  continueUserActivity:(NSUserActivity *)userActivity

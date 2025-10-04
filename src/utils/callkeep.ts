@@ -199,6 +199,10 @@ export const setupCallKeepEvents = async () => {
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
     ctx.call.updateBackgroundCalls()
+    const hasAnsweredCall = ctx.call.calls.some(c => c.answered)
+    if (!hasAnsweredCall) {
+      BrekekeUtils.resetAudioSession()
+    }
   }
   const didReceiveStartCallAction = async (
     e: EventsPayload['didReceiveStartCallAction'],
@@ -250,7 +254,12 @@ export const setupCallKeepEvents = async () => {
     eventEmitterIos.addListener(
       'onAudioRouteChange',
       ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
-        ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+        const hasCall = ctx.call.calls.some(
+          c => (c.incoming && c.answered) || !c.incoming,
+        )
+        if (hasCall) {
+          ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+        }
       },
     )
     return
