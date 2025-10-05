@@ -50,7 +50,7 @@ import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 const { width, height } = Dimensions.get('window')
-const minSizeH = height * 0.35
+const minSizeH = height * 0.3
 const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
