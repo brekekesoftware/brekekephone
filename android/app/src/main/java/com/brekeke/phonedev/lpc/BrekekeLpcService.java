@@ -30,6 +30,7 @@ public class BrekekeLpcService extends Service {
   private static Intent iService;
   private static ConnectivityManager cm;
   private ConnectivityManager.NetworkCallback networkCallback;
+
   @Override
   public void onCreate() {
     isServiceStarted = true;
@@ -127,32 +128,34 @@ public class BrekekeLpcService extends Service {
   private void registerNetworkCallback() {
     cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     if (cm != null) {
-      cm.registerDefaultNetworkCallback(networkCallback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(@NonNull Network network) {
-              super.onAvailable(network);
-              Emitter.debug("[BrekekeLpcService] Connection available");
-              if (iService != null && !isServiceStarted) {
-                if (LpcUtils.checkAppInBackground()) {
-                  Log.d(LpcUtils.TAG, "onAvailable: create React Context In Background");
-                  LpcUtils.createReactContextInBackground(
-                      (ReactApplication) getApplicationContext());
-                  BrekekeLpcSocket.con.onConnected();
+      cm.registerDefaultNetworkCallback(
+          networkCallback =
+              new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                  super.onAvailable(network);
+                  Emitter.debug("[BrekekeLpcService] Connection available");
+                  if (iService != null && !isServiceStarted) {
+                    if (LpcUtils.checkAppInBackground()) {
+                      Log.d(LpcUtils.TAG, "onAvailable: create React Context In Background");
+                      LpcUtils.createReactContextInBackground(
+                          (ReactApplication) getApplicationContext());
+                      BrekekeLpcSocket.con.onConnected();
+                    }
+                    startInService(iService);
+                    isServiceStarted = true;
+                    Emitter.debug("[BrekekeLpcService] Start service when network is available");
+                  }
                 }
-                startInService(iService);
-                isServiceStarted = true;
-                Emitter.debug("[BrekekeLpcService] Start service when network is available");
-              }
-            }
 
-            @Override
-            public void onLost(@NonNull Network network) {
-              super.onLost(network);
-              isServiceStarted = false;
-              Emitter.debug("[BrekekeLpcService] Connection lost");
-              Log.d(LpcUtils.TAG, "Connection lost");
-            }
-          });
+                @Override
+                public void onLost(@NonNull Network network) {
+                  super.onLost(network);
+                  isServiceStarted = false;
+                  Emitter.debug("[BrekekeLpcService] Connection lost");
+                  Log.d(LpcUtils.TAG, "Connection lost");
+                }
+              });
     }
   }
 
