@@ -43,6 +43,7 @@ import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.PN;
@@ -172,6 +173,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtConnectionStatus.setText(msg);
     if (isFailure) {
       txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_error));
+    } else {
+      txtConnectionStatus.setBackgroundColor(getColor(R.color.toast_warning));
     }
   }
 
@@ -195,7 +198,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       forceFinish();
       return;
     }
-
     timer = new Timer();
     uuid = data.get("callkeepUuid");
     callerName = PN.callerName(data);
@@ -206,6 +208,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     tenant = PN.tenant(data);
     host = PN.host(data);
     port = PN.port(data);
+    autoAnswer = BrekekeUtils.toBoolean(PN.autoAnswer(data));
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
@@ -336,6 +339,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     txtCallerName.setText(callerName);
     txtHeaderCallerName.setText(callerName);
     txtCallerNameHeader.setText(callerName);
+    txtConnectionStatus.setOnClickListener(this);
 
     updateLabels();
     if (autoAnswer) {
@@ -599,7 +603,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     if (vWebrtcVideo != null) {
       return;
     }
-    vWebrtcVideo = new WebRTCView(this);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return;
+    }
+    vWebrtcVideo = new WebRTCView(ctx);
     vWebrtcVideo.setLayoutParams(
         new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -643,7 +651,11 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private WebRTCView createNewRTCView(String streamUrl) {
-    WebRTCView rtcView = new WebRTCView(this);
+    var ctx = Ctx.rn();
+    if (ctx == null) {
+      return null;
+    }
+    WebRTCView rtcView = new WebRTCView(ctx);
     rtcView.setZOrder(1);
     rtcView.setObjectFit("cover");
     rtcView.setStreamURL(streamUrl);
@@ -923,7 +935,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
-    boolean isLargeDevice = height > 1200;
+    boolean isLargeDevice = height > 1280;
     int flexValue = height / 7;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
@@ -931,25 +943,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
-        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+        R.id.view_time, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 5);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.view_time, ConstraintSet.BOTTOM, 10);
     constraintSet.connect(
         R.id.view_call_manage_controls,
         ConstraintSet.BOTTOM,
         R.id.view_button_end,
         ConstraintSet.TOP,
-        isLargeDevice ? flexValue / 2 : 30);
-    constraintSet.connect(
-        R.id.card_avatar_talking,
-        ConstraintSet.TOP,
-        ConstraintSet.PARENT_ID,
-        ConstraintSet.TOP,
-        (int) (flexValue / 1.1));
+        isLargeDevice ? flexValue / 2 : 10);
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-        isLargeDevice ? flexValue / 2 : 30);
+        isLargeDevice ? flexValue / 2 : 10);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1266,7 +1274,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnVideoClick(v);
     } else if (id == R.id.btn_back) {
       onBtnBackPress(v);
+    } else if (id == R.id.txt_conection_status) {
+      onConnectionStatusClick(v);
     }
+  }
+
+  public void onConnectionStatusClick(View v) {
+    Emitter.emit("connectionRequest", "");
   }
 
   @Override
@@ -1302,6 +1316,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnRejectClick(v);
     } else if (id == R.id.btn_chat) {
       onBtnChatClick(v);
+    } else if (id == R.id.txt_conection_status) {
+      onRequestUnlock(v);
     }
   }
 
@@ -1327,7 +1343,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
     btnChat.setVisibility(View.VISIBLE);
-    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
     } else {
       vCardAvatarTalking.setVisibility(View.VISIBLE);
@@ -1459,6 +1475,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setImageTalkingUrl(String url, boolean _isLarge) {
+    if (url.equalsIgnoreCase(talkingAvatar)) {
+      return;
+    }
     talkingAvatar = url;
     isLarge = _isLarge;
     handleShowAvatarTalking();

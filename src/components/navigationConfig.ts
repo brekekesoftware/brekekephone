@@ -1,6 +1,7 @@
 import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
+import { isCustomPageUrlBuilt } from '#/api/customPage'
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -41,14 +42,16 @@ const getSettingSubMenus = (customPages: PbxCustomPage[], isLeft = false) =>
         c.pos.includes(isLeft ? 'left' : 'right') &&
         c.pos.split(',')?.[2],
     )
-    .sort(
-      (a, b) =>
-        parseInt(a.pos.split(',')?.[2]) - parseInt(b.pos.split(',')?.[2]),
-    )
+    .sort((a, b) => {
+      const aOrder = parseInt(a.pos.split(',')?.[2])
+      const bOrder = parseInt(b.pos.split(',')?.[2])
+      return isLeft ? aOrder - bOrder : bOrder - aOrder
+    })
     .map(i => ({ key: i.id, label: i.title, navFnKey: 'goToPageCustomPage' }))
 const genMenus = (customPages: PbxCustomPage[]) => {
   const settingSubMenusLeft = getSettingSubMenus(customPages, true)
   const settingSubMenusRight = getSettingSubMenus(customPages, false)
+
   const settingSubMenus = [
     ...settingSubMenusLeft,
     {
@@ -161,6 +164,25 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
           }
+        }
+
+        // should update custom page URL if not built
+        const updateCustomPageUrl = async (i: PbxCustomPage) => {
+          if (isCustomPageUrlBuilt(i.url)) {
+            return
+          }
+          const url = await ctx.pbx.buildCustomPageUrl(i.url)
+          ctx.auth.updateCustomPage({ ...i, url })
+          ctx.auth.customPageLoadings[i.id] = true
+        }
+
+        if (s.navFnKey === 'goToPageCustomPage') {
+          const cp = ctx.auth.getCustomPageById(s.key)
+          if (!cp) {
+            return
+          }
+          updateCustomPageUrl(cp)
+          ctx.auth.activeCustomPageId = s.key
         }
         // @ts-ignore
         ctx.nav[s.navFnKey]({ id: s.key })

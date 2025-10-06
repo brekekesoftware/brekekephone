@@ -4,6 +4,26 @@ declare global {
   }
 }
 
+export type EmbedPbxConfig = Partial<
+  Pick<
+    PbxGetProductInfoRes,
+    | 'webphone.useragent'
+    | 'webphone.http.useragent.product'
+    | 'webphone.resource-line'
+  >
+>
+export type EmbedPalConfig = {
+  // webphone.pal.param.*
+  [k: string]: string
+}
+export type EmbedSignInOptions = {
+  autoLogin?: boolean
+  clearExistingAccount?: boolean
+  palEvents?: string[]
+  accounts: EmbedAccount[]
+} & EmbedPbxConfig &
+  EmbedPalConfig
+
 export type Brekeke = {
   pbx: {
     getPal(wsUri: string, options: GetPalOptions): Pbx
@@ -12,7 +32,7 @@ export type Brekeke = {
     Phone: Sip
   }
   Phone: {
-    render: Function
+    render(rootTag: HTMLElement, options: EmbedSignInOptions): any
   }
   Phonebook: Phonebook
   WebNotification: WebNotification
@@ -431,7 +451,7 @@ export type MakeCallFn = (
   videoEnabled?: boolean,
   videoOptions?: object,
   exInfo?: string,
-) => void
+) => Promise<boolean>
 
 export type VideoOptions = {
   call: {

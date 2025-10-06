@@ -2,8 +2,12 @@ import EventEmitter from 'eventemitter3'
 import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parseParamsWithPrefix'
-import { _parseResourceLines } from '#/api/pbx'
-import type { MakeCallFn, PbxGetProductInfoRes } from '#/brekekejs'
+import type {
+  EmbedPbxConfig,
+  EmbedSignInOptions,
+  MakeCallFn,
+} from '#/brekekejs'
+import { bundleIdentifier, currentVersion, jssipVersion } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { getAccountUniqueId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -11,27 +15,6 @@ import { arrToMap } from '#/utils/arrToMap'
 import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
-
-type EmbedPbxConfig = Partial<
-  Pick<
-    PbxGetProductInfoRes,
-    | 'webphone.useragent'
-    | 'webphone.http.useragent.product'
-    | 'webphone.resource-line'
-  >
->
-type EmbedPalConfig = {
-  // webphone.pal.param.*
-  [k: string]: string
-}
-
-export type EmbedSignInOptions = {
-  autoLogin?: boolean
-  clearExistingAccount?: boolean
-  palEvents?: string[]
-  accounts: EmbedAccount[]
-} & EmbedPbxConfig &
-  EmbedPalConfig
 
 export class EmbedApi extends EventEmitter {
   /** ==========================================================================
@@ -47,9 +30,13 @@ export class EmbedApi extends EventEmitter {
     ctx.global.productName = name
   }
 
-  getGlobalCtx = () => ctx
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
   getCurrentAccountCtx = () => ctx
+  getCurrentVersion = () => ({
+    webphone: currentVersion,
+    jssip: jssipVersion,
+    bundleIdentifier,
+  })
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
@@ -63,7 +50,7 @@ export class EmbedApi extends EventEmitter {
   cleanup = () => {
     ctx.auth.signOutWithoutSaving()
     if (this._rootTag) {
-      AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag as any)
+      AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag)
     }
   }
 
@@ -71,7 +58,7 @@ export class EmbedApi extends EventEmitter {
    * private properties/methods
    */
 
-  _rootTag?: HTMLElement
+  _rootTag?: any
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
@@ -83,7 +70,7 @@ export class EmbedApi extends EventEmitter {
     embedApi._palEvents = o.palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
-    _parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
+    ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
     // check if cleanup existing account
     if (o.clearExistingAccount) {
       ctx.account.accounts = []

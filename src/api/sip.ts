@@ -3,8 +3,9 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isEmbed, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
@@ -164,6 +165,7 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
+        ctx.call.callTerminated[ev.sessionId] = true
         this.emit('session-stopped', ev)
         return
       }
@@ -299,6 +301,7 @@ export class SIP extends EventEmitter {
     }
   }
   stopWebRTC = () => {
+    ctx.call.callTerminated = {}
     const count = this.phone?.getSessionCount()
     if (count) {
       console.error(

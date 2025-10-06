@@ -2,7 +2,11 @@ import { darken, lighten, transparentize } from 'polished'
 
 import { isWeb } from '#/config'
 
-import json from '../../package.json'
+const boxShadow = {
+  shadowColor: 'black',
+  shadowOpacity: 0.1,
+  shadowRadius: 2,
+}
 
 export const v = {
   fontSize: 14,
@@ -45,15 +49,11 @@ export const v = {
   layerBgVideo: '#00000080',
   //
   boxShadow: {
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    ...boxShadow,
+    shadowOffset: { width: 0, height: 1 },
     elevation: 3, // android
   },
+  bottomBoxShadow: { ...boxShadow, shadowOffset: { width: 0, height: -2 } },
   //
   backdropZindex: {
     zIndex: 999,
@@ -72,6 +72,8 @@ export const v = {
     dangerFn: (lv: number) =>
       lv > 0 ? lighten(lv, v.colors.danger) : darken(-lv, v.colors.danger),
   },
+  borderTopStyles: {
+    borderTopColor: '#0000000d',
+    borderTopWidth: 1,
+  },
 }
-
-export const currentVersion = json.version

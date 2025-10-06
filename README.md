@@ -35,7 +35,6 @@ yarn cache clean && yarn --check-files && yarn rn --reset-cache
 
 - Those private files are ignored from git history, you need to download or generate your own files to build your custom app. See [Custom branding build](./.doc/custom-branding.md) for more detail
   - `android/app/google-services.json`
-  - `android/keystores/development.keystore`
   - `android/keystores/release.keystore`
   - `src/api/turnConfig.ts`
 - Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real turn config:

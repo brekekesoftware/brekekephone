@@ -3,6 +3,7 @@ import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
 import { Errors } from '#/brekekejs/ucclient'
+import { defaultTimeout } from '#/config'
 import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
@@ -77,7 +78,7 @@ export class AuthUC {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, 300)
+  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 
   @action private onConnectionStopped = (e: { code: number }) => {
     ctx.auth.ucState = 'failure'
@@ -87,7 +88,6 @@ export class AuthUC {
   }
   @action private loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
-
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return

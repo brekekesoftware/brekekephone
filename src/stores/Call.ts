@@ -3,12 +3,13 @@ import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
 import type { Session, SessionStatus } from '#/brekekejs'
-import { isEmbed, isIos } from '#/config'
+import { isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/callStore'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intlDebug } from '#/stores/intl'
+import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
@@ -76,6 +77,7 @@ export class Call {
   @action
   answer = async (
     options?: { ignoreNav?: boolean },
+    videoEnabled?: boolean,
     videoOptions?: object,
     exInfo?: string,
   ) => {
@@ -90,9 +92,9 @@ export class Call {
     ctx.sip.phone?.answer(
       this.id,
       options,
-      this.remoteVideoEnabled,
+      videoEnabled,
       videoOptions,
-      'answered',
+      exInfo || 'answered',
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
@@ -151,6 +153,17 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
+  @observable mutedVideo = false
+  getLocalVideoEnabled = () => this.localVideoEnabled && !this.mutedVideo
+  getRemoteVideoEnabled = (user?: string) => {
+    if (user) {
+      return !this.remoteUserOptionsTable?.[user]?.muted?.videoClient
+    }
+    return this.videoClientSessionTable.some(
+      v => !this.remoteUserOptionsTable?.[v.user]?.muted?.videoClient,
+    )
+  }
+
   toggleVideo = () => {
     const pbxUser = ctx.contact.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -207,7 +220,6 @@ export class Call {
   }
 
   @observable muted = false
-  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -240,12 +252,6 @@ export class Call {
       return
     }
     this.recording = !this.recording
-    if (typeof err !== 'boolean') {
-      const message = this.recording
-        ? intlDebug`Failed to stop recording the call`
-        : intlDebug`Failed to start recording the call`
-      RnAlert.error({ message, err })
-    }
   }
 
   @observable holding = false
@@ -302,15 +308,10 @@ export class Call {
     }
     const prevFn = this.holding ? 'hold' : 'unhold'
     this.setHoldWithCallkeep(prevFn === 'unhold')
-    const message =
-      prevFn === 'unhold'
-        ? intlDebug`Failed to unhold the call`
-        : intlDebug`Failed to hold the call`
-    ctx.toast.error({ message, err }, 8000)
     BrekekeUtils.toast(
       this.callkeepUuid,
-      message.label,
-      err.message || '',
+      intl`Internet connection failed`,
+      '',
       'error',
     )
     return true
@@ -367,10 +368,6 @@ export class Call {
   }
   @action private onTransferFailure = (err: Error) => {
     this.transferring = ''
-    RnAlert.error({
-      message: intlDebug`Failed to transfer the call`,
-      err,
-    })
   }
 
   @action stopTransferring = () => {
@@ -385,10 +382,6 @@ export class Call {
   @action private onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
-    RnAlert.error({
-      message: intlDebug`Failed to stop the transfer`,
-      err,
-    })
   }
 
   @action conferenceTransferring = () => {
@@ -403,10 +396,6 @@ export class Call {
   @action private onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
-    RnAlert.error({
-      message: intlDebug`Failed to make conference for the transfer`,
-      err,
-    })
   }
 
   @action park = (number: string) =>

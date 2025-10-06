@@ -9,7 +9,7 @@ import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '#/components/Rn'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -151,7 +151,7 @@ export class DebugStore {
   }
   writeFile = async () => {
     if (this.loading) {
-      BackgroundTimer.setTimeout(this.writeFileBatch, 300)
+      BackgroundTimer.setTimeout(this.writeFileBatch, defaultTimeout)
       return
     }
     this.loading = true
@@ -187,7 +187,7 @@ export class DebugStore {
       await this.checkAndCreateFile(LOG_DIR, this.createLogFileName())
     }
   }
-  writeFileBatch = debounce(this.writeFile, 300, { maxWait: 1000 })
+  writeFileBatch = debounce(this.writeFile, defaultTimeout, { maxWait: 1000 })
 
   openLogFile = (file: ReadDirItem) =>
     this.openLogFileWithoutCatch(file).catch((err: Error) => {
@@ -211,7 +211,7 @@ export class DebugStore {
       const b64 = Buffer.from(content).toString('base64')
       url = `data:text/plain;base64,${b64}` // only works with base64
     }
-    Share.open({ title, url, subject: title })
+    Share.open({ title, url, subject: title, isNewTask: true })
   }
 
   clearLogFiles = () => {

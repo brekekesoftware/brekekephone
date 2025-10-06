@@ -49,16 +49,9 @@ export class PagePhonebookUpdate extends Component<{
     ctx.pbx
       .setContact(contactUpdate)
       .then(() => this.onSaveSuccess(contactUpdate))
-      .catch(this.onSaveFailure)
   }
   onSaveSuccess = (phonebook: Phonebook) => {
     ctx.nav.goToPageContactPhonebook()
     ctx.contact.upsertPhonebook(phonebook)
-  }
-  onSaveFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to save the contact`,
-      err,
-    })
   }
 }

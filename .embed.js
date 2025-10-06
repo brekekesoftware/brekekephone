@@ -26,8 +26,3 @@ if (!contents.length) {
 
 console.log(`.embed.js total script tags: ${contents.length}`)
 fs.writeFileSync(path.join(b, 'webphone.js'), contents.join(';\n'))
-
-const p = path.join(__dirname, './public')
-fs.copyFileSync(
-  ...[p, b].map(d => path.join(d, './webphone_embed_example.html')),
-)

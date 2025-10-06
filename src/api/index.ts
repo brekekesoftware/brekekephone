@@ -1,7 +1,13 @@
 import { action } from 'mobx'
 
 import { updatePhoneAppli } from '#/api/updatePhoneIndex'
-import type { Conference, PbxEvent, Session } from '#/brekekejs'
+import type {
+  Conference,
+  PbxEvent,
+  PbxPal,
+  Request,
+  Session,
+} from '#/brekekejs'
 import { successConnectCheckPeriod } from '#/config'
 import { clearAlreadyHistoryMap } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
@@ -27,6 +33,8 @@ class Api {
     ctx.pbx.on('park-started', this.onPBXUserParkStarted)
     ctx.pbx.on('park-stopped', this.onPBXUserParkStopped)
     ctx.pbx.on('call-recording', this.onPbxCallRecording)
+    ctx.pbx.on('pal-retrying', this.onPalRetrying)
+    ctx.pbx.on('pal-retry-end', this.onPalRetryEnd)
     ctx.sip.on('connection-started', this.onSIPConnectionStarted)
     ctx.sip.on('connection-stopped', this.onSIPConnectionStopped)
     ctx.sip.on('connection-timeout', this.onSIPConnectionTimeout)
@@ -43,6 +51,17 @@ class Api {
     ctx.uc.on('file-received', this.onFileReceived)
     ctx.uc.on('file-progress', this.onFileProgress)
     ctx.uc.on('file-finished', this.onFileFinished)
+  }
+
+  onPalRetrying = ({ id }: Request<keyof PbxPal>) => {
+    if (id && !ctx.pbx.retryingRequests.includes(id)) {
+      ctx.pbx.retryingRequests.push(id)
+    }
+  }
+  onPalRetryEnd = ({ id }: Request<keyof PbxPal>) => {
+    if (id) {
+      ctx.pbx.retryingRequests = ctx.pbx.retryingRequests.filter(i => i !== id)
+    }
   }
 
   @action onPBXConnectionStarted = async () => {

@@ -7,7 +7,7 @@ import { v4 as newUuid } from 'uuid'
 
 import { mdiPhone } from '#/assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '#/brekekejs'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
 import { addCallHistory } from '#/stores/addCallHistory'
 import type { ConnectionState } from '#/stores/authStore'
 import { Call } from '#/stores/Call'
@@ -420,6 +420,11 @@ export class CallStore {
       return
     }
 
+    // bug call update event come after terminated, due to this async function
+    if (this.callTerminated[p.id]) {
+      return
+    }
+
     //
     // construct a new call
     const c = new Call(this)
@@ -448,7 +453,11 @@ export class CallStore {
     // desktop notification
     if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
-      webShowNotification(name + ' ' + intl`Incoming call`, name)
+      webShowNotification(
+        c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
+        name,
+        name,
+      )
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -498,7 +507,10 @@ export class CallStore {
     }
   }
 
+  callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
+    this.callTerminated[rawSession.sessionId] = true
+
     this.updateCurrentCallDebounce()
     this.recentCallActivityAt = Date.now()
     const c = this.calls.find(_ => _.id === rawSession.sessionId)
@@ -518,7 +530,7 @@ export class CallStore {
       this.endCallKeep(c.callkeepUuid)
     }
 
-    this.calls = this.calls.filter(c0 => c0 !== c)
+    this.calls = this.calls.filter(c0 => c0.id !== c.id)
     // set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // when if this is a outgoing call, try to insert a call history to uc chat
@@ -572,10 +584,10 @@ export class CallStore {
   startCall: MakeCallFn = async (number: string, ...args) => {
     // make sure sip is ready before make call
     if (ctx.auth.sipState !== 'success') {
-      return
+      return false
     }
     if (!(await permForCall())) {
-      return
+      return false
     }
     if (
       this.callkeepUuidPending ||
@@ -584,7 +596,7 @@ export class CallStore {
       RnAlert.error({
         message: intlDebug`There is already an outgoing call`,
       })
-      return
+      return false
     }
     // check line resource
     if (
@@ -598,7 +610,7 @@ export class CallStore {
         )
         args[0] = { ...args[0], extraHeaders }
       } catch (err) {
-        return
+        return false
       }
     }
     // start call logic in RNCallKeep
@@ -638,11 +650,11 @@ export class CallStore {
       sipState === 'stopped'
     ) {
       ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
-      return
+      return true
     }
     if (sipState === 'connecting') {
       ctx.auth.waitSip().then(sipCreateSession)
-      return
+      return true
     }
     // in case of sip state is success
     // there could still cases that the sip is disconnected but state not updated yet
@@ -695,6 +707,7 @@ export class CallStore {
       }),
       500,
     )
+    return true
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
@@ -716,7 +729,7 @@ export class CallStore {
   }
   private updateBackgroundCallsDebounce = debounce(
     this.updateBackgroundCalls,
-    300,
+    defaultTimeout,
     { maxWait: 1000 },
   )
   @action private updateCurrentCall = () => {
@@ -733,9 +746,13 @@ export class CallStore {
     }
     this.updateBackgroundCallsDebounce()
   }
-  private updateCurrentCallDebounce = debounce(this.updateCurrentCall, 300, {
-    maxWait: 1000,
-  })
+  private updateCurrentCallDebounce = debounce(
+    this.updateCurrentCall,
+    defaultTimeout,
+    {
+      maxWait: 1000,
+    },
+  )
 
   // callkeep + pn data
   @observable callkeepMap: {
@@ -1046,7 +1063,7 @@ export class CallStore {
         if (await BrekekeUtils.isLocked()) {
           BrekekeUtils.setIsAppActive(false, true)
         }
-      }, 300)
+      }, defaultTimeout)
     })
   }
 
