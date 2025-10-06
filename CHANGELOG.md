@@ -8,6 +8,7 @@
 - Fix it should crash when add park number (issue 1068)
 - Fix it should show remote video when remote enable (issue 1074)
 - Fix android it should reconnect LPC on internet connection lost (issue 1076)
+- Fix it should not cut off call screen in small screen device (issue 1079)
 - Fix it should not show error on ping failure (issue 1081)
 
 #### 2.16.5
