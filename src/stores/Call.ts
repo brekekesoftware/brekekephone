@@ -77,6 +77,7 @@ export class Call {
   @action
   answer = async (
     options?: { ignoreNav?: boolean },
+    videoEnabled?: boolean,
     videoOptions?: object,
     exInfo?: string,
   ) => {
@@ -91,9 +92,9 @@ export class Call {
     ctx.sip.phone?.answer(
       this.id,
       options,
-      this.remoteVideoEnabled,
+      videoEnabled,
       videoOptions,
-      'answered',
+      exInfo || 'answered',
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings

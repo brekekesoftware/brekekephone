@@ -1,6 +1,7 @@
 #### 2.16.6
 
 - Update web browser notification to match with UC desktop
+- Update logic answer call: should not answer with video until the user turn on video option
 
 #### 2.16.5
 
