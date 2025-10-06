@@ -196,19 +196,18 @@ public class BrekekeUtils: NSObject {
 
   @objc private func handleAudioRouteChange(_ notification: Notification) {
     do {
-      if rtcAudioSession.mode == AVAudioSession.Mode.voiceChat.rawValue {
+      if rtcAudioSession.mode != AVAudioSession.Mode.default.rawValue {
         try audioSession.setMode(.default)
         try audioSession.setActive(true)
-        print("Hoang: change mode")
         return
       }
+      
       if let o = rtcAudioSession.currentRoute.outputs.first {
         if !output.isEmpty && output["output"] == o
           .portType {
           return
         }
-        print("Hoang: mode \(audioSession.mode)")
-        print("Hoang: outout \(o.portType)")
+        print("BrekekeUtils.handleAudioRouteChange: outout \(o.portType)")
         output["output"] = o.portType
         BrekekeEmitter.emit(
           name: "onAudioRouteChange",
