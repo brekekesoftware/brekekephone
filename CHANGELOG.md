@@ -1,3 +1,15 @@
+#### 2.16.6
+
+- Update web browser notification to match with UC desktop
+- Update logic answer call: should not answer with video until the user turn on
+- Fix it should save call history after restart PBX (issue 1021)
+- Fix android it should reconnect LPC on internet connection lost (issue 1076)
+
+#### 2.16.5
+
+- Embed
+  - Fix it should cleanup
+
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)

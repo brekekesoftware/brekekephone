@@ -101,6 +101,7 @@ yarn.lock
 
 ###############################################################################
 # others in this project
+
 # google service keys for firebase
 GoogleService-Info.plist
 google-services.json
@@ -108,3 +109,7 @@ google-services.json
 turnConfig.*
 # intl output
 .intlNewEn.json
+
+# embed
+!embed/**/package-lock.json
+embed/**/brekeke_phone*

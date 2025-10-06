@@ -2,8 +2,6 @@ import { darken, lighten, transparentize } from 'polished'
 
 import { isWeb } from '#/config'
 
-import json from '../../package.json'
-
 const boxShadow = {
   shadowColor: 'black',
   shadowOpacity: 0.1,
@@ -79,5 +77,3 @@ export const v = {
     borderTopWidth: 1,
   },
 }
-
-export const currentVersion = json.version

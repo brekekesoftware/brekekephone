@@ -18,7 +18,7 @@
 
 #### iOS
 
-- TODO:
+- TODO: NOT IMPLEMENTED YET
 
 #### Web browser
 
