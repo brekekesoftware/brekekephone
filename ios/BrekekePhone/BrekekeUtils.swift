@@ -37,11 +37,6 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
-  func resetAudioSession() {
-    audioSessionManager.resetAudioConfiguration()
-  }
-
-  @objc
   func setProximityMonitoring(_ enabled: Bool) {
     DispatchQueue.main.async {
       if UIDevice.current.isProximityMonitoringEnabled != enabled {
@@ -101,9 +96,10 @@ public class BrekekeUtils: NSObject {
   @objc
   func playRBT(_ isLoudSpeaker: Bool) {
     do {
+      let v : Float = isLoudSpeaker ? 1.0 : 0.3
       if audio != nil {
         if audio.isPlaying {
-          audio?.volume = isLoudSpeaker ? 1.0 : 0.3
+          audio?.volume = v
         }
         return
       }
@@ -124,7 +120,7 @@ public class BrekekeUtils: NSObject {
       // 0.3 ensures comfortable Receiver output while keeping Speaker loud.
       audio = try AVAudioPlayer(contentsOf: soundURL)
       audio?.numberOfLoops = -1
-      audio?.volume = isLoudSpeaker ? 1.0 : 0.3
+      audio?.volume = v
       audio?.prepareToPlay()
       try audioSession.setCategory(
         .playAndRecord,
@@ -203,6 +199,7 @@ public class BrekekeUtils: NSObject {
       if rtcAudioSession.mode == AVAudioSession.Mode.voiceChat.rawValue {
         try audioSession.setMode(.default)
         try audioSession.setActive(true)
+        print("Hoang: change mode")
         return
       }
       if let o = rtcAudioSession.currentRoute.outputs.first {
@@ -210,7 +207,8 @@ public class BrekekeUtils: NSObject {
           .portType {
           return
         }
-
+        print("Hoang: mode \(audioSession.mode)")
+        print("Hoang: outout \(o.portType)")
         output["output"] = o.portType
         BrekekeEmitter.emit(
           name: "onAudioRouteChange",
