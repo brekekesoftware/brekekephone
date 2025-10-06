@@ -40,14 +40,12 @@ const IncomingItemAndroid = observer(() => {
   )
   return null
 })
-const IncomingItemIos = () => {
-  useEffect(() => {
-    // old logic: only play ringtone without vibration and repeat the ringtone continuously
-    IncallManager.startRingtone('_BUNDLE_', [], 'default', 0)
-    return () => IncallManager.stopRingtone()
-  }, [])
-  return null
-}
+const IncomingItemIos = () =>
+  // it should not handle anything on iOS. Because
+  // RNCallKeep already handles ringtone when PN is disabled
+  // if we handle it here, it will conflict with AudioSession
+  null
+
 // IncomingItem will mount when PN is disabled
 export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIos
 
@@ -104,9 +102,12 @@ export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
   }
   useEffect(() => {
     BrekekeUtils.playRBT(p.isLoudSpeaker)
-    return () => {
-      stopRingbackAndSyncSpeaker()
-    }
   }, [p.isLoudSpeaker])
+  useEffect(
+    () => () => {
+      stopRingbackAndSyncSpeaker()
+    },
+    [],
+  )
   return null
 }

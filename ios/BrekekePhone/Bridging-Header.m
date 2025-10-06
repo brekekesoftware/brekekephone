@@ -15,6 +15,7 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)localSsid tlsKeyHash
                   : (NSString *)tlsKeyHash)
 RCT_EXTERN_METHOD(disableLPC)
+
 RCT_EXTERN_METHOD(playRBT : (BOOL)isLoudSpeaker)
 RCT_EXTERN_METHOD(stopRBT
                   : (RCTPromiseResolveBlock)resolve rejecter
