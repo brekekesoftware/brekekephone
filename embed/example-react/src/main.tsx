@@ -67,6 +67,9 @@ const Call = observer(({ call }) => (
       Hangup
     </button>
 
+    <div>local video enabled: {call.getLocalVideoEnabled().toString()}</div>
+    <div>remote video enabled: {call.getRemoteVideoEnabled().toString()}</div>
+
     <div className='call-video-items'>
       <div>
         My camera:

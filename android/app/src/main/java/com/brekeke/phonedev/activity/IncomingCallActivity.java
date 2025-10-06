@@ -198,7 +198,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       forceFinish();
       return;
     }
-
     timer = new Timer();
     uuid = data.get("callkeepUuid");
     callerName = PN.callerName(data);
@@ -209,6 +208,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     tenant = PN.tenant(data);
     host = PN.host(data);
     port = PN.port(data);
+    autoAnswer = BrekekeUtils.toBoolean(PN.autoAnswer(data));
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
