@@ -68,7 +68,7 @@ export class IntlStore {
       BrekekeUtils.setLocale(this.locale)
     })
   }
-  private setLocale = async (locale: string) => {
+  setLocale = async (locale: string) => {
     if (this.localeLoading || locale === this.locale) {
       return
     }

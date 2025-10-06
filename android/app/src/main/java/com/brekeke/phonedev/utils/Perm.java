@@ -90,10 +90,14 @@ public class Perm {
     handlers.put(
         AndroidLpc,
         new Handler() {
-          private static final int OP_BACKGROUND_START_ACTIVITY = 10021;
+          private static final int OP_BACKGROUND_START_ACTIVITY_MI_UI = 10021;
 
           @Override
           public boolean check() {
+            if (!LpcUtils.isMIUI()) {
+              Emitter.debug("Permission check skipped: Non-MIUI device");
+              return true;
+            }
             try {
               var ctx = Ctx.app();
               var mgr = (AppOpsManager) ctx.getSystemService(Context.APP_OPS_SERVICE);
@@ -104,12 +108,12 @@ public class Perm {
                   (int)
                       m.invoke(
                           mgr,
-                          OP_BACKGROUND_START_ACTIVITY,
+                          OP_BACKGROUND_START_ACTIVITY_MI_UI,
                           android.os.Process.myUid(),
                           ctx.getPackageName());
               return r == AppOpsManager.MODE_ALLOWED;
             } catch (Exception e) {
-              Emitter.error("AndroidLpc Permission check", e.getMessage());
+              Emitter.error("AndroidLpc Permission Exception " + e.getMessage());
             }
             return true;
           }

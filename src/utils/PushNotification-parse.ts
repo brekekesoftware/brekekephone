@@ -204,8 +204,8 @@ export const parse = async (
   }
 
   // handle duplicated pn on android
-  // sometimes getInitialNotifications not update callkeepUuid yet
-  if (isAndroid && n.callkeepUuid) {
+  // sometimes getInitialNotifications not update callkeepUuid yet or Event NotificationOpened triggered get more than once
+  if (isAndroid) {
     const k = n.id || jsonStable(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(
