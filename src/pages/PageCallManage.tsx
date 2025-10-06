@@ -39,7 +39,7 @@ import { RnText } from '#/components/RnText'
 import { SmartImage } from '#/components/SmartImage'
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
-import { holdingTimeout, isAndroid, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isWeb } from '#/config'
 import { PageCallTransferAttend } from '#/pages/PageCallTransferAttend'
 import type { Call, CallConfigKey } from '#/stores/Call'
 import { ctx } from '#/stores/ctx'
@@ -689,7 +689,7 @@ class PageCallManage extends Component<{
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
               loading={c.rqLoadings['hold']}
-              msLoading={holdingTimeout}
+              msLoading={defaultTimeout}
               textcolor='white'
             />
           )}

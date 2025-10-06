@@ -15,7 +15,7 @@ import {
 import { ButtonIcon } from '#/components/ButtonIcon'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { holdingTimeout, isWeb } from '#/config'
+import { defaultTimeout, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timerStore'
@@ -122,7 +122,7 @@ export const CallBar = observer(() => {
             onPress={oc.toggleHoldWithCheck}
             path={oc.holding ? mdiPlay : mdiPause}
             loading={oc.rqLoadings['hold']}
-            msLoading={holdingTimeout}
+            msLoading={defaultTimeout}
           />
         </View>
       </RnTouchableOpacity>
