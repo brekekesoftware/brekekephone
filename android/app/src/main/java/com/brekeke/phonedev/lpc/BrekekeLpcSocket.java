@@ -11,6 +11,7 @@ import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
+import com.brekeke.phonedev.utils.MonitorConnection;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,18 +38,22 @@ import tlschannel.NeedsWriteException;
 import tlschannel.TlsChannel;
 
 public class BrekekeLpcSocket {
+  public static MonitorConnection con;
+
   public class SSLSocketAsyncTask extends AsyncTask<LpcModel.Settings, Void, String> {
     private Context mContext;
     private boolean requestSent = false;
     private LpcModel.Settings settings;
     private Charset utf8 = StandardCharsets.UTF_8;
+    private Gson gson;
 
     public SSLSocketAsyncTask(Context context) {
       mContext = context;
+      con = new MonitorConnection();
+      gson = new Gson();
     }
 
     public class CodableHelper {
-      private final Gson gson = new Gson();
 
       public <T> String encode(T object) {
         return gson.toJson(object);
@@ -110,6 +115,7 @@ public class BrekekeLpcSocket {
     @Override
     protected void onPostExecute(String result) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute");
+      BrekekeLpcSocket.con.onDisconnected();
     }
 
     private void handleCallToServer() {
@@ -128,6 +134,7 @@ public class BrekekeLpcSocket {
         if (e.getMessage().equals("Connection refused")) {
           // stop service
           LpcUtils.LpcCallback.cb.getStateServer(false);
+          Emitter.error("[BrekekeLpcSocket] Connection refused");
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "Exception: " + e.getMessage());
@@ -212,7 +219,6 @@ public class BrekekeLpcSocket {
           if (Objects.equals(wr.payload.codingKey, 3)) {
             String res = new String(Base64.decode(wr.payload.data, Base64.NO_WRAP));
             Log.d(LpcUtils.TAG, "handleResponse: " + res);
-            Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
             m.put("lpc", "true");
@@ -223,10 +229,14 @@ public class BrekekeLpcSocket {
             String e = LpcUtils.convertMapToString(m);
             Emitter.emit("lpcIncomingCall", e);
             Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
+            Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
+            Emitter.debug("[BrekekeLpcSocket] Response " + res);
           }
+          con.onMessageReceived();
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "handleResponse error: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] handleResponse " + e.getMessage());
       }
     }
 
