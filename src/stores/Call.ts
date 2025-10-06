@@ -77,6 +77,7 @@ export class Call {
   @action
   answer = async (
     options?: { ignoreNav?: boolean },
+    videoEnabled?: boolean,
     videoOptions?: object,
     exInfo?: string,
   ) => {
@@ -91,9 +92,9 @@ export class Call {
     ctx.sip.phone?.answer(
       this.id,
       options,
-      this.remoteVideoEnabled,
+      videoEnabled,
       videoOptions,
-      'answered',
+      exInfo || 'answered',
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
@@ -178,12 +179,15 @@ export class Call {
       }
     } else {
       this.mutedVideo = false
+      ctx.sip.enableLocalVideo(this.id)
+      ctx.sip.setMutedVideo(false, this.id)
     }
-    // for video conference
-    // with the current logic of webrtcclient.js
-    // if we disable the local stream, it will remove all other streams
-    // so to make video conference works, we need to enable to keep receiving other streams
-    ctx.sip.enableLocalVideo(this.id)
+    // update UI for IncomingCallActivity
+    BrekekeUtils.setIsVideoCall(
+      this.callkeepUuid,
+      this.localVideoEnabled,
+      this.mutedVideo,
+    )
   }
   @action toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
