@@ -79,7 +79,6 @@ type TBrekekeUtils = {
   playRBT(isLoudSpeaker: boolean): void
   stopRBT(): Promise<void>
   setProximityMonitoring(enabled: boolean): void
-  resetAudioSession(): void
 
   // ==========================================================================
   // these methods available on both
@@ -165,7 +164,6 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
-  resetAudioSession: () => undefined,
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,

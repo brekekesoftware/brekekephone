@@ -199,10 +199,6 @@ export const setupCallKeepEvents = async () => {
     console.log('CallKeep debug: didDeactivateAudioSession')
     BrekekeUtils.webrtcSetAudioEnabled(false)
     ctx.call.updateBackgroundCalls()
-    const hasAnsweredCall = ctx.call.calls.some(c => c.answered)
-    if (!hasAnsweredCall) {
-      BrekekeUtils.resetAudioSession()
-    }
   }
   const didReceiveStartCallAction = async (
     e: EventsPayload['didReceiveStartCallAction'],

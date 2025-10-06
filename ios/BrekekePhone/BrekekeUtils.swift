@@ -37,11 +37,6 @@ public class BrekekeUtils: NSObject {
   }
 
   @objc
-  func resetAudioSession() {
-    audioSessionManager.resetAudioConfiguration()
-  }
-
-  @objc
   func setProximityMonitoring(_ enabled: Bool) {
     DispatchQueue.main.async {
       if UIDevice.current.isProximityMonitoringEnabled != enabled {
@@ -204,6 +199,7 @@ public class BrekekeUtils: NSObject {
       if rtcAudioSession.mode != AVAudioSession.Mode.default.rawValue {
         try audioSession.setMode(.default)
         try audioSession.setActive(true)
+        print("Hoang: change mode")
         return
       }
       if let o = rtcAudioSession.currentRoute.outputs.first {
