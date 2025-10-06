@@ -324,6 +324,10 @@ export const parse = async (
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       ctx.call.onCallKeepAnswerCall(n.callkeepUuid)
+      // Update UI immediately after the call has been auto-answered but PN data arrives later
+      if (n.sipPn.autoAnswer) {
+        BrekekeUtils.onCallConnected(n.callkeepUuid)
+      }
     } else if (action === 'rejectCall') {
       ctx.call.onCallKeepEndCall(n.callkeepUuid)
     }
