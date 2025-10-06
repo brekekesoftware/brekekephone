@@ -2,6 +2,7 @@
 
 - Update web browser notification to match with UC desktop
 - Update logic answer call: should not answer with video until the user turn on video option
+- Fix android it should reconnect LPC on internet connection lost (issue 1076)
 
 #### 2.16.5
 
