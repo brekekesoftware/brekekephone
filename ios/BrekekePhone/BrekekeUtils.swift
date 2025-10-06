@@ -10,19 +10,30 @@ import WebRTC
 @objc(BrekekeUtils)
 public class BrekekeUtils: NSObject {
   var audio: AVAudioPlayer!
-  private var audioSessionManager: AudioSessionManager
-  private var audioSession: AVAudioSession
+  var audioSession: AVAudioSession!
+  var rtcAudioSession: RTCAudioSession!
+  var output: [String: AVAudioSession.Port] = [:]
   override init() {
-    audioSessionManager = AudioSessionManager.shared
-    audioSession = AVAudioSession.sharedInstance()
     super.init()
     audio = nil
+    audioSession = AVAudioSession.sharedInstance()
+    rtcAudioSession = RTCAudioSession.sharedInstance()
+    rtcAudioSession.useManualAudio = true
+    listenAudioSessionRoute()
     print("BrekekeUtils.init(): initialized")
   }
 
   @objc
   func webrtcSetAudioEnabled(_ enabled: Bool) {
-    audioSessionManager.setAudioEnabled(enabled)
+    if enabled == rtcAudioSession.isAudioEnabled {
+      return
+    }
+    if enabled {
+      rtcAudioSession.audioSessionDidActivate(audioSession)
+    } else {
+      rtcAudioSession.audioSessionDidDeactivate(audioSession)
+    }
+    rtcAudioSession.isAudioEnabled = enabled
   }
 
   @objc
@@ -89,7 +100,6 @@ public class BrekekeUtils: NSObject {
 
   @objc
   func playRBT(_ isLoudSpeaker: Bool) {
-    print("BrekekeUtils.playRBT: loudspeaker=\(isLoudSpeaker)")
     do {
       let v: Float = isLoudSpeaker ? 1.0 : 0.3
       if audio != nil {
@@ -117,6 +127,11 @@ public class BrekekeUtils: NSObject {
       audio?.numberOfLoops = -1
       audio?.volume = v
       audio?.prepareToPlay()
+      try audioSession.setCategory(
+        .playAndRecord,
+        mode: .default,
+        options: [.allowBluetooth, .allowBluetoothA2DP]
+      )
       try audioSession.setActive(true)
       try audioSession.overrideOutputAudioPort(isLoudSpeaker ? .speaker : .none)
       audio?.play()

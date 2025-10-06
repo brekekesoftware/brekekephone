@@ -74,7 +74,6 @@
 		9CF382FF28ED908E008FC490 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF382FB28ED908E008FC490 /* SettingsManager.swift */; };
 		9CF3830128ED909C008FC490 /* BrekekeLPCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */; };
 		CB2145672AF4EF5D004D2EAA /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2145662AF4EF5D004D2EAA /* Intents.framework */; };
-		CB3707F52E8AD47400DF5ACE /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3707F42E8AD47400DF5ACE /* AudioSessionManager.swift */; };
 		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
 		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CBAD324D29F374A20057D82C /* ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBAD324C29F374A20057D82C /* ding.mp3 */; };
@@ -157,7 +156,6 @@
 		B039FBCF1D83E0624E935067 /* libPods-BrekekePhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BrekekePhone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = BrekekePhone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CB2145662AF4EF5D004D2EAA /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		CB3707F42E8AD47400DF5ACE /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AudioSessionManager.swift; path = BrekekePhone/AudioSessionManager.swift; sourceTree = "<group>"; };
 		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -195,7 +193,6 @@
 				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
 				9CF1917728E34BA20048E7A1 /* AppDelegate.swift */,
 				9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */,
-				CB3707F42E8AD47400DF5ACE /* AudioSessionManager.swift */,
 				9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */,
 				9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -566,7 +563,6 @@
 				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
 				9CF382FC28ED908E008FC490 /* Settings.swift in Sources */,
 				9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
-				CB3707F52E8AD47400DF5ACE /* AudioSessionManager.swift in Sources */,
 				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
 				9C972BB828E1B5BF00DD89B4 /* BrekekeLPCExtension.swift in Sources */,
 				9CF382EC28ED8496008FC490 /* KeyCodable.swift in Sources */,
