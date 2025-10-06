@@ -164,6 +164,7 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
+
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,

@@ -96,7 +96,7 @@ public class BrekekeUtils: NSObject {
   @objc
   func playRBT(_ isLoudSpeaker: Bool) {
     do {
-      let v : Float = isLoudSpeaker ? 1.0 : 0.3
+      let v: Float = isLoudSpeaker ? 1.0 : 0.3
       if audio != nil {
         if audio.isPlaying {
           audio?.volume = v
@@ -194,14 +194,14 @@ public class BrekekeUtils: NSObject {
     )
   }
 
-  @objc private func handleAudioRouteChange(_ notification: Notification) {
+  @objc private func handleAudioRouteChange(_: Notification) {
     do {
       if rtcAudioSession.mode != AVAudioSession.Mode.default.rawValue {
         try audioSession.setMode(.default)
         try audioSession.setActive(true)
         return
       }
-      
+
       if let o = rtcAudioSession.currentRoute.outputs.first {
         if !output.isEmpty && output["output"] == o
           .portType {

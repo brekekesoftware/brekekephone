@@ -41,8 +41,9 @@ const IncomingItemAndroid = observer(() => {
   return null
 })
 const IncomingItemIos = () =>
-  // It should not handle anything on iOS. Because RNcallkeep already handles ringtone when PN is disabled
-  // If we handle it here, it will make conflict AudioSession.
+  // it should not handle anything on iOS. Because
+  // RNCallKeep already handles ringtone when PN is disabled
+  // if we handle it here, it will conflict with AudioSession
   null
 
 // IncomingItem will mount when PN is disabled
