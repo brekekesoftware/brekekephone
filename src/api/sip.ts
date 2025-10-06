@@ -182,6 +182,7 @@ export class SIP extends EventEmitter {
         session.videoClientSessionTable[ev.videoClientSessionId]
       this.emit('session-updated', {
         id: ev.sessionId,
+        localVideoEnabled: true,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
         localStreamObject: session.localVideoStreamObject,
@@ -239,6 +240,7 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteUserOptionsTable: ev.remoteUserOptionsTable,
+        remoteVideoEnabled: ev.remoteWithVideo,
       })
     })
 
