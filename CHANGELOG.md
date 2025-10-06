@@ -4,6 +4,7 @@
 - Update logic answer call: should not answer with video until the user turn on
 - Fix it should save call history after restart PBX (issue 1021)
 - Fix it should not flash hold button on press (issue 1031)
+- Fix android it should perform correct action when press notification (issue 1059, 1063, 1064)
 - Fix android it should reconnect LPC on internet connection lost (issue 1076)
 
 #### 2.16.5

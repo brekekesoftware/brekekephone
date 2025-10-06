@@ -38,6 +38,7 @@ class MainActivity : ReactActivity() {
 
   override fun onDestroy() {
     BrekekeUtils.main = null
+    BrekekeUtils.dialerCheckState = DialerCheckState.IDLE
     Ringtone.stop()
     Emitter.emit("onDestroyMainActivity", "")
     super.onDestroy()
@@ -47,13 +48,25 @@ class MainActivity : ReactActivity() {
   // check if notification pressed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    if (BrekekeUtils.main == null) {
+      BrekekeUtils.main = this
+    }
     // handle default dialer
     BrekekeUtils.defaultDialerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
           checkSetDefaultDialerResult(result.resultCode)
         }
+
+    if (isOpenedFromLauncherIcon(intent)) {
+      BrekekeUtils.checkDefaultDialer()
+    }
     // handle call from other app
     handleIntent(intent)
+  }
+
+  private fun isOpenedFromLauncherIcon(intent: Intent?): Boolean {
+    return intent?.action == Intent.ACTION_MAIN &&
+        intent.categories?.contains(Intent.CATEGORY_LAUNCHER) == true
   }
 
   // ==========================================================================
@@ -124,8 +137,8 @@ class MainActivity : ReactActivity() {
   private fun checkSetDefaultDialerResult(resultCode: Int) {
     when (resultCode) {
       RESULT_CANCELED ->
-          BrekekeUtils.resolveDefaultDialer("Permission to set default phone app was canceled")
-      RESULT_OK -> BrekekeUtils.resolveDefaultDialer("Default dialer set successfully")
+          BrekekeUtils.resultDefaultDialer("Permission to set default phone app was canceled")
+      RESULT_OK -> BrekekeUtils.resultDefaultDialer("Default dialer set successfully")
     }
   }
 }
