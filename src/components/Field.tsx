@@ -276,10 +276,7 @@ export const Field: FC<
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
   const isGroup = props.isGroup
-  // Fix: Move this conditional rendering logic outside of any hooks
-  // React hooks must be called in the same order every time the component renders
-  // This early return prevents hooks that come after it from being called consistently
-  // causing the "Rules of Hooks" violation https://react.dev/warnings/invalid-hook-call-warning
+  // https://react.dev/warnings/invalid-hook-call-warning
   if (isGroup) {
     return (
       <View
