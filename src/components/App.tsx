@@ -118,7 +118,6 @@ const initApp = async () => {
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
       await autoLogin()
-      await BrekekeUtils.permDefaultDialer()
     }
 
     if (checkHasCall()) {

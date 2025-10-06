@@ -1,3 +1,17 @@
+#### 2.16.6
+
+- Update web browser notification to match with UC desktop
+- Update logic answer call: should not answer with video until the user turn on
+- Fix it should save call history after restart PBX (issue 1021)
+- Fix it should not flash hold button on press (issue 1031)
+- Fix android it should perform correct action when press notification (issue 1059, 1063, 1064)
+- Fix android it should reconnect LPC on internet connection lost (issue 1076)
+
+#### 2.16.5
+
+- Embed
+  - Fix it should cleanup
+
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
@@ -8,7 +22,7 @@
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
 - Fix it should have layout display well with status bar (issue 1020, 1049)
 - Fix it should save logs when the device is locked (issue 1040)
-- Fix ios loud speaker it should toggle well (1041)
+- Fix ios loud speaker it should toggle well (issue 1041)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
 - Fix it should connect to sip after restart tomcat (issue 1043)
 - Fix it should not show notification with LPC service (issue 1044)
