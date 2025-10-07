@@ -193,19 +193,28 @@ public class BrekekeUtils: NSObject {
       object: nil
     )
   }
-
-  @objc private func handleAudioRouteChange(_: Notification) {
-    do {
-      if rtcAudioSession.mode != AVAudioSession.Mode.default.rawValue {
-        try audioSession.setMode(.default)
-        try audioSession.setActive(true)
-        return
+  
+  @objc private func handleAudioRouteChange(_ notification: Notification) {
+      guard let reasonValue = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+            let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+          return
       }
       
+      switch reason {
+      case .newDeviceAvailable, .oldDeviceUnavailable:
+          adjustAudioIfNeeded()
+      case .categoryChange:
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              self.adjustAudioIfNeeded()
+          }
+      default:
+          break
+      }
+    
       if let o = rtcAudioSession.currentRoute.outputs.first {
         if !output.isEmpty && output["output"] == o
-          .portType {
-          return
+        .portType {
+        return
         }
         print("BrekekeUtils.handleAudioRouteChange: outout \(o.portType)")
         output["output"] = o.portType
@@ -214,8 +223,19 @@ public class BrekekeUtils: NSObject {
           data: ["isSpeakerOn": o.portType == .builtInSpeaker]
         )
       }
-    } catch {
-      output.removeAll()
-    }
+  }
+
+  private func adjustAudioIfNeeded() {
+      let session = AVAudioSession.sharedInstance()
+      guard session.mode != .default else { return }
+
+      do {
+          print("Hoang: Adjust mode \(session.mode) → default")
+          try session.setMode(.default)
+          try session.overrideOutputAudioPort(.speaker)
+          try session.setActive(true)
+      } catch {
+          print("Hoang: Audio adjust error: \(error)")
+      }
   }
 }
