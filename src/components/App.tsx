@@ -314,7 +314,7 @@ export const App = observer(() => {
 
   return (
     <RootView>
-      <AudioPlayer />
+      {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize
