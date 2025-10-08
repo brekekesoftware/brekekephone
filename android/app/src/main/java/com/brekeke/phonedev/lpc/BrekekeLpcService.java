@@ -19,8 +19,12 @@ import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.NetworkUtils;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 // main lpc service
 
@@ -81,12 +85,18 @@ public class BrekekeLpcService extends Service {
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    iService = intent;
     Log.d(LpcUtils.TAG, "onBind: execute");
-    startInService(intent);
-    Emitter.debug("[BrekekeLpcService] Start service when bind");
-    BrekekeLpcSocket.con.onConnected();
+    iService = intent;
     registerNetworkCallback();
+    var r = intent.getStringArrayListExtra("remoteSsids");
+    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+      Emitter.debug("[BrekekeLpcService] Wifi not match");
+      return null;
+    }
+    Emitter.debug("[BrekekeLpcService] Start service when bind");
+
+    startInService(intent);
+    BrekekeLpcSocket.con.onConnected();
     return null;
   }
 
@@ -96,7 +106,8 @@ public class BrekekeLpcService extends Service {
     String host = intent.getStringExtra("host");
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
-    settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username);
+    ArrayList<String> remoteSsids = intent.getStringArrayListExtra("remoteSsids");
+    settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username, remoteSsids);
     Gson gson = new Gson();
     LpcUtils.writeConfig(this, gson.toJson(settings));
     createConnection(settings);
@@ -135,7 +146,18 @@ public class BrekekeLpcService extends Service {
                 public void onAvailable(@NonNull Network network) {
                   super.onAvailable(network);
                   Emitter.debug("[BrekekeLpcService] Connection available");
-                  if (iService != null && !isServiceStarted) {
+                  if (iService == null) {
+                    Log.d(LpcUtils.TAG,"[BrekekeLpcService] Service intent is null");
+                    Emitter.debug("[BrekekeLpcService] Service intent is null");
+                    return;
+                  }
+                  var r = iService.getStringArrayListExtra("remoteSsids");
+                  Log.d(LpcUtils.TAG,"[BrekekeLpcService] r " + r);
+                  if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+                    Emitter.debug("[BrekekeLpcService] Wifi not match");
+                    return;
+                  }
+                  if (!isServiceStarted) {
                     if (LpcUtils.checkAppInBackground()) {
                       Log.d(LpcUtils.TAG, "onAvailable: create React Context In Background");
                       LpcUtils.createReactContextInBackground(
