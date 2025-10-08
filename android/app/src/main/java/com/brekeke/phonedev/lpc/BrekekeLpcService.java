@@ -22,6 +22,7 @@ import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.MonitorConnection;
 import com.brekeke.phonedev.utils.NetworkUtils;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 
