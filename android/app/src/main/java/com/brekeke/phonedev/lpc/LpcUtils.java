@@ -34,12 +34,14 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.*;
 import org.json.JSONObject;
 
 public class LpcUtils {
-  public static String TAG = "[BrekekeLpcService]";
+  public static String TAG = "[Hoang]";
+//  public static String TAG = "[BrekekeLpcService]";
 
   public static String NOTI_CHANNEL_ID = "NOTIFICATION_CHANNEL";
   public static int NOTI_ID = 0;
