@@ -91,7 +91,7 @@ public class Perm {
         AndroidLpc,
         new Handler() {
           // ROM/Version: MIUI (Xiaomi)
-          private static final int OP_BACKGROUND_START_ACTIVITY = 10021;
+          private static final int OP_BACKGROUND_START_ACTIVITY_MI_UI = 10021;
 
           @Override
           public boolean check() {
