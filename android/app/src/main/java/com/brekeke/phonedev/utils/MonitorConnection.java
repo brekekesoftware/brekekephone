@@ -1,12 +1,7 @@
 package com.brekeke.phonedev.utils;
 
-import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Handler;
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
-
-import com.facebook.react.bridge.ReactApplicationContext;
 
 public class MonitorConnection {
   private static final long DEFAULT_TIMEOUT_MS = 20000;
