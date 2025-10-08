@@ -37,7 +37,13 @@ public class LpcModel {
       this.userName = userName;
     }
 
-    public Settings(String host, int port, String tlsKeyHash, String token, String userName, ArrayList<String> remoteSsids) {
+    public Settings(
+        String host,
+        int port,
+        String tlsKeyHash,
+        String token,
+        String userName,
+        ArrayList<String> remoteSsids) {
       this.host = host;
       this.port = port;
       this.tlsKeyHash = tlsKeyHash;
