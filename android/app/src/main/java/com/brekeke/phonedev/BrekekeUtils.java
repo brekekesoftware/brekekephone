@@ -933,9 +933,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       String localSsid,
       String tlsKeyHash) {
     var ctx = Ctx.app();
+    var r = LpcUtils.convertReadableArrayToStringList(remoteSsids);
     var i =
         LpcUtils.putConfigToIntent(
-            host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
+            host, port, token, username, tlsKeyHash, r, new Intent(ctx, BrekekeLpcService.class));
     ctx.startForegroundService(i);
     ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
     // update the status if the server turns lpc on or off

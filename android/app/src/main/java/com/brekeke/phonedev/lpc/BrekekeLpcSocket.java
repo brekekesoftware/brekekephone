@@ -11,7 +11,6 @@ import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
-import com.brekeke.phonedev.utils.MonitorConnection;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -38,7 +37,6 @@ import tlschannel.NeedsWriteException;
 import tlschannel.TlsChannel;
 
 public class BrekekeLpcSocket {
-  public static MonitorConnection con;
 
   public class SSLSocketAsyncTask extends AsyncTask<LpcModel.Settings, Void, String> {
     private Context mContext;
@@ -49,7 +47,6 @@ public class BrekekeLpcSocket {
 
     public SSLSocketAsyncTask(Context context) {
       mContext = context;
-      con = new MonitorConnection();
       gson = new Gson();
     }
 
@@ -115,7 +112,7 @@ public class BrekekeLpcSocket {
     @Override
     protected void onPostExecute(String result) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute");
-      BrekekeLpcSocket.con.onDisconnected();
+      BrekekeLpcService.con.onDisconnected();
     }
 
     private void handleCallToServer() {
@@ -232,7 +229,7 @@ public class BrekekeLpcSocket {
             Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
             Emitter.debug("[BrekekeLpcSocket] Response " + res);
           }
-          con.onMessageReceived();
+          BrekekeLpcService.con.onMessageReceived();
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "handleResponse error: " + e.getMessage());

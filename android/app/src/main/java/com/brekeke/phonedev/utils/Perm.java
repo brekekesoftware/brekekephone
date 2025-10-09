@@ -90,10 +90,12 @@ public class Perm {
     handlers.put(
         AndroidLpc,
         new Handler() {
+          // ROM/Version: MIUI (Xiaomi)
           private static final int OP_BACKGROUND_START_ACTIVITY_MI_UI = 10021;
 
           @Override
           public boolean check() {
+            // Permission check skipped: Non-MIUI device
             if (!LpcUtils.isMIUI()) {
               Emitter.debug("Permission check skipped: Non-MIUI device");
               return true;
