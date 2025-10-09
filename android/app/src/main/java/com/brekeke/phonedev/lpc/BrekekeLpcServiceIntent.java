@@ -39,6 +39,7 @@ public class BrekekeLpcServiceIntent extends Service {
                 settings.token,
                 settings.userName,
                 settings.tlsKeyHash,
+                settings.remoteSsids,
                 new Intent(ctx, BrekekeLpcService.class));
         ctx.startForegroundService(i);
         ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);

@@ -1,5 +1,7 @@
 package com.brekeke.phonedev.lpc;
 
+import java.util.ArrayList;
+
 public class LpcModel {
   public class User {
     String uuid;
@@ -18,8 +20,8 @@ public class LpcModel {
     String host;
     int port;
     String tlsKeyHash = "";
-    String[] localSsids;
-    String[] remoteSsids;
+    String localSsids;
+    ArrayList<String> remoteSsids;
     String mobileCountryCode = "";
     String mobileNetworkCode = "";
     String trackingAreaCode = "";
@@ -33,6 +35,21 @@ public class LpcModel {
       this.tlsKeyHash = tlsKeyHash;
       this.token = token;
       this.userName = userName;
+    }
+
+    public Settings(
+        String host,
+        int port,
+        String tlsKeyHash,
+        String token,
+        String userName,
+        ArrayList<String> remoteSsids) {
+      this.host = host;
+      this.port = port;
+      this.tlsKeyHash = tlsKeyHash;
+      this.token = token;
+      this.userName = userName;
+      this.remoteSsids = remoteSsids;
     }
   }
 }

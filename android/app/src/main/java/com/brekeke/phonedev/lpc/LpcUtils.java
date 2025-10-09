@@ -32,6 +32,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Map;
 import javax.net.ssl.*;
@@ -44,12 +45,19 @@ public class LpcUtils {
   public static int NOTI_ID = 0;
 
   public static Intent putConfigToIntent(
-      String host, int port, String token, String userName, String tlsKeyHash, Intent i) {
+      String host,
+      int port,
+      String token,
+      String userName,
+      String tlsKeyHash,
+      ArrayList<String> remoteSsids,
+      Intent i) {
     i.putExtra("token", token);
     i.putExtra("username", userName);
     i.putExtra("host", host);
     i.putExtra("port", port);
     i.putExtra("tlsKeyHash", tlsKeyHash);
+    i.putStringArrayListExtra("remoteSsids", remoteSsids);
     return i;
   }
 
@@ -268,5 +276,33 @@ public class LpcUtils {
       }
     }
     return false;
+  }
+
+  // Convert ReadableArray to String[]
+  public static ArrayList<String> convertReadableArrayToStringList(ReadableArray array) {
+    ArrayList<String> result = new ArrayList<>();
+
+    if (array == null || array.size() == 0) {
+      return result;
+    }
+
+    for (int i = 0; i < array.size(); i++) {
+      try {
+        String value = null;
+        if (array.getType(i) == ReadableType.String) {
+          value = array.getString(i);
+        } else {
+          value = String.valueOf(array.getDynamic(i).asString());
+        }
+
+        if (value != null && !"null".equals(value)) {
+          result.add(value);
+        }
+
+      } catch (Exception e) {
+      }
+    }
+
+    return result;
   }
 }
