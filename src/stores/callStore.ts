@@ -343,6 +343,11 @@ export class CallStore {
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
+        // auto enable local video if remote user make video call
+        if (e.remoteVideoEnabled) {
+          ctx.sip.enableLocalVideo(e.id)
+        }
+
         // auto mute video if the call is answered and local video is not enabled or incoming call
         if (!e.localVideoEnabled || (e.localVideoEnabled && e.incoming)) {
           e.mutedVideo = true
