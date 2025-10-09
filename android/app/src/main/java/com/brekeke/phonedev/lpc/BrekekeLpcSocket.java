@@ -262,7 +262,7 @@ public class BrekekeLpcSocket {
       String data = new CodableHelper().encode(map);
       return addSizeToMessage(data);
     }
-    
+
     private byte[] getAcknowledeParams() throws IOException {
       Map<String, Object> map = new HashMap<>();
       Map<String, Object> p = new HashMap<>();
