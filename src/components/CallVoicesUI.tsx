@@ -96,9 +96,6 @@ export class AnsweredItem extends Component<{
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {
   const stopRingbackAndSyncSpeaker = async () => {
     await BrekekeUtils.stopRBT()
-    // make sure AVAudioSession deactivated
-    await waitTimeout()
-    IncallManager.setForceSpeakerphoneOn(p.isLoudSpeaker)
   }
   useEffect(() => {
     BrekekeUtils.playRBT(p.isLoudSpeaker)
