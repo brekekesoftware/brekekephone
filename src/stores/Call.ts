@@ -89,6 +89,7 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
+    videoEnabled = videoEnabled || this.remoteVideoEnabled
     ctx.sip.phone?.answer(
       this.id,
       options,
