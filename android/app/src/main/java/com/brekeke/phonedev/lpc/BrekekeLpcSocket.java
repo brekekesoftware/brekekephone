@@ -142,6 +142,7 @@ public class BrekekeLpcSocket {
       ByteBuffer requestBuffer = null;
       ByteBuffer responseBuffer = ByteBuffer.allocateDirect(8096);
       Selector selector = Selector.open();
+      var isConnected = false;
       try (SocketChannel rawChannel = SocketChannel.open()) {
         rawChannel.configureBlocking(false);
         rawChannel.setOption(SO_KEEPALIVE, true);
@@ -173,11 +174,12 @@ public class BrekekeLpcSocket {
                     if (requestBuffer != null && requestBuffer.hasRemaining()) {
                       requestBuffer.clear();
                     }
-                    byte[] data = getDataParams();
+                    byte[] data = (isConnected) ? getAcknowledeParams() : getDataParams();
                     requestBuffer = ByteBuffer.wrap(data, 0, data.length);
                     tlsChannel.write(requestBuffer);
                     if (requestBuffer.remaining() == 0) {
                       requestSent = true;
+                      isConnected = true;
                     }
                   } else {
                     responseBuffer.clear();
@@ -257,6 +259,15 @@ public class BrekekeLpcSocket {
           new LpcModel().new User(this.settings.token, this.settings.token, this.settings.userName);
       map.put("payload", new Payload(u));
       map.put("command", "request");
+      String data = new CodableHelper().encode(map);
+      return addSizeToMessage(data);
+    }
+
+    private byte[] getAcknowledeParams() throws IOException {
+      Map<String, Object> map = new HashMap<>();
+      Map<String, Object> p = new HashMap<>();
+      map.put("requestIdentifier", new Random().nextInt(999999999));
+      map.put("command", "acknowledge");
       String data = new CodableHelper().encode(map);
       return addSizeToMessage(data);
     }
