@@ -113,6 +113,7 @@ const initApp = async () => {
 
     ctx.auth.resetFailureState()
     ctx.call.onCallKeepAction()
+    ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
 

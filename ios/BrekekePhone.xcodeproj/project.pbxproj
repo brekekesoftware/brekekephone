@@ -77,6 +77,7 @@
 		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
 		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CBAD324D29F374A20057D82C /* ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBAD324C29F374A20057D82C /* ding.mp3 */; };
+		CBFFFD682E9676860081E175 /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBFFFD672E9676860081E175 /* AudioSessionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +159,7 @@
 		CB2145662AF4EF5D004D2EAA /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
+		CBFFFD672E9676860081E175 /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AudioSessionManager.swift; path = BrekekePhone/AudioSessionManager.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -192,6 +194,7 @@
 				9CF1917528E34BA20048E7A1 /* Bridging-Header.h */,
 				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
 				9CF1917728E34BA20048E7A1 /* AppDelegate.swift */,
+				CBFFFD672E9676860081E175 /* AudioSessionManager.swift */,
 				9CF3830028ED909C008FC490 /* BrekekeLPCManager.swift */,
 				9CF1917828E34BA20048E7A1 /* BrekekeUtils.swift */,
 				9C391D932550EEAD00E3924D /* BrekekePhone.entitlements */,
@@ -563,6 +566,7 @@
 				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
 				9CF382FC28ED908E008FC490 /* Settings.swift in Sources */,
 				9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
+				CBFFFD682E9676860081E175 /* AudioSessionManager.swift in Sources */,
 				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
 				9C972BB828E1B5BF00DD89B4 /* BrekekeLPCExtension.swift in Sources */,
 				9CF382EC28ED8496008FC490 /* KeyCodable.swift in Sources */,
@@ -751,10 +755,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -815,10 +816,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = false;

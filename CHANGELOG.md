@@ -4,7 +4,7 @@
 - Update logic answer call: should not answer with video until the user turn on
 - Fix it should save call history after restart PBX (issue 1021)
 - Fix it should not flash hold button on press (issue 1031)
-- Fix ios audio session (issue 1041, 1065)
+- Fix ios audio session (issue 1041, 1060, 1061, 1065, 1078)
 - Fix android it should perform correct action when press notification (issue 1059, 1063, 1064)
 - Fix it should not crash when add park number (issue 1068)
 - Fix android it should update UI correctly with auto answer (issue 1071)

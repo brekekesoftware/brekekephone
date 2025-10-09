@@ -75,10 +75,11 @@ type TBrekekeUtils = {
 
   // ==========================================================================
   // these methods only available on ios
-  webrtcSetAudioEnabled(enabled: boolean): void
+  webrtcSetAudioEnabled(enabled: boolean, action?: string): void
   playRBT(isLoudSpeaker: boolean): void
   stopRBT(): Promise<void>
   setProximityMonitoring(enabled: boolean): void
+  isSpeakerOn(): Promise<boolean>
 
   // ==========================================================================
   // these methods available on both
@@ -164,7 +165,7 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
-
+  isSpeakerOn: () => Promise.resolve(false),
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
