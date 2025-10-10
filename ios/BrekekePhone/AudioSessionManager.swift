@@ -56,6 +56,26 @@ class AudioSessionManager: NSObject {
     }
   }
 
+  func resetAVAudioConfig() {
+    if rtcAudioSession
+      .isAudioEnabled ||
+      (audioSession.category == .playback && audioSession.mode == .default) {
+      return
+    }
+
+    do {
+      try audioSession.setCategory(
+        .playback,
+        mode: .default,
+        options: [.mixWithOthers, .duckOthers]
+      )
+      try audioSession.setActive(true)
+      logger.log("resetAVAudioConfig completed")
+    } catch {
+      logger.log("resetAVAudioConfig error: \(error)")
+    }
+  }
+
   func setupAVAdioSession(_ mode: AVAudioSession.Mode? = nil) {
     do {
       try audioSession.setCategory(
