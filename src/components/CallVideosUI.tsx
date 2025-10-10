@@ -7,26 +7,35 @@ import type {
   PanResponderGestureState,
   PanResponderInstance,
 } from 'react-native'
-import { PanResponder, Platform, StyleSheet, View } from 'react-native'
+import {
+  Dimensions,
+  PanResponder,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native'
 
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
 import { ctx } from '#/stores/ctx'
 import { RnStacker } from '#/stores/RnStacker'
 
+const MINI_WIDTH = 150
+const MINI_HEIGHT = 150
+
 const css = StyleSheet.create({
   Mini: {
     position: 'absolute',
-    width: 150,
+    width: MINI_WIDTH,
     backgroundColor: 'black',
     ...Platform.select({
       android: {
         borderRadius: 75,
-        height: 150,
+        height: MINI_HEIGHT,
       },
       ios: {
         borderRadius: 75,
-        height: 150,
+        height: MINI_HEIGHT,
       },
       web: {
         borderRadius: v.borderRadius,
@@ -37,6 +46,24 @@ const css = StyleSheet.create({
     ...v.backdropZindex,
   },
 })
+
+const calculateBoundedPosition = (
+  currentLeft: number,
+  currentTop: number,
+  dx: number,
+  dy: number,
+): { left: number; top: number } => {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
+
+  let newLeft = currentLeft + dx
+  let newTop = currentTop + dy
+
+  newLeft = Math.max(0, Math.min(newLeft, screenWidth - MINI_WIDTH))
+  newTop = Math.max(0, Math.min(newTop, screenHeight - MINI_HEIGHT))
+
+  return { left: newLeft, top: newTop }
+}
+
 type Props = {
   onDoubleTap: Function
   sourceObject: MediaStream
@@ -84,11 +111,15 @@ class Mini extends Component<Props> {
   }
 
   onDrag = (e: GestureResponderEvent, gesture: PanResponderGestureState) => {
+    const { left, top } = calculateBoundedPosition(
+      ctx.call.videoPositionL,
+      ctx.call.videoPositionT,
+      gesture.dx,
+      gesture.dy,
+    )
+
     this.view?.setNativeProps({
-      style: {
-        left: ctx.call.videoPositionL + gesture.dx,
-        top: ctx.call.videoPositionT + gesture.dy,
-      },
+      style: { left, top },
     })
   }
 
@@ -96,10 +127,18 @@ class Mini extends Component<Props> {
     e: GestureResponderEvent,
     gesture: PanResponderGestureState,
   ) => {
+    const { left, top } = calculateBoundedPosition(
+      ctx.call.videoPositionL,
+      ctx.call.videoPositionT,
+      gesture.dx,
+      gesture.dy,
+    )
+
     Object.assign(ctx.call, {
-      videoPositionL: ctx.call.videoPositionL + gesture.dx,
-      videoPositionT: ctx.call.videoPositionT + gesture.dy,
+      videoPositionL: left,
+      videoPositionT: top,
     })
+
     const n = Date.now()
     if (
       gesture.dx <= 10 &&
