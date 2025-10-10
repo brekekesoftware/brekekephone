@@ -291,8 +291,6 @@ export class Call {
   }
 
   @action private toggleHold = async () => {
-    console.error('thangnt:: Call: toggleHold', this.holding)
-
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHoldWithCallkeep(fn === 'hold')
