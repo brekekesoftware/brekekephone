@@ -3,7 +3,7 @@ import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
 import type { Session, SessionStatus } from '#/brekekejs'
-import { isIos } from '#/config'
+import { defaultTimeout, isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/callStore'
@@ -261,10 +261,20 @@ export class Call {
   private prevHolding = false
   // TODO: make this more generic to support all pal functions
   pendingRequestIds: string[] = []
+  lastHoldToggle = 0
   toggleHoldWithCheck = () => {
     if (this.isAboutToHangup) {
       return
     }
+    const now = Date.now()
+    if (now - this.lastHoldToggle < defaultTimeout) {
+      console.log(
+        'toggleHoldWithCheck: debounced, time since last toggle:',
+        now - this.lastHoldToggle,
+      )
+      return
+    }
+    this.lastHoldToggle = now
     this.toggleHold()
   }
 
@@ -281,6 +291,8 @@ export class Call {
   }
 
   @action private toggleHold = async () => {
+    console.error('thangnt:: Call: toggleHold', this.holding)
+
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHoldWithCallkeep(fn === 'hold')
