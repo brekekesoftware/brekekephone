@@ -28,6 +28,12 @@ public class BrekekeUtils: NSObject {
   }
 
   // Native module methods
+
+  @objc
+  func resetAudioConfig() {
+    am.resetAVAudioConfig()
+  }
+
   @objc
   func isSpeakerOn(_ resolve: @escaping RCTPromiseResolveBlock,
                    rejecter _: @escaping RCTPromiseRejectBlock) {

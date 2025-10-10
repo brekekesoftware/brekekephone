@@ -17,6 +17,7 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)localSsid tlsKeyHash
                   : (NSString *)tlsKeyHash)
 RCT_EXTERN_METHOD(disableLPC)
+RCT_EXTERN_METHOD(resetAudioConfig)
 RCT_EXTERN_METHOD(isSpeakerOn
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
