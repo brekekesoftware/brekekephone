@@ -282,7 +282,6 @@ public class BrekekeLpcSocket {
         m.put("body", msg);
         if (title != null && !title.isEmpty()) {
           m.put("title", title);
-          m.put("threadId", title);
           var lc = "local_notification";
           m.put("my_custom_data", lc);
           m.put("is_local_notification", lc);
