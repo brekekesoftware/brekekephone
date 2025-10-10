@@ -11,6 +11,7 @@ import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
+import com.brekeke.phonedev.utils.NotificationHelper;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -220,15 +221,11 @@ public class BrekekeLpcSocket {
             Log.d(LpcUtils.TAG, "handleResponse: " + res);
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
-            m.put("lpc", "true");
-            // start incoming call activity
-            Ctx.wakeFromPn(mContext);
-            BrekekeUtils.onFcmMessageReceived(m);
-            // emit message to assign callKeepUuid to call store
-            String e = LpcUtils.convertMapToString(m);
-            Emitter.emit("lpcIncomingCall", e);
-            Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
-            Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
+            if (isChatMessage(m)) {
+              handleChatmessageResponse(obj, m);
+            } else {
+              handleLPCResponse(m);
+            }
             Emitter.debug("[BrekekeLpcSocket] Response " + res);
           }
           BrekekeLpcService.con.onMessageReceived();
@@ -265,11 +262,49 @@ public class BrekekeLpcSocket {
 
     private byte[] getAcknowledeParams() throws IOException {
       Map<String, Object> map = new HashMap<>();
-      Map<String, Object> p = new HashMap<>();
       map.put("requestIdentifier", new Random().nextInt(999999999));
       map.put("command", "acknowledge");
       String data = new CodableHelper().encode(map);
       return addSizeToMessage(data);
+    }
+
+    private Boolean isChatMessage(Map<String, String> m) {
+      return m.get("x_pn-id") == null && "message".equalsIgnoreCase(m.get("event"));
+    }
+
+    private void handleChatmessageResponse(JSONObject obj, Map<String, String> m) {
+      try {
+        var msg = obj.getString("message");
+        var title = m.getOrDefault("senderUserId", "");
+        if (msg.isEmpty()) {
+          msg = "UC message";
+        }
+        m.put("body", msg);
+        if (title != null && !title.isEmpty()) {
+          m.put("title", title);
+          m.put("threadId", title);
+          var lc = "local_notification";
+          m.put("my_custom_data", lc);
+          m.put("is_local_notification", lc);
+        }
+        NotificationHelper.showLocalPush(mContext, title, msg, m);
+        Emitter.debug("[BrekekeLpcSocket] Show local push from Lpc ");
+      } catch (Exception e) {
+        Log.d(LpcUtils.TAG, "handleChat messageResponse error: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] handleChat messageResponse error " + e.getMessage());
+      }
+    }
+
+    private void handleLPCResponse(Map<String, String> m) {
+      m.put("lpc", "true");
+      // start incoming call activity
+      Ctx.wakeFromPn(mContext);
+      BrekekeUtils.onFcmMessageReceived(m);
+      // emit message to assign callKeepUuid to call store
+      String e = LpcUtils.convertMapToString(m);
+      Emitter.emit("lpcIncomingCall", e);
+      Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
+      Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
     }
   }
 }
