@@ -13,16 +13,17 @@ declare global {
     _BrekekePhoneEmbedImports: any
   }
 }
-
-export const isEmbed = Platform.OS === 'web' && !window._BrekekePhoneWebRoot
 export const webRootId = '__brekeke_phone_web_root'
-
 if (isWeb) {
   window._BrekekePhoneWebRoot = document.getElementById(webRootId)
   if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
     window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
   }
 }
+
+// window._BrekekePhoneWebRoot should be set before assigning isEmbed
+export const isEmbed = Platform.OS === 'web' && !window._BrekekePhoneWebRoot
+
 if (isEmbed) {
   window._BrekekePhoneEmbedImports = {
     mobx: Mobx,
