@@ -17,6 +17,7 @@ import {
 
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
+import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { RnStacker } from '#/stores/RnStacker'
 
@@ -25,25 +26,21 @@ const MINI_HEIGHT = 150
 
 const css = StyleSheet.create({
   Mini: {
-    position: 'absolute',
+    position: isWeb ? 'fixed' : 'absolute',
     width: MINI_WIDTH,
+    height: MINI_HEIGHT,
     backgroundColor: 'black',
-    ...Platform.select({
-      android: {
-        borderRadius: 75,
-        height: MINI_HEIGHT,
-      },
-      ios: {
-        borderRadius: 75,
-        height: MINI_HEIGHT,
-      },
-      web: {
-        borderRadius: v.borderRadius,
-      },
-    }),
+    borderRadius: 75,
     overflow: 'hidden',
     ...v.boxShadow,
     ...v.backdropZindex,
+    ...(isWeb &&
+      ({
+        cursor: 'move',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        touchAction: 'none',
+      } as any)),
   },
 })
 
@@ -53,13 +50,19 @@ const calculateBoundedPosition = (
   dx: number,
   dy: number,
 ): { left: number; top: number } => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
+  const screenWidth = isWeb ? window.innerWidth : Dimensions.get('window').width
+  const screenHeight = isWeb
+    ? window.innerHeight
+    : Dimensions.get('window').height
 
-  let newLeft = currentLeft + dx
-  let newTop = currentTop + dy
-
-  newLeft = Math.max(0, Math.min(newLeft, screenWidth - MINI_WIDTH))
-  newTop = Math.max(0, Math.min(newTop, screenHeight - MINI_HEIGHT))
+  const newLeft = Math.max(
+    0,
+    Math.min(currentLeft + dx, screenWidth - MINI_WIDTH),
+  )
+  const newTop = Math.max(
+    0,
+    Math.min(currentTop + dy, screenHeight - MINI_HEIGHT),
+  )
 
   return { left: newLeft, top: newTop }
 }
@@ -72,26 +75,55 @@ type Props = {
 @observer
 class Mini extends Component<Props> {
   panResponder: PanResponderInstance
-  view?: View
+  view: View | null = null
   private lastTap?: number
+  private isDragging = false
+  private startX = 0
+  private startY = 0
+  private startLeft = 0
+  private startTop = 0
 
-  state = {}
   constructor(props: Props) {
     super(props)
-
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: this.onDrag,
       onPanResponderRelease: this.onDrop,
       onPanResponderTerminate: this.onDrop,
     })
   }
 
+  componentDidMount() {
+    if (isWeb && this.view) {
+      const el = this.view as any
+      el.addEventListener('mousedown', this.onMouseDown)
+      el.addEventListener('touchstart', this.onTouchStart)
+      document.addEventListener('mousemove', this.onMouseMove)
+      document.addEventListener('mouseup', this.onMouseUp)
+      document.addEventListener('touchmove', this.onTouchMove)
+      document.addEventListener('touchend', this.onTouchEnd)
+    }
+  }
+
+  componentWillUnmount() {
+    if (isWeb && this.view) {
+      const el = this.view as any
+      el.removeEventListener('mousedown', this.onMouseDown)
+      el.removeEventListener('touchstart', this.onTouchStart)
+      document.removeEventListener('mousemove', this.onMouseMove)
+      document.removeEventListener('mouseup', this.onMouseUp)
+      document.removeEventListener('touchmove', this.onTouchMove)
+      document.removeEventListener('touchend', this.onTouchEnd)
+    }
+  }
+
   render() {
     return (
       <View
-        ref={this.setViewRef}
+        ref={v => {
+          this.view = v
+        }}
         style={[
           css.Mini,
           {
@@ -99,63 +131,133 @@ class Mini extends Component<Props> {
             left: ctx.call.videoPositionL,
           },
         ]}
-        {...this.panResponder.panHandlers}
+        {...(!isWeb && this.panResponder.panHandlers)}
       >
         <VideoPlayer sourceObject={this.props.sourceObject} />
       </View>
     )
   }
 
-  setViewRef = (view: View) => {
-    this.view = view
-  }
-
-  onDrag = (e: GestureResponderEvent, gesture: PanResponderGestureState) => {
+  // Native (iOS/Android)
+  onDrag = (_: GestureResponderEvent, g: PanResponderGestureState) => {
     const { left, top } = calculateBoundedPosition(
       ctx.call.videoPositionL,
       ctx.call.videoPositionT,
-      gesture.dx,
-      gesture.dy,
+      g.dx,
+      g.dy,
     )
-
-    this.view?.setNativeProps({
-      style: { left, top },
-    })
+    this.view?.setNativeProps({ style: { left, top } })
   }
 
-  @action onDrop = (
-    e: GestureResponderEvent,
-    gesture: PanResponderGestureState,
-  ) => {
+  @action onDrop = (_: GestureResponderEvent, g: PanResponderGestureState) => {
     const { left, top } = calculateBoundedPosition(
       ctx.call.videoPositionL,
       ctx.call.videoPositionT,
-      gesture.dx,
-      gesture.dy,
+      g.dx,
+      g.dy,
+    )
+    Object.assign(ctx.call, { videoPositionL: left, videoPositionT: top })
+
+    const n = Date.now()
+    if (g.dx <= 10 && g.dy <= 10 && this.lastTap && n - this.lastTap <= 500) {
+      this.props.onDoubleTap()
+    }
+    this.lastTap = n
+  }
+
+  // Web
+  onMouseDown = (e: MouseEvent) => {
+    e.preventDefault()
+    this.startDrag(e.clientX, e.clientY)
+  }
+
+  onMouseMove = (e: MouseEvent) => {
+    if (!this.isDragging) {
+      return
+    }
+    e.preventDefault()
+    this.moveDrag(e.clientX, e.clientY)
+  }
+
+  onMouseUp = (e: MouseEvent) => {
+    if (!this.isDragging) {
+      return
+    }
+    e.preventDefault()
+    this.endDrag(e.clientX, e.clientY)
+  }
+
+  onTouchStart = (e: TouchEvent) => {
+    e.preventDefault()
+    this.startDrag(e.touches[0].clientX, e.touches[0].clientY)
+  }
+
+  onTouchMove = (e: TouchEvent) => {
+    if (!this.isDragging) {
+      return
+    }
+    e.preventDefault()
+    this.moveDrag(e.touches[0].clientX, e.touches[0].clientY)
+  }
+
+  onTouchEnd = (e: TouchEvent) => {
+    if (!this.isDragging) {
+      return
+    }
+    e.preventDefault()
+    this.endDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+  }
+
+  startDrag = (x: number, y: number) => {
+    this.isDragging = true
+    this.startX = x
+    this.startY = y
+    this.startLeft = ctx.call.videoPositionL
+    this.startTop = ctx.call.videoPositionT
+  }
+
+  moveDrag = (x: number, y: number) => {
+    const { left, top } = calculateBoundedPosition(
+      this.startLeft,
+      this.startTop,
+      x - this.startX,
+      y - this.startY,
+    )
+    if (this.view) {
+      const el = this.view as any
+      el.style.left = `${left}px`
+      el.style.top = `${top}px`
+    }
+  }
+
+  @action endDrag = (x: number, y: number) => {
+    const dx = x - this.startX
+    const dy = y - this.startY
+    const { left, top } = calculateBoundedPosition(
+      this.startLeft,
+      this.startTop,
+      dx,
+      dy,
     )
 
-    Object.assign(ctx.call, {
-      videoPositionL: left,
-      videoPositionT: top,
-    })
+    Object.assign(ctx.call, { videoPositionL: left, videoPositionT: top })
 
     const n = Date.now()
     if (
-      gesture.dx <= 10 &&
-      gesture.dy <= 10 &&
+      Math.abs(dx) <= 10 &&
+      Math.abs(dy) <= 10 &&
       this.lastTap &&
       n - this.lastTap <= 500
     ) {
       this.props.onDoubleTap()
     }
     this.lastTap = n
+    this.isDragging = false
   }
 }
 
 @observer
-class Control extends Component<{
-  sourceObject: MediaStream
-}> {
+class Control extends Component<{ sourceObject: MediaStream }> {
   render() {
     const s = RnStacker.stacks[RnStacker.stacks.length - 1]
     if (
