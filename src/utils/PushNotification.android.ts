@@ -126,6 +126,7 @@ export const PushNotification = {
           const payload =
             n.payload?.payload ||
             n.payload?.pushNotification?.payload ||
+            n.payload?.pushNotification ||
             n.payload
           onNotification(payload, initApp, true)
         },
