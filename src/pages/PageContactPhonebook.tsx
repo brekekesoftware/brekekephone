@@ -172,7 +172,9 @@ export class PageContactPhonebook extends Component {
         ctx.contact.removeContacts(result.succeeded)
       }
       ctx.contact.selectedContactIds = {}
-    } catch (err) {}
+    } catch (err) {
+      console.error(err)
+    }
   }
   onCancel = () => {
     ctx.contact.isDeleteState = false

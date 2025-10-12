@@ -60,7 +60,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => toggleVideo?.()}
+            onPress={toggleVideo}
             style={styles.switchCameraBtn}
           >
             <RnIcon
@@ -72,7 +72,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => onSwitchCamera?.()}
+            onPress={onSwitchCamera}
             style={styles.switchCameraBtn}
           >
             <RnIcon path={mdiCameraRotate} color='white' />

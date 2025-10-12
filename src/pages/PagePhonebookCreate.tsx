@@ -6,8 +6,7 @@ import { Component } from 'react'
 import { ContactsCreateForm } from '#/components/ContactCreateForm'
 import type { ContactInfo, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intl, intlDebug } from '#/stores/intl'
-import { RnAlert } from '#/stores/RnAlert'
+import { intl } from '#/stores/intl'
 
 @observer
 export class PagePhonebookCreate extends Component<{

@@ -247,6 +247,7 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
       rs?.display_name || name || phoneNumber
     }`
   } catch (err) {
+    console.error(err)
     return r
   }
 }

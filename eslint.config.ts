@@ -118,7 +118,7 @@ const nonFix: ConfigWithExtends = {
     '@typescript-eslint/no-shadow': warn,
 
     'prefer-arrow/prefer-arrow-functions': [
-      warn,
+      off,
       {
         disallowPrototype: true,
         singleReturnOnly: false,
@@ -128,7 +128,7 @@ const nonFix: ConfigWithExtends = {
     'prefer-arrow-callback': [warn, { allowNamedFunctions: true }],
     'func-style': [warn, 'expression', { allowArrowFunctions: true }],
 
-    'import/no-default-export': warn,
+    'import/no-default-export': off,
   },
 }
 

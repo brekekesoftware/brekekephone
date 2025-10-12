@@ -174,7 +174,9 @@ export class ContactStore {
       this.pbxUsers = res
         .filter(u => u[0] !== ca.pbxUsername)
         .map(id => ({ id: id[0], name: id[1] }))
-    } catch (err) {}
+    } catch (err) {
+      console.error(err)
+    }
   }
   setTalkerStatus = (userId: string, talkerId: string, status: string) => {
     const u = this.getPbxUserById(userId)

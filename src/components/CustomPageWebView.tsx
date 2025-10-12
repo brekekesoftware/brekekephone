@@ -49,9 +49,6 @@ export const CustomPageWebView = ({
   onLoadEnd,
   onError,
 }: Props) => {
-  if (!url) {
-    return null
-  }
   const nLoading = useRef(false)
   const cUrl = useRef('')
   const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
@@ -87,6 +84,7 @@ export const CustomPageWebView = ({
         }
       }
     } catch (err) {
+      console.error(err)
       return
     }
   }
@@ -97,23 +95,27 @@ export const CustomPageWebView = ({
       return true
     }
 
-    const url = event.url.toLowerCase()
-    if (!url.startsWith(callScheme)) {
+    const eurl = event.url.toLowerCase()
+    if (!eurl.startsWith(callScheme)) {
       return true
     }
 
     try {
-      const urlObj = new URL(url)
-      const number = urlObj.searchParams.get('number')
+      const number = new URL(eurl).searchParams.get('number')
       if (number && ctx.call) {
         const decodedNumber = decodeURIComponent(number.trim())
         ctx.call.startCall(decodedNumber)
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err)
       return true
     }
 
     return false
+  }
+
+  if (!url) {
+    return null
   }
 
   return (
