@@ -1,7 +1,11 @@
+#### 2.16.7
+
+- Fix it should be able to drag mini video call circle (issue 1084)
+- Update logic answer call: should not answer with video until the user turn on
+
 #### 2.16.6
 
 - Update web browser notification to match with UC desktop
-- Update logic answer call: should not answer with video until the user turn on
 - Fix it should save call history after restart PBX (issue 1021)
 - Fix it should not flash hold button on press (issue 1031)
 - Fix ios audio session (issue 1041, 1060, 1061, 1065, 1078)
