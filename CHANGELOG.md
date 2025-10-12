@@ -1,3 +1,7 @@
+#### 2.16.7
+
+- Fix it should be able to drag mini video call circle (issue 1084)
+
 #### 2.16.6
 
 - Update web browser notification to match with UC desktop
