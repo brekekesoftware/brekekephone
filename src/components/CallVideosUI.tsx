@@ -7,13 +7,7 @@ import type {
   PanResponderGestureState,
   PanResponderInstance,
 } from 'react-native'
-import {
-  Dimensions,
-  PanResponder,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { Dimensions, PanResponder, StyleSheet, View } from 'react-native'
 
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
@@ -121,8 +115,8 @@ class Mini extends Component<Props> {
   render() {
     return (
       <View
-        ref={v => {
-          this.view = v
+        ref={view => {
+          this.view = view
         }}
         style={[
           css.Mini,

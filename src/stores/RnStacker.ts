@@ -67,7 +67,9 @@ export class RnStackerStore {
         if (stack && !stack.nativeEvent) {
           try {
             Object.assign(stack0, stack)
-          } catch (err) {}
+          } catch (err) {
+            void err
+          }
         }
         Object.assign(stack0, {
           name,

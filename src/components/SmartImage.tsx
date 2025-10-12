@@ -100,6 +100,7 @@ export const SmartImage = ({
         setStatusImageLoading(StatusImage.loaded)
       }
     } catch (err) {
+      console.error(err)
       return
     }
   }
