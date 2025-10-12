@@ -344,7 +344,10 @@ export class CallStore {
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
         // auto mute video if the call is answered and local video is not enabled or incoming call
-        if (!e.localVideoEnabled || (e.localVideoEnabled && e.incoming)) {
+        if (
+          !e.answerVideoEnabled &&
+          (!e.localVideoEnabled || (e.localVideoEnabled && e.incoming))
+        ) {
           e.mutedVideo = true
           ctx.sip.setMutedVideo(true, e.id)
         }
@@ -367,8 +370,8 @@ export class CallStore {
       // but local video is not enabled
       if (
         e.answered &&
-        !e.remoteVideoEnabled &&
-        p.remoteVideoEnabled &&
+        ((!e.remoteVideoEnabled && p.remoteVideoEnabled) ||
+          e.answerVideoEnabled) &&
         !e.localVideoEnabled
       ) {
         ctx.sip.enableLocalVideo(e.id)
@@ -622,6 +625,7 @@ export class CallStore {
         )
         args[0] = { ...args[0], extraHeaders }
       } catch (err) {
+        console.error(err)
         return false
       }
     }
@@ -675,6 +679,7 @@ export class CallStore {
     try {
       sipCreateSession()
     } catch (err) {
+      console.error(err)
       reconnectCalled = true
       ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
     }

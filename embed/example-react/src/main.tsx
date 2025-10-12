@@ -13,6 +13,14 @@ const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
   clearExistingAccounts: false,
   accounts: [
     {
+      hostname: 'dev01.brekeke.com',
+      port: '8443',
+      tenant: 'nam',
+      username: 'nam01',
+      password: '123',
+      uc: true,
+    },
+    {
       hostname: 'YOUR_PBX_HOSTNAME',
       port: 'YOUR_PBX_PORT',
       tenant: 'TENANT',
@@ -23,6 +31,7 @@ const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
   ],
 })
 const ctx = phone.getCurrentAccountCtx()
+ctx.intl.setLocale('en')
 const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
@@ -63,6 +72,14 @@ const Call = observer(({ call }) => (
         Answer
       </button>
     )}
+    {call.incoming && !call.answered && (
+      <button
+        className='call-answer'
+        onClick={() => call.answer(undefined, true)}
+      >
+        Answer with video
+      </button>
+    )}
     <button className='call-hangup' onClick={() => call.hangupWithUnhold()}>
       Hangup
     </button>
@@ -99,6 +116,6 @@ const Video = observer(({ stream }) => {
     if (r.current && stream) {
       r.current.srcObject = stream
     }
-  }, [r.current, stream])
+  }, [stream])
   return <video className='video-item' ref={r} playsInline autoPlay />
 })

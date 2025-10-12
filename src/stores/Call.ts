@@ -74,6 +74,8 @@ export class Call {
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
 
+  answerVideoEnabled?: boolean
+
   @action
   answer = async (
     options?: { ignoreNav?: boolean },
@@ -81,6 +83,7 @@ export class Call {
     videoOptions?: object,
     exInfo?: string,
   ) => {
+    this.answerVideoEnabled = videoEnabled
     this.holding = false
     this.answered = true
     this.store.setCurrentCallId(this.id)
@@ -89,11 +92,10 @@ export class Call {
     if (options) {
       delete options.ignoreNav
     }
-    videoEnabled = videoEnabled || this.remoteVideoEnabled
     ctx.sip.phone?.answer(
       this.id,
       options,
-      videoEnabled,
+      videoEnabled || this.remoteVideoEnabled,
       videoOptions,
       exInfo || 'answered',
     )
@@ -173,16 +175,11 @@ export class Call {
     }
     if (this.localVideoEnabled) {
       this.mutedVideo = !this.mutedVideo
-      if (this.mutedVideo) {
-        ctx.sip.setMutedVideo(true, this.id)
-      } else {
-        ctx.sip.setMutedVideo(false, this.id)
-      }
     } else {
       this.mutedVideo = false
       ctx.sip.enableLocalVideo(this.id)
-      ctx.sip.setMutedVideo(false, this.id)
     }
+    ctx.sip.setMutedVideo(this.mutedVideo, this.id)
     // update UI for IncomingCallActivity
     BrekekeUtils.setIsVideoCall(
       this.callkeepUuid,

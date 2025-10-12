@@ -25,8 +25,6 @@ export const CallVideosCarousel = observer(
       mutedVideo,
       toggleVideo,
     },
-    showButtonsInVideoCall,
-    onButtonsInVideo,
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollView>(null)
 
@@ -42,7 +40,7 @@ export const CallVideosCarousel = observer(
       if (!videoClientSessionTable.length) {
         updateVideoStreamActive(null)
       }
-    }, [videoClientSessionTable.length, videoStreamActive])
+    }, [updateVideoStreamActive, videoClientSessionTable, videoStreamActive])
 
     const width = Dimensions.get('window').width
     const finalHeight = 182

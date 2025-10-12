@@ -167,13 +167,13 @@ const genMenus = (customPages: PbxCustomPage[]) => {
         }
 
         // should update custom page URL if not built
-        const updateCustomPageUrl = async (i: PbxCustomPage) => {
-          if (isCustomPageUrlBuilt(i.url)) {
+        const updateCustomPageUrl = async (c: PbxCustomPage) => {
+          if (isCustomPageUrlBuilt(c.url)) {
             return
           }
-          const url = await ctx.pbx.buildCustomPageUrl(i.url)
-          ctx.auth.updateCustomPage({ ...i, url })
-          ctx.auth.customPageLoadings[i.id] = true
+          const url = await ctx.pbx.buildCustomPageUrl(c.url)
+          ctx.auth.updateCustomPage({ ...c, url })
+          ctx.auth.customPageLoadings[c.id] = true
         }
 
         if (s.navFnKey === 'goToPageCustomPage') {

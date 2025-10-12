@@ -60,7 +60,9 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       if (typeof f === 'string' && f.charAt(0) === '{') {
         try {
           return JSON.parse(f)
-        } catch (err) {}
+        } catch (err) {
+          void err
+        }
       }
       return f
     })
