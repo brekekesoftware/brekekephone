@@ -12,6 +12,7 @@ import { Layout } from '#/components/Layout'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { currentVersion } from '#/config'
+import { PageAccountSignInMFA } from '#/pages/PageAccountSignInMFA'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { permForCall } from '#/utils/permissions'
@@ -72,6 +73,10 @@ const css = StyleSheet.create({
 })
 
 export const PageAccountSignIn = observer(() => {
+  if (true) {
+    return <PageAccountSignInMFA />
+  }
+
   const ids = ctx.account.accounts.map(a => a.id).filter(id => id)
   const l = ids.length
   const createAccount = async () => {

@@ -36,6 +36,7 @@ export const v = {
     : undefined,
   //
   borderRadius: 3,
+  borderRadiusMFA: 15,
   maxModalWidth: 380,
   //
   bg: 'white',
@@ -47,6 +48,8 @@ export const v = {
   borderBg: darken(0.15, 'white'),
   layerBg: transparentize(0.2, 'black'),
   layerBgVideo: '#00000080',
+  borderColorMFA: darken(0.1, 'white'),
+  grayBg: darken(0.2, 'white'),
   //
   boxShadow: {
     ...boxShadow,
