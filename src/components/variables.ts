@@ -68,6 +68,7 @@ export const v = {
     primary: '#609B3A',
     warning: '#F1AF20',
     danger: '#DC0F39',
+    info: '#4ac5de',
     primaryFn: (lv: number) =>
       lv > 0 ? lighten(lv, v.colors.primary) : darken(-lv, v.colors.primary),
     warningFn: (lv: number) =>
