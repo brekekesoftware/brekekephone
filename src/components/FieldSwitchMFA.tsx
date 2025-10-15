@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { RnSwitch } from '#/components/RnSwitch'
 import { RnText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 
 const css = StyleSheet.create({
@@ -26,17 +28,24 @@ const css = StyleSheet.create({
 
 interface FieldSignInMFAInterface {
   title: string
-  isEnable: boolean
+  onChangeValue?: (e: boolean) => void
+  value: boolean
 }
 
 export const FieldSwitchMFA = ({
-  isEnable,
+  onChangeValue,
   title,
-}: FieldSignInMFAInterface) => (
-  <View style={css.RowContents}>
-    <View style={css.TitleView}>
-      <RnText style={css.Title}>{title}</RnText>
-    </View>
-    <RnSwitch enabled={isEnable} />
-  </View>
-)
+  value,
+}: FieldSignInMFAInterface) => {
+  const onChange = () => {
+    onChangeValue?.(!value)
+  }
+  return (
+    <RnTouchableOpacity onPress={onChange} style={css.RowContents}>
+      <View style={css.TitleView}>
+        <RnText style={css.Title}>{title}</RnText>
+      </View>
+      <RnSwitch enabled={value} />
+    </RnTouchableOpacity>
+  )
+}

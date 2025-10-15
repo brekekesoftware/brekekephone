@@ -15,8 +15,10 @@ import { FooterActions } from '#/components/FooterActions'
 import { FooterActionsMFA } from '#/components/FooterActionsMFA'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { permForCall } from '#/utils/permissions'
 
 const css = StyleSheet.create({
   AccountSignInItem: {
@@ -32,9 +34,12 @@ const css = StyleSheet.create({
   AccountSignInItem__empty: {
     height: '70%',
     minHeight: 320,
-    marginVertical: 45,
     marginLeft: 15,
     padding: 15,
+    backgroundColor: v.bg,
+    borderRadius: v.borderRadiusMFA,
+    width: 270,
+    position: 'relative',
   },
   Content: {
     flex: 1,
@@ -46,6 +51,15 @@ const css = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
   },
+  Button_Empty: {
+    width: '100%',
+    height: '15%',
+    position: 'absolute',
+    backgroundColor: 'red',
+    alignSelf: 'center',
+    bottom: 30,
+    borderRadius: 2,
+  },
 })
 
 export const AccountSignInItemMFA: FC<{
@@ -55,14 +69,23 @@ export const AccountSignInItemMFA: FC<{
 }> = observer(props => {
   const { empty, id, last } = props
   if (empty) {
-    const onNext = () => {}
-    // TODO: Need re-style this component
+    const onPressCreateAccount = async () => {
+      if (!(await permForCall(true))) {
+        return
+      }
+      ctx.nav.goToPageAccountCreate()
+    }
     return (
-      <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
+      <View style={[css.AccountSignInItem__empty]}>
         <RnText subTitle>{intl`No account`}</RnText>
         <RnText>{intl`There is no account created`}</RnText>
         <RnText>{intl`Tap the below button to create one`}</RnText>
-        <FooterActions onNext={onNext} onNextText={intl`CREATE NEW ACCOUNT`} />
+        <View style={css.Button_Empty}>
+          <FooterActions
+            onNext={onPressCreateAccount}
+            onNextText={intl`CREATE NEW ACCOUNT`}
+          />
+        </View>
       </View>
     )
   }
@@ -81,8 +104,13 @@ export const AccountSignInItemMFA: FC<{
   if (!a) {
     return null
   }
+  const onPressSignIn = async () => {
+    ctx.nav.goToPage2StepVarification()
+  }
 
-  const onPressSignIn = async () => {}
+  const onChangeUC = (e: boolean) => {
+    ctx.account.upsertAccount({ id: a.id, ucEnabled: e })
+  }
   return (
     <View style={[css.AccountSignInItem, last && css.AccountSignInItem__last]}>
       <RnTouchableOpacity style={css.Content} onPress={() => {}}>
@@ -99,13 +127,11 @@ export const AccountSignInItemMFA: FC<{
         />
         <FieldMFA icon={mdiPort} title={intl`PORT`} data={a.pbxPort} />
       </RnTouchableOpacity>
-      <FieldSwitchMFA title={intl`UC STATUS`} isEnable={a.ucEnabled} />
-      {/* <Field
-        label='UC'
-        onValueChange={(e: boolean) => {}}
-        type='Switch'
+      <FieldSwitchMFA
+        onChangeValue={onChangeUC}
+        title={intl`UC STATUS`}
         value={a.ucEnabled}
-      /> */}
+      />
       <FooterActionsMFA
         onBack={() => {
           RnAlert.prompt({

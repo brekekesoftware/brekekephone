@@ -1,11 +1,13 @@
 import { observer } from 'mobx-react'
 import { FlatList, StyleSheet, View } from 'react-native'
 
-import { AccountSignInItem } from '#/components/AccountSignInItem'
 import { AccountSignInItemMFA } from '#/components/AccountSignInItemMFA'
 import { BrekekeGradient } from '#/components/BrekekeGradient'
 import { Layout } from '#/components/Layout'
+import { v } from '#/components/variables'
+import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { permForCall } from '#/utils/permissions'
 
 const css = StyleSheet.create({
   PageAccountSignIn_ListServers: {
@@ -23,25 +25,38 @@ const css = StyleSheet.create({
   Space: {
     height: 15,
   },
+  Footer: {
+    position: 'absolute',
+    bottom: 0,
+    paddingTop: 25,
+    paddingBottom: 10,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    ...v.backdropZindex,
+  },
 })
 
 export const PageAccountSignInMFA = observer(() => {
-  const l = 0
-  // TODO: Text color must be white
-  const dataMock = [{ id: '0', pbxHostname: '', pbxPort: '', pbxTenant: '' }]
+  const ids = ctx.account.accounts.map(a => a.id).filter(id => id)
+  const l = 1
+  const createAccount = async () => {
+    if (!(await permForCall(true))) {
+      return
+    }
+    ctx.nav.goToPageAccountCreate()
+  }
   return (
     <BrekekeGradient>
       <Layout
         description={intl`${l} SERVERS IN TOTAL`}
         noScroll
-        onCreate={undefined}
+        onCreate={!!l ? createAccount : undefined}
         title={intl`Servers`}
         transparent
       >
-        {/* <View style={css.PageAccountSignIn_Spacing} /> */}
         <View style={css.PageAccountSignIn_ListServers}>
-          {l ? (
-            <AccountSignInItem empty />
+          {!l ? (
+            <AccountSignInItemMFA empty />
           ) : (
             <FlatList
               data={['1']}
