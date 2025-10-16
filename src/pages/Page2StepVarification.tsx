@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Dimensions, StyleSheet, View } from 'react-native'
 
 import { mdiClose } from '#/assets/icons'
@@ -10,6 +10,7 @@ import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
+import type { AccountUnique } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
@@ -77,8 +78,40 @@ const css = StyleSheet.create({
 })
 
 export const Page2StepVarification = () => {
-  const [isVerify, setVerify] = useState(true)
+  const [isVerify, setVerify] = useState(false)
   const veryfiFormRef = useRef<FormMFARef | null>(null)
+  const valueRef = useRef<AccountUnique>(null)
+  const signIn = async (r: Record<string, string>) => {
+    const a: AccountUnique = {
+      pbxUsername: r.pbxUsername || '',
+      pbxTenant: r.pbxTenant || '',
+      pbxHostname: '',
+      pbxPort: '',
+    }
+    valueRef.current = a
+    const ca = await ctx.account.find(a)
+    if (!ca) {
+      return
+    }
+    const c = await ctx.account.mfaStart(ca)
+    if (!c) {
+      console.log('[Hoang] Page2StepVarification: No need to MFA ')
+      ctx.nav.goToPageIndex()
+      return
+    }
+    setVerify(true)
+  }
+
+  const onCheck2FA = async () => {}
+
+  const resendNewCode = async () => {
+    if (valueRef.current) {
+      signIn(valueRef.current)
+      veryfiFormRef.current?.showInfoToast(
+        intl`A new OTP code was sent to your email`,
+      )
+    }
+  }
 
   const onBack = () => {
     ctx.nav.backToPageAccountSignIn()
@@ -106,13 +139,13 @@ export const Page2StepVarification = () => {
                 <RnCheckBox
                   style={css.CheckBox}
                   isSelected={true}
-                  disabled
+                  disabled={false}
                   onPress={() => {}}
                 />
                 <RnText>{intl`Remember Me`}</RnText>
               </View>
             }
-            onSubmit={() => {}}
+            onSubmit={signIn}
           />
         )}
         {isVerify && (
@@ -128,20 +161,14 @@ export const Page2StepVarification = () => {
               belowButton={
                 <View style={css.ResendCode}>
                   <RnText>{intl`Can't find your code?`} </RnText>
-                  <RnTouchableOpacity
-                    onPress={() => {
-                      veryfiFormRef.current?.showInfoToast(
-                        intl`A new OTP code was sent to your email`,
-                      )
-                    }}
-                  >
+                  <RnTouchableOpacity onPress={resendNewCode}>
                     <RnText
                       style={css.TouchResendCode}
                     >{intl`Resend a new code`}</RnText>
                   </RnTouchableOpacity>
                 </View>
               }
-              onSubmit={() => {}}
+              onSubmit={onCheck2FA}
             />
           </>
         )}
@@ -152,7 +179,7 @@ export const Page2StepVarification = () => {
 
 const formFields: FormFields[] = [
   {
-    id: 'id_number',
+    id: 'pbxUsername',
     placeholder: 'ID Number',
   },
   {
@@ -161,7 +188,7 @@ const formFields: FormFields[] = [
     secureTextEntry: true,
   },
   {
-    id: 'tenant',
+    id: 'pbxTenant',
     placeholder: 'Tenant',
   },
 ]
