@@ -8,7 +8,7 @@ import { ButtonIcon } from '#/components/ButtonIcon'
 import { IncomingItem } from '#/components/CallVoicesUI'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
@@ -61,7 +61,9 @@ export const CallNotify = observer(() => {
   // try trigger observer?
   void Object.keys(ctx.call.callkeepMap)
   void ctx.call.calls.map(_ => _.callkeepUuid)
-  const c = ctx.call.getCallInNotify()
+  const c = isAndroid
+    ? ctx.call.getCallInNotifyForAndroid()
+    : ctx.call.getCallInNotify()
   // do not show notify if in page call manage
   if (ctx.call.inPageCallManage || !c) {
     return null
@@ -91,7 +93,7 @@ export const CallNotify = observer(() => {
           <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>
             {intl`Incoming Call`}
-            {n > 0 ? ' (' + intl`${n} in background` + ')' : ''}
+            {!isAndroid && n > 0 ? ' (' + intl`${n} in background` + ')' : ''}
           </RnText>
         </View>
         {!hideHangup && (

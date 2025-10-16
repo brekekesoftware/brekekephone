@@ -1,4 +1,4 @@
-import { debounce, isEmpty } from 'lodash'
+import { create, debounce, isEmpty } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { AppState } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
@@ -27,6 +27,7 @@ import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
+import { parse } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webShowNotification } from '#/utils/webShowNotification'
 
@@ -286,6 +287,36 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
+
+  @action private shouldHandleOutgoing = (uuid: string) => {
+    const ca = ctx.auth.getCurrentAccount()
+    if (!isAndroid || !ca?.pushNotificationEnabled) {
+      return
+    }
+    BrekekeUtils.onHandedOutgoingCall(uuid)
+  }
+  @action private shouldCreateCallkeepUuid = () => {
+    const ca = ctx.auth.getCurrentAccount()
+    if (!isAndroid || ca?.pushNotificationEnabled) {
+      return
+    }
+    const c = this.calls
+      .filter(i => i.incoming && !i.answered && !i.callkeepUuid)
+      .sort((a, b) => a.createdAt - b.createdAt)[0]
+    if (c) {
+      this.createCallkeepUuid(c)
+    }
+  }
+  @action private createCallkeepUuid = async (c: Call) => {
+    const uuid = newUuid().toUpperCase()
+    c.callkeepUuid = uuid
+    RNCallKeep.displayIncomingCall(
+      uuid,
+      c.partyNumber,
+      await c.getDisplayNameAsync(),
+      'generic',
+    )
+  }
   @action private upsertCall = async (
     // partial
     p: Pick<Call, 'id'> &
@@ -350,6 +381,11 @@ export class CallStore {
         ) {
           e.mutedVideo = true
           ctx.sip.setMutedVideo(true, e.id)
+        }
+        if (e.incoming) {
+          this.shouldCreateCallkeepUuid()
+        } else {
+          this.shouldHandleOutgoing(e.callkeepUuid)
         }
       }
       // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
@@ -478,20 +514,21 @@ export class CallStore {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
     }
+    const hasOtherIncoming =
+      isAndroid &&
+      this.calls.some(
+        i =>
+          (!i.incoming && !i.answered) ||
+          (i.incoming && i.pnId !== c.pnId && !i.answered),
+      )
     if (
       !isWeb &&
       c.incoming &&
       !c.callkeepUuid &&
-      !ca?.pushNotificationEnabled
+      !ca?.pushNotificationEnabled &&
+      !hasOtherIncoming
     ) {
-      const uuid = newUuid().toUpperCase()
-      c.callkeepUuid = uuid
-      RNCallKeep.displayIncomingCall(
-        uuid,
-        c.partyNumber,
-        await c.getDisplayNameAsync(),
-        'generic',
-      )
+      this.createCallkeepUuid(c)
     }
     // get and check callkeep if pending incoming call
     if (isWeb || !c.incoming || c.answered) {
@@ -533,6 +570,29 @@ export class CallStore {
       return
     }
 
+    // Handle pending incoming call
+    // ================================
+    if (c.incoming) {
+      this.shouldCreateCallkeepUuid()
+    } else {
+      this.shouldHandleOutgoing(c.callkeepUuid)
+    }
+
+    // should handle next incoming call with callkeep uuid
+    const ca = ctx.auth.getCurrentAccount()
+    if (isAndroid && ca?.pushNotificationEnabled && c.incoming) {
+      BrekekeUtils.onHandedIncomingCall(c.pnId)
+      const m = await BrekekeUtils.getCurrentIncomingCall()
+      if (m) {
+        try {
+          const data = JSON.parse(m)
+          parse(data, false)
+        } catch (err) {
+          console.warn('Failed to parse incoming call data:', err)
+        }
+      }
+    }
+    // ================================
     c.cancelPendingRequest()
 
     if (c.rawSession) {
@@ -637,6 +697,7 @@ export class CallStore {
       this.callkeepUuidPending = uuid
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
+        BrekekeUtils.onOutgoing(uuid)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // enable proximity monitoring for trigger proximity state to keep the call alive
@@ -966,7 +1027,47 @@ export class CallStore {
           timerStore.now - _.createdAt > 1000)
       )
     })
+  @action getCallInNotifyForAndroid = () => {
+    // Do not display incoming call if there is any outgoing call currently dialing
+    const co = this.calls.find(_ => !_.incoming && !_.answered)
+    if (co) {
+      return
+    }
+    const calls = this.calls.filter(_ => {
+      const k = this.callkeepMap[_.callkeepUuid]
+      return (
+        _.incoming &&
+        !_.answered &&
+        (!k || k.hasAction || timerStore.now - _.createdAt > 1000)
+      )
+    })
 
+    if (calls.length > 1) {
+      return calls.sort((a, b) => a.createdAt - b.createdAt)[0]
+    }
+    return calls[0]
+  }
+
+  getBgCalls = (c: Call) => {
+    let arr = this.calls.filter(x => x.id !== c.id)
+    if (isAndroid) {
+      const od = this.calls.find(x => !x.incoming && !x.answered)
+      if (od) {
+        arr = arr.filter(
+          x =>
+            x.answered ||
+            !x.incoming ||
+            (x.incoming && x.createdAt <= od.createdAt && !x.answered),
+        )
+      } else {
+        const [f] = this.calls
+          .filter(c => c.incoming && !c.answered)
+          .sort((a, b) => a.createdAt - b.createdAt)
+        arr = arr.filter(x => x.answered || !x.incoming || x.id === f.id)
+      }
+    }
+    return arr
+  }
   shouldRingInNotify = () => {
     if (isWeb) {
       return true
