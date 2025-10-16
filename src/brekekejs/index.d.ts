@@ -249,6 +249,37 @@ export type PbxPal = {
   park(p: PbxParkParam, resolve: () => void, reject: ErrorHandler): void
   sendDTMF(p: PbxSendDtmfParam, resolve: () => void, reject: ErrorHandler): void
   ping(p: undefined, resolve: () => void, reject: ErrorHandler): void
+  // MFA
+  'device_token/create'(
+    p: MFADeviceTokenCreate,
+    resolve: (res: MFADeviceTokenCreateRes) => void,
+    reject: ErrorHandler,
+  ): void
+  'device_token/check'(
+    p: MFADeviceTokenCheck,
+    resolve: (res: MFADeviceTokenCheckRes) => void,
+    reject: ErrorHandler,
+  ): void
+  'device_token/delete'(
+    p: MFADeviceTokenDelete,
+    resolve: (res: MFADeviceTokenDeleteRes) => void,
+    reject: ErrorHandler,
+  ): void
+  'mfa/start'(
+    p: MFAStart,
+    resolve: (res: MFAStartRes) => void,
+    reject: ErrorHandler,
+  ): void
+  'mfa/check'(
+    p: MFACheck,
+    resolve: (res: MFACheckRes) => void,
+    reject: ErrorHandler,
+  ): void
+  'mfa/delete'(
+    p: MFADelete,
+    resolve: (res: MFADeleteRes) => void,
+    reject: ErrorHandler,
+  ): void
 }
 
 export type PbxResourceLine = {
@@ -296,6 +327,7 @@ export type PbxGetProductInfoRes = {
   'webphone.http.useragent.product': string
   'webphone.error_toast.suppress_enabled': string
   'webphone.error_toast.suppress_patterns': string
+  'webphone.pal.mfa': boolean
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -1061,3 +1093,90 @@ export type UcConstants = {
 }
 
 type ErrorHandler = (err: Error) => void
+
+// Device token
+export type MFADeviceTokenCreate = {
+  tenant: string
+  user: string
+  sa?: boolean
+  ip_address: string
+  user_agent: string
+  options?: any
+}
+
+export type MFADeviceTokenCreateRes = {
+  status: string
+  token?: string
+  expiration_time?: number
+  options?: any
+}
+
+export type MFADeviceTokenCheck = {
+  token: string
+  tenant: string
+  user: string
+  sa?: boolean
+  ip_address: string
+  user_agent: string
+}
+
+export type MFADeviceTokenCheckRes = {
+  status: string
+  options: MFADeviceTokenCheck
+}
+
+export type MFADeviceTokenDelete = {
+  tenant: string
+  user: string
+  sa?: boolean
+}
+
+export type MFADeviceTokenDeleteRes = {
+  status: string
+  message?: string
+}
+
+export type MFACheck = {
+  tenant: string
+  user: string
+  sa?: boolean
+  code: string
+  sess_key: string
+}
+
+export type MFAStart = {
+  tenant: string
+  user: string
+  sa?: boolean
+  ip_address: string
+  email?: string
+  url?: string
+  options?: any
+}
+
+export type MFADelete = {
+  tenant: string
+  user: string
+  sa?: boolean
+  sess_key: string
+}
+
+export type MFACheckRes = {
+  status: string
+  option?: MFAStartRes
+}
+
+export type MFAStartRes = {
+  status: string
+  type: string
+  code: string
+  url: string
+  none: boolean
+  sess_key: string
+  expiry_time: number
+  message?: string
+}
+
+export type MFADeleteRes = {
+  status: string
+}
