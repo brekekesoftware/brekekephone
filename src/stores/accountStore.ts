@@ -2,7 +2,14 @@ import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
-import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
+import type {
+  MFADeviceTokenCreate,
+  MFADeviceTokenCreateRes,
+  MFAStart,
+  MFAStartRes,
+  UcBuddy,
+  UcBuddyGroup,
+} from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
 import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -13,6 +20,7 @@ import { arrToMap } from '#/utils/arrToMap'
 import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
+import { getPublicIp } from '#/utils/publicIpAddress'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -73,7 +81,21 @@ export type AccountData = {
   userAgent?: string
   pnExpires?: string
   phoneappliEnabled?: boolean
+  mfa?: MFAInfo
 }
+
+type DeviceTokenInfo = {
+  createdAt: number
+  checkedAt?: number
+} & Record<MFAStorageKey, string>
+
+type MFAInfo = {
+  verified: boolean
+  expire?: number
+  deviceToken?: DeviceTokenInfo
+}
+
+export type MFAStorageKey = `br+dtoken+${string}+${string}`
 
 export class AccountStore {
   @observable appInitDone = false
@@ -87,6 +109,8 @@ export class AccountStore {
     }
   }
   @observable accountData: AccountData[] = []
+
+  keySessionMFA: string = ''
 
   genEmptyAccount = (): Account => ({
     id: newUuid(),
@@ -297,6 +321,7 @@ export class AccountStore {
       recentCalls: [],
       recentChats: [],
       pbxBuddyList: undefined,
+      mfa: { verified: false },
     }
     await waitTimeout(17)
     this.updateAccountData(newD)
@@ -312,6 +337,125 @@ export class AccountStore {
       this.accountData = arr
     })
     this.saveAccountsToLocalStorageDebounced()
+  }
+
+  updateTokenToAccountData = async (
+    a: AccountUnique,
+    res: MFADeviceTokenCreateRes,
+  ) => {
+    const d = await this.findData(a)
+    if (!d) {
+      return
+    }
+
+    const status = res.status === 'OK'
+    const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
+
+    if (!d.mfa) {
+      d.mfa = { verified: status }
+    } else {
+      d.mfa.verified = status
+    }
+
+    if (status) {
+      const now = Date.now()
+      if (res.expiration_time) {
+        d.mfa.expire = res.expiration_time
+      }
+      d.mfa.expire = res.expiration_time
+      if (d.mfa.deviceToken) {
+        d.mfa.deviceToken.checkedAt = now
+      } else {
+        const i: DeviceTokenInfo = {
+          createdAt: now,
+          [key]: res.token ?? '',
+        } as DeviceTokenInfo
+        d.mfa.deviceToken = { ...i }
+      }
+    } else {
+      d.mfa.deviceToken = undefined
+      d.mfa.expire = undefined
+      d.mfa.verified = false
+    }
+
+    console.log('[Hoang]: update', d.mfa)
+    this.saveAccountsToLocalStorageDebounced()
+  }
+
+  getMFAKey = (tenant: string, user: string): MFAStorageKey =>
+    `br+dtoken+${tenant}+${user}`
+
+  getMFAToken = async (a: AccountUnique) => {
+    const d = await this.findData(a)
+    if (!d) {
+      return ''
+    }
+    const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
+    return d.mfa?.deviceToken?.[key] || ''
+  }
+
+  findMFAData = async (a: AccountUnique) => await this.findData(a)
+
+  createMFADeviceToken = async (p: MFADeviceTokenCreate, ca: Account) => {
+    try {
+      const o = { options: {}, ...p }
+      const res = await ctx.pbx.client?.call_pal('device_token/create', o)
+      console.log('[Hoang] Acount store: create res ', res)
+      if (res && res.status === 'OK') {
+        this.updateTokenToAccountData(ca, res)
+        return
+      }
+    } catch (err) {
+      console.log('[Hoang] Acount store: device token handle: ', err)
+    }
+  }
+
+  checkMFADeviceToken = async (p: MFADeviceTokenCreate, ca: Account) => {
+    try {
+      const param = { token: await ctx.account.getMFAToken(ca), ...p }
+      const res = await ctx.pbx.client?.call_pal('device_token/check', param)
+      console.log('[Hoang] Acount store: check res ', res)
+      if (res && res.status !== 'OK') {
+        // TODO : !== => ===
+        ctx.account.updateTokenToAccountData(ca, res)
+      } else {
+        console.log('[Hoang] Acount store: nav to 2FA')
+        ctx.nav.goToPage2StepVarification()
+      }
+    } catch (err) {
+      console.log('[Hoang] Acount store: check device token handle: ', err)
+    }
+  }
+
+  mfaStart = async (ca: Account, email?: string, url?: string) => {
+    try {
+      const param: MFAStart = {
+        ip_address: await getPublicIp(),
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        email,
+        url,
+      }
+      const res: MFAStartRes | undefined = await ctx.pbx.client?.call_pal(
+        'mfa/start',
+        param,
+      )
+      //  if (res && res.status === 'OK') {
+      //   ctx.account.updateTokenToAccountData(ca, res)
+      // }
+      console.log('[Hoang] Acount store: mfaStart res ', res)
+      if (!res) {
+        return false
+      }
+      return res.status === 'OK' && !res.none
+    } catch (err) {
+      console.log('[Hoang] Acount store: mfaStart: ', err)
+    }
+    return false
+  }
+  mfaCheck = async (ca: Account) => {}
+  mfaDelete = async (ca: Account) => {
+    this.keySessionMFA = ''
   }
 }
 
