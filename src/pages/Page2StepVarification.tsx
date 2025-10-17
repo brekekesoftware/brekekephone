@@ -1,5 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { Dimensions, StyleSheet, View } from 'react-native'
+import { useMemo, useRef, useState } from 'react'
+import {
+  Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 
 import { mdiClose } from '#/assets/icons'
 import type { FormFields, FormMFARef } from '#/components/FormMFA'
@@ -9,8 +15,9 @@ import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
-import type { AccountUnique } from '#/stores/accountStore'
+import { isIos, isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
+import { getLastSignedInId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
@@ -20,7 +27,7 @@ const css = StyleSheet.create({
   Root: { flex: 1 },
   Header: {
     paddingTop: '5%',
-    height: '10%',
+    height: height * 0.1,
     justifyContent: 'center',
   },
   Body: {
@@ -32,14 +39,14 @@ const css = StyleSheet.create({
   },
   TouchableBack: {
     flexDirection: 'row',
-    width: width * 0.5,
+    width: width * 0.8,
     gap: 15,
   },
   Icon: {
     paddingLeft: 15,
   },
   Remember: {
-    height: '10%',
+    height: height * 0.03,
     alignItems: 'center',
     flexDirection: 'row',
     gap: 15,
@@ -77,45 +84,140 @@ const css = StyleSheet.create({
   Title: { width: width * 0.7 },
 })
 
-export const Page2StepVarification = () => {
+export const Page2StepVarification = ({
+  tenant,
+  user,
+}: {
+  tenant: string
+  user: string
+}) => {
+  const formFields = useMemo<FormFields[]>(
+    () => [
+      {
+        id: 'pbxUsername',
+        placeholder: 'ID Number',
+        editable: false,
+        defaultValue: user,
+      },
+      {
+        id: 'password',
+        placeholder: 'Password',
+        secureTextEntry: true,
+        editable: true,
+      },
+      {
+        id: 'pbxTenant',
+        placeholder: 'Tenant',
+        editable: false,
+        defaultValue: tenant,
+      },
+    ],
+    [user, tenant],
+  )
+
   const [isVerify, setVerify] = useState(false)
+  const [isRemember, setRemember] = useState(false)
+  const [isLoading, setLoading] = useState(false)
+  const [account, setAccount] = useState<Account | null>(null)
   const veryfiFormRef = useRef<FormMFARef | null>(null)
-  const valueRef = useRef<AccountUnique>(null)
-  const signIn = async (r: Record<string, string>) => {
-    const a: AccountUnique = {
-      pbxUsername: r.pbxUsername || '',
-      pbxTenant: r.pbxTenant || '',
-      pbxHostname: '',
-      pbxPort: '',
-    }
-    valueRef.current = a
-    const ca = await ctx.account.find(a)
+
+  const onSubmit = async (r: Record<string, string>) => {
+    setLoading(true)
+    setLoading(false)
+    const ca = await getAccount()
     if (!ca) {
       return
     }
-    const c = await ctx.account.mfaStart(ca)
+    if (!validateSignIn(ca, r.password)) {
+      return
+    }
+    signIn(ca)
+  }
+
+  const signIn = async (ca: Account) => {
+    const c = await ctx.account.mfaStart(ca, 'dev@nongdan.dev')
     if (!c) {
-      console.log('[Hoang] Page2StepVarification: No need to MFA ')
-      ctx.nav.goToPageIndex()
+      console.log(' Page2StepVarification: Start mfa false ')
+      veryfiFormRef.current?.showToast(
+        intl`Unable to log in. Please try again.`,
+        'err',
+      )
+      return
+    }
+    if (typeof c === 'string' && c === 'none') {
+      console.log(' Page2StepVarification: Do not need to 2FA ')
       return
     }
     setVerify(true)
+    veryfiFormRef.current?.showToast(
+      intl`A new OTP code was sent to your email`,
+      'info',
+    )
+    setLoading(false)
   }
 
-  const onCheck2FA = async () => {}
+  const getAccount = async () => {
+    if (account) {
+      return account
+    }
+
+    const d = await getLastSignedInId()
+    const ca = await ctx.account.findByUniqueId(d.id)
+    if (ca) {
+      setAccount(ca)
+      return ca
+    }
+    setLoading(false)
+    veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+    return
+  }
+
+  const onCheck2FA = async (r: Record<string, string>) => {
+    setLoading(true)
+    if (!account) {
+      veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+      setLoading(false)
+      return
+    }
+    const c = await ctx.account.mfaCheck(account, r.auth)
+    if (c) {
+      ctx.nav.backToPageContactUsers()
+    } else {
+      veryfiFormRef.current?.showToast(
+        intl`Invalid verification code. Please check again or get another code`,
+        'err',
+      )
+    }
+    setLoading(false)
+  }
 
   const resendNewCode = async () => {
-    if (valueRef.current) {
-      signIn(valueRef.current)
-      veryfiFormRef.current?.showInfoToast(
+    setLoading(true)
+    if (!account) {
+      return
+    }
+    const d = await ctx.account.mfaDelete(account)
+    if (d) {
+      await signIn(account)
+      veryfiFormRef.current?.showToast(
         intl`A new OTP code was sent to your email`,
+        'info',
       )
     }
   }
 
   const onBack = () => {
+    ctx.auth.signOut()
     ctx.nav.backToPageAccountSignIn()
-    console.log('[Hoang]: rn ')
+  }
+
+  const validateSignIn = (ca: Account, pwd: string) => {
+    if (ca.pbxPassword !== pwd) {
+      veryfiFormRef.current?.showToast(intl`Incorrect password`, 'err')
+      setLoading(false)
+      return false
+    }
+    return true
   }
   return (
     <View style={css.Root}>
@@ -129,74 +231,75 @@ export const Page2StepVarification = () => {
           </RnText>
         </RnTouchableOpacity>
       </View>
-      <View style={[css.Body, isWeb && width > 500 && css.Body_Web]}>
-        {!isVerify && (
-          <FormMFA
-            formFields={formFields}
-            buttonLabel={intl`Sign In`}
-            aboveButton={
-              <View style={css.Remember}>
-                <RnCheckBox
-                  style={css.CheckBox}
-                  isSelected={true}
-                  disabled={false}
-                  onPress={() => {}}
-                />
-                <RnText>{intl`Remember Me`}</RnText>
-              </View>
-            }
-            onSubmit={signIn}
-          />
-        )}
-        {isVerify && (
-          <>
-            <View style={isWeb ? css.Desciption_Web : css.Desciption}>
-              <RnText>{intl`We sent an 6-digit code to your email. Please copy and paste here to verify your account.`}</RnText>
-            </View>
-
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={isIos ? 'padding' : 'height'}
+        keyboardVerticalOffset={isIos ? 100 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={css.Body}
+          keyboardShouldPersistTaps='handled'
+        >
+          {!isVerify ? (
             <FormMFA
+              disbaled={isLoading}
               ref={veryfiFormRef}
-              formFields={formVerifyFields}
-              buttonLabel={intl`VERIFY`}
-              belowButton={
-                <View style={css.ResendCode}>
-                  <RnText>{intl`Can't find your code?`} </RnText>
-                  <RnTouchableOpacity onPress={resendNewCode}>
-                    <RnText
-                      style={css.TouchResendCode}
-                    >{intl`Resend a new code`}</RnText>
-                  </RnTouchableOpacity>
+              formFields={formFields}
+              buttonLabel={intl`Sign In`}
+              aboveButton={
+                <View style={css.Remember}>
+                  <RnCheckBox
+                    style={css.CheckBox}
+                    isSelected={isRemember}
+                    disabled={false}
+                    onPress={() => setRemember(!isRemember)}
+                  />
+                  <RnText>{intl`Remember Me`}</RnText>
                 </View>
               }
-              onSubmit={onCheck2FA}
+              onSubmit={onSubmit}
             />
-          </>
-        )}
-      </View>
+          ) : (
+            <>
+              <View style={isWeb ? css.Desciption_Web : css.Desciption}>
+                <RnText>
+                  {intl`We sent an 6-digit code to your email. Please copy and paste here to verify your account.`}
+                </RnText>
+              </View>
+
+              <FormMFA
+                disbaled={isLoading}
+                ref={veryfiFormRef}
+                formFields={formVerifyFields}
+                buttonLabel={intl`VERIFY`}
+                belowButton={
+                  <View style={css.ResendCode}>
+                    <RnText>{intl`Can't find your code?`} </RnText>
+                    <RnTouchableOpacity
+                      disabled={isLoading}
+                      onPress={resendNewCode}
+                    >
+                      <RnText style={css.TouchResendCode}>
+                        {intl`Resend a new code`}
+                      </RnText>
+                    </RnTouchableOpacity>
+                  </View>
+                }
+                onSubmit={onCheck2FA}
+              />
+            </>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   )
 }
-
-const formFields: FormFields[] = [
-  {
-    id: 'pbxUsername',
-    placeholder: 'ID Number',
-  },
-  {
-    id: 'password',
-    placeholder: 'Password',
-    secureTextEntry: true,
-  },
-  {
-    id: 'pbxTenant',
-    placeholder: 'Tenant',
-  },
-]
 
 const formVerifyFields: FormFields[] = [
   {
     id: 'auth',
     placeholder: 'Authentication Code',
     keyboardType: 'numeric',
+    editable: true,
   },
 ]
