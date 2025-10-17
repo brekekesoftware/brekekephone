@@ -8,7 +8,7 @@ import type {
   Request,
   Session,
 } from '#/brekekejs'
-import { isWeb, successConnectCheckPeriod } from '#/config'
+import { successConnectCheckPeriod } from '#/config'
 import { clearAlreadyHistoryMap } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
 import { FileEvent } from '#/stores/chatStore'
@@ -16,7 +16,6 @@ import { getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
-import { getPublicIp } from '#/utils/publicIpAddress'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 
@@ -133,26 +132,14 @@ class Api {
 
     ctx.auth.pbxConnectedAt = Date.now()
     console.log(
-      `[Hoang] PBX PN debug: is use MFA ${ctx.auth.pbxConfig?.['webphone.pal.mfa']} `,
+      `PBX PN debug: is use MFA ${ctx.auth.pbxConfig?.['webphone.pal.mfa']} `,
     )
     if (!ctx.auth.pbxConfig?.['webphone.pal.mfa']) {
       // TODO: Need to confirm whether we should delete the device token
       // saved in local storage if PAL.MFA is not used.
       // return
     }
-    const d = await ctx.account.findDataWithDefault(ca)
-    const p = {
-      tenant: ca.pbxTenant,
-      user: ca.pbxUsername,
-      ip_address: await getPublicIp(),
-      user_agent: isWeb ? navigator.userAgent : 'react-native',
-    }
-
-    if (!d.mfa?.verified) {
-      ctx.account.createMFADeviceToken(p, ca)
-    } else {
-      ctx.account.checkMFADeviceToken(p, ca)
-    }
+    ctx.account.handleMFA(ca)
   }
   onPBXConnectionStopped = () => {
     ctx.auth.pbxState = 'stopped'
