@@ -283,13 +283,13 @@ export class Nav {
   goToPageAccountSignInMFA = RnStacker.createGoTo<
     ComponentProps<typeof PageAccountSignInMFA>
   >({ PageAccountSignInMFA })
-  backToPageAccountSignInMFA = RnStacker.createGoTo<
+  backToPageAccountSignInMFA = RnStacker.createBackTo<
     ComponentProps<typeof PageAccountSignInMFA>
   >({ PageAccountSignInMFA })
   goToPage2StepVarification = RnStacker.createGoTo<
     ComponentProps<typeof Page2StepVarification>
   >({ Page2StepVarification })
-  backToPage2StepVarification = RnStacker.createGoTo<
+  backToPage2StepVarification = RnStacker.createBackTo<
     ComponentProps<typeof Page2StepVarification>
   >({ Page2StepVarification })
 

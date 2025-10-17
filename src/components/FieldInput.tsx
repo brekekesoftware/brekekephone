@@ -17,6 +17,10 @@ const css = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 14,
     maxWidth: 400,
+    color: 'black',
+  },
+  Disable: {
+    color: v.colors.greyTextChat,
   },
 })
 
@@ -50,7 +54,7 @@ export const FieldInput = forwardRef<FieldInputRef, FieldInputProps>(
     return (
       <RnTextInput
         ref={inputRef}
-        style={[css.Input, style]}
+        style={[css.Input, style, !props.editable && css.Disable]}
         value={value}
         onChangeText={text => {
           setValue(text)
