@@ -376,7 +376,6 @@ export class AccountStore {
       if (res.expiration_time) {
         d.mfa.expire = res.expiration_time
       }
-      d.mfa.expire = res.expiration_time
       if (d.mfa.deviceToken) {
         d.mfa.deviceToken.checkedAt = now
       } else {
@@ -523,7 +522,6 @@ export class AccountStore {
       ip_address: await getPublicIp(),
       user_agent: isWeb ? navigator.userAgent : 'react-native',
     }
-
     if (!d.mfa?.verified) {
       this.createMFADeviceToken(p, ca)
     } else {
