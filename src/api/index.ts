@@ -132,14 +132,18 @@ class Api {
 
     ctx.auth.pbxConnectedAt = Date.now()
     console.log(
-      `PBX PN debug: is use MFA ${ctx.auth.pbxConfig?.['webphone.pal.mfa']} `,
+      `PBX PN debug: is use MFA ${ctx.auth.pbxConfig?.['webphone.pal.mfa']} 
+      and ${ctx.auth.pbxConfig?.['pal.mode_device_token']} `,
     )
-    if (!ctx.auth.pbxConfig?.['webphone.pal.mfa']) {
-      // TODO: Need to confirm whether we should delete the device token
-      // saved in local storage if PAL.MFA is not used.
-      // return
+    if (
+      ctx.auth.pbxConfig?.['webphone.pal.mfa'] ||
+      ctx.auth.pbxConfig?.['pal.mode_device_token']
+    ) {
+      ctx.account.handleMFA(ca)
     }
-    ctx.account.handleMFA(ca)
+    // TODO: Need to confirm whether we should delete the device token
+    // saved in local storage if PAL.MFA is not used.
+    // return
   }
   onPBXConnectionStopped = () => {
     ctx.auth.pbxState = 'stopped'
