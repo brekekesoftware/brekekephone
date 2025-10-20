@@ -77,12 +77,11 @@
 		CB8766C028E83920002261CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB8766BF28E83920002261CB /* Assets.xcassets */; };
 		CB8766E128E87C59002261CB /* BrekekeLPCExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CBAD324D29F374A20057D82C /* ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CBAD324C29F374A20057D82C /* ding.mp3 */; };
-		CBF1FF472EA5D92D0081C7FB /* PN.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF402EA5D92D0081C7FB /* PN.swift */; };
-		CBF1FF482EA5D92D0081C7FB /* L.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF3F2EA5D92D0081C7FB /* L.swift */; };
-		CBF1FF492EA5D92D0081C7FB /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF412EA5D92D0081C7FB /* RingtoneUtils.swift */; };
-		CBF1FF4A2EA5D92D0081C7FB /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF422EA5D92D0081C7FB /* Storage.swift */; };
-		CBF1FF4B2EA5D92D0081C7FB /* AccountUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF3E2EA5D92D0081C7FB /* AccountUtils.swift */; };
-		CBF1FF4C2EA5D92D0081C7FB /* RingtoneModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF452EA5D92D0081C7FB /* RingtoneModule.m */; };
+		CBF1FF532EA5E7E60081C7FB /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF512EA5E7E60081C7FB /* Storage.swift */; };
+		CBF1FF542EA5E7E60081C7FB /* AccountUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF4D2EA5E7E60081C7FB /* AccountUtils.swift */; };
+		CBF1FF552EA5E7E60081C7FB /* PN.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF4F2EA5E7E60081C7FB /* PN.swift */; };
+		CBF1FF562EA5E7E60081C7FB /* RingtoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF502EA5E7E60081C7FB /* RingtoneUtils.swift */; };
+		CBF1FF572EA5E7E60081C7FB /* L.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF1FF4E2EA5E7E60081C7FB /* L.swift */; };
 		CBFFFD682E9676860081E175 /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBFFFD672E9676860081E175 /* AudioSessionManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -165,13 +164,11 @@
 		CB2145662AF4EF5D004D2EAA /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		CB8766BF28E83920002261CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBAD324C29F374A20057D82C /* ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ding.mp3; path = ../src/assets/ding.mp3; sourceTree = "<group>"; };
-		CBF1FF3E2EA5D92D0081C7FB /* AccountUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtils.swift; sourceTree = "<group>"; };
-		CBF1FF3F2EA5D92D0081C7FB /* L.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L.swift; sourceTree = "<group>"; };
-		CBF1FF402EA5D92D0081C7FB /* PN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PN.swift; sourceTree = "<group>"; };
-		CBF1FF412EA5D92D0081C7FB /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
-		CBF1FF422EA5D92D0081C7FB /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
-		CBF1FF442EA5D92D0081C7FB /* RingtoneModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RingtoneModule.h; sourceTree = "<group>"; };
-		CBF1FF452EA5D92D0081C7FB /* RingtoneModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RingtoneModule.m; sourceTree = "<group>"; };
+		CBF1FF4D2EA5E7E60081C7FB /* AccountUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtils.swift; sourceTree = "<group>"; };
+		CBF1FF4E2EA5E7E60081C7FB /* L.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L.swift; sourceTree = "<group>"; };
+		CBF1FF4F2EA5E7E60081C7FB /* PN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PN.swift; sourceTree = "<group>"; };
+		CBF1FF502EA5E7E60081C7FB /* RingtoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingtoneUtils.swift; sourceTree = "<group>"; };
+		CBF1FF512EA5E7E60081C7FB /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		CBFFFD672E9676860081E175 /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AudioSessionManager.swift; path = BrekekePhone/AudioSessionManager.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -203,6 +200,7 @@
 		13B07FAE1A68108700A75B9A /* BrekekePhone */ = {
 			isa = PBXGroup;
 			children = (
+				CBF1FF522EA5E7E60081C7FB /* Utils */,
 				0ABBE3FE2E4EDA3000D88CF0 /* BrekekeEmitter.swift */,
 				9CF1917528E34BA20048E7A1 /* Bridging-Header.h */,
 				9CF1917628E34BA20048E7A1 /* Bridging-Header.m */,
@@ -221,8 +219,6 @@
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
 				CBAD324C29F374A20057D82C /* ding.mp3 */,
 				C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */,
-				CBF1FF462EA5D92D0081C7FB /* Ringtone */,
-				CBF1FF432EA5D92D0081C7FB /* Utils */,
 			);
 			name = BrekekePhone;
 			sourceTree = "<group>";
@@ -355,25 +351,17 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		CBF1FF432EA5D92D0081C7FB /* Utils */ = {
+		CBF1FF522EA5E7E60081C7FB /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				CBF1FF3E2EA5D92D0081C7FB /* AccountUtils.swift */,
-				CBF1FF3F2EA5D92D0081C7FB /* L.swift */,
-				CBF1FF402EA5D92D0081C7FB /* PN.swift */,
-				CBF1FF412EA5D92D0081C7FB /* RingtoneUtils.swift */,
-				CBF1FF422EA5D92D0081C7FB /* Storage.swift */,
+				CBF1FF4D2EA5E7E60081C7FB /* AccountUtils.swift */,
+				CBF1FF4E2EA5E7E60081C7FB /* L.swift */,
+				CBF1FF4F2EA5E7E60081C7FB /* PN.swift */,
+				CBF1FF502EA5E7E60081C7FB /* RingtoneUtils.swift */,
+				CBF1FF512EA5E7E60081C7FB /* Storage.swift */,
 			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		CBF1FF462EA5D92D0081C7FB /* Ringtone */ = {
-			isa = PBXGroup;
-			children = (
-				CBF1FF442EA5D92D0081C7FB /* RingtoneModule.h */,
-				CBF1FF452EA5D92D0081C7FB /* RingtoneModule.m */,
-			);
-			path = Ringtone;
+			name = Utils;
+			path = BrekekePhone/Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -603,12 +591,6 @@
 				9CF382D028ED8495008FC490 /* BaseChannel.swift in Sources */,
 				9CF382E428ED8496008FC490 /* Publisher+DropNil.swift in Sources */,
 				9CF382FC28ED908E008FC490 /* Settings.swift in Sources */,
-				CBF1FF472EA5D92D0081C7FB /* PN.swift in Sources */,
-				CBF1FF482EA5D92D0081C7FB /* L.swift in Sources */,
-				CBF1FF492EA5D92D0081C7FB /* RingtoneUtils.swift in Sources */,
-				CBF1FF4A2EA5D92D0081C7FB /* Storage.swift in Sources */,
-				CBF1FF4B2EA5D92D0081C7FB /* AccountUtils.swift in Sources */,
-				CBF1FF4C2EA5D92D0081C7FB /* RingtoneModule.m in Sources */,
 				9CF382C428ED8495008FC490 /* HeartbeatCoordinator.swift in Sources */,
 				CBFFFD682E9676860081E175 /* AudioSessionManager.swift in Sources */,
 				9CF1917B28E34BA20048E7A1 /* BrekekeUtils.swift in Sources */,
@@ -618,6 +600,11 @@
 				9CF382D628ED8495008FC490 /* Invite.swift in Sources */,
 				9CF382CC28ED8495008FC490 /* RequestResponseSession.swift in Sources */,
 				9CF382E228ED8496008FC490 /* CallAction.swift in Sources */,
+				CBF1FF532EA5E7E60081C7FB /* Storage.swift in Sources */,
+				CBF1FF542EA5E7E60081C7FB /* AccountUtils.swift in Sources */,
+				CBF1FF552EA5E7E60081C7FB /* PN.swift in Sources */,
+				CBF1FF562EA5E7E60081C7FB /* RingtoneUtils.swift in Sources */,
+				CBF1FF572EA5E7E60081C7FB /* L.swift in Sources */,
 				9CF382FE28ED908E008FC490 /* SettingsManager.swift in Sources */,
 				9CF382DA28ED8495008FC490 /* Routable.swift in Sources */,
 				9CF3830128ED909C008FC490 /* BrekekeLPCManager.swift in Sources */,
