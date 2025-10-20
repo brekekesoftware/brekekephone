@@ -16,7 +16,6 @@
     "postinstall": "husky && patch-package"
   },
   "dependencies": {
-    "@dr.pogodin/react-native-fs": "2.35.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-clipboard/clipboard": "1.16.3",
     "@react-native-community/netinfo": "11.4.1",
@@ -50,6 +49,7 @@
     "react-native-callkeep": "4.3.16",
     "react-native-emoji-selector": "0.2.0",
     "react-native-exception-handler": "2.10.10",
+    "react-native-fs": "2.20.0",
     "react-native-fast-image": "8.6.3",
     "react-native-get-random-values": "1.11.0",
     "react-native-hyperlink": "0.0.22",

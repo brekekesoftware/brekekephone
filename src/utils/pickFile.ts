@@ -1,5 +1,5 @@
-import { stat } from '@dr.pogodin/react-native-fs'
 import { isErrorWithCode, pick } from '@react-native-documents/picker'
+import { stat } from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
