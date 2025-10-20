@@ -96,10 +96,11 @@ public class BrekekeLpcService extends Service {
     iService = intent;
     registerNetworkCallback();
     var r = intent.getStringArrayListExtra("remoteSsids");
-    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
-      Emitter.debug("[BrekekeLpcService] Wifi not match");
-      return null;
-    }
+// The matching ssid check is not yet complete
+//    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+//      Emitter.debug("[BrekekeLpcService] Wifi not match");
+//      return null;
+//    }
     Emitter.debug("[BrekekeLpcService] Start service when bind");
 
     startInService(intent);

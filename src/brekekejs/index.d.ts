@@ -314,6 +314,7 @@ export type PbxGetProductInfoRes = {
   'webphone.resource-line': string
   'webphone.http.useragent.product': string
   'webphone.pal.mfa': boolean
+  'pal.mode_device_token': boolean
   version: string
 }
 export type PbxGetProductInfoParam = {
