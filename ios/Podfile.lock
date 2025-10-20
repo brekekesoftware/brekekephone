@@ -2183,34 +2183,6 @@ PODS:
     - SocketRocket
   - ReactNativeExceptionHandler (2.10.10):
     - React-Core
-  - ReactNativeFs (2.35.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsc
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - ReactNativeIncallManager (4.2.1):
     - React-Core
   - RNCallKeep (4.3.16):
@@ -2225,6 +2197,8 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
+  - RNFS (2.20.0):
+    - React-Core
   - RNPermissions (5.4.1):
     - React-Core
   - RNShare (12.1.0):
@@ -2355,13 +2329,13 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeExceptionHandler (from `../node_modules/react-native-exception-handler`)
-  - "ReactNativeFs (from `../node_modules/@dr.pogodin/react-native-fs`)"
   - ReactNativeIncallManager (from `../node_modules/react-native-incall-manager`)
   - RNCallKeep (from `../node_modules/react-native-callkeep`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -2543,8 +2517,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeExceptionHandler:
     :path: "../node_modules/react-native-exception-handler"
-  ReactNativeFs:
-    :path: "../node_modules/@dr.pogodin/react-native-fs"
   ReactNativeIncallManager:
     :path: "../node_modules/react-native-incall-manager"
   RNCallKeep:
@@ -2557,6 +2529,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNShare:
@@ -2655,13 +2629,13 @@ SPEC CHECKSUMS:
   ReactCodegen: cbe81c2a57b146be99212d9cfb2081cfdcfd2133
   ReactCommon: 832545e6bc03f7b2d02216e626f871532ec8da4f
   ReactNativeExceptionHandler: a23922ca00122b050ae9412f960061791c232c47
-  ReactNativeFs: 86a115c2d242a862b162583da86b2306155c4b0a
   ReactNativeIncallManager: dccd3e7499caa3bb73d3acfedf4fb0360f1a87d5
   RNCallKeep: 1930a01d8caf48f018be4f2db0c9f03405c2f977
   RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
   RNCClipboard: f6679d470d0da2bce2a37b0af7b9e0bf369ecda5
   RNCPushNotificationIOS: 6c4ca3388c7434e4a662b92e4dfeeee858e6f440
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
+  RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
   RNPermissions: fedef4028b1774c0628c93efa3d4aa4709f50468
   RNShare: 9da57726f5d405f746a96b636e0cb150f6c01f19
   RNSVG: e17f99a7d2774ef99018dfed91e812e058fdbcdf
@@ -2674,4 +2648,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1e38e6ae2a36c8314eaf98340830215f3e8e043b
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
