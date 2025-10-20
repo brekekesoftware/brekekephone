@@ -326,6 +326,7 @@ export type PbxGetProductInfoRes = {
   'webphone.error_toast.suppress_enabled': string
   'webphone.error_toast.suppress_patterns': string
   'webphone.pal.mfa': boolean
+  'pal.mode_device_token': boolean
   version: string
 }
 export type PbxGetProductInfoParam = {
