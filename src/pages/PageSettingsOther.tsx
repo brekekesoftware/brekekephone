@@ -76,7 +76,7 @@ export class PageSettingsOther extends Component {
       })
   }
 
-  onChangeRingtone = async value => {
+  onChangeRingtone = value => {
     this.setState({ ringtone: value })
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
@@ -187,15 +187,17 @@ export class PageSettingsOther extends Component {
             />
           </>
         )}
-        {!isWeb && <Field isGroup label={intl`Ringtone`} />}
         {!isWeb && (
-          <Field
-            label={intl`INCOMING CALL RINGTONE`}
-            options={this.state.ringtoneOptions}
-            type='RnPicker'
-            value={this.state.ringtone}
-            onValueChange={this.onChangeRingtone}
-          />
+          <>
+            <Field isGroup label={intl`Ringtone`} />
+            <Field
+              label={intl`INCOMING CALL RINGTONE`}
+              options={this.state.ringtoneOptions}
+              type='RnPicker'
+              value={this.state.ringtone}
+              onValueChange={this.onChangeRingtone}
+            />
+          </>
         )}
         {isIos && (
           <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />

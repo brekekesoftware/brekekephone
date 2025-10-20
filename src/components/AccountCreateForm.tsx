@@ -316,14 +316,14 @@ export const AccountCreateForm: FC<{
             isGroup: true,
             label: intl`Ringtone`,
             hasMargin: true,
-            hidden: props.footerLogout,
+            hidden: isWeb || props.footerLogout,
           },
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
             name: 'ringtone',
             options: $.ringtoneOptions,
-            hidden: props.footerLogout,
+            hidden: isWeb || props.footerLogout,
           },
         ]}
         k='account'
