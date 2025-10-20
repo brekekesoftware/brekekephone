@@ -8,31 +8,45 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.MonitorConnection;
+import com.brekeke.phonedev.utils.NetworkUtils;
+import com.facebook.react.ReactApplication;
 import com.google.gson.Gson;
+import java.util.ArrayList;
 
 // main lpc service
 
 public class BrekekeLpcService extends Service {
   public static boolean isServiceStarted = false;
   public static LpcModel.Settings settings;
-  private static Intent iService;
+  public static Intent iService;
+  private static ConnectivityManager cm;
+  private ConnectivityManager.NetworkCallback networkCallback;
+  public static Boolean isReconnectByNetworkChange = false;
+  public static MonitorConnection con;
 
   @Override
   public void onCreate() {
     isServiceStarted = true;
     createNotificationChannel();
+    con = new MonitorConnection();
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    Log.d(LpcUtils.TAG, "onStartCommand called");
+    Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
+    reconnectLPC();
     // register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
     registerReceiver(new BrekekeLpcReceiver(), filter);
@@ -74,9 +88,18 @@ public class BrekekeLpcService extends Service {
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    startInService(intent);
-    iService = intent;
     Log.d(LpcUtils.TAG, "onBind: execute");
+    iService = intent;
+    registerNetworkCallback();
+    var r = intent.getStringArrayListExtra("remoteSsids");
+    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+      Emitter.debug("[BrekekeLpcService] Wifi not match");
+      return null;
+    }
+    Emitter.debug("[BrekekeLpcService] Start service when bind");
+
+    startInService(intent);
+    con.onConnected();
     return null;
   }
 
@@ -86,7 +109,8 @@ public class BrekekeLpcService extends Service {
     String host = intent.getStringExtra("host");
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
-    settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username);
+    ArrayList<String> remoteSsids = intent.getStringArrayListExtra("remoteSsids");
+    settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username, remoteSsids);
     Gson gson = new Gson();
     LpcUtils.writeConfig(this, gson.toJson(settings));
     createConnection(settings);
@@ -102,6 +126,7 @@ public class BrekekeLpcService extends Service {
   public void onDestroy() {
     isServiceStarted = false;
     Log.d(LpcUtils.TAG, "service destroy");
+    Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
     // clear local config
     LpcUtils.writeConfig(this, "");
@@ -110,6 +135,66 @@ public class BrekekeLpcService extends Service {
   @Override
   public boolean onUnbind(Intent intent) {
     stopLPCService(this);
+    clearNetworkCallback();
+    con.cancelTimer();
     return super.onUnbind(intent);
+  }
+
+  private void registerNetworkCallback() {
+    cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    if (cm != null) {
+      cm.registerDefaultNetworkCallback(
+          networkCallback =
+              new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                  super.onAvailable(network);
+                  Emitter.debug("[BrekekeLpcService] Connection available");
+                  if (isReconnectByNetworkChange) {
+                    reconnectLPC();
+                    isReconnectByNetworkChange = false;
+                  }
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                  super.onLost(network);
+                  isServiceStarted = false;
+                  Emitter.debug("[BrekekeLpcService] Connection lost");
+                  isReconnectByNetworkChange = true;
+                }
+              });
+    }
+  }
+
+  private void clearNetworkCallback() {
+    if (cm != null && networkCallback != null) {
+      cm.unregisterNetworkCallback(networkCallback);
+      cm = null;
+      networkCallback = null;
+    }
+  }
+
+  public void reconnectLPC() {
+    if (iService == null) {
+      Emitter.debug("[BrekekeLpcService] Service intent is null");
+      return;
+    }
+    // TODO
+    //    var r = iService.getStringArrayListExtra("remoteSsids");
+    //    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+    //      Emitter.debug("[BrekekeLpcService] Wifi not match");
+    //      return;
+    //    }
+    if (!isServiceStarted) {
+      if (LpcUtils.checkAppInBackground()) {
+        Log.d(LpcUtils.TAG, "[BrekekeLpcService] create React Context In Background");
+        LpcUtils.createReactContextInBackground((ReactApplication) getApplicationContext());
+        con.onConnected();
+      }
+      startInService(iService);
+      isServiceStarted = true;
+      Emitter.debug("[BrekekeLpcService] Start service when network is available");
+    }
   }
 }

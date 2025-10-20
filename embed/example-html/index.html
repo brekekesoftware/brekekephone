@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brekeke Phone Embed - Example HTML</title>
+
+    <style>
+      #root,
+      #brekeke_phone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+      }
+      #root {
+        left: 0;
+        right: 50%;
+        border-right: 1px solid black;
+      }
+      #brekeke_phone {
+        left: 50%;
+        right: 0;
+        display: flex;
+      }
+
+      .app {
+        margin: 10px;
+      }
+
+      .call-answer {
+        color: green;
+      }
+      .call-hangup {
+        color: red;
+      }
+      .call-answer,
+      .call-hangup {
+        margin-left: 10px;
+      }
+
+      .video-item {
+        display: block;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 3px;
+        overflow: hidden;
+        background-color: black;
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <script type="text/javascript">
+      window._BrekekePhoneCaptureConsole = true
+    </script>
+    <script
+      type="text/javascript"
+      src="./brekeke_phone2.16.7/webphone.js"
+    ></script>
+  </head>
+
+  <body>
+    <div id="brekeke_phone"></div>
+    <div id="root"></div>
+  </body>
+
+  <script type="text/javascript">
+    var brekekePhoneDiv = document.getElementById('brekeke_phone')
+    var phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
+      autoLogin: true,
+      clearExistingAccounts: false,
+      accounts: [
+        {
+          hostname: 'YOUR_PBX_HOSTNAME',
+          port: 'YOUR_PBX_PORT',
+          tenant: 'TENANT',
+          username: 'USERNAME',
+          password: 'PASSWORD',
+          uc: true,
+        },
+      ],
+    })
+    var ctx = phone.getCurrentAccountCtx()
+    var version = phone.getCurrentVersion()
+
+    var imports = window._BrekekePhoneEmbedImports
+    var { observer } = imports['mobx-react']
+    var { useEffect, useRef, createElement: jsx } = imports['react']
+    var { createRoot } = imports['react-dom/client']
+
+    var App = observer(() =>
+      jsx('div', {
+        className: 'app',
+        children: [
+          // version
+          jsx('span', {
+            children: ['Web Phone - ', version.webphone, ' | '],
+          }),
+          jsx('span', {
+            children: ['JsSIP - ', version.jssip, ' | '],
+          }),
+          jsx('span', {
+            children: [version.bundleIdentifier, ' '],
+          }),
+          jsx('hr'),
+
+          // connection status
+          jsx('span', {
+            children: 'Status: ',
+          }),
+          jsx('span', {
+            children: ['PBX - ', ctx.auth.pbxState, ' | '],
+          }),
+          jsx('span', {
+            children: ['SIP - ', ctx.auth.sipState, ' | '],
+          }),
+          jsx('span', {
+            children: ['Calls - ', ctx.call.calls.length, ' '],
+          }),
+          jsx('hr'),
+
+          // display all calls
+          ctx.call.calls.map(c => jsx(Call, { call: c })),
+        ],
+      }),
+    )
+
+    var reactRootDiv = document.getElementById('root')
+    createRoot(reactRootDiv).render(jsx(App))
+
+    var Call = observer(({ call }) =>
+      jsx('div', {
+        className: 'call-item',
+        children: [
+          // call title
+          jsx('span', {
+            className: 'call-from',
+            children: ['Call Display Name: ', call.getDisplayName()],
+          }),
+
+          // answer, hangup this call
+          call.incoming &&
+            !call.answered &&
+            jsx('button', {
+              className: 'call-answer',
+              onClick: () => call.answer(),
+              children: 'Answer',
+            }),
+          jsx('button', {
+            className: 'call-hangup',
+            onClick: () => call.hangupWithUnhold(),
+            children: 'Hangup',
+          }),
+
+          // all participants' video in this call
+          jsx('div', {
+            className: 'call-video-items',
+            children: [
+              jsx('div', {
+                children: [
+                  'My camera:',
+                  jsx(Video, {
+                    stream: call.localStreamObject,
+                  }),
+                ],
+              }),
+              call.videoClientSessionTable.map(v =>
+                jsx('div', {
+                  children: [
+                    v.user,
+                    "'s camera:",
+                    jsx(Video, {
+                      stream: v.remoteStreamObject,
+                    }),
+                  ],
+                }),
+              ),
+            ],
+          }),
+
+          jsx('hr'),
+        ],
+      }),
+    )
+
+    var Video = observer(({ stream }) => {
+      var r = useRef()
+      useEffect(() => {
+        if (r.current && stream) {
+          r.current.srcObject = stream
+        }
+      }, [r.current, stream])
+      return jsx('video', {
+        className: 'video-item',
+        ref: r,
+        playsInline: true,
+        autoPlay: true,
+      })
+    })
+  </script>
+</html>

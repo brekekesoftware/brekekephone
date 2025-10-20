@@ -26,7 +26,9 @@ export const formatChatContent = (c: {
         }
     try {
       o = JSON.parse(text)
-    } catch (err) {}
+    } catch (err) {
+      void err
+    }
     if (!o) {
       o = {}
     }

@@ -133,15 +133,13 @@ export const AccountCreateForm: FC<{
   const $ = useStore(m) as any as M
   const [Form, submitForm] = useForm()
 
-  const getLocalRingtone = async () => {
-    $.ringtoneOptions = await getRingtoneOptions()
-  }
-
   useEffect(() => {
     if (!props.footerLogout) {
-      getLocalRingtone()
+      getRingtoneOptions().then(r => {
+        $.ringtoneOptions = r
+      })
     }
-  }, [])
+  }, [$, props.footerLogout])
 
   const getDropDown = () => {
     let d = [

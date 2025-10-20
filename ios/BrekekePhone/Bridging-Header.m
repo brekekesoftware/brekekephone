@@ -4,7 +4,9 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RCT_EXTERN_MODULE (BrekekeUtils, NSObject)
-RCT_EXTERN_METHOD(webrtcSetAudioEnabled : (BOOL)enabled)
+RCT_EXTERN_METHOD(webrtcSetAudioEnabled
+                  : (BOOL)enabled action
+                  : (NSString *)action)
 RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)token tokenVoip
                   : (NSString *)tokenVoip username
@@ -15,6 +17,10 @@ RCT_EXTERN_METHOD(enableLPC
                   : (NSString *)localSsid tlsKeyHash
                   : (NSString *)tlsKeyHash)
 RCT_EXTERN_METHOD(disableLPC)
+RCT_EXTERN_METHOD(resetAudioConfig)
+RCT_EXTERN_METHOD(isSpeakerOn
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(playRBT : (BOOL)isLoudSpeaker)
 RCT_EXTERN_METHOD(stopRBT
                   : (RCTPromiseResolveBlock)resolve rejecter

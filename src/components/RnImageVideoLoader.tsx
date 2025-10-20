@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import {
   ActivityIndicator,
@@ -117,7 +117,10 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return nextUrl
   }, [])
 
-  const images = url ? [{ url: convertUri(url) }] : undefined
+  const images = useMemo(
+    () => (url ? [{ url: convertUri(url) }] : undefined),
+    [url, convertUri],
+  )
   const isLoading =
     (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
     (save && save === 'started')

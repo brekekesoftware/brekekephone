@@ -11,6 +11,7 @@ import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
+import com.brekeke.phonedev.utils.NotificationHelper;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,18 +38,20 @@ import tlschannel.NeedsWriteException;
 import tlschannel.TlsChannel;
 
 public class BrekekeLpcSocket {
+
   public class SSLSocketAsyncTask extends AsyncTask<LpcModel.Settings, Void, String> {
     private Context mContext;
     private boolean requestSent = false;
     private LpcModel.Settings settings;
     private Charset utf8 = StandardCharsets.UTF_8;
+    private Gson gson;
 
     public SSLSocketAsyncTask(Context context) {
       mContext = context;
+      gson = new Gson();
     }
 
     public class CodableHelper {
-      private final Gson gson = new Gson();
 
       public <T> String encode(T object) {
         return gson.toJson(object);
@@ -110,6 +113,7 @@ public class BrekekeLpcSocket {
     @Override
     protected void onPostExecute(String result) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute");
+      BrekekeLpcService.con.onDisconnected();
     }
 
     private void handleCallToServer() {
@@ -128,6 +132,7 @@ public class BrekekeLpcSocket {
         if (e.getMessage().equals("Connection refused")) {
           // stop service
           LpcUtils.LpcCallback.cb.getStateServer(false);
+          Emitter.error("[BrekekeLpcSocket] Connection refused");
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "Exception: " + e.getMessage());
@@ -138,6 +143,7 @@ public class BrekekeLpcSocket {
       ByteBuffer requestBuffer = null;
       ByteBuffer responseBuffer = ByteBuffer.allocateDirect(8096);
       Selector selector = Selector.open();
+      var isConnected = false;
       try (SocketChannel rawChannel = SocketChannel.open()) {
         rawChannel.configureBlocking(false);
         rawChannel.setOption(SO_KEEPALIVE, true);
@@ -169,11 +175,12 @@ public class BrekekeLpcSocket {
                     if (requestBuffer != null && requestBuffer.hasRemaining()) {
                       requestBuffer.clear();
                     }
-                    byte[] data = getDataParams();
+                    byte[] data = (isConnected) ? getAcknowledeParams() : getDataParams();
                     requestBuffer = ByteBuffer.wrap(data, 0, data.length);
                     tlsChannel.write(requestBuffer);
                     if (requestBuffer.remaining() == 0) {
                       requestSent = true;
+                      isConnected = true;
                     }
                   } else {
                     responseBuffer.clear();
@@ -212,21 +219,20 @@ public class BrekekeLpcSocket {
           if (Objects.equals(wr.payload.codingKey, 3)) {
             String res = new String(Base64.decode(wr.payload.data, Base64.NO_WRAP));
             Log.d(LpcUtils.TAG, "handleResponse: " + res);
-            Gson gson = new Gson();
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
-            m.put("lpc", "true");
-            // start incoming call activity
-            Ctx.wakeFromPn(mContext);
-            BrekekeUtils.onFcmMessageReceived(m);
-            // emit message to assign callKeepUuid to call store
-            String e = LpcUtils.convertMapToString(m);
-            Emitter.emit("lpcIncomingCall", e);
-            Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
+            if (isChatMessage(m)) {
+              handleChatmessageResponse(obj, m);
+            } else {
+              handleLPCResponse(m);
+            }
+            Emitter.debug("[BrekekeLpcSocket] Response " + res);
           }
+          BrekekeLpcService.con.onMessageReceived();
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "handleResponse error: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] handleResponse " + e.getMessage());
       }
     }
 
@@ -252,6 +258,52 @@ public class BrekekeLpcSocket {
       map.put("command", "request");
       String data = new CodableHelper().encode(map);
       return addSizeToMessage(data);
+    }
+
+    private byte[] getAcknowledeParams() throws IOException {
+      Map<String, Object> map = new HashMap<>();
+      map.put("requestIdentifier", new Random().nextInt(999999999));
+      map.put("command", "acknowledge");
+      String data = new CodableHelper().encode(map);
+      return addSizeToMessage(data);
+    }
+
+    private Boolean isChatMessage(Map<String, String> m) {
+      return m.get("x_pn-id") == null && "message".equalsIgnoreCase(m.get("event"));
+    }
+
+    private void handleChatmessageResponse(JSONObject obj, Map<String, String> m) {
+      try {
+        var msg = obj.getString("message");
+        var title = m.getOrDefault("senderUserId", "");
+        if (msg.isEmpty()) {
+          msg = "UC message";
+        }
+        m.put("body", msg);
+        if (title != null && !title.isEmpty()) {
+          m.put("title", title);
+          var lc = "local_notification";
+          m.put("my_custom_data", lc);
+          m.put("is_local_notification", lc);
+        }
+        NotificationHelper.showLocalPush(mContext, title, msg, m);
+        Emitter.debug("[BrekekeLpcSocket] Show local push from Lpc ");
+      } catch (Exception e) {
+        Log.d(LpcUtils.TAG, "handleChat messageResponse error: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] handleChat messageResponse error " + e.getMessage());
+      }
+    }
+
+    private void handleLPCResponse(Map<String, String> m) {
+      m.put("lpc", "true");
+      // start incoming call activity
+      Ctx.wakeFromPn(mContext);
+      BrekekeUtils.onFcmMessageReceived(m);
+      // emit message to assign callKeepUuid to call store
+      String e = LpcUtils.convertMapToString(m);
+      Emitter.emit("lpcIncomingCall", e);
+      Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
+      Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
     }
   }
 }

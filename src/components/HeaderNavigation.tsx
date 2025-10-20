@@ -102,7 +102,7 @@ export const Navigation: FC<{
     if (ctx.auth.activeCustomPageId) {
       scrollToTab()
     }
-  }, [ctx.auth.activeCustomPageId, scrollToTab])
+  }, [scrollToTab])
 
   return (
     <Container

@@ -26,7 +26,8 @@ import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { RootView } from '#/components/RootView'
 import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
-import { defaultTimeout, isEmbed, isIos, isWeb } from '#/config'
+import { defaultTimeout, isIos, isWeb } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -112,6 +113,7 @@ const initApp = async () => {
 
     ctx.auth.resetFailureState()
     ctx.call.onCallKeepAction()
+    ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
 
@@ -313,7 +315,7 @@ export const App = observer(() => {
 
   return (
     <RootView>
-      {ctx.chat.chatNotificationSoundRunning && <AudioPlayer />}
+      <AudioPlayer />
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize

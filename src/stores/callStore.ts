@@ -291,6 +291,7 @@ export class CallStore {
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
         remoteVideoStreamObject?: MediaStream | null
+        remoteWithVideo?: boolean
       },
   ) => {
     this.updateCurrentCallDebounce()
@@ -342,8 +343,11 @@ export class CallStore {
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
-        // auto disable video if the call is answered and incoming call
-        if (e.incoming && e.localVideoEnabled) {
+        // auto mute video if the call is answered and local video is not enabled or incoming call
+        if (
+          !e.answerVideoEnabled &&
+          (!e.localVideoEnabled || (e.localVideoEnabled && e.incoming))
+        ) {
           e.mutedVideo = true
           ctx.sip.setMutedVideo(true, e.id)
         }
@@ -360,6 +364,17 @@ export class CallStore {
         AppState.currentState !== 'active'
       ) {
         e.setHoldWithoutCallKeep(true)
+      }
+
+      // auto enable local video if the call is answered and remote video is enabled
+      // but local video is not enabled
+      if (
+        e.answered &&
+        ((!e.remoteVideoEnabled && p.remoteVideoEnabled) ||
+          e.answerVideoEnabled) &&
+        !e.localVideoEnabled
+      ) {
+        ctx.sip.enableLocalVideo(e.id)
       }
 
       Object.assign(e, p, {
@@ -453,7 +468,11 @@ export class CallStore {
     // desktop notification
     if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
-      webShowNotification(name + ' ' + intl`Incoming call`, name)
+      webShowNotification(
+        c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
+        name,
+        name,
+      )
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -619,6 +638,7 @@ export class CallStore {
         )
         args[0] = { ...args[0], extraHeaders }
       } catch (err) {
+        console.error(err)
         return false
       }
     }
@@ -672,6 +692,7 @@ export class CallStore {
     try {
       sipCreateSession()
     } catch (err) {
+      console.error(err)
       reconnectCalled = true
       ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
     }
@@ -1086,6 +1107,12 @@ export class CallStore {
 
   // some other fields
   @observable isLoudSpeakerEnabled = false
+
+  @action updateLoudSpeakerStatus = async () => {
+    if (isIos && this.getOngoingCall()) {
+      this.isLoudSpeakerEnabled = await BrekekeUtils.isSpeakerOn()
+    }
+  }
   @action toggleLoudSpeaker = () => {
     if (isWeb) {
       return

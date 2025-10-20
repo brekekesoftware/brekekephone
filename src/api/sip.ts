@@ -3,8 +3,9 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isEmbed, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
@@ -181,6 +182,7 @@ export class SIP extends EventEmitter {
         session.videoClientSessionTable[ev.videoClientSessionId]
       this.emit('session-updated', {
         id: ev.sessionId,
+        localVideoEnabled: true,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
         localStreamObject: session.localVideoStreamObject,
@@ -238,6 +240,7 @@ export class SIP extends EventEmitter {
       this.emit('session-updated', {
         id: ev.sessionId,
         remoteUserOptionsTable: ev.remoteUserOptionsTable,
+        remoteVideoEnabled: ev.remoteWithVideo,
       })
     })
 

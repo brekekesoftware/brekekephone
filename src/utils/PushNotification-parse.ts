@@ -60,7 +60,9 @@ const parseNotificationDataMultiple = (...fields: object[]): ParsedPn => {
       if (typeof f === 'string' && f.charAt(0) === '{') {
         try {
           return JSON.parse(f)
-        } catch (err) {}
+        } catch (err) {
+          void err
+        }
       }
       return f
     })
@@ -204,8 +206,8 @@ export const parse = async (
   }
 
   // handle duplicated pn on android
-  // sometimes getInitialNotifications not update callkeepUuid yet
-  if (isAndroid && n.callkeepUuid) {
+  // sometimes getInitialNotifications not update callkeepUuid yet or Event NotificationOpened triggered get more than once
+  if (isAndroid) {
     const k = n.id || jsonStable(raw)
     if (androidAlreadyProccessedPn[k]) {
       console.log(
@@ -324,6 +326,10 @@ export const parse = async (
     console.log(`SIP PN debug: getPendingUserAction=${action}`)
     if (action === 'answerCall') {
       ctx.call.onCallKeepAnswerCall(n.callkeepUuid)
+      // call with auto-answer before PN arrive
+      if (n.sipPn.autoAnswer) {
+        BrekekeUtils.onCallConnected(n.callkeepUuid)
+      }
     } else if (action === 'rejectCall') {
       ctx.call.onCallKeepEndCall(n.callkeepUuid)
     }

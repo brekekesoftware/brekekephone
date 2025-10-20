@@ -166,7 +166,8 @@ export const setupCallKeepEvents = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
-    BrekekeUtils.webrtcSetAudioEnabled(!e.hold)
+    // Audio enabled state is managed by didActivateAudioSession and didDeactivateAudioSession
+    // BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
@@ -190,14 +191,14 @@ export const setupCallKeepEvents = async () => {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
     }
-    BrekekeUtils.webrtcSetAudioEnabled(true)
+    BrekekeUtils.webrtcSetAudioEnabled(true, 'didActivateAudioSession')
   }
   const didDeactivateAudioSession = (
     e: EventsPayload['didDeactivateAudioSession'],
   ) => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
-    BrekekeUtils.webrtcSetAudioEnabled(false)
+    BrekekeUtils.webrtcSetAudioEnabled(false, 'didDeactivateAudioSession')
     ctx.call.updateBackgroundCalls()
   }
   const didReceiveStartCallAction = async (
@@ -250,7 +251,13 @@ export const setupCallKeepEvents = async () => {
     eventEmitterIos.addListener(
       'onAudioRouteChange',
       ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
-        ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+        // already handled in app becoming active event
+        // const hasCall = ctx.call.calls.some(
+        //   c => (c.incoming && c.answered) || !c.incoming,
+        // )
+        // if (hasCall) {
+        //   ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+        // }
       },
     )
     return

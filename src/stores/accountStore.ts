@@ -4,8 +4,7 @@ import { v4 as newUuid } from 'uuid'
 
 import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
-import { currentVersion } from '#/components/variables'
-import { isWeb } from '#/config'
+import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { intlDebug } from '#/stores/intl'
@@ -117,6 +116,7 @@ export class AccountStore {
       try {
         d = JSON.parse(arr)
       } catch (err) {
+        void err
         d = undefined
       }
     }
@@ -386,7 +386,9 @@ export const getLastSignedInId = async (
   let d = undefined as any as LastSignedInId
   try {
     d = j && JSON.parse(j)
-  } catch (err) {}
+  } catch (err) {
+    void err
+  }
   if (d && 'h' in d) {
     // backward compatibility json is the unique account id
     d = j as any as LastSignedInId

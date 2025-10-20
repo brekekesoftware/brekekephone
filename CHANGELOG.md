@@ -1,3 +1,26 @@
+#### 2.16.7
+
+- Fix it should be able to drag mini video call circle (issue 1084)
+
+#### 2.16.6
+
+- Update web browser notification to match with UC desktop
+- Fix it should save call history after restart PBX (issue 1021)
+- Fix it should not flash hold button on press (issue 1031)
+- Fix ios audio session (issue 1041, 1060, 1061, 1065, 1078)
+- Fix android it should perform correct action when press notification (issue 1059, 1063, 1064)
+- Fix it should not crash when add park number (issue 1068)
+- Fix android it should update UI correctly with auto answer (issue 1071)
+- Fix it should show remote video when remote enable (issue 1074)
+- Fix android it should reconnect LPC on internet connection lost (issue 1076)
+- Fix it should not cut off call screen in small screen device (issue 1079)
+- Fix it should not show error on ping failure (issue 1081)
+
+#### 2.16.5
+
+- Embed
+  - Fix it should cleanup
+
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
@@ -8,7 +31,7 @@
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
 - Fix it should have layout display well with status bar (issue 1020, 1049)
 - Fix it should save logs when the device is locked (issue 1040)
-- Fix ios loud speaker it should toggle well (1041)
+- Fix ios loud speaker it should toggle well (issue 1041)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
 - Fix it should connect to sip after restart tomcat (issue 1043)
 - Fix it should not show notification with LPC service (issue 1044)

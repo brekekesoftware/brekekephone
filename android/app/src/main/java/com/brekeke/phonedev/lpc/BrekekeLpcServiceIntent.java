@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.brekeke.phonedev.utils.Emitter;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 
@@ -25,7 +26,7 @@ public class BrekekeLpcServiceIntent extends Service {
 
     try {
       Log.d(LpcUtils.TAG, "onStartCommand in intent service");
-
+      Emitter.debug("[BrekekeLpcServiceIntent] onStartCommand in intent service");
       String config = LpcUtils.readConfig(this);
       if (!config.isEmpty()) {
         Gson gson = new Gson();
@@ -38,6 +39,7 @@ public class BrekekeLpcServiceIntent extends Service {
                 settings.token,
                 settings.userName,
                 settings.tlsKeyHash,
+                settings.remoteSsids,
                 new Intent(ctx, BrekekeLpcService.class));
         ctx.startForegroundService(i);
         ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
