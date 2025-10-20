@@ -15,11 +15,12 @@ module.exports = {
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
         'react-native-svg': 'react-native-svg-web',
         'react-native-callkeep': nullAlias,
-        '@dr.pogodin/react-native-fs': nullAlias,
+        'react-native-fs': nullAlias,
         'react-native-incall-manager': nullAlias,
         'react-native-share': nullAlias,
         'react-native-splash-screen': nullAlias,
         'react-native-background-timer': nullAlias,
+        '@react-native-documents/picker': nullAlias,
       }
       c.resolve.fallback = {
         os: false,
