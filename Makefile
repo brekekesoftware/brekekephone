@@ -126,6 +126,15 @@ web_embed:
 	rm -rf embed/example-react/public/brekeke_phone* && \
 	mv build embed/example-react/public/brekeke_phone$$V;
 
+upload_embed:
+	cd embed/example-react && \
+	npm i --force && npm run build && \
+	mv dist embed && zip -vr embed.zip embed && \
+	scp embed.zip bre:/var/www && \
+	rm -rf embed* && \
+	ssh bre "cd /var/www && sudo rm -rf embed && unzip embed.zip && rm embed.zip" && \
+	cd ../.. && make -Bs chmod;
+
 dev:
 	make -Bs chmod && \
 	cd dev01/react-app && yarn --ignore-engines && yarn build && \

@@ -25,7 +25,7 @@ const phone = window.Brekeke.Phone.render(brekekePhoneDiv, {
 const customizedPromptBrowserPermission1 = () => {
   const div = document.createElement('div')
   div.style =
-    'position: fixed; inset: 0; padding-top: 50px; background: rgba(0,0,0,0.8); color: white; text-align: center; font-weight: bold; cursor: pointer;'
+    'position: fixed; inset: 0; padding-top: 50px; background: rgba(0,0,0,0.8); color: white; text-align: center; font-weight: bold; cursor: pointer; z-index: 9999;'
   div.innerHTML = 'Customized prompt for permission 1'
   div.addEventListener('click', () => {
     document.body.removeChild(div)
@@ -49,6 +49,8 @@ if (useCustomizedPrompt === 1) {
 
 const ctx = phone.getCurrentAccountCtx()
 ctx.intl.setLocale('en')
+ctx.global.embedStaticPath =
+  location.pathname.replace(/\/+$/, '') + '/brekeke_phone2.16.7'
 const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports

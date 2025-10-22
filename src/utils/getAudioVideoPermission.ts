@@ -3,10 +3,7 @@ import { webPlayDing } from '#/utils/webPlayDing'
 
 export const getAudioVideoPermission = () => {
   const cb = (stream: MediaStream) => stream.getTracks().forEach(t => t.stop())
-  // @ts-ignore
-  const eb = (err: MediaStreamError) => {
-    /* TODO */
-  }
+  const eb = (err: any) => console.error(err)
   let p: Promise<MediaStream>
   if (navigator.mediaDevices?.getUserMedia) {
     p = navigator.mediaDevices.getUserMedia({ audio: true, video: true })
@@ -19,7 +16,6 @@ export const getAudioVideoPermission = () => {
       eb,
     ) as any as Promise<MediaStream>
   }
-
   if (p?.then) {
     p.then(cb).catch(eb)
   }
