@@ -17,7 +17,9 @@ export class GlobalStore {
       return path
     }
     return (
-      this.embedStaticPath.replace(/\/+$/, '') + '/' + path.replace(/^\.+/, '')
+      this.embedStaticPath.replace(/\/+$/, '') +
+      '/' +
+      path.replace(/^\.+/, '').replace(/^\/+/, '')
     )
   }
 }
