@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..664441b 100644
+index 786045f..4382ccb 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,7 +1136,7 @@ index 786045f..664441b 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,150 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,157 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1197,8 +1197,15 @@ index 786045f..664441b 100644
 +- (void)handleAudioInterruption:(NSNotification *)notification {
 +    NSDictionary *userInfo = notification.userInfo;
 +    AVAudioSessionInterruptionType type = [userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
-+    if (type == AVAudioSessionInterruptionTypeBegan) {
-+        if(audioPlayer != nil && ringtoneUrl != nil) {
++    if (type == AVAudioSessionInterruptionTypeEnded) {
++        if(audioPlayer != nil && audioPlayer.isPlaying) {
++            [audioPlayer pause];
++        }
++    }
++    else if (type == AVAudioSessionInterruptionTypeEnded) {
++        NSError *error = nil;
++        [[AVAudioSession sharedInstance] setActive:YES error:&error];
++        if (!error && ringtoneUrl && audioPlayer) {
 +            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:YES];
 +        }
 +    }
