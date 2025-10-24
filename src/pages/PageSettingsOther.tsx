@@ -28,25 +28,29 @@ export class PageSettingsOther extends Component {
   }
 
   componentDidMount = async () => {
-    const me = ctx.uc.me()
-    let ro: RingtoneOption[] = []
-    let r = getCurrentRingtone()
-    if (isIos) {
-      const d = await handleRingtoneOptionsInSetting()
-      if (d) {
-        ro = d.ro
-        r = d.r
+    try {
+      const me = ctx.uc.me()
+      let ro: RingtoneOption[] = []
+      let r = getCurrentRingtone()
+      if (isIos) {
+        const d = await handleRingtoneOptionsInSetting()
+        if (d) {
+          ro = d.ro
+          r = d.r
+        }
+      } else {
+        ro = await getRingtoneOptions()
       }
-    } else {
-      ro = await getRingtoneOptions()
-    }
 
-    this.setState({
-      status: me.status,
-      statusText: me.statusText,
-      ringtoneOptions: ro,
-      ringtone: r,
-    })
+      this.setState({
+        status: me.status,
+        statusText: me.statusText,
+        ringtoneOptions: ro,
+        ringtone: r,
+      })
+    } catch (error) {
+      console.log('[PageSettingsOther] error in componentDidMount: ', error)
+    }
   }
 
   setStatusText = (statusText: string) => {
@@ -87,11 +91,15 @@ export class PageSettingsOther extends Component {
   }
 
   onUploadRingtone = async () => {
-    const u = await pickRingtone()
-    if (u) {
-      this.setState({
-        ringtoneOptions: await getRingtoneOptions(),
-      })
+    try {
+      const u = await pickRingtone()
+      if (u) {
+        this.setState({
+          ringtoneOptions: await getRingtoneOptions(),
+        })
+      }
+    } catch (error) {
+      console.log('[PageSettingOther] error uploading ringtone: ', error)
     }
   }
 

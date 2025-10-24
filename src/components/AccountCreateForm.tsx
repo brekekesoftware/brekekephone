@@ -116,9 +116,13 @@ export const AccountCreateForm: FC<{
       props.onSave($.account, $.hasUnsavedChanges())
     },
     onUploadRingtone: async () => {
-      const u = await pickRingtone()
-      if (u) {
-        $.ringtoneOptions = await getRingtoneOptions()
+      try {
+        const u = await pickRingtone()
+        if (u) {
+          $.ringtoneOptions = await getRingtoneOptions()
+        }
+      } catch (error) {
+        console.log('[AccountCreateForm]: error uploading ringtone: ', error)
       }
     },
   })

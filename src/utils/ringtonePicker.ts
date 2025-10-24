@@ -40,18 +40,22 @@ export const pickRingtone = async () => {
 }
 
 const saveToCache = async (f: string, uri: string) => {
-  const [r] = await keepLocalCopy({
-    files: [
-      {
-        uri,
-        fileName: f,
-      },
-    ],
-    destination: 'documentDirectory',
-    folderName: 'Ringtones',
-  })
-  if (r.status === 'success') {
-    return r.localUri
+  try {
+    const [r] = await keepLocalCopy({
+      files: [
+        {
+          uri,
+          fileName: f,
+        },
+      ],
+      destination: 'documentDirectory',
+      folderName: 'Ringtones',
+    })
+    if (r.status === 'success') {
+      return r.localUri
+    }
+  } catch (error) {
+    console.log('[RingtonePicker]: error saving ringtone to cache: ', error)
   }
   return ''
 }
