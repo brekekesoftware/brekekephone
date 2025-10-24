@@ -13,7 +13,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
-import { pickRingtone } from '#/utils/ringtonePicker'
+import { handleUploadRingtone } from '#/utils/ringtonePicker'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -117,10 +117,9 @@ export const AccountCreateForm: FC<{
     },
     onUploadRingtone: async () => {
       try {
-        const u = await pickRingtone()
-        if (u) {
-          $.ringtoneOptions = await getRingtoneOptions()
-        }
+        await handleUploadRingtone($.ringtoneOptions, options => {
+          $.ringtoneOptions = options
+        })
       } catch (error) {
         console.log('[AccountCreateForm]: error uploading ringtone: ', error)
       }

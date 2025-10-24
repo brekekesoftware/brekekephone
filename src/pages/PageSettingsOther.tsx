@@ -15,7 +15,7 @@ import {
   getRingtoneOptions,
   handleRingtoneOptionsInSetting,
 } from '#/utils/getRingtoneOptions'
-import { pickRingtone } from '#/utils/ringtonePicker'
+import { handleUploadRingtone } from '#/utils/ringtonePicker'
 import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
 
 @observer
@@ -92,12 +92,11 @@ export class PageSettingsOther extends Component {
 
   onUploadRingtone = async () => {
     try {
-      const u = await pickRingtone()
-      if (u) {
+      await handleUploadRingtone(this.state.ringtoneOptions, options => {
         this.setState({
-          ringtoneOptions: await getRingtoneOptions(),
+          ringtoneOptions: options,
         })
-      }
+      })
     } catch (error) {
       console.log('[PageSettingOther] error uploading ringtone: ', error)
     }
