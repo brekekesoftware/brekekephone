@@ -183,6 +183,9 @@ export class AccountStore {
     return this._saveAccountsToLocalStorageDebounced()
   }
 
+  saveAccountsToLocalStorageWithoutDebounced = async () =>
+    await this.saveAccountsToLocalStorage()
+
   @action upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
 

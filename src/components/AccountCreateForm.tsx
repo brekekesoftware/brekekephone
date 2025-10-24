@@ -118,10 +118,7 @@ export const AccountCreateForm: FC<{
     onUploadRingtone: async () => {
       const u = await pickRingtone()
       if (u) {
-        setTimeout(
-          async () => ($.ringtoneOptions = await getRingtoneOptions()),
-          1000,
-        )
+        $.ringtoneOptions = await getRingtoneOptions()
       }
     },
   })

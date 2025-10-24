@@ -89,13 +89,9 @@ export class PageSettingsOther extends Component {
   onUploadRingtone = async () => {
     const u = await pickRingtone()
     if (u) {
-      setTimeout(
-        async () =>
-          this.setState({
-            ringtoneOptions: await getRingtoneOptions(),
-          }),
-        1000,
-      )
+      this.setState({
+        ringtoneOptions: await getRingtoneOptions(),
+      })
     }
   }
 

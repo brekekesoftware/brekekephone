@@ -31,7 +31,7 @@ export const pickRingtone = async () => {
     const s = await saveToCache(name, uri)
     if (s) {
       ctx.account.ringtonePicker[getFilenameWithoutExtension(name)] = true
-      ctx.account.saveAccountsToLocalStorageDebounced()
+      await ctx.account.saveAccountsToLocalStorageWithoutDebounced()
       ctx.toast.success(intl`Select mp3 file successfully`, 2000)
       return true
     }
