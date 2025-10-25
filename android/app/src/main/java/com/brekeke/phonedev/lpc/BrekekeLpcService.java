@@ -29,12 +29,12 @@ import java.util.ArrayList;
 
 public class BrekekeLpcService extends Service {
   public static boolean isServiceStarted = false;
-  public static LpcModel.Settings settings;
   public static Intent iService;
   private static ConnectivityManager cm;
   private ConnectivityManager.NetworkCallback networkCallback;
   public static Boolean isReconnectByNetworkChange = false;
   public static MonitorConnection con;
+  private Boolean isServiceNotiExist = false;
 
   @Override
   public void onCreate() {
@@ -47,6 +47,10 @@ public class BrekekeLpcService extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
     reconnectLPC();
+    if (isServiceNotiExist) {
+      return START_STICKY;
+    }
+    isServiceNotiExist = true;
     // register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
     registerReceiver(new BrekekeLpcReceiver(), filter);
@@ -110,7 +114,8 @@ public class BrekekeLpcService extends Service {
     String token = intent.getStringExtra("token");
     String username = intent.getStringExtra("username");
     ArrayList<String> remoteSsids = intent.getStringArrayListExtra("remoteSsids");
-    settings = new LpcModel().new Settings(host, port, tlsKeyHash, token, username, remoteSsids);
+    var settings =
+        new LpcModel().new Settings(host, port, tlsKeyHash, token, username, remoteSsids);
     Gson gson = new Gson();
     LpcUtils.writeConfig(this, gson.toJson(settings));
     createConnection(settings);
@@ -137,6 +142,7 @@ public class BrekekeLpcService extends Service {
     stopLPCService(this);
     clearNetworkCallback();
     con.cancelTimer();
+    isServiceNotiExist = false;
     return super.onUnbind(intent);
   }
 

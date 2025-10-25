@@ -220,9 +220,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
               i.putExtra("data", new HashMap<>(m));
               ctx.startActivity(i);
-              if (toBoolean(m.get("lpc"))) {
-                LpcUtils.showIncomingCallNotification(ctx, i);
-              }
             };
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0

@@ -15,6 +15,7 @@
 - Fix android it should reconnect LPC on internet connection lost (issue 1076)
 - Fix it should not cut off call screen in small screen device (issue 1079)
 - Fix it should not show error on ping failure (issue 1081)
+- Fix it should not show notification intervally (issue 1091)
 
 #### 2.16.5
 
