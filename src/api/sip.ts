@@ -27,13 +27,14 @@ type DeviceInputWeb = {
 }
 export class SIP extends EventEmitter {
   phone?: Sip
-  currentCamera: string | undefined = '1'
+  currentCamera?: string
 
   cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
     this.cameraIds = await getCameraSourceIds()
 
-    this.currentCamera = this.cameraIds?.[0]?.deviceId || '1'
+    this.currentCamera =
+      this.cameraIds?.[0]?.deviceId || (isWeb ? undefined : '1')
 
     const phone = getWebrtcClient(o.dtmfSendPal, this.currentCamera)
     this.phone = phone
