@@ -217,11 +217,11 @@ public class Ringtone {
   private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
-      var r = validateWithError(a.getString("ringtone"));
+      var r = validateWithError(a.getString("ringtoneFromLocal"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
-      r = validateWithError(a.getString("pbxRingtone"));
+      r = validateWithError(a.getString("ringtoneFromPbx"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }

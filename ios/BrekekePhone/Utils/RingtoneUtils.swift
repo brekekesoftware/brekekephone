@@ -20,11 +20,11 @@ public class RingtoneUtils {
   
   @objc static func getRingtone(username : String, tenant : String, host: String, port : String) -> String {
     if let a = AccountUtils.find(username: username, tenant: tenant, host: host, port: port) {
-      var r = _validate(ringtone: a.ringtone ?? "")
+      var r = _validate(ringtone: a.ringtoneFromLocal ?? "")
       if !r.isEmpty {
         return r
       }
-      r = _validate(ringtone: a.pbxRingtone ?? "")
+      r = _validate(ringtone: a.ringtoneFromPbx ?? "")
       if !r.isEmpty {
         return r
       }

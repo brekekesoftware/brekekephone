@@ -58,8 +58,8 @@ export const IncomingItem = observer(() => {
   const priority = [
     c?.ringtoneFromSip,
     ctx.call.ringtone,
-    ca?.ringtone,
-    ca?.pbxRingtone,
+    ca?.ringtoneFromLocal,
+    ca?.ringtoneFromPbx,
   ]
   const r = priority.map(validateWithError).find(v => v) || _default
   // reset to make sure it will rerender

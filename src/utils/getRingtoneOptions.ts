@@ -37,12 +37,12 @@ export const handleRingtoneOptionsInSetting = async (): Promise<{
   const rp = Object.keys(ctx.account.ringtonePicker)
   const s = new Set(r)
   let hasChange = false
-  const curr = ctx.auth.getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
   rp.forEach(v => {
     if (!s.has(v)) {
       delete ctx.account.ringtonePicker[v]
-      if (curr && curr.ringtone === v) {
-        curr.ringtone = defaultRingtone
+      if (ca && ca.ringtoneFromLocal === v) {
+        ca.ringtoneFromLocal = defaultRingtone
       }
       hasChange = true
     }
@@ -53,11 +53,11 @@ export const handleRingtoneOptionsInSetting = async (): Promise<{
 
   return {
     ro: handleRingtoneOptions(r),
-    r: curr?.ringtone ?? defaultRingtone,
+    r: ca?.ringtoneFromLocal ?? defaultRingtone,
   }
 }
 
 export const getCurrentRingtone = (): string => {
-  const curr = ctx.auth.getCurrentAccount()
-  return curr?.ringtone || defaultRingtone
+  const ca = ctx.auth.getCurrentAccount()
+  return ca?.ringtoneFromLocal || defaultRingtone
 }
