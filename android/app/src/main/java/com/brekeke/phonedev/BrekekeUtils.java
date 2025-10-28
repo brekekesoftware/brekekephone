@@ -934,6 +934,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     var i =
         LpcUtils.putConfigToIntent(
             host, port, token, username, tlsKeyHash, r, new Intent(ctx, BrekekeLpcService.class));
+    i.putExtra("reason", "enable LPC");
     ctx.startForegroundService(i);
     ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
     // update the status if the server turns lpc on or off

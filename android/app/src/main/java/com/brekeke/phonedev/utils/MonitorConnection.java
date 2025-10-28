@@ -1,7 +1,9 @@
 package com.brekeke.phonedev.utils;
 
 import android.os.Handler;
+import android.util.Log;
 import com.brekeke.phonedev.lpc.BrekekeLpcService;
+import com.brekeke.phonedev.lpc.LpcUtils;
 
 public class MonitorConnection {
   private static final long DEFAULT_TIMEOUT_MS = 20000;
@@ -28,6 +30,7 @@ public class MonitorConnection {
     countReconnect = 0;
     updateState(true);
     resetTimer();
+    Log.d(LpcUtils.TAG, "Update timer");
   }
 
   public void onDisconnected() {
@@ -47,17 +50,23 @@ public class MonitorConnection {
   private void updateState(boolean connected) {
     if (isConnected != connected) {
       isConnected = connected;
-      Emitter.debug("LPC connection: " + (connected ? "CONNECTED" : "DISCONNECTED"));
+      Emitter.debug(
+          "[MonitorConnection] LPC connection: " + (connected ? "CONNECTED" : "DISCONNECTED"));
     }
 
     if (!connected) {
-      var iService = BrekekeLpcService.iService;
-      if (countReconnect > 1 && !BrekekeLpcService.isReconnectByNetworkChange && iService != null) {
+      var i = BrekekeLpcService.iService;
+      if (countReconnect > 2
+          && !BrekekeLpcService.isReconnectByNetworkChange
+          && i != null
+          && BrekekeLpcService.isServiceStarted) {
         countReconnect = 0;
         var ctx = Ctx.app();
         if (ctx != null) {
           BrekekeLpcService.isServiceStarted = false;
-          ctx.startForegroundService(iService);
+          i.putExtra("reason", "LPC re-connect by pbx");
+          ctx.startForegroundService(i);
+          Emitter.debug("[MonitorConnection] LPC re-connect by pbx:");
         }
       }
       countReconnect++;
