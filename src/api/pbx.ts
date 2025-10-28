@@ -819,7 +819,7 @@ export class PBX extends EventEmitter {
 
     const ca = ctx.auth.getCurrentAccount()
     if (ca) {
-      ca.pbxRingtone = config['webphone.call.ringtone']
+      ca.ringtoneFromPbx = config['webphone.call.ringtone']
       ctx.account.saveAccountsToLocalStorageDebounced()
     }
     const d = await ctx.auth.getCurrentDataAsync()

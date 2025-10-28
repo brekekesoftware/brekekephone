@@ -81,7 +81,7 @@ type TBrekekeUtils = {
   setProximityMonitoring(enabled: boolean): void
   isSpeakerOn(): Promise<boolean>
   resetAudioConfig(): void
-
+  validateRingtone(r: string, u: string, t: string, h: string, p: string): void
   // ==========================================================================
   // these methods available on both
   enableLPC(
@@ -168,7 +168,7 @@ const Polyfill: TBrekekeUtils = {
   setProximityMonitoring: () => undefined,
   isSpeakerOn: () => Promise.resolve(false),
   resetAudioConfig: () => undefined,
-
+  validateRingtone: () => undefined,
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
