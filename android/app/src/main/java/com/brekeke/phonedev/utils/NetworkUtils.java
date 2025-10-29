@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 
@@ -14,6 +16,8 @@ public class NetworkUtils {
     WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
     var w = wifiInfo.getSSID().replace("\"", "");
+    Emitter.debug("[BrekekeLpcService] SSID " + w);
+    Log.d("[Wy]", "matchSsid: " + w);
     return s.contains(w);
   }
 

@@ -186,12 +186,11 @@ public class BrekekeLpcService extends Service {
       Emitter.debug("[BrekekeLpcService] Service intent is null");
       return;
     }
-    // TODO
-    //    var r = iService.getStringArrayListExtra("remoteSsids");
-    //    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
-    //      Emitter.debug("[BrekekeLpcService] Wifi not match");
-    //      return;
-    //    }
+    var r = iService.getStringArrayListExtra("remoteSsids");
+    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
+      Emitter.debug("[BrekekeLpcService] Wifi not match");
+      return;
+    }
     if (!isServiceStarted) {
       if (LpcUtils.checkAppInBackground()) {
         Log.d(LpcUtils.TAG, "[BrekekeLpcService] create React Context In Background");

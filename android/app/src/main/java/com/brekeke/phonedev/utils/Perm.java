@@ -1,12 +1,19 @@
 package com.brekeke.phonedev.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
+
+import androidx.core.app.ActivityCompat;
+
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.facebook.react.bridge.Promise;
 import java.util.ArrayList;
@@ -21,7 +28,8 @@ public class Perm {
   public static String Overlay = "Overlay";
   public static String IgnoringBatteryOptimizations = "IgnoringBatteryOptimizations";
   public static String AndroidLpc = "AndroidLpc";
-
+  private static final int REQUEST_LOCATION_PERMISSION = 101;
+  private static final int REQUEST_CHECK_LOCATION_SETTINGS = 102;
   private interface Handler {
     boolean check();
 
@@ -170,5 +178,45 @@ public class Perm {
       }
     }
     promises.clear();
+  }
+
+  public static boolean hasLocationPermission(Context context) {
+    boolean fine = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+
+    boolean nearby = true;
+    if (Build.VERSION.SDK_INT >= 33) {
+      nearby = ActivityCompat.checkSelfPermission(context, Manifest.permission.NEARBY_WIFI_DEVICES)
+              == PackageManager.PERMISSION_GRANTED;
+    }
+    return fine && nearby;
+  }
+
+  public static void requestLocationPermission(Activity activity) {
+    if (Build.VERSION.SDK_INT >= 33) {
+      ActivityCompat.requestPermissions(
+              activity,
+              new String[]{
+                      Manifest.permission.ACCESS_FINE_LOCATION,
+                      Manifest.permission.NEARBY_WIFI_DEVICES
+              },
+              REQUEST_LOCATION_PERMISSION
+      );
+    } else {
+      ActivityCompat.requestPermissions(
+              activity,
+              new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+              REQUEST_LOCATION_PERMISSION
+      );
+    }
+  }
+  public static boolean isLocationEnabled(Context context) {
+    try {
+      LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+      return lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+              || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    } catch (Exception e) {
+      return false;
+    }
   }
 }
