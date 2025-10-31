@@ -468,11 +468,13 @@ export class CallStore {
     // desktop notification
     if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
-      webShowNotification(
-        c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
-        name,
-        name,
-      )
+      webShowNotification({
+        type: 'call',
+        id: c.id,
+        body: c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
+        tag: name,
+        title: name,
+      })
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
