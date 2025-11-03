@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..4382ccb 100644
+index 786045f..4d36388 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,24 +1136,24 @@ index 786045f..4382ccb 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,157 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,158 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
 +// handle local ringtone file
 +static AVAudioPlayer *audioPlayer = nil;
 +
-++ (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL *)replay {
+++ (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL)replay {
 +    if(!url) {
 +        NSLog(@"[RNCallKeep] url does not exist");
 +        return;
 +    }
-+    if (audioPlayer != nil && replay == NO) {
++    if (audioPlayer != nil && !replay) {
 +        NSLog(@"[RNCallKeep] Ringtone is playing");
 +        return;
 +    }
 +    NSError *error = nil;
-+    [RNCallKeep configAudioSessionForAudioPlayer];
++    
 +    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
 +    if (error || !audioPlayer) {
 +        NSLog(@"[RNCallKeep] Failed to create AVAudioPlayer: %@", error.localizedDescription);
@@ -1161,6 +1161,7 @@ index 786045f..4382ccb 100644
 +    }
 +    audioPlayer.numberOfLoops = -1;
 +    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
 +            NSLog(@"[RNCallKeep] Prepare failed!");
