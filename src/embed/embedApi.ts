@@ -3,6 +3,7 @@ import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parseParamsWithPrefix'
 import type {
+  EmbedNotificationOptions,
   EmbedPbxConfig,
   EmbedSignInOptions,
   MakeCallFn,
@@ -62,12 +63,25 @@ export class EmbedApi extends EventEmitter {
    */
 
   _rootTag?: any
+  _options?: EmbedNotificationOptions
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
   _pbxConfig: EmbedPbxConfig = {}
 
   _signIn = async (o: EmbedSignInOptions) => {
+    const {
+      dontShowNotificationIfFocusing = true,
+      closeAllNotificationOnFocus = true,
+      closeNotificationOnCallAnswer = true,
+      closeNotificationOnCallEnd = true,
+    } = o
+    this._options = {
+      dontShowNotificationIfFocusing,
+      closeAllNotificationOnFocus,
+      closeNotificationOnCallAnswer,
+      closeNotificationOnCallEnd,
+    }
     await ctx.account.waitStorageLoaded()
     // reassign options on each sign in
     embedApi._palEvents = o.palEvents

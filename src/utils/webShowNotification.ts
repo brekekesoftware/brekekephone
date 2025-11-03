@@ -1,7 +1,21 @@
+import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import { jsonStable } from '#/utils/jsonStable'
 
 const cache: { [k: string]: string } = {}
+
+window.addEventListener('focus', () => {
+  if (!isEmbed) {
+    return
+  }
+  if (!embedApi._options?.closeAllNotificationOnFocus) {
+    return
+  }
+  Object.values(cache).forEach(notificationId => {
+    window.Brekeke.WebNotification.closeNotification({ notificationId })
+  })
+})
 
 export const webCloseNotification = ({
   type,
@@ -38,6 +52,13 @@ export const webShowNotification = ({
   timeout?: number
 }) => {
   if (ctx.auth.pbxConfig?.['webphone.desktop.notification'] === 'false') {
+    return
+  }
+  if (
+    isEmbed &&
+    embedApi._options?.dontShowNotificationIfFocusing &&
+    document.hasFocus()
+  ) {
     return
   }
   const k = jsonStable({

@@ -8,6 +8,8 @@ import { v4 as newUuid } from 'uuid'
 import { mdiPhone } from '#/assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '#/brekekejs'
 import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import { addCallHistory } from '#/stores/addCallHistory'
 import type { ConnectionState } from '#/stores/authStore'
 import { Call } from '#/stores/Call'
@@ -28,7 +30,10 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
-import { webShowNotification } from '#/utils/webShowNotification'
+import {
+  webCloseNotification,
+  webShowNotification,
+} from '#/utils/webShowNotification'
 
 export class CallStore {
   @observable inPageCallManage?: {
@@ -351,6 +356,10 @@ export class CallStore {
           e.mutedVideo = true
           ctx.sip.setMutedVideo(true, e.id)
         }
+
+        if (isEmbed && embedApi._options?.closeNotificationOnCallAnswer) {
+          webCloseNotification({ type: 'call', id: e.id })
+        }
       }
       // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
       if (p.remoteUserOptionsTable?.[e.partyNumber]?.exInfo === 'answered') {
@@ -526,6 +535,10 @@ export class CallStore {
 
   callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
+    if (isEmbed && embedApi._options?.closeNotificationOnCallEnd) {
+      webCloseNotification({ type: 'call', id: rawSession.sessionId })
+    }
+
     this.callTerminated[rawSession.sessionId] = true
 
     this.updateCurrentCallDebounce()

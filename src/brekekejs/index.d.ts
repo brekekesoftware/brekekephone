@@ -21,8 +21,15 @@ export type EmbedSignInOptions = {
   clearExistingAccount?: boolean
   palEvents?: string[]
   accounts: EmbedAccount[]
-} & EmbedPbxConfig &
+} & Partial<EmbedNotificationOptions> &
+  EmbedPbxConfig &
   EmbedPalConfig
+export type EmbedNotificationOptions = {
+  dontShowNotificationIfFocusing: boolean
+  closeAllNotificationOnFocus: boolean
+  closeNotificationOnCallAnswer: boolean
+  closeNotificationOnCallEnd: boolean
+}
 
 export type Brekeke = {
   pbx: {
