@@ -1,16 +1,51 @@
 import { ctx } from '#/stores/ctx'
+import { jsonStable } from '#/utils/jsonStable'
 
-export const webShowNotification = async (
-  body: string,
-  tag: string,
-  title?: string,
-  timeout?: number,
-) => {
+const cache: { [k: string]: string } = {}
+
+export const webCloseNotification = ({
+  type,
+  id,
+}: {
+  type: 'call' | 'chat'
+  id: string
+}) => {
+  const k = jsonStable({
+    type,
+    id,
+  })
+  const notificationId = cache[k]
+  if (!notificationId) {
+    return
+  }
+  window.Brekeke.WebNotification.closeNotification({ notificationId })
+  delete cache[k]
+}
+
+export const webShowNotification = ({
+  type,
+  id,
+  body,
+  tag,
+  title,
+  timeout,
+}: {
+  type: 'call' | 'chat'
+  id: string
+  body: string
+  tag: string
+  title?: string
+  timeout?: number
+}) => {
   if (ctx.auth.pbxConfig?.['webphone.desktop.notification'] === 'false') {
     return
   }
+  const k = jsonStable({
+    type,
+    id,
+  })
   const notification = window.Brekeke.WebNotification
-  const id = notification.showNotification({
+  const notificationId = notification.showNotification({
     document,
     timeout,
     interval: 15000,
@@ -22,10 +57,13 @@ export const webShowNotification = async (
     noisiness: 1,
     onclick: (e: unknown) => {
       window.focus()
-      notification.closeNotification({ notificationId: id })
+      notification.closeNotification({ notificationId })
+      delete cache[k]
     },
     onclose: (e: unknown) => {
-      notification.closeNotification({ notificationId: id })
+      notification.closeNotification({ notificationId })
+      delete cache[k]
     },
   })
+  cache[k] = notificationId
 }

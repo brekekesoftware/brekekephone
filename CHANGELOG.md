@@ -1,3 +1,8 @@
+#### 2.17.0
+
+- Embed:
+  - Add api to close notification
+
 #### 2.16.7
 
 - Fix it should be able to drag mini video call circle (issue 1084)

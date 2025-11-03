@@ -15,6 +15,7 @@ import { arrToMap } from '#/utils/arrToMap'
 import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
+import { webCloseNotification } from '#/utils/webShowNotification'
 
 export class EmbedApi extends EventEmitter {
   /** ==========================================================================
@@ -29,6 +30,8 @@ export class EmbedApi extends EventEmitter {
   setProductName = (name: string) => {
     ctx.global.productName = name
   }
+
+  closeNotification = webCloseNotification
 
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
   getCurrentAccountCtx = () => ctx
