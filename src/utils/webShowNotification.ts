@@ -9,7 +9,7 @@ window.addEventListener('focus', () => {
   if (!isEmbed) {
     return
   }
-  if (!embedApi._options?.closeAllNotificationOnFocus) {
+  if (!embedApi._notificationOptions?.closeAllNotificationOnFocus) {
     return
   }
   Object.values(cache).forEach(notificationId => {
@@ -57,10 +57,14 @@ export const webShowNotification = ({
   }
   if (
     isEmbed &&
-    embedApi._options?.dontShowNotificationIfFocusing &&
+    embedApi._notificationOptions?.dontShowNotificationIfFocusing &&
     document.hasFocus()
   ) {
     return
+  }
+  let interval = 15000
+  if (isEmbed && embedApi._notificationOptions?.notificationInterval) {
+    interval = embedApi._notificationOptions.notificationInterval
   }
   const k = jsonStable({
     type,
@@ -70,7 +74,7 @@ export const webShowNotification = ({
   const notificationId = notification.showNotification({
     document,
     timeout,
-    interval: 15000,
+    interval,
     title: title ? title : ctx.global.productName,
     renotify: true,
     body,

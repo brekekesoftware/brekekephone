@@ -357,7 +357,10 @@ export class CallStore {
           ctx.sip.setMutedVideo(true, e.id)
         }
 
-        if (isEmbed && embedApi._options?.closeNotificationOnCallAnswer) {
+        if (
+          isEmbed &&
+          embedApi._notificationOptions?.closeNotificationOnCallAnswer
+        ) {
           webCloseNotification({ type: 'call', id: e.id })
         }
       }
@@ -535,7 +538,7 @@ export class CallStore {
 
   callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
-    if (isEmbed && embedApi._options?.closeNotificationOnCallEnd) {
+    if (isEmbed && embedApi._notificationOptions?.closeNotificationOnCallEnd) {
       webCloseNotification({ type: 'call', id: rawSession.sessionId })
     }
 

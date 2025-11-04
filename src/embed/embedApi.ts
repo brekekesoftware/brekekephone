@@ -63,28 +63,32 @@ export class EmbedApi extends EventEmitter {
    */
 
   _rootTag?: any
-  _options?: EmbedNotificationOptions
+  _notificationOptions?: EmbedNotificationOptions
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
   _pbxConfig: EmbedPbxConfig = {}
 
-  _signIn = async (o: EmbedSignInOptions) => {
+  _signIn = async (_o: EmbedSignInOptions) => {
     const {
+      palEvents,
       dontShowNotificationIfFocusing = true,
       closeAllNotificationOnFocus = true,
       closeNotificationOnCallAnswer = true,
       closeNotificationOnCallEnd = true,
-    } = o
-    this._options = {
+      notificationInterval = 15000,
+      ...o
+    } = _o
+    this._notificationOptions = {
       dontShowNotificationIfFocusing,
       closeAllNotificationOnFocus,
       closeNotificationOnCallAnswer,
       closeNotificationOnCallEnd,
+      notificationInterval,
     }
     await ctx.account.waitStorageLoaded()
     // reassign options on each sign in
-    embedApi._palEvents = o.palEvents
+    embedApi._palEvents = palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
     ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])

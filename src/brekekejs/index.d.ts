@@ -29,6 +29,7 @@ export type EmbedNotificationOptions = {
   closeAllNotificationOnFocus: boolean
   closeNotificationOnCallAnswer: boolean
   closeNotificationOnCallEnd: boolean
+  notificationInterval: number
 }
 
 export type Brekeke = {
