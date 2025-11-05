@@ -8,6 +8,11 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import {
+  prompBackgroundLocationPermisson,
+  prompForegroundLocationPermisson,
+  promptEnableGPS,
+} from '#/utils/location'
 import { checkFineLocation, permFineLocation } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
@@ -144,14 +149,25 @@ const syncPnTokenWithoutCatch = async (
     }
 
     if (isAndroid) {
-      // request access fine location to get current ssid
-      const granted = await permFineLocation()
+      // request access background location to get current ssid
+      const granted = await prompForegroundLocationPermisson()
       locationPerm = granted
-      if (!granted) {
-        BrekekeUtils.disableLPC()
-        // set flag -> "blocked"
-        return disconnectPbx(true)
+      if (granted) {
+        locationPerm = await prompBackgroundLocationPermisson()
+        const gps = await promptEnableGPS()
+        console.log(`[Hoang]: gps ${gps} `)
+        // if user refuse to enable gps -> what next?
+        if (!gps) {
+        }
       }
+      console.log(
+        `[Hoang]: backgroundGranted ${locationPerm} foreground granted ${granted}`,
+      )
+      // if (!granted) {
+      //   BrekekeUtils.disableLPC()
+      // set flag -> "blocked"
+      // return disconnectPbx(true)
+      // }
     }
 
     const remoteSsids =

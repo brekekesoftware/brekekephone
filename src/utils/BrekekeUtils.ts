@@ -96,6 +96,13 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+  // ==========================================================================
+  // location / gps
+  enableGPS(): Promise<boolean>
+  isEnableGPS(): Promise<boolean>
+  requestBackgroundLocationPermissions(): Promise<boolean>
+  requestLocationPermission(): Promise<boolean>
+  isBackgroundLocationGranted(): Promise<boolean>
 }
 
 export type TNativeModules = {
@@ -174,6 +181,13 @@ const Polyfill: TBrekekeUtils = {
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  // ==========================================================================
+  // location / gps
+  enableGPS: () => Promise.resolve(false),
+  isEnableGPS: () => Promise.resolve(false),
+  requestLocationPermission: () => Promise.resolve(false),
+  requestBackgroundLocationPermissions: () => Promise.resolve(false),
+  isBackgroundLocationGranted: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

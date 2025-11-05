@@ -20,6 +20,7 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
@@ -31,6 +32,8 @@ import com.brekeke.phonedev.utils.Account;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.LocationPermissionHelper;
+import com.brekeke.phonedev.utils.LocationUtils;
 import com.brekeke.phonedev.utils.PN;
 import com.brekeke.phonedev.utils.Perm;
 import com.brekeke.phonedev.utils.Ringtone;
@@ -1026,4 +1029,90 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           }
         });
   }
+
+  // Location
+  @ReactMethod
+  public void enableGPS(Promise p) {
+    try {
+      var ctx = Ctx.app();
+      if (LocationUtils.isLocationEnabled(ctx)) {
+        p.resolve(true);
+        return;
+      }
+      LocationUtils.gpsPromise = p;
+      LocationUtils.ensureLocationService(
+          main,
+          new LocationUtils.LocationStatusCallback() {
+            @Override
+            public void onReady() {
+              Log.d(LpcUtils.TAG, "Vị trí đã sẵn sàng");
+              p.resolve(true);
+            }
+
+            @Override
+            public void onPermissionDenied() {
+              Log.d(LpcUtils.TAG, "Chưa được cấp quyền vị trí");
+              p.resolve(false);
+            }
+
+            @Override
+            public void onProviderDisabled() {
+              Log.d(LpcUtils.TAG, "Vui lòng bật GPS / Location");
+              LocationUtils.openLocationSettings(main);
+            }
+          });
+    } catch (Exception e) {
+      Log.d(LpcUtils.TAG, "needEnableGPS " + e.getMessage());
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void isEnableGPS(Promise p) {
+    try {
+      var ctx = Ctx.app();
+      p.resolve(LocationUtils.isLocationEnabled(ctx));
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void requestBackgroundLocationPermissions(Promise p) {
+    try {
+      LocationPermissionHelper.checkAndRequestBackgroundLocationPermissions(main, p);
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void isBackgroundLocationGranted(Promise p) {
+    try {
+      var ctx = Ctx.app();
+      p.resolve(LocationPermissionHelper.isBackgroundPermissionGranted(ctx));
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void isForegroundLocationGranted(Promise p) {
+    try {
+      var ctx = Ctx.app();
+      p.resolve(LocationPermissionHelper.isForegroundPermissionGranted(ctx));
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
+  @ReactMethod
+  public void requestLocationPermission(Promise p) {
+    try {
+      LocationPermissionHelper.checkAndRequestLocationPermission(main, p);
+    } catch (Exception e) {
+      p.resolve(false);
+    }
+  }
+
 }

@@ -7,7 +7,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
-
 import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 

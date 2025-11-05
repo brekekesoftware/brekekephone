@@ -1,13 +1,18 @@
 package com.brekeke.phonedev
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
+import com.brekeke.phonedev.lpc.LpcUtils
 import com.brekeke.phonedev.utils.Ctx
 import com.brekeke.phonedev.utils.Emitter
+import com.brekeke.phonedev.utils.LocationPermissionHelper
+import com.brekeke.phonedev.utils.LocationUtils
 import com.brekeke.phonedev.utils.Perm
 import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
@@ -24,6 +29,23 @@ class MainActivity : ReactActivity() {
 
   override fun onResume() {
     super.onResume()
+    if (LocationUtils.gpsPromise != null) {
+      val e = LocationUtils.isLocationEnabled(applicationContext);
+      LocationUtils.gpsPromise.resolve(e)
+      LocationUtils.gpsPromise = null
+    }
+
+    if (LocationPermissionHelper.locationPermissionPromise != null) {
+      val e = LocationPermissionHelper.isForegroundPermissionGranted(applicationContext);
+      LocationPermissionHelper.locationPermissionPromise.resolve(e)
+      LocationPermissionHelper.locationPermissionPromise = null
+    }
+
+    if (LocationPermissionHelper.backgroundLocationPermissionPromise != null) {
+      val e = LocationPermissionHelper.isBackgroundPermissionGranted(applicationContext);
+      LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(e)
+      LocationPermissionHelper.backgroundLocationPermissionPromise = null
+    }
     // permissions
     Perm.resolve()
     // call history
@@ -34,6 +56,7 @@ class MainActivity : ReactActivity() {
     if (phone.isNullOrEmpty()) return
     intent.removeExtra("extra_phone")
     handleMakeCall(phone)
+
   }
 
   override fun onDestroy() {
@@ -108,10 +131,30 @@ class MainActivity : ReactActivity() {
       @NonNull grantResults: IntArray
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+    Log.d(LpcUtils.TAG, "grantResults " + grantResults[0]);
     when (requestCode) {
       RNCallKeepModule.REQUEST_READ_PHONE_STATE ->
           RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults)
+      LocationPermissionHelper.REQUEST_FOREGROUND_PERMISSION ->
+        if (granted) {
+        Log.d(LpcUtils.TAG, "Foreground granted → request background");
+          LocationPermissionHelper.locationPermissionPromise.resolve(true)
+      } else {
+        Log.d(LpcUtils.TAG, "Từ chối → có thể show rationale hoặc dẫn tới App Settings");
+//        LocationPermissionHelper.locationPermissionPromise.resolve(false)
+          LocationPermissionHelper.openAppSettings(applicationContext)
+      }
+      LocationPermissionHelper.REQUEST_BACKGROUND_PERMISSION -> {
+        if (!granted) {
+          Log.d(LpcUtils.TAG, "Background permission bị từ chối");
+          LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(false)
+          return
+        }
+        LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(true)
+      }
     }
+
   }
 
   // ==========================================================================
