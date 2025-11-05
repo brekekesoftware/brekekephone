@@ -1,3 +1,4 @@
+import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
@@ -5,18 +6,25 @@ import { jsonStable } from '#/utils/jsonStable'
 
 let cache: { [k: string]: string } = {}
 
-window.addEventListener('focus', () => {
-  if (!isEmbed) {
+const _addFocusListener = () => {
+  if (!isWeb) {
     return
   }
-  if (!embedApi._notificationOptions?.closeAllNotificationOnFocus) {
-    return
-  }
-  Object.values(cache).forEach(notificationId => {
-    window.Brekeke.WebNotification.closeNotification({ notificationId })
+  window.addEventListener('focus', () => {
+    if (!isEmbed) {
+      return
+    }
+
+    if (!embedApi._notificationOptions?.closeAllNotificationOnFocus) {
+      return
+    }
+    Object.values(cache).forEach(notificationId => {
+      window.Brekeke.WebNotification.closeNotification({ notificationId })
+    })
+    cache = {}
   })
-  cache = {}
-})
+}
+_addFocusListener()
 
 export const webCloseNotification = ({
   type,
