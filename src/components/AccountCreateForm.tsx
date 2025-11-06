@@ -321,7 +321,7 @@ export const AccountCreateForm: FC<{
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
-            name: 'ringtoneFromLocal',
+            name: 'ringtone',
             options: $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
           },

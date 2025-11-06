@@ -5,8 +5,8 @@ struct Profile: Codable {
   let pbxTenant: String?
   let pbxHostname: String?
   let pbxPort: String?
-  let ringtoneFromLocal: String?
-  let ringtoneFromPbx: String?
+  let ringtone: String?
+  let pbxRingtone: String?
 }
 
 struct ProfilesWrapper: Codable {

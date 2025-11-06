@@ -86,7 +86,7 @@ export class PageSettingsOther extends Component {
     if (!ca) {
       return
     }
-    ca.ringtoneFromLocal = value
+    ca.ringtone = value
     ctx.account.saveAccountsToLocalStorageDebounced()
   }
 

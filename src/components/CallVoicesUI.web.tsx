@@ -58,8 +58,8 @@ export const IncomingItem = observer(() => {
   const priority = [
     c?.ringtoneFromSip,
     ctx.call.ringtone,
-    ca?.ringtoneFromLocal,
-    ca?.ringtoneFromPbx,
+    ca?.ringtone,
+    ca?.pbxRingtone,
   ]
   const r = ctx.global.buildEmbedStaticPath(
     priority.map(validateWithError).find(v => v) || _default,

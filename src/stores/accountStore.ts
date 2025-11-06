@@ -39,8 +39,8 @@ export type Account = {
   displayOfflineUsers?: boolean
   navIndex: number
   navSubMenus: string[]
-  ringtoneFromLocal?: string
-  ringtoneFromPbx?: string
+  ringtone?: string
+  pbxRingtone?: string
 }
 export type AccountData = {
   id: string
@@ -103,8 +103,8 @@ export class AccountStore {
     ucEnabled: false,
     navIndex: -1,
     navSubMenus: [],
-    ringtoneFromLocal: defaultRingtone,
-    ringtoneFromPbx: defaultRingtone,
+    ringtone: defaultRingtone,
+    pbxRingtone: defaultRingtone,
   })
 
   @observable ringtonePicker: RingtonePickerType = {}

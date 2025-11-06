@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -217,11 +218,12 @@ public class Ringtone {
   private static String get(String u, String t, String h, String p) {
     try {
       var a = Account.find(u, t, h, p);
-      var r = validateWithError(a.getString("ringtoneFromLocal"));
+      var r = validateWithError(a.getString("ringtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
-      r = validateWithError(a.getString("ringtoneFromPbx"));
+      Log.d("[Wy]", "get: " + a.getString("pbxRingtone"));
+      r = validateWithError(a.getString("pbxRingtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
