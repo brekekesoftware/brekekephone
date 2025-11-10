@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -35,25 +36,28 @@ public class BrekekeLpcService extends Service {
   public static Boolean isReconnectByNetworkChange = false;
   public static MonitorConnection con;
   private Boolean isServiceNotiExist = false;
+  private BroadcastReceiver broadcastReceiver;
 
   @Override
   public void onCreate() {
     isServiceStarted = true;
     createNotificationChannel();
     con = new MonitorConnection();
+    broadcastReceiver = new BrekekeLpcReceiver();
+    // register action shutdown
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
+    registerReceiver(broadcastReceiver, filter);
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
     reconnectLPC();
+
     if (isServiceNotiExist) {
       return START_STICKY;
     }
     isServiceNotiExist = true;
-    // register action shutdown
-    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-    registerReceiver(new BrekekeLpcReceiver(), filter);
 
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
@@ -143,6 +147,7 @@ public class BrekekeLpcService extends Service {
     clearNetworkCallback();
     con.cancelTimer();
     isServiceNotiExist = false;
+    unregisterReceiver(broadcastReceiver);
     return super.onUnbind(intent);
   }
 

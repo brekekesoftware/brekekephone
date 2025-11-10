@@ -101,8 +101,9 @@ type TBrekekeUtils = {
   enableGPS(): Promise<boolean>
   isEnableGPS(): Promise<boolean>
   requestBackgroundLocationPermissions(): Promise<boolean>
-  requestLocationPermission(): Promise<boolean>
+  shouldAskLocationPermission(): Promise<boolean>
   isBackgroundLocationGranted(): Promise<boolean>
+  openAppSettings(): Promise<boolean>
 }
 
 export type TNativeModules = {
@@ -185,9 +186,10 @@ const Polyfill: TBrekekeUtils = {
   // location / gps
   enableGPS: () => Promise.resolve(false),
   isEnableGPS: () => Promise.resolve(false),
-  requestLocationPermission: () => Promise.resolve(false),
+  shouldAskLocationPermission: () => Promise.resolve(false),
   requestBackgroundLocationPermissions: () => Promise.resolve(false),
   isBackgroundLocationGranted: () => Promise.resolve(false),
+  openAppSettings: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

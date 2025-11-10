@@ -20,17 +20,16 @@ public class LocationPermissionHelper {
   public static final int REQUEST_BACKGROUND_PERMISSION = 1113;
   public static Promise locationPermissionPromise;
   public static Promise backgroundLocationPermissionPromise;
+  public static Promise openSettingPromise;
+  private static Boolean fistAskLocation = false;
 
-  /** Kiểm tra foreground location permission */
   public static boolean isForegroundPermissionGranted(Context context) {
     boolean granted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED;
-    Log.d(LpcUtils.TAG, "isForegroundPermissionGranted: " + granted);
     return granted;
   }
 
-  /** Kiểm tra background location permission (Android 10+) */
   public static boolean isBackgroundPermissionGranted(Context context) {
     boolean granted;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // Android 10+
@@ -40,20 +39,9 @@ public class LocationPermissionHelper {
     } else {
       granted = true; // < Android 10 → No permission required
     }
-    Log.d(LpcUtils.TAG, "isBackgroundPermissionGranted: " + granted);
     return granted;
   }
 
-  /** Request foreground permission */
-  public static void requestForegroundPermission(Activity activity) {
-    Log.d(LpcUtils.TAG, "Requesting foreground location permission");
-    ActivityCompat.requestPermissions(
-        activity,
-        new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-        REQUEST_FOREGROUND_PERMISSION);
-  }
-
-  /** Request background permission */
   public static void requestBackgroundPermission(Activity activity) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Log.d(LpcUtils.TAG, "Requesting background location permission");
@@ -64,7 +52,6 @@ public class LocationPermissionHelper {
     }
   }
 
-  /** Kiểm tra và request permissions đầy đủ */
   public static void checkAndRequestBackgroundLocationPermissions(Activity activity, Promise p) {
     var isBackgroundGranted = isBackgroundPermissionGranted(activity);
     if (isBackgroundGranted) {
@@ -72,31 +59,39 @@ public class LocationPermissionHelper {
       return;
     }
     Log.d(LpcUtils.TAG, "Checking background location permissions");
-      backgroundLocationPermissionPromise = p;
+    backgroundLocationPermissionPromise = p;
     requestBackgroundPermission(activity);
   }
 
-  public static void checkAndRequestLocationPermission(Activity activity, Promise p) {
-    var isForegroundGranted = isForegroundPermissionGranted(activity);
-    if (isForegroundGranted) {
-      p.resolve(true);
-      return;
-    }
-    Log.d(LpcUtils.TAG, "Checking foreground location permissions");
-    locationPermissionPromise = p;
-    requestForegroundPermission(activity);
-  }
-
-  public static void openAppSettings(Context context) {
+  public static void openAppSettings(Context context, Promise p) {
     try {
+      openSettingPromise = p;
       Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
       Uri uri = Uri.fromParts("package", context.getPackageName(), null);
       intent.setData(uri);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(intent);
-        Log.d(LpcUtils.TAG, "openAppSettings");
+      Log.d(LpcUtils.TAG, "openAppSettings");
     } catch (Exception e) {
-        Log.d(LpcUtils.TAG, "openAppSettings " + e.getMessage());
+      Log.d(LpcUtils.TAG, "openAppSettings " + e.getMessage());
+    }
+  }
+
+  public static boolean shouldAskLocationPermission(Activity activity) {
+    if (!fistAskLocation) {
+      fistAskLocation = true;
+      return true;
+    }
+    return ActivityCompat.shouldShowRequestPermissionRationale(
+        activity, Manifest.permission.ACCESS_FINE_LOCATION);
+  }
+
+  public static void resolveLocationPromise(Context ctx) {
+    if (openSettingPromise != null) {
+      var f = isForegroundPermissionGranted(ctx);
+      var b = isBackgroundPermissionGranted(ctx);
+      openSettingPromise.resolve(f || b);
+      openSettingPromise = null;
     }
   }
 }

@@ -9,11 +9,11 @@ import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import {
+  checkAndRequestForegroundLocationPermisson,
   prompBackgroundLocationPermisson,
-  prompForegroundLocationPermisson,
   promptEnableGPS,
 } from '#/utils/location'
-import { checkFineLocation, permFineLocation } from '#/utils/permissions'
+import { checkFineLocation } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -147,27 +147,19 @@ const syncPnTokenWithoutCatch = async (
       locationPerm = null
       return disconnectPbx(true)
     }
-
-    if (isAndroid) {
+    if (isAndroid && pnEnabled) {
       // request access background location to get current ssid
-      const granted = await prompForegroundLocationPermisson()
+      // if gps and background location permission are not granted
+      // lpc cannot get ssid so disable lpc
+      const granted = await checkAndRequestForegroundLocationPermisson()
       locationPerm = granted
       if (granted) {
-        locationPerm = await prompBackgroundLocationPermisson()
         const gps = await promptEnableGPS()
-        console.log(`[Hoang]: gps ${gps} `)
-        // if user refuse to enable gps -> what next?
-        if (!gps) {
-        }
+        const bg = await prompBackgroundLocationPermisson()
+        console.log(
+          `'PN sync debug: background : ${bg} - foreground : ${locationPerm} - gps : ${gps}`,
+        )
       }
-      console.log(
-        `[Hoang]: backgroundGranted ${locationPerm} foreground granted ${granted}`,
-      )
-      // if (!granted) {
-      //   BrekekeUtils.disableLPC()
-      // set flag -> "blocked"
-      // return disconnectPbx(true)
-      // }
     }
 
     const remoteSsids =

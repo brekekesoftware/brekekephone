@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull
+import com.brekeke.phonedev.lpc.BrekekeLpcService
 import com.brekeke.phonedev.lpc.LpcUtils
 import com.brekeke.phonedev.utils.Ctx
 import com.brekeke.phonedev.utils.Emitter
@@ -29,23 +30,8 @@ class MainActivity : ReactActivity() {
 
   override fun onResume() {
     super.onResume()
-    if (LocationUtils.gpsPromise != null) {
-      val e = LocationUtils.isLocationEnabled(applicationContext);
-      LocationUtils.gpsPromise.resolve(e)
-      LocationUtils.gpsPromise = null
-    }
-
-    if (LocationPermissionHelper.locationPermissionPromise != null) {
-      val e = LocationPermissionHelper.isForegroundPermissionGranted(applicationContext);
-      LocationPermissionHelper.locationPermissionPromise.resolve(e)
-      LocationPermissionHelper.locationPermissionPromise = null
-    }
-
-    if (LocationPermissionHelper.backgroundLocationPermissionPromise != null) {
-      val e = LocationPermissionHelper.isBackgroundPermissionGranted(applicationContext);
-      LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(e)
-      LocationPermissionHelper.backgroundLocationPermissionPromise = null
-    }
+    LocationUtils.resolveLocationPromise(this.applicationContext)
+    LocationPermissionHelper.resolveLocationPromise(this.applicationContext)
     // permissions
     Perm.resolve()
     // call history
@@ -132,26 +118,34 @@ class MainActivity : ReactActivity() {
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-    Log.d(LpcUtils.TAG, "grantResults " + grantResults[0]);
+
     when (requestCode) {
       RNCallKeepModule.REQUEST_READ_PHONE_STATE ->
           RNCallKeepModule.onRequestPermissionsResult(requestCode, permissions, grantResults)
-      LocationPermissionHelper.REQUEST_FOREGROUND_PERMISSION ->
-        if (granted) {
-        Log.d(LpcUtils.TAG, "Foreground granted → request background");
-          LocationPermissionHelper.locationPermissionPromise.resolve(true)
-      } else {
-        Log.d(LpcUtils.TAG, "Từ chối → có thể show rationale hoặc dẫn tới App Settings");
-//        LocationPermissionHelper.locationPermissionPromise.resolve(false)
-          LocationPermissionHelper.openAppSettings(applicationContext)
+      LocationPermissionHelper.REQUEST_FOREGROUND_PERMISSION -> {
+        try {
+          if (LocationPermissionHelper.locationPermissionPromise == null) {
+            return
+          }
+          LocationPermissionHelper.locationPermissionPromise.resolve(granted)
+          LocationPermissionHelper.locationPermissionPromise = null
+          Log.d(LpcUtils.TAG, "Foreground granted $granted")
+        } catch (e : Exception) {
+          Emitter.debug("[MainActivity] onRequestPermissionsResult REQUEST_FOREGROUND_PERMISSION" + e.message)
+        }
       }
       LocationPermissionHelper.REQUEST_BACKGROUND_PERMISSION -> {
-        if (!granted) {
-          Log.d(LpcUtils.TAG, "Background permission bị từ chối");
-          LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(false)
-          return
+        try {
+          if (LocationPermissionHelper.backgroundLocationPermissionPromise == null) {
+            return
+          }
+          LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(granted)
+          LocationPermissionHelper.backgroundLocationPermissionPromise = null
+          Log.d(LpcUtils.TAG, "Background granted $granted")
+        } catch (e: Exception){
+          Emitter.debug("[MainActivity] onRequestPermissionsResult REQUEST_BACKGROUND_PERMISSION" + e.message)
         }
-        LocationPermissionHelper.backgroundLocationPermissionPromise.resolve(true)
+
       }
     }
 

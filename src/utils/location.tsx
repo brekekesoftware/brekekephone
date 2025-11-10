@@ -4,11 +4,11 @@ import { RnText } from '#/components/RnText'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { checkFineLocation, permFineLocation } from '#/utils/permissions'
 
 export const promptEnableGPS = () =>
   new Promise(async resolve => {
     const isEnabled = await BrekekeUtils.isEnableGPS()
-    console.log(`[Hoang]:isEnabled ${isEnabled}`)
     if (isEnabled) {
       resolve(true)
       return
@@ -41,9 +41,6 @@ export const prompBackgroundLocationPermisson = async (): Promise<boolean> =>
 
   new Promise(async resolve => {
     const isEnabled = await BrekekeUtils.isBackgroundLocationGranted()
-    console.log(
-      `[Hoang]:prompBackgroundLocationPermisson isEnabled ${isEnabled}`,
-    )
     if (isEnabled) {
       resolve(true)
       return
@@ -75,36 +72,44 @@ export const prompBackgroundLocationPermisson = async (): Promise<boolean> =>
     })
   })
 
-export const prompForegroundLocationPermisson = async (): Promise<boolean> =>
-  // todo: intl
+export const checkAndRequestForegroundLocationPermisson =
+  async (): Promise<boolean> =>
+    // todo: intl , remove isForegroundLocationPermissionGranted, request foregournd location permission
 
-  new Promise(async resolve => {
-    const isEnabled = await BrekekeUtils.isBackgroundLocationGranted()
-    console.log(
-      `[Hoang]:prompForegroundLocationPermisson isEnabled ${isEnabled}`,
-    )
-    if (isEnabled) {
-      resolve(true)
-      return
-    }
-    RnAlert.prompt({
-      title: intl`Enable Location Permission`,
-      message: (
-        <View>
-          <RnText>{intl`The app needs location permission so it can get the wifi SSID for LPC`}</RnText>
-        </View>
-      ),
-      onConfirm: async () => {
-        try {
-          const result = await BrekekeUtils.requestLocationPermission()
-          console.log(`[Hoang]: Enable Location Permission ${result} `)
-          resolve(result)
-        } catch (e) {
-          resolve(false)
-        }
-      },
-      onDismiss: () => resolve(false),
-      confirmText: intl`Continue`,
-      dismissText: intl`Cancel`,
+    new Promise(async resolve => {
+      const isEnabled = await checkFineLocation()
+
+      if (isEnabled) {
+        resolve(true)
+        return
+      }
+      const shouldAsk = await BrekekeUtils.shouldAskLocationPermission()
+      if (!shouldAsk) {
+        RnAlert.prompt({
+          title: intl`Enable Location Permission`,
+          message: (
+            <View>
+              <RnText>{intl`The app needs location permission so it can get the wifi SSID for LPC`}</RnText>
+            </View>
+          ),
+          onConfirm: async () => {
+            try {
+              const result = await BrekekeUtils.openAppSettings()
+              resolve(result)
+            } catch (e) {
+              resolve(false)
+            }
+          },
+          onDismiss: () => resolve(false),
+          confirmText: intl`Continue`,
+          dismissText: intl`Cancel`,
+        })
+        return
+      }
+      try {
+        const result = await permFineLocation()
+        resolve(result)
+      } catch (e) {
+        resolve(false)
+      }
     })
-  })

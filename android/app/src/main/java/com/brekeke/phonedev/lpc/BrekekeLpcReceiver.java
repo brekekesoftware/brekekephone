@@ -10,6 +10,8 @@ import com.facebook.react.ReactApplication;
 // lpc boot receiver
 
 public class BrekekeLpcReceiver extends BroadcastReceiver {
+  private final String TAG = "BrekekeLpcReceiver]";
+
   @Override
   public void onReceive(Context ctx, Intent intent) {
     if (!BrekekeLpcService.isServiceStarted) {
@@ -18,7 +20,7 @@ public class BrekekeLpcReceiver extends BroadcastReceiver {
         Intent i = new Intent(ctx, BrekekeLpcServiceIntent.class);
         LpcUtils.createReactContextInBackground((ReactApplication) ctx.getApplicationContext());
         ctx.startService(i);
-        Log.d(LpcUtils.TAG, "Boot completed");
+        Log.d(TAG, "Boot completed");
         Emitter.debug(
             "[BrekekeLpcReceiver] Boot completed and start lpc service in service intent");
       }

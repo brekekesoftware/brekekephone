@@ -1045,19 +1045,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           new LocationUtils.LocationStatusCallback() {
             @Override
             public void onReady() {
-              Log.d(LpcUtils.TAG, "Vị trí đã sẵn sàng");
+              Emitter.debug("[LocaltionUtils] GPS already");
               p.resolve(true);
             }
 
             @Override
-            public void onPermissionDenied() {
-              Log.d(LpcUtils.TAG, "Chưa được cấp quyền vị trí");
-              p.resolve(false);
-            }
-
-            @Override
             public void onProviderDisabled() {
-              Log.d(LpcUtils.TAG, "Vui lòng bật GPS / Location");
+              Emitter.debug("[LocaltionUtils] Need to enable GPS");
               LocationUtils.openLocationSettings(main);
             }
           });
@@ -1097,22 +1091,21 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void isForegroundLocationGranted(Promise p) {
+  public void shouldAskLocationPermission(Promise p) {
     try {
-      var ctx = Ctx.app();
-      p.resolve(LocationPermissionHelper.isForegroundPermissionGranted(ctx));
+      p.resolve(LocationPermissionHelper.shouldAskLocationPermission(main));
     } catch (Exception e) {
       p.resolve(false);
     }
   }
 
   @ReactMethod
-  public void requestLocationPermission(Promise p) {
+  public void openAppSettings(Promise p) {
     try {
-      LocationPermissionHelper.checkAndRequestLocationPermission(main, p);
+      var ctx = Ctx.rn();
+      LocationPermissionHelper.openAppSettings(ctx, p);
     } catch (Exception e) {
       p.resolve(false);
     }
   }
-
 }
