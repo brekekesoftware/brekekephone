@@ -45,12 +45,14 @@ public class BrekekeLpcService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
+    Log.d(LpcUtils.TAG, "onStartCommand called");
     reconnectLPC();
     if (isServiceNotiExist) {
+      Emitter.debug("[BrekekeLpcService] Service notification exist");
       return START_STICKY;
     }
     isServiceNotiExist = true;
+    Emitter.debug("[BrekekeLpcService] Service notication created");
     // register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
     registerReceiver(new BrekekeLpcReceiver(), filter);
@@ -101,7 +103,7 @@ public class BrekekeLpcService extends Service {
       return null;
     }
     Emitter.debug("[BrekekeLpcService] Start service when bind");
-
+    Log.d(LpcUtils.TAG, "[BrekekeLpcService]: Start service when bind");
     startInService(intent);
     con.onConnected();
     return null;
@@ -119,6 +121,8 @@ public class BrekekeLpcService extends Service {
     Gson gson = new Gson();
     LpcUtils.writeConfig(this, gson.toJson(settings));
     createConnection(settings);
+    Emitter.debug("[BrekekeLpcService] LPC connection begin");
+    Log.d(LpcUtils.TAG, "[BrekekeLpcService]: LPC connection begin");
   }
 
   private static void stopLPCService(Context ctx) {
@@ -155,8 +159,9 @@ public class BrekekeLpcService extends Service {
                 @Override
                 public void onAvailable(@NonNull Network network) {
                   super.onAvailable(network);
-                  Emitter.debug("[BrekekeLpcService] Connection available");
                   if (isReconnectByNetworkChange) {
+                    Emitter.debug("[BrekekeLpcService] Connection available");
+                    iService.putExtra("reason", "LPC reconnect by network");
                     reconnectLPC();
                     isReconnectByNetworkChange = false;
                   }
@@ -186,6 +191,12 @@ public class BrekekeLpcService extends Service {
       Emitter.debug("[BrekekeLpcService] Service intent is null");
       return;
     }
+    Emitter.debug("[BrekekeLpcService] LPC reconnect reason: " + iService.getStringExtra("reason"));
+    Log.d(LpcUtils.TAG, "reconnectLPC: reason " + iService.getStringExtra("reason"));
+    if (con.isConnected()) {
+      Emitter.debug("[BrekekeLpcService] LPC still connected");
+      return;
+    }
     // TODO
     //    var r = iService.getStringArrayListExtra("remoteSsids");
     //    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
@@ -200,7 +211,8 @@ public class BrekekeLpcService extends Service {
       }
       startInService(iService);
       isServiceStarted = true;
-      Emitter.debug("[BrekekeLpcService] Start service when network is available");
+      Emitter.debug("[BrekekeLpcService] Reconnect LPC");
+      Log.d(LpcUtils.TAG, "[BrekekeLpcService] Reconnect LPC");
     }
   }
 }

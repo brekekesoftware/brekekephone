@@ -114,6 +114,7 @@ public class BrekekeLpcSocket {
     protected void onPostExecute(String result) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute");
       BrekekeLpcService.con.onDisconnected();
+      Emitter.debug("[BrekekeLpcSocket] onPostExecute: Socket disconnected");
     }
 
     private void handleCallToServer() {

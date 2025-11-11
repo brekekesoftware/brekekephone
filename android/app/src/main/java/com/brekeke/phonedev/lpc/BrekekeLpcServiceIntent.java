@@ -41,6 +41,7 @@ public class BrekekeLpcServiceIntent extends Service {
                 settings.tlsKeyHash,
                 settings.remoteSsids,
                 new Intent(ctx, BrekekeLpcService.class));
+        i.putExtra("reason", "LPC re-connect by intent service");
         ctx.startForegroundService(i);
         ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
         // used to update the status if the server turns Lpc on and off
