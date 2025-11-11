@@ -50,7 +50,7 @@ if (useCustomizedPrompt === 1) {
 const ctx = phone.getCurrentAccountCtx()
 ctx.intl.setLocale('en')
 ctx.global.embedStaticPath =
-  location.pathname.replace(/\/+$/, '') + '/brekeke_phone2.17.0'
+  location.pathname.replace(/\/+$/, '') + '/brekeke_phone2.16.7'
 const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports

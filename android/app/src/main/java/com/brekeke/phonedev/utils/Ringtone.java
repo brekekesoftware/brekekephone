@@ -222,7 +222,6 @@ public class Ringtone {
       if (!TextUtils.isEmpty(r)) {
         return r;
       }
-      Log.d("[Wy]", "get: " + a.getString("pbxRingtone"));
       r = validateWithError(a.getString("pbxRingtone"));
       if (!TextUtils.isEmpty(r)) {
         return r;
