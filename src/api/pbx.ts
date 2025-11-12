@@ -14,6 +14,7 @@ import {
   replaceUrlWithoutPbxToken,
 } from '#/api/customPage'
 import { parseCallParams, parsePalParams } from '#/api/parseParamsWithPrefix'
+import { shouldShowToast } from '#/api/pbxToastSuppressor'
 import type { PnParams, PnParamsNew } from '#/api/pnConfig'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
 import type {
@@ -348,7 +349,7 @@ export class PBX extends EventEmitter {
       return
     }
     const isPingMethod = method === 'ping'
-    if (!isPingMethod) {
+    if (!isPingMethod && shouldShowToast(err)) {
       ctx.toast.internet(err)
     }
     if (this.isPalTimeoutError(err)) {
