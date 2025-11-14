@@ -1,3 +1,7 @@
+#### 2.16.8
+
+- Fix it should suppress some errors with admin account
+
 #### 2.16.7
 
 - Fix it should be able to drag mini video call circle (issue 1084)
