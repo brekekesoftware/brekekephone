@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..4d36388 100644
+index 786045f..012f3f8 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,14 +1136,14 @@ index 786045f..4d36388 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,158 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,180 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
 +// handle local ringtone file
 +static AVAudioPlayer *audioPlayer = nil;
 +
-++ (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL)replay {
++- (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL)replay {
 +    if(!url) {
 +        NSLog(@"[RNCallKeep] url does not exist");
 +        return;
@@ -1161,6 +1161,7 @@ index 786045f..4d36388 100644
 +    }
 +    audioPlayer.numberOfLoops = -1;
 +    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++        [self listenVolumneChange];
 +        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
@@ -1175,11 +1176,12 @@ index 786045f..4d36388 100644
 +    });
 +}
 +
-++ (void)stopRingtone: (NSUUID *)uuid {
++- (void)stopRingtone {
 +    if (audioPlayer && callMap.count == 0) {
 +        [audioPlayer stop];
 +        audioPlayer = nil;
 +        ringtoneUrl = nil;
++        [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
 +        NSLog(@"[RNCallKeep] Stopped ringtone");
 +    }
 +    
@@ -1198,7 +1200,7 @@ index 786045f..4d36388 100644
 +- (void)handleAudioInterruption:(NSNotification *)notification {
 +    NSDictionary *userInfo = notification.userInfo;
 +    AVAudioSessionInterruptionType type = [userInfo[AVAudioSessionInterruptionTypeKey] integerValue];
-+    if (type == AVAudioSessionInterruptionTypeEnded) {
++    if (type == AVAudioSessionInterruptionTypeBegan) {
 +        if(audioPlayer != nil && audioPlayer.isPlaying) {
 +            [audioPlayer pause];
 +        }
@@ -1207,7 +1209,7 @@ index 786045f..4d36388 100644
 +        NSError *error = nil;
 +        [[AVAudioSession sharedInstance] setActive:YES error:&error];
 +        if (!error && ringtoneUrl && audioPlayer) {
-+            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:YES];
++            [self playRingtoneWithURL:ringtoneUrl replay:YES];
 +        }
 +    }
 +}
@@ -1224,6 +1226,14 @@ index 786045f..4d36388 100644
 +                                                 name:AVAudioSessionInterruptionNotification
 +                                               object:[AVAudioSession sharedInstance]];
 +}
++
++- (void) listenVolumneChange {
++    [[AVAudioSession sharedInstance] addObserver:self
++                      forKeyPath:@"outputVolume"
++                         options:NSKeyValueObservingOptionNew
++                         context:NULL];
++}
++
 +// listen call event
 +- (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
 +    NSLog(@"[RNCallKeep] Call changed: %@, isOutgoing=%d, hasConnected=%d, hasEnded=%d",
@@ -1232,20 +1242,20 @@ index 786045f..4d36388 100644
 +          call.hasConnected,
 +          call.hasEnded);
 +    if(call.outgoing) {
-+        [RNCallKeep handleOutgoingCall:call];
++        [self handleOutgoingCall:call];
 +    } else if ([RNCallKeep gsmCall:call.UUID]) {
-+        [RNCallKeep handleGsmCall:call];
++        [self handleGsmCall:call];
 +    } else {
-+        [RNCallKeep handleBrekekeCall:call];
++        [self handleBrekekeCall:call];
 +    }
 +}
 +
-++ (void) handleOutgoingCall:(CXCall *) call {
++- (void) handleOutgoingCall:(CXCall *) call {
 +    NSLog(@"[RNCallKeep] is outgoing");
 +    if(call.hasEnded || call.hasConnected) {
 +        hasOutgoing = NO;
 +        if (call.hasEnded && callMap.count > 0 && gsmCallMap.count == 0) {
-+            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:NO];
++            [self playRingtoneWithURL:ringtoneUrl replay:NO];
 +            NSLog(@"[RNCallKeep] play ringtone when outgoing call ended");
 +        }
 +        return;
@@ -1253,12 +1263,12 @@ index 786045f..4d36388 100644
 +    hasOutgoing = YES;
 +}
 +
-++ (void) handleGsmCall:(CXCall *) call {
++- (void) handleGsmCall:(CXCall *) call {
 +    NSUUID *uuid = call.UUID;
 +    if(call.hasEnded) {
 +        [gsmCallMap removeObjectForKey:uuid];
 +        if (callMap.count > 0 && hasOutgoing == NO) {
-+            [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:NO];
++            [self playRingtoneWithURL:ringtoneUrl replay:NO];
 +            NSLog(@"[RNCallKeep] play ringtone when gsm ended");
 +        }
 +        return;
@@ -1266,19 +1276,31 @@ index 786045f..4d36388 100644
 +    gsmCallMap[uuid] = uuid;
 +}
 +
-++ (void) handleBrekekeCall:(CXCall *) call {
++- (void) handleBrekekeCall:(CXCall *) call {
 +    NSUUID *uuid = call.UUID;
 +    if(call.hasEnded || call.hasConnected) {
 +        if (call.hasEnded) {
 +            [callMap removeObjectForKey:uuid];
 +        }
-+        [RNCallKeep stopRingtone:uuid];
++        [self stopRingtone];
 +        NSLog(@"[RNCallKeep] stop ringtone when call ended");
 +        return;
 +    }
 +    if(callMap[uuid] && gsmCallMap.count == 0 && hasOutgoing == NO) {
 +        NSLog(@"[RNCallKeep] play ringtone");
-+        [RNCallKeep playRingtoneWithURL:ringtoneUrl replay:NO];
++        [self playRingtoneWithURL:ringtoneUrl replay:NO];
++    }
++}
++
++- (void)observeValueForKeyPath:(NSString *)keyPath
++                      ofObject:(id)object
++                        change:(NSDictionary *)change
++                       context:(void *)context {
++    
++    if ([keyPath isEqualToString:@"outputVolume"]) {
++        if (audioPlayer != nil) {
++            [audioPlayer pause];
++        }
 +    }
 +}
 +
