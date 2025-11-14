@@ -107,7 +107,7 @@
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		0ABBE3FE2E4EDA3000D88CF0 /* BrekekeEmitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrekekeEmitter.swift; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Brekeke Phone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BrekekePhone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
 		18574EA6F31A19EB0D202463 /* Pods-BrekekePhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BrekekePhone.debug.xcconfig"; path = "Target Support Files/Pods-BrekekePhone/Pods-BrekekePhone.debug.xcconfig"; sourceTree = "<group>"; };
@@ -253,7 +253,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */,
+				13B07F961A680F5B00A75B9A /* Brekeke Phone.app */,
 				9C972B8C28E1B34C00DD89B4 /* BrekekeLPCExtension.appex */,
 			);
 			name = Products;
@@ -362,8 +362,8 @@
 				CB8766E328E87C5A002261CB /* PBXTargetDependency */,
 			);
 			name = BrekekePhone;
-			productName = "Brekeke Phone Dev";
-			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */;
+			productName = "Brekeke Phone";
+			productReference = 13B07F961A680F5B00A75B9A /* Brekeke Phone.app */;
 			productType = "com.apple.product-type.application";
 		};
 		9C972B8B28E1B34C00DD89B4 /* BrekekeLPCExtension */ = {
@@ -647,10 +647,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
-				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = phonedev;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phonedev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
+				PRODUCT_NAME = "Brekeke Phone";
+				PROVISIONING_PROFILE_SPECIFIER = phone;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phone;
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -683,10 +683,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev;
-				PRODUCT_NAME = "Brekeke Phone Dev";
-				PROVISIONING_PROFILE_SPECIFIER = phonedev;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phonedev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone;
+				PRODUCT_NAME = "Brekeke Phone";
+				PROVISIONING_PROFILE_SPECIFIER = phone;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = phone;
 				SWIFT_OBJC_BRIDGING_HEADER = "BrekekePhone/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -858,10 +858,10 @@
 				MARKETING_VERSION = 2.16.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "phonedev-LPCExtension";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "phonedev-LPCExtension";
+				PROVISIONING_PROFILE_SPECIFIER = "phone-LPCExtension";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "phone-LPCExtension";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -899,10 +899,10 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift$(inherited)";
 				MARKETING_VERSION = 2.16.8;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phonedev.BrekekeLPCExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brekeke.phone.BrekekeLPCExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "phonedev-LPCExtension";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "phonedev-LPCExtension";
+				PROVISIONING_PROFILE_SPECIFIER = "phone-LPCExtension";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "phone-LPCExtension";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
