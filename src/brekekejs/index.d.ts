@@ -282,6 +282,8 @@ export type PbxGetProductInfoRes = {
   'webphone.recents.max': string
   'webphone.resource-line': string
   'webphone.http.useragent.product': string
+  'webphone.error_toast.suppress_enabled': string
+  'webphone.error_toast.suppress_patterns': string
   version: string
 }
 export type PbxGetProductInfoParam = {
