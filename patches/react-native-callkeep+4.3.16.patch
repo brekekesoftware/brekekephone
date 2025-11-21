@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..012f3f8 100644
+index 786045f..6f7e3d0 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,7 +1136,7 @@ index 786045f..012f3f8 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,180 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,159 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1161,7 +1161,6 @@ index 786045f..012f3f8 100644
 +    }
 +    audioPlayer.numberOfLoops = -1;
 +    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-+        [self listenVolumneChange];
 +        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
@@ -1181,7 +1180,6 @@ index 786045f..012f3f8 100644
 +        [audioPlayer stop];
 +        audioPlayer = nil;
 +        ringtoneUrl = nil;
-+        [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
 +        NSLog(@"[RNCallKeep] Stopped ringtone");
 +    }
 +    
@@ -1225,13 +1223,6 @@ index 786045f..012f3f8 100644
 +                                             selector:@selector(handleAudioInterruption:)
 +                                                 name:AVAudioSessionInterruptionNotification
 +                                               object:[AVAudioSession sharedInstance]];
-+}
-+
-+- (void) listenVolumneChange {
-+    [[AVAudioSession sharedInstance] addObserver:self
-+                      forKeyPath:@"outputVolume"
-+                         options:NSKeyValueObservingOptionNew
-+                         context:NULL];
 +}
 +
 +// listen call event
@@ -1289,18 +1280,6 @@ index 786045f..012f3f8 100644
 +    if(callMap[uuid] && gsmCallMap.count == 0 && hasOutgoing == NO) {
 +        NSLog(@"[RNCallKeep] play ringtone");
 +        [self playRingtoneWithURL:ringtoneUrl replay:NO];
-+    }
-+}
-+
-+- (void)observeValueForKeyPath:(NSString *)keyPath
-+                      ofObject:(id)object
-+                        change:(NSDictionary *)change
-+                       context:(void *)context {
-+    
-+    if ([keyPath isEqualToString:@"outputVolume"]) {
-+        if (audioPlayer != nil) {
-+            [audioPlayer pause];
-+        }
 +    }
 +}
 +
