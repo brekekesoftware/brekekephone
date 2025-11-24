@@ -20,6 +20,7 @@ module.exports = {
         'react-native-share': nullAlias,
         'react-native-splash-screen': nullAlias,
         'react-native-background-timer': nullAlias,
+        '@react-native-documents/picker': nullAlias,
       }
       c.resolve.fallback = {
         os: false,
