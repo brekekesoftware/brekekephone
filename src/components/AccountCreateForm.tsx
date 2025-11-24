@@ -120,8 +120,8 @@ export const AccountCreateForm: FC<{
         await handleUploadRingtone($.ringtoneOptions, options => {
           $.ringtoneOptions = options
         })
-      } catch (error) {
-        console.log('[AccountCreateForm]: error uploading ringtone: ', error)
+      } catch (err) {
+        console.error('AccountCreateForm onUploadRingtone:', err)
       }
     },
   })

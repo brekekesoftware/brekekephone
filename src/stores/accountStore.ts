@@ -121,7 +121,8 @@ export class AccountStore {
       }
     }
     if (d) {
-      let { profileData: accountData, profiles: accounts, ringtonePicker } = d
+      let { profileData: accountData, profiles: accounts } = d
+      const { ringtonePicker } = d
       if (Array.isArray(d)) {
         // lower version compatible
         accounts = d

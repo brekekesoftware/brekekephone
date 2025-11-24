@@ -263,7 +263,7 @@ extension BrekekeLPCManager: NEAppPushDelegate {
         .log("userInfo dictionary is missing a required callkeepUuid field ")
       return
     }
-  
+
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
       payload: payload,

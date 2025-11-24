@@ -6,8 +6,7 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
-                   UNUserNotificationCenterDelegate, ObservableObject {
-  
+  UNUserNotificationCenterDelegate, ObservableObject {
   override init() {
     super.init()
     BrekekeLPCManager.shared.initialize()
@@ -116,7 +115,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       .didReceiveIncomingPush(with: payload,
                               forType: (type as NSString) as String,
                               callkeepUuid: uuid)
-    
+
     // config RNCallKeep
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
@@ -200,9 +199,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?
   ) {
-    if(AccountUtils.find(m: payload) == nil) {
+    if AccountUtils.find(m: payload) == nil {
       print("Account 404")
-      return;
+      return
     }
     let from: String! = PN.callerName(payload)
     // ringtone
@@ -224,6 +223,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                      fromPushKit: true,
                                      payload: payload,
                                      withCompletionHandler: handler,
-                                     ringtone:RingtoneUtils.getRingtone(ringtone: ringtoneName, username: username, tenant: tenant, host: host, port: port))
+                                     ringtone: RingtoneUtils.getRingtone(
+                                       ringtone: ringtoneName,
+                                       username: username,
+                                       tenant: tenant,
+                                       host: host,
+                                       port: port
+                                     ))
   }
 }

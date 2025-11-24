@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.WritableNativeArray;

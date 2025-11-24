@@ -35,7 +35,9 @@ export const pickRingtone = async () => {
       name,
       uri,
     }
-  } catch (err) {}
+  } catch (err) {
+    console.error('ringtonePicker pickRingtone:', err)
+  }
   return false
 }
 
@@ -57,8 +59,8 @@ const saveToCache = async (f: string, uri: string) => {
       ctx.toast.success(intl`Select mp3 file successfully`, 2000)
       return true
     }
-  } catch (error) {
-    console.log('[RingtonePicker]: error saving ringtone to cache: ', error)
+  } catch (err) {
+    console.error('ringtonePicker saveToCache:', err)
   }
   return false
 }
@@ -76,12 +78,14 @@ const removeRingtoneFile = async (f: string) => {
   try {
     const exists = await RNFS.exists(path)
     if (!exists) {
-      console.log('[RingtonePicker]: Not found ', path)
+      console.error('ringtonePicker removeRingtoneFile path not found:', path)
       return
     }
     await RNFS.unlink(path)
     return true
-  } catch (error) {}
+  } catch (err) {
+    console.error('ringtonePicker removeRingtoneFile:', err)
+  }
   return
 }
 

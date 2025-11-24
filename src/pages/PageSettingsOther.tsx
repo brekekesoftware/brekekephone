@@ -8,7 +8,6 @@ import { isIos, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import {
   getCurrentRingtone,
@@ -48,8 +47,8 @@ export class PageSettingsOther extends Component {
         ringtoneOptions: ro,
         ringtone: r,
       })
-    } catch (error) {
-      console.log('[PageSettingsOther] error in componentDidMount: ', error)
+    } catch (err) {
+      console.error('PageSettingsOther componentDidMount:', err)
     }
   }
 
@@ -97,8 +96,8 @@ export class PageSettingsOther extends Component {
           ringtoneOptions: options,
         })
       })
-    } catch (error) {
-      console.log('[PageSettingOther] error uploading ringtone: ', error)
+    } catch (err) {
+      console.error('PageSettingOther onUploadRingtone:', err)
     }
   }
 
