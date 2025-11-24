@@ -19,8 +19,10 @@
 
 #### iOS
 
+- There is no official method to play dynamic custom ringtones in ios, we can only play pre-defined ringtones bundled together in the app release. Currently we are using some hacks to play dynamic custom ringtones, it could stop working in the future if there is changes from Apple api and policy. It is recommended to pre-define ringtones bundled together in the app release.
 - The logic should be similar to android except:
   - No ringtone from system os
+  - Urls can be played like android, but the files will be downloaded and store to the phone storage then play, it could result in some silent delay before trying the next priority
 
 #### Web browser
 

@@ -199,10 +199,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?
   ) {
-    if AccountUtils.find(m: payload) == nil {
-      print("Account 404")
-      return
-    }
     let from: String! = PN.callerName(payload)
     // ringtone
     let ringtoneName = PN.ringtone(payload) ?? ""
