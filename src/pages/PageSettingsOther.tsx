@@ -135,7 +135,7 @@ export class PageSettingsOther extends Component {
     if (!isWeb) {
       d = [
         {
-          label: intl`Upload ringtone`,
+          label: intl`Select local mp3 as ringtone`,
           onPress: this.onUploadRingtone,
         },
         ...d,

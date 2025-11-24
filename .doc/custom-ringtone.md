@@ -11,6 +11,7 @@
 - For the list of available ringtones to select in the account settings, it can get from:
   - Pre-defined audio files
   - Ringtone from system os
+  - Pick local mp3 file to use as ringtone
 - For the support of server like: `x_ringtone`, `X-Ringtone`, `webphone.call.ringtone`
   - It can be the name of the above available ringtones
   - It can be url with prefix https://
@@ -18,10 +19,12 @@
 
 #### iOS
 
-- TODO: NOT IMPLEMENTED YET
+- The logic should be similar to android except:
+  - No ringtone from system os
 
 #### Web browser
 
 - The logic should be similar to android except:
   - No ringtone from system os
+  - No ringtone from local mp3 file picker
   - No PN data

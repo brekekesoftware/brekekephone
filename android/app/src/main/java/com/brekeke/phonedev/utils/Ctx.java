@@ -10,8 +10,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 // on push notification wake up, the react native js might not be available yet
 
 public class Ctx {
-  public static Handler h;
-
   private static ReactApplicationContext rn;
   private static Context main;
   private static Context pn;
@@ -82,9 +80,6 @@ public class Ctx {
   }
 
   private static void init() {
-    if (h == null) {
-      h = new Handler(Looper.getMainLooper());
-    }
     // each init should check if it is already initialized or not
     // this can be helpful if some are failed to init, then they can be reinit
     L.init();
