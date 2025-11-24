@@ -4,6 +4,7 @@ import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
+import { isIos } from '#/config'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/RnPicker'
 import { RnPicker } from '#/stores/RnPicker'
@@ -23,7 +24,8 @@ const css = StyleSheet.create({
     bottom: 15,
     width: '90%',
     maxWidth: v.maxModalWidth,
-    maxHeight: '100%',
+    maxHeight: '90%',
+    marginBottom: 60,
   },
   RnPicker_Options: {
     borderRadius: v.borderRadius,
@@ -47,6 +49,13 @@ const css = StyleSheet.create({
     borderBottomWidth: 0,
     borderRadius: v.borderRadius,
     backgroundColor: v.bg,
+  },
+  RnPicker_Button_cancel: {
+    flex: 1,
+    position: 'absolute',
+    bottom: isIos ? 20 : 15,
+    width: '90%',
+    maxWidth: v.maxModalWidth,
   },
   RnPicker_Text__selected: {
     fontWeight: 'bold',
@@ -112,6 +121,8 @@ const RnPickerR = (p: RnPickerOption) => {
             )
           })}
         </View>
+      </Animated.ScrollView>
+      <Animated.View style={[{ transform: [y] }, css.RnPicker_Button_cancel]}>
         <RnTouchableOpacity
           onPress={RnPicker.dismiss}
           style={[css.RnPicker_Option, css.RnPicker_Option__cancel]}
@@ -125,7 +136,7 @@ const RnPickerR = (p: RnPickerOption) => {
             style={css.RnPicker_Icon}
           />
         </RnTouchableOpacity>
-      </Animated.ScrollView>
+      </Animated.View>
     </View>
   )
 }

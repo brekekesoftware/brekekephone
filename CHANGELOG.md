@@ -1,3 +1,8 @@
+#### 2.16.9
+
+- Initial impelemtation of ios custom ringtone
+- Add support for android to pick mp3 file as ringtone to match with ios implementation
+
 #### 2.16.8
 
 - Fix it should suppress some errors with admin account

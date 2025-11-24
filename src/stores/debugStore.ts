@@ -118,8 +118,8 @@ export class DebugStore {
         return
       }
       return
-    } catch (error) {
-      return error
+    } catch (err) {
+      return err
     }
   }
   // by default only error logs will be captured

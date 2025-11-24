@@ -4,13 +4,18 @@ import { Component } from 'react'
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { isWeb } from '#/config'
+import { isIos, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
-import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
-import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
+import {
+  getCurrentRingtone,
+  getRingtoneOptions,
+  handleRingtoneOptionsInSetting,
+} from '#/utils/getRingtoneOptions'
+import { handleUploadRingtone } from '#/utils/ringtonePicker'
+import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
 
 @observer
 export class PageSettingsOther extends Component {
@@ -18,16 +23,35 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOption[],
-    ringtone: ctx.auth.getCurrentAccount()?.ringtone,
+    ringtone: '',
   }
+
   componentDidMount = async () => {
-    const me = ctx.uc.me()
-    this.setState({
-      status: me.status,
-      statusText: me.statusText,
-      ringtoneOptions: await getRingtoneOptions(),
-    })
+    try {
+      const me = ctx.uc.me()
+      let ro: RingtoneOption[] = []
+      let r = getCurrentRingtone()
+      if (isIos) {
+        const d = await handleRingtoneOptionsInSetting()
+        if (d) {
+          ro = d.ro
+          r = d.r
+        }
+      } else {
+        ro = await getRingtoneOptions()
+      }
+
+      this.setState({
+        status: me.status,
+        statusText: me.statusText,
+        ringtoneOptions: ro,
+        ringtone: r,
+      })
+    } catch (err) {
+      console.error('PageSettingsOther componentDidMount:', err)
+    }
   }
+
   setStatusText = (statusText: string) => {
     this.setState({ statusText })
   }
@@ -61,38 +85,72 @@ export class PageSettingsOther extends Component {
     if (!ca) {
       return
     }
-    ca.ringtone = value || defaultRingtone
+    ca.ringtone = value
     ctx.account.saveAccountsToLocalStorageDebounced()
+  }
+
+  onUploadRingtone = async () => {
+    try {
+      await handleUploadRingtone(this.state.ringtoneOptions, options => {
+        this.setState({
+          ringtoneOptions: options,
+        })
+      })
+    } catch (err) {
+      console.error('PageSettingOther onUploadRingtone:', err)
+    }
+  }
+
+  onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
+    this.setState({
+      ringtoneOptions: ro,
+      ringtone: r,
+    })
+  }
+
+  getDropDown = () => {
+    let d = [
+      ...(ctx.auth.isConnFailure()
+        ? [
+            {
+              label: intl`Reconnect to server`,
+              onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
+            },
+          ]
+        : []),
+      ...(!isWeb
+        ? [
+            {
+              label: intl`Open debug log`,
+              onPress: ctx.nav.goToPageSettingsDebugFiles,
+            },
+          ]
+        : []),
+      {
+        label: intl`Logout`,
+        onPress: ctx.auth.signOut,
+        danger: true,
+      },
+    ]
+    if (!isWeb) {
+      d = [
+        {
+          label: intl`Select local mp3 as ringtone`,
+          onPress: this.onUploadRingtone,
+        },
+        ...d,
+      ]
+    }
+    return d
   }
 
   render() {
     const ca = ctx.auth.getCurrentAccount()
+
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
-        dropdown={[
-          ...(ctx.auth.isConnFailure()
-            ? [
-                {
-                  label: intl`Reconnect to server`,
-                  onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
-                },
-              ]
-            : []),
-          ...(!isWeb
-            ? [
-                {
-                  label: intl`Open debug log`,
-                  onPress: ctx.nav.goToPageSettingsDebugFiles,
-                },
-              ]
-            : []),
-          {
-            label: intl`Logout`,
-            onPress: ctx.auth.signOut,
-            danger: true,
-          },
-        ]}
+        dropdown={this.getDropDown()}
         menu='settings'
         subMenu='other'
         title={intl`Other Settings`}
@@ -131,14 +189,21 @@ export class PageSettingsOther extends Component {
             />
           </>
         )}
-        <Field isGroup label={intl`Ringtone`} />
-        <Field
-          label={intl`INCOMING CALL RINGTONE`}
-          options={this.state.ringtoneOptions}
-          type='RnPicker'
-          value={this.state.ringtone}
-          onValueChange={this.onChangeRingtone}
-        />
+        {!isWeb && (
+          <>
+            <Field isGroup label={intl`Ringtone`} />
+            <Field
+              label={intl`INCOMING CALL RINGTONE`}
+              options={this.state.ringtoneOptions}
+              type='RnPicker'
+              value={this.state.ringtone}
+              onValueChange={this.onChangeRingtone}
+            />
+          </>
+        )}
+        {isIos && (
+          <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
+        )}
       </Layout>
     )
   }
