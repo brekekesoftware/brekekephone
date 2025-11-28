@@ -1,10 +1,15 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import { StyleSheet } from 'react-native'
 
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
+import { RnText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
+import { v } from '#/components/variables'
 import { isIos, isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -16,6 +21,24 @@ import {
 } from '#/utils/getRingtoneOptions'
 import { handleUploadRingtone } from '#/utils/ringtonePicker'
 import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
+
+const css = StyleSheet.create({
+  Btn: {
+    borderRadius: 0,
+    width: '95%',
+    paddingVertical: 8,
+    backgroundColor: v.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 15,
+  },
+  Text: {
+    color: v.revColor,
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+})
 
 @observer
 export class PageSettingsOther extends Component {
@@ -81,12 +104,19 @@ export class PageSettingsOther extends Component {
 
   onChangeRingtone = value => {
     this.setState({ ringtone: value })
-    const ca = ctx.auth.getCurrentAccount()
+  }
+
+  onSaveRingtone = async (value: string, ca?: Account) => {
     if (!ca) {
+      ctx.toast.warning(
+        intl`Unable to change ringtone. Please try again later`,
+        2000,
+      ) // todo internationalize
       return
     }
     ca.ringtone = value
-    ctx.account.saveAccountsToLocalStorageDebounced()
+    await ctx.account.saveAccountsToLocalStorageDebounced()
+    ctx.toast.success(intl`Change ringtone successfully`, 2000) // todo internationalize
   }
 
   onUploadRingtone = async () => {
@@ -199,6 +229,12 @@ export class PageSettingsOther extends Component {
               value={this.state.ringtone}
               onValueChange={this.onChangeRingtone}
             />
+            <RnTouchableOpacity
+              onPress={() => this.onSaveRingtone(this.state.ringtone, ca)}
+              style={css.Btn}
+            >
+              <RnText style={css.Text}>{intl`SAVE`}</RnText>
+            </RnTouchableOpacity>
           </>
         )}
         {isIos && (
