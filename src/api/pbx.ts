@@ -157,9 +157,14 @@ export class PBX extends EventEmitter {
     if (!err || typeof err !== 'object') {
       return false
     }
+    const code = (err as any).code
+    const message = String((err as any).message || '')
     return (
-      ('code' in err && (err as any).code === -1) ||
-      ('message' in err && /timeout/i.test((err as Error).message))
+      code === -1 || // ERROR_TIMEOUT
+      code === -2 || // ERROR_DISCONNECTED
+      /timeout/i.test(message) ||
+      /disconnected/i.test(message) ||
+      /connection reset/i.test(message)
     )
   }
 
