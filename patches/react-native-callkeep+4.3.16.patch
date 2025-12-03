@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..46860d2 100644
+index 786045f..6f7e3d0 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -718,7 +718,7 @@ index 786045f..46860d2 100644
 +    NSLog(@"[RNCallKeep][initCallKitProvider]");
 +#endif
 +    if (sharedProvider == nil) {
-+        sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfigurationRingtone: @"brekeke_ringtone.mp3"]];
++        sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfigurationRingtone: @"incallmanager_ringtone.mp3"]];
 +    }
  }
  
