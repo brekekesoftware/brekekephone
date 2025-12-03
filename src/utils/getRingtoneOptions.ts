@@ -1,6 +1,10 @@
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
+import {
+  BrekekeUtils,
+  defaultRingtone,
+  staticRingtoneMap,
+} from '#/utils/BrekekeUtils'
 
 export type RingtoneOption = {
   key: string
@@ -19,7 +23,7 @@ export const handleRingtoneOptions = (options: string[]): RingtoneOption[] => [
   },
   ...options.map(r => ({
     key: r,
-    label: r,
+    label: handleRingtoneName(r),
   })),
 ]
 
@@ -61,3 +65,5 @@ export const getCurrentRingtone = (): string => {
   const ca = ctx.auth.getCurrentAccount()
   return ca?.ringtone || defaultRingtone
 }
+
+const handleRingtoneName = (r: string) => staticRingtoneMap[r] || r
