@@ -213,7 +213,7 @@ export enum CallLogType {
 export const defaultRingtone = '-'
 // same with _static in native Ringtone.java
 export const staticRingtones = [
-  'brekeke_ringtone',
+  'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
 

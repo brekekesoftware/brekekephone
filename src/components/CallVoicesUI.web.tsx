@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react'
 import { Component, createRef, useEffect, useState } from 'react'
 
-import ringtone from '#/assets/brekeke_ringtone.mp3'
 import ringback from '#/assets/incallmanager_ringback.mp3'
+import ringtone from '#/assets/incallmanager_ringtone.mp3'
 import { ctx } from '#/stores/ctx'
 import type { staticRingtones } from '#/utils/BrekekeUtils'
 
@@ -11,9 +11,9 @@ const ringtoneOptions: {
   // strong typing to make sure not missing static ringtone mp3
   [k in (typeof staticRingtones)[number]]: string
 } = {
-  brekeke_ringtone: ringtone,
+  incallmanager_ringtone: ringtone,
 }
-const _default = ringtoneOptions.brekeke_ringtone
+const _default = ringtoneOptions.incallmanager_ringtone
 
 export const IncomingItem = observer(() => {
   // reset to make sure it will rerender

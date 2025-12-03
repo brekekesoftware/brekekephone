@@ -144,7 +144,7 @@ public class Ringtone {
   // ==========================================================================
   // validate
 
-  private static String[] _static = {"brekeke_ringtone"};
+  private static String[] _static = {"incallmanager_ringtone"};
   private static String _default = _static[0];
   private static String defaultFormat = ".mp3";
 

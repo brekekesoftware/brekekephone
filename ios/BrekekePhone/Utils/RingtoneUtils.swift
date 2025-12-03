@@ -3,7 +3,7 @@ struct RingtonePicker: Codable {
 }
 
 public class RingtoneUtils {
-  static let staticRingtones: [String] = ["brekeke_ringtone"]
+  static let staticRingtones: [String] = ["incallmanager_ringtone"]
   static let defaultRingtone: String = staticRingtones.first! + defaultFormat
   static let defaultFormat = ".mp3"
   static var audioPlayer: AVAudioPlayer?
