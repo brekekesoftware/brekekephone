@@ -37,7 +37,7 @@ export const getConnectionStatus = () => {
     }
   } else if (!serviceConnectingOrFailure) {
     if (isRequestRetrying) {
-      message = intl`Internet connection failed`
+      message = intl`Retrying connection...`
     }
   } else {
     message = intl`Connecting to ${serviceConnectingOrFailure}...`
@@ -46,7 +46,7 @@ export const getConnectionStatus = () => {
   return {
     signedInId,
     message,
-    isFailure: isFailure || isRequestRetrying,
+    isFailure,
     onPress:
       isFailure && !isRequestRetrying
         ? ctx.auth.resetFailureStateIncludePbxOrUc
