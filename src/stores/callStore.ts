@@ -71,6 +71,18 @@ export class CallStore {
       return
     }
     const c = this.getCallKeep(uuid)
+    // fix bug ios turn off pn on the server side side
+    if (isIos && c && c.callkeepUuid !== uuid) {
+      const del = c.callkeepUuid
+      c.callkeepUuid = uuid
+      delete this.callkeepMap[del]
+      delete this.callkeepActionMap[del]
+      delete this.calleeRejectedMap[del]
+      RNCallKeep.endCall(del)
+      if (c.answered) {
+        RNCallKeep.answerIncomingCall(uuid)
+      }
+    }
     if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
@@ -504,6 +516,18 @@ export class CallStore {
         'generic',
         undefined,
         op,
+      )
+    }
+    // fix bug ios turn off pn on the server side side
+    if (isIos && c.incoming && !c.callkeepUuid) {
+      const uuid = newUuid().toUpperCase()
+      c.callkeepUuid = uuid
+      RNCallKeep.startCall(
+        uuid,
+        c.partyNumber,
+        await c.getDisplayNameAsync(),
+        'generic',
+        false,
       )
     }
     // get and check callkeep if pending incoming call
