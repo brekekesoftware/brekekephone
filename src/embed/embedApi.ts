@@ -23,8 +23,11 @@ export class EmbedApi extends EventEmitter {
    * public properties/methods
    */
 
+  static promptBrowserPermission = webPromptPermission
+  static acceptBrowserPermission = getAudioVideoPermission
   promptBrowserPermission = webPromptPermission
   acceptBrowserPermission = getAudioVideoPermission
+
   setIncomingRingtone = (ringtone: string) => {
     ctx.call.setIncomingRingtone(ringtone)
   }
@@ -36,11 +39,12 @@ export class EmbedApi extends EventEmitter {
 
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
   getCurrentAccountCtx = () => ctx
-  getCurrentVersion = () => ({
+  static getCurrentVersion = () => ({
     webphone: currentVersion,
     jssip: jssipVersion,
     bundleIdentifier,
   })
+  getCurrentVersion = EmbedApi.getCurrentVersion
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
@@ -126,6 +130,13 @@ export class EmbedApi extends EventEmitter {
       return
     }
     await ctx.auth.autoSignInEmbed()
+  }
+
+  static _renderApp: Function
+  static render = (rootTag, options) => {
+    embedApi._rootTag = this._renderApp(rootTag)
+    embedApi._signIn(options)
+    return embedApi
   }
 }
 

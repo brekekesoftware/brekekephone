@@ -2,6 +2,7 @@
 
 - Embed:
   - Add api to close notification
+  - Update api static getCurrentVersion
 
 #### 2.16.7
 
