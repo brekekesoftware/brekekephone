@@ -74,11 +74,12 @@ export class CallStore {
     if (c) {
       if (c.callkeepUuid !== uuid) {
         const del = c.callkeepUuid
-        c.callkeepUuid = uuid
         delete this.callkeepMap[del]
         delete this.callkeepActionMap[del]
         delete this.calleeRejectedMap[del]
         RNCallKeep.endCall(del)
+        c.callkeepUuid = uuid
+        c.bugIosOffPnServer = false
         if (c.answered) {
           RNCallKeep.answerIncomingCall(uuid)
         }
