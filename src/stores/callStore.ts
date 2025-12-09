@@ -495,12 +495,8 @@ export class CallStore {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
     }
-    if (
-      !isWeb &&
-      c.incoming &&
-      !c.callkeepUuid &&
-      !ca?.pushNotificationEnabled
-    ) {
+
+    const displayCall = async () => {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
       const op = {
@@ -523,30 +519,19 @@ export class CallStore {
         op,
       )
     }
+
+    if (
+      !isWeb &&
+      c.incoming &&
+      !c.callkeepUuid &&
+      !ca?.pushNotificationEnabled
+    ) {
+      await displayCall()
+    }
     // fix bug ios turn off pn on the server side side
     if (isIos && c.incoming && !c.callkeepUuid) {
-      const uuid = newUuid().toUpperCase()
-      c.callkeepUuid = uuid
+      await displayCall()
       c.bugIosOffPnServer = true
-      const op = {
-        ios: {
-          ringtone: await BrekekeUtils.validateRingtone(
-            p.ringtoneFromSip ?? '',
-            ca?.pbxUsername ?? '',
-            ca?.pbxTenant ?? '',
-            ca?.pbxHostname ?? '',
-            ca?.pbxPort ?? '',
-          ),
-        },
-      }
-      RNCallKeep.displayIncomingCall(
-        uuid,
-        c.partyNumber,
-        await c.getDisplayNameAsync(),
-        'generic',
-        undefined,
-        op,
-      )
     }
     // get and check callkeep if pending incoming call
     if (isWeb || !c.incoming || c.answered) {
