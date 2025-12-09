@@ -13,6 +13,7 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import {
   getCurrentRingtone,
@@ -46,7 +47,7 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOption[],
-    ringtone: '',
+    ringtone: defaultRingtone,
   }
 
   componentDidMount = async () => {
@@ -134,7 +135,7 @@ export class PageSettingsOther extends Component {
   onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
     this.setState({
       ringtoneOptions: ro,
-      ringtone: r,
+      ringtone: r || defaultRingtone,
     })
   }
 
