@@ -3,7 +3,7 @@
 - Initial impelemtation of ios custom ringtone
 - Add support for android to pick mp3 file as ringtone to match with ios implementation
 - Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
-- Fix pal disconnect retry with lte (issue 1145)
+- Fix ios pal disconnect retry with lte (issue 1145)
 
 #### 2.16.8
 
