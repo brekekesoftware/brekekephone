@@ -2,7 +2,7 @@
 
 - Initial impelemtation of ios custom ringtone
 - Add support for android to pick mp3 file as ringtone to match with ios implementation
-- Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 2.16.9)
+- Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
 
 #### 2.16.8
 
