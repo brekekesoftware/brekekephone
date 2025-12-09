@@ -8,12 +8,10 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
-import { checkFineLocation, permFineLocation } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
-let locationPerm: boolean | null = null
 const syncPnTokenWithoutCatch = async (
   p: Account,
   { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
@@ -139,19 +137,7 @@ const syncPnTokenWithoutCatch = async (
         }
         await Promise.all(promises)
       }
-      locationPerm = null
       return disconnectPbx(true)
-    }
-
-    if (isAndroid) {
-      // request access fine location to get current ssid
-      const granted = await permFineLocation()
-      locationPerm = granted
-      if (!granted) {
-        BrekekeUtils.disableLPC()
-        // set flag -> "blocked"
-        return disconnectPbx(true)
-      }
     }
 
     const remoteSsids =
@@ -159,7 +145,7 @@ const syncPnTokenWithoutCatch = async (
         ?.split(',')
         .map(w => w.trim())
         .filter(w => w) || []
-    const localSsid = remoteSsids.length && isIos ? '' : await getLocalSsid()
+    const localSsid = ''
 
     const lpcPn = toBoolean(c['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
@@ -223,13 +209,8 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
 }
 
 const syncPnTokenForAllAccounts = async () => {
-  // check if user open app then change permission in settings when app is running
-  const noCheckChange = locationPerm === null
-  const isChange = noCheckChange
-    ? false
-    : (await checkFineLocation()) !== locationPerm
   ctx.account.accounts.forEach(a => {
-    if (a.pushNotificationEnabledSynced && !isChange) {
+    if (a.pushNotificationEnabledSynced) {
       return
     }
     syncPnToken(a)
@@ -243,8 +224,3 @@ const m = {
 ctx.pnToken = m
 
 export type SyncPnToken = typeof m
-
-const getLocalSsid = () =>
-  Promise.race([WifiManager.getCurrentWifiSSID(), waitTimeout(10000)])
-    .then(v => v || '')
-    .catch(() => '')

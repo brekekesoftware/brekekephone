@@ -2,6 +2,7 @@
 
 - Initial impelemtation of ios custom ringtone
 - Add support for android to pick mp3 file as ringtone to match with ios implementation
+- Revert android lpc fine location permission, there will be no logic for matching wifi ssid
 - Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
 - Fix bug display status bar and switcher (issue 1144)
 - Fix ios pal disconnect retry with lte (issue 1145)

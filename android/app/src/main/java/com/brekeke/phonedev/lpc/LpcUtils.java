@@ -79,34 +79,6 @@ public class LpcUtils {
     return myProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
   }
 
-  public static void showIncomingCallNotification(Context appCtx, Intent i) {
-    if (!checkAppInBackground()) {
-      return;
-    }
-    i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-    // fix: the application crashes when it is in the background state and there is an
-    // incoming call
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      // |= is used to add a flag without losing other flags already present in the flags
-      // variable.
-      flags |= PendingIntent.FLAG_IMMUTABLE;
-    }
-    PendingIntent pi = PendingIntent.getActivity(appCtx, 0, i, flags);
-
-    Notification notification =
-        new Notification.Builder(appCtx, NOTI_CHANNEL_ID)
-            // fix: the app will crash: "Invalid notification (no valid small icon)"
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(L.incomingCall())
-            .setCategory(Notification.CATEGORY_CALL)
-            .setFullScreenIntent(pi, true)
-            .build();
-    NotificationManager nm =
-        (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
-    nm.notify(TAG, NOTI_ID, notification);
-  }
-
   public static final ServiceConnection connection =
       new ServiceConnection() {
         @Override
@@ -265,17 +237,6 @@ public class LpcUtils {
     sslContext.init(null, trustAllCerts, null);
 
     return sslContext;
-  }
-
-  // TODO: match ssid in background service where it initiates the connection
-  public static Boolean matchSsid(ReadableArray remoteSsid, String localSsid) {
-    for (int i = 0; i < remoteSsid.size(); i++) {
-      ReadableType type = remoteSsid.getType(i);
-      if (type == ReadableType.String && remoteSsid.getString(i).equals(localSsid)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   // Convert ReadableArray to String[]
