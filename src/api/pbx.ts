@@ -262,7 +262,7 @@ export class PBX extends EventEmitter {
       if (request.retryCount >= this.MAX_RETRY) {
         const errorMsg = new Error('Maximum number of retries reached')
         request.reject(errorMsg)
-        // Show error message only when MAX_RETRY is reached
+        // show error message only when MAX_RETRY is reached
         if (!suppressErr(errorMsg)) {
           ctx.toast.internet(errorMsg)
         }
