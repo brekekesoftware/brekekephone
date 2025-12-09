@@ -73,6 +73,7 @@ export class Call {
   callkeepUuid = ''
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
+  bugIosOffPnServer = false
 
   answerVideoEnabled?: boolean
 

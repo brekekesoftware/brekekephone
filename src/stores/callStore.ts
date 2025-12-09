@@ -70,18 +70,21 @@ export class CallStore {
     if (!uuid || !n) {
       return
     }
-    const c = this.getCallKeep(uuid)
-    // fix bug ios turn off pn on the server side side
-    if (isIos && c && c.callkeepUuid !== uuid) {
-      const del = c.callkeepUuid
-      c.callkeepUuid = uuid
-      delete this.callkeepMap[del]
-      delete this.callkeepActionMap[del]
-      delete this.calleeRejectedMap[del]
-      RNCallKeep.endCall(del)
-      if (c.answered) {
-        RNCallKeep.answerIncomingCall(uuid)
+    let c = this.calls.find(_ => _.bugIosOffPnServer && _.pnId === n.id)
+    if (c) {
+      if (c.callkeepUuid !== uuid) {
+        const del = c.callkeepUuid
+        c.callkeepUuid = uuid
+        delete this.callkeepMap[del]
+        delete this.callkeepActionMap[del]
+        delete this.calleeRejectedMap[del]
+        RNCallKeep.endCall(del)
+        if (c.answered) {
+          RNCallKeep.answerIncomingCall(uuid)
+        }
       }
+    } else {
+      c = this.getCallKeep(uuid)
     }
     if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
@@ -522,6 +525,7 @@ export class CallStore {
     if (isIos && c.incoming && !c.callkeepUuid) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
+      c.bugIosOffPnServer = true
       RNCallKeep.startCall(
         uuid,
         c.partyNumber,
