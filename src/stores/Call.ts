@@ -73,6 +73,8 @@ export class Call {
   callkeepUuid = ''
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
+
+  // fix bug ios turn off pn on the server side side
   bugIosOffPnServer = false
 
   answerVideoEnabled?: boolean

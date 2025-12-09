@@ -70,6 +70,7 @@ export class CallStore {
     if (!uuid || !n) {
       return
     }
+    // fix bug ios turn off pn on the server side side
     let c = this.calls.find(_ => _.bugIosOffPnServer && _.pnId === n.id)
     if (c) {
       if (c.callkeepUuid !== uuid) {
