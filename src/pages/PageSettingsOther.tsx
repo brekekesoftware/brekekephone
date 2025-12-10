@@ -28,28 +28,32 @@ export class PageSettingsOther extends Component {
 
   componentDidMount = async () => {
     try {
-      const me = ctx.uc.me()
-      let ro: RingtoneOption[] = []
-      let r = getCurrentRingtone()
-      if (isIos) {
-        const d = await handleRingtoneOptionsInSetting()
-        if (d) {
-          ro = d.ro
-          r = d.r
-        }
-      } else {
-        ro = await getRingtoneOptions()
-      }
-
-      this.setState({
-        status: me.status,
-        statusText: me.statusText,
-        ringtoneOptions: ro,
-        ringtone: r,
-      })
+      this.initData()
     } catch (err) {
       console.error('PageSettingsOther componentDidMount:', err)
     }
+  }
+
+  initData = async () => {
+    const me = ctx.uc.me()
+    let ro: RingtoneOption[] = []
+    let r = getCurrentRingtone()
+    if (isIos) {
+      const d = await handleRingtoneOptionsInSetting()
+      if (d) {
+        ro = d.ro
+        r = d.r
+      }
+    } else {
+      ro = await getRingtoneOptions()
+    }
+
+    this.setState({
+      status: me.status,
+      statusText: me.statusText,
+      ringtoneOptions: ro,
+      ringtone: r,
+    })
   }
 
   setStatusText = (statusText: string) => {
@@ -159,7 +163,9 @@ export class PageSettingsOther extends Component {
         <Field
           icon={mdiTranslate}
           label={intl`LANGUAGE`}
-          onTouchPress={ctx.intl.selectLocale}
+          onTouchPress={() =>
+            ctx.intl.selectLocaleWithCallback(() => this.initData())
+          }
           value={ctx.intl.locale}
           valueRender={() => ctx.intl.getLocaleName()}
         />

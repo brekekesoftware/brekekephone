@@ -66,4 +66,11 @@ export const getCurrentRingtone = (): string => {
   return ca?.ringtone || defaultRingtone
 }
 
-const handleRingtoneName = (r: string) => staticRingtoneMap[r] || r
+const handleRingtoneName = (r: string) => {
+  switch (staticRingtoneMap[r]) {
+    case 'Brekeke ringtone':
+      return intl`Brekeke ringtone`
+    default:
+      return r
+  }
+}

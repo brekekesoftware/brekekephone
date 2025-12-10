@@ -218,7 +218,7 @@ export const staticRingtones = [
 ] as const
 
 export const staticRingtoneMap = {
-  incallmanager_ringtone: 'Brekeke',
+  incallmanager_ringtone: 'Brekeke ringtone',
 }
 
 export type RemoteStream = {
