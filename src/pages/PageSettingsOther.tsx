@@ -1,13 +1,9 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
 
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { RnText } from '#/components/RnText'
-import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
-import { v } from '#/components/variables'
 import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -27,24 +23,6 @@ import {
   validateRingtone,
 } from '#/utils/ringtonePicker'
 import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
-
-const css = StyleSheet.create({
-  Btn: {
-    borderRadius: 0,
-    width: '95%',
-    paddingVertical: 8,
-    backgroundColor: v.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 15,
-  },
-  Text: {
-    color: v.revColor,
-    fontSize: 11,
-    fontWeight: 'bold',
-  },
-})
 
 @observer
 export class PageSettingsOther extends Component {
