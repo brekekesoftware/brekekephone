@@ -81,13 +81,6 @@ type TBrekekeUtils = {
   setProximityMonitoring(enabled: boolean): void
   isSpeakerOn(): Promise<boolean>
   resetAudioConfig(): void
-  validateRingtone(
-    r: string,
-    u: string,
-    t: string,
-    h: string,
-    p: string,
-  ): Promise<void>
 
   // ==========================================================================
   // these methods available on both
@@ -103,6 +96,14 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
+  startRingtoneWithCatch(r: string): void
 }
 
 export type TNativeModules = {
@@ -175,13 +176,14 @@ const Polyfill: TBrekekeUtils = {
   setProximityMonitoring: () => undefined,
   isSpeakerOn: () => Promise.resolve(false),
   resetAudioConfig: () => undefined,
-  validateRingtone: () => Promise.resolve(),
 
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  validateRingtone: () => Promise.resolve(''),
+  startRingtoneWithCatch: () => undefined,
 }
 
 const M = NativeModules as TNativeModules

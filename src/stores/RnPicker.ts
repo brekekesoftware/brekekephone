@@ -7,9 +7,11 @@ export type RnPickerOption = {
     icon?: string
   }[]
   cancelLabel?: string
+  confirmLabel?: string
   selectedKey?: string
   onSelect: Function
   onDismiss?: Function
+  onConfirm?: Function
 }
 
 export class RnPickerStore {
