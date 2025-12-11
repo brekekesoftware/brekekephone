@@ -103,7 +103,6 @@ type TBrekekeUtils = {
     h: string,
     p: string,
   ): Promise<string>
-  startRingtoneWithCatch(r: string): void
 }
 
 export type TNativeModules = {
@@ -183,7 +182,6 @@ const Polyfill: TBrekekeUtils = {
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
   validateRingtone: () => Promise.resolve(''),
-  startRingtoneWithCatch: () => undefined,
 }
 
 const M = NativeModules as TNativeModules
