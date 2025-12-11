@@ -2,24 +2,16 @@ import { observer } from 'mobx-react'
 import { useState } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import {
-  mdiCheck,
-  mdiClose,
-  mdiRadioboxBlank,
-  mdiRadioboxMarked,
-} from '#/assets/icons'
+import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { isAndroid, isIos } from '#/config'
+import { isIos } from '#/config'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/RnPicker'
 import { RnPicker } from '#/stores/RnPicker'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
 const defaultBottomPosition = isIos ? 20 : 15
-const defaultConfirmBottomPosition = isIos
-  ? defaultBottomPosition * 3.5
-  : defaultBottomPosition * 4.5
 
 const css = StyleSheet.create({
   RnPicker: {
@@ -34,7 +26,9 @@ const css = StyleSheet.create({
     position: 'absolute',
     width: '90%',
     maxWidth: v.maxModalWidth,
-    maxHeight: '85%',
+    maxHeight: '80%',
+    marginBottom: 60,
+    bottom: defaultBottomPosition,
   },
   RnPicker_Options: {
     borderRadius: v.borderRadius,
@@ -59,19 +53,22 @@ const css = StyleSheet.create({
     borderRadius: v.borderRadius,
     backgroundColor: v.bg,
   },
-  RnPicker_Button_cancel: {
+  RnPicker_Button: {
     flex: 1,
-    position: 'absolute',
-    bottom: defaultBottomPosition,
-    width: '90%',
     maxWidth: v.maxModalWidth,
   },
   RnPicker_Button_confirm: {
-    flex: 1,
-    position: 'absolute',
-    bottom: defaultConfirmBottomPosition,
-    width: '90%',
-    maxWidth: v.maxModalWidth,
+    alignItems: 'center',
+    backgroundColor: v.colors.primary,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    color: 'white',
+  },
+  RnPicker_Button_cancel: {
+    alignItems: 'center',
+    backgroundColor: v.colors.dangerFn(0.5),
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
   },
   RnPicker_Text__selected: {
     fontWeight: 'bold',
@@ -85,6 +82,16 @@ const css = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+  },
+  RnPicker_footer: {
+    flexDirection: 'row',
+    bottom: defaultBottomPosition,
+    position: 'absolute',
+    width: '90%',
+    maxWidth: v.maxModalWidth,
+  },
+  Confirm_label: {
+    color: 'white',
   },
 })
 
@@ -120,10 +127,6 @@ const RnPickerR = (p: RnPickerOption) => {
           css.RnPicker_Inner,
           {
             transform: [y],
-            marginBottom: p.onConfirm && isAndroid ? 75 : 60,
-            bottom: p.onConfirm
-              ? defaultBottomPosition * 3
-              : defaultBottomPosition,
           },
         ]}
       >
@@ -160,41 +163,45 @@ const RnPickerR = (p: RnPickerOption) => {
           })}
         </View>
       </Animated.ScrollView>
-      {p.onConfirm && (
-        <Animated.View
-          style={[{ transform: [y] }, css.RnPicker_Button_confirm]}
-        >
+      <View style={css.RnPicker_footer}>
+        <Animated.View style={[{ transform: [y] }, css.RnPicker_Button]}>
           <RnTouchableOpacity
-            onPress={onConfirm}
-            style={[css.RnPicker_Option, css.RnPicker_Option__general]}
+            onPress={RnPicker.dismiss}
+            style={[
+              css.RnPicker_Option,
+              css.RnPicker_Option__general,
+              p.onConfirm && css.RnPicker_Button_cancel,
+            ]}
           >
-            <RnText style={css.RnPicker_Text__selected}>
-              {p.confirmLabel || intl`SAVE`}
+            <RnText style={css.RnPicker_Text__cancel}>
+              {p.cancelLabel || intl`Cancel`}
             </RnText>
-            <RnIcon
-              color={v.colors.primary}
-              path={mdiCheck}
-              style={css.RnPicker_Icon}
-            />
+            {!p.onConfirm && (
+              <RnIcon
+                color={v.colors.danger}
+                path={mdiClose}
+                style={css.RnPicker_Icon}
+              />
+            )}
           </RnTouchableOpacity>
         </Animated.View>
-      )}
-
-      <Animated.View style={[{ transform: [y] }, css.RnPicker_Button_cancel]}>
-        <RnTouchableOpacity
-          onPress={RnPicker.dismiss}
-          style={[css.RnPicker_Option, css.RnPicker_Option__general]}
-        >
-          <RnText style={css.RnPicker_Text__cancel}>
-            {p.cancelLabel || intl`Cancel`}
-          </RnText>
-          <RnIcon
-            color={v.colors.danger}
-            path={mdiClose}
-            style={css.RnPicker_Icon}
-          />
-        </RnTouchableOpacity>
-      </Animated.View>
+        {p.onConfirm && (
+          <Animated.View style={[{ transform: [y] }, css.RnPicker_Button]}>
+            <RnTouchableOpacity
+              onPress={onConfirm}
+              style={[
+                css.RnPicker_Option,
+                css.RnPicker_Option__general,
+                p.onConfirm && css.RnPicker_Button_confirm,
+              ]}
+            >
+              <RnText style={[css.RnPicker_Text__selected, css.Confirm_label]}>
+                {p.confirmLabel || intl`SAVE`}
+              </RnText>
+            </RnTouchableOpacity>
+          </Animated.View>
+        )}
+      </View>
     </View>
   )
 }
