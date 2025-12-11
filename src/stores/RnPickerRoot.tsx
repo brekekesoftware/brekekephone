@@ -2,15 +2,10 @@ import { observer } from 'mobx-react'
 import { useState } from 'react'
 import { Animated, Dimensions, StyleSheet, View } from 'react-native'
 
-import {
-  mdiCheck,
-  mdiClose,
-  mdiRadioboxBlank,
-  mdiRadioboxMarked,
-} from '#/assets/icons'
+import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { isAndroid, isIos } from '#/config'
+import { isIos } from '#/config'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/RnPicker'
 import { RnPicker } from '#/stores/RnPicker'
