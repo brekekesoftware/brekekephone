@@ -1027,6 +1027,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
+    if(isVideoCall) {
+      disableAvatarTalking();
+      return;
+    }
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
