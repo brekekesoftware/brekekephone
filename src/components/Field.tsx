@@ -253,6 +253,9 @@ export const Field: FC<
     loading: boolean
     horizontalInput: string[]
     maxLength?: number
+    onRnPickerConfirm(value: string): void
+    onRnPickerDismiss(): void
+    confirmRnPickerLabel: string
   }>
 > = observer(({ ...props }) => {
   // handle enable/disable input Park
@@ -442,6 +445,9 @@ export const Field: FC<
             options: props.options || [],
             selectedKey: props.value as string,
             onSelect: props.onValueChange as Function,
+            confirmLabel: props.confirmRnPickerLabel,
+            onConfirm: props.onRnPickerConfirm,
+            onDismiss: props.onRnPickerDismiss,
           })
           Keyboard.dismiss()
         },

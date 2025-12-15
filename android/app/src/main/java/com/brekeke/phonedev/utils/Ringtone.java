@@ -145,7 +145,7 @@ public class Ringtone {
   // validate
 
   private static String[] _static = {"incallmanager_ringtone"};
-  private static String _default = _static[0];
+  public static String _default = _static[0];
   private static String defaultFormat = ".mp3";
 
   // map ringtone url -> 1 (true) / 0 (false)
@@ -201,7 +201,7 @@ public class Ringtone {
   }
 
   // get from push notification and validate
-  private static String get(String r, String u, String t, String h, String p) {
+  public static String get(String r, String u, String t, String h, String p) {
     try {
       var v = validateWithError(r);
       if (!TextUtils.isEmpty(v)) {

@@ -5,16 +5,23 @@ import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
 import { isIos, isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import {
   getCurrentRingtone,
   getRingtoneOptions,
   handleRingtoneOptionsInSetting,
 } from '#/utils/getRingtoneOptions'
-import { handleUploadRingtone } from '#/utils/ringtonePicker'
+import PreviewRingtone from '#/utils/PreviewRingtone'
+import {
+  handleUploadRingtone,
+  saveRingtoneSelection,
+  validateRingtone,
+} from '#/utils/ringtonePicker'
 import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
 
 @observer
@@ -23,7 +30,8 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOption[],
-    ringtone: '',
+    ringtone: defaultRingtone,
+    preview: '',
   }
 
   componentDidMount = async () => {
@@ -83,14 +91,18 @@ export class PageSettingsOther extends Component {
       })
   }
 
-  onChangeRingtone = value => {
-    this.setState({ ringtone: value })
-    const ca = ctx.auth.getCurrentAccount()
-    if (!ca) {
-      return
-    }
-    ca.ringtone = value
-    ctx.account.saveAccountsToLocalStorageDebounced()
+  onChangeRingtone = async (value: string, ca?: Account) => {
+    this.stopPreview()
+    const r = await validateRingtone(value, ca)
+    this.setState({ preview: r })
+  }
+
+  onSaveRingtone = async (value: string, ca?: Account) => {
+    await saveRingtoneSelection(
+      value,
+      () => this.setState({ ringtone: value }),
+      ca,
+    )
   }
 
   onUploadRingtone = async () => {
@@ -108,7 +120,7 @@ export class PageSettingsOther extends Component {
   onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
     this.setState({
       ringtoneOptions: ro,
-      ringtone: r,
+      ringtone: r || defaultRingtone,
     })
   }
 
@@ -147,6 +159,8 @@ export class PageSettingsOther extends Component {
     }
     return d
   }
+
+  stopPreview = () => this.setState({ preview: '' })
 
   render() {
     const ca = ctx.auth.getCurrentAccount()
@@ -203,12 +217,20 @@ export class PageSettingsOther extends Component {
               options={this.state.ringtoneOptions}
               type='RnPicker'
               value={this.state.ringtone}
-              onValueChange={this.onChangeRingtone}
+              onValueChange={v => this.onChangeRingtone(v, ca)}
+              onRnPickerConfirm={v => this.onSaveRingtone(v, ca)}
+              onRnPickerDismiss={this.stopPreview}
             />
           </>
         )}
         {isIos && (
           <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
+        )}
+        {!isWeb && this.state.preview && (
+          <PreviewRingtone
+            source={this.state.preview}
+            onFinished={this.stopPreview}
+          />
         )}
       </Layout>
     )
