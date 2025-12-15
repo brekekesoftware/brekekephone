@@ -915,7 +915,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageControls.setVisibility(View.VISIBLE);
     vCallManage.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
-    btnEndCall.setVisibility(View.VISIBLE);
+    btnEndCall.setVisibility(btnHold.isSelected() ? View.GONE : View.VISIBLE);
     updateBtnUnlockLabel();
   }
 
@@ -1027,6 +1027,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
+    if(isVideoCall) {
+      disableAvatarTalking();
+      return;
+    }
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
