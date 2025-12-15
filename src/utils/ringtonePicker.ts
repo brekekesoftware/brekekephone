@@ -169,7 +169,7 @@ export const saveRingtoneSelection = async (
     ctx.toast.warning(
       intl`Unable to change ringtone. Please try again later`,
       2000,
-    ) // todo internationalize
+    )
     return
   }
   ca.ringtone = value
