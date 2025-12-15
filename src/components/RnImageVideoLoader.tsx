@@ -150,6 +150,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             paused={true}
             style={css.video}
             enterPictureInPictureOnLeave
+            preventsDisplaySleepDuringVideoPlayback={false}
           />
           <View style={css.vlayerVideo}>
             <RnTouchableOpacity onPress={onShowImage}>
@@ -167,6 +168,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             paused={true}
             style={css.video}
             controls={true}
+            preventsDisplaySleepDuringVideoPlayback={false}
           />
         </View>
       )
