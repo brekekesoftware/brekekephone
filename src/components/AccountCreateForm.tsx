@@ -13,7 +13,12 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
-import { handleUploadRingtone } from '#/utils/ringtonePicker'
+import PreviewRingtone from '#/utils/PreviewRingtone'
+import {
+  handleUploadRingtone,
+  saveRingtoneSelection,
+  validateRingtone,
+} from '#/utils/ringtonePicker'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
@@ -32,6 +37,7 @@ export const AccountCreateForm: FC<{
       },
       addingPark: { name: '', number: '' },
       ringtoneOptions: [] as RingtoneOption[],
+      preview: '',
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -124,6 +130,7 @@ export const AccountCreateForm: FC<{
         console.error('AccountCreateForm onUploadRingtone:', err)
       }
     },
+    stopPreview: () => ($.preview = ''),
   })
 
   type M0 = ReturnType<typeof m>
@@ -324,11 +331,21 @@ export const AccountCreateForm: FC<{
             name: 'ringtone',
             options: $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
+            onConfirm: async (value: string) =>
+              await saveRingtoneSelection(value, undefined, $.account),
+            onValueChange: async (value: string) => {
+              const r = await validateRingtone(value, $.account)
+              $.preview = r
+            },
+            onDismiss: $.stopPreview,
           },
         ]}
         k='account'
         onValidSubmit={$.onValidSubmit}
       />
+      {!isWeb && $.preview && (
+        <PreviewRingtone source={$.preview} onFinished={$.stopPreview} />
+      )}
     </Layout>
   )
 })
