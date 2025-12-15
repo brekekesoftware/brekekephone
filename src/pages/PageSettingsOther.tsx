@@ -98,11 +98,16 @@ export class PageSettingsOther extends Component {
   }
 
   onSaveRingtone = async (value: string, ca?: Account) => {
-    await saveRingtoneSelection(
-      value,
-      () => this.setState({ ringtone: value }),
-      ca,
-    )
+    if (!ca) {
+      ctx.toast.warning(
+        intl`Unable to change ringtone. Please try again later`,
+        2000,
+      ) 
+      return
+    }
+    ca.ringtone = value
+    await ctx.account.saveAccountsToLocalStorageDebounced()
+    ctx.toast.success(intl`Change ringtone successfully`, 2000)
   }
 
   onUploadRingtone = async () => {
