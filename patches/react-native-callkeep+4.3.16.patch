@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..6f7e3d0 100644
+index 786045f..8bdf7b4 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,7 +1136,7 @@ index 786045f..6f7e3d0 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,159 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,161 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1160,18 +1160,20 @@ index 786045f..6f7e3d0 100644
 +        return;
 +    }
 +    audioPlayer.numberOfLoops = -1;
-+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 +        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
 +            NSLog(@"[RNCallKeep] Prepare failed!");
 +            return;
 +        }
++        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++            BOOL au = [audioPlayer play];
++            if(au) {
++                NSLog(@"[RNCallKeep] Play url %@ " , url.path);
++            }
++        });
 +        
-+        BOOL au = [audioPlayer play];
-+        if(au) {
-+            NSLog(@"[RNCallKeep] Play url %@ " , url.path);
-+        }
 +    });
 +}
 +
