@@ -216,12 +216,16 @@ public class BrekekeUtils: NSObject {
                         port: String,
                         resolver resolve: RCTPromiseResolveBlock,
                         rejecter _: RCTPromiseRejectBlock) {
-    resolve(RingtoneUtils.getRingtone(
+    var v = RingtoneUtils.getRingtone(
       ringtone: ringtone,
       username: username,
       tenant: tenant,
       host: host,
       port: port
-    ))
+    )
+    if (v == RingtoneUtils.staticRingtones[0]) {
+      v = ""
+    }
+    resolve(v)
   }
 }

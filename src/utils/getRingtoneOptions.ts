@@ -57,7 +57,7 @@ export const handleRingtoneOptionsInSetting = async (): Promise<{
 
   return {
     ro: handleRingtoneOptions(r),
-    r: ca?.ringtone ?? defaultRingtone,
+    r: ca?.ringtone || defaultRingtone,
   }
 }
 
