@@ -23,7 +23,7 @@ export const handleRingtoneOptions = (options: string[]): RingtoneOption[] => [
   },
   ...options.map(r => ({
     key: r,
-    label: handleRingtoneName(r),
+    label: staticRingtoneMap[r]?.() || r,
   })),
 ]
 
@@ -64,13 +64,4 @@ export const handleRingtoneOptionsInSetting = async (): Promise<{
 export const getCurrentRingtone = (): string => {
   const ca = ctx.auth.getCurrentAccount()
   return ca?.ringtone || defaultRingtone
-}
-
-const handleRingtoneName = (r: string) => {
-  switch (staticRingtoneMap[r]) {
-    case 'Brekeke ringtone':
-      return intl`Brekeke ringtone`
-    default:
-      return r
-  }
 }
