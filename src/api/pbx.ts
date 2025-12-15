@@ -794,7 +794,6 @@ export class PBX extends EventEmitter {
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
-
     if (!this.isMainInstance) {
       return config
     }
