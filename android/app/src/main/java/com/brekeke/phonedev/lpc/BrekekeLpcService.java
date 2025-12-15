@@ -20,7 +20,6 @@ import com.brekeke.phonedev.R;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.MonitorConnection;
-import com.brekeke.phonedev.utils.NetworkUtils;
 import com.facebook.react.ReactApplication;
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -95,13 +94,7 @@ public class BrekekeLpcService extends Service {
     Log.d(LpcUtils.TAG, "onBind: execute");
     iService = intent;
     registerNetworkCallback();
-    var r = intent.getStringArrayListExtra("remoteSsids");
-    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
-      Emitter.debug("[BrekekeLpcService] Wifi not match");
-      return null;
-    }
     Emitter.debug("[BrekekeLpcService] Start service when bind");
-
     startInService(intent);
     con.onConnected();
     return null;
@@ -186,12 +179,6 @@ public class BrekekeLpcService extends Service {
       Emitter.debug("[BrekekeLpcService] Service intent is null");
       return;
     }
-    // TODO
-    //    var r = iService.getStringArrayListExtra("remoteSsids");
-    //    if (r == null || r.isEmpty() || !NetworkUtils.matchSsid(getApplicationContext(), r)) {
-    //      Emitter.debug("[BrekekeLpcService] Wifi not match");
-    //      return;
-    //    }
     if (!isServiceStarted) {
       if (LpcUtils.checkAppInBackground()) {
         Log.d(LpcUtils.TAG, "[BrekekeLpcService] create React Context In Background");

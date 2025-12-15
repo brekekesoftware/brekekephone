@@ -1,6 +1,5 @@
 import { Platform } from 'react-native'
 import {
-  check,
   checkMultiple,
   checkNotifications,
   openSettings,
@@ -255,16 +254,6 @@ const permAndroidLpcForIncomingCall = async () => {
       dismissText: intl`Cancel`,
     })
   })
-}
-
-export const permFineLocation = async () => {
-  const r = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-  return r === 'granted'
-}
-
-export const checkFineLocation = async () => {
-  const r = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-  return r === 'granted'
 }
 
 const permOverlayPermission = async () => {

@@ -89,8 +89,18 @@ export const useForm = () => {
       const formProps = isWeb ? { onSubmit: $.submit } : null
       return (
         <RnForm {...(formProps as object)}>
-          {fields.map(
-            (f: FormField, i: number) =>
+          {fields.map((f: FormField, i: number) => {
+            const onConfirm = f.onConfirm
+              ? v => {
+                  f.onConfirm?.(v)
+                }
+              : undefined
+            const onDismiss = f.onDismiss
+              ? () => {
+                  f.onDismiss?.()
+                }
+              : undefined
+            return (
               !f.hidden && (
                 <Field
                   key={i}
@@ -128,9 +138,12 @@ export const useForm = () => {
                       ? get($parent, k + '.' + f.name)
                       : f.value
                   }
+                  onRnPickerConfirm={onConfirm}
+                  onRnPickerDismiss={onDismiss}
                 />
-              ),
-          )}
+              )
+            )
+          })}
           {k === 'phonebook' && $.currentFocus === 'phonebook' && (
             <PhonebookAutoComplete
               value={get($parent, k + '.phonebook')}
@@ -160,4 +173,6 @@ export type FormField = {
   onValueChange: Function
   rule: string
   hidden?: boolean
+  onConfirm?: Function
+  onDismiss?: Function
 }

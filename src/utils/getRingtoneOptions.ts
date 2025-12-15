@@ -1,6 +1,10 @@
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { BrekekeUtils, defaultRingtone } from '#/utils/BrekekeUtils'
+import {
+  BrekekeUtils,
+  defaultRingtone,
+  staticRingtoneMap,
+} from '#/utils/BrekekeUtils'
 
 export type RingtoneOption = {
   key: string
@@ -19,7 +23,7 @@ export const handleRingtoneOptions = (options: string[]): RingtoneOption[] => [
   },
   ...options.map(r => ({
     key: r,
-    label: r,
+    label: staticRingtoneMap[r]?.() || r,
   })),
 ]
 
@@ -53,7 +57,7 @@ export const handleRingtoneOptionsInSetting = async (): Promise<{
 
   return {
     ro: handleRingtoneOptions(r),
-    r: ca?.ringtone ?? defaultRingtone,
+    r: ca?.ringtone || defaultRingtone,
   }
 }
 
