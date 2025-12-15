@@ -39,6 +39,7 @@ export const AudioPlayer = observer(() => {
       style={css.video}
       disableAudioSessionManagement={true}
       paused={!isPlaying}
+      preventsDisplaySleepDuringVideoPlayback={isPlaying}
     />
   )
 })

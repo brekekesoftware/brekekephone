@@ -3,6 +3,7 @@
 - Initial impelemtation of ios custom ringtone
 - Add support for android to pick mp3 file as ringtone to match with ios implementation
 - Revert android lpc fine location permission, there will be no logic for matching wifi ssid
+- Fix android the phone should be able to sleep
 - Fix it should resume video call after unhold (issue 1120)
 - Fix android it should show hang up button when on hold (issue 1122)
 - Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
