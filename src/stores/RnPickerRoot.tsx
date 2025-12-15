@@ -93,6 +93,9 @@ const css = StyleSheet.create({
   Confirm_label: {
     color: 'white',
   },
+  RnPicker_Label: {
+    width: '95%',
+  },
 })
 
 const RnPickerR = (p: RnPickerOption) => {
@@ -147,7 +150,13 @@ const RnPickerR = (p: RnPickerOption) => {
                   isSelected && css.RnPicker_Option__selected,
                 ]}
               >
-                <RnText style={isSelected && css.RnPicker_Text__selected}>
+                <RnText
+                  numberOfLines={1}
+                  style={[
+                    css.RnPicker_Label,
+                    isSelected && css.RnPicker_Text__selected,
+                  ]}
+                >
                   {o.label}
                 </RnText>
                 <RnIcon

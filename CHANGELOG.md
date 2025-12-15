@@ -6,6 +6,7 @@
 - Fix android the phone should be able to sleep
 - Fix it should resume video call after unhold (issue 1120)
 - Fix android it should show hang up button when on hold (issue 1122)
+- Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
 - Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
 - Improve custom ringtone features as feedback (issue 1143)
 - Fix bug display status bar and switcher (issue 1144)
