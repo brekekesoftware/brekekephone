@@ -94,6 +94,17 @@ export class IntlStore {
     })
   }
 
+  selectLocaleWithCallback = (cb: () => void) => {
+    RnPicker.open({
+      options: localeOptions,
+      selectedKey: this.locale,
+      onSelect: async (v: string) => {
+        await this.setLocale(v)
+        cb()
+      },
+    })
+  }
+
   private loadingPromise?: Promise<unknown>
   wait = () => {
     if (!this.loadingPromise) {
