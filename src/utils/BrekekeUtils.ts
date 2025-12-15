@@ -4,6 +4,7 @@ import { NativeModules } from 'react-native'
 
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
 
 type TBrekekeUtils = {
   // ==========================================================================
@@ -208,6 +209,12 @@ export const staticRingtones = [
   'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
+
+export const staticRingtoneMap: {
+  [k in (typeof staticRingtones)[number]]: () => string
+} = {
+  incallmanager_ringtone: () => intl`Brekeke ringtone`,
+}
 
 export type RemoteStream = {
   vId: string
