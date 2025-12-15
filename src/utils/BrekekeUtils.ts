@@ -4,6 +4,7 @@ import { NativeModules } from 'react-native'
 
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
 
 type TBrekekeUtils = {
   // ==========================================================================
@@ -81,13 +82,6 @@ type TBrekekeUtils = {
   setProximityMonitoring(enabled: boolean): void
   isSpeakerOn(): Promise<boolean>
   resetAudioConfig(): void
-  validateRingtone(
-    r: string,
-    u: string,
-    t: string,
-    h: string,
-    p: string,
-  ): Promise<void>
 
   // ==========================================================================
   // these methods available on both
@@ -103,6 +97,13 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
 }
 
 export type TNativeModules = {
@@ -175,13 +176,13 @@ const Polyfill: TBrekekeUtils = {
   setProximityMonitoring: () => undefined,
   isSpeakerOn: () => Promise.resolve(false),
   resetAudioConfig: () => undefined,
-  validateRingtone: () => Promise.resolve(),
 
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  validateRingtone: () => Promise.resolve(''),
 }
 
 const M = NativeModules as TNativeModules
@@ -216,6 +217,12 @@ export const staticRingtones = [
   'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
+
+export const staticRingtoneMap: {
+  [k in (typeof staticRingtones)[number]]: () => string
+} = {
+  incallmanager_ringtone: () => intl`Brekeke ringtone`,
+}
 
 export type RemoteStream = {
   vId: string

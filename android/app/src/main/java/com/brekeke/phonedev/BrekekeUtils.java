@@ -652,6 +652,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void validateRingtone(String r, String u, String t, String h, String p, Promise promise) {
+    var v = Ringtone.get(r, u, t, h, p);
+    if (Ringtone._default.equals(v)) {
+      v = "";
+    }
+    promise.resolve(v);
+  }
+
+  @ReactMethod
   public void stopRingtone(Promise p) {
     Ringtone.stop();
     p.resolve(true);

@@ -1,9 +1,15 @@
 import { keepLocalCopy, pick, types } from '@react-native-documents/picker'
 import RNFS from 'react-native-fs'
 
+import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import {
+  BrekekeUtils,
+  defaultRingtone,
+  staticRingtones,
+} from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
 
@@ -56,7 +62,7 @@ const saveToCache = async (f: string, uri: string) => {
     if (r.status === 'success') {
       ctx.account.ringtonePicker[getFilenameWithoutExtension(f)] = true
       await ctx.account.saveAccountsToLocalStorageWithoutDebounced()
-      ctx.toast.success(intl`Select mp3 file successfully`, 2000)
+      ctx.toast.success(intl`Ringtone is uploaded successfully`, 2000)
       return true
     }
   } catch (err) {
@@ -133,4 +139,41 @@ export const handleUploadRingtone = async (
   }
 
   await saveAndRefresh()
+}
+
+export const validateRingtone = async (value: string, ca?: Account) => {
+  const { pbxUsername, pbxTenant, pbxHostname, pbxPort, pbxRingtone } = ca || {}
+  let r = ''
+  if (value === defaultRingtone) {
+    r = pbxRingtone || ''
+  } else if (value === staticRingtones[0]) {
+    r = value
+  } else {
+    r = await BrekekeUtils.validateRingtone(
+      value,
+      pbxUsername ?? '',
+      pbxTenant ?? '',
+      pbxHostname ?? '',
+      pbxPort ?? '',
+    )
+  }
+  return r || defaultRingtone
+}
+
+export const saveRingtoneSelection = async (
+  value: string,
+  callback?: () => void,
+  ca?: Account,
+) => {
+  if (!ca) {
+    ctx.toast.warning(
+      intl`Unable to change ringtone. Please try again later`,
+      2000,
+    ) // todo internationalize
+    return
+  }
+  ca.ringtone = value
+  callback?.()
+  await ctx.account.saveAccountsToLocalStorageDebounced()
+  ctx.toast.success(intl`Change ringtone successfully`, 2000)
 }

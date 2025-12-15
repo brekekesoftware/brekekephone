@@ -311,6 +311,9 @@ export class Call {
   private onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+    if (!this.holding && !this.mutedVideo) {
+      ctx.sip.enableLocalVideo(this.id)
+    }
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
     const isRetryableError =
