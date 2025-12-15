@@ -1,6 +1,6 @@
 #### 2.16.9
 
-- Initial impelemtation of ios custom ringtone
+- Initial implementation of ios custom ringtone
 - Add support for android to pick mp3 file as ringtone to match with ios implementation
 - Revert android lpc fine location permission, there will be no logic for matching wifi ssid
 - Fix android the phone should be able to sleep
@@ -9,7 +9,7 @@
 - Try fix ios custom ringtone when playing other audio (issue 1129)
 - Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
 - Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
-- Improve custom ringtone features as feedback (issue 1143)
+- Improve custom ringtone as feedbacks (issue 1143)
 - Fix bug display status bar and switcher (issue 1144)
 - Fix ios pal disconnect retry with lte (issue 1145)
 
