@@ -9,6 +9,7 @@ import {
   BrekekeUtils,
   defaultRingtone,
   staticRingtones,
+  systemRingtone,
 } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
@@ -144,7 +145,9 @@ export const handleUploadRingtone = async (
 export const validateRingtone = async (value: string, ca?: Account) => {
   const { pbxUsername, pbxTenant, pbxHostname, pbxPort, pbxRingtone } = ca || {}
   let r = ''
-  if (value === defaultRingtone) {
+  if (value === systemRingtone) {
+    return r
+  } else if (value === defaultRingtone) {
     r = pbxRingtone || ''
   } else if (value === staticRingtones[0]) {
     r = value
