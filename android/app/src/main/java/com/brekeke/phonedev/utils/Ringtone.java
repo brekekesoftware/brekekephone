@@ -34,6 +34,7 @@ import java.util.stream.StreamSupport;
 public class Ringtone {
   // ==========================================================================
   // init
+  static final String TAG = "[Ringtone]";
 
   public static void init() {
     if (am != null) {
@@ -155,6 +156,10 @@ public class Ringtone {
     if (TextUtils.isEmpty(r)) {
       return null;
     }
+    if (_systemDefault(r)) {
+      var u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+      return u.toString();
+    }
     if (_static(r)) {
       return r;
     }
@@ -183,6 +188,10 @@ public class Ringtone {
 
   private static boolean _static(String r) {
     return Arrays.asList(_static).contains(r);
+  }
+
+  private static boolean _systemDefault(String r) {
+    return "--".equals(r);
   }
 
   private static boolean https(String r) {

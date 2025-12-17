@@ -4,6 +4,7 @@ import {
   BrekekeUtils,
   defaultRingtone,
   staticRingtoneMap,
+  systemRingtone,
 } from '#/utils/BrekekeUtils'
 
 export type RingtoneOption = {
@@ -20,6 +21,10 @@ export const handleRingtoneOptions = (options: string[]): RingtoneOption[] => [
   {
     key: defaultRingtone,
     label: intl`Use default`,
+  },
+  {
+    key: systemRingtone,
+    label: intl`System ringtone`,
   },
   ...options.map(r => ({
     key: r,

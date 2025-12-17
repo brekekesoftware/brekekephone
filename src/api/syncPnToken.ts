@@ -1,5 +1,3 @@
-import WifiManager from 'react-native-wifi-reborn'
-
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
@@ -10,7 +8,6 @@ import { compareSemVer } from '#/stores/debugStore'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
-import { waitTimeout } from '#/utils/waitTimeout'
 
 const syncPnTokenWithoutCatch = async (
   p: Account,

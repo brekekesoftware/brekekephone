@@ -35,7 +35,6 @@ export default function PreviewRingtone({
     if (input === staticRingtones[0]) {
       return require('#/assets/incallmanager_ringtone.mp3')
     }
-
     return { uri: input }
   }
 
@@ -66,7 +65,7 @@ export default function PreviewRingtone({
         setCurrentSource(fallback)
       }
     }, timeoutMs)
-  }, [source])
+  }, [source, autoPlay, timeoutMs, didPlayStart])
 
   const handleLoaded = () => {
     setDidPlayStart(true)
