@@ -245,6 +245,7 @@
   "This account has no park number",
   "This contact doesn't have any phone number",
   "This file cannot be selected",
+  "This file is reserved by the system",
   "This phone index is already in use. Do you want to continue?",
   "To ensure the best user experience, the application requires the \"Show on Lock screen\" and \"Display pop-up windows while running in the background\" permissions. Please enable these two permissions in your device settings to proceed.",
   "To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.",
