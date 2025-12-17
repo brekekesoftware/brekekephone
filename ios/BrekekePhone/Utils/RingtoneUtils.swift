@@ -58,7 +58,7 @@ public class RingtoneUtils {
     if ringtone.isEmpty {
       return ""
     }
-    if (_systemDefault(r: ringtone)) {
+    if _systemDefault(r: ringtone) {
       return ringtone
     }
     if _static(r: ringtone) {
@@ -78,7 +78,7 @@ public class RingtoneUtils {
   static func _static(r: String) -> Bool {
     return staticRingtones.contains(r)
   }
-  
+
   static func _systemDefault(r: String) -> Bool {
     return r == "--"
   }
