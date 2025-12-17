@@ -1027,7 +1027,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
-    if(isVideoCall) {
+    if (isVideoCall) {
       disableAvatarTalking();
       return;
     }

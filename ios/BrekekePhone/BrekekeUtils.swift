@@ -223,7 +223,7 @@ public class BrekekeUtils: NSObject {
       host: host,
       port: port
     )
-    if (v == RingtoneUtils.staticRingtones[0]) {
+    if v == RingtoneUtils.staticRingtones[0] {
       v = ""
     }
     resolve(v)
