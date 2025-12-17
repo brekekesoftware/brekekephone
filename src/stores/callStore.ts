@@ -520,24 +520,36 @@ export class CallStore {
       )
     }
 
-    if (
-      !isWeb &&
-      c.incoming &&
-      !c.callkeepUuid &&
-      !ca?.pushNotificationEnabled
-    ) {
-      await displayCall()
+    const trySetCallkeepUuid = async () => {
+      if (isWeb || !c.incoming || c.callkeepUuid) {
+        return
+      }
+
+      if (!ca?.pushNotificationEnabled) {
+        await displayCall()
+        return
+      }
+
+      const uuidFromPN = this.getUuidFromPnId(c.pnId)
+      if (uuidFromPN) {
+        c.callkeepUuid = uuidFromPN
+        return
+      }
+
+      if (isIos) {
+        await displayCall()
+        c.bugIosOffPnServer = true
+        return
+      }
     }
+
     // fix bug ios turn off pn on the server side side
-    if (isIos && c.incoming && !c.callkeepUuid) {
-      await displayCall()
-      c.bugIosOffPnServer = true
-    }
+    await trySetCallkeepUuid()
+
     // get and check callkeep if pending incoming call
     if (isWeb || !c.incoming || c.answered) {
       return
     }
-    c.callkeepUuid = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
 
     if (
       c.callkeepUuid &&
