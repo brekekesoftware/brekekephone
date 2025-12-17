@@ -33,14 +33,7 @@ export const pickRingtone = async () => {
       ctx.toast.warning(intl`Only mp3 format supported`, 2000)
       return false
     }
-    if (
-      [systemRingtone, defaultRingtone].includes(
-        getFilenameWithoutExtension(name),
-      )
-    ) {
-      ctx.toast.warning(intl`This file is reserved by the system`, 2000)
-      return false
-    }
+
     if ((size ?? 0) > MAX_ACCEPTABLE_SIZE) {
       ctx.toast.warning(intl`File size must not exceed 1MB`, 2000)
       return false
