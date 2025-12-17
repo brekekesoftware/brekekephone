@@ -212,6 +212,8 @@ export enum CallLogType {
 
 // same convention with default pbx tenant
 export const defaultRingtone = '-'
+// same convention with system ringtone
+export const systemRingtone = '--'
 // same with _static in native Ringtone.java
 export const staticRingtones = [
   'incallmanager_ringtone',
