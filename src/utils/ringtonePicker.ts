@@ -1,5 +1,6 @@
 import { keepLocalCopy, pick, types } from '@react-native-documents/picker'
 import RNFS from 'react-native-fs'
+import type { ReactVideoSource } from 'react-native-video'
 
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -160,7 +161,7 @@ export const validateRingtone = async (value: string, ca?: Account) => {
       pbxPort ?? '',
     )
   }
-  return r || defaultRingtone
+  return r || staticRingtones[0]
 }
 
 export const saveRingtoneSelection = async (
@@ -179,4 +180,20 @@ export const saveRingtoneSelection = async (
   callback?.()
   await ctx.account.saveAccountsToLocalStorageDebounced()
   ctx.toast.success(intl`Change ringtone successfully`, 2000)
+}
+
+export const isSameSource = (a: ReactVideoSource, b?: ReactVideoSource) => {
+  if (!b) {
+    return false
+  }
+
+  if (typeof a === 'number' && typeof b === 'number') {
+    return a === b
+  }
+
+  if (typeof a === 'object' && typeof b === 'object') {
+    return a.uri === b.uri
+  }
+
+  return false
 }

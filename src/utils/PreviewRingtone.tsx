@@ -4,13 +4,12 @@ import type { ReactVideoSource, VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
 
 import { staticRingtones } from '#/utils/BrekekeUtils'
+import { isSameSource } from '#/utils/ringtonePicker'
 
 interface PreviewRingtoneProps {
   source: string
   onReady?: () => void
   onError?: (e: any) => void
-  timeoutMs?: number
-  autoPlay?: boolean
   onFinished?: () => void
 }
 
@@ -23,11 +22,9 @@ export default function PreviewRingtone({
   onReady,
   onError,
   onFinished,
-  timeoutMs = 1000,
-  autoPlay = true,
 }: PreviewRingtoneProps) {
   const playerRef = useRef<VideoRef | null>(null)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [currentSource, setCurrentSource] = useState<ReactVideoSource>()
   const [didPlayStart, setDidPlayStart] = useState(false)
 
@@ -48,10 +45,10 @@ export default function PreviewRingtone({
   )
 
   useEffect(() => {
-    if (!autoPlay) {
+    const converted = convertSource(source)
+    if (isSameSource(converted, currentSource)) {
       return
     }
-    const converted = convertSource(source)
     setCurrentSource(converted)
     setDidPlayStart(false)
 
@@ -64,8 +61,8 @@ export default function PreviewRingtone({
         const fallback = convertSource('incallmanager_ringtone')
         setCurrentSource(fallback)
       }
-    }, timeoutMs)
-  }, [source, autoPlay, timeoutMs, didPlayStart])
+    }, 1000)
+  }, [source, didPlayStart, currentSource])
 
   const handleLoaded = () => {
     setDidPlayStart(true)
