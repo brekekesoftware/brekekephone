@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..1155c45 100644
+index 786045f..1477c5b 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -904,10 +904,11 @@ index 786045f..1155c45 100644
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][reportNewIncomingCall] uuidString = %@", uuidString);
-@@ -785,10 +773,26 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
+@@ -785,10 +773,27 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
      callUpdate.supportsUngrouping = supportsUngrouping;
      callUpdate.hasVideo = hasVideo;
      callUpdate.localizedCallerName = localizedCallerName;
++    [RNCallKeep resetAudioSessionBeforePlayRingtone];
 +    NSLog(@"[RNCallKeep][reportNewIncomingCall] ringtone = %@", ringtone);
 +    callMap[uuid] = uuid;
 +    NSLog(@"[RNCallKeep][reportNewIncomingCall] count = %lu", (unsigned long)[callMap count]);
@@ -932,7 +933,7 @@ index 786045f..1155c45 100644
          [callKeep sendEventWithNameWrapper:RNCallKeepDidDisplayIncomingCall body:@{
              @"error": error && error.localizedDescription ? error.localizedDescription : @"",
              @"errorCode": error ? [callKeep getIncomingCallErrorCode:error] : @"",
-@@ -806,7 +810,9 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
+@@ -806,7 +811,9 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
          if (error == nil) {
              // Workaround per https://forums.developer.apple.com/message/169511
              if ([callKeep lessThanIos10_2]) {
@@ -943,7 +944,7 @@ index 786045f..1155c45 100644
              }
          }
          if (completion != nil) {
-@@ -876,71 +882,85 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
+@@ -876,71 +883,84 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
      }
  }
  
@@ -959,7 +960,9 @@ index 786045f..1155c45 100644
 -    providerConfiguration.maximumCallGroups = 3;
 -    providerConfiguration.maximumCallsPerCallGroup = 1;
 -    providerConfiguration.supportedHandleTypes = [RNCallKeep getSupportedHandleTypes:settings[@"handleType"]];
--
++    return [RNCallKeep commonProviderConfig:ringtone];
++}
+ 
 -    if (settings[@"supportsVideo"]) {
 -        providerConfiguration.supportsVideo = [settings[@"supportsVideo"] boolValue];
 -    }
@@ -978,18 +981,8 @@ index 786045f..1155c45 100644
 -    if (@available(iOS 11.0, *)) {
 -        if (settings[@"includesCallsInRecents"]) {
 -            providerConfiguration.includesCallsInRecents = [settings[@"includesCallsInRecents"] boolValue];
--        }
--    }
--    return providerConfiguration;
-+    return [RNCallKeep commonProviderConfig:ringtone];
- }
- 
--- (void)configureAudioSession
 ++ (CXProviderConfiguration *)commonProviderConfig:(NSString *)ringtone
- {
--#ifdef DEBUG
--    NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
--#endif
++{
 +    NSString *localizedName = @"Brekeke Phone";
 +    CXProviderConfiguration *p = [[CXProviderConfiguration alloc] initWithLocalizedName:localizedName];
 +    p.supportedHandleTypes = [RNCallKeep getSupportedHandleTypes:@"generic"];
@@ -1006,29 +999,21 @@ index 786045f..1155c45 100644
 +{
 +    CXCallObserver *callObserver = [[CXCallObserver alloc] init];
 +    NSArray *calls = callObserver.calls;
- 
--    NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
--    NSString *mode = AVAudioSessionModeDefault;
++
 +    NSInteger totalCalls = calls.count;
 +    NSInteger answeredCalls = 0;
 +    NSInteger incomingCalls = 0;
- 
--    NSDictionary *settings = [RNCallKeep getSettings];
--    if (settings && settings[@"audioSession"]) {
--        if (settings[@"audioSession"][@"categoryOptions"]) {
--            categoryOptions = [settings[@"audioSession"][@"categoryOptions"] integerValue];
++
 +    for (CXCall *call in calls) {
 +        if (call.hasConnected) {
 +            answeredCalls++;
-         }
--
--        if (settings[@"audioSession"][@"mode"]) {
--            mode = settings[@"audioSession"][@"mode"];
++        }
 +        if (!call.outgoing && !call.hasConnected) {
 +            incomingCalls++;
          }
      }
- 
+-    return providerConfiguration;
++
 +    #ifdef DEBUG
 +    NSLog(@"[RNCallKeep][getCallsInfo] Total: %ld, Answered: %ld, Incoming: %ld",
 +    (long)totalCalls, (long)answeredCalls, (long)incomingCalls);
@@ -1040,23 +1025,36 @@ index 786045f..1155c45 100644
 +        @"incoming": @(incomingCalls),
 +        @"hasActiveCalls": @(totalCalls > 0)
 +    };
-+}
-+
+ }
+ 
+-- (void)configureAudioSession
+-{
 +- (void)configureAudioSession {
-+#ifdef DEBUG
-+    NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
-+#endif
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
+ #endif
 +    // check calls info
 +    NSDictionary *callsInfo = [self getCallsInfo];
 +    NSInteger totalCalls = [callsInfo[@"total"] integerValue];
-+    NSInteger answeredCalls = [callsInfo[@"answered"] integerValue];
-+
+ 
+-    NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+-    NSString *mode = AVAudioSessionModeDefault;
+-
+-    NSDictionary *settings = [RNCallKeep getSettings];
+-    if (settings && settings[@"audioSession"]) {
+-        if (settings[@"audioSession"][@"categoryOptions"]) {
+-            categoryOptions = [settings[@"audioSession"][@"categoryOptions"] integerValue];
+-        }
+-
+-        if (settings[@"audioSession"][@"mode"]) {
+-            mode = settings[@"audioSession"][@"mode"];
+-        }
 +    // only configure if there are active calls
 +    if (totalCalls > 1) {
 +        NSLog(@"[RNCallKeep][configureAudioSession] No active calls, skipping configuration");
 +        return;
-+    }
-+    
+     }
+     
      AVAudioSession* audioSession = [AVAudioSession sharedInstance];
 -    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
 +    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
@@ -1139,7 +1137,7 @@ index 786045f..1155c45 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,170 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,180 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1202,6 +1200,16 @@ index 786045f..1155c45 100644
 +                   error:nil];
 +    
 +    [session setActive:YES error:nil];
++}
++
+++(void) resetAudioSessionBeforePlayRingtone {
++    if([callMap count] == 0) {
++        NSLog(@"[RNCallKeep] reset audio session");
++        AVAudioSession* session = [AVAudioSession sharedInstance];
++        [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
++        [session setMode:AVAudioSessionModeVoiceChat error:nil];
++        [session setActive:YES error:nil];
++    }
 +}
 +
 +// listen interruption audio session
