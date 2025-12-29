@@ -126,7 +126,7 @@ public class RingtoneUtils {
         return nil
       }
       guard let url = URL(string: u) else { return nil }
-      fileName = hashFileName(from: url.lastPathComponent.replacingOccurrences(of: " ", with: "_"))
+      fileName = hashFileName(from: url)
     }
     let fileURL = getDestinationURL(for: fileName)
     if FileManager.default.fileExists(atPath: fileURL.path) {
@@ -180,13 +180,24 @@ public class RingtoneUtils {
     let fileURL = getDestinationURL(for: fileName)
     return FileManager.default.fileExists(atPath: fileURL.path)
   }
-  
-  private static func hashFileName(from urlString: String) -> String {
-      let digest = SHA256.hash(data: urlString.data(using: .utf8) ?? Data())
-      let hashString = digest.map { String(format: "%02hhx", $0) }.joined()
-      let shortHash = String(hashString.prefix(12))
-      
-      return "v1_\(shortHash)\(defaultFormat)"
-    }
 
+  private static func hashFileName(from url: URL) -> String {
+    let urlString = url.absoluteString
+    let digest = SHA256.hash(
+      data: urlString.data(using: .utf8) ?? Data()
+    )
+    let hashString = digest
+      .map { String(format: "%02hhx", $0) }
+      .joined()
+
+    let originalName = url
+      .deletingPathExtension()
+      .lastPathComponent
+
+    let sanitized = originalName
+      .replacingOccurrences(of: " ", with: "_")
+      .prefix(20)
+
+    return "\(sanitized)_\(hashString.prefix(8))\(defaultFormat)"
+  }
 }

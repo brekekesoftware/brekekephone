@@ -132,7 +132,8 @@ export const handleUploadRingtone = async (
     if (!saved) {
       ctx.toast.warning(intl`This file cannot be saved`, 2000)
       return
-    } else if (saved === 'ALREADY_EXISTS') {
+    }
+    if (saved === 'ALREADY_EXISTS') {
       ctx.toast.warning(
         intl`This file already exists in the ringtone list.`,
         2000,
