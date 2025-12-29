@@ -36,7 +36,7 @@ const showMessagePermForCallIos = async (
 
   RnAlert.prompt({
     title: '',
-    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device.`,
+    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -108,7 +108,7 @@ const showMessagePermForCallAndroid = async (
 
   RnAlert.prompt({
     title: '',
-    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device.`,
+    message: intl`You do not have permission as follows${msg}Please grant access permission in the app settings of the device`,
     onConfirm: openSettings,
     confirmText: intl`Settings`,
     dismissText: intl`Cancel`,
@@ -224,7 +224,7 @@ const permDisableBatteryOptimization = async () => {
   return await new Promise<void | boolean>(resolve => {
     RnAlert.prompt({
       title: '',
-      message: intl`To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed.`,
+      message: intl`To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed`,
       onConfirm: async () => {
         const r = await BrekekeUtils.permRequestIgnoringBatteryOptimizations()
         resolve(r)
@@ -244,7 +244,7 @@ const permAndroidLpcForIncomingCall = async () => {
   return await new Promise<void | boolean>(resolve => {
     RnAlert.prompt({
       title: '',
-      message: intl`To ensure the best user experience, the application requires the "Show on Lock screen" and "Display pop-up windows while running in the background" permissions. Please enable these two permissions in your device settings to proceed.`,
+      message: intl`To ensure the best user experience, the application requires the "Show on Lock screen" and "Display pop-up windows while running in the background" permissions. Please enable these two permissions in your device settings to proceed`,
       onConfirm: async () => {
         const r = await BrekekeUtils.permRequestAndroidLpc()
         resolve(r)
@@ -264,7 +264,7 @@ const permOverlayPermission = async () => {
     console.log('Permission debug permOverlayPermission')
     RnAlert.prompt({
       title: '',
-      message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed.`,
+      message: intl`To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed`,
       onConfirm: async () => {
         const r = await BrekekeUtils.permRequestOverlay()
         resolve(r)

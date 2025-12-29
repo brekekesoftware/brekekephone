@@ -62,7 +62,7 @@ export class PageCallRecents extends Component {
       >
         <Field
           icon={mdiMagnify}
-          label={intl`SEARCH NAME, PHONE NUMBER ...`}
+          label={intl`SEARCH NAME, PHONE NUMBER...`}
           onValueChange={(v: string) => {
             // TODO: use debounced value to perform data filter
             ctx.contact.callSearchRecents = v
