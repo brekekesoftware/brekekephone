@@ -1,3 +1,5 @@
+import CryptoKit
+
 struct RingtonePicker: Codable {
   let ringtonePicker: [String: Bool]
 }
@@ -124,7 +126,7 @@ public class RingtoneUtils {
         return nil
       }
       guard let url = URL(string: u) else { return nil }
-      fileName = url.lastPathComponent.replacingOccurrences(of: " ", with: "_")
+      fileName = hashFileName(from: url.lastPathComponent.replacingOccurrences(of: " ", with: "_"))
     }
     let fileURL = getDestinationURL(for: fileName)
     if FileManager.default.fileExists(atPath: fileURL.path) {
@@ -178,4 +180,13 @@ public class RingtoneUtils {
     let fileURL = getDestinationURL(for: fileName)
     return FileManager.default.fileExists(atPath: fileURL.path)
   }
+  
+  private static func hashFileName(from urlString: String) -> String {
+      let digest = SHA256.hash(data: urlString.data(using: .utf8) ?? Data())
+      let hashString = digest.map { String(format: "%02hhx", $0) }.joined()
+      let shortHash = String(hashString.prefix(12))
+      
+      return "v1_\(shortHash)\(defaultFormat)"
+    }
+
 }

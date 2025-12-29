@@ -61,11 +61,15 @@ const saveToCache = async (f: string, uri: string) => {
       destination: 'documentDirectory',
       folderName: 'Ringtones',
     })
+    console.log('[RingtonePicker] keepLocalCopy result:', r)
     if (r.status === 'success') {
       ctx.account.ringtonePicker[getFilenameWithoutExtension(f)] = true
       await ctx.account.saveAccountsToLocalStorageWithoutDebounced()
       ctx.toast.success(intl`Ringtone is uploaded successfully`, 2000)
       return true
+    }
+    if (r.status === 'error' && r.copyError.includes('already exists')) {
+      return 'ALREADY_EXISTS'
     }
   } catch (err) {
     console.error('ringtonePicker saveToCache:', err)
@@ -126,6 +130,13 @@ export const handleUploadRingtone = async (
   const saveAndRefresh = async () => {
     const saved = await saveToCache(name, uri)
     if (!saved) {
+      ctx.toast.warning(intl`This file cannot be saved`, 2000)
+      return
+    } else if (saved === 'ALREADY_EXISTS') {
+      ctx.toast.warning(
+        intl`This file already exists in the ringtone list.`,
+        2000,
+      )
       return
     }
     const options = await getRingtoneOptions()
