@@ -509,6 +509,7 @@ export class CallStore {
             ca?.pbxPort ?? '',
           ),
         },
+        pnid: c.pnId,
       }
       RNCallKeep.displayIncomingCall(
         uuid,
