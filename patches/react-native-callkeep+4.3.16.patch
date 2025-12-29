@@ -626,7 +626,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..44c7d03 100644
+index 786045f..5fc2053 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,13 @@
@@ -952,7 +952,7 @@ index 786045f..44c7d03 100644
 -            if ([callKeep lessThanIos10_2]) {
 +
 +    // Check if call already exists in CallKit (by pnId mapping)
-+    NSUUID *existingUUID = pnId ? incomingCallMap[pnId] : nil;
++    NSUUID *existingUUID = pnId.length > 0 ? incomingCallMap[pnId] : nil;
 +    BOOL shouldUpdateExistingCall = NO;
 +
 +    
@@ -986,7 +986,7 @@ index 786045f..44c7d03 100644
 +    }
 +
 +    // New call - save mapping and setup
-+    if (pnId) {
++    if (pnId.length > 0) {
 +        incomingCallMap[pnId] = uuid;
 +    }
 +    callMap[uuid] = uuid;
@@ -1151,7 +1151,7 @@ index 786045f..44c7d03 100644
 +        NSLog(@"[RNCallKeep][configureAudioSession] No active calls, skipping configuration");
 +        return;
      }
-     
+ 
      AVAudioSession* audioSession = [AVAudioSession sharedInstance];
 -    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
 +    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
