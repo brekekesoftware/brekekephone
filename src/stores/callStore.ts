@@ -508,8 +508,8 @@ export class CallStore {
             ca?.pbxHostname ?? '',
             ca?.pbxPort ?? '',
           ),
+          pnid: c.pnId,
         },
-        pnid: c.pnId,
       }
       RNCallKeep.displayIncomingCall(
         uuid,
