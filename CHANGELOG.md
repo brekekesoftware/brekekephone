@@ -1,3 +1,7 @@
+#### 2.17.0
+
+- Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
+
 #### 2.16.9
 
 - Initial implementation of ios custom ringtone
@@ -8,7 +12,6 @@
 - Fix android it should show hang up button when on hold (issue 1122)
 - Try fix ios custom ringtone when playing other audio (issue 1129)
 - Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
-- Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
 - Improve custom ringtone as feedbacks (issue 1143)
 - Fix bug display status bar and switcher (issue 1144)
 - Fix ios pal disconnect retry with lte (issue 1145)
