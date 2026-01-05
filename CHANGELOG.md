@@ -1,3 +1,7 @@
+#### 2.17.0
+
+- Fix ios it should have voice connected if receive incoming call without PN due to server mismatch (issue 1142)
+
 #### 2.16.9
 
 - Initial implementation of ios custom ringtone
