@@ -161,7 +161,10 @@ export const validateRingtone = async (value: string, ca?: Account) => {
   if (value === systemRingtone) {
     return r
   } else if (value === defaultRingtone) {
-    r = pbxRingtone || ''
+    r =
+      pbxRingtone === defaultRingtone || !pbxRingtone
+        ? staticRingtones[0]
+        : pbxRingtone
   } else if (value === staticRingtones[0]) {
     r = value
   } else {
