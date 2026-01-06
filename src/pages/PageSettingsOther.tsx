@@ -4,13 +4,25 @@ import { Component } from 'react'
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { isWeb } from '#/config'
+import { isIos, isWeb } from '#/config'
+import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
-import { getRingtoneOptions } from '#/utils/getRingtoneOptions'
+import {
+  getCurrentRingtone,
+  getRingtoneOptions,
+  handleRingtoneOptionsInSetting,
+} from '#/utils/getRingtoneOptions'
+import PreviewRingtone from '#/utils/PreviewRingtone'
+import {
+  handleUploadRingtone,
+  saveRingtoneSelection,
+  validateRingtone,
+} from '#/utils/ringtonePicker'
+import { SyncRingtoneOnForeground } from '#/utils/SyncRingtoneOnForeground'
 
 @observer
 export class PageSettingsOther extends Component {
@@ -18,16 +30,40 @@ export class PageSettingsOther extends Component {
     status: '',
     statusText: '',
     ringtoneOptions: [] as RingtoneOption[],
-    ringtone: ctx.auth.getCurrentAccount()?.ringtone,
+    ringtone: defaultRingtone,
+    preview: '',
   }
+
   componentDidMount = async () => {
+    try {
+      this.initData()
+    } catch (err) {
+      console.error('PageSettingsOther componentDidMount:', err)
+    }
+  }
+
+  initData = async () => {
     const me = ctx.uc.me()
+    let ro: RingtoneOption[] = []
+    let r = getCurrentRingtone()
+    if (isIos) {
+      const d = await handleRingtoneOptionsInSetting()
+      if (d) {
+        ro = d.ro
+        r = d.r
+      }
+    } else {
+      ro = await getRingtoneOptions()
+    }
+
     this.setState({
       status: me.status,
       statusText: me.statusText,
-      ringtoneOptions: await getRingtoneOptions(),
+      ringtoneOptions: ro,
+      ringtone: r,
     })
   }
+
   setStatusText = (statusText: string) => {
     this.setState({ statusText })
   }
@@ -55,44 +91,84 @@ export class PageSettingsOther extends Component {
       })
   }
 
-  onChangeRingtone = value => {
-    this.setState({ ringtone: value })
-    const ca = ctx.auth.getCurrentAccount()
-    if (!ca) {
-      return
-    }
-    ca.ringtone = value || defaultRingtone
-    ctx.account.saveAccountsToLocalStorageDebounced()
+  onChangeRingtone = async (value: string, ca?: Account) => {
+    this.stopPreview()
+    const r = await validateRingtone(value, ca)
+    this.setState({ preview: r })
   }
+
+  onSaveRingtone = async (value: string, ca?: Account) => {
+    await saveRingtoneSelection(
+      value,
+      () => this.setState({ ringtone: value }),
+      ca,
+    )
+  }
+
+  onUploadRingtone = async () => {
+    try {
+      await handleUploadRingtone(this.state.ringtoneOptions, options => {
+        this.setState({
+          ringtoneOptions: options,
+        })
+      })
+    } catch (err) {
+      console.error('PageSettingOther onUploadRingtone:', err)
+    }
+  }
+
+  onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
+    this.setState({
+      ringtoneOptions: ro,
+      ringtone: r || defaultRingtone,
+    })
+  }
+
+  getDropDown = () => {
+    let d = [
+      ...(ctx.auth.isConnFailure()
+        ? [
+            {
+              label: intl`Reconnect to server`,
+              onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
+            },
+          ]
+        : []),
+      ...(!isWeb
+        ? [
+            {
+              label: intl`Open debug log`,
+              onPress: ctx.nav.goToPageSettingsDebugFiles,
+            },
+          ]
+        : []),
+      {
+        label: intl`Logout`,
+        onPress: ctx.auth.signOut,
+        danger: true,
+      },
+    ]
+    if (!isWeb) {
+      d = [
+        {
+          label: intl`Select local mp3 as ringtone`,
+          onPress: this.onUploadRingtone,
+        },
+        ...d,
+      ]
+    }
+    return d
+  }
+
+  stopPreview = () => this.setState({ preview: '' })
 
   render() {
     const ca = ctx.auth.getCurrentAccount()
+
     return (
       <Layout
         description={intl`Other settings for PBX/UC`}
-        dropdown={[
-          ...(ctx.auth.isConnFailure()
-            ? [
-                {
-                  label: intl`Reconnect to server`,
-                  onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
-                },
-              ]
-            : []),
-          ...(!isWeb
-            ? [
-                {
-                  label: intl`Open debug log`,
-                  onPress: ctx.nav.goToPageSettingsDebugFiles,
-                },
-              ]
-            : []),
-          {
-            label: intl`Logout`,
-            onPress: ctx.auth.signOut,
-            danger: true,
-          },
-        ]}
+        dropdown={this.getDropDown()}
         menu='settings'
         subMenu='other'
         title={intl`Other Settings`}
@@ -101,7 +177,9 @@ export class PageSettingsOther extends Component {
         <Field
           icon={mdiTranslate}
           label={intl`LANGUAGE`}
-          onTouchPress={ctx.intl.selectLocale}
+          onTouchPress={() =>
+            ctx.intl.selectLocaleWithCallback(() => this.initData())
+          }
           value={ctx.intl.locale}
           valueRender={() => ctx.intl.getLocaleName()}
         />
@@ -131,14 +209,29 @@ export class PageSettingsOther extends Component {
             />
           </>
         )}
-        <Field isGroup label={intl`Ringtone`} />
-        <Field
-          label={intl`INCOMING CALL RINGTONE`}
-          options={this.state.ringtoneOptions}
-          type='RnPicker'
-          value={this.state.ringtone}
-          onValueChange={this.onChangeRingtone}
-        />
+        {!isWeb && (
+          <>
+            <Field isGroup label={intl`Ringtone`} />
+            <Field
+              label={intl`INCOMING CALL RINGTONE`}
+              options={this.state.ringtoneOptions}
+              type='RnPicker'
+              value={this.state.ringtone}
+              onValueChange={v => this.onChangeRingtone(v, ca)}
+              onRnPickerConfirm={v => this.onSaveRingtone(v, ca)}
+              onRnPickerDismiss={this.stopPreview}
+            />
+          </>
+        )}
+        {isIos && (
+          <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
+        )}
+        {!isWeb && this.state.preview && (
+          <PreviewRingtone
+            source={this.state.preview}
+            onFinished={this.stopPreview}
+          />
+        )}
       </Layout>
     )
   }

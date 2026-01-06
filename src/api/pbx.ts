@@ -16,6 +16,7 @@ import {
 import { parseCallParams, parsePalParams } from '#/api/parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from '#/api/pnConfig'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
+import { suppressErr } from '#/api/suppressErr'
 import type {
   PalMethodParams,
   Pbx,
@@ -151,14 +152,26 @@ export class PBX extends EventEmitter {
   private MAX_RETRY = 3
   @observable retryingRequests: string[] = []
 
+  // Methods that have retry mechanism via palRequestWithRetry
+  private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
+    'hold',
+    'unhold',
+    'getPhoneAppliContact',
+  ]
+
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
       return false
     }
+    const code = (err as any).code
+    const message = String((err as any).message || '')
     return (
-      ('code' in err && (err as any).code === -1) ||
-      ('message' in err && /timeout/i.test((err as Error).message))
+      code === -1 || // ERROR_TIMEOUT
+      code === -2 || // ERROR_DISCONNECTED
+      /timeout/i.test(message) ||
+      /disconnected/i.test(message) ||
+      /connection reset/i.test(message)
     )
   }
 
@@ -247,7 +260,13 @@ export class PBX extends EventEmitter {
         continue
       }
       if (request.retryCount >= this.MAX_RETRY) {
-        request.reject(new Error('Maximum number of retries reached'))
+        const errorMsg = new Error('Maximum number of retries reached')
+        request.reject(errorMsg)
+        // show error message only when MAX_RETRY is reached
+        if (!suppressErr(errorMsg)) {
+          ctx.toast.internet(errorMsg)
+        }
+
         this.emit('pal-retry-end', request)
         continue
       }
@@ -348,12 +367,17 @@ export class PBX extends EventEmitter {
       return
     }
     const isPingMethod = method === 'ping'
-    if (!isPingMethod) {
+    const isRetryableError = this.isPalTimeoutError(err)
+    const hasRetryMethod = this.methodsWithRetry.includes(method)
+    const shouldHideError = isRetryableError && hasRetryMethod
+
+    if (!isPingMethod && !suppressErr(err) && !shouldHideError) {
       ctx.toast.internet(err)
     }
-    if (this.isPalTimeoutError(err)) {
+
+    if (isRetryableError) {
       ctx.authPBX.dispose()
-      if (isPingMethod) {
+      if (isPingMethod && !shouldHideError) {
         ctx.toast.internet()
       }
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
@@ -361,6 +385,7 @@ export class PBX extends EventEmitter {
       ctx.authPBX.auth()
       return
     }
+
     this.pingActivityAt = Date.now()
   }
 

@@ -308,23 +308,36 @@ export class Call {
   private onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+    if (!this.holding && !this.mutedVideo) {
+      ctx.sip.enableLocalVideo(this.id)
+    }
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
-    this.toggleHoldLoading(false)
+    const isRetryableError =
+      err && typeof err === 'object' ? ctx.pbx.isPalTimeoutError(err) : false
+
+    if (!isRetryableError) {
+      this.toggleHoldLoading(false)
+    }
+
     if (err === true) {
       return true
     }
     if (!err) {
       return false
     }
-    const prevFn = this.holding ? 'hold' : 'unhold'
-    this.setHoldWithCallkeep(prevFn === 'unhold')
-    BrekekeUtils.toast(
-      this.callkeepUuid,
-      intl`Internet connection failed`,
-      '',
-      'error',
-    )
+
+    if (!isRetryableError) {
+      const prevFn = this.holding ? 'hold' : 'unhold'
+      this.setHoldWithCallkeep(prevFn === 'unhold')
+      BrekekeUtils.toast(
+        this.callkeepUuid,
+        intl`Internet connection failed`,
+        '',
+        'error',
+      )
+    }
+
     return true
   }
   private setHoldWithCallkeep = (holding: boolean) => {

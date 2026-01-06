@@ -1,5 +1,5 @@
 import { isErrorWithCode, pick } from '@react-native-documents/picker'
-import RNFS from 'react-native-fs'
+import { stat } from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
@@ -117,9 +117,9 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
   let size: string | number = file.fileSize || file.filesize || file.size || 0
   if (!size) {
     try {
-      const stat = await RNFS.stat(file.uri)
-      name = getName(stat.originalFilepath || stat.path) || name
-      size = stat.size
+      const s = await stat(file.uri)
+      name = getName(s.originalFilepath || s.path) || name
+      size = s.size
     } catch (err) {
       console.error('pickFile RNFS.stat error:', err)
     }

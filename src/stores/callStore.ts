@@ -500,11 +500,24 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
+      const op = {
+        ios: {
+          ringtone: await BrekekeUtils.validateRingtone(
+            p.ringtoneFromSip ?? '',
+            ca?.pbxUsername ?? '',
+            ca?.pbxTenant ?? '',
+            ca?.pbxHostname ?? '',
+            ca?.pbxPort ?? '',
+          ),
+        },
+      }
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
         await c.getDisplayNameAsync(),
         'generic',
+        undefined,
+        op,
       )
     }
     // get and check callkeep if pending incoming call

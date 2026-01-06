@@ -4,6 +4,7 @@ import { NativeModules } from 'react-native'
 
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
 
 type TBrekekeUtils = {
   // ==========================================================================
@@ -96,6 +97,13 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
 }
 
 export type TNativeModules = {
@@ -174,6 +182,7 @@ const Polyfill: TBrekekeUtils = {
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  validateRingtone: () => Promise.resolve(''),
 }
 
 const M = NativeModules as TNativeModules
@@ -203,11 +212,19 @@ export enum CallLogType {
 
 // same convention with default pbx tenant
 export const defaultRingtone = '-'
+// same convention with system ringtone
+export const systemRingtone = '--'
 // same with _static in native Ringtone.java
 export const staticRingtones = [
   'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
+
+export const staticRingtoneMap: {
+  [k in (typeof staticRingtones)[number]]: () => string
+} = {
+  incallmanager_ringtone: () => intl`Brekeke ringtone`,
+}
 
 export type RemoteStream = {
   vId: string

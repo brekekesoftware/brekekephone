@@ -4,6 +4,24 @@
   - Add api to close notification
   - Update api static getCurrentVersion
 
+#### 2.16.9
+
+- Initial implementation of ios custom ringtone
+- Add support for android to pick mp3 file as ringtone to match with ios implementation
+- Revert android lpc fine location permission, there will be no logic for matching wifi ssid
+- Fix android the phone should be able to sleep
+- Fix it should resume video call after unhold (issue 1120)
+- Fix android it should show hang up button when on hold (issue 1122)
+- Try fix ios custom ringtone when playing other audio (issue 1129)
+- Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
+- Improve custom ringtone as feedbacks (issue 1143)
+- Fix bug display status bar and switcher (issue 1144)
+- Fix ios pal disconnect retry with lte (issue 1145)
+
+#### 2.16.8
+
+- Fix it should suppress some errors with admin account
+
 #### 2.16.7
 
 - Fix it should be able to drag mini video call circle (issue 1084)
