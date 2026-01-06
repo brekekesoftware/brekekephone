@@ -61,7 +61,9 @@ export const IncomingItem = observer(() => {
     ca?.ringtone,
     ca?.pbxRingtone,
   ]
-  const r = priority.map(validateWithError).find(v => v) || _default
+  const r = ctx.global.buildEmbedStaticPath(
+    priority.map(validateWithError).find(v => v) || _default,
+  )
   // reset to make sure it will rerender
   useEffect(reset, [r])
   // render
@@ -77,7 +79,12 @@ export const IncomingItem = observer(() => {
   )
 })
 export const OutgoingItem = () => (
-  <audio autoPlay loop src={ringback} muted={false} />
+  <audio
+    autoPlay
+    loop
+    src={ctx.global.buildEmbedStaticPath(ringback)}
+    muted={false}
+  />
 )
 
 export class OutgoingItemWithSDP extends Component<{

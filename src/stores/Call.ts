@@ -3,8 +3,9 @@ import { action, autorun, observable } from 'mobx'
 import RNCallKeep from 'react-native-callkeep'
 
 import type { Session, SessionStatus } from '#/brekekejs'
-import { isEmbed, isIos } from '#/config'
+import { defaultTimeout, isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/callStore'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
@@ -73,12 +74,16 @@ export class Call {
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
 
+  answerVideoEnabled?: boolean
+
   @action
   answer = async (
     options?: { ignoreNav?: boolean },
+    videoEnabled?: boolean,
     videoOptions?: object,
     exInfo?: string,
   ) => {
+    this.answerVideoEnabled = videoEnabled
     this.holding = false
     this.answered = true
     this.store.setCurrentCallId(this.id)
@@ -90,9 +95,9 @@ export class Call {
     ctx.sip.phone?.answer(
       this.id,
       options,
-      this.remoteVideoEnabled,
+      videoEnabled || this.remoteVideoEnabled,
       videoOptions,
-      'answered',
+      exInfo || 'answered',
     )
     // should hangup call if user don't allow permissions for call before answering
     // app will be forced to restart when you change the privacy settings
@@ -151,6 +156,17 @@ export class Call {
 
   @observable videoSessionId = ''
   @observable localVideoEnabled = false
+  @observable mutedVideo = false
+  getLocalVideoEnabled = () => this.localVideoEnabled && !this.mutedVideo
+  getRemoteVideoEnabled = (user?: string) => {
+    if (user) {
+      return !this.remoteUserOptionsTable?.[user]?.muted?.videoClient
+    }
+    return this.videoClientSessionTable.some(
+      v => !this.remoteUserOptionsTable?.[v.user]?.muted?.videoClient,
+    )
+  }
+
   toggleVideo = () => {
     const pbxUser = ctx.contact.getPbxUserById(this.partyNumber)
     const callerStatus = pbxUser?.talkers?.[0]?.status
@@ -159,19 +175,17 @@ export class Call {
     }
     if (this.localVideoEnabled) {
       this.mutedVideo = !this.mutedVideo
-      if (this.mutedVideo) {
-        ctx.sip.setMutedVideo(true, this.id)
-      } else {
-        ctx.sip.setMutedVideo(false, this.id)
-      }
     } else {
       this.mutedVideo = false
+      ctx.sip.enableLocalVideo(this.id)
     }
-    // for video conference
-    // with the current logic of webrtcclient.js
-    // if we disable the local stream, it will remove all other streams
-    // so to make video conference works, we need to enable to keep receiving other streams
-    ctx.sip.enableLocalVideo(this.id)
+    ctx.sip.setMutedVideo(this.mutedVideo, this.id)
+    // update UI for IncomingCallActivity
+    BrekekeUtils.setIsVideoCall(
+      this.callkeepUuid,
+      this.localVideoEnabled,
+      this.mutedVideo,
+    )
   }
   @action toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
@@ -207,7 +221,6 @@ export class Call {
   }
 
   @observable muted = false
-  @observable mutedVideo = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -246,10 +259,20 @@ export class Call {
   private prevHolding = false
   // TODO: make this more generic to support all pal functions
   pendingRequestIds: string[] = []
+  lastHoldToggle = 0
   toggleHoldWithCheck = () => {
     if (this.isAboutToHangup) {
       return
     }
+    const now = Date.now()
+    if (now - this.lastHoldToggle < defaultTimeout) {
+      console.log(
+        'toggleHoldWithCheck: debounced, time since last toggle:',
+        now - this.lastHoldToggle,
+      )
+      return
+    }
+    this.lastHoldToggle = now
     this.toggleHold()
   }
 
@@ -285,23 +308,36 @@ export class Call {
   private onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
+    if (!this.holding && !this.mutedVideo) {
+      ctx.sip.enableLocalVideo(this.id)
+    }
   }
   @action private onToggleHoldFailure = (err: Error | boolean) => {
-    this.toggleHoldLoading(false)
+    const isRetryableError =
+      err && typeof err === 'object' ? ctx.pbx.isPalTimeoutError(err) : false
+
+    if (!isRetryableError) {
+      this.toggleHoldLoading(false)
+    }
+
     if (err === true) {
       return true
     }
     if (!err) {
       return false
     }
-    const prevFn = this.holding ? 'hold' : 'unhold'
-    this.setHoldWithCallkeep(prevFn === 'unhold')
-    BrekekeUtils.toast(
-      this.callkeepUuid,
-      intl`Internet connection failed`,
-      '',
-      'error',
-    )
+
+    if (!isRetryableError) {
+      const prevFn = this.holding ? 'hold' : 'unhold'
+      this.setHoldWithCallkeep(prevFn === 'unhold')
+      BrekekeUtils.toast(
+        this.callkeepUuid,
+        intl`Internet connection failed`,
+        '',
+        'error',
+      )
+    }
+
     return true
   }
   private setHoldWithCallkeep = (holding: boolean) => {

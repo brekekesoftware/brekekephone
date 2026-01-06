@@ -16,6 +16,7 @@ import {
 import { parseCallParams, parsePalParams } from '#/api/parseParamsWithPrefix'
 import type { PnParams, PnParamsNew } from '#/api/pnConfig'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
+import { suppressErr } from '#/api/suppressErr'
 import type {
   PalMethodParams,
   Pbx,
@@ -29,20 +30,118 @@ import {
   bundleIdentifier,
   fcmApplicationId,
   isAndroid,
-  isEmbed,
   isWeb,
+  retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
-import { intl, intlDebug } from '#/stores/intl'
+import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
+// ----------------------------------------------------------------------------
+// parse resource line data
+const parseResourceLines = (l: string | undefined) => {
+  if (!l) {
+    ctx.auth.resourceLines = []
+    return
+  }
+  const lines = l.split(',')
+  const resourceLines: PbxResourceLine[] = []
+  lines.forEach(line => {
+    if (line.includes(':')) {
+      const [key, value] = line.split(':')
+      if (key) {
+        resourceLines.push({ key: key.trim(), value: value.trim() })
+      }
+    } else if (line) {
+      resourceLines.push({ key: line.trim(), value: line.trim() })
+    }
+  })
+  // remove duplicate value
+  ctx.auth.resourceLines = resourceLines.filter((item, index) => {
+    const nextItem = resourceLines.find(
+      (next, nextIndex) => nextIndex > index && next.value === item.value,
+    )
+    return !nextItem
+  })
+}
+
+// ----------------------------------------------------------------------------
+// custom page url utils
+// need to place them here to avoid circular dependencies
+
+const parseListCustomPage = () => {
+  const c = ctx.auth.pbxConfig
+  if (!c) {
+    return
+  }
+  const results: PbxCustomPage[] = []
+  Object.keys(c).forEach(k => {
+    if (!k.startsWith('webphone.custompage')) {
+      return
+    }
+    const parts = k.split('.')
+    const id = `${parts[0]}.${parts[1]}`
+    if (results.some(item => item.id === id)) {
+      return
+    }
+    let url = c[`${id}.url`]
+    if (!url || !validator.isURL(url)) {
+      // ignore if not url
+      console.log(`CustomPage debug: ${url} is not valid url`)
+      return
+    }
+    url = addFromNumberNonce(url)
+    const title = c[`${id}.title`]?.trim() || intl`PBX user settings`
+    const pos = c[`${id}.pos`]?.trim() || 'setting,right,1'
+    const incoming = c[`${id}.incoming`]?.trim()
+    results.push({
+      id,
+      url,
+      title,
+      pos,
+      incoming,
+    })
+  })
+  ctx.auth.listCustomPage = results
+}
+
+const buildCustomPageUrl = async (url: string) => {
+  const ca = ctx.auth.getCurrentAccount()
+  if (!ca) {
+    return url
+  }
+  url = replaceUrlWithoutPbxToken(
+    url,
+    ctx.intl.locale,
+    ca.pbxTenant,
+    ca.pbxUsername,
+  )
+  if (!hasPbxTokenTobeRepalced(url)) {
+    return url
+  }
+  const r = await ctx.pbx.getPbxToken()
+  return r?.token ? replacePbxToken(url, r.token) : url
+}
+
+const rebuildCustomPageUrlNonce = (url: string) =>
+  replaceFromNumberUsingParam(url, random(1, 1000000, false))
+
+const rebuildCustomPageUrlPbxToken = async (url: string) => {
+  url = rebuildCustomPageUrlNonce(url)
+  const r = await ctx.pbx.getPbxToken()
+  return r?.token ? replacePbxTokenUsingSessParam(url, r.token) : url
+}
+
+// ----------------------------------------------------------------------------
+// actual pbx class
 export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
@@ -51,17 +150,28 @@ export class PBX extends EventEmitter {
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  private RETRY_DELAY = 300
   @observable retryingRequests: string[] = []
+
+  // Methods that have retry mechanism via palRequestWithRetry
+  private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
+    'hold',
+    'unhold',
+    'getPhoneAppliContact',
+  ]
 
   private generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
       return false
     }
+    const code = (err as any).code
+    const message = String((err as any).message || '')
     return (
-      ('code' in err && (err as any).code === -1) ||
-      ('message' in err && /timeout/i.test((err as Error).message))
+      code === -1 || // ERROR_TIMEOUT
+      code === -2 || // ERROR_DISCONNECTED
+      /timeout/i.test(message) ||
+      /disconnected/i.test(message) ||
+      /connection reset/i.test(message)
     )
   }
 
@@ -150,7 +260,13 @@ export class PBX extends EventEmitter {
         continue
       }
       if (request.retryCount >= this.MAX_RETRY) {
-        request.reject(new Error('Maximum number of retries reached'))
+        const errorMsg = new Error('Maximum number of retries reached')
+        request.reject(errorMsg)
+        // show error message only when MAX_RETRY is reached
+        if (!suppressErr(errorMsg)) {
+          ctx.toast.internet(errorMsg)
+        }
+
         this.emit('pal-retry-end', request)
         continue
       }
@@ -176,7 +292,7 @@ export class PBX extends EventEmitter {
             request.retryCount++
             setTimeout(() => {
               this.pendingRequests.push(request)
-            }, this.RETRY_DELAY)
+            }, retryInterval)
           } else {
             request.reject(err)
           }
@@ -243,19 +359,34 @@ export class PBX extends EventEmitter {
     },
   )
 
-  private checkTimeoutToReconnectPbx = async (err: Error | true) => {
+  private checkTimeoutToReconnectPbx = async (
+    err: Error | true,
+    method: keyof Pbx,
+  ) => {
     if (err === true) {
       return
     }
-    ctx.toast.internet(err)
-    if (this.isPalTimeoutError(err)) {
+    const isPingMethod = method === 'ping'
+    const isRetryableError = this.isPalTimeoutError(err)
+    const hasRetryMethod = this.methodsWithRetry.includes(method)
+    const shouldHideError = isRetryableError && hasRetryMethod
+
+    if (!isPingMethod && !suppressErr(err) && !shouldHideError) {
+      ctx.toast.internet(err)
+    }
+
+    if (isRetryableError) {
       ctx.authPBX.dispose()
+      if (isPingMethod && !shouldHideError) {
+        ctx.toast.internet()
+      }
       // wait for 1 second to ensure PBX is fully stopped and Mobx reactions cleared
       await waitTimeout(1000)
       ctx.authPBX.auth()
-    } else {
-      this.pingActivityAt = Date.now()
+      return
     }
+
+    this.pingActivityAt = Date.now()
   }
 
   private wrapListenersWithLog = <T extends (...args: any[]) => void>(
@@ -315,8 +446,43 @@ export class PBX extends EventEmitter {
       ctype: 2,
     })
     this.client = client
-
     client.debugLevel = 2
+
+    // Check server availability before login
+    if (isAndroid) {
+      const serverReady = await new Promise<boolean>(resolve => {
+        const testWs = new WebSocket(`${wsUri}?status=true`)
+        let timeoutId: number | undefined = undefined
+        let isResolved = false
+
+        const cleanup = (result: boolean) => {
+          if (isResolved) {
+            return
+          }
+          isResolved = true
+
+          if (timeoutId) {
+            BackgroundTimer.clearTimeout(timeoutId)
+          }
+          try {
+            testWs.close()
+          } catch {}
+          resolve(result)
+        }
+
+        timeoutId = BackgroundTimer.setTimeout(() => cleanup(false), 5000)
+        testWs.onopen = () => cleanup(true)
+        testWs.onerror = () => cleanup(false)
+        testWs.onclose = e => cleanup(e.wasClean || e.code === 1000)
+      })
+
+      if (!serverReady) {
+        this.logMainInstance('PAL Server not ready - aborting login')
+        this.disconnect()
+        return false
+      }
+      this.logMainInstance('PAL Server available - proceeding with login')
+    }
     client.call_pal = (method: keyof Pbx, params?: object) =>
       new Promise((resolve, reject) => {
         const start = Date.now()
@@ -349,7 +515,7 @@ export class PBX extends EventEmitter {
                 `PAL call error - method: ${method}, duration: ${end - start}ms, error:`,
                 err,
               )
-              this.checkTimeoutToReconnectPbx(err)
+              this.checkTimeoutToReconnectPbx(err, method)
             }
             reject(err)
           },
@@ -668,12 +834,12 @@ export class PBX extends EventEmitter {
     //    even after re-connected it, don't refresh it again
     const urlCustomPage = ctx.auth.listCustomPage?.[0]?.url
     if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
-      _parseListCustomPage()
+      parseListCustomPage()
     }
 
     // get resource line
     if (!isEmbed) {
-      _parseResourceLines(config['webphone.resource-line'])
+      parseResourceLines(config['webphone.resource-line'])
     }
 
     const ca = ctx.auth.getCurrentAccount()
@@ -1138,101 +1304,12 @@ export class PBX extends EventEmitter {
       command: PnCommand.remove,
       service_id: PnServiceId.apns,
     })
+
+  parseResourceLines = parseResourceLines
+  parseListCustomPage = parseListCustomPage
+  buildCustomPageUrl = buildCustomPageUrl
+  rebuildCustomPageUrlNonce = rebuildCustomPageUrlNonce
+  rebuildCustomPageUrlPbxToken = rebuildCustomPageUrlPbxToken
 }
 
 ctx.pbx = new PBX()
-
-// ----------------------------------------------------------------------------
-// parse resource line data
-export const _parseResourceLines = (l: string | undefined) => {
-  if (!l) {
-    ctx.auth.resourceLines = []
-    return
-  }
-  const lines = l.split(',')
-  const resourceLines: PbxResourceLine[] = []
-  lines.forEach(line => {
-    if (line.includes(':')) {
-      const [key, value] = line.split(':')
-      if (key) {
-        resourceLines.push({ key: key.trim(), value: value.trim() })
-      }
-    } else if (line) {
-      resourceLines.push({ key: line.trim(), value: line.trim() })
-    }
-  })
-  // remove duplicate value
-  ctx.auth.resourceLines = resourceLines.filter((item, index) => {
-    const nextItem = resourceLines.find(
-      (next, nextIndex) => nextIndex > index && next.value === item.value,
-    )
-    return !nextItem
-  })
-}
-
-// ----------------------------------------------------------------------------
-// custom page url utils
-// need to place them here to avoid circular dependencies
-
-const _parseListCustomPage = () => {
-  const c = ctx.auth.pbxConfig
-  if (!c) {
-    return
-  }
-  const results: PbxCustomPage[] = []
-  Object.keys(c).forEach(k => {
-    if (!k.startsWith('webphone.custompage')) {
-      return
-    }
-    const parts = k.split('.')
-    const id = `${parts[0]}.${parts[1]}`
-    if (results.some(item => item.id === id)) {
-      return
-    }
-    let url = c[`${id}.url`]
-    if (!validator.isURL(url)) {
-      // ignore if not url
-      console.log(`CustomPage debug: ${url} is not valid url`)
-      return
-    }
-    url = addFromNumberNonce(url)
-    const title = c[`${id}.title`] || intl`PBX user settings`
-    const pos = c[`${id}.pos`] || 'setting,right,1'
-    const incoming = c[`${id}.incoming`]
-    results.push({
-      id,
-      url,
-      title,
-      pos,
-      incoming,
-    })
-  })
-  ctx.auth.listCustomPage = results
-}
-
-export const buildCustomPageUrl = async (url: string) => {
-  const ca = ctx.auth.getCurrentAccount()
-  if (!ca) {
-    return url
-  }
-  url = replaceUrlWithoutPbxToken(
-    url,
-    ctx.intl.locale,
-    ca.pbxTenant,
-    ca.pbxUsername,
-  )
-  if (!hasPbxTokenTobeRepalced(url)) {
-    return url
-  }
-  const r = await ctx.pbx.getPbxToken()
-  return r?.token ? replacePbxToken(url, r.token) : url
-}
-
-export const rebuildCustomPageUrlNonce = (url: string) =>
-  replaceFromNumberUsingParam(url, random(1, 1000000, false))
-
-export const rebuildCustomPageUrlPbxToken = async (url: string) => {
-  url = rebuildCustomPageUrlNonce(url)
-  const r = await ctx.pbx.getPbxToken()
-  return r?.token ? replacePbxTokenUsingSessParam(url, r.token) : url
-}

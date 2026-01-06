@@ -7,7 +7,9 @@ import { v4 as newUuid } from 'uuid'
 
 import { mdiPhone } from '#/assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '#/brekekejs'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import { addCallHistory } from '#/stores/addCallHistory'
 import type { ConnectionState } from '#/stores/authStore'
 import { Call } from '#/stores/Call'
@@ -28,7 +30,10 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
-import { webShowNotification } from '#/utils/webShowNotification'
+import {
+  webCloseNotification,
+  webShowNotification,
+} from '#/utils/webShowNotification'
 
 export class CallStore {
   @observable inPageCallManage?: {
@@ -291,6 +296,7 @@ export class CallStore {
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
         remoteVideoStreamObject?: MediaStream | null
+        remoteWithVideo?: boolean
       },
   ) => {
     this.updateCurrentCallDebounce()
@@ -342,10 +348,20 @@ export class CallStore {
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
-        // auto disable video if the call is answered and incoming call
-        if (e.incoming && e.localVideoEnabled) {
+        // auto mute video if the call is answered and local video is not enabled or incoming call
+        if (
+          !e.answerVideoEnabled &&
+          (!e.localVideoEnabled || (e.localVideoEnabled && e.incoming))
+        ) {
           e.mutedVideo = true
           ctx.sip.setMutedVideo(true, e.id)
+        }
+
+        if (
+          isEmbed &&
+          embedApi._notificationOptions?.closeNotificationOnCallAnswer
+        ) {
+          webCloseNotification({ type: 'call', id: e.id })
         }
       }
       // handle logic set hold when user don't answer the call on PN incoming with auto answer function on iOS #975
@@ -360,6 +376,17 @@ export class CallStore {
         AppState.currentState !== 'active'
       ) {
         e.setHoldWithoutCallKeep(true)
+      }
+
+      // auto enable local video if the call is answered and remote video is enabled
+      // but local video is not enabled
+      if (
+        e.answered &&
+        ((!e.remoteVideoEnabled && p.remoteVideoEnabled) ||
+          e.answerVideoEnabled) &&
+        !e.localVideoEnabled
+      ) {
+        ctx.sip.enableLocalVideo(e.id)
       }
 
       Object.assign(e, p, {
@@ -453,7 +480,13 @@ export class CallStore {
     // desktop notification
     if (isWeb && c.incoming && !c.answered) {
       const name = await c.getDisplayNameAsync()
-      webShowNotification(name + ' ' + intl`Incoming call`, name)
+      webShowNotification({
+        type: 'call',
+        id: c.id,
+        body: c.remoteVideoEnabled ? intl`Video call` : intl`Voice call`,
+        tag: name,
+        title: name,
+      })
     }
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
@@ -467,11 +500,24 @@ export class CallStore {
     ) {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
+      const op = {
+        ios: {
+          ringtone: await BrekekeUtils.validateRingtone(
+            p.ringtoneFromSip ?? '',
+            ca?.pbxUsername ?? '',
+            ca?.pbxTenant ?? '',
+            ca?.pbxHostname ?? '',
+            ca?.pbxPort ?? '',
+          ),
+        },
+      }
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
         await c.getDisplayNameAsync(),
         'generic',
+        undefined,
+        op,
       )
     }
     // get and check callkeep if pending incoming call
@@ -505,6 +551,10 @@ export class CallStore {
 
   callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
+    if (isEmbed && embedApi._notificationOptions?.closeNotificationOnCallEnd) {
+      webCloseNotification({ type: 'call', id: rawSession.sessionId })
+    }
+
     this.callTerminated[rawSession.sessionId] = true
 
     this.updateCurrentCallDebounce()
@@ -580,10 +630,10 @@ export class CallStore {
   startCall: MakeCallFn = async (number: string, ...args) => {
     // make sure sip is ready before make call
     if (ctx.auth.sipState !== 'success') {
-      return
+      return false
     }
     if (!(await permForCall())) {
-      return
+      return false
     }
     if (
       this.callkeepUuidPending ||
@@ -592,7 +642,7 @@ export class CallStore {
       RnAlert.error({
         message: intlDebug`There is already an outgoing call`,
       })
-      return
+      return false
     }
     // check line resource
     if (
@@ -606,7 +656,8 @@ export class CallStore {
         )
         args[0] = { ...args[0], extraHeaders }
       } catch (err) {
-        return
+        console.error(err)
+        return false
       }
     }
     // start call logic in RNCallKeep
@@ -646,11 +697,11 @@ export class CallStore {
       sipState === 'stopped'
     ) {
       ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
-      return
+      return true
     }
     if (sipState === 'connecting') {
       ctx.auth.waitSip().then(sipCreateSession)
-      return
+      return true
     }
     // in case of sip state is success
     // there could still cases that the sip is disconnected but state not updated yet
@@ -659,6 +710,7 @@ export class CallStore {
     try {
       sipCreateSession()
     } catch (err) {
+      console.error(err)
       reconnectCalled = true
       ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
     }
@@ -703,6 +755,7 @@ export class CallStore {
       }),
       500,
     )
+    return true
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
 
@@ -724,7 +777,7 @@ export class CallStore {
   }
   private updateBackgroundCallsDebounce = debounce(
     this.updateBackgroundCalls,
-    300,
+    defaultTimeout,
     { maxWait: 1000 },
   )
   @action private updateCurrentCall = () => {
@@ -741,9 +794,13 @@ export class CallStore {
     }
     this.updateBackgroundCallsDebounce()
   }
-  private updateCurrentCallDebounce = debounce(this.updateCurrentCall, 300, {
-    maxWait: 1000,
-  })
+  private updateCurrentCallDebounce = debounce(
+    this.updateCurrentCall,
+    defaultTimeout,
+    {
+      maxWait: 1000,
+    },
+  )
 
   // callkeep + pn data
   @observable callkeepMap: {
@@ -1054,7 +1111,7 @@ export class CallStore {
         if (await BrekekeUtils.isLocked()) {
           BrekekeUtils.setIsAppActive(false, true)
         }
-      }, 300)
+      }, defaultTimeout)
     })
   }
 
@@ -1068,6 +1125,12 @@ export class CallStore {
 
   // some other fields
   @observable isLoudSpeakerEnabled = false
+
+  @action updateLoudSpeakerStatus = async () => {
+    if (isIos && this.getOngoingCall()) {
+      this.isLoudSpeakerEnabled = await BrekekeUtils.isSpeakerOn()
+    }
+  }
   @action toggleLoudSpeaker = () => {
     if (isWeb) {
       return

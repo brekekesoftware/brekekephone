@@ -1,16 +1,16 @@
 import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import {
   ActivityIndicator,
   Dimensions,
   Modal,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
-import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
 
@@ -80,7 +80,7 @@ const css = StyleSheet.create({
   },
   btnClose: {
     position: 'absolute',
-    top: getStatusBarHeight(true),
+    top: isAndroid ? StatusBar.currentHeight : 44,
     right: 15,
     zIndex: 10,
     elevation: 2,
@@ -117,7 +117,10 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return nextUrl
   }, [])
 
-  const images = url ? [{ url: convertUri(url) }] : undefined
+  const images = useMemo(
+    () => (url ? [{ url: convertUri(url) }] : undefined),
+    [url, convertUri],
+  )
   const isLoading =
     (state !== 'success' && state !== 'failure' && state !== 'stopped') ||
     (save && save === 'started')
@@ -147,6 +150,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             paused={true}
             style={css.video}
             enterPictureInPictureOnLeave
+            preventsDisplaySleepDuringVideoPlayback={false}
           />
           <View style={css.vlayerVideo}>
             <RnTouchableOpacity onPress={onShowImage}>
@@ -164,6 +168,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             paused={true}
             style={css.video}
             controls={true}
+            preventsDisplaySleepDuringVideoPlayback={false}
           />
         </View>
       )

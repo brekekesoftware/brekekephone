@@ -2,20 +2,15 @@ package com.brekeke.phonedev.lpc;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import com.brekeke.phonedev.R;
-import com.brekeke.phonedev.utils.L;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReadableArray;
@@ -32,6 +27,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Map;
 import javax.net.ssl.*;
@@ -44,12 +40,19 @@ public class LpcUtils {
   public static int NOTI_ID = 0;
 
   public static Intent putConfigToIntent(
-      String host, int port, String token, String userName, String tlsKeyHash, Intent i) {
+      String host,
+      int port,
+      String token,
+      String userName,
+      String tlsKeyHash,
+      ArrayList<String> remoteSsids,
+      Intent i) {
     i.putExtra("token", token);
     i.putExtra("username", userName);
     i.putExtra("host", host);
     i.putExtra("port", port);
     i.putExtra("tlsKeyHash", tlsKeyHash);
+    i.putStringArrayListExtra("remoteSsids", remoteSsids);
     return i;
   }
 
@@ -69,34 +72,6 @@ public class LpcUtils {
     ActivityManager.RunningAppProcessInfo myProcess = new ActivityManager.RunningAppProcessInfo();
     ActivityManager.getMyMemoryState(myProcess);
     return myProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
-  }
-
-  public static void showIncomingCallNotification(Context appCtx, Intent i) {
-    if (!checkAppInBackground()) {
-      return;
-    }
-    i.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-    // fix: the application crashes when it is in the background state and there is an
-    // incoming call
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-      // |= is used to add a flag without losing other flags already present in the flags
-      // variable.
-      flags |= PendingIntent.FLAG_IMMUTABLE;
-    }
-    PendingIntent pi = PendingIntent.getActivity(appCtx, 0, i, flags);
-
-    Notification notification =
-        new Notification.Builder(appCtx, NOTI_CHANNEL_ID)
-            // fix: the app will crash: "Invalid notification (no valid small icon)"
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(L.incomingCall())
-            .setCategory(Notification.CATEGORY_CALL)
-            .setFullScreenIntent(pi, true)
-            .build();
-    NotificationManager nm =
-        (NotificationManager) appCtx.getSystemService(Context.NOTIFICATION_SERVICE);
-    nm.notify(TAG, NOTI_ID, notification);
   }
 
   public static final ServiceConnection connection =
@@ -259,14 +234,31 @@ public class LpcUtils {
     return sslContext;
   }
 
-  // TODO: match ssid in background service where it initiates the connection
-  public static Boolean matchSsid(ReadableArray remoteSsid, String localSsid) {
-    for (int i = 0; i < remoteSsid.size(); i++) {
-      ReadableType type = remoteSsid.getType(i);
-      if (type == ReadableType.String && remoteSsid.getString(i).equals(localSsid)) {
-        return true;
+  // Convert ReadableArray to String[]
+  public static ArrayList<String> convertReadableArrayToStringList(ReadableArray array) {
+    ArrayList<String> result = new ArrayList<>();
+
+    if (array == null || array.size() == 0) {
+      return result;
+    }
+
+    for (int i = 0; i < array.size(); i++) {
+      try {
+        String value = null;
+        if (array.getType(i) == ReadableType.String) {
+          value = array.getString(i);
+        } else {
+          value = String.valueOf(array.getDynamic(i).asString());
+        }
+
+        if (value != null && !"null".equals(value)) {
+          result.add(value);
+        }
+
+      } catch (Exception e) {
       }
     }
-    return false;
+
+    return result;
   }
 }

@@ -39,7 +39,7 @@ import { RnText } from '#/components/RnText'
 import { SmartImage } from '#/components/SmartImage'
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/VideoPlayer'
-import { isAndroid, isWeb } from '#/config'
+import { defaultTimeout, isAndroid, isWeb } from '#/config'
 import { PageCallTransferAttend } from '#/pages/PageCallTransferAttend'
 import type { Call, CallConfigKey } from '#/stores/Call'
 import { ctx } from '#/stores/ctx'
@@ -50,8 +50,8 @@ import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 const { width, height } = Dimensions.get('window')
-const minSizeH = height * 0.4
-const minSizeW = width * 0.9
+const minSizeH = height * 0.3
+const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 const css = StyleSheet.create({
@@ -88,7 +88,7 @@ const css = StyleSheet.create({
   Btns_Inner: {
     flexDirection: 'row',
     alignSelf: 'center',
-    width: Dimensions.get('screen').width,
+    width,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
@@ -493,7 +493,7 @@ class PageCallManage extends Component<{
     const isShowAvatar =
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     const styleBigAvatar = c.localVideoEnabled
-      ? { flex: 1, maxHeight: Dimensions.get('window').height / 2 - 20 }
+      ? { flex: 1, maxHeight: height / 2 - 20 }
       : { flex: 1 }
     const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
@@ -689,6 +689,7 @@ class PageCallManage extends Component<{
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
               size={40}
               loading={c.rqLoadings['hold']}
+              msLoading={defaultTimeout}
               textcolor='white'
             />
           )}

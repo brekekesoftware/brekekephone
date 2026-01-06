@@ -1650,6 +1650,8 @@ PODS:
     - React-Core
   - react-native-notifications (5.1.0):
     - React-Core
+  - react-native-safe-area-context (5.6.1):
+    - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
   - react-native-video (6.16.1):
@@ -2231,8 +2233,6 @@ PODS:
     - React-Core
   - RNVoipPushNotification (3.3.3):
     - React-Core
-  - RNWifi (4.13.6):
-    - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -2291,6 +2291,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-notifications (from `../node_modules/react-native-notifications`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
@@ -2337,7 +2338,6 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVoipPushNotification (from `../node_modules/react-native-voip-push-notification`)
-  - RNWifi (from `../node_modules/react-native-wifi-reborn`)
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -2442,6 +2442,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-notifications:
     :path: "../node_modules/react-native-notifications"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-video:
@@ -2534,8 +2536,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNVoipPushNotification:
     :path: "../node_modules/react-native-voip-push-notification"
-  RNWifi:
-    :path: "../node_modules/react-native-wifi-reborn"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -2588,6 +2588,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: cb9f98f35ab33d86c426a347ec15057e1abe5952
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-notifications: 4601a5a8db4ced6ae7cfc43b44d35fe437ac50c4
+  react-native-safe-area-context: aac2745e96999c8633d2f6119e4e39b499c2ac8b
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-video: 432ebcda896cd5db9d89f8118f43c645c97ccc90
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
@@ -2634,7 +2635,6 @@ SPEC CHECKSUMS:
   RNShare: b23b47bdfdcb5d1c0b6edb5c85aad34bc44f3411
   RNSVG: 3446469442ca54ddf210d2a1b7c2b6eaecaca2c3
   RNVoipPushNotification: a6f7c09e1ca7220e2be1c45e9b6b897c9600024b
-  RNWifi: dfa2db4c4e46496f53016fb8be32b5a51f13aee4
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

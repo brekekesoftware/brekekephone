@@ -1,3 +1,4 @@
+import AVFoundation
 import Combine
 import Foundation
 import SwiftUI
@@ -114,6 +115,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       .didReceiveIncomingPush(with: payload,
                               forType: (type as NSString) as String,
                               callkeepUuid: uuid)
+
     // config RNCallKeep
     AppDelegate.reportNewIncomingCall(
       uuid: uuid,
@@ -197,24 +199,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?
   ) {
-    let aps: NSDictionary! = payload["aps"] as? NSDictionary
-    var from: String! = payload["x_from"] as? String
-    if from == nil, aps != nil {
-      from = aps.value(forKey: "x_from") as? String
-    }
-    var name: String! = payload["x_displayname"] as? String
-    if name == nil, aps != nil {
-      name = aps.value(forKey: "x_displayname") as? String
-    }
-    if name == nil, from != nil {
-      name = from
-    }
-    if from == nil {
-      from = "Brekeke Phone"
-    }
-    if name == nil {
-      name = "Loading..."
-    }
+    let from: String! = PN.callerName(payload)
+    // ringtone
+    let ringtoneName = PN.ringtone(payload) ?? ""
+    let username = PN.username(payload) ?? ""
+    let tenant = PN.tenant(payload) ?? ""
+    let host = PN.host(payload) ?? ""
+    let port = PN.port(payload) ?? ""
+    let name: String! = from
     RNCallKeep.reportNewIncomingCall(uuid,
                                      handle: from,
                                      handleType: "generic",
@@ -226,6 +218,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                      supportsUngrouping: false,
                                      fromPushKit: true,
                                      payload: payload,
-                                     withCompletionHandler: handler)
+                                     withCompletionHandler: handler,
+                                     ringtone: RingtoneUtils.getRingtone(
+                                       ringtone: ringtoneName,
+                                       username: username,
+                                       tenant: tenant,
+                                       host: host,
+                                       port: port
+                                     ))
   }
 }

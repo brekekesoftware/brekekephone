@@ -14,7 +14,7 @@ import { permForCallLog } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
-const alreadyAddHistoryMap: { [pnId: string]: true } = {}
+let alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const parseReasonCancelCall = (reason?: string) => {
   if (!reason) {
     return
@@ -69,7 +69,6 @@ export const addCallHistory = async (
     return
   }
   const pnId = isTypeCall ? c.pnId : c.id
-
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
       return
@@ -192,6 +191,11 @@ export type CallHistoryInfo = {
   to?: string
 }
 
+// Need to clear alreadyAddHistoryMap when pbx stops to avoid losing history log
+export const clearAlreadyHistoryMap = () => {
+  alreadyAddHistoryMap = {}
+}
+
 const addToCallLog = async (c: CallHistoryInfo) => {
   // TODO: temporary disabled
   const disabled = true
@@ -243,6 +247,7 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
       rs?.display_name || name || phoneNumber
     }`
   } catch (err) {
+    console.error(err)
     return r
   }
 }

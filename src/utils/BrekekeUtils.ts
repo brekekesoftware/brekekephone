@@ -4,6 +4,7 @@ import { NativeModules } from 'react-native'
 
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/callStore'
+import { intl } from '#/stores/intl'
 
 type TBrekekeUtils = {
   // ==========================================================================
@@ -75,10 +76,12 @@ type TBrekekeUtils = {
 
   // ==========================================================================
   // these methods only available on ios
-  webrtcSetAudioEnabled(enabled: boolean): void
+  webrtcSetAudioEnabled(enabled: boolean, action?: string): void
   playRBT(isLoudSpeaker: boolean): void
   stopRBT(): Promise<void>
   setProximityMonitoring(enabled: boolean): void
+  isSpeakerOn(): Promise<boolean>
+  resetAudioConfig(): void
 
   // ==========================================================================
   // these methods available on both
@@ -94,10 +97,18 @@ type TBrekekeUtils = {
   ): void
   disableLPC(): void
   systemUptimeMs(): Promise<number>
+  validateRingtone(
+    r: string,
+    u: string,
+    t: string,
+    h: string,
+    p: string,
+  ): Promise<string>
 }
 
 export type TNativeModules = {
   BrekekeUtils: NativeModule & TBrekekeUtils
+  BrekekeEmitter: NativeModule | null
 }
 
 const Polyfill: TBrekekeUtils = {
@@ -163,16 +174,20 @@ const Polyfill: TBrekekeUtils = {
   playRBT: () => undefined,
   stopRBT: () => Promise.resolve(),
   setProximityMonitoring: () => undefined,
+  isSpeakerOn: () => Promise.resolve(false),
+  resetAudioConfig: () => undefined,
 
   // ==========================================================================
   // these methods available on both
   enableLPC: () => undefined,
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
+  validateRingtone: () => Promise.resolve(''),
 }
 
 const M = NativeModules as TNativeModules
 export const BrekekeUtils = M.BrekekeUtils || Polyfill
+export const BrekekeEmitter = M.BrekekeEmitter || null
 
 if (__DEV__ && !isWeb) {
   const k = Object.keys(M.BrekekeUtils || {})
@@ -197,11 +212,19 @@ export enum CallLogType {
 
 // same convention with default pbx tenant
 export const defaultRingtone = '-'
+// same convention with system ringtone
+export const systemRingtone = '--'
 // same with _static in native Ringtone.java
 export const staticRingtones = [
   'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
+
+export const staticRingtoneMap: {
+  [k in (typeof staticRingtones)[number]]: () => string
+} = {
+  incallmanager_ringtone: () => intl`Brekeke ringtone`,
+}
 
 export type RemoteStream = {
   vId: string

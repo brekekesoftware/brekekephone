@@ -18,7 +18,7 @@ import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
+import { defaultTimeout, isWeb } from '#/config'
 import type { ChatFile, ChatGroup, ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -88,7 +88,7 @@ export class PageChatGroupDetail extends Component<{
       })
       .then(chats => {
         ctx.chat.pushMessages(groupId, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, 300)
+        BackgroundTimer.setTimeout(this.onContentSizeChange, defaultTimeout)
       })
       .catch((err: Error) => {
         RnAlert.error({

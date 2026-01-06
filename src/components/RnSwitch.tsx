@@ -26,8 +26,7 @@ const css = StyleSheet.create({
     ...v.boxShadow,
   },
   Circle__enabled: {
-    left: null as any,
-    right: -1,
+    transform: [{ translateX: 20 }],
     backgroundColor: v.colors.primary,
   },
 })

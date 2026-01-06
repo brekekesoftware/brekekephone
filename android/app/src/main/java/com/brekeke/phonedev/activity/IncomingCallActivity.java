@@ -198,7 +198,6 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       forceFinish();
       return;
     }
-
     timer = new Timer();
     uuid = data.get("callkeepUuid");
     callerName = PN.callerName(data);
@@ -209,6 +208,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     tenant = PN.tenant(data);
     host = PN.host(data);
     port = PN.port(data);
+    autoAnswer = BrekekeUtils.toBoolean(PN.autoAnswer(data));
 
     if ("rejectCall".equals(BrekekeUtils.userActions.get(uuid))) {
       debug("onCreate rejectCall");
@@ -915,7 +915,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     vCallManageControls.setVisibility(View.VISIBLE);
     vCallManage.bringToFront();
     btnUnlock.setVisibility(View.VISIBLE);
-    btnEndCall.setVisibility(View.VISIBLE);
+    btnEndCall.setVisibility(btnHold.isSelected() ? View.GONE : View.VISIBLE);
     updateBtnUnlockLabel();
   }
 
@@ -935,7 +935,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     ConstraintLayout constraintLayout = findViewById(R.id.call_manager_layout);
     ConstraintSet constraintSet = new ConstraintSet();
     int height = displayMetrics.heightPixels;
-    boolean isLargeDevice = height > 1200;
+    boolean isLargeDevice = height > 1280;
     int flexValue = height / 7;
     vCardAvatarTalking.setBackgroundColor(Color.WHITE);
     vCardAvatarTalking.getLayoutParams().height = flexValue;
@@ -943,25 +943,21 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     shape.setCornerRadius(flexValue / 2);
     constraintSet.clone(constraintLayout);
     constraintSet.connect(
-        R.id.btn_unlock, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 12);
+        R.id.view_time, ConstraintSet.TOP, R.id.card_avatar_talking, ConstraintSet.BOTTOM, 5);
+    constraintSet.connect(
+        R.id.btn_unlock, ConstraintSet.TOP, R.id.view_time, ConstraintSet.BOTTOM, 10);
     constraintSet.connect(
         R.id.view_call_manage_controls,
         ConstraintSet.BOTTOM,
         R.id.view_button_end,
         ConstraintSet.TOP,
-        isLargeDevice ? flexValue / 2 : 30);
-    constraintSet.connect(
-        R.id.card_avatar_talking,
-        ConstraintSet.TOP,
-        ConstraintSet.PARENT_ID,
-        ConstraintSet.TOP,
-        (int) (flexValue / 1.1));
+        isLargeDevice ? flexValue / 2 : 10);
     constraintSet.connect(
         R.id.view_button_end,
         ConstraintSet.BOTTOM,
         ConstraintSet.PARENT_ID,
         ConstraintSet.BOTTOM,
-        isLargeDevice ? flexValue / 2 : 30);
+        isLargeDevice ? flexValue / 2 : 10);
     vCardAvatarTalking.setBackground(shape);
     constraintSet.applyTo(constraintLayout);
   }
@@ -1031,6 +1027,10 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void handleShowAvatarTalking() {
+    if (isVideoCall) {
+      disableAvatarTalking();
+      return;
+    }
     if (BrekekeUtils.isImageUrl(talkingAvatar)) {
       webViewAvatarTalking.setVisibility(View.GONE);
       imgAvatarTalking.setVisibility(View.VISIBLE);
@@ -1347,7 +1347,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     startTimer(answeredAt);
     vCallManageLoading.setVisibility(View.GONE);
     btnChat.setVisibility(View.VISIBLE);
-    if (talkingAvatar == null || talkingAvatar.isEmpty()) {
+    if (isVideoCall || talkingAvatar == null || talkingAvatar.isEmpty()) {
       vCardAvatarTalking.setVisibility(View.GONE);
     } else {
       vCardAvatarTalking.setVisibility(View.VISIBLE);
@@ -1479,6 +1479,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   public void setImageTalkingUrl(String url, boolean _isLarge) {
+    if (url.equalsIgnoreCase(talkingAvatar)) {
+      return;
+    }
     talkingAvatar = url;
     isLarge = _isLarge;
     handleShowAvatarTalking();

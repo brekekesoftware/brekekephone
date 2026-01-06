@@ -4,6 +4,34 @@ declare global {
   }
 }
 
+export type EmbedPbxConfig = Partial<
+  Pick<
+    PbxGetProductInfoRes,
+    | 'webphone.useragent'
+    | 'webphone.http.useragent.product'
+    | 'webphone.resource-line'
+  >
+>
+export type EmbedPalConfig = {
+  // webphone.pal.param.*
+  [k: string]: string
+}
+export type EmbedSignInOptions = {
+  autoLogin?: boolean
+  clearExistingAccount?: boolean
+  palEvents?: string[]
+  accounts: EmbedAccount[]
+} & Partial<EmbedNotificationOptions> &
+  EmbedPbxConfig &
+  EmbedPalConfig
+export type EmbedNotificationOptions = {
+  dontShowNotificationIfFocusing: boolean
+  closeAllNotificationOnFocus: boolean
+  closeNotificationOnCallAnswer: boolean
+  closeNotificationOnCallEnd: boolean
+  notificationInterval: number
+}
+
 export type Brekeke = {
   pbx: {
     getPal(wsUri: string, options: GetPalOptions): Pbx
@@ -12,7 +40,7 @@ export type Brekeke = {
     Phone: Sip
   }
   Phone: {
-    render: Function
+    render(rootTag: HTMLElement, options: EmbedSignInOptions): any
   }
   Phonebook: Phonebook
   WebNotification: WebNotification
@@ -262,6 +290,8 @@ export type PbxGetProductInfoRes = {
   'webphone.recents.max': string
   'webphone.resource-line': string
   'webphone.http.useragent.product': string
+  'webphone.error_toast.suppress_enabled': string
+  'webphone.error_toast.suppress_patterns': string
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -431,7 +461,7 @@ export type MakeCallFn = (
   videoEnabled?: boolean,
   videoOptions?: object,
   exInfo?: string,
-) => void
+) => Promise<boolean>
 
 export type VideoOptions = {
   call: {

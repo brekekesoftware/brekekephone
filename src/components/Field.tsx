@@ -253,23 +253,11 @@ export const Field: FC<
     loading: boolean
     horizontalInput: string[]
     maxLength?: number
+    onRnPickerConfirm(value: string): void
+    onRnPickerDismiss(): void
+    confirmRnPickerLabel: string
   }>
 > = observer(({ ...props }) => {
-  if (props.isGroup) {
-    return (
-      <View
-        style={[
-          css.Field,
-          css.Field__group,
-          props.hasMargin && css.Field__groupMargin,
-        ]}
-      >
-        <RnText small style={css.Field_LabelTextGroup}>
-          {props.label}
-        </RnText>
-      </View>
-    )
-  }
   // handle enable/disable input Park
   const disablePark = props.type === 'PARK' && props.disabled
 
@@ -290,12 +278,31 @@ export const Field: FC<
   }
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
+  const isGroup = props.isGroup
+  // https://react.dev/warnings/invalid-hook-call-warning
+  if (isGroup) {
+    return (
+      <View
+        style={[
+          css.Field,
+          css.Field__group,
+          props.hasMargin && css.Field__groupMargin,
+        ]}
+      >
+        <RnText small style={css.Field_LabelTextGroup}>
+          {props.label}
+        </RnText>
+      </View>
+    )
+  }
+
   if (!inputRef.current && $.isFocusing) {
     $.set('isFocusing', false)
   }
   if (!inputRefName.current && $.isParkNameFocusing) {
     $.set('isParkNameFocusing', false)
   }
+
   if (props.onCreateBtnPress) {
     Object.assign(props, {
       iconRender: () => (
@@ -438,6 +445,9 @@ export const Field: FC<
             options: props.options || [],
             selectedKey: props.value as string,
             onSelect: props.onValueChange as Function,
+            confirmLabel: props.confirmRnPickerLabel,
+            onConfirm: props.onRnPickerConfirm,
+            onDismiss: props.onRnPickerDismiss,
           })
           Keyboard.dismiss()
         },

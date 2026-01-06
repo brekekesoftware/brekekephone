@@ -14,7 +14,7 @@ import { RnAlert } from '#/stores/RnAlert'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { RnPicker } from '#/stores/RnPicker'
 import { RnStacker } from '#/stores/RnStacker'
-import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { BrekekeEmitter, BrekekeUtils } from '#/utils/BrekekeUtils'
 import { cleanUpDeepLink } from '#/utils/deeplink'
 import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
@@ -166,7 +166,8 @@ export const setupCallKeepEvents = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
-    BrekekeUtils.webrtcSetAudioEnabled(!e.hold)
+    // Audio enabled state is managed by didActivateAudioSession and didDeactivateAudioSession
+    // BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
@@ -190,14 +191,14 @@ export const setupCallKeepEvents = async () => {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
     }
-    BrekekeUtils.webrtcSetAudioEnabled(true)
+    BrekekeUtils.webrtcSetAudioEnabled(true, 'didActivateAudioSession')
   }
   const didDeactivateAudioSession = (
     e: EventsPayload['didDeactivateAudioSession'],
   ) => {
     // only in ios
     console.log('CallKeep debug: didDeactivateAudioSession')
-    BrekekeUtils.webrtcSetAudioEnabled(false)
+    BrekekeUtils.webrtcSetAudioEnabled(false, 'didDeactivateAudioSession')
     ctx.call.updateBackgroundCalls()
   }
   const didReceiveStartCallAction = async (
@@ -240,19 +241,36 @@ export const setupCallKeepEvents = async () => {
   add('didDeactivateAudioSession', didDeactivateAudioSession)
   add('didReceiveStartCallAction', didReceiveStartCallAction)
 
-  // android self-managed connection service
-  if (!isAndroid) {
+  // ios self-managed audio session
+  if (isIos) {
+    if (!BrekekeEmitter) {
+      return
+    }
+    const eventEmitterIos = new NativeEventEmitter(BrekekeEmitter)
+    // listen audio session route change event
+    eventEmitterIos.addListener(
+      'onAudioRouteChange',
+      ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
+        // already handled in app becoming active event
+        // const hasCall = ctx.call.calls.some(
+        //   c => (c.incoming && c.answered) || !c.incoming,
+        // )
+        // if (hasCall) {
+        //   ctx.call.isLoudSpeakerEnabled = isSpeakerOn
+        // }
+      },
+    )
     return
   }
+  // android self-managed connection service
+  // events from our custom BrekekeUtils module
+  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   // in killed state, the event handler may fire before the nav object has init
   const waitTimeoutNav = async () => {
     const t = RnStacker.stacks.some(s => s.isRoot) ? 300 : 1000
     await waitTimeout(t)
   }
-
-  // events from our custom BrekekeUtils module
-  const eventEmitter = new NativeEventEmitter(BrekekeUtils)
 
   eventEmitter.addListener('lpcIncomingCall', (v: string) => {
     parse(JSON.parse(v))

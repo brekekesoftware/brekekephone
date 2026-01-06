@@ -1,17 +1,70 @@
+#### 2.17.0
+
+- Embed:
+  - Add api to close notification
+  - Update api static getCurrentVersion
+
+#### 2.16.9
+
+- Initial implementation of ios custom ringtone
+- Add support for android to pick mp3 file as ringtone to match with ios implementation
+- Revert android lpc fine location permission, there will be no logic for matching wifi ssid
+- Fix android the phone should be able to sleep
+- Fix it should resume video call after unhold (issue 1120)
+- Fix android it should show hang up button when on hold (issue 1122)
+- Try fix ios custom ringtone when playing other audio (issue 1129)
+- Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
+- Improve custom ringtone as feedbacks (issue 1143)
+- Fix bug display status bar and switcher (issue 1144)
+- Fix ios pal disconnect retry with lte (issue 1145)
+
+#### 2.16.8
+
+- Fix it should suppress some errors with admin account
+
+#### 2.16.7
+
+- Fix it should be able to drag mini video call circle (issue 1084)
+
+#### 2.16.6
+
+- Update web browser notification to match with UC desktop
+- Fix it should save call history after restart PBX (issue 1021)
+- Fix it should not flash hold button on press (issue 1031)
+- Fix ios audio session (issue 1041, 1060, 1061, 1065, 1078)
+- Fix android it should perform correct action when press notification (issue 1059, 1063, 1064)
+- Fix it should not crash when add park number (issue 1068)
+- Fix android it should update UI correctly with auto answer (issue 1071)
+- Fix it should show remote video when remote enable (issue 1074)
+- Fix android it should reconnect LPC on internet connection lost (issue 1076)
+- Fix it should not cut off call screen in small screen device (issue 1079)
+- Fix it should not show error on ping failure (issue 1081)
+- Fix it should not show notification intervally (issue 1091)
+
+#### 2.16.5
+
+- Embed
+  - Fix it should cleanup
+
 #### 2.16.4
 
 - Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
+- Initial implementation of multiple custom pages
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
 - Fix it should prevent button quickly double press
 - Fix it should handle deeplink while making call from PhoneAppli (issue 1014)
+- Fix it should have layout display well with status bar (issue 1020, 1049)
 - Fix it should save logs when the device is locked (issue 1040)
+- Fix ios loud speaker it should toggle well (issue 1041)
 - Fix it should not display error message UC connection failure in incoming call (issue 1042)
 - Fix it should connect to sip after restart tomcat (issue 1043)
 - Fix it should not show notification with LPC service (issue 1044)
 - Fix it should not reload avatar when rerender (issue 1046)
 - Fix it should logout when app is closed from task manager (issue 1050)
 - Fix it should load video in video call (issue 1052)
+- Fix it should not hangup call when sip disconnect (issue 1056)
+- Fix it should clear keypad after hangup (issue 1057)
 
 #### 2.16.3
 

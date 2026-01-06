@@ -4,8 +4,7 @@ import { v4 as newUuid } from 'uuid'
 
 import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
-import { currentVersion } from '#/components/variables'
-import { isWeb } from '#/config'
+import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { intlDebug } from '#/stores/intl'
@@ -108,6 +107,8 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
+  @observable ringtonePicker: RingtonePickerType = {}
+
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
     let d: TAccountDataInStorage | undefined
@@ -115,11 +116,13 @@ export class AccountStore {
       try {
         d = JSON.parse(arr)
       } catch (err) {
+        void err
         d = undefined
       }
     }
     if (d) {
       let { profileData: accountData, profiles: accounts } = d
+      const { ringtonePicker } = d
       if (Array.isArray(d)) {
         // lower version compatible
         accounts = d
@@ -138,6 +141,7 @@ export class AccountStore {
           )
         }
         this.accountData = uniqBy(accountData, 'id')
+        this.ringtonePicker = ringtonePicker ?? {}
       })
     }
     resolveFn?.()
@@ -156,6 +160,7 @@ export class AccountStore {
         jsonSafe({
           profiles,
           profileData: this.accountData,
+          ringtonePicker: this.ringtonePicker,
         }),
       )
     } catch (err) {
@@ -178,6 +183,9 @@ export class AccountStore {
     })
     return this._saveAccountsToLocalStorageDebounced()
   }
+
+  saveAccountsToLocalStorageWithoutDebounced = async () =>
+    await this.saveAccountsToLocalStorage()
 
   @action upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
@@ -291,8 +299,12 @@ export class AccountStore {
     if (d) {
       return d
     }
+    const uniqueId = getAccountUniqueId(a)
+    if (!uniqueId) {
+      throw new Error('Account unique id is undefined')
+    }
     const newD = {
-      id: getAccountUniqueId(a),
+      id: uniqueId,
       accessToken: '',
       recentCalls: [],
       recentChats: [],
@@ -355,6 +367,7 @@ export type RecentCall = AccountData['recentCalls'][0]
 type TAccountDataInStorage = {
   profiles: Account[]
   profileData: AccountData[]
+  ringtonePicker: RingtonePickerType
 }
 
 type LastSignedInId = {
@@ -366,6 +379,10 @@ type LastSignedInId = {
   autoSignInBrekekePhone?: boolean
 }
 
+export type RingtonePickerType = {
+  [fileName: string]: boolean
+}
+
 export const getLastSignedInId = async (
   checkAutoSignInBrekekePhone?: boolean,
 ) => {
@@ -373,7 +390,9 @@ export const getLastSignedInId = async (
   let d = undefined as any as LastSignedInId
   try {
     d = j && JSON.parse(j)
-  } catch (err) {}
+  } catch (err) {
+    void err
+  }
   if (d && 'h' in d) {
     // backward compatibility json is the unique account id
     d = j as any as LastSignedInId

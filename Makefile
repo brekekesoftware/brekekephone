@@ -119,6 +119,22 @@ web:
 	ssh bre "cd /var/www && sudo rm -rf phone && unzip /var/www/upload/brekeke_phone$$V.zip && sudo mv brekeke_phone$$V phone" && \
 	make -Bs chmod;
 
+embed_b:
+	export V=$$(jq -r ".version" package.json) && \
+	echo $$V && \
+	yarn --ignore-engines && yarn build && \
+	rm -rf embed/example-react/public/brekeke_phone* && \
+	mv build embed/example-react/public/brekeke_phone$$V;
+
+embed_u:
+	cd embed/example-react && \
+	npm i --force && npm run build && \
+	mv dist embed && zip -vr embed.zip embed && \
+	scp embed.zip bre:/var/www && \
+	rm -rf embed* && \
+	ssh bre "cd /var/www && sudo rm -rf embed && unzip embed.zip && rm embed.zip" && \
+	cd ../.. && make -Bs chmod;
+
 dev:
 	make -Bs chmod && \
 	cd dev01/react-app && yarn --ignore-engines && yarn build && \

@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -52,7 +54,14 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 
+enum DialerCheckState {
+  IDLE,
+  CHECKING,
+  COMPLETED
+}
+
 public class BrekekeUtils extends ReactContextBaseJavaModule {
+
   public static Promise defaultDialerPromise;
   private static String TAG = "[BrekekeUtils]";
 
@@ -74,6 +83,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static Activity main;
   public static ActivityResultLauncher<Intent> defaultDialerLauncher;
+  public static DialerCheckState dialerCheckState = DialerCheckState.IDLE;
+
   public static KeyguardManager km;
 
   public static boolean isAppActive = false;
@@ -209,9 +220,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
               i.putExtra("data", new HashMap<>(m));
               ctx.startActivity(i);
-              if (toBoolean(m.get("lpc"))) {
-                LpcUtils.showIncomingCallNotification(ctx, i);
-              }
             };
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
@@ -428,37 +436,55 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return NotificationManagerCompat.from(ctx).areNotificationsEnabled();
   }
 
+  public static void resultDefaultDialer(String msg) {
+    dialerCheckState = DialerCheckState.COMPLETED;
+    resolveDefaultDialer(msg);
+  }
+
   public static void resolveDefaultDialer(String msg) {
     if (defaultDialerPromise != null) {
+      Emitter.debug("DefaultDialer resolved: " + msg);
       defaultDialerPromise.resolve(msg);
       defaultDialerPromise = null;
     }
   }
 
   public static void checkDefaultDialer() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || main == null) {
-      resolveDefaultDialer("Not supported on this Anrdoid version");
+    if (dialerCheckState == DialerCheckState.CHECKING) {
+      return;
+    }
+
+    if (dialerCheckState == DialerCheckState.COMPLETED) {
+      resolveDefaultDialer("Already checked");
+      return;
+    }
+
+    dialerCheckState = DialerCheckState.CHECKING;
+
+    if (VERSION.SDK_INT < VERSION_CODES.M || main == null) {
+      resultDefaultDialer("Not supported on this Anrdoid version");
       return;
     }
     var ctx = Ctx.app();
     var tm = (TelecomManager) ctx.getSystemService(TELECOM_SERVICE);
     if (tm == null) {
-      resolveDefaultDialer("TelecomManager is null");
+      resultDefaultDialer("TelecomManager is null");
       return;
     }
     var packageName = ctx.getPackageName();
     if (packageName.equals(tm.getDefaultDialerPackage())) {
-      resolveDefaultDialer("Already the default dialer");
+      resultDefaultDialer("Already the default dialer");
       return;
     }
     var intent =
         new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName);
     if (intent.resolveActivity(ctx.getPackageManager()) == null) {
-      resolveDefaultDialer("No activity to handle the intent");
+      resultDefaultDialer("No activity to handle the intent");
       return;
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+
+    if (VERSION.SDK_INT < VERSION_CODES.Q) {
       defaultDialerLauncher.launch(intent);
     } else {
       var rm = main.getSystemService(RoleManager.class);
@@ -622,6 +648,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void startRingtone(String r, String u, String t, String h, String p, Promise promise) {
     var v = Ringtone.play(r, u, t, h, p);
+    promise.resolve(v);
+  }
+
+  @ReactMethod
+  public void validateRingtone(String r, String u, String t, String h, String p, Promise promise) {
+    var v = Ringtone.get(r, u, t, h, p);
+    if (Ringtone._default.equals(v)) {
+      v = "";
+    }
     promise.resolve(v);
   }
 
@@ -904,9 +939,10 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       String localSsid,
       String tlsKeyHash) {
     var ctx = Ctx.app();
+    var r = LpcUtils.convertReadableArrayToStringList(remoteSsids);
     var i =
         LpcUtils.putConfigToIntent(
-            host, port, token, username, tlsKeyHash, new Intent(ctx, BrekekeLpcService.class));
+            host, port, token, username, tlsKeyHash, r, new Intent(ctx, BrekekeLpcService.class));
     ctx.startForegroundService(i);
     ctx.bindService(i, LpcUtils.connection, BrekekeLpcService.BIND_AUTO_CREATE);
     // update the status if the server turns lpc on or off

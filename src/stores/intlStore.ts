@@ -68,7 +68,7 @@ export class IntlStore {
       BrekekeUtils.setLocale(this.locale)
     })
   }
-  private setLocale = async (locale: string) => {
+  setLocale = async (locale: string) => {
     if (this.localeLoading || locale === this.locale) {
       return
     }
@@ -91,6 +91,17 @@ export class IntlStore {
       options: localeOptions,
       selectedKey: this.locale,
       onSelect: this.setLocale,
+    })
+  }
+
+  selectLocaleWithCallback = (cb: () => void) => {
+    RnPicker.open({
+      options: localeOptions,
+      selectedKey: this.locale,
+      onSelect: async (v: string) => {
+        await this.setLocale(v)
+        cb()
+      },
     })
   }
 

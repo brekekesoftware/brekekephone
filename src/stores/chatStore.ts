@@ -231,8 +231,14 @@ export class ChatStore {
 
     // show desktop notification for Web platform
     if (isWeb && this.getThreadConfig(threadId).isUnread && m.length === 1) {
-      const messageNotification = name + ': ' + m[0]?.text || ''
-      webShowNotification(messageNotification, name)
+      const messageNotification = m[0].text || ''
+      webShowNotification({
+        type: 'chat',
+        id: m[0].id,
+        body: messageNotification,
+        tag: name,
+        title: name,
+      })
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {

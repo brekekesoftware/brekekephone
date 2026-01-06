@@ -140,6 +140,7 @@ export class PageCallTransferAttend extends Component {
       }
       this.setState({ phoneappliSource, phoneappliTarget })
     } catch (err) {
+      console.error(err)
       return
     }
   }

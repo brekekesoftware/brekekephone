@@ -6,6 +6,7 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { buildWebViewSource, isAndroid } from '#/config'
+import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
   image: {
@@ -48,9 +49,6 @@ export const CustomPageWebView = ({
   onLoadEnd,
   onError,
 }: Props) => {
-  if (!url) {
-    return null
-  }
   const nLoading = useRef(false)
   const cUrl = useRef('')
   const onLoadStartForLoading = (e: WebViewNavigationEvent) => {
@@ -86,8 +84,38 @@ export const CustomPageWebView = ({
         }
       }
     } catch (err) {
+      console.error(err)
       return
     }
+  }
+
+  const onShouldStartLoadWithRequest = (event: { url: string }) => {
+    const callScheme = 'brekekephone://call'
+    if (!event || !event.url) {
+      return true
+    }
+
+    const eurl = event.url.toLowerCase()
+    if (!eurl.startsWith(callScheme)) {
+      return true
+    }
+
+    try {
+      const number = new URL(eurl).searchParams.get('number')
+      if (number && ctx.call) {
+        const decodedNumber = decodeURIComponent(number.trim())
+        ctx.call.startCall(decodedNumber)
+      }
+    } catch (err) {
+      console.error(err)
+      return true
+    }
+
+    return false
+  }
+
+  if (!url) {
+    return null
   }
 
   return (
@@ -105,6 +133,7 @@ export const CustomPageWebView = ({
       onLoadEnd={onLoadEnd}
       onError={onError}
       cacheEnabled={true}
+      onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
     />
   )
 }

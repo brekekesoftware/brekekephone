@@ -28,6 +28,8 @@ const css = StyleSheet.create({
   Btn__next: {
     width: '50%',
     backgroundColor: v.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   Btn__15: {
     width: '15%',
@@ -43,10 +45,9 @@ const css = StyleSheet.create({
   },
   //
   Text: {
-    flex: 1,
     color: v.revColor,
-    lineHeight: v.iconSize,
-    textAlign: 'center',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
 })
 
@@ -104,9 +105,7 @@ export const FooterActions: FC<
           },
         ]}
       >
-        <RnText small style={css.Text}>
-          {onNextText || intl`SAVE`}
-        </RnText>
+        <RnText style={css.Text}>{onNextText || intl`SAVE`}</RnText>
       </RnTouchableOpacity>
     </View>
   )
