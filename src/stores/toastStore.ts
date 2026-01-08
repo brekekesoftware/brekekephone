@@ -18,7 +18,7 @@ interface Toast {
 
 export class ToastStore {
   @observable items: Toast[] = []
-
+  private lastInternetToastTime = 0
   @action
   show = (
     msg: string | undefined,
@@ -73,7 +73,13 @@ export class ToastStore {
   }
 
   internet = (err?: Error) => {
-    this.error({ message: intlDebug`Internet connection failed`, err }, 5000)
+    const now = Date.now()
+    const timeSinceLastToast = now - this.lastInternetToastTime
+    // Only show if enough time has passed since last internet toast
+    if (timeSinceLastToast >= 5000) {
+      this.lastInternetToastTime = now
+      this.error({ message: intlDebug`Internet connection failed`, err }, 5000)
+    }
   }
 }
 
