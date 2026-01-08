@@ -155,7 +155,7 @@ export const AccountCreateForm: FC<{
         onPress: $.resetAllFields,
       },
     ]
-    if (props.updating && !isWeb) {
+    if (!isWeb) {
       d = [
         {
           label: intl`Select local mp3 as ringtone`,
