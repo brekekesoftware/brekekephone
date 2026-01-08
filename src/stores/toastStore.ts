@@ -44,6 +44,11 @@ export class ToastStore {
   }
 
   @action
+  clearAll = () => {
+    this.items = []
+  }
+
+  @action
   success = (msg: string, time?: number) => {
     this.show(msg, 'success', time)
   }
