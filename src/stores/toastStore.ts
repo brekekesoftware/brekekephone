@@ -4,6 +4,7 @@ import { v4 as newUuid } from 'uuid'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import type { ErrorRnAlert } from '#/stores/RnAlert'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -25,6 +26,10 @@ export class ToastStore {
     time: number = 3000,
     err?: Error,
   ) => {
+    const { message } = getConnectionStatus()
+    if (!!message) {
+      return
+    }
     const id = newUuid()
     const toast: Toast = { id, msg, type, time, err }
     this.items.push(toast)
