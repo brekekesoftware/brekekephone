@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..8bdf7b4 100644
+index 786045f..134f8cb 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,7 +1136,7 @@ index 786045f..8bdf7b4 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,161 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,168 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1178,7 +1178,7 @@ index 786045f..8bdf7b4 100644
 +}
 +
 +- (void)stopRingtone {
-+    if (audioPlayer && callMap.count == 0) {
++    if (audioPlayer) {
 +        [audioPlayer stop];
 +        audioPlayer = nil;
 +        ringtoneUrl = nil;
@@ -1271,14 +1271,21 @@ index 786045f..8bdf7b4 100644
 +
 +- (void) handleBrekekeCall:(CXCall *) call {
 +    NSUUID *uuid = call.UUID;
-+    if(call.hasEnded || call.hasConnected) {
-+        if (call.hasEnded) {
-+            [callMap removeObjectForKey:uuid];
++    if (call.hasEnded) {
++        [callMap removeObjectForKey:uuid];
++        if (callMap.count == 0) {
++            [self stopRingtone];
 +        }
-+        [self stopRingtone];
 +        NSLog(@"[RNCallKeep] stop ringtone when call ended");
 +        return;
 +    }
++    
++    if (call.hasConnected) {
++        [self stopRingtone];
++        NSLog(@"[RNCallKeep] stop ringtone when call connected");
++        return;
++    }
++    
 +    if(callMap[uuid] && gsmCallMap.count == 0 && hasOutgoing == NO) {
 +        NSLog(@"[RNCallKeep] play ringtone");
 +        [self playRingtoneWithURL:ringtoneUrl replay:NO];
