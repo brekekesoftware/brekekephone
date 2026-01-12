@@ -1,3 +1,7 @@
+#### 2.16.10
+
+- Add throttle to prevent spam of "Internet connection failed" toast (issue 1170)
+
 #### 2.16.9
 
 - Initial implementation of ios custom ringtone
