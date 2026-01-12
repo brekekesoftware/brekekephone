@@ -623,7 +623,7 @@ index c8e7bbd..062f225 100644
  
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..d5a09c3 100644
+index 786045f..58eaf6a 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,6 +38,12 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
@@ -1136,7 +1136,7 @@ index 786045f..d5a09c3 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1176,168 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
+@@ -1154,4 +1176,169 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1145,18 +1145,18 @@ index 786045f..d5a09c3 100644
 +
 +- (void)playRingtoneWithURL:(NSURL *)url replay:(BOOL)replay {
 +    if(!url) {
-+        NSLog(@"[RNCallKeep] url does not exist");
++        NSLog(@"[RNCallKeep][Ringtone] url does not exist");
 +        return;
 +    }
 +    if (audioPlayer != nil && !replay) {
-+        NSLog(@"[RNCallKeep] Ringtone is playing");
++        NSLog(@"[RNCallKeep][Ringtone] Ringtone is playing");
 +        return;
 +    }
 +    NSError *error = nil;
 +    
 +    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
 +    if (error || !audioPlayer) {
-+        NSLog(@"[RNCallKeep] Failed to create AVAudioPlayer: %@", error.localizedDescription);
++        NSLog(@"[RNCallKeep][Ringtone] Failed to create AVAudioPlayer: %@", error.localizedDescription);
 +        return;
 +    }
 +    audioPlayer.numberOfLoops = -1;
@@ -1164,13 +1164,13 @@ index 786045f..d5a09c3 100644
 +        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
-+            NSLog(@"[RNCallKeep] Prepare failed!");
++            NSLog(@"[RNCallKeep][Ringtone] Prepare failed!");
 +            return;
 +        }
 +        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 +            BOOL au = [audioPlayer play];
 +            if(au) {
-+                NSLog(@"[RNCallKeep] Play url %@ " , url.path);
++                NSLog(@"[RNCallKeep][Ringtone] Play url %@ " , url.path);
 +            }
 +        });
 +        
@@ -1180,10 +1180,11 @@ index 786045f..d5a09c3 100644
 +- (void)stopRingtone {
 +    if (audioPlayer) {
 +        [audioPlayer stop];
-+        audioPlayer = nil;
-+        ringtoneUrl = nil;
-+        NSLog(@"[RNCallKeep] Stopped ringtone");
++        NSLog(@"[RNCallKeep][Ringtone] audioPlayer stop");
 +    }
++    audioPlayer = nil;
++    ringtoneUrl = nil;
++    NSLog(@"[RNCallKeep][Ringtone] Stopped ringtone");
 +}
 +
 ++(void) configAudioSessionForAudioPlayer {
@@ -1228,7 +1229,7 @@ index 786045f..d5a09c3 100644
 +
 +// listen call event
 +- (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
-+    NSLog(@"[RNCallKeep] Call changed: %@, isOutgoing=%d, hasConnected=%d, hasEnded=%d",
++    NSLog(@"[RNCallKeep][Ringtone] Call changed: %@, isOutgoing=%d, hasConnected=%d, hasEnded=%d",
 +          call.UUID.UUIDString,
 +          call.outgoing,
 +          call.hasConnected,
@@ -1243,12 +1244,12 @@ index 786045f..d5a09c3 100644
 +}
 +
 +- (void) handleOutgoingCall:(CXCall *) call {
-+    NSLog(@"[RNCallKeep] is outgoing");
++    NSLog(@"[RNCallKeep][Ringtone] is outgoing");
 +    if(call.hasEnded) {
 +        hasOutgoing = NO;
 +        if (callMap.count > 0 && gsmCallMap.count == 0) {
 +            [self playRingtoneWithURL:ringtoneUrl replay:NO];
-+            NSLog(@"[RNCallKeep] play ringtone when outgoing call ended");
++            NSLog(@"[RNCallKeep][Ringtone] play ringtone when outgoing call ended");
 +        }
 +        return;
 +    }
@@ -1261,7 +1262,7 @@ index 786045f..d5a09c3 100644
 +        [gsmCallMap removeObjectForKey:uuid];
 +        if (callMap.count > 0 && hasOutgoing == NO) {
 +            [self playRingtoneWithURL:ringtoneUrl replay:NO];
-+            NSLog(@"[RNCallKeep] play ringtone when gsm ended");
++            NSLog(@"[RNCallKeep][Ringtone] play ringtone when gsm ended");
 +        }
 +        return;
 +    }
@@ -1276,18 +1277,18 @@ index 786045f..d5a09c3 100644
 +            return;
 +        }
 +        [self stopRingtone];
-+        NSLog(@"[RNCallKeep] stop ringtone when call ended");
++        NSLog(@"[RNCallKeep][Ringtone] stop ringtone when call ended");
 +        return;
 +    }
 +  
 +
 +    if (call.hasConnected) {
 +        [self stopRingtone];
-+        NSLog(@"[RNCallKeep] stop ringtone when call connected");
++        NSLog(@"[RNCallKeep][Ringtone] stop ringtone when call connected");
 +        return;
 +    }
 +    if(callMap[uuid] && gsmCallMap.count == 0 && hasOutgoing == NO) {
-+        NSLog(@"[RNCallKeep] play ringtone");
++        NSLog(@"[RNCallKeep][Ringtone] play ringtone");
 +        [self playRingtoneWithURL:ringtoneUrl replay:NO];
 +    }
 +}
