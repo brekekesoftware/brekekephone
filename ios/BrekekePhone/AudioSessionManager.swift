@@ -12,6 +12,7 @@ class AudioSessionManager: NSObject {
   private var rtcAudioSession: RTCAudioSession
   private var output: [String: AVAudioSession.Port] = [:]
   private var isActivatingAudio = false
+  private var isInterruptAudio = false
   private var restoreSpeaker = false
   private var restoreSpeakerInterruption = false
   private final var rtcMode: AVAudioSession.Mode = .voiceChat
@@ -186,6 +187,51 @@ class AudioSessionManager: NSObject {
     handleAudioActivation(reason: reason)
   }
 
+  func restartWebRTCAudio() {
+    let rtcSession = RTCAudioSession.sharedInstance()
+
+    rtcSession.lockForConfiguration()
+    defer { rtcSession.unlockForConfiguration() }
+
+    rtcSession.isAudioEnabled = false
+    rtcSession.isAudioEnabled = true
+    logger.log("WebRTC audio unit force restarted")
+  }
+
+  func resumeAudioSession(withRetryCount retryCount: Int = 0) {
+    logger.log("resumeAudioSession - attempt \(retryCount + 1)")
+    let session = AVAudioSession.sharedInstance()
+    do {
+      // Deactivated old session
+      try session.setActive(false)
+    } catch {
+      logger.log("Deactivate error (ignore): \(error)")
+    }
+
+    do {
+      try session.setCategory(
+        .playAndRecord,
+        mode: .voiceChat,
+        options: [.allowBluetooth, .allowBluetoothA2DP, .duckOthers]
+      )
+      try session.setActive(true, options: .notifyOthersOnDeactivation)
+      logger.log("Audio session resumed successfully")
+      // Force restart audio unit
+      restartWebRTCAudio()
+    } catch let error as NSError {
+      logger
+        .log(
+          "❌AudioResuming error: \(error.localizedDescription) (code: \(error.code))"
+        )
+      if retryCount < 5 {
+        let delay = Double(retryCount + 1) * 1.0
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+          self.resumeAudioSession(withRetryCount: retryCount + 1)
+        }
+      }
+    }
+  }
+
   @objc func handleInterruption(_ notification: Notification) {
     guard let userInfo = notification.userInfo,
           let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
@@ -193,32 +239,18 @@ class AudioSessionManager: NSObject {
     else { return }
 
     if type == .began {
+      logger.log("Audio Interruption Began")
+      isInterruptAudio = true
       if audioSession.isOtherAudioPlaying {
         restoreSpeakerInterruption = audioSession.currentRoute.outputs.first?
           .portType == .builtInSpeaker
         setAudioActive(false, action: "InterruptionBegan")
       }
     } else if type == .ended {
-      if audioSession.isOtherAudioPlaying {
-        do {
-          try audioSession.setCategory(
-            .playAndRecord,
-            mode: .voiceChat,
-            options: [
-              .allowBluetooth,
-              .allowBluetoothA2DP,
-              .duckOthers,
-              .mixWithOthers,
-            ]
-          )
-          if restoreSpeakerInterruption {
-            try audioSession.overrideOutputAudioPort(.speaker)
-          } else {
-            try audioSession.overrideOutputAudioPort(.none)
-          }
-          restoreSpeakerInterruption = false
-          try audioSession.setActive(false)
-        } catch {}
+      if isInterruptAudio {
+        logger.log("Audio Interruption ENDED.")
+        resumeAudioSession()
+        isInterruptAudio = false
       }
     }
   }
