@@ -1,6 +1,8 @@
 #### 2.16.10
 
 - Add throttle to prevent spam of "Internet connection failed" toast (issue 1170)
+- Fix iOS ringtone playing during an active call (issue 1174, 1136)
+- Fix iOS call no-voice when audio session conflict occurs (issue 1176)
 
 #### 2.16.9
 
@@ -11,7 +13,7 @@
 - Fix it should resume video call after unhold (issue 1120)
 - Fix android it should show hang up button when on hold (issue 1122)
 - Try fix ios custom ringtone when playing other audio (issue 1129)
-- Fix ringtone picker should not cut off texts and use elipsis if too long (issue 1133)
+- Fix ringtone picker should not cut off texts and use ellipsis if too long (issue 1133)
 - Improve custom ringtone as feedbacks (issue 1143)
 - Fix bug display status bar and switcher (issue 1144)
 - Fix ios pal disconnect retry with lte (issue 1145)
