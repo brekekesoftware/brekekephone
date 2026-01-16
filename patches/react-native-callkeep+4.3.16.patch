@@ -616,7 +616,7 @@ index c8e7bbd..a94d7a0 100644
  + (void)endCallWithUUID:(NSString *)uuidString
                   reason:(int)reason;
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..3bc6140 100644
+index 786045f..7d2eafe 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,21 @@
@@ -1120,12 +1120,13 @@ index 786045f..3bc6140 100644
  }
  
  -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAction *)action
-@@ -1100,7 +1121,14 @@ -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAc
+@@ -1100,7 +1121,15 @@ -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAc
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction]");
  #endif
 -
 +    if(_isInterruptAudio && action.onHold == 0){
++        _isInterruptAudio = NO;
 +        NSDictionary *userInfo
 +        = @{
 +            AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
@@ -1136,7 +1137,7 @@ index 786045f..3bc6140 100644
      [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
      [action fulfill];
  }
-@@ -1142,7 +1170,7 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
+@@ -1142,7 +1171,7 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
      };
      [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
  
@@ -1145,7 +1146,7 @@ index 786045f..3bc6140 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1182,190 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
+@@ -1154,4 +1183,190 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  

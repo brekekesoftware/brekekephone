@@ -198,6 +198,23 @@ class AudioSessionManager: NSObject {
     logger.log("WebRTC audio unit force restarted")
   }
 
+  func handleSpeakerInterruption() {
+    let session = AVAudioSession.sharedInstance()
+    // Restore speaker state - separate block to avoid retry if only speaker
+    // fails
+    do {
+      if restoreSpeakerInterruption {
+        try session.overrideOutputAudioPort(.speaker)
+        logger.log("Restored speaker output")
+      } else {
+        try session.overrideOutputAudioPort(.none)
+      }
+    } catch {
+      logger.log("overrideOutputAudioPort error: \(error)")
+    }
+    restoreSpeakerInterruption = false
+  }
+
   func resumeAudioSession(withRetryCount retryCount: Int = 0) {
     logger.log("resumeAudioSession - attempt \(retryCount + 1)")
     let session = AVAudioSession.sharedInstance()
@@ -212,12 +229,18 @@ class AudioSessionManager: NSObject {
       try session.setCategory(
         .playAndRecord,
         mode: .voiceChat,
-        options: [.allowBluetooth, .allowBluetoothA2DP, .duckOthers]
+        options: [
+          .allowBluetooth,
+          .allowBluetoothA2DP,
+          .duckOthers,
+          .mixWithOthers,
+        ]
       )
       try session.setActive(true, options: .notifyOthersOnDeactivation)
       logger.log("Audio session resumed successfully")
-      // Force restart audio unit
+      // Force restart audio unit and restore speaker
       restartWebRTCAudio()
+      handleSpeakerInterruption()
     } catch let error as NSError {
       logger
         .log(
@@ -229,6 +252,7 @@ class AudioSessionManager: NSObject {
           self.resumeAudioSession(withRetryCount: retryCount + 1)
         }
       }
+      return
     }
   }
 
