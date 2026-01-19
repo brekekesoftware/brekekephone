@@ -1,3 +1,9 @@
+#### 2.17.0
+
+- Embed:
+  - Add api to close notification
+  - Update api static getCurrentVersion
+
 #### 2.16.9
 
 - Initial implementation of ios custom ringtone

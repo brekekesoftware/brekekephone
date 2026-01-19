@@ -3,6 +3,7 @@ import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parseParamsWithPrefix'
 import type {
+  EmbedNotificationOptions,
   EmbedPbxConfig,
   EmbedSignInOptions,
   MakeCallFn,
@@ -15,14 +16,18 @@ import { arrToMap } from '#/utils/arrToMap'
 import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
+import { webCloseNotification } from '#/utils/webShowNotification'
 
 export class EmbedApi extends EventEmitter {
   /** ==========================================================================
    * public properties/methods
    */
 
+  static promptBrowserPermission = webPromptPermission
+  static acceptBrowserPermission = getAudioVideoPermission
   promptBrowserPermission = webPromptPermission
   acceptBrowserPermission = getAudioVideoPermission
+
   setIncomingRingtone = (ringtone: string) => {
     ctx.call.setIncomingRingtone(ringtone)
   }
@@ -30,13 +35,16 @@ export class EmbedApi extends EventEmitter {
     ctx.global.productName = name
   }
 
+  closeNotification = webCloseNotification
+
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
   getCurrentAccountCtx = () => ctx
-  getCurrentVersion = () => ({
+  static getCurrentVersion = () => ({
     webphone: currentVersion,
     jssip: jssipVersion,
     bundleIdentifier,
   })
+  getCurrentVersion = EmbedApi.getCurrentVersion
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
@@ -59,15 +67,32 @@ export class EmbedApi extends EventEmitter {
    */
 
   _rootTag?: any
+  _notificationOptions?: EmbedNotificationOptions
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
   _pbxConfig: EmbedPbxConfig = {}
 
-  _signIn = async (o: EmbedSignInOptions) => {
+  _signIn = async (_o: EmbedSignInOptions) => {
+    const {
+      palEvents,
+      dontShowNotificationIfFocusing = true,
+      closeAllNotificationOnFocus = true,
+      closeNotificationOnCallAnswer = true,
+      closeNotificationOnCallEnd = true,
+      notificationInterval = 15000,
+      ...o
+    } = _o
+    this._notificationOptions = {
+      dontShowNotificationIfFocusing,
+      closeAllNotificationOnFocus,
+      closeNotificationOnCallAnswer,
+      closeNotificationOnCallEnd,
+      notificationInterval,
+    }
     await ctx.account.waitStorageLoaded()
     // reassign options on each sign in
-    embedApi._palEvents = o.palEvents
+    embedApi._palEvents = palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
     ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
@@ -105,6 +130,13 @@ export class EmbedApi extends EventEmitter {
       return
     }
     await ctx.auth.autoSignInEmbed()
+  }
+
+  static _renderApp: Function
+  static render = (rootTag, options) => {
+    embedApi._rootTag = this._renderApp(rootTag)
+    embedApi._signIn(options)
+    return embedApi
   }
 }
 
