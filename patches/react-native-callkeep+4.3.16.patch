@@ -627,7 +627,7 @@ index c8e7bbd..a8a37af 100644
 +
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..d16750b 100644
+index 786045f..4d0578d 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,22 @@
@@ -855,9 +855,9 @@ index 786045f..d16750b 100644
      [transaction addAction:setHeldCallAction];
  
      [self requestTransaction:transaction];
-+    
++    NSLog(@"[RNCallKeep][setOnHold] uuidString = %@, shouldHold = %d, _isInterruptAudio=%d , isOtherAudioPlaying=%d, isRecoveringAudio=%d", uuidString, shouldHold, _isInterruptAudio, [AVAudioSession sharedInstance].isOtherAudioPlaying, isRecoveringAudio);
 +    // handle resume audio session when gsm call disconected
-+    if(!gsmCallMap[uuidString] && shouldHold == 0 && _isInterruptAudio && [AVAudioSession sharedInstance].isOtherAudioPlaying == 1 && !isRecoveringAudio){
++    if(!gsmCallMap[uuidString] && shouldHold == 0 && [AVAudioSession sharedInstance].isOtherAudioPlaying == 1 && !isRecoveringAudio){
 +        _isInterruptAudio = false;
 +        NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] Should ResumeAudioSession 🙏");
 +        NSDictionary *userInfo
@@ -1158,7 +1158,7 @@ index 786045f..d16750b 100644
 -    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction]");
 +    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] isRecovering:%d, onHold:%d, isOther:%d", isRecoveringAudio, action.onHold, [AVAudioSession sharedInstance].isOtherAudioPlaying);
  #endif
-     
+ 
 -    [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
 +    // Skip sending event to JavaScript if this is an audio recovery operation
 +    if (!isRecoveringAudio) {

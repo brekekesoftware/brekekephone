@@ -305,7 +305,7 @@ class AudioSessionManager: NSObject {
     let source = userInfo["RNCallKeep_source"] as? String ?? "system"
 
     logger.log(
-      "Interruption \(type == .began ? "Began" : "Ended"), source: \(source), isOtherAudioPlaying: \(audioSession.isOtherAudioPlaying)"
+      "Interruption \(type == .began ? "⚠️Began" : "✅Ended"), source: \(source), isOtherAudioPlaying: \(audioSession.isOtherAudioPlaying)"
     )
 
     switch type {
@@ -321,11 +321,11 @@ class AudioSessionManager: NSObject {
   private func handleInterruptionBegan() {
     // Early return if no active call
     guard RNCallKeep.hasActiveUnholdBrekekeCall() else {
-      logger.log("No active Brekeke call - skipping recovery")
+      logger.log("👌No active Brekeke call - skipping recovery")
       return
     }
 
-    logger.log("Active call detected - preparing recovery")
+    logger.log("🙏Active call detected - preparing recovery")
 
     // Cache speaker state before recovery
     restoreSpeakerInterruption = audioSession.currentRoute.outputs
@@ -335,12 +335,12 @@ class AudioSessionManager: NSObject {
   }
 
   private func handleInterruptionEnded(source: String) {
-    guard source == "ResumeAudioSession" else {
-      logger.log("Interruption ended from \(source) - no action needed")
+    guard source == "ResumeAudioSession" || audioSession.isOtherAudioPlaying else {
+      logger.log("👌Interruption ended from \(source) - no action needed")
       return
     }
 
-    logger.log("Resuming audio session...")
+    logger.log("🙏Resuming audio session...")
     resumeAudioSession()
   }
 
