@@ -12,9 +12,9 @@ class AudioSessionManager: NSObject {
   private var rtcAudioSession: RTCAudioSession
   private var output: [String: AVAudioSession.Port] = [:]
   private var isActivatingAudio = false
-  private var isInterruptAudio = false
   private var restoreSpeaker = false
   private var restoreSpeakerInterruption = false
+  private var isRecovering = false
   private final var rtcMode: AVAudioSession.Mode = .voiceChat
   private final var rtcCategory: AVAudioSession.Category = .playAndRecord
   private final var rtcCateOptions: AVAudioSession.CategoryOptions = [
@@ -40,20 +40,48 @@ class AudioSessionManager: NSObject {
   }
 
   func setAudioActive(_ active: Bool, action: String = "") {
-    logger.log(" setAudioActive: \(active), action: \(action)")
+    logger
+      .log(
+        "setAudioActive: \(active),isAudioEnabled:\(rtcAudioSession.isAudioEnabled) action: \(action), isOtherAudioPlaying:\(audioSession.isOtherAudioPlaying)"
+      )
     if active == rtcAudioSession.isAudioEnabled {
       return
     }
-    // If activating audio, set flag to track activation state
-    rtcAudioSession.lockForConfiguration()
-    defer {
-      rtcAudioSession.unlockForConfiguration()
-    }
+
     do {
-      try rtcAudioSession.setActive(active)
-      rtcAudioSession.isAudioEnabled = active
-    } catch {
-      logger.log("Set active error: \(error)")
+      if active {
+        ensureAudioSessionReady()
+        try audioSession.setActive(true)
+        rtcAudioSession.isAudioEnabled = true
+      } else {
+        rtcAudioSession.isAudioEnabled = false
+        try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+      }
+      logger.log("setAudioActive = \(active) - Success")
+    } catch let error as NSError {
+      logger
+        .log("setAudioActive = \(active) error: \(error), code: \(error.code)")
+    }
+  }
+
+  // Helper function to ensure AVAudioSession is ready
+  private func ensureAudioSessionReady() {
+    // Check if category and mode are correct
+    let needsConfig = audioSession.category != rtcCategory
+      || audioSession.mode != rtcMode
+
+    if needsConfig {
+      logger.log("⚠️ AVAudioSession not ready, re-configuring...")
+      do {
+        try audioSession.setCategory(
+          rtcCategory,
+          mode: rtcMode,
+          options: rtcCateOptions
+        )
+        logger.log("AVAudioSession re-configured")
+      } catch let error as NSError {
+        logger.log("EnsureAudioSessionReady error: \(error)")
+      }
     }
   }
 
@@ -99,7 +127,7 @@ class AudioSessionManager: NSObject {
     config.categoryOptions = rtcCateOptions
     do {
       try rtcAudioSession.setConfiguration(config)
-    } catch {
+    } catch let error as NSError {
       logger.log("Audio config error: \(error)")
     }
   }
@@ -109,8 +137,6 @@ class AudioSessionManager: NSObject {
     let isSpeaker = currentOutputs.contains { $0.portType == .builtInSpeaker }
     return isSpeaker
   }
-
-  // listener methods
 
   private func listenAudioSessionRoute() {
     NotificationCenter.default.addObserver(
@@ -153,7 +179,7 @@ class AudioSessionManager: NSObject {
           try audioSession.overrideOutputAudioPort(.speaker)
           logger.log(" ✅ restore Speaker to: \(restoreSpeaker)")
           restoreSpeaker = false
-        } catch {
+        } catch let error as NSError {
           logger.log("overrideOutputAudioPort error: \(error)")
         }
       }
@@ -188,71 +214,85 @@ class AudioSessionManager: NSObject {
   }
 
   func restartWebRTCAudio() {
-    let rtcSession = RTCAudioSession.sharedInstance()
+    rtcAudioSession.lockForConfiguration()
+    defer { rtcAudioSession.unlockForConfiguration() }
 
-    rtcSession.lockForConfiguration()
-    defer { rtcSession.unlockForConfiguration() }
-
-    rtcSession.isAudioEnabled = false
-    rtcSession.isAudioEnabled = true
+    rtcAudioSession.isAudioEnabled = false
+    rtcAudioSession.isAudioEnabled = true
     logger.log("WebRTC audio unit force restarted")
   }
 
   func handleSpeakerInterruption() {
-    let session = AVAudioSession.sharedInstance()
-    // Restore speaker state - separate block to avoid retry if only speaker
-    // fails
     do {
       if restoreSpeakerInterruption {
-        try session.overrideOutputAudioPort(.speaker)
-        logger.log("Restored speaker output")
+        try audioSession.overrideOutputAudioPort(.speaker)
       } else {
-        try session.overrideOutputAudioPort(.none)
+        try audioSession.overrideOutputAudioPort(.none)
       }
-    } catch {
+    } catch let error as NSError {
       logger.log("overrideOutputAudioPort error: \(error)")
     }
     restoreSpeakerInterruption = false
   }
 
   func resumeAudioSession(withRetryCount retryCount: Int = 0) {
-    logger.log("resumeAudioSession - attempt \(retryCount + 1)")
-    let session = AVAudioSession.sharedInstance()
-    do {
-      // Deactivated old session
-      try session.setActive(false)
-    } catch {
-      logger.log("Deactivate error (ignore): \(error)")
-    }
-
-    do {
-      try session.setCategory(
-        .playAndRecord,
-        mode: .voiceChat,
-        options: [
-          .allowBluetooth,
-          .allowBluetoothA2DP,
-          .duckOthers,
-          .mixWithOthers,
-        ]
-      )
-      try session.setActive(true, options: .notifyOthersOnDeactivation)
-      logger.log("Audio session resumed successfully")
-      // Force restart audio unit and restore speaker
-      restartWebRTCAudio()
-      handleSpeakerInterruption()
-    } catch let error as NSError {
-      logger
-        .log(
-          "❌AudioResuming error: \(error.localizedDescription) (code: \(error.code))"
-        )
-      if retryCount < 5 {
-        let delay = Double(retryCount + 1) * 1.0
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-          self.resumeAudioSession(withRetryCount: retryCount + 1)
-        }
-      }
+    // Prevent excessive retries
+    guard retryCount < 8 else {
+      logger.log("⚠️ Max retry attempts reached - giving up")
       return
+    }
+    
+    logger.log("resumeAudioSession - attempt \(retryCount + 1)")
+    
+    // Step 1: Deactivate old session
+    deactivateAudioSession()
+    
+    // Step 2: Reconfigure and activate
+    do {
+      try configureAndActivateAudioSession()
+      onResumeSuccess()
+    } catch {
+      handleResumeError(error as NSError, retryCount: retryCount)
+    }
+  }
+  
+  private func deactivateAudioSession() {
+    do {
+      try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+      rtcAudioSession.isAudioEnabled = false
+      logger.log("Audio session deactivated")
+    } catch {
+      // Non-critical error - continue with resume attempt
+      logger.log("Deactivate error (ignored): \(error)")
+    }
+  }
+  
+  private func configureAndActivateAudioSession() throws {
+    try audioSession.setCategory(
+      rtcCategory,
+      mode: rtcMode,
+      options: rtcCateOptions
+    )
+    try audioSession.setActive(true)
+  }
+  
+  private func onResumeSuccess() {
+    restartWebRTCAudio()
+    handleSpeakerInterruption()
+    logger.log("✅ Audio session resumed successfully")
+  }
+  
+  private func handleResumeError(_ error: NSError, retryCount: Int) {
+    logger.log(
+      "Resume failed: \(error.localizedDescription) (code: \(error.code))"
+    )
+    
+    // Schedule retry with exponential backoff
+    let delay = Double(retryCount + 1) * 1.0
+    logger.log("⏱️ Retrying in \(delay)s...")
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+      self?.resumeAudioSession(withRetryCount: retryCount + 1)
     }
   }
 
@@ -262,20 +302,63 @@ class AudioSessionManager: NSObject {
           let type = AVAudioSession.InterruptionType(rawValue: typeValue)
     else { return }
 
-    if type == .began {
-      logger.log("Audio Interruption Began")
-      isInterruptAudio = true
-      if audioSession.isOtherAudioPlaying {
-        restoreSpeakerInterruption = audioSession.currentRoute.outputs.first?
-          .portType == .builtInSpeaker
-        setAudioActive(false, action: "InterruptionBegan")
-      }
-    } else if type == .ended {
-      if isInterruptAudio {
-        logger.log("Audio Interruption ENDED.")
-        resumeAudioSession()
-        isInterruptAudio = false
-      }
+    let source = userInfo["RNCallKeep_source"] as? String ?? "system"
+
+    logger.log(
+      "Interruption \(type == .began ? "Began" : "Ended"), source: \(source), isOtherAudioPlaying: \(audioSession.isOtherAudioPlaying)"
+    )
+
+    switch type {
+    case .began:
+      handleInterruptionBegan()
+    case .ended:
+      handleInterruptionEnded(source: source)
+    @unknown default:
+      logger.log("⚠️ Unknown interruption type: \(typeValue)")
+    }
+  }
+
+  private func handleInterruptionBegan() {
+    // Early return if no active call
+    guard RNCallKeep.hasActiveUnholdBrekekeCall() else {
+      logger.log("No active Brekeke call - skipping recovery")
+      return
+    }
+
+    logger.log("Active call detected - preparing recovery")
+
+    // Cache speaker state before recovery
+    restoreSpeakerInterruption = audioSession.currentRoute.outputs
+      .first?.portType == .builtInSpeaker
+
+    recoverAudioSession()
+  }
+
+  private func handleInterruptionEnded(source: String) {
+    guard source == "ResumeAudioSession" else {
+      logger.log("Interruption ended from \(source) - no action needed")
+      return
+    }
+
+    logger.log("Resuming audio session...")
+    resumeAudioSession()
+  }
+
+  private func recoverAudioSession() {
+    // Prevent duplicate recovery
+    if isRecovering {
+      logger.log("⚠️ Recovery already in progress - skipping")
+      return
+    }
+    isRecovering = true
+    logger.log("🔄 Starting audio session recovery via hold/unhold...")
+    // Trigger hold/unhold via CallKit - this is what works!
+    RNCallKeep.recoverAudioViaHoldUnhold()
+
+    // Reset flag after delay
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      self.isRecovering = false
+      self.handleSpeakerInterruption()
     }
   }
 }
