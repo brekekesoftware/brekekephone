@@ -89,7 +89,7 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
     versionCode 216010
-    versionName "2.16.10"
+    versionName "2.16.11"
   }
 
   signingConfigs {
