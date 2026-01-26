@@ -1,3 +1,7 @@
+#### 2.16.11
+
+- Fix no-voice issue caused by audio session conflict during active call (issue 1176,1179,1180,1181,1183,1184,1185,1188)
+
 #### 2.16.10
 
 - Add throttle to prevent spam of "Internet connection failed" toast (issue 1170)
