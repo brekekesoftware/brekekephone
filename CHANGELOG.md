@@ -1,12 +1,12 @@
 #### 2.16.11
 
-- Fix no-voice issue caused by audio session conflict during active call (issue 1176,1179,1180,1181,1183,1184,1185,1188)
+- Fix ios it should have voice in some audio session conflicts during active call (issue 1176, 1179, 1180, 1181, 1183, 1184, 1185, 1188)
 
 #### 2.16.10
 
-- Add throttle to prevent spam of "Internet connection failed" toast (issue 1170)
-- Fix iOS ringtone playing during an active call (issue 1174, 1136)
-- Fix iOS call no-voice when audio session conflict occurs (issue 1176)
+- Fix it should throttle toast internet connection failed (issue 1170)
+- Fix ios it should not play ringtone during an active call (issue 1174, 1136)
+- Fix ios it should have voice when audio session conflict occurs (issue 1176)
 
 #### 2.16.9
 
