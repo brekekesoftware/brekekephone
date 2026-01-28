@@ -33,6 +33,7 @@ export const getConnectionStatus = () => {
     } else if (ctx.auth.ucLoginFromAnotherPlace) {
       message = intl`UC signed in from another location`
     } else {
+      ctx.toast.clearAll()
       message = intl`Internet connection failed`
     }
   } else if (!serviceConnectingOrFailure) {

@@ -4,6 +4,7 @@ import { v4 as newUuid } from 'uuid'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import type { ErrorRnAlert } from '#/stores/RnAlert'
+import { getConnectionStatus } from '#/utils/getConnectionStatus'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -17,7 +18,7 @@ interface Toast {
 
 export class ToastStore {
   @observable items: Toast[] = []
-
+  private lastInternetToastTime = 0
   @action
   show = (
     msg: string | undefined,
@@ -25,6 +26,10 @@ export class ToastStore {
     time: number = 3000,
     err?: Error,
   ) => {
+    const { message } = getConnectionStatus()
+    if (!!message) {
+      return
+    }
     const id = newUuid()
     const toast: Toast = { id, msg, type, time, err }
     this.items.push(toast)
@@ -36,6 +41,11 @@ export class ToastStore {
   @action
   hide = (id: string) => {
     this.items = this.items.filter(t => t.id !== id)
+  }
+
+  @action
+  clearAll = () => {
+    this.items = []
   }
 
   @action
@@ -68,7 +78,13 @@ export class ToastStore {
   }
 
   internet = (err?: Error) => {
-    this.error({ message: intlDebug`Internet connection failed`, err }, 5000)
+    const now = Date.now()
+    const timeSinceLastToast = now - this.lastInternetToastTime
+    // Only show if enough time has passed since last internet toast
+    if (timeSinceLastToast >= 5000) {
+      this.lastInternetToastTime = now
+      this.error({ message: intlDebug`Internet connection failed`, err }, 5000)
+    }
   }
 }
 
