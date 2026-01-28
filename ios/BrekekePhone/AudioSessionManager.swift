@@ -241,12 +241,12 @@ class AudioSessionManager: NSObject {
       logger.log("⚠️ Max retry attempts reached - giving up")
       return
     }
-    
+
     logger.log("resumeAudioSession - attempt \(retryCount + 1)")
-    
+
     // Step 1: Deactivate old session
     deactivateAudioSession()
-    
+
     // Step 2: Reconfigure and activate
     do {
       try configureAndActivateAudioSession()
@@ -255,7 +255,7 @@ class AudioSessionManager: NSObject {
       handleResumeError(error as NSError, retryCount: retryCount)
     }
   }
-  
+
   private func deactivateAudioSession() {
     do {
       try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
@@ -266,7 +266,7 @@ class AudioSessionManager: NSObject {
       logger.log("Deactivate error (ignored): \(error)")
     }
   }
-  
+
   private func configureAndActivateAudioSession() throws {
     try audioSession.setCategory(
       rtcCategory,
@@ -275,22 +275,22 @@ class AudioSessionManager: NSObject {
     )
     try audioSession.setActive(true)
   }
-  
+
   private func onResumeSuccess() {
     restartWebRTCAudio()
     handleSpeakerInterruption()
     logger.log("✅ Audio session resumed successfully")
   }
-  
+
   private func handleResumeError(_ error: NSError, retryCount: Int) {
     logger.log(
       "Resume failed: \(error.localizedDescription) (code: \(error.code))"
     )
-    
+
     // Schedule retry with exponential backoff
     let delay = Double(retryCount + 1) * 1.0
     logger.log("⏱️ Retrying in \(delay)s...")
-    
+
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
       self?.resumeAudioSession(withRetryCount: retryCount + 1)
     }
@@ -335,7 +335,8 @@ class AudioSessionManager: NSObject {
   }
 
   private func handleInterruptionEnded(source: String) {
-    guard source == "ResumeAudioSession" || audioSession.isOtherAudioPlaying else {
+    guard source == "ResumeAudioSession" || audioSession.isOtherAudioPlaying
+    else {
       logger.log("👌Interruption ended from \(source) - no action needed")
       return
     }
