@@ -328,12 +328,14 @@ export const AccountCreateForm: FC<{
           {
             disabled: props.footerLogout,
             type: 'RnPicker',
+            label: intl`INCOMING CALL RINGTONE`,
             name: 'ringtone',
             options: $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
             onConfirm: async (value: string) =>
               await saveRingtoneSelection(value, undefined, $.account),
             onValueChange: async (value: string) => {
+              $.stopPreview()
               const r = await validateRingtone(value, $.account)
               $.preview = r
             },
