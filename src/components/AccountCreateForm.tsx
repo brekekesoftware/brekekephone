@@ -46,7 +46,6 @@ export const AccountCreateForm: FC<{
         onConfirm: () => {
           $.set('account', (p: Account) => ({
             ...ctx.account.genEmptyAccount(),
-            ...cloneDeep(props.updating),
             id: p.id,
           }))
         },
