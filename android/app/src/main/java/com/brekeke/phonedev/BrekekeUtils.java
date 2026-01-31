@@ -367,7 +367,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return -1;
   }
 
-  private static boolean activitesAnyAnswered() {
+  public static boolean activitesAnyAnswered() {
     try {
       for (var a : activities) {
         if (a.answered) {
@@ -1034,5 +1034,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           } catch (Exception e) {
           }
         });
+  }
+
+  @ReactMethod
+  public void setShouldSkipPlayRingtone(Boolean s) {
+    Ringtone.shouldSkipPlayRingtone = s;
+  }
+
+  @ReactMethod
+  public void shouldPlayRingtone(Promise p) {
+    p.resolve(!activities.isEmpty());
   }
 }

@@ -14,7 +14,9 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
+import com.brekeke.phonedev.BrekekeUtils;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import java.io.File;
@@ -35,6 +37,7 @@ public class Ringtone {
   // ==========================================================================
   // init
   static final String TAG = "[Ringtone]";
+  public static Boolean shouldSkipPlayRingtone = false;
 
   public static void init() {
     if (am != null) {
@@ -256,8 +259,19 @@ public class Ringtone {
   private static Data d = new Data();
 
   public static boolean play(String r, String u, String t, String h, String p) {
+    if (BrekekeUtils.activitesAnyAnswered()) {
+      Emitter.debug("[Ringtone] Skip playing: another call is already answered.");
+      return false;
+    }
+
+    Log.d(TAG, "play: shouldSkipPlayRingtone = " + shouldSkipPlayRingtone);
+    if (shouldSkipPlayRingtone) {
+      Emitter.debug("[Ringtone] Skip playing: a call is already connected.");
+      return false;
+    }
     if (mp != null) {
       // return false if already playing
+      Emitter.debug("[Ringtone] Ringtone is playing");
       return false;
     }
     d.set(r, u, t, h, p);

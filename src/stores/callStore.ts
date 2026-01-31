@@ -431,7 +431,7 @@ export class CallStore {
         )
         BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
-
+      BrekekeUtils.setShouldSkipPlayRingtone(this.hasActiveCall())
       return
     }
 
@@ -583,6 +583,20 @@ export class CallStore {
     await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
+    if (isAndroid) {
+      const ac = this.hasActiveCall()
+      BrekekeUtils.setShouldSkipPlayRingtone(ac)
+      const ca = ctx.auth.getCurrentAccount()
+      if (ca && !ac && (await BrekekeUtils.shouldPlayRingtone())) {
+        BrekekeUtils.startRingtone(
+          c.ringtoneFromSip,
+          ca.pbxUsername,
+          ca.pbxTenant,
+          ca.pbxHostname,
+          ca.pbxPort,
+        )
+      }
+    }
 
     // emit to embed api
     c.finishEmitEmbed()
@@ -650,6 +664,7 @@ export class CallStore {
       this.callkeepUuidPending = uuid
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
+        BrekekeUtils.setShouldSkipPlayRingtone(true)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // enable proximity monitoring for trigger proximity state to keep the call alive
@@ -1142,6 +1157,12 @@ export class CallStore {
   @action setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
   }
+
+  // to check if has any active call
+  @action hasActiveCall = () =>
+    this.calls.some(
+      c => !c.incoming || c.answered || c.sessionStatus === 'connected',
+    )
 }
 
 ctx.call = new CallStore()
