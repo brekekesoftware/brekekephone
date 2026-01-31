@@ -587,7 +587,7 @@ export class CallStore {
       const ac = this.hasActiveCall()
       BrekekeUtils.setShouldSkipPlayRingtone(ac)
       const ca = ctx.auth.getCurrentAccount()
-      if (ca && (await BrekekeUtils.shouldPlayRingtone())) {
+      if (ca && !ac && (await BrekekeUtils.shouldPlayRingtone())) {
         BrekekeUtils.startRingtone(
           c.ringtoneFromSip,
           ca.pbxUsername,
