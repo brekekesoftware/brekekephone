@@ -88,7 +88,7 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    versionCode 216010
+    versionCode 216011
     versionName "2.16.11"
   }
 
