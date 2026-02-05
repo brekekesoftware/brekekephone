@@ -330,7 +330,9 @@ export const AccountCreateForm: FC<{
             type: 'RnPicker',
             label: intl`INCOMING CALL RINGTONE`,
             name: 'ringtone',
-            options: $.ringtoneOptions,
+            options: !props.updating
+              ? $.ringtoneOptions.slice(1)
+              : $.ringtoneOptions,
             hidden: isWeb || props.footerLogout,
             onConfirm: async (value: string) =>
               await saveRingtoneSelection(value, undefined, $.account),
