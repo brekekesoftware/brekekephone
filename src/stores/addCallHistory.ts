@@ -13,6 +13,7 @@ import { BrekekeUtils, CallLogType } from '#/utils/BrekekeUtils'
 import { permForCallLog } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
+import { webShowNotification } from '#/utils/webShowNotification'
 
 let alreadyAddHistoryMap: { [pnId: string]: true } = {}
 export const parseReasonCancelCall = (reason?: string) => {
@@ -253,9 +254,6 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
 }
 
 const presentNotification = async (c: CallHistoryInfo) => {
-  if (isWeb) {
-    return
-  }
   // if two users answer a call at the same time, the system will automatically end the call for the second user to join
   // the second user will receive a reason: "Call completed by ..."
   // --> c.answered = true, c.reason = "..." -> show notify
@@ -265,8 +263,9 @@ const presentNotification = async (c: CallHistoryInfo) => {
   }
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
-
-  if (isAndroid) {
+  if (isWeb) {
+    webShowNotification(title, title, body)
+  } else if (isAndroid) {
     Notifications.postLocalNotification({
       payload: {
         title,
