@@ -132,6 +132,7 @@ export class ChatStore {
     body: string,
     threadId?: string,
     isGroupChat?: boolean,
+    to?: string,
   ) => {
     if (isWeb) {
       return
@@ -159,6 +160,7 @@ export class ChatStore {
           pre_app_state: AppState.currentState,
           my_custom_data: 'local_notification',
           is_local_notification: 'local_notification',
+          to,
         },
         identifier: id,
         body,

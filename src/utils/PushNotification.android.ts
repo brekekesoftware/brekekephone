@@ -193,13 +193,15 @@ const getInitialNotifications = async () => {
       ) {
         return
       }
-      const senderId = payload?.senderUserId
+      const senderUserId = payload?.senderUserId
       const confId = payload?.confId
+
       ctx.chat.pushChatNotification(
-        '',
+        senderUserId || '',
         payload?.message || '',
-        senderId || confId,
-        !senderId,
+        senderUserId || confId,
+        !senderUserId,
+        payload?.to || '',
       )
     })
 
