@@ -580,7 +580,7 @@ index a011f67..b313a70 100644
      RNCallKeepModule.setup(options);
  
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
-index c8e7bbd..a8a37af 100644
+index c8e7bbd..3831d10 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 @@ -11,10 +11,10 @@
@@ -615,7 +615,7 @@ index c8e7bbd..a8a37af 100644
  
  + (void)endCallWithUUID:(NSString *)uuidString
                   reason:(int)reason;
-@@ -47,4 +48,10 @@ continueUserActivity:(NSUserActivity *)userActivity
+@@ -47,4 +48,12 @@ continueUserActivity:(NSUserActivity *)userActivity
  
  + (void)setup:(NSDictionary *)options;
  
@@ -625,9 +625,11 @@ index c8e7bbd..a8a37af 100644
 +
 ++ (void)recoverAudioViaHoldUnhold;
 +
+++ (NSInteger)getConnectedCallsCount;
++
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..4d0578d 100644
+index 786045f..e43c594 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,22 @@
@@ -858,16 +860,16 @@ index 786045f..4d0578d 100644
 +    NSLog(@"[RNCallKeep][setOnHold] uuidString = %@, shouldHold = %d, _isInterruptAudio=%d , isOtherAudioPlaying=%d, isRecoveringAudio=%d", uuidString, shouldHold, _isInterruptAudio, [AVAudioSession sharedInstance].isOtherAudioPlaying, isRecoveringAudio);
 +    // handle resume audio session when gsm call disconected
 +    if(!gsmCallMap[uuidString] && shouldHold == 0 && [AVAudioSession sharedInstance].isOtherAudioPlaying == 1 && !isRecoveringAudio){
-+        _isInterruptAudio = false;
-+        NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] Should ResumeAudioSession 🙏");
-+        NSDictionary *userInfo
-+        = @{
-+            AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
-+            AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume],
-+            @"RNCallKeep_source": @"ResumeAudioSession"
-+        };
-+        
-+        [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
++//        _isInterruptAudio = false;
++//        NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] Should ResumeAudioSession 🙏");
++//        NSDictionary *userInfo
++//        = @{
++//            AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
++//            AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume],
++//            @"RNCallKeep_source": @"ResumeAudioSession"
++//        };
++//        
++//        [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
 +    }
  }
  
@@ -968,7 +970,7 @@ index 786045f..4d0578d 100644
              }
          }
          if (completion != nil) {
-@@ -876,71 +897,84 @@ + (int)getHandleType:(NSString *)handleType
+@@ -876,71 +897,92 @@ + (int)getHandleType:(NSString *)handleType
      }
  }
  
@@ -1054,7 +1056,8 @@ index 786045f..4d0578d 100644
 -{
 +- (void)configureAudioSession {
  #ifdef DEBUG
-     NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
+-    NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
++    NSLog(@"🎇[RNCallKeep][configureAudioSession] Activating audio session");
  #endif
 -
 -    NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
@@ -1082,7 +1085,7 @@ index 786045f..4d0578d 100644
  
      AVAudioSession* audioSession = [AVAudioSession sharedInstance];
 -    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
-+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
++    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionDuckOthers error:nil];
  
 -    [audioSession setMode:mode error:nil];
 +    [audioSession setMode:AVAudioSessionModeDefault error:nil];
@@ -1093,11 +1096,19 @@ index 786045f..4d0578d 100644
      NSTimeInterval bufferDuration = .005;
      [audioSession setPreferredIOBufferDuration:bufferDuration error:nil];
 -    [audioSession setActive:TRUE error:nil];
-+    [audioSession setActive:YES error:nil];
++    
++    NSError *err = nil;
++    [audioSession setActive:YES error:&err];
++    
++    if(err){
++        NSLog(@"❌[RNCallKeep][configureAudioSession] Set Active error:%@", [err localizedDescription]);
++    }else{
++        NSLog(@"✅[RNCallKeep][configureAudioSession] Set Active Successs");
++    }
  }
  
  + (BOOL)application:(UIApplication *)application
-@@ -951,25 +985,25 @@ + (BOOL)application:(UIApplication *)application
+@@ -951,25 +993,25 @@ + (BOOL)application:(UIApplication *)application
      NSLog(@"[RNCallKeep][application:openURL]");
  #endif
      /*
@@ -1137,15 +1148,23 @@ index 786045f..4d0578d 100644
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][application:continueUserActivity]");
-@@ -1083,6 +1117,7 @@ - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAct
-     [self configureAudioSession];
-     [self sendEventWithNameWrapper:RNCallKeepPerformAnswerCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
-     [action fulfill];
+@@ -1080,8 +1122,14 @@ - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAct
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performAnswerCallAction]");
+ #endif
+-    [self configureAudioSession];
 +    
++    NSError *err = nil;
++    [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&err];
++    if(err){
++        NSLog(@"❌[RNCallKeep][performAnswerCallAction] PortOverrideNone error: %@", [err localizedDescription]);
++    }
+     [self sendEventWithNameWrapper:RNCallKeepPerformAnswerCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
++    
+     [action fulfill];
  }
  
- // Ending incoming call
-@@ -1093,15 +1128,22 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
+@@ -1093,15 +1141,22 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
  #endif
      [self sendEventWithNameWrapper:RNCallKeepPerformEndCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
      [action fulfill];
@@ -1170,24 +1189,20 @@ index 786045f..4d0578d 100644
      [action fulfill];
  }
  
-@@ -1135,6 +1177,7 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
+@@ -1135,12 +1190,6 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][CXProviderDelegate][provider:didActivateAudioSession]");
  #endif
-+    
-     NSDictionary *userInfo
-     = @{
-         AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
-@@ -1142,7 +1185,7 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
-     };
-     [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
- 
--    [self configureAudioSession];
-+//  [self configureAudioSession];
+-    NSDictionary *userInfo
+-    = @{
+-        AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
+-        AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume]
+-    };
+-    [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
+    
+     [self configureAudioSession];
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
- }
- 
-@@ -1154,4 +1197,247 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
+@@ -1154,4 +1203,258 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1421,17 +1436,28 @@ index 786045f..4d0578d 100644
 +    [instance requestTransaction:holdTransaction];
 +
 +    // Unhold after 100ms delay
-+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 +        CXSetHeldCallAction *unholdAction = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
 +        CXTransaction *unholdTransaction = [[CXTransaction alloc] initWithAction:unholdAction];
 +        [instance requestTransaction:unholdTransaction];
 +
 +        // Reset flag after unhold completes (add 200ms buffer)
-+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 +            isRecoveringAudio = NO;
 +            NSLog(@"[RNCallKeep][recoverAudioViaHoldUnhold] Recovery complete, flag reset");
 +        });
 +    });
++}
++
+++ (NSInteger) getConnectedCallsCount {
++    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
++    NSInteger count = 0;
++    for (CXCall *call in instance->_callObserver.calls) {
++        if (callMap[call.UUID] && call.hasConnected && !call.hasEnded) {
++            count++;
++        }
++    }
++    return count;
 +}
 +
  @end
