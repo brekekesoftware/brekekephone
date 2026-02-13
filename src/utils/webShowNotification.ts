@@ -58,6 +58,11 @@ export const webShowNotification = ({
   if (ctx.auth.pbxConfig?.['webphone.desktop.notification'] === 'false') {
     return
   }
+
+  if (isEmbed && embedApi._notificationOptions?.disableNotification) {
+    return
+  }
+
   if (
     isEmbed &&
     embedApi._notificationOptions?.dontShowNotificationIfFocusing &&

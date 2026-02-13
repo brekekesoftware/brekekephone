@@ -4,7 +4,8 @@ import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
-import { isAndroid, isWeb } from '#/config'
+import { isAndroid, isIos } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { Call } from '#/stores/Call'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
@@ -263,9 +264,17 @@ const presentNotification = async (c: CallHistoryInfo) => {
   }
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
-  if (isWeb) {
-    webShowNotification(title, title, body)
-  } else if (isAndroid) {
+  if (isEmbed) {
+    webShowNotification({
+      type: 'call',
+      id: c.id,
+      body,
+      tag: title,
+      title,
+    })
+    return
+  }
+  if (isAndroid) {
     Notifications.postLocalNotification({
       payload: {
         title,
@@ -293,7 +302,9 @@ const presentNotification = async (c: CallHistoryInfo) => {
       type: '',
       thread: '',
     })
-  } else {
+    return
+  }
+  if (isIos) {
     PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
       badge = 1 + (Number(badge) || 0)
       PushNotificationIOS.addNotificationRequest({

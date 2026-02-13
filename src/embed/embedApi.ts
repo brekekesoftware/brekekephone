@@ -61,13 +61,60 @@ export class EmbedApi extends EventEmitter {
       AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag)
     }
   }
+  _notificationOptions?: EmbedNotificationOptions
+  setDontShowNotificationIfFocusing = (value: boolean) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    this._notificationOptions.dontShowNotificationIfFocusing = value
+  }
+
+  setCloseAllNotificationOnFocus = (value: boolean) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    this._notificationOptions.closeAllNotificationOnFocus = value
+  }
+
+  setCloseNotificationOnCallAnswer = (value: boolean) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    this._notificationOptions.closeNotificationOnCallAnswer = value
+  }
+
+  setCloseNotificationOnCallEnd = (value: boolean) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    this._notificationOptions.closeNotificationOnCallEnd = value
+  }
+
+  setNotificationInterval = (value: number) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    if (value < 0) {
+      return
+    }
+    this._notificationOptions!.notificationInterval = value
+  }
+
+  setDisableNotification = (value: boolean) => {
+    if (!this._notificationOptions) {
+      return
+    }
+    this._notificationOptions.disableNotification = value
+  }
+
+  getNotificationOptions = (): EmbedNotificationOptions | undefined =>
+    this._notificationOptions
 
   /** ==========================================================================
    * private properties/methods
    */
 
   _rootTag?: any
-  _notificationOptions?: EmbedNotificationOptions
 
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
@@ -81,6 +128,7 @@ export class EmbedApi extends EventEmitter {
       closeNotificationOnCallAnswer = true,
       closeNotificationOnCallEnd = true,
       notificationInterval = 15000,
+      disableNotification = false,
       ...o
     } = _o
     this._notificationOptions = {
@@ -89,6 +137,7 @@ export class EmbedApi extends EventEmitter {
       closeNotificationOnCallAnswer,
       closeNotificationOnCallEnd,
       notificationInterval,
+      disableNotification: true,
     }
     await ctx.account.waitStorageLoaded()
     // reassign options on each sign in

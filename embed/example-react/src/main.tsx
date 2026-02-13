@@ -55,11 +55,14 @@ const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
 const { observer } = imports['mobx-react']
-const { useEffect, useRef } = imports['react']
+const { useEffect, useRef, useState } = imports['react']
 const { createRoot } = imports['react-dom/client']
 
 const App = observer(() => {
   const inputRef = useRef()
+  const displayIntervalRef = useRef()
+  const [notificationOptions, setNotificationOptions] = useState({})
+
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
   }
@@ -67,11 +70,84 @@ const App = observer(() => {
     ctx.call.startCall(inputRef.current.value, undefined, true)
   }
 
+  const updateDontShowIfFocusing = (value: boolean) => {
+    phone.setDontShowNotificationIfFocusing(value)
+    loadNotificationOptions()
+  }
+
+  const updateCloseAllOnFocus = (value: boolean) => {
+    phone.setCloseAllNotificationOnFocus(value)
+    loadNotificationOptions()
+  }
+
+  const updateCloseOnAnswer = (value: boolean) => {
+    phone.setCloseNotificationOnCallAnswer(value)
+    loadNotificationOptions()
+  }
+
+  const updateCloseOnEnd = (value: boolean) => {
+    phone.setCloseNotificationOnCallEnd(value)
+    loadNotificationOptions()
+  }
+
+  const updateDisableNotification = (value: boolean) => {
+    phone.setDisableNotification(value)
+    loadNotificationOptions()
+  }
+
+  const updateInterval = (value: number) => {
+    phone.setNotificationInterval(value)
+    loadNotificationOptions()
+  }
+
+  const loadNotificationOptions = () => {
+    const opts = phone.getNotificationOptions()
+    if (opts) {
+      setNotificationOptions({ ...opts })
+    }
+  }
+
+  useEffect(() => {
+    loadNotificationOptions()
+  }, [])
+
   return (
     <div className='app'>
       <span>Web Phone - {version.webphone} | </span>
       <span>JsSIP - {version.jssip} | </span>
       <span>{version.bundleIdentifier} </span>
+      <hr />
+
+      <h3>Notification Options</h3>
+      <div>
+        <span>dontShowNotificationIfFocusing: </span>
+        <span>
+          {notificationOptions?.dontShowNotificationIfFocusing?.toString()}
+        </span>
+        <button onClick={() => updateDontShowIfFocusing(true)}>true</button>
+        <button onClick={() => updateDontShowIfFocusing(false)}>false</button>
+      </div>
+      <hr />
+      <div>
+        <span>disableNotification: </span>
+        <span>{notificationOptions?.disableNotification?.toString()}</span>
+        <button onClick={() => updateDisableNotification(true)}>true</button>
+        <button onClick={() => updateDisableNotification(false)}>false</button>
+      </div>
+      <hr />
+
+      <div>
+        <span>notificationInterval (ms): </span>
+        <span>{notificationOptions?.notificationInterval}</span>
+        <input ref={displayIntervalRef} type='number' />
+        <button
+          onClick={() => {
+            updateInterval(Number(displayIntervalRef.current.value))
+          }}
+        >
+          Update
+        </button>
+      </div>
       <hr />
 
       <span>Status: </span>
