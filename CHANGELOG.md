@@ -1,3 +1,9 @@
+#### 2.17.0
+
+- Embed:
+  - Add api to close notification
+  - Update api static getCurrentVersion
+
 #### 2.16.11
 
 - Fix ios it should have voice in some audio session conflicts during active call (issue 1176, 1179, 1180, 1181, 1183, 1184, 1185, 1188)
