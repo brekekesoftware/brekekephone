@@ -60,6 +60,7 @@ const { createRoot } = imports['react-dom/client']
 
 const App = observer(() => {
   const inputRef = useRef()
+
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
   }
