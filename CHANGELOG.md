@@ -2,6 +2,7 @@
 
 - Fix android compatibility policy: Support 16 KB page sizes
 - Embed:
+  - Notification call answered elsewhere
   - Add api to close notification
   - Update api static getCurrentVersion
 
