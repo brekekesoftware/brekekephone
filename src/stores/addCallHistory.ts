@@ -4,29 +4,33 @@ import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
-import { isAndroid, isWeb } from '#/config'
+import { isAndroid, isIos } from '#/config'
+import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import { Call } from '#/stores/Call'
 import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils, CallLogType } from '#/utils/BrekekeUtils'
+import { jsonStable } from '#/utils/jsonStable'
 import { permForCallLog } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
+import { webShowNotification } from '#/utils/webShowNotification'
 
 let alreadyAddHistoryMap: { [pnId: string]: true } = {}
-export const parseReasonCancelCall = (reason?: string) => {
+
+const parseReasonCancelCall = (reason?: string) => {
   if (!reason) {
     return
   }
-
   const m = reason.match(/"([^"]+)"/i)
   if (!m) {
     return
   }
   return m[1]
 }
-export const getUserInfoFromReasons = (reason?: string | false) => {
+const getUserInfoFromReasons = (reason?: string | false) => {
   if (!reason) {
     return
   }
@@ -68,7 +72,8 @@ export const addCallHistory = async (
     // voice mail
     return
   }
-  const pnId = isTypeCall ? c.pnId : c.id
+
+  const pnId = (isTypeCall ? c.pnId : c.id) || c.id || jsonStable(c)
   if (pnId) {
     if (alreadyAddHistoryMap[pnId]) {
       return
@@ -253,9 +258,6 @@ const getBodyForNotification = async (c: CallHistoryInfo) => {
 }
 
 const presentNotification = async (c: CallHistoryInfo) => {
-  if (isWeb) {
-    return
-  }
   // if two users answer a call at the same time, the system will automatically end the call for the second user to join
   // the second user will receive a reason: "Call completed by ..."
   // --> c.answered = true, c.reason = "..." -> show notify
@@ -265,6 +267,25 @@ const presentNotification = async (c: CallHistoryInfo) => {
   }
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
+
+  // show notification call completed elsewhere in web embed api
+  if (
+    isEmbed &&
+    c.answeredBy &&
+    embedApi._notificationOptions?.notificationCallCompletedElseWhere
+  ) {
+    webShowNotification({
+      type: 'call',
+      id: c.id,
+      body,
+      tag: title,
+      title,
+      interval:
+        embedApi._notificationOptions
+          ?.notificationCallCompletedElseWhereInterval,
+    })
+    return
+  }
 
   if (isAndroid) {
     Notifications.postLocalNotification({
@@ -294,7 +315,10 @@ const presentNotification = async (c: CallHistoryInfo) => {
       type: '',
       thread: '',
     })
-  } else {
+    return
+  }
+
+  if (isIos) {
     PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
       badge = 1 + (Number(badge) || 0)
       PushNotificationIOS.addNotificationRequest({

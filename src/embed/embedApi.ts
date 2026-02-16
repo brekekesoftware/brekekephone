@@ -81,6 +81,8 @@ export class EmbedApi extends EventEmitter {
       closeNotificationOnCallAnswer = true,
       closeNotificationOnCallEnd = true,
       notificationInterval = 15000,
+      notificationCallCompletedElseWhere = true,
+      notificationCallCompletedElseWhereInterval = 15000,
       ...o
     } = _o
     this._notificationOptions = {
@@ -89,6 +91,8 @@ export class EmbedApi extends EventEmitter {
       closeNotificationOnCallAnswer,
       closeNotificationOnCallEnd,
       notificationInterval,
+      notificationCallCompletedElseWhere,
+      notificationCallCompletedElseWhereInterval,
     }
     await ctx.account.waitStorageLoaded()
     // reassign options on each sign in
