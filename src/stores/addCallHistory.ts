@@ -267,6 +267,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
   }
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
+
   // show notification call completed elsewhere in web embed api
   if (
     isEmbed &&
@@ -282,6 +283,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
     })
     return
   }
+
   if (isAndroid) {
     Notifications.postLocalNotification({
       payload: {
@@ -312,6 +314,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
     })
     return
   }
+
   if (isIos) {
     PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
       badge = 1 + (Number(badge) || 0)
