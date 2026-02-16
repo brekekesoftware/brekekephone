@@ -47,6 +47,7 @@ export const webShowNotification = ({
   tag,
   title,
   timeout,
+  interval,
 }: {
   type: 'call' | 'chat'
   id: string
@@ -54,6 +55,7 @@ export const webShowNotification = ({
   tag: string
   title?: string
   timeout?: number
+  interval?: number
 }) => {
   if (ctx.auth.pbxConfig?.['webphone.desktop.notification'] === 'false') {
     return
@@ -66,10 +68,14 @@ export const webShowNotification = ({
   ) {
     return
   }
-  let interval = 15000
-  if (isEmbed && embedApi._notificationOptions?.notificationInterval) {
-    interval = embedApi._notificationOptions.notificationInterval
+
+  if (!interval) {
+    interval = 15000
+    if (isEmbed && embedApi._notificationOptions?.notificationInterval) {
+      interval = embedApi._notificationOptions.notificationInterval
+    }
   }
+
   const k = jsonStable({
     type,
     id,

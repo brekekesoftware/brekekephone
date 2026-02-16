@@ -280,6 +280,9 @@ const presentNotification = async (c: CallHistoryInfo) => {
       body,
       tag: title,
       title,
+      interval:
+        embedApi._notificationOptions
+          ?.notificationCallCompletedElseWhereInterval,
     })
     return
   }
