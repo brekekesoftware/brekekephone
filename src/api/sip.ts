@@ -375,10 +375,10 @@ export class SIP extends EventEmitter {
   }
 
   switchCamera = async (sessionId: string, isFrontCamera: boolean) => {
-    // alert(this.currentFrontCamera)
     if (!this.phone) {
       return
     }
+
     // get camera info again for web mobile
     if (this.cameraIds === undefined || this.cameraIds.length === 0) {
       this.cameraIds = await getCameraSourceIds()
@@ -410,7 +410,7 @@ export class SIP extends EventEmitter {
       shareStream: true,
     }
 
-    // TODO: Need handle the best way to switch camera still keep connection
+    // TODO: find a better way to switch camera still keep connection
     // current: disable video then enable, same with UC desktop
     this.phone?.setWithVideo(sessionId, false, videoOptions)
     this.phone?.setWithVideo(sessionId, true, videoOptions)
