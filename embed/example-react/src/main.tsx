@@ -55,13 +55,11 @@ const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
 const { observer } = imports['mobx-react']
-const { useEffect, useRef, useState } = imports['react']
+const { useEffect, useRef } = imports['react']
 const { createRoot } = imports['react-dom/client']
 
 const App = observer(() => {
   const inputRef = useRef()
-  const displayIntervalRef = useRef()
-  const [notificationOptions, setNotificationOptions] = useState({})
 
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
