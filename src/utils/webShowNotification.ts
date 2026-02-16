@@ -59,10 +59,6 @@ export const webShowNotification = ({
     return
   }
 
-  if (isEmbed && embedApi._notificationOptions?.disableNotification) {
-    return
-  }
-
   if (
     isEmbed &&
     embedApi._notificationOptions?.dontShowNotificationIfFocusing &&
