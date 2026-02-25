@@ -627,134 +627,150 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
+  @observable isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
-    // make sure sip is ready before make call
-    if (ctx.auth.sipState !== 'success') {
-      return false
-    }
-    if (!(await permForCall())) {
-      return false
-    }
-    if (
-      this.callkeepUuidPending ||
-      this.calls.filter(c => !c.incoming && !c.answered).length
-    ) {
-      RnAlert.error({
-        message: intlDebug`There is already an outgoing call`,
-      })
-      return false
-    }
-    // check line resource
-    if (
-      ctx.auth.resourceLines.length > 0 &&
-      !this.isLineExist(args[0], ctx.auth.resourceLines)
-    ) {
-      try {
-        const extraHeaders = await this.getExtraHeader(
-          ctx.auth.resourceLines,
-          args[0],
-        )
-        args[0] = { ...args[0], extraHeaders }
-      } catch (err) {
-        console.error(err)
+    try {
+      //  Prevent concurrent calls
+      if (this.isStartingCall) {
+        console.log('debug: prevent concurrent call')
         return false
       }
-    }
-    // start call logic in RNCallKeep
-    // adding this will help the outgoing call automatically hold on GSM call
-    let uuid = ''
-    if (!isWeb) {
-      uuid = newUuid().toUpperCase()
-      this.callkeepUuidPending = uuid
-      if (isAndroid) {
-        RNCallKeep.startCall(uuid, ctx.global.productName, number)
-      } else {
-        RNCallKeep.startCall(uuid, number, number, 'generic', false)
-        // enable proximity monitoring for trigger proximity state to keep the call alive
-        BrekekeUtils.setProximityMonitoring(true)
-        // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
-        // add time out to make sure audio active (didDeactivateAudioSession)
-        // before sip call established
-        await waitTimeout(1000)
+      this.isStartingCall = true
+      // make sure sip is ready before make call
+      if (ctx.auth.sipState !== 'success') {
+        return false
       }
-      this.setAutoEndCallKeepTimer(uuid)
-    }
-    const sipCreateSession = () => {
-      // do not make call if the callkeep ended
-      if (uuid && uuid !== this.callkeepUuidPending) {
-        return
+      if (!(await permForCall())) {
+        return false
       }
-      ctx.sip.phone?.makeCall(number, ...args)
-    }
-    // reset sip connection state and navigate to the call manage screen
-    ctx.auth.sipTotalFailure = 0
-    ctx.nav.goToPageCallManage({ isOutgoingCall: true })
-    // it can be reconnected, use type conversion here to fix ts error
-    const sipState = ctx.auth.sipState as ConnectionState
-    if (
-      sipState === 'waiting' ||
-      sipState === 'failure' ||
-      sipState === 'stopped'
-    ) {
-      ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
-      return true
-    }
-    if (sipState === 'connecting') {
-      ctx.auth.waitSip().then(sipCreateSession)
-      return true
-    }
-    // in case of sip state is success
-    // there could still cases that the sip is disconnected but state not updated yet
-    // like putting the phone on background or changing the network
-    let reconnectCalled = false
-    try {
-      sipCreateSession()
+      if (
+        this.callkeepUuidPending ||
+        this.calls.filter(c => !c.incoming && !c.answered).length
+      ) {
+        RnAlert.error({
+          message: intlDebug`There is already an outgoing call`,
+        })
+        return false
+      }
+      // check line resource
+      if (
+        ctx.auth.resourceLines.length > 0 &&
+        !this.isLineExist(args[0], ctx.auth.resourceLines)
+      ) {
+        try {
+          const extraHeaders = await this.getExtraHeader(
+            ctx.auth.resourceLines,
+            args[0],
+          )
+          args[0] = { ...args[0], extraHeaders }
+        } catch (err) {
+          console.error(err)
+          return false
+        }
+      }
+      // start call logic in RNCallKeep
+      // adding this will help the outgoing call automatically hold on GSM call
+      let uuid = ''
+      if (!isWeb) {
+        uuid = newUuid().toUpperCase()
+        this.callkeepUuidPending = uuid
+        if (isAndroid) {
+          RNCallKeep.startCall(uuid, ctx.global.productName, number)
+        } else {
+          RNCallKeep.startCall(uuid, number, number, 'generic', false)
+          // enable proximity monitoring for trigger proximity state to keep the call alive
+          BrekekeUtils.setProximityMonitoring(true)
+          // ios if sip call get response INVITE 18x quickly in 50ms - 130ms
+          // add time out to make sure audio active (didDeactivateAudioSession)
+          // before sip call established
+          await waitTimeout(1000)
+        }
+        this.setAutoEndCallKeepTimer(uuid)
+      }
+      const sipCreateSession = () => {
+        // do not make call if the callkeep ended
+        if (uuid && uuid !== this.callkeepUuidPending) {
+          return
+        }
+        ctx.sip.phone?.makeCall(number, ...args)
+      }
+      // reset sip connection state and navigate to the call manage screen
+      ctx.auth.sipTotalFailure = 0
+      ctx.nav.goToPageCallManage({ isOutgoingCall: true })
+      // it can be reconnected, use type conversion here to fix ts error
+      const sipState = ctx.auth.sipState as ConnectionState
+      if (
+        sipState === 'waiting' ||
+        sipState === 'failure' ||
+        sipState === 'stopped'
+      ) {
+        ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
+        return true
+      }
+      if (sipState === 'connecting') {
+        ctx.auth.waitSip().then(sipCreateSession)
+        return true
+      }
+      // in case of sip state is success
+      // there could still cases that the sip is disconnected but state not updated yet
+      // like putting the phone on background or changing the network
+      let reconnectCalled = false
+      try {
+        sipCreateSession()
+      } catch (err) {
+        console.error(err)
+        reconnectCalled = true
+        ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
+      }
+      // reset the currentCallId to display the new call
+      // check for each 0.5s internval auto update currentCallId
+      // the call will be emitted from sip, we need to use interval here to set it
+      // also if after 3s there's no call in store, reconnect
+      runInAction(() => {
+        this.setCurrentCallId('')
+      })
+      const prevIds = arrToMap(this.calls, 'id')
+      this.clearStartCallIntervalTimer()
+      this.startCallIntervalAt = Date.now()
+      this.startCallIntervalId = BackgroundTimer.setInterval(
+        action(() => {
+          const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
+          if (curr) {
+            if (uuid) {
+              curr.callkeepUuid = uuid
+            }
+            this.setCurrentCallId(curr.id)
+            this.clearStartCallIntervalTimer()
+            return
+          }
+          const diff = Date.now() - this.startCallIntervalAt
+          // add a guard of 10s to clear the interval
+          if (diff > 10000) {
+            if (uuid) {
+              this.callkeepUuidPending = ''
+              this.endCallKeep(uuid)
+            }
+            this.clearStartCallIntervalTimer()
+            return
+          }
+          // also if after 3s there's no call in store, reconnect
+          // it's likely a connection issue occurred
+          if (!reconnectCalled && diff > 3000) {
+            reconnectCalled = true
+            ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
+            this.clearStartCallIntervalTimer()
+          }
+        }),
+        500,
+      )
     } catch (err) {
       console.error(err)
-      reconnectCalled = true
-      ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
+      return false
+    } finally {
+      setTimeout(() => {
+        this.isStartingCall = false
+      }, 100)
     }
-    // reset the currentCallId to display the new call
-    // check for each 0.5s internval auto update currentCallId
-    // the call will be emitted from sip, we need to use interval here to set it
-    // also if after 3s there's no call in store, reconnect
-    runInAction(() => {
-      this.setCurrentCallId('')
-    })
-    const prevIds = arrToMap(this.calls, 'id')
-    this.clearStartCallIntervalTimer()
-    this.startCallIntervalAt = Date.now()
-    this.startCallIntervalId = BackgroundTimer.setInterval(
-      action(() => {
-        const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
-        if (curr) {
-          if (uuid) {
-            curr.callkeepUuid = uuid
-          }
-          this.setCurrentCallId(curr.id)
-          this.clearStartCallIntervalTimer()
-          return
-        }
-        const diff = Date.now() - this.startCallIntervalAt
-        // add a guard of 10s to clear the interval
-        if (diff > 10000) {
-          if (uuid) {
-            this.callkeepUuidPending = ''
-            this.endCallKeep(uuid)
-          }
-          this.clearStartCallIntervalTimer()
-          return
-        }
-        // also if after 3s there's no call in store, reconnect
-        // it's likely a connection issue occurred
-        if (!reconnectCalled && diff > 3000) {
-          reconnectCalled = true
-          ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
-          this.clearStartCallIntervalTimer()
-        }
-      }),
-      500,
-    )
     return true
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
