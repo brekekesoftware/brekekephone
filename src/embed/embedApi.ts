@@ -49,6 +49,34 @@ export class EmbedApi extends EventEmitter {
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
 
+  /**
+   * Get list of available cameras (videoinput devices)
+   */
+  getAvailableCameras = async (): Promise<MediaDeviceInfo[]> => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      return devices.filter(device => device.kind === 'videoinput')
+    } catch (error) {
+      console.error('Error getting available cameras:', error)
+      return []
+    }
+  }
+
+  /**
+   * Get list of available microphones (audioinput devices)
+   */
+  getAvailableMicrophones = async (): Promise<MediaDeviceInfo[]> => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const d = devices.filter(device => device.kind === 'audioinput')
+      console.log('[Wy]: available microphones:', d)
+      return d
+    } catch (error) {
+      console.error('Error getting available microphones:', error)
+      return []
+    }
+  }
+
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()
     await waitTimeout()

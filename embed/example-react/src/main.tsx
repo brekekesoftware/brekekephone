@@ -55,11 +55,106 @@ const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
 const { observer } = imports['mobx-react']
-const { useEffect, useRef } = imports['react']
+const { useEffect, useRef, useState } = imports['react']
 const { createRoot } = imports['react-dom/client']
 
 const App = observer(() => {
   const inputRef = useRef()
+  const [cameras, setCameras] = useState([])
+  const [microphones, setMicrophones] = useState([])
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedMicrophone, setSelectedMicrophone] = useState('')
+  const [isLoadingDevices, setIsLoadingDevices] = useState(true)
+  const [switchError, setSwitchError] = useState('')
+  const [switchSuccess, setSwitchSuccess] = useState('')
+
+  // Load available devices on mount
+  useEffect(() => {
+    const loadDevices = async () => {
+      try {
+        setIsLoadingDevices(true)
+        const [camerasData, microphonesData] = await Promise.all([
+          phone.getAvailableCameras(),
+          phone.getAvailableMicrophones(),
+        ])
+        setCameras(camerasData)
+        setMicrophones(microphonesData)
+
+        // Set first device as default if available
+        if (camerasData.length > 0 && !selectedCamera) {
+          setSelectedCamera(camerasData[0].deviceId)
+        }
+        if (microphonesData.length > 0 && !selectedMicrophone) {
+          setSelectedMicrophone(microphonesData[0].deviceId)
+        }
+      } catch (error) {
+        console.error('Error loading devices:', error)
+      } finally {
+        setIsLoadingDevices(false)
+      }
+    }
+
+    loadDevices()
+
+    // Listen for device changes (e.g., camera/microphone plugged/unplugged)
+    const handleDeviceChange = () => {
+      loadDevices()
+    }
+
+    navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
+
+    return () => {
+      navigator.mediaDevices.removeEventListener(
+        'devicechange',
+        handleDeviceChange,
+      )
+    }
+  }, [])
+
+  const handleCameraChange = async (e: any) => {
+    const deviceId = e.target.value
+    setSelectedCamera(deviceId)
+    try {
+    } catch (error) {
+      console.error('Error setting camera:', error)
+    }
+  }
+
+  const handleMicrophoneChange = async (e: any) => {
+    const deviceId = e.target.value
+    setSelectedMicrophone(deviceId)
+    setSwitchError('')
+    setSwitchSuccess('')
+
+    // Clear messages after 3 seconds
+    const clearMessages = () => {
+      setSwitchError('')
+      setSwitchSuccess('')
+    }
+
+    try {
+      // Use the new switchMicrophone with better error handling
+      // Falls back to setMicrophone for backward compatibility
+      if (phone.switchMicrophone) {
+      } else {
+      }
+
+      setSwitchSuccess('Microphone switched successfully')
+      setTimeout(clearMessages, 3000)
+    } catch (error: any) {
+      const errorMsg =
+        error?.message ||
+        'Failed to switch microphone. Device may no longer be available.'
+      setSwitchError(errorMsg)
+      console.error('Microphone switch error:', error)
+
+      // Reload devices in case one was unplugged
+      const updatedMicrophones = await phone.getAvailableMicrophones()
+      setMicrophones(updatedMicrophones)
+
+      setTimeout(clearMessages, 5000)
+    }
+  }
 
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
@@ -67,6 +162,9 @@ const App = observer(() => {
   const makeCallVideo = () => {
     ctx.call.startCall(inputRef.current.value, undefined, true)
   }
+
+  const getDeviceLabel = (device: MediaDeviceInfo): string =>
+    device.label || `Device ${device.deviceId.substring(0, 5)}`
 
   return (
     <div className='app'>
@@ -80,6 +178,89 @@ const App = observer(() => {
       <span>SIP - {ctx.auth.sipState} | </span>
       <span>Calls - {ctx.call.calls.length} </span>
       <hr />
+
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor='camera-select' style={{ marginRight: '8px' }}>
+          Camera:
+        </label>
+        <select
+          id='camera-select'
+          value={selectedCamera}
+          onChange={handleCameraChange}
+          disabled={isLoadingDevices || cameras.length === 0}
+          style={{ padding: '4px', minWidth: '200px' }}
+        >
+          {cameras.length === 0 ? (
+            <option value=''>No cameras available</option>
+          ) : (
+            cameras.map(camera => (
+              <option key={camera.deviceId} value={camera.deviceId}>
+                {getDeviceLabel(camera)}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
+
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor='microphone-select' style={{ marginRight: '8px' }}>
+          Microphone:
+        </label>
+        <select
+          id='microphone-select'
+          value={selectedMicrophone}
+          onChange={handleMicrophoneChange}
+          disabled={isLoadingDevices || microphones.length === 0}
+          style={{ padding: '4px', minWidth: '200px' }}
+        >
+          {microphones.length === 0 ? (
+            <option value=''>No microphones available</option>
+          ) : (
+            microphones.map(microphone => (
+              <option key={microphone.deviceId} value={microphone.deviceId}>
+                {getDeviceLabel(microphone)}
+              </option>
+            ))
+          )}
+        </select>
+        <button
+          className='call-answer'
+          onClick={() => phone.logCurrentDevices()}
+          style={{ marginLeft: '8px' }}
+        >
+          Debug
+        </button>
+      </div>
+
+      {switchError && (
+        <div
+          style={{
+            color: '#d32f2f',
+            backgroundColor: '#ffebee',
+            padding: '8px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontSize: '14px',
+          }}
+        >
+          {switchError}
+        </div>
+      )}
+
+      {switchSuccess && (
+        <div
+          style={{
+            color: '#388e3c',
+            backgroundColor: '#e8f5e9',
+            padding: '8px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontSize: '14px',
+          }}
+        >
+          ✓ {switchSuccess}
+        </div>
+      )}
 
       <input ref={inputRef} />
       <button onClick={makeCallAudio}>Make call audio</button>
