@@ -9,6 +9,8 @@ import type {
   MakeCallFn,
 } from '#/brekekejs'
 import { bundleIdentifier, currentVersion, jssipVersion } from '#/config'
+import type { DeviceInfo } from '#/embed/embedDevicesManager'
+import { embedDevicesManager } from '#/embed/embedDevicesManager'
 import type { Account } from '#/stores/accountStore'
 import { getAccountUniqueId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -48,14 +50,16 @@ export class EmbedApi extends EventEmitter {
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
+  // -------------------------------------------------------------------------
+  // Public: Devices management
+  // -------------------------------------------------------------------------
 
   /**
    * Get list of available cameras (videoinput devices)
    */
-  getAvailableCameras = async (): Promise<MediaDeviceInfo[]> => {
+  getAvailableCameras = async (): Promise<DeviceInfo[]> => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      return devices.filter(device => device.kind === 'videoinput')
+      return await embedDevicesManager.getVideoInputDevices()
     } catch (error) {
       console.error('Error getting available cameras:', error)
       return []
@@ -65,10 +69,9 @@ export class EmbedApi extends EventEmitter {
   /**
    * Get list of available microphones (audioinput devices)
    */
-  getAvailableMicrophones = async (): Promise<MediaDeviceInfo[]> => {
+  getAvailableMicrophones = async (): Promise<DeviceInfo[]> => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      const d = devices.filter(device => device.kind === 'audioinput')
+      const d = await embedDevicesManager.getAudioInputDevices()
       console.log('[Wy]: available microphones:', d)
       return d
     } catch (error) {
@@ -77,6 +80,38 @@ export class EmbedApi extends EventEmitter {
     }
   }
 
+  setAudioInputDevice = async (deviceId: string) => {
+    console.log(`[Wy]: setting audio input device to deviceId=${deviceId}`)
+    embedDevicesManager.setAudioInputDevice(deviceId)
+  }
+
+  switchMicrophoneDuringCall = async (
+    deviceId: string,
+    sessionId: string | null = null,
+  ) => {
+    console.log(
+      `[Wy]: switching microphone to deviceId=${deviceId}, sessionId=${sessionId}`,
+    )
+    embedDevicesManager.switchMicrophoneDuringCall(
+      ctx.sip.phone,
+      deviceId,
+      sessionId,
+    )
+  }
+
+  debugDevices = async () => {
+    const co = ctx.call.getOngoingCall()
+    console.group('Debug Devices')
+    console.log('[Wy] Current call:', Object.keys(co || {}))
+    console.log('[Wy] Current call answered:', co?.answered)
+    console.log('[Wy] Call length:', ctx.call.calls.length)
+
+    console.groupEnd()
+  }
+
+  // -------------------------------------------------------------------------
+  // Public: Devices management end
+  // -------------------------------------------------------------------------
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()
     await waitTimeout()

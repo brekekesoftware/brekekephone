@@ -86,6 +86,7 @@ const App = observer(() => {
         }
         if (microphonesData.length > 0 && !selectedMicrophone) {
           setSelectedMicrophone(microphonesData[0].deviceId)
+          phone.setAudioInputDevice(microphonesData[0].deviceId)
         }
       } catch (error) {
         console.error('Error loading devices:', error)
@@ -102,7 +103,7 @@ const App = observer(() => {
     }
 
     navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
-
+    phone.listenDebug()
     return () => {
       navigator.mediaDevices.removeEventListener(
         'devicechange',
@@ -133,12 +134,12 @@ const App = observer(() => {
     }
 
     try {
-      // Use the new switchMicrophone with better error handling
-      // Falls back to setMicrophone for backward compatibility
-      if (phone.switchMicrophone) {
+      const c = ctx.call.getOngoingCall()
+      if (c) {
+        phone.switchMicrophoneDuringCall(deviceId, c.sessionId)
       } else {
+        phone.setAudioInputDevice(deviceId)
       }
-
       setSwitchSuccess('Microphone switched successfully')
       setTimeout(clearMessages, 3000)
     } catch (error: any) {
@@ -225,7 +226,7 @@ const App = observer(() => {
         </select>
         <button
           className='call-answer'
-          onClick={() => phone.logCurrentDevices()}
+          onClick={() => phone.debugDevices()}
           style={{ marginLeft: '8px' }}
         >
           Debug
