@@ -579,8 +579,12 @@ index a011f67..b313a70 100644
    _setupAndroid = async (options) => {
      RNCallKeepModule.setup(options);
  
+diff --git a/node_modules/react-native-callkeep/ios/.DS_Store b/node_modules/react-native-callkeep/ios/.DS_Store
+new file mode 100644
+index 0000000..a1ab0ea
+Binary files /dev/null and b/node_modules/react-native-callkeep/ios/.DS_Store differ
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
-index c8e7bbd..3831d10 100644
+index c8e7bbd..f8dc9ef 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 @@ -11,10 +11,10 @@
@@ -615,21 +619,17 @@ index c8e7bbd..3831d10 100644
  
  + (void)endCallWithUUID:(NSString *)uuidString
                   reason:(int)reason;
-@@ -47,4 +48,12 @@ continueUserActivity:(NSUserActivity *)userActivity
+@@ -47,4 +48,8 @@ continueUserActivity:(NSUserActivity *)userActivity
  
  + (void)setup:(NSDictionary *)options;
  
-++ (BOOL)hasActiveUnholdBrekekeCall;
-+
-++ (NSString *)getActiveBrekekeCallUUID;
-+
-++ (void)recoverAudioViaHoldUnhold;
-+
 ++ (NSInteger)getConnectedCallsCount;
++
+++ (NSInteger)getActiveCallsCount;
 +
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..e43c594 100644
+index 786045f..4db1993 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,22 @@
@@ -640,7 +640,7 @@ index 786045f..e43c594 100644
 +static NSURL *ringtoneUrl = nil;
 +static NSMutableDictionary *callMap = nil;
 +static NSMutableDictionary *gsmCallMap = nil;
-+static BOOL isRecoveringAudio = NO;
++
  @implementation RNCallKeep
  {
      NSOperatingSystemVersion _version;
@@ -704,7 +704,15 @@ index 786045f..e43c594 100644
  }
  
  // Override method of RCTEventEmitter
-@@ -167,28 +191,34 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
+@@ -149,7 +173,6 @@ - (void)onAudioRouteChange:(NSNotification *)notification
+     NSDictionary *info = notification.userInfo;
+     NSInteger reason = [[info valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+     NSString *output = [RNCallKeep getAudioOutput];
+-
+     if (output == nil) {
+         return;
+     }
+@@ -167,28 +190,34 @@ - (void)sendEventWithNameWrapper:(NSString *)name body:(id)body {
          [self sendEventWithName:name body:body];
      } else {
          NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -741,7 +749,7 @@ index 786045f..e43c594 100644
 +        sharedProvider = [[CXProvider alloc] initWithConfiguration:[RNCallKeep getProviderConfigurationRingtone: ringtone]];
 +        return;
      }
-+    [sharedProvider setConfiguration:[RNCallKeep getProviderConfigurationRingtone:ringtone]];
++    [sharedProvider setConfiguration:[RNCallKeep getProviderConfigurationRingtone: ringtone]];
  }
  
  + (NSString *) getAudioOutput {
@@ -749,7 +757,7 @@ index 786045f..e43c594 100644
      @try{
          NSArray<AVAudioSessionPortDescription *>* outputs = [AVAudioSession sharedInstance].currentRoute.outputs;
          if(outputs != nil && outputs.count > 0){
-@@ -197,52 +227,9 @@ + (NSString *) getAudioOutput {
+@@ -197,52 +226,9 @@ + (NSString *) getAudioOutput {
      } @catch(NSException* error) {
          NSLog(@"getAudioOutput error :%@", [error description]);
      }
@@ -802,7 +810,7 @@ index 786045f..e43c594 100644
  RCT_EXPORT_METHOD(setReachable)
  {
  #ifdef DEBUG
-@@ -283,8 +270,10 @@ + (void)setup:(NSDictionary *)options {
+@@ -283,8 +269,10 @@ + (void)setup:(NSDictionary *)options {
                    supportsHolding:(BOOL)supportsHolding
                    supportsDTMF:(BOOL)supportsDTMF
                    supportsGrouping:(BOOL)supportsGrouping
@@ -814,7 +822,7 @@ index 786045f..e43c594 100644
      [RNCallKeep reportNewIncomingCall: uuidString
                                 handle: handle
                             handleType: handleType
-@@ -296,22 +285,8 @@ + (void)setup:(NSDictionary *)options {
+@@ -296,22 +284,8 @@ + (void)setup:(NSDictionary *)options {
                     supportsUngrouping: supportsUngrouping
                            fromPushKit: NO
                                payload: nil
@@ -839,7 +847,7 @@ index 786045f..e43c594 100644
  }
  
  RCT_EXPORT_METHOD(getInitialEvents:(RCTPromiseResolveBlock)resolve
-@@ -339,7 +314,13 @@ + (void)setup:(NSDictionary *)options {
+@@ -339,7 +313,13 @@ + (void)setup:(NSDictionary *)options {
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][startCall] uuidString = %@", uuidString);
@@ -853,28 +861,15 @@ index 786045f..e43c594 100644
      int _handleType = [RNCallKeep getHandleType:handleType];
      NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
      CXHandle *callHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
-@@ -400,6 +381,20 @@ + (void)setup:(NSDictionary *)options {
+@@ -400,6 +380,7 @@ + (void)setup:(NSDictionary *)options {
      [transaction addAction:setHeldCallAction];
  
      [self requestTransaction:transaction];
-+    NSLog(@"[RNCallKeep][setOnHold] uuidString = %@, shouldHold = %d, _isInterruptAudio=%d , isOtherAudioPlaying=%d, isRecoveringAudio=%d", uuidString, shouldHold, _isInterruptAudio, [AVAudioSession sharedInstance].isOtherAudioPlaying, isRecoveringAudio);
-+    // handle resume audio session when gsm call disconected
-+    if(!gsmCallMap[uuidString] && shouldHold == 0 && [AVAudioSession sharedInstance].isOtherAudioPlaying == 1 && !isRecoveringAudio){
-+//        _isInterruptAudio = false;
-+//        NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] Should ResumeAudioSession 🙏");
-+//        NSDictionary *userInfo
-+//        = @{
-+//            AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
-+//            AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume],
-+//            @"RNCallKeep_source": @"ResumeAudioSession"
-+//        };
-+//        
-+//        [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
-+    }
++    NSLog(@"[RNCallKeep][setOnHold] uuidString = %@, shouldHold = %d, _isInterruptAudio=%d , isOtherAudioPlaying=%d", uuidString, shouldHold, _isInterruptAudio, [AVAudioSession sharedInstance].isOtherAudioPlaying);
  }
  
  RCT_EXPORT_METHOD(_startCallActionEventListenerAdded)
-@@ -651,17 +646,22 @@ + (NSString *) getAudioInputType: (NSString *) type
+@@ -651,17 +632,22 @@ + (NSString *) getAudioInputType: (NSString *) type
  
  + (NSString *) getSelectedAudioRoute
  {
@@ -907,7 +902,7 @@ index 786045f..e43c594 100644
  }
  
  - (void)requestTransaction:(CXTransaction *)transaction
-@@ -680,6 +680,7 @@ - (void)requestTransaction:(CXTransaction *)transaction
+@@ -680,6 +666,7 @@ - (void)requestTransaction:(CXTransaction *)transaction
  
              // CXStartCallAction
              if ([[transaction.actions firstObject] isKindOfClass:[CXStartCallAction class]]) {
@@ -915,7 +910,7 @@ index 786045f..e43c594 100644
                  CXStartCallAction *startCallAction = [transaction.actions firstObject];
                  CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
                  callUpdate.remoteHandle = startCallAction.handle;
-@@ -759,6 +760,7 @@ + (void)endCallWithUUID:(NSString *)uuidString
+@@ -759,6 +746,7 @@ + (void)endCallWithUUID:(NSString *)uuidString
      }
  }
  
@@ -923,7 +918,7 @@ index 786045f..e43c594 100644
  + (void)reportNewIncomingCall:(NSString *)uuidString
                         handle:(NSString *)handle
                     handleType:(NSString *)handleType
-@@ -771,6 +773,7 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
+@@ -771,6 +759,7 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
                    fromPushKit:(BOOL)fromPushKit
                        payload:(NSDictionary * _Nullable)payload
          withCompletionHandler:(void (^_Nullable)(void))completion
@@ -931,13 +926,17 @@ index 786045f..e43c594 100644
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][reportNewIncomingCall] uuidString = %@", uuidString);
-@@ -785,10 +788,26 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
+@@ -785,10 +774,30 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
      callUpdate.supportsUngrouping = supportsUngrouping;
      callUpdate.hasVideo = hasVideo;
      callUpdate.localizedCallerName = localizedCallerName;
 +    NSLog(@"[RNCallKeep][reportNewIncomingCall] ringtone = %@", ringtone);
 +    callMap[uuid] = uuid;
-+    NSLog(@"[RNCallKeep][reportNewIncomingCall] count = %lu", (unsigned long)[callMap count]);
++    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
++    NSString *outputAudio = [RNCallKeep getAudioOutput];
++    NSLog(@"[RNCallKeep][reportNewIncomingCall] AudioSeesion category:%@, mode:%@, options:%lu, output:%@, isOtherAudioPlaying: %d",
++          audioSession.category, audioSession.mode, (unsigned long)audioSession.categoryOptions, outputAudio, audioSession.isOtherAudioPlaying);
++
 +    if(ringtone != nil && [callMap count] == 1) {
 +        NSString *r = ringtone;
 +        if([RNCallKeep localFile:r]) {
@@ -945,13 +944,13 @@ index 786045f..e43c594 100644
 +            ringtoneUrl = [NSURL URLWithString:ringtone];
 +        }
 +        if(![lastRingtone isEqualToString:r]) {
-+            NSLog(@"[RNCallKeep][initCallKitProviderWithRingtone] reportNew");
++            NSLog(@"[RNCallKeep][reportNewIncomingCall] reportNew");
 +            [RNCallKeep initCallKitProviderWithRingtone:r];
 +        }
 +    } else {
 +        [RNCallKeep initCallKitProvider];
 +    }
- 
+     
 -    [RNCallKeep initCallKitProvider];
      [sharedProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError * _Nullable error) {
          RNCallKeep *callKeep = [RNCallKeep allocWithZone: nil];
@@ -959,7 +958,7 @@ index 786045f..e43c594 100644
          [callKeep sendEventWithNameWrapper:RNCallKeepDidDisplayIncomingCall body:@{
              @"error": error && error.localizedDescription ? error.localizedDescription : @"",
              @"errorCode": error ? [callKeep getIncomingCallErrorCode:error] : @"",
-@@ -806,7 +825,9 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
+@@ -806,7 +815,9 @@ + (void)reportNewIncomingCall:(NSString *)uuidString
          if (error == nil) {
              // Workaround per https://forums.developer.apple.com/message/169511
              if ([callKeep lessThanIos10_2]) {
@@ -970,7 +969,7 @@ index 786045f..e43c594 100644
              }
          }
          if (completion != nil) {
-@@ -876,71 +897,92 @@ + (int)getHandleType:(NSString *)handleType
+@@ -876,71 +887,91 @@ + (int)getHandleType:(NSString *)handleType
      }
  }
  
@@ -1085,10 +1084,11 @@ index 786045f..e43c594 100644
  
      AVAudioSession* audioSession = [AVAudioSession sharedInstance];
 -    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
-+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionDuckOthers error:nil];
- 
+-
 -    [audioSession setMode:mode error:nil];
-+    [audioSession setMode:AVAudioSessionModeDefault error:nil];
++    NSError *err = nil;
++    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
++        mode:AVAudioSessionModeVoiceChat options: AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error: &err];
  
      double sampleRate = 44100.0;
      [audioSession setPreferredSampleRate:sampleRate error:nil];
@@ -1097,7 +1097,6 @@ index 786045f..e43c594 100644
      [audioSession setPreferredIOBufferDuration:bufferDuration error:nil];
 -    [audioSession setActive:TRUE error:nil];
 +    
-+    NSError *err = nil;
 +    [audioSession setActive:YES error:&err];
 +    
 +    if(err){
@@ -1108,7 +1107,7 @@ index 786045f..e43c594 100644
  }
  
  + (BOOL)application:(UIApplication *)application
-@@ -951,25 +993,25 @@ + (BOOL)application:(UIApplication *)application
+@@ -951,25 +982,25 @@ + (BOOL)application:(UIApplication *)application
      NSLog(@"[RNCallKeep][application:openURL]");
  #endif
      /*
@@ -1148,23 +1147,43 @@ index 786045f..e43c594 100644
  {
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][application:continueUserActivity]");
-@@ -1080,8 +1122,14 @@ - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAct
+@@ -1053,6 +1084,7 @@ - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallActio
+ #ifdef DEBUG
+     NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performStartCallAction]");
+ #endif
++    
+     //do this first, audio sessions are flakey
+     [self configureAudioSession];
+     //tell the JS to actually make the call
+@@ -1080,9 +1112,25 @@ - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAct
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performAnswerCallAction]");
  #endif
 -    [self configureAudioSession];
-+    
-+    NSError *err = nil;
-+    [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&err];
-+    if(err){
-+        NSLog(@"❌[RNCallKeep][performAnswerCallAction] PortOverrideNone error: %@", [err localizedDescription]);
+-    [self sendEventWithNameWrapper:RNCallKeepPerformAnswerCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
++    [self stopRingtone];
++    NSDictionary *callsInfo = [self getCallsInfo];
++    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
++    NSLog(@"[RNCallKeep][provider:performAnswerCallAction]  cate:%@, mode: %@, option: %lu, outputAudio:%@, isOtherAudioPlaying: %lu",audioSession.category, audioSession.mode, audioSession.categoryOptions, [RNCallKeep getAudioOutput], audioSession.isOtherAudioPlaying);
++
++    NSInteger callAnswered = [callsInfo[@"answered"] integerValue];
++    AVAudioSession *session = [AVAudioSession sharedInstance];
++    NSError *error = nil;
++    if (![session.category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
++        [session setCategory:AVAudioSessionCategoryPlayAndRecord
++                 mode:AVAudioSessionModeVoiceChat
++                 options: AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
++                       error:&error];
++        if (error) NSLog(@"Set category error: %@", error);
++        NSLog(@"[RNCallKeep][provider:performAnswerCallAction] AFTER  cate:%@, mode: %@, option: %lu, outputAudio:%@, isOtherAudioPlaying: %lu",audioSession.category, audioSession.mode, audioSession.categoryOptions, [RNCallKeep getAudioOutput], audioSession.isOtherAudioPlaying);
 +    }
-     [self sendEventWithNameWrapper:RNCallKeepPerformAnswerCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
-+    
      [action fulfill];
++    [self sendEventWithNameWrapper:RNCallKeepPerformAnswerCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
++    
  }
  
-@@ -1093,15 +1141,22 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
+ // Ending incoming call
+@@ -1093,15 +1141,21 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
  #endif
      [self sendEventWithNameWrapper:RNCallKeepPerformEndCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
      [action fulfill];
@@ -1175,21 +1194,19 @@ index 786045f..e43c594 100644
  {
  #ifdef DEBUG
 -    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction]");
-+    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction] isRecovering:%d, onHold:%d, isOther:%d", isRecoveringAudio, action.onHold, [AVAudioSession sharedInstance].isOtherAudioPlaying);
++    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:performSetHeldCallAction]  onHold:%d, isOther:%d", action.onHold, [AVAudioSession sharedInstance].isOtherAudioPlaying);
  #endif
- 
--    [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
-+    // Skip sending event to JavaScript if this is an audio recovery operation
-+    if (!isRecoveringAudio) {
-+        [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
-+    } else {
-+        NSLog(@"[RNCallKeep][performSetHeldCallAction] Skipping event - audio recovery in progress");
-+    }
-+
+     
+     [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
++    
++//    if (action.onHold && gsmCallMap[action.callUUID]){
++//        [[AVAudioSession sharedInstance] setActive:NO withOptions: AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
++//        NSLog(@"😤 Forced deactivate for GSM hold");
++//    }
      [action fulfill];
  }
  
-@@ -1135,12 +1190,6 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
+@@ -1135,14 +1189,13 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][CXProviderDelegate][provider:didActivateAudioSession]");
  #endif
@@ -1199,10 +1216,18 @@ index 786045f..e43c594 100644
 -        AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume]
 -    };
 -    [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
-    
-     [self configureAudioSession];
++    NSLog(@"[RNCallKeep][CXProviderDelegate][provider:didActivateAudioSession]");
++    NSDictionary *userInfo = @{
++            AVAudioSessionInterruptionTypeKey: [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded],
++            AVAudioSessionInterruptionOptionKey: [NSNumber numberWithInt:AVAudioSessionInterruptionOptionShouldResume]
++        };
++     [[NSNotificationCenter defaultCenter] postNotificationName:AVAudioSessionInterruptionNotification object:nil userInfo:userInfo];
+ 
+-    [self configureAudioSession];
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
-@@ -1154,4 +1203,258 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
+ }
+ 
+@@ -1154,4 +1207,232 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1226,8 +1251,13 @@ index 786045f..e43c594 100644
 +        NSLog(@"[RNCallKeep][Ringtone] Failed to create AVAudioPlayer: %@", error.localizedDescription);
 +        return;
 +    }
++    
 +    audioPlayer.numberOfLoops = -1;
 +    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++        if (!audioPlayer) {
++            NSLog(@"[RNCallKeep][Ringtone] Ringtone stopped before play, skipping");
++            return;
++        }
 +        [RNCallKeep configAudioSessionForAudioPlayer];
 +        BOOL p = [audioPlayer prepareToPlay];
 +        if(!p) {
@@ -1235,6 +1265,10 @@ index 786045f..e43c594 100644
 +            return;
 +        }
 +        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++            if (!audioPlayer) {
++                NSLog(@"[RNCallKeep][Ringtone] Ringtone stopped before actual play, skipping");
++                return;
++            }
 +            BOOL au = [audioPlayer play];
 +            if(au) {
 +                NSLog(@"[RNCallKeep][Ringtone] Play url %@ " , url.path);
@@ -1248,11 +1282,16 @@ index 786045f..e43c594 100644
 +    if (audioPlayer) {
 +        [audioPlayer stop];
 +        audioPlayer = nil;
-+        NSLog(@"[RNCallKeep][Ringtone] Stopped ringtone");
++        
++        [[AVAudioSession sharedInstance] setActive:NO
++               withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
++                error:nil];
++        
 +    }
 +}
 +
 ++(void) configAudioSessionForAudioPlayer {
++    NSLog(@"[RNCallKeep][Ringtone] configAudioSessionForAudioPlayer");
 +    AVAudioSession *session = [AVAudioSession sharedInstance];
 +    [session setCategory:AVAudioSessionCategoryPlayback
 +             withOptions:AVAudioSessionCategoryOptionDuckOthers | AVAudioSessionCategoryOptionMixWithOthers
@@ -1301,7 +1340,13 @@ index 786045f..e43c594 100644
 +          call.outgoing,
 +          call.hasConnected,
 +          call.hasEnded);
-+
++    AVAudioSession *a = [AVAudioSession sharedInstance];
++    NSLog(@"[RNCallKeep][Ringtone] Call category: %@, mode=%@, options=%lu, speaker=%@, isOtherAudioPlaying=%d",
++          a.category,
++          a.mode,
++          (unsigned long)a.categoryOptions,
++          [RNCallKeep getAudioOutput], a.isOtherAudioPlaying);
++    
 +    [self updateCallStateForCall:call];
 +
 +    [self updateRingtoneState];
@@ -1325,8 +1370,8 @@ index 786045f..e43c594 100644
 +
 +- (void) updateRingtoneState {
 +    BOOL shouldPlay = [self shouldPlayRingtone];
-+    NSLog(@"[RNCallKeep][Ringtone] State check: shouldPlay=%d, callMap=%lu, gsmCallMap=%lu",
-+          shouldPlay, (unsigned long)callMap.count, (unsigned long)gsmCallMap.count);
++    NSLog(@"[RNCallKeep][Ringtone] State check: shouldPlay=%d, ringtoneUrl=%@, callMap=%lu, gsmCallMap=%lu",
++          shouldPlay, ringtoneUrl, (unsigned long)callMap.count, (unsigned long)gsmCallMap.count);
 +    
 +    if (shouldPlay) {
 +        [self playRingtoneWithURL:ringtoneUrl replay:NO];
@@ -1392,68 +1437,22 @@ index 786045f..e43c594 100644
 +        && [self hasAnyIncomingBrekekeCall];
 +}
 +
-+
-++ (BOOL) hasActiveUnholdBrekekeCall {
-+    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
-+    return [instance getActiveBrekekeCallUUID] ? YES : NO;
-+}
-+
-+- (NSString*) getActiveBrekekeCallUUID {
-+    for (CXCall *call in _callObserver.calls) {
-+        // Check: NOT external call, IS connected (answered), NOT ended, NOT on hold
-+        if (!gsmCallMap[call.UUID] && call.hasConnected && !call.hasEnded && !call.onHold) {
-+            return call.UUID.UUIDString;
-+        }
-+    }
-+    return nil;
-+}
-+
-++ (NSString*) getActiveBrekekeCallUUID {
-+    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
-+    return [instance getActiveBrekekeCallUUID];
-+}
-+
-++ (void) recoverAudioViaHoldUnhold {
-+    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
-+    NSString *callUUID = [instance getActiveBrekekeCallUUID];
-+
-+    if (!callUUID) {
-+        NSLog(@"[RNCallKeep][recoverAudioViaHoldUnhold] No active Brekeke call found");
-+        return;
-+    }
-+
-+    NSLog(@"[RNCallKeep][recoverAudioViaHoldUnhold] Triggering hold/unhold for call: %@", callUUID);
-+
-+    // Set flag to skip sending events to JavaScript
-+    isRecoveringAudio = YES;
-+
-+    // Create hold action
-+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:callUUID];
-+    CXSetHeldCallAction *holdAction = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:YES];
-+    CXTransaction *holdTransaction = [[CXTransaction alloc] initWithAction:holdAction];
-+
-+    // Execute hold
-+    [instance requestTransaction:holdTransaction];
-+
-+    // Unhold after 100ms delay
-+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-+        CXSetHeldCallAction *unholdAction = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-+        CXTransaction *unholdTransaction = [[CXTransaction alloc] initWithAction:unholdAction];
-+        [instance requestTransaction:unholdTransaction];
-+
-+        // Reset flag after unhold completes (add 200ms buffer)
-+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-+            isRecoveringAudio = NO;
-+            NSLog(@"[RNCallKeep][recoverAudioViaHoldUnhold] Recovery complete, flag reset");
-+        });
-+    });
-+}
-+
 ++ (NSInteger) getConnectedCallsCount {
 +    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
 +    NSInteger count = 0;
 +    for (CXCall *call in instance->_callObserver.calls) {
 +        if (callMap[call.UUID] && call.hasConnected && !call.hasEnded) {
++            count++;
++        }
++    }
++    return count;
++}
++
+++ (NSInteger) getActiveCallsCount {
++    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
++    NSInteger count = 0;
++    for (CXCall *call in instance->_callObserver.calls) {
++        if (callMap[call.UUID] && !call.hasEnded) {
 +            count++;
 +        }
 +    }

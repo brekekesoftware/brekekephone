@@ -166,8 +166,8 @@ export const setupCallKeepEvents = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
-    // Audio enabled state is managed by didActivateAudioSession and didDeactivateAudioSession
-    // BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
+
+    BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
     const uuid = e.callUUID.toUpperCase()
