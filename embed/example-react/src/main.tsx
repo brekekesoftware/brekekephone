@@ -80,13 +80,32 @@ const App = observer(() => {
         setCameras(camerasData)
         setMicrophones(microphonesData)
 
-        // Set first device as default if available
-        if (camerasData.length > 0 && !selectedCamera) {
-          setSelectedCamera(camerasData[0].deviceId)
+        const current = phone.getCurrentDeviceIdSelected()
+
+        // Camera
+        const isCameraStillAvailable = camerasData.some(
+          c => c.deviceId === current.video,
+        )
+        if (isCameraStillAvailable) {
+          setSelectedCamera(current.video)
+        } else if (camerasData.length > 0) {
+          handleCameraChange(camerasData[0].deviceId)
+        } else {
+          setSelectedCamera(null)
         }
-        if (microphonesData.length > 0 && !selectedMicrophone) {
-          setSelectedMicrophone(microphonesData[0].deviceId)
-          phone.setAudioInputDevice(microphonesData[0].deviceId)
+
+        // Microphone
+        const isMicStillAvailable = microphonesData.some(
+          m => m.deviceId === current.audio,
+        )
+        if (isMicStillAvailable) {
+          setSelectedMicrophone(current.audio)
+        } else if (microphonesData.length > 0) {
+          handleMicrophoneChange(
+            microphonesData[microphonesData.length - 1].deviceId,
+          )
+        } else {
+          setSelectedMicrophone(null)
         }
       } catch (error) {
         console.error('Error loading devices:', error)
@@ -96,52 +115,68 @@ const App = observer(() => {
     }
 
     loadDevices()
+    phone.listenDeviceChanges(loadDevices)
 
-    // Listen for device changes (e.g., camera/microphone plugged/unplugged)
-    const handleDeviceChange = () => {
-      loadDevices()
-    }
-
-    navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
-    phone.listenDebug()
     return () => {
-      navigator.mediaDevices.removeEventListener(
-        'devicechange',
-        handleDeviceChange,
-      )
+      phone.unlistenDeviceChanges(loadDevices)
     }
   }, [])
 
-  const handleCameraChange = async (e: any) => {
-    const deviceId = e.target.value
+  const clearMessages = () => {
+    setSwitchError('')
+    setSwitchSuccess('')
+  }
+
+  const handleCameraChange = async (deviceId: string) => {
     setSelectedCamera(deviceId)
+    clearMessages()
+
     try {
+      const co = ctx.call.getOngoingCall()
+      if (co) {
+        const s = await phone.switchCameraDuringCall(co, deviceId)
+        if (!s) {
+          setSwitchError(
+            'Failed to switch camera during call. Please try again.',
+          )
+        } else {
+          setSwitchSuccess('Camera switched successfully')
+        }
+      } else {
+        phone.setVideoInputDevice(deviceId)
+        setSwitchSuccess('Camera switched successfully')
+      }
+
+      setTimeout(clearMessages, 2000)
     } catch (error) {
+      const errorMsg =
+        error?.message ||
+        'Failed to switch camera. Device may no longer be available.'
+      setSwitchError(errorMsg)
       console.error('Error setting camera:', error)
     }
   }
 
-  const handleMicrophoneChange = async (e: any) => {
-    const deviceId = e.target.value
+  const handleMicrophoneChange = async (deviceId: string) => {
     setSelectedMicrophone(deviceId)
-    setSwitchError('')
-    setSwitchSuccess('')
-
-    // Clear messages after 3 seconds
-    const clearMessages = () => {
-      setSwitchError('')
-      setSwitchSuccess('')
-    }
+    clearMessages()
 
     try {
       const c = ctx.call.getOngoingCall()
       if (c) {
-        phone.switchMicrophoneDuringCall(deviceId, c.sessionId)
+        const s = phone.switchMicrophoneDuringCall(deviceId, c.sessionId)
+        if (!s) {
+          setSwitchError(
+            'Failed to switch microphone during call. Please try again.',
+          )
+        } else {
+          setSwitchSuccess('Microphone switched successfully')
+        }
       } else {
         phone.setAudioInputDevice(deviceId)
+        setSwitchSuccess('Microphone switched successfully')
       }
-      setSwitchSuccess('Microphone switched successfully')
-      setTimeout(clearMessages, 3000)
+      setTimeout(clearMessages, 2000)
     } catch (error: any) {
       const errorMsg =
         error?.message ||
@@ -152,8 +187,7 @@ const App = observer(() => {
       // Reload devices in case one was unplugged
       const updatedMicrophones = await phone.getAvailableMicrophones()
       setMicrophones(updatedMicrophones)
-
-      setTimeout(clearMessages, 5000)
+      setTimeout(clearMessages, 3000)
     }
   }
 
@@ -187,7 +221,7 @@ const App = observer(() => {
         <select
           id='camera-select'
           value={selectedCamera}
-          onChange={handleCameraChange}
+          onChange={e => handleCameraChange(e.target.value)}
           disabled={isLoadingDevices || cameras.length === 0}
           style={{ padding: '4px', minWidth: '200px' }}
         >
@@ -210,7 +244,7 @@ const App = observer(() => {
         <select
           id='microphone-select'
           value={selectedMicrophone}
-          onChange={handleMicrophoneChange}
+          onChange={e => handleMicrophoneChange(e.target.value)}
           disabled={isLoadingDevices || microphones.length === 0}
           style={{ padding: '4px', minWidth: '200px' }}
         >
@@ -224,13 +258,6 @@ const App = observer(() => {
             ))
           )}
         </select>
-        <button
-          className='call-answer'
-          onClick={() => phone.debugDevices()}
-          style={{ marginLeft: '8px' }}
-        >
-          Debug
-        </button>
       </div>
 
       {switchError && (

@@ -12,14 +12,24 @@ class EmbedDevicesManager {
     | typeof navigator.mediaDevices.getUserMedia
     | null = null
 
+  async init() {
+    this._audioInputDeviceId = this._getPreferredDeviceId(
+      await this.getAudioInputDevices(),
+    )
+    this._videoInputDeviceId = this._getPreferredDeviceId(
+      await this.getVideoInputDevices(),
+    )
+    this._syncPatch()
+  }
+
   setAudioInputDevice(deviceId: string): void {
     this._audioInputDeviceId = deviceId || null
-    this._applyPatch()
+    this._syncPatch()
   }
 
   setVideoInputDevice(deviceId: string): void {
     this._videoInputDeviceId = deviceId || null
-    this._applyPatch()
+    this._syncPatch()
   }
 
   clearDeviceSelection(): void {
@@ -32,25 +42,39 @@ class EmbedDevicesManager {
     return this._getDevicesByKind('audioinput')
   }
 
-  /** Lấy danh sách tất cả video input devices */
   async getVideoInputDevices(): Promise<DeviceInfo[]> {
     return this._getDevicesByKind('videoinput')
+  }
+
+  getCurrentDeviceIdSelected = () => ({
+    audio: this._audioInputDeviceId,
+    video: this._videoInputDeviceId,
+  })
+
+  listenDeviceChanges(callback: () => void): void {
+    navigator.mediaDevices.addEventListener('devicechange', callback)
+  }
+
+  unlistenDeviceChanges(callback: () => void): void {
+    navigator.mediaDevices.removeEventListener('devicechange', callback)
   }
 
   switchMicrophoneDuringCall(
     phone: any,
     deviceId: string,
     sessionId: string | null = null,
-  ): void {
+  ): boolean {
     if (!phone) {
-      throw new Error('[WebRTCDeviceManager] phone instance is required')
+      console.error('[WebRTCDeviceManager] phone instance is required')
+      return false
     }
     if (!deviceId) {
-      throw new Error('[WebRTCDeviceManager] deviceId is required')
+      console.error('[WebRTCDeviceManager] deviceId is required')
+      return false
     }
 
     this._audioInputDeviceId = deviceId
-    this._applyPatch()
+    this._syncPatch()
 
     const constraints: MediaStreamConstraints = {
       audio: { deviceId: { exact: deviceId } },
@@ -58,6 +82,61 @@ class EmbedDevicesManager {
     }
 
     phone.reconnectMicrophone(sessionId, { mediaConstraints: constraints })
+    return true
+  }
+
+  async switchCameraDuringCall(s: any, deviceId: string): Promise<boolean> {
+    if (!deviceId) {
+      console.error('[WebRTCDeviceManager] deviceId is required')
+      return false
+    }
+    const sender = this._getVideoSender(s)
+
+    if (!sender) {
+      console.error(
+        '[WebRTCDeviceManager] No video sender found in PeerConnection',
+      )
+      return false
+    }
+    const oldTrack = sender.track
+    const getUserMedia =
+      this._originalGetUserMedia ??
+      navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+
+    const newStream = await getUserMedia({
+      video: { deviceId: { exact: deviceId } },
+      audio: false,
+    })
+
+    const [newVideoTrack] = newStream.getVideoTracks()
+    if (!newVideoTrack) {
+      console.error('[WebRTCDeviceManager] No video track in new stream')
+      return false
+    }
+
+    try {
+      await sender.replaceTrack(newVideoTrack)
+      const localVideoStream: MediaStream | null =
+        s?.localVideoStreamObject ?? null
+      // update localVideoStream if exists
+      if (localVideoStream && oldTrack) {
+        localVideoStream.removeTrack(oldTrack)
+        localVideoStream.addTrack(newVideoTrack)
+      }
+
+      oldTrack?.stop()
+    } catch (error) {
+      newVideoTrack.stop()
+      console.error(
+        '[WebRTCDeviceManager] Failed to switch camera during call:',
+        error,
+      )
+      return false
+    }
+
+    this._videoInputDeviceId = deviceId
+    this._syncPatch()
+    return true
   }
 
   destroy(): void {
@@ -65,6 +144,7 @@ class EmbedDevicesManager {
     this._audioInputDeviceId = null
     this._videoInputDeviceId = null
   }
+
   // -------------------------------------------------------------------------
   // Private: Monkey-patch
   // -------------------------------------------------------------------------
@@ -75,7 +155,7 @@ class EmbedDevicesManager {
     }
     if (this._patched) {
       return
-    } // closure đã bind `this`, không cần patch lại
+    }
 
     this._originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(
       navigator.mediaDevices,
@@ -91,9 +171,21 @@ class EmbedDevicesManager {
     }
 
     this._patched = true
+    console.log(
+      `Applied patch for device management, audioInputDeviceId=${this._audioInputDeviceId}, videoInputDeviceId=${this._videoInputDeviceId}`,
+    )
   }
 
-  /** Restore về hàm gốc */
+  private _syncPatch() {
+    const hasAnyDevice =
+      !!this._audioInputDeviceId || !!this._videoInputDeviceId
+    if (hasAnyDevice) {
+      this._applyPatch()
+    } else {
+      this._restorePatch()
+    }
+  }
+
   private _restorePatch(): void {
     if (!this._patched || !this._originalGetUserMedia) {
       return
@@ -104,10 +196,6 @@ class EmbedDevicesManager {
     this._patched = false
   }
 
-  /**
-   * Inject deviceId vào constraints dựa trên _audioInputDeviceId / _videoInputDeviceId.
-   * Không mutate object gốc.
-   */
   private _injectDeviceIds(
     constraints: MediaStreamConstraints,
   ): MediaStreamConstraints {
@@ -157,6 +245,39 @@ class EmbedDevicesManager {
         label: d.label || `${kind} (${d.deviceId.slice(0, 8)}...)`,
         kind: d.kind,
       }))
+  }
+
+  private _getVideoSender = (session: any) => {
+    if (!session) {
+      console.error('[WebRTCDeviceManager] No active session found')
+      return
+    }
+    const videoClientSessions = Object.values(
+      session.videoClientSessionTable ?? {},
+    ) as any
+    if (videoClientSessions.length === 0) {
+      console.error(
+        '[WebRTCDeviceManager] No video client session found. ' +
+          'Make sure the call was started with withVideo: true.',
+      )
+      return
+    }
+    const videoPC = videoClientSessions[0].rtcSession.connection
+    if (!videoPC) {
+      console.error('[WebRTCDeviceManager] Video PeerConnection not ready yet')
+      return
+    }
+    return videoPC.getSenders().find(s => s.track?.kind === 'video')
+  }
+
+  private _getPreferredDeviceId(devices: DeviceInfo[]): string | null {
+    if (devices.length === 0) {
+      return null
+    }
+    return (
+      devices.find(d => d.deviceId === 'default')?.deviceId ??
+      devices[0].deviceId
+    )
   }
 }
 

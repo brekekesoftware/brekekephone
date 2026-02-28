@@ -54,9 +54,6 @@ export class EmbedApi extends EventEmitter {
   // Public: Devices management
   // -------------------------------------------------------------------------
 
-  /**
-   * Get list of available cameras (videoinput devices)
-   */
   getAvailableCameras = async (): Promise<DeviceInfo[]> => {
     try {
       return await embedDevicesManager.getVideoInputDevices()
@@ -66,47 +63,46 @@ export class EmbedApi extends EventEmitter {
     }
   }
 
-  /**
-   * Get list of available microphones (audioinput devices)
-   */
   getAvailableMicrophones = async (): Promise<DeviceInfo[]> => {
     try {
-      const d = await embedDevicesManager.getAudioInputDevices()
-      console.log('[Wy]: available microphones:', d)
-      return d
+      return await embedDevicesManager.getAudioInputDevices()
     } catch (error) {
       console.error('Error getting available microphones:', error)
       return []
     }
   }
 
-  setAudioInputDevice = async (deviceId: string) => {
-    console.log(`[Wy]: setting audio input device to deviceId=${deviceId}`)
-    embedDevicesManager.setAudioInputDevice(deviceId)
+  getCurrentDeviceIdSelected = () =>
+    embedDevicesManager.getCurrentDeviceIdSelected()
+
+  listenDeviceChanges = (callback: () => void) => {
+    embedDevicesManager.listenDeviceChanges(callback)
   }
 
-  switchMicrophoneDuringCall = async (
+  unlistenDeviceChanges = (callback: () => void) => {
+    embedDevicesManager.unlistenDeviceChanges(callback)
+  }
+
+  setAudioInputDevice = async (deviceId: string) => {
+    embedDevicesManager.setAudioInputDevice(deviceId)
+  }
+  setVideoInputDevice = async (deviceId: string) => {
+    embedDevicesManager.setVideoInputDevice(deviceId)
+  }
+
+  switchMicrophoneDuringCall = (
     deviceId: string,
     sessionId: string | null = null,
-  ) => {
-    console.log(
-      `[Wy]: switching microphone to deviceId=${deviceId}, sessionId=${sessionId}`,
-    )
+  ) =>
     embedDevicesManager.switchMicrophoneDuringCall(
       ctx.sip.phone,
       deviceId,
       sessionId,
     )
-  }
 
-  debugDevices = async () => {
-    const co = ctx.call.getOngoingCall()
-    console.group('Debug Devices')
-    console.log('[Wy] Current call:', Object.keys(co || {}))
-    console.log('[Wy] Current call answered:', co?.answered)
-    console.log('[Wy] Call length:', ctx.call.calls.length)
-
-    console.groupEnd()
+  switchCameraDuringCall = async (call: any, deviceId: string) => {
+    const s = ctx.sip.phone?.getSession(call.sessionId)
+    return await embedDevicesManager.switchCameraDuringCall(s, deviceId)
   }
 
   // -------------------------------------------------------------------------
@@ -162,6 +158,9 @@ export class EmbedApi extends EventEmitter {
     embedApi._palEvents = palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
+    // init devices manager to get default devices
+    await embedDevicesManager.init()
+
     ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
     // check if cleanup existing account
     if (o.clearExistingAccount) {
