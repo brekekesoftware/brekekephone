@@ -113,20 +113,14 @@ class AudioSessionManager: NSObject {
       )
 
     guard isActive != rtcAudioSession.isAudioEnabled else { return }
-
-    let wasSpeaker = isSpeakerEnabled()
-
+    logger.log("🏁 start set active:\(isActive) audio")
     if isActive {
       rtcAudioSession.audioSessionDidActivate(audioSession)
     } else {
       rtcAudioSession.audioSessionDidDeactivate(audioSession)
     }
     rtcAudioSession.isAudioEnabled = isActive
-
-    if isActive && wasSpeaker {
-      logger.log("🔊 Restoring speaker after activate")
-      try? audioSession.overrideOutputAudioPort(.speaker)
-    }
+    logger.log("🏁 finish set active:\(isActive) audio")
   }
 
   // MARK: - Audio Activation

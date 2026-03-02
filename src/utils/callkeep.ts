@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
+import inCallManager from 'react-native-incall-manager'
 
 import { bundleIdentifier, isAndroid, isIos, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -21,6 +22,7 @@ import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false
+let _savedSpeakerOnUnhold: boolean | null = null
 
 const setupCallKeep = async () => {
   if (alreadySetupCallKeep) {
@@ -166,7 +168,9 @@ export const setupCallKeepEvents = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
-
+    if (isIos && !e.hold) {
+      _savedSpeakerOnUnhold = ctx.call.isLoudSpeakerEnabled
+    }
     BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
@@ -190,6 +194,10 @@ export const setupCallKeepEvents = async () => {
     if (c?.isAutoAnswer) {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
+    }
+    if (isIos && _savedSpeakerOnUnhold) {
+      inCallManager.setForceSpeakerphoneOn(true)
+      _savedSpeakerOnUnhold = null
     }
     BrekekeUtils.webrtcSetAudioEnabled(true, 'didActivateAudioSession')
   }
