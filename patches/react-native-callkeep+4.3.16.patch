@@ -584,7 +584,7 @@ new file mode 100644
 index 0000000..a1ab0ea
 Binary files /dev/null and b/node_modules/react-native-callkeep/ios/.DS_Store differ
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
-index c8e7bbd..f8dc9ef 100644
+index c8e7bbd..b263d7b 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.h
 @@ -11,10 +11,10 @@
@@ -625,11 +625,11 @@ index c8e7bbd..f8dc9ef 100644
  
 ++ (NSInteger)getConnectedCallsCount;
 +
-++ (NSInteger)getActiveCallsCount;
+++ (NSInteger)getAllCallsCount;
 +
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..4906a44 100644
+index 786045f..92d2764 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,22 @@
@@ -1202,7 +1202,7 @@ index 786045f..4906a44 100644
 +    // Brekeke call held due to GSM call → release audio for GSM
 +    if (action.onHold && !gsmCallMap[action.callUUID] && gsmCallMap.count > 0){
 +        [[AVAudioSession sharedInstance] setActive:NO withOptions: AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
-+        NSLog(@"😤 AudioSessionManager:: Forced deactivate for GSM hold");
++        NSLog(@"performSetHeldCallAction Forced deactivate for GSM hold");
 +    }
 +    
      [action fulfill];
@@ -1453,11 +1453,11 @@ index 786045f..4906a44 100644
 +    return count;
 +}
 +
-++ (NSInteger) getActiveCallsCount {
+++ (NSInteger) getAllCallsCount {
 +    RNCallKeep *instance = [RNCallKeep allocWithZone: nil];
 +    NSInteger count = 0;
 +    for (CXCall *call in instance->_callObserver.calls) {
-+        if (callMap[call.UUID] && !call.hasEnded) {
++        if (!call.hasEnded) {
 +            count++;
 +        }
 +    }

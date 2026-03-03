@@ -72,7 +72,7 @@ class AudioSessionManager: NSObject {
   // MARK: - Public
 
   func resetAVAudioConfig() {
-    let activeCalls = RNCallKeep.getActiveCallsCount()
+    let activeCalls = RNCallKeep.getAllCallsCount()
     let appState: UIApplication.State
     if Thread.isMainThread {
       appState = UIApplication.shared.applicationState
