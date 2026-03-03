@@ -629,7 +629,7 @@ index c8e7bbd..f8dc9ef 100644
 +
  @end
 diff --git a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
-index 786045f..dd8913e 100644
+index 786045f..4906a44 100644
 --- a/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 +++ b/node_modules/react-native-callkeep/ios/RNCallKeep/RNCallKeep.m
 @@ -38,16 +38,22 @@
@@ -1183,7 +1183,7 @@ index 786045f..dd8913e 100644
  }
  
  // Ending incoming call
-@@ -1093,15 +1141,22 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
+@@ -1093,15 +1141,23 @@ - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)
  #endif
      [self sendEventWithNameWrapper:RNCallKeepPerformEndCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
      [action fulfill];
@@ -1199,15 +1199,16 @@ index 786045f..dd8913e 100644
      
      [self sendEventWithNameWrapper:RNCallKeepDidToggleHoldAction body:@{ @"hold": @(action.onHold), @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
 +    
-+    if (action.onHold && gsmCallMap[action.callUUID]){
++    // Brekeke call held due to GSM call → release audio for GSM
++    if (action.onHold && !gsmCallMap[action.callUUID] && gsmCallMap.count > 0){
 +        [[AVAudioSession sharedInstance] setActive:NO withOptions: AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
-+        NSLog(@"😤 Forced deactivate for GSM hold");
++        NSLog(@"😤 AudioSessionManager:: Forced deactivate for GSM hold");
 +    }
 +    
      [action fulfill];
  }
  
-@@ -1135,14 +1190,16 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
+@@ -1135,14 +1191,16 @@ - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession
  #ifdef DEBUG
      NSLog(@"[RNCallKeep][CXProviderDelegate][provider:didActivateAudioSession]");
  #endif
@@ -1231,7 +1232,7 @@ index 786045f..dd8913e 100644
      [self sendEventWithNameWrapper:RNCallKeepDidActivateAudioSession body:nil];
  }
  
-@@ -1154,4 +1211,232 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
+@@ -1154,4 +1212,232 @@ - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSessio
      [self sendEventWithNameWrapper:RNCallKeepDidDeactivateAudioSession body:nil];
  }
  
@@ -1366,7 +1367,7 @@ index 786045f..dd8913e 100644
 +    }
 +
 +    // If this call is not in callMap (not a Brekeke call), track it as GSM call
-+    // callMap already track in reportNewIncomingCall 
++    // callMap already track in reportNewIncomingCall
 +    if (!callMap[uuid] && !gsmCallMap[uuid] && !call.outgoing) {
 +        gsmCallMap[uuid] = uuid;
 +    }
