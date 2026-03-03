@@ -197,6 +197,10 @@ class AudioSessionManager: NSObject {
       .log(
         "🔀 RouteChange reason: \(reason.rawValue), speaker: \(isSpeakerOn), isOtherAudioPlaying:\(audioSession.isOtherAudioPlaying), isAudioEnabled: \(rtcAudioSession.isAudioEnabled), category:\(audioSession.category) ,mode: \(audioSession.mode), options: \(audioSession.categoryOptions), callConnected: \(RNCallKeep.getConnectedCallsCount())"
       )
+    BrekekeEmitter.emit(
+      name: "onAudioRouteChange",
+      data: ["isSpeakerOn": isSpeakerOn]
+    )
   }
 
   @objc private func handleInterruption(_ notification: Notification) {

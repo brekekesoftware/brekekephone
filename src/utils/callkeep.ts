@@ -22,7 +22,6 @@ import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 let alreadySetupCallKeep = false
-let _savedSpeakerOnUnhold: boolean | null = null
 
 const setupCallKeep = async () => {
   if (alreadySetupCallKeep) {
@@ -168,9 +167,7 @@ export const setupCallKeepEvents = async () => {
     if (c && c.holding !== e.hold) {
       c.toggleHoldWithCheck()
     }
-    if (isIos && !e.hold) {
-      _savedSpeakerOnUnhold = ctx.call.isLoudSpeakerEnabled
-    }
+
     BrekekeUtils.webrtcSetAudioEnabled(!e.hold, e.hold ? 'hold' : 'unhold')
   }
   const didPerformDTMFAction = (e: EventsPayload['didPerformDTMFAction']) => {
@@ -195,10 +192,7 @@ export const setupCallKeepEvents = async () => {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
     }
-    if (isIos && _savedSpeakerOnUnhold) {
-      inCallManager.setForceSpeakerphoneOn(true)
-      _savedSpeakerOnUnhold = null
-    }
+
     BrekekeUtils.webrtcSetAudioEnabled(true, 'didActivateAudioSession')
   }
   const didDeactivateAudioSession = (
@@ -255,17 +249,27 @@ export const setupCallKeepEvents = async () => {
       return
     }
     const eventEmitterIos = new NativeEventEmitter(BrekekeEmitter)
-    // listen audio session route change event
+
     eventEmitterIos.addListener(
       'onAudioRouteChange',
       ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
-        // already handled in app becoming active event
-        // const hasCall = ctx.call.calls.some(
-        //   c => (c.incoming && c.answered) || !c.incoming,
-        // )
-        // if (hasCall) {
-        //   ctx.call.isLoudSpeakerEnabled = isSpeakerOn
-        // }
+        // Re-apply speaker after hold/unhold: iOS resets route to receiver,
+        // this catches the reset event and re-enables speaker if user had it on
+        if (isSpeakerOn) {
+          return
+        }
+        const isAppActive = AppState.currentState === 'active'
+        const connectedCalls = ctx.call.calls.filter(
+          c => c.answered && !c.holding,
+        )
+        if (
+          isAppActive &&
+          connectedCalls.length === 1 &&
+          ctx.call.isLoudSpeakerEnabled
+        ) {
+          console.error('✅ AudioSessionManager: force enable speaker')
+          inCallManager.setForceSpeakerphoneOn(true)
+        }
       },
     )
     return
