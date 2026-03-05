@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
 import { turnConfig } from '#/api/turnConfig'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/accountStore'
@@ -11,6 +11,10 @@ import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
 import { getPartyNameAsync } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
+import {
+  filterGhostSessions,
+  getGhostSessionKeys,
+} from '#/utils/handleGhostConnections'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
@@ -28,6 +32,7 @@ type DeviceInputWeb = {
 export class SIP extends EventEmitter {
   phone?: Sip
   currentCamera?: string
+  private _videoTrackListeners: Map<string, () => void> = new Map()
 
   cameraIds?: DeviceInputWeb[] = []
   private init = async (o: SipLoginOption) => {
@@ -181,16 +186,22 @@ export class SIP extends EventEmitter {
       const session = phone.getSession(ev.sessionId)
       const videoSession =
         session.videoClientSessionTable[ev.videoClientSessionId]
+
       this.emit('session-updated', {
         id: ev.sessionId,
         localVideoEnabled: true,
         videoSessionId: ev.videoClientSessionId,
         remoteVideoStreamObject: videoSession.remoteStreamObject,
         localStreamObject: session.localVideoStreamObject,
-        videoClientSessionTable: Object.entries(
-          session.videoClientSessionTable,
-        ).map(([key, value]) => ({ ...value, vId: key })),
+        videoClientSessionTable: filterGhostSessions(
+          Object.entries(session.videoClientSessionTable).map(
+            ([key, value]) => ({ ...value, vId: key }),
+          ),
+        ),
         remoteUserOptionsTable: session.remoteUserOptionsTable,
+        ghostConnectionList: isAndroid
+          ? getGhostSessionKeys(session.videoClientSessionTable)
+          : [],
       })
     })
     phone.addEventListener('videoClientSessionEnded', ev => {

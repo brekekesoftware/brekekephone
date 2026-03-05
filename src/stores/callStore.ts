@@ -297,6 +297,7 @@ export class CallStore {
       Partial<Omit<Call, 'id'>> & {
         remoteVideoStreamObject?: MediaStream | null
         remoteWithVideo?: boolean
+        ghostConnectionList: string[]
       },
   ) => {
     this.updateCurrentCallDebounce()
@@ -337,6 +338,16 @@ export class CallStore {
             })
           } else {
             BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
+          }
+
+          if (
+            isAndroid &&
+            p.ghostConnectionList &&
+            p.ghostConnectionList.length
+          ) {
+            p.ghostConnectionList.forEach((v, _) =>
+              BrekekeUtils.removeStreamFromView(e.callkeepUuid, v),
+            )
           }
         }
       }
