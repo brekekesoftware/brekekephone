@@ -1127,7 +1127,7 @@ export class CallStore {
   @observable isLoudSpeakerEnabled = false
 
   @action updateLoudSpeakerStatus = async () => {
-    if (isIos && this.getOngoingCall()) {
+    if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
       this.isLoudSpeakerEnabled = await BrekekeUtils.isSpeakerOn()
     }
   }

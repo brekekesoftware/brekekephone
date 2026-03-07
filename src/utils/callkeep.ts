@@ -253,21 +253,23 @@ export const setupCallKeepEvents = async () => {
     eventEmitterIos.addListener(
       'onAudioRouteChange',
       ({ isSpeakerOn }: { isSpeakerOn: boolean }) => {
-        // Re-apply speaker after hold/unhold: iOS resets route to receiver,
-        // this catches the reset event and re-enables speaker if user had it on
+        // When WebRTC activates its audio unit (e.g. after unhold), it reconfigures
+        // the AVAudioSession internally and resets the output route to the earpiece.
+        // This listener catches that route-reset event and re-applies the speaker
+        // preference if the user had it enabled.
+
         if (isSpeakerOn) {
           return
         }
         const isAppActive = AppState.currentState === 'active'
-        const connectedCalls = ctx.call.calls.filter(
-          c => c.answered && !c.holding,
-        )
+        const hasActiveCall = ctx.call.calls.some(c => c.answered && !c.holding)
         if (
+          isIos &&
           isAppActive &&
-          connectedCalls.length === 1 &&
+          hasActiveCall &&
           ctx.call.isLoudSpeakerEnabled
         ) {
-          console.error('✅ AudioSessionManager: force enable speaker')
+          console.log('✅ AudioSessionManager: force enable speaker')
           inCallManager.setForceSpeakerphoneOn(true)
         }
       },

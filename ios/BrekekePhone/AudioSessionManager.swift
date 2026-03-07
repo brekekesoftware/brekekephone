@@ -17,8 +17,6 @@ class AudioSessionManager: NSObject {
   private final var rtcCateOptions: AVAudioSession.CategoryOptions = [
     .allowBluetooth,
     .allowBluetoothA2DP,
-//    .duckOthers,
-//    .mixWithOthers
   ]
 
   // MARK: - Init / Deinit
@@ -157,7 +155,7 @@ class AudioSessionManager: NSObject {
     }
   }
 
-  func ensureAudioSessionReady() {
+  private func ensureAudioSessionReady() {
     let needsConfig = audioSession.category != rtcCategory
       || audioSession.mode != rtcMode
       || audioSession.categoryOptions != rtcCateOptions
@@ -195,7 +193,7 @@ class AudioSessionManager: NSObject {
 
     logger
       .log(
-        "🔀 RouteChange reason: \(reason.rawValue), speaker: \(isSpeakerOn), isOtherAudioPlaying:\(audioSession.isOtherAudioPlaying), isAudioEnabled: \(rtcAudioSession.isAudioEnabled), category:\(audioSession.category) ,mode: \(audioSession.mode), options: \(audioSession.categoryOptions), callConnected: \(RNCallKeep.getConnectedCallsCount())"
+        "🔀 RouteChange reason: \(reason.rawValue), speaker: \(isSpeakerOn), isOtherAudioPlaying:\(audioSession.isOtherAudioPlaying), isAudioEnabled: \(rtcAudioSession.isAudioEnabled), category:\(audioSession.category) ,mode: \(audioSession.mode), options: \(audioSession.categoryOptions)"
       )
     BrekekeEmitter.emit(
       name: "onAudioRouteChange",
