@@ -11,7 +11,7 @@ import {
 import { Avatar } from '#/components/Avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
-import { getPartyName } from '#/stores/contactStore'
+import { getPbxName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
@@ -195,7 +195,7 @@ export class PageCallTransferAttend extends Component {
             />
             <RnText center singleLine small>
               {phoneappliTarget.username ||
-                getPartyName({ partyNumber: oc.transferring }) ||
+                getPbxName({ partyNumber: oc.transferring }) ||
                 oc.transferring}
             </RnText>
           </View>

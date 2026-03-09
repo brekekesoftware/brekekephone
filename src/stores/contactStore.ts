@@ -392,7 +392,7 @@ export class ContactStore {
 ctx.contact = new ContactStore()
 
 // prioritize displaying phonebook name first for calls
-export const getPartyName = (o: {
+export const getPbxName = (o: {
   partyNumber?: string
   preferPbxName?: boolean
 }) => {
@@ -411,7 +411,27 @@ export const getPartyName = (o: {
     : phonebookName || pbxUserName || parkName
 }
 
-export const getPartyNameAsync = async (partyNumber: string) => {
+export const getPbxNameWithUpdateContact = async (partyNumber: string) => {
   await ctx.contact.updateContact(partyNumber)
-  return getPartyName({ partyNumber })
+  return getPbxName({ partyNumber })
+}
+
+export const getPhoneappliName = async (partyNumber: string) => {
+  const ca = ctx.auth.getCurrentAccount()
+  if (!ca) {
+    return
+  }
+
+  const { pbxTenant, pbxUsername } = ca
+  try {
+    const rs = await ctx.pbx.getPhoneappliContact(
+      pbxTenant,
+      pbxUsername,
+      partyNumber,
+    )
+    return rs?.display_name
+  } catch (err) {
+    console.error(err)
+    return
+  }
 }

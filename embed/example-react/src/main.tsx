@@ -69,58 +69,62 @@ const App = observer(() => {
   const [switchSuccess, setSwitchSuccess] = useState('')
 
   // Load available devices on mount
-  useEffect(() => {
-    const loadDevices = async () => {
-      try {
-        setIsLoadingDevices(true)
-        const [camerasData, microphonesData] = await Promise.all([
-          phone.getAvailableCameras(),
-          phone.getAvailableMicrophones(),
-        ])
-        setCameras(camerasData)
-        setMicrophones(microphonesData)
+  useEffect(
+    () => {
+      const loadDevices = async () => {
+        try {
+          setIsLoadingDevices(true)
+          const [camerasData, microphonesData] = await Promise.all([
+            phone.getAvailableCameras(),
+            phone.getAvailableMicrophones(),
+          ])
+          setCameras(camerasData)
+          setMicrophones(microphonesData)
 
-        const current = phone.getCurrentDeviceIdSelected()
+          const current = phone.getCurrentDeviceIdSelected()
 
-        // Camera
-        const isCameraStillAvailable = camerasData.some(
-          c => c.deviceId === current.video,
-        )
-        if (isCameraStillAvailable) {
-          setSelectedCamera(current.video)
-        } else if (camerasData.length > 0) {
-          handleCameraChange(camerasData[0].deviceId)
-        } else {
-          setSelectedCamera(null)
-        }
-
-        // Microphone
-        const isMicStillAvailable = microphonesData.some(
-          m => m.deviceId === current.audio,
-        )
-        if (isMicStillAvailable) {
-          setSelectedMicrophone(current.audio)
-        } else if (microphonesData.length > 0) {
-          handleMicrophoneChange(
-            microphonesData[microphonesData.length - 1].deviceId,
+          // Camera
+          const isCameraStillAvailable = camerasData.some(
+            c => c.deviceId === current.video,
           )
-        } else {
-          setSelectedMicrophone(null)
+          if (isCameraStillAvailable) {
+            setSelectedCamera(current.video)
+          } else if (camerasData.length > 0) {
+            handleCameraChange(camerasData[0].deviceId)
+          } else {
+            setSelectedCamera(null)
+          }
+
+          // Microphone
+          const isMicStillAvailable = microphonesData.some(
+            m => m.deviceId === current.audio,
+          )
+          if (isMicStillAvailable) {
+            setSelectedMicrophone(current.audio)
+          } else if (microphonesData.length > 0) {
+            handleMicrophoneChange(
+              microphonesData[microphonesData.length - 1].deviceId,
+            )
+          } else {
+            setSelectedMicrophone(null)
+          }
+        } catch (error) {
+          console.error('Error loading devices:', error)
+        } finally {
+          setIsLoadingDevices(false)
         }
-      } catch (error) {
-        console.error('Error loading devices:', error)
-      } finally {
-        setIsLoadingDevices(false)
       }
-    }
 
-    loadDevices()
-    phone.listenDeviceChanges(loadDevices)
+      loadDevices()
+      phone.listenDeviceChanges(loadDevices)
 
-    return () => {
-      phone.unlistenDeviceChanges(loadDevices)
-    }
-  }, [])
+      return () => {
+        phone.unlistenDeviceChanges(loadDevices)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
 
   const clearMessages = () => {
     setSwitchError('')

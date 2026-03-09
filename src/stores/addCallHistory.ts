@@ -8,7 +8,11 @@ import { isAndroid, isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import { Call } from '#/stores/Call'
-import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
+import {
+  getPbxName,
+  getPbxNameWithUpdateContact,
+  getPhoneappliName,
+} from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils, CallLogType } from '#/utils/BrekekeUtils'
@@ -30,9 +34,22 @@ const parseReasonCancelCall = (reason?: string) => {
   }
   return m[1]
 }
-const getUserInfoFromReasons = (reason?: string | false) => {
+
+type UserInfo = {
+  unknown?: boolean
+  name?: string
+  phoneNumber?: string
+}
+const getUserInfoFromReasons = (
+  reason?: string | false,
+): UserInfo | undefined => {
   if (!reason) {
     return
+  }
+  if (reason.match(/call completed elsewhere/i)) {
+    return {
+      unknown: true,
+    }
   }
   // when *** has ( and ),  the string in those parentheses is the phone number.
   // when *** does not have ( and ), then the entiere string is the phone number.
@@ -45,21 +62,8 @@ const getUserInfoFromReasons = (reason?: string | false) => {
   }
   return {
     name: m[2] ? m[1].trim() : '',
-    phoneNumber: m[2]?.trim() || m[1]?.trim(),
+    phoneNumber: m[2] ? m[2].trim() : m[1].trim(),
   }
-}
-export const getReasonCancelCall = async (ms?: {
-  name: string
-  phoneNumber: string
-}) => {
-  if (!ms) {
-    return
-  }
-  let name = ms.name
-  if (!name) {
-    name = (await getPartyNameAsync(ms.phoneNumber)) || ms.phoneNumber
-  }
-  return intl`answered by ${name}`
 }
 
 export const addCallHistory = async (
@@ -108,7 +112,6 @@ export const addCallHistory = async (
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
-  const reason = await getReasonCancelCall(answeredBy)
   const line = (isTypeCall && c?.line) || undefined
   // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
   const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
@@ -126,7 +129,6 @@ export const addCallHistory = async (
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
-        reason,
         answeredBy,
         lineValue,
         lineLabel,
@@ -138,12 +140,11 @@ export const addCallHistory = async (
         incoming: true,
         answered: false,
         partyName:
-          getPartyName({ partyNumber: c.from, preferPbxName: true }) ||
+          getPbxName({ partyNumber: c.from, preferPbxName: true }) ||
           c.displayName ||
           c.from,
         partyNumber: c.from,
         duration: 0,
-        reason,
         answeredBy,
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
@@ -189,8 +190,7 @@ export type CallHistoryInfo = {
   partyNumber: string
   duration: number
   isAboutToHangup: boolean
-  reason?: string
-  answeredBy?: { name: string; phoneNumber: string }
+  answeredBy?: UserInfo
   lineLabel?: string
   lineValue?: string
   to?: string
@@ -224,47 +224,32 @@ const addToCallLog = async (c: CallHistoryInfo) => {
 }
 
 const getBodyForNotification = async (c: CallHistoryInfo) => {
-  if (!c.reason || !c.answeredBy) {
+  if (!c.answeredBy) {
     return c.partyName || c.partyNumber
   }
 
-  if (!ctx.auth.phoneappliEnabled()) {
-    return intl`The call from ${c.partyName || c.partyNumber} is ${c.reason}`
-  }
+  const from = c.partyName || c.partyNumber
+  const { unknown, name, phoneNumber } = c.answeredBy
+  const r = intl`The call from ${from} is answered by someone else`
 
-  const { name, phoneNumber } = c.answeredBy
-  const r = intl`The call from ${
-    c.partyName || c.partyNumber
-  } is answered by someone else`
-
-  const ca = ctx.auth.getCurrentAccount()
-  if (!ca) {
+  if (unknown) {
     return r
   }
-  const { pbxTenant, pbxUsername } = ca
-  try {
-    const rs = await ctx.pbx.getPhoneappliContact(
-      pbxTenant,
-      pbxUsername,
-      phoneNumber,
-    )
-    return intl`The call from ${c.partyName || c.partyNumber} is answered by ${
-      rs?.display_name || name || phoneNumber
-    }`
-  } catch (err) {
-    console.error(err)
+  if (!phoneNumber) {
+    // should not happen, just for type safety
     return r
   }
+
+  const contactName =
+    (ctx.auth.phoneappliEnabled()
+      ? await getPhoneappliName(phoneNumber)
+      : await getPbxNameWithUpdateContact(phoneNumber)) ||
+    name ||
+    phoneNumber
+  return intl`The call from ${from} is answered by ${contactName}`
 }
 
 const presentNotification = async (c: CallHistoryInfo) => {
-  // if two users answer a call at the same time, the system will automatically end the call for the second user to join
-  // the second user will receive a reason: "Call completed by ..."
-  // --> c.answered = true, c.reason = "..." -> show notify
-  const shouldPresent = c.answered && c.reason
-  if ((c.answered || !c.incoming || c.isAboutToHangup) && !shouldPresent) {
-    return
-  }
   const title = intl`Missed call`
   const body = await getBodyForNotification(c)
 
@@ -287,6 +272,12 @@ const presentNotification = async (c: CallHistoryInfo) => {
         embedApi._notificationOptions
           ?.notificationCallCompletedElseWhereInterval,
     })
+    return
+  }
+
+  // legacy non-embed logic
+  const shouldPresent = c.answered && c.answeredBy
+  if ((c.answered || !c.incoming || c.isAboutToHangup) && !shouldPresent) {
     return
   }
 

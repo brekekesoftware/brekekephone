@@ -9,7 +9,7 @@ import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
-import { getPartyNameAsync } from '#/stores/contactStore'
+import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
@@ -95,7 +95,7 @@ export class SIP extends EventEmitter {
       ctx.contact.updateContact(partyNumber)
       partyName =
         partyName ||
-        (await getPartyNameAsync(partyNumber)) ||
+        (await getPbxNameWithUpdateContact(partyNumber)) ||
         d?.recentCalls.find(c => c.partyNumber === partyNumber)?.partyName ||
         partyNumber
       //
