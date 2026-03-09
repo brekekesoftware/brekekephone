@@ -55,11 +55,141 @@ const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
 const { observer } = imports['mobx-react']
-const { useEffect, useRef } = imports['react']
+const { useEffect, useRef, useState } = imports['react']
 const { createRoot } = imports['react-dom/client']
 
 const App = observer(() => {
   const inputRef = useRef()
+  const [cameras, setCameras] = useState([])
+  const [microphones, setMicrophones] = useState([])
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedMicrophone, setSelectedMicrophone] = useState('')
+  const [isLoadingDevices, setIsLoadingDevices] = useState(true)
+  const [switchError, setSwitchError] = useState('')
+  const [switchSuccess, setSwitchSuccess] = useState('')
+
+  // Load available devices on mount
+  useEffect(() => {
+    const loadDevices = async () => {
+      try {
+        setIsLoadingDevices(true)
+        const [camerasData, microphonesData] = await Promise.all([
+          phone.getAvailableCameras(),
+          phone.getAvailableMicrophones(),
+        ])
+        setCameras(camerasData)
+        setMicrophones(microphonesData)
+
+        const current = phone.getCurrentDeviceIdSelected()
+
+        // Camera
+        const isCameraStillAvailable = camerasData.some(
+          c => c.deviceId === current.video,
+        )
+        if (isCameraStillAvailable) {
+          setSelectedCamera(current.video)
+        } else if (camerasData.length > 0) {
+          handleCameraChange(camerasData[0].deviceId)
+        } else {
+          setSelectedCamera(null)
+        }
+
+        // Microphone
+        const isMicStillAvailable = microphonesData.some(
+          m => m.deviceId === current.audio,
+        )
+        if (isMicStillAvailable) {
+          setSelectedMicrophone(current.audio)
+        } else if (microphonesData.length > 0) {
+          handleMicrophoneChange(
+            microphonesData[microphonesData.length - 1].deviceId,
+          )
+        } else {
+          setSelectedMicrophone(null)
+        }
+      } catch (error) {
+        console.error('Error loading devices:', error)
+      } finally {
+        setIsLoadingDevices(false)
+      }
+    }
+
+    loadDevices()
+    phone.listenDeviceChanges(loadDevices)
+
+    return () => {
+      phone.unlistenDeviceChanges(loadDevices)
+    }
+  }, [])
+
+  const clearMessages = () => {
+    setSwitchError('')
+    setSwitchSuccess('')
+  }
+
+  const handleCameraChange = async (deviceId: string) => {
+    setSelectedCamera(deviceId)
+    clearMessages()
+
+    try {
+      const co = ctx.call.getOngoingCall()
+      if (co) {
+        const s = await phone.switchCameraDuringCall(co, deviceId)
+        if (!s) {
+          setSwitchError(
+            'Failed to switch camera during call. Please try again.',
+          )
+        } else {
+          setSwitchSuccess('Camera switched successfully')
+        }
+      } else {
+        phone.setVideoInputDevice(deviceId)
+        setSwitchSuccess('Camera switched successfully')
+      }
+
+      setTimeout(clearMessages, 2000)
+    } catch (error) {
+      const errorMsg =
+        error?.message ||
+        'Failed to switch camera. Device may no longer be available.'
+      setSwitchError(errorMsg)
+      console.error('Error setting camera:', error)
+    }
+  }
+
+  const handleMicrophoneChange = async (deviceId: string) => {
+    setSelectedMicrophone(deviceId)
+    clearMessages()
+
+    try {
+      const c = ctx.call.getOngoingCall()
+      if (c) {
+        const s = phone.switchMicrophoneDuringCall(deviceId, c.sessionId)
+        if (!s) {
+          setSwitchError(
+            'Failed to switch microphone during call. Please try again.',
+          )
+        } else {
+          setSwitchSuccess('Microphone switched successfully')
+        }
+      } else {
+        phone.setAudioInputDevice(deviceId)
+        setSwitchSuccess('Microphone switched successfully')
+      }
+      setTimeout(clearMessages, 2000)
+    } catch (error: any) {
+      const errorMsg =
+        error?.message ||
+        'Failed to switch microphone. Device may no longer be available.'
+      setSwitchError(errorMsg)
+      console.error('Microphone switch error:', error)
+
+      // Reload devices in case one was unplugged
+      const updatedMicrophones = await phone.getAvailableMicrophones()
+      setMicrophones(updatedMicrophones)
+      setTimeout(clearMessages, 3000)
+    }
+  }
 
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
@@ -67,6 +197,9 @@ const App = observer(() => {
   const makeCallVideo = () => {
     ctx.call.startCall(inputRef.current.value, undefined, true)
   }
+
+  const getDeviceLabel = (device: MediaDeviceInfo): string =>
+    device.label || `Device ${device.deviceId.substring(0, 5)}`
 
   return (
     <div className='app'>
@@ -80,6 +213,82 @@ const App = observer(() => {
       <span>SIP - {ctx.auth.sipState} | </span>
       <span>Calls - {ctx.call.calls.length} </span>
       <hr />
+
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor='camera-select' style={{ marginRight: '8px' }}>
+          Camera:
+        </label>
+        <select
+          id='camera-select'
+          value={selectedCamera}
+          onChange={e => handleCameraChange(e.target.value)}
+          disabled={isLoadingDevices || cameras.length === 0}
+          style={{ padding: '4px', minWidth: '200px' }}
+        >
+          {cameras.length === 0 ? (
+            <option value=''>No cameras available</option>
+          ) : (
+            cameras.map(camera => (
+              <option key={camera.deviceId} value={camera.deviceId}>
+                {getDeviceLabel(camera)}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
+
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor='microphone-select' style={{ marginRight: '8px' }}>
+          Microphone:
+        </label>
+        <select
+          id='microphone-select'
+          value={selectedMicrophone}
+          onChange={e => handleMicrophoneChange(e.target.value)}
+          disabled={isLoadingDevices || microphones.length === 0}
+          style={{ padding: '4px', minWidth: '200px' }}
+        >
+          {microphones.length === 0 ? (
+            <option value=''>No microphones available</option>
+          ) : (
+            microphones.map(microphone => (
+              <option key={microphone.deviceId} value={microphone.deviceId}>
+                {getDeviceLabel(microphone)}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
+
+      {switchError && (
+        <div
+          style={{
+            color: '#d32f2f',
+            backgroundColor: '#ffebee',
+            padding: '8px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontSize: '14px',
+          }}
+        >
+          {switchError}
+        </div>
+      )}
+
+      {switchSuccess && (
+        <div
+          style={{
+            color: '#388e3c',
+            backgroundColor: '#e8f5e9',
+            padding: '8px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontSize: '14px',
+          }}
+        >
+          ✓ {switchSuccess}
+        </div>
+      )}
 
       <input ref={inputRef} />
       <button onClick={makeCallAudio}>Make call audio</button>

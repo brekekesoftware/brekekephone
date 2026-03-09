@@ -9,6 +9,8 @@ import type {
   MakeCallFn,
 } from '#/brekekejs'
 import { bundleIdentifier, currentVersion, jssipVersion } from '#/config'
+import type { DeviceInfo } from '#/embed/embedDevicesManager'
+import { embedDevicesManager } from '#/embed/embedDevicesManager'
 import type { Account } from '#/stores/accountStore'
 import { getAccountUniqueId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -48,7 +50,64 @@ export class EmbedApi extends EventEmitter {
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
+  // -------------------------------------------------------------------------
+  // Public: Devices management
+  // -------------------------------------------------------------------------
 
+  getAvailableCameras = async (): Promise<DeviceInfo[]> => {
+    try {
+      return await embedDevicesManager.getVideoInputDevices()
+    } catch (error) {
+      console.error('Error getting available cameras:', error)
+      return []
+    }
+  }
+
+  getAvailableMicrophones = async (): Promise<DeviceInfo[]> => {
+    try {
+      return await embedDevicesManager.getAudioInputDevices()
+    } catch (error) {
+      console.error('Error getting available microphones:', error)
+      return []
+    }
+  }
+
+  getCurrentDeviceIdSelected = () =>
+    embedDevicesManager.getCurrentDeviceIdSelected()
+
+  listenDeviceChanges = (callback: () => void) => {
+    embedDevicesManager.listenDeviceChanges(callback)
+  }
+
+  unlistenDeviceChanges = (callback: () => void) => {
+    embedDevicesManager.unlistenDeviceChanges(callback)
+  }
+
+  setAudioInputDevice = async (deviceId: string) => {
+    embedDevicesManager.setAudioInputDevice(deviceId)
+  }
+  setVideoInputDevice = async (deviceId: string) => {
+    embedDevicesManager.setVideoInputDevice(deviceId)
+  }
+
+  switchMicrophoneDuringCall = (
+    deviceId: string,
+    sessionId: string | null = null,
+  ) =>
+    embedDevicesManager.switchMicrophoneDuringCall(
+      ctx.sip.phone,
+      deviceId,
+      sessionId,
+    )
+
+  switchCameraDuringCall = async (call: any, deviceId: string) => {
+    const s = ctx.sip.phone?.getSession(call.sessionId)
+    return await embedDevicesManager.switchCameraDuringCall(s, deviceId)
+  }
+
+  // -------------------------------------------------------------------------
+  // Public: Devices management end
+  // -------------------------------------------------------------------------
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()
     await waitTimeout()
@@ -99,6 +158,9 @@ export class EmbedApi extends EventEmitter {
     embedApi._palEvents = palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
+    // init devices manager to get default devices
+    await embedDevicesManager.init()
+
     ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
     // check if cleanup existing account
     if (o.clearExistingAccount) {
