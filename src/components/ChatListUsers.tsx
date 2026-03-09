@@ -7,7 +7,7 @@ import { UserItem } from '#/components/ContactUserItem'
 import { RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 // import {intl} from '../stores/intl'
-import { getPartyName } from '#/stores/contactStore'
+import { getPbxName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 
 const css = StyleSheet.create({
@@ -39,7 +39,7 @@ export const ListUsers: FC<{
       >
         <UserItem
           key={id}
-          name={name || getPartyName({ partyNumber: id, preferPbxName: true })}
+          name={name || getPbxName({ partyNumber: id, preferPbxName: true })}
           {...(group ? p.groupById : p.userById)[id]}
           lastMessage={text}
           group={group}

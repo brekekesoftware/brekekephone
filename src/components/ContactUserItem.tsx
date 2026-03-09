@@ -20,7 +20,7 @@ import { RnCheckBox } from '#/components/RnCheckbox'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contactStore'
-import { getPartyName } from '#/stores/contactStore'
+import { getPbxName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -288,7 +288,7 @@ export const UserItem: FC<
             >
               {partyName ||
                 name ||
-                getPartyName({ partyNumber }) ||
+                getPbxName({ partyNumber }) ||
                 partyNumber ||
                 id}
             </RnText>

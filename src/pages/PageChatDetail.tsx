@@ -18,7 +18,7 @@ import { RnText, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
 import { defaultTimeout, isWeb } from '#/config'
 import type { ChatFile, ChatMessage } from '#/stores/chatStore'
-import { getPartyName } from '#/stores/contactStore'
+import { getPbxName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -148,7 +148,7 @@ export class PageChatDetail extends Component<{
         containerRef={this.setViewRef}
         fabRender={this.renderChatInput}
         onBack={ctx.nav.backToPageChatRecents}
-        title={getPartyName({ partyNumber: id, preferPbxName: true }) || id} // for user not set username
+        title={getPbxName({ partyNumber: id, preferPbxName: true }) || id} // for user not set username
         isShowToastMessage={isShowToastMessage}
         incomingMessage={incomingMessage}
         dropdown={[

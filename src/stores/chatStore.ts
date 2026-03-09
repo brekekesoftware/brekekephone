@@ -8,7 +8,7 @@ import { Notifications } from 'react-native-notifications'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
 import { isAndroid, isIos, isWeb } from '#/config'
-import { getPartyName } from '#/stores/contactStore'
+import { getPbxName } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -226,7 +226,7 @@ export class ChatStore {
     } else {
       // user not set username
       name =
-        getPartyName({ partyNumber: threadId, preferPbxName: true }) || threadId
+        getPbxName({ partyNumber: threadId, preferPbxName: true }) || threadId
     }
 
     // show desktop notification for Web platform

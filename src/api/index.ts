@@ -12,7 +12,7 @@ import { successConnectCheckPeriod } from '#/config'
 import { clearAlreadyHistoryMap } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
 import { FileEvent } from '#/stores/chatStore'
-import { getPartyNameAsync } from '#/stores/contactStore'
+import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
@@ -206,7 +206,8 @@ class Api {
       c.partyName = intl`Voicemail`
     }
     if (!c.partyName) {
-      c.partyName = (await getPartyNameAsync(c.partyNumber)) || c.partyNumber
+      c.partyName =
+        (await getPbxNameWithUpdateContact(c.partyNumber)) || c.partyNumber
     }
     ctx.call.onCallUpsert(c)
   }

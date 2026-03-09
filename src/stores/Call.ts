@@ -7,7 +7,7 @@ import { defaultTimeout, isIos } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/callStore'
-import { getPartyName, getPartyNameAsync } from '#/stores/contactStore'
+import { getPbxName, getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -48,13 +48,13 @@ export class Call {
   phoneappliAvatar = ''
   getDisplayName = () =>
     this.partyName ||
-    getPartyName({ partyNumber: this.partyNumber }) ||
+    getPbxName({ partyNumber: this.partyNumber }) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
   getDisplayNameAsync = async () =>
     this.partyName ||
-    (await getPartyNameAsync(this.partyNumber)) ||
+    (await getPbxNameWithUpdateContact(this.partyNumber)) ||
     this.partyNumber ||
     this.pbxTalkerId ||
     this.id
