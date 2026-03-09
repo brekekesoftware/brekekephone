@@ -269,10 +269,13 @@ const presentNotification = async (c: CallHistoryInfo) => {
   const body = await getBodyForNotification(c)
 
   // show notification call completed elsewhere in web embed api
+  const ccew = embedApi._notificationOptions?.notificationCallCompletedElseWhere
   if (
     isEmbed &&
     c.answeredBy &&
-    embedApi._notificationOptions?.notificationCallCompletedElseWhere
+    (ccew === true ||
+      (ccew === 'incoming' && c.incoming) ||
+      (ccew === 'outgoing' && !c.incoming))
   ) {
     webShowNotification({
       type: 'call',
