@@ -346,7 +346,26 @@ export const Field: FC<
       props.onValueChange?.(newPark)
     }
     const onChangeNumber = (number: string) => {
-      number = number.replace(/[^0-9a-zA-Z-_]/g, '')
+      let specialCount = 0
+
+      number = number
+        .split('')
+        .filter(char => {
+          // block multi-byte characters completely
+          if (/[^\x00-\x7F]/.test(char)) {
+            return false
+          }
+          // Check if the character is outside the allowed base set.
+          if (/[^0-9a-zA-Z-_]/.test(char)) {
+            specialCount++
+            // Only allow the first special character.
+            return specialCount <= 1
+          }
+
+          return true
+        })
+        .join('')
+
       const newPark = { ...$.park, number }
       $.set('park', newPark)
       props.onValueChange?.(newPark)
