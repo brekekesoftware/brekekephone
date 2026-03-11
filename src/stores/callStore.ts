@@ -627,7 +627,32 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
+  @observable isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
+    if (this.isStartingCall) {
+      console.log('[startCall] blocked double tap')
+      return false
+    }
+
+    runInAction(() => {
+      this.isStartingCall = true
+    })
+
+    try {
+      return await this._startCallCore(number, ...args)
+    } catch (err) {
+      console.error('[startCall] unexpected error in core flow:', err)
+      return false
+    } finally {
+      setTimeout(() => {
+        runInAction(() => {
+          this.isStartingCall = false
+        })
+      }, 500)
+    }
+  }
+
+  private _startCallCore: MakeCallFn = async (number, ...args) => {
     // make sure sip is ready before make call
     if (ctx.auth.sipState !== 'success') {
       return false
