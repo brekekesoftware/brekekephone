@@ -37,7 +37,7 @@ public class Ringtone {
   // ==========================================================================
   // init
   static final String TAG = "[Ringtone]";
-  public static Boolean shouldSkipPlayRingtone = false;
+  public static volatile boolean shouldSkipPlayRingtone = false;
 
   public static void init() {
     if (am != null) {
