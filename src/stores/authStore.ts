@@ -652,7 +652,7 @@ export class AuthStore {
     // Dispose AuthSIP to prevent its reaction from firing during account switch.
     // Without this, the sipPn assignment above triggers sipShouldAuth reaction,
     // which calls authPnWithoutCatch while signedInId is being cleared/switched,
-    // causing "Already signed out after long await" error.ƒ
+    // causing "Already signed out after long await" error.
     ctx.authSIP.dispose()
     if (this.signedInId) {
       this.signedInId = ''
