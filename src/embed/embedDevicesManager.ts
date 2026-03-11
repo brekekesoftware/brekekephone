@@ -66,14 +66,14 @@ class EmbedDevicesManager {
         return false
       }
 
-      const sender = this._getVideoSender(s)
-      if (!sender) {
+      const senders = this._getVideoSenders(s)
+      if (senders.length === 0) {
         console.error(
-          '[WebRTCDeviceManager] No video sender found in PeerConnection',
+          '[WebRTCDeviceManager] No video sender found in any PeerConnection',
         )
         return false
       }
-      const oldTrack = sender.track
+      const oldTrack = senders[0].track
       const getUserMedia =
         this._originalGetUserMedia ??
         navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
@@ -90,7 +90,9 @@ class EmbedDevicesManager {
       }
 
       try {
-        await sender.replaceTrack(newVideoTrack)
+        await Promise.all(
+          senders.map(sender => sender.replaceTrack(newVideoTrack)),
+        )
         const localVideoStream: MediaStream | null =
           s.localVideoStreamObject ?? null
         if (localVideoStream && oldTrack) {
@@ -230,10 +232,10 @@ class EmbedDevicesManager {
       }))
   }
 
-  private _getVideoSender = (session?: Session): RTCRtpSender | undefined => {
+  private _getVideoSenders = (session?: Session): RTCRtpSender[] => {
     if (!session) {
       console.error('[WebRTCDeviceManager] No active session found')
-      return
+      return []
     }
 
     const videoClientSessions = Object.values(
@@ -245,17 +247,21 @@ class EmbedDevicesManager {
         '[WebRTCDeviceManager] No video client session found. ' +
           'Make sure the call was started with withVideo: true.',
       )
-      return
+      return []
     }
 
-    const videoPC = videoClientSessions[0].rtcSession.connection
-
-    if (!videoPC) {
-      console.error('[WebRTCDeviceManager] Video PeerConnection not ready yet')
-      return
+    const senders: RTCRtpSender[] = []
+    for (const vcs of videoClientSessions) {
+      const videoPC = vcs.rtcSession.connection
+      if (!videoPC) {
+        continue
+      }
+      const sender = videoPC.getSenders().find(s => s.track?.kind === 'video')
+      if (sender) {
+        senders.push(sender)
+      }
     }
-
-    return videoPC.getSenders().find(s => s.track?.kind === 'video')
+    return senders
   }
 
   private _getPreferredDeviceId(devices: DeviceInfo[]): string | null {
