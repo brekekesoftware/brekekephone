@@ -190,6 +190,7 @@ export class ChatStore {
               pre_app_state: AppState.currentState,
               local_notification: true,
               is_local_notification: 'local_notification',
+              to,
             },
           },
         })
@@ -244,7 +245,13 @@ export class ChatStore {
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(name, m[0]?.text || '', threadId, isGroup)
+      this.pushChatNotification(
+        name,
+        m[0]?.text || '',
+        threadId,
+        isGroup,
+        ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
+      )
     }
     // play chat notification sound & vibration
     const isTalking =
