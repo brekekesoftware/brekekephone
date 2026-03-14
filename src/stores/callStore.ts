@@ -613,7 +613,7 @@ export class CallStore {
     this.setCurrentCallId(c.id)
     ctx.nav.backToPageCallManage()
     await waitTimeout()
-    if (c.holding && c.rqLoadings['hold']) {
+    if (c.holding && !c.rqLoadings['hold']) {
       c.toggleHoldWithCheck()
     }
   }
