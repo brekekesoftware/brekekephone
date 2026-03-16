@@ -2,6 +2,7 @@
 
 - Fix android compatibility policy: Support 16 KB page sizes
 - Fix it should connect properly with multi accounts (issue 1107)
+- Fix ringtone preview should work with correct volume (issue 1167)
 - Embed:
   - Notification call answered elsewhere
   - Add api to switch camera and microphone
