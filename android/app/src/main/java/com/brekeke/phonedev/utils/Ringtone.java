@@ -259,7 +259,7 @@ public class Ringtone {
   private static Data d = new Data();
 
   public static boolean play(String r, String u, String t, String h, String p) {
-    if (BrekekeUtils.activitesAnyAnswered()) {
+    if (BrekekeUtils.anyCallAnswered()) {
       Emitter.debug("[Ringtone] Skip playing: another call is already answered.");
       return false;
     }

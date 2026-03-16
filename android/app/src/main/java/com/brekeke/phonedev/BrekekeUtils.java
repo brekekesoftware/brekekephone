@@ -367,7 +367,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return -1;
   }
 
-  public static boolean activitesAnyAnswered() {
+  public static boolean anyCallAnswered() {
     try {
       for (var a : activities) {
         if (a.answered) {
@@ -379,7 +379,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     return false;
   }
 
-  private static boolean activitesAllDestroyed() {
+  private static boolean allCallsDestroyed() {
     try {
       for (var a : activities) {
         if (!a.destroyed) {
@@ -398,7 +398,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       destroyedUuids.put(uuid, "destroyed");
     } catch (Exception e) {
     }
-    if (activitiesSize == 0 || activitesAnyAnswered() || activitesAllDestroyed()) {
+    if (activitiesSize == 0 || anyCallAnswered() || allCallsDestroyed()) {
       Ringtone.stop();
     }
     if (activitiesSize == 0 && jsCallsSize == 0) {
