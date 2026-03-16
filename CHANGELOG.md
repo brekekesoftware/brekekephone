@@ -2,6 +2,7 @@
 
 - Fix android compatibility policy: Support 16 KB page sizes
 - Fix it should connect properly with multi accounts (issue 1107)
+- Fix it should unhold properly with multi calls (issue 1121)
 - Fix android it should unlock if press the chat icon in incoming call screen (issue 1123)
 - Update some ringtone labels (issue 1158, 1162)
 - Update it should allow to upload custom ringtone when create a new account (issue 1161)
