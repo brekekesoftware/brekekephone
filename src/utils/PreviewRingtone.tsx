@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import type { ReactVideoSource, VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
 
-import { staticRingtones } from '#/utils/BrekekeUtils'
+import { BrekekeUtils, staticRingtones } from '#/utils/BrekekeUtils'
 import { isSameSource } from '#/utils/ringtonePicker'
 
 interface PreviewRingtoneProps {
@@ -51,7 +51,7 @@ export default function PreviewRingtone({
     }
     setCurrentSource(converted)
     setDidPlayStart(false)
-
+    BrekekeUtils.resetAudioConfig()
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }

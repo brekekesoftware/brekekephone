@@ -69,62 +69,36 @@ const App = observer(() => {
   const [switchSuccess, setSwitchSuccess] = useState('')
 
   // Load available devices on mount
-  useEffect(
-    () => {
-      const loadDevices = async () => {
-        try {
-          setIsLoadingDevices(true)
-          const [camerasData, microphonesData] = await Promise.all([
-            phone.getAvailableCameras(),
-            phone.getAvailableMicrophones(),
-          ])
-          setCameras(camerasData)
-          setMicrophones(microphonesData)
+  useEffect(() => {
+    const loadDevices = async () => {
+      try {
+        setIsLoadingDevices(true)
+        const [camerasData, microphonesData] = await Promise.all([
+          phone.getAvailableCameras(),
+          phone.getAvailableMicrophones(),
+        ])
 
-          const current = phone.getCurrentDeviceIdSelected()
+        setCameras(camerasData)
+        setMicrophones(microphonesData)
 
-          // Camera
-          const isCameraStillAvailable = camerasData.some(
-            c => c.deviceId === current.video,
-          )
-          if (isCameraStillAvailable) {
-            setSelectedCamera(current.video)
-          } else if (camerasData.length > 0) {
-            handleCameraChange(camerasData[0].deviceId)
-          } else {
-            setSelectedCamera(null)
-          }
-
-          // Microphone
-          const isMicStillAvailable = microphonesData.some(
-            m => m.deviceId === current.audio,
-          )
-          if (isMicStillAvailable) {
-            setSelectedMicrophone(current.audio)
-          } else if (microphonesData.length > 0) {
-            handleMicrophoneChange(
-              microphonesData[microphonesData.length - 1].deviceId,
-            )
-          } else {
-            setSelectedMicrophone(null)
-          }
-        } catch (error) {
-          console.error('Error loading devices:', error)
-        } finally {
-          setIsLoadingDevices(false)
+        // Camera
+        if (camerasData.length > 0) {
+          setSelectedCamera(camerasData[0].deviceId)
         }
-      }
 
-      loadDevices()
-      phone.listenDeviceChanges(loadDevices)
-
-      return () => {
-        phone.unlistenDeviceChanges(loadDevices)
+        // Microphone
+        if (microphonesData.length > 0) {
+          setSelectedMicrophone(microphonesData[0].deviceId)
+        }
+      } catch (error) {
+        console.error('Error loading devices:', error)
+      } finally {
+        setIsLoadingDevices(false)
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  )
+    }
+
+    loadDevices()
+  }, [])
 
   const clearMessages = () => {
     setSwitchError('')
@@ -132,25 +106,18 @@ const App = observer(() => {
   }
 
   const handleCameraChange = async (deviceId: string) => {
-    setSelectedCamera(deviceId)
     clearMessages()
 
     try {
-      const co = ctx.call.getOngoingCall()
-      if (co) {
-        const s = await phone.switchCameraDuringCall(co, deviceId)
-        if (!s) {
-          setSwitchError(
-            'Failed to switch camera during call. Please try again.',
-          )
-        } else {
-          setSwitchSuccess('Camera switched successfully')
-        }
-      } else {
-        phone.setVideoInputDevice(deviceId)
-        setSwitchSuccess('Camera switched successfully')
+      const c = await phone.setVideoInputDevice(deviceId)
+      if (!c) {
+        setSwitchError(
+          'Failed to switch video. Device may no longer be available.',
+        )
+        return
       }
-
+      setSelectedCamera(deviceId)
+      setSwitchSuccess('Camera switched successfully')
       setTimeout(clearMessages, 2000)
     } catch (error) {
       const errorMsg =
@@ -158,29 +125,24 @@ const App = observer(() => {
         'Failed to switch camera. Device may no longer be available.'
       setSwitchError(errorMsg)
       console.error('Error setting camera:', error)
+    } finally {
+      setTimeout(clearMessages, 2000)
     }
   }
 
   const handleMicrophoneChange = async (deviceId: string) => {
-    setSelectedMicrophone(deviceId)
     clearMessages()
 
     try {
-      const c = ctx.call.getOngoingCall()
-      if (c) {
-        const s = phone.switchMicrophoneDuringCall(deviceId, c.sessionId)
-        if (!s) {
-          setSwitchError(
-            'Failed to switch microphone during call. Please try again.',
-          )
-        } else {
-          setSwitchSuccess('Microphone switched successfully')
-        }
-      } else {
-        phone.setAudioInputDevice(deviceId)
-        setSwitchSuccess('Microphone switched successfully')
+      const c = phone.setAudioInputDevice(deviceId)
+      if (!c) {
+        setSwitchError(
+          'Failed to switch microphone. Device may no longer be available.',
+        )
+        return
       }
-      setTimeout(clearMessages, 2000)
+      setSelectedMicrophone(deviceId)
+      setSwitchSuccess('Microphone switched successfully')
     } catch (error: any) {
       const errorMsg =
         error?.message ||
@@ -191,7 +153,8 @@ const App = observer(() => {
       // Reload devices in case one was unplugged
       const updatedMicrophones = await phone.getAvailableMicrophones()
       setMicrophones(updatedMicrophones)
-      setTimeout(clearMessages, 3000)
+    } finally {
+      setTimeout(clearMessages, 2000)
     }
   }
 
