@@ -258,9 +258,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
   if (
     isEmbed &&
     c.answeredBy &&
-    (ccew === true ||
-      (ccew === 'incoming' && c.incoming) ||
-      (ccew === 'outgoing' && !c.incoming))
+    (ccew === true || (typeof ccew === 'function' && ccew(c)))
   ) {
     webShowNotification({
       type: 'call',
