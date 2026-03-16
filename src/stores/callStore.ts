@@ -93,7 +93,7 @@ export class CallStore {
     } else {
       c = this.getCallKeep(uuid)
     }
-    if (n.sipPn.autoAnswer && c && !c.bugIosOffPnServer) {
+    if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
