@@ -54,56 +54,24 @@ export class EmbedApi extends EventEmitter {
   // Public: Devices management
   // -------------------------------------------------------------------------
 
-  getAvailableCameras = async (): Promise<DeviceInfo[]> => {
-    try {
-      return await embedDevicesManager.getVideoInputDevices()
-    } catch (error) {
-      console.error('Error getting available cameras:', error)
-      return []
-    }
-  }
+  static getAvailableCameras = (): Promise<DeviceInfo[]> =>
+    embedDevicesManager.getVideoInputDevices()
 
-  getAvailableMicrophones = async (): Promise<DeviceInfo[]> => {
-    try {
-      return await embedDevicesManager.getAudioInputDevices()
-    } catch (error) {
-      console.error('Error getting available microphones:', error)
-      return []
-    }
-  }
+  getAvailableCameras = EmbedApi.getAvailableCameras
 
-  getCurrentDeviceIdSelected = () =>
-    embedDevicesManager.getCurrentDeviceIdSelected()
+  static getAvailableMicrophones = (): Promise<DeviceInfo[]> =>
+    embedDevicesManager.getAudioInputDevices()
 
-  listenDeviceChanges = (callback: () => void) => {
-    embedDevicesManager.listenDeviceChanges(callback)
-  }
+  getAvailableMicrophones = EmbedApi.getAvailableMicrophones
 
-  unlistenDeviceChanges = (callback: () => void) => {
-    embedDevicesManager.unlistenDeviceChanges(callback)
-  }
-
-  setAudioInputDevice = async (deviceId: string) => {
+  static setAudioInputDevice = (deviceId: string): boolean =>
     embedDevicesManager.setAudioInputDevice(deviceId)
-  }
-  setVideoInputDevice = async (deviceId: string) => {
+  setAudioInputDevice = EmbedApi.setAudioInputDevice
+
+  static setVideoInputDevice = (deviceId: string): Promise<boolean> =>
     embedDevicesManager.setVideoInputDevice(deviceId)
-  }
 
-  switchMicrophoneDuringCall = (
-    deviceId: string,
-    sessionId: string | null = null,
-  ) =>
-    embedDevicesManager.switchMicrophoneDuringCall(
-      ctx.sip.phone,
-      deviceId,
-      sessionId,
-    )
-
-  switchCameraDuringCall = async (call: any, deviceId: string) => {
-    const s = ctx.sip.phone?.getSession(call.sessionId)
-    return await embedDevicesManager.switchCameraDuringCall(s, deviceId)
-  }
+  setVideoInputDevice = EmbedApi.setVideoInputDevice
 
   // -------------------------------------------------------------------------
   // Public: Devices management end
@@ -116,6 +84,7 @@ export class EmbedApi extends EventEmitter {
 
   cleanup = () => {
     ctx.auth.signOutWithoutSaving()
+    embedDevicesManager.destroy()
     if (this._rootTag) {
       AppRegistry.unmountApplicationComponentAtRootTag(this._rootTag)
     }

@@ -455,6 +455,12 @@ export type Sip = {
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
   }
   _removeEventListenerPhoneStatusChange?: Function
+  reconnectMicrophone(
+    sessionId?: string,
+    options?: {
+      mediaConstraints: MediaStreamConstraints
+    },
+  ): void
 }
 
 export type MakeCallFn = (
@@ -548,6 +554,7 @@ export type Session = {
     _request?: {
       extraHeaders?: string[]
     }
+    connection?: RTCPeerConnection
   }
   withVideo: boolean
   remoteWithVideo: boolean
