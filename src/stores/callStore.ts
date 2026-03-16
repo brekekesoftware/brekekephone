@@ -460,7 +460,7 @@ export class CallStore {
         )
         BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
       }
-
+      BrekekeUtils.setShouldSkipPlayRingtone(this.hasActiveCall())
       return
     }
 
@@ -643,9 +643,30 @@ export class CallStore {
     await addCallHistory(c)
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
+    if (isAndroid) {
+      await this.playRingtoneIfNeeded(c)
+    }
 
     // emit to embed api
     c.finishEmitEmbed()
+  }
+
+  playRingtoneIfNeeded = async (c: Call) => {
+    const ac = this.hasActiveCall()
+    BrekekeUtils.setShouldSkipPlayRingtone(ac)
+    if (ac) {
+      return
+    }
+    const ca = ctx.auth.getCurrentAccount()
+    if (ca && (await BrekekeUtils.shouldPlayRingtone())) {
+      BrekekeUtils.startRingtone(
+        c.ringtoneFromSip,
+        ca.pbxUsername,
+        ca.pbxTenant,
+        ca.pbxHostname,
+        ca.pbxPort,
+      )
+    }
   }
 
   @computed get isAnyHoldLoading() {
@@ -655,7 +676,7 @@ export class CallStore {
     this.setCurrentCallId(c.id)
     ctx.nav.backToPageCallManage()
     await waitTimeout()
-    if (c.holding && c.rqLoadings['hold']) {
+    if (c.holding && !c.rqLoadings['hold']) {
       c.toggleHoldWithCheck()
     }
   }
@@ -669,7 +690,32 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
+  @observable isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
+    if (this.isStartingCall) {
+      console.log('[startCall] blocked double tap')
+      return false
+    }
+
+    runInAction(() => {
+      this.isStartingCall = true
+    })
+
+    try {
+      return await this._startCallCore(number, ...args)
+    } catch (err) {
+      console.error('[startCall] unexpected error in core flow:', err)
+      return false
+    } finally {
+      setTimeout(() => {
+        runInAction(() => {
+          this.isStartingCall = false
+        })
+      }, 500)
+    }
+  }
+
+  private _startCallCore: MakeCallFn = async (number, ...args) => {
     // make sure sip is ready before make call
     if (ctx.auth.sipState !== 'success') {
       return false
@@ -710,6 +756,7 @@ export class CallStore {
       this.callkeepUuidPending = uuid
       if (isAndroid) {
         RNCallKeep.startCall(uuid, ctx.global.productName, number)
+        BrekekeUtils.setShouldSkipPlayRingtone(true)
       } else {
         RNCallKeep.startCall(uuid, number, number, 'generic', false)
         // enable proximity monitoring for trigger proximity state to keep the call alive
@@ -1202,6 +1249,12 @@ export class CallStore {
   @action setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
   }
+
+  // to check if has any active call or it is outgoing call
+  hasActiveCall = () =>
+    this.calls.some(
+      c => !c.incoming || c.answered || c.sessionStatus === 'connected',
+    )
 }
 
 ctx.call = new CallStore()
