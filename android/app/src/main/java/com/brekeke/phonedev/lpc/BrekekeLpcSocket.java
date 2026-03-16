@@ -275,7 +275,7 @@ public class BrekekeLpcSocket {
     private void handleChatmessageResponse(JSONObject obj, Map<String, String> m) {
       try {
         var msg = obj.getString("message");
-        var title = m.getOrDefault("senderUserId", "");
+        var title = m.getOrDefault("senderUserName", m.getOrDefault("senderUserId", ""));
         if (msg.isEmpty()) {
           msg = "UC message";
         }
@@ -286,7 +286,10 @@ public class BrekekeLpcSocket {
           m.put("my_custom_data", lc);
           m.put("is_local_notification", lc);
         }
-        NotificationHelper.showLocalPush(mContext, title, msg, m);
+        String e = LpcUtils.convertMapToString(m);
+        if (!Emitter.emit("lpcPnMessage", e)) {
+          NotificationHelper.showLocalPush(mContext, title, msg, m);
+        }
         Emitter.debug("[BrekekeLpcSocket] Show local push from Lpc ");
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "handleChat messageResponse error: " + e.getMessage());
@@ -301,7 +304,7 @@ public class BrekekeLpcSocket {
       BrekekeUtils.onFcmMessageReceived(m);
       // emit message to assign callKeepUuid to call store
       String e = LpcUtils.convertMapToString(m);
-      Emitter.emit("lpcIncomingCall", e);
+      Emitter.emit("lpcPnMessage", e);
       Log.d(LpcUtils.TAG, "Incoming call started by Lpc");
       Emitter.debug("[BrekekeLpcSocket] Incoming call started by Lpc");
     }

@@ -1280,6 +1280,8 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
       onBtnBackPress(v);
     } else if (id == R.id.txt_conection_status) {
       onConnectionStatusClick(v);
+    } else if (id == R.id.btn_chat) {
+      onBtnChatClick(v);
     }
   }
 
@@ -1319,7 +1321,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     } else if (id == R.id.btn_end_call) {
       onBtnRejectClick(v);
     } else if (id == R.id.btn_chat) {
-      onBtnChatClick(v);
+      onRequestUnlock(v);
     } else if (id == R.id.txt_conection_status) {
       onRequestUnlock(v);
     }
