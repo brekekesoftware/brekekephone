@@ -286,7 +286,6 @@ public class BrekekeLpcSocket {
           m.put("my_custom_data", lc);
           m.put("is_local_notification", lc);
         }
-
         String e = LpcUtils.convertMapToString(m);
         if (!Emitter.emit("lpcPnMessage", e)) {
           NotificationHelper.showLocalPush(mContext, title, msg, m);
