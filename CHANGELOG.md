@@ -3,6 +3,7 @@
 - Fix android compatibility policy: Support 16 KB page sizes
 - Fix it should connect properly with multi accounts (issue 1107)
 - Update some ringtone labels (issue 1158, 1162)
+- Update it should allow to upload custom ringtone when create a new account (issue 1161)
 - Fix ringtone preview should work with correct volume (issue 1167)
 - Embed:
   - Notification call answered elsewhere
