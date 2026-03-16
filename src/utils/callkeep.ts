@@ -272,8 +272,28 @@ export const setupCallKeepEvents = async () => {
     await waitTimeout(t)
   }
 
-  eventEmitter.addListener('lpcIncomingCall', (v: string) => {
-    parse(JSON.parse(v))
+  eventEmitter.addListener('lpcPnMessage', (v: string) => {
+    try {
+      if (!v) {
+        return
+      }
+      const m = JSON.parse(v)
+      if (m.event === 'message') {
+        ctx.chat.pushChatNotification(
+          m.title || '',
+          m.body || '',
+          m.senderUserId || m.confId,
+          !m.senderUserId,
+          m.to || '',
+        )
+        return
+      }
+      if (m.lpc) {
+        parse(m)
+      }
+    } catch (e) {
+      console.log('lpcPnMessage error ', e)
+    }
   })
 
   eventEmitter.addListener('answerCall', async (uuid: string) => {
