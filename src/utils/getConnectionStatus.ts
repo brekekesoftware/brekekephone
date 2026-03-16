@@ -18,7 +18,7 @@ export const getConnectionStatus = () => {
     ctx.auth.pbxLoginFromAnotherPlace &&
     !ctx.auth.showMsgPbxLoginFromAnotherPlace
   ) {
-    // Case: logged in from another location but the notification has not been shown yet
+    // logged in from another location but the notification has not been shown yet
     return {
       signedInId,
       message,

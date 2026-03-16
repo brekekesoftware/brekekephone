@@ -24,7 +24,7 @@ public final class NotificationHelper {
   private static final int RANDOM_MAX = 999_999_999;
 
   private NotificationHelper() {
-    // Prevent instantiation
+    // prevent instantiation
   }
 
   public static void showLocalPush(
@@ -38,7 +38,6 @@ public final class NotificationHelper {
 
     ensureChannelExists(manager);
 
-    // Build intent to open app
     Intent intent = new Intent(context, MainActivity.class);
     intent.putExtra("pushNotification", mapToBundle(data));
     int notificationId = new Random().nextInt(RANDOM_MAX);

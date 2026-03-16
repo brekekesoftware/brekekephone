@@ -68,7 +68,6 @@ const App = observer(() => {
   const [switchError, setSwitchError] = useState('')
   const [switchSuccess, setSwitchSuccess] = useState('')
 
-  // Load available devices on mount
   useEffect(() => {
     const loadDevices = async () => {
       try {
@@ -81,12 +80,9 @@ const App = observer(() => {
         setCameras(camerasData)
         setMicrophones(microphonesData)
 
-        // Camera
         if (camerasData.length > 0) {
           setSelectedCamera(camerasData[0].deviceId)
         }
-
-        // Microphone
         if (microphonesData.length > 0) {
           setSelectedMicrophone(microphonesData[0].deviceId)
         }
@@ -150,7 +146,7 @@ const App = observer(() => {
       setSwitchError(errorMsg)
       console.error('Microphone switch error:', error)
 
-      // Reload devices in case one was unplugged
+      // reload devices in case one was unplugged
       const updatedMicrophones = await phone.getAvailableMicrophones()
       setMicrophones(updatedMicrophones)
     } finally {

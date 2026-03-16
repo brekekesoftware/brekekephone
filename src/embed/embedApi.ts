@@ -41,6 +41,7 @@ export class EmbedApi extends EventEmitter {
 
   getCurrentAccount = () => ctx.auth.getCurrentAccount()
   getCurrentAccountCtx = () => ctx
+
   static getCurrentVersion = () => ({
     webphone: currentVersion,
     jssip: jssipVersion,
@@ -50,18 +51,13 @@ export class EmbedApi extends EventEmitter {
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
-  // -------------------------------------------------------------------------
-  // Public: Devices management
-  // -------------------------------------------------------------------------
 
   static getAvailableCameras = (): Promise<DeviceInfo[]> =>
     embedDevicesManager.getVideoInputDevices()
-
   getAvailableCameras = EmbedApi.getAvailableCameras
 
   static getAvailableMicrophones = (): Promise<DeviceInfo[]> =>
     embedDevicesManager.getAudioInputDevices()
-
   getAvailableMicrophones = EmbedApi.getAvailableMicrophones
 
   static setAudioInputDevice = (deviceId: string): boolean =>
@@ -70,12 +66,8 @@ export class EmbedApi extends EventEmitter {
 
   static setVideoInputDevice = (deviceId: string): Promise<boolean> =>
     embedDevicesManager.setVideoInputDevice(deviceId)
-
   setVideoInputDevice = EmbedApi.setVideoInputDevice
 
-  // -------------------------------------------------------------------------
-  // Public: Devices management end
-  // -------------------------------------------------------------------------
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()
     await waitTimeout()
@@ -123,10 +115,12 @@ export class EmbedApi extends EventEmitter {
       notificationCallCompletedElseWhereInterval,
     }
     await ctx.account.waitStorageLoaded()
+
     // reassign options on each sign in
     embedApi._palEvents = palEvents
     embedApi._palParams = parsePalParams(o)
     embedApi._pbxConfig = o // TODO: pick fields
+
     // init devices manager to get default devices
     await embedDevicesManager.init()
 
@@ -136,12 +130,14 @@ export class EmbedApi extends EventEmitter {
       ctx.account.accounts = []
       ctx.account.accountData = []
     }
+
     // create map based on unique (host, port, tenant, user)
     const accountsMap = arrToMap(
       ctx.account.accounts,
       getAccountUniqueId,
       (p: Account) => p,
     ) as { [k: string]: Account }
+
     // convert accounts from options to storage
     let firstAccountInOptions: Account | undefined
     o.accounts.forEach(a => {
@@ -156,6 +152,7 @@ export class EmbedApi extends EventEmitter {
       }
     })
     await ctx.account.saveAccountsToLocalStorageDebounced()
+
     // check if auto login
     if (!o.autoLogin) {
       return

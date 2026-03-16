@@ -234,7 +234,6 @@ public class LpcUtils {
     return sslContext;
   }
 
-  // Convert ReadableArray to String[]
   public static ArrayList<String> convertReadableArrayToStringList(ReadableArray array) {
     ArrayList<String> result = new ArrayList<>();
 
