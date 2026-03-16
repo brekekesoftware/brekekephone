@@ -131,8 +131,6 @@ public class BrekekeUtils: NSObject {
       audio?.numberOfLoops = -1
       audio?.volume = v
       audio?.prepareToPlay()
-      am.setupAVAdioSession(.default)
-      try audioSession.overrideOutputAudioPort(isLoudSpeaker ? .speaker : .none)
       audio?.play()
       logger.log("playRBT: Playing, loudspeaker=\(isLoudSpeaker)")
     } catch {
@@ -143,33 +141,14 @@ public class BrekekeUtils: NSObject {
   @objc
   func stopRBT(
     _ resolve: @escaping RCTPromiseResolveBlock,
-    rejecter reject: @escaping RCTPromiseRejectBlock
+    rejecter _: @escaping RCTPromiseRejectBlock
   ) {
     if audio != nil {
       logger.log("stopRBT: Stopped")
       audio?.stop()
       audio = nil
     }
-    do {
-      // Deactivate AVAudioSession with notifyOthersOnDeactivation.
-      // Reason: Ensures WebRTC or RNInCallManager can configure audio routes without conflicts after stopping RBT.
-      // Notifying others allows WebRTC to activate AVAudioSession cleanly
-      let isSpeakerOn = am.isSpeakerEnabled()
-      am.setupAVAdioSession(.voiceChat)
-      logger.log("stopRBT: AVAudioSession deactivated")
-      am.setAudioActive(true)
-      if isSpeakerOn {
-        try audioSession.overrideOutputAudioPort(.speaker)
-      } else {
-        try audioSession.overrideOutputAudioPort(.none)
-      }
-      resolve(nil)
-    } catch {
-      logger.log(
-        "stopRBT: Error deactivating AVAudioSession: \(error.localizedDescription)"
-      )
-      reject("stopRBT: Error", error.localizedDescription, error)
-    }
+    resolve(nil)
   }
 
   @objc

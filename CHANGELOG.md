@@ -5,6 +5,7 @@
 - Fix it should connect properly with multi accounts (issue 1107)
 - Fix it should unhold properly with multi calls (issue 1121)
 - Fix android it should unlock if press the chat icon in incoming call screen (issue 1123)
+- Fix ios it should have voice connected if receive incoming call without PN due to server configuration mismatch (issue 1142, 1165)
 - Update some ringtone labels (issue 1158, 1162)
 - Update it should allow to upload custom ringtone when create a new account (issue 1161)
 - Fix ringtone preview should work with correct volume (issue 1167)

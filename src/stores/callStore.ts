@@ -75,8 +75,25 @@ export class CallStore {
     if (!uuid || !n) {
       return
     }
-    const c = this.getCallKeep(uuid)
-    if (n.sipPn.autoAnswer && c) {
+    // fix bug ios turn off pn on the server side side
+    let c = this.calls.find(_ => _.bugIosOffPnServer && _.pnId === n.id)
+    if (c) {
+      if (c.callkeepUuid !== uuid) {
+        const del = c.callkeepUuid
+        delete this.callkeepMap[del]
+        delete this.callkeepActionMap[del]
+        delete this.calleeRejectedMap[del]
+        RNCallKeep.endCall(del)
+        c.callkeepUuid = uuid
+        c.bugIosOffPnServer = false
+        if (c.answered) {
+          RNCallKeep.answerIncomingCall(uuid)
+        }
+      }
+    } else {
+      c = this.getCallKeep(uuid)
+    }
+    if (n.sipPn.autoAnswer && c && !c.bugIosOffPnServer) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
         RNCallKeep.backToForeground()
       }
@@ -86,7 +103,7 @@ export class CallStore {
       if (isIos) {
         c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {
-          RNCallKeep.answerIncomingCall(uuid)
+          RNCallKeep.answerIncomingCall(c.callkeepUuid)
         }, 2000)
       }
     }
@@ -488,16 +505,13 @@ export class CallStore {
         title: name,
       })
     }
+
     if (!c.incoming && !c.callkeepUuid && this.callkeepUuidPending) {
       c.callkeepUuid = this.callkeepUuidPending
       this.callkeepUuidPending = ''
     }
-    if (
-      !isWeb &&
-      c.incoming &&
-      !c.callkeepUuid &&
-      !ca?.pushNotificationEnabled
-    ) {
+
+    const displayCall = async () => {
       const uuid = newUuid().toUpperCase()
       c.callkeepUuid = uuid
       const op = {
@@ -509,6 +523,7 @@ export class CallStore {
             ca?.pbxHostname ?? '',
             ca?.pbxPort ?? '',
           ),
+          pnid: c.pnId,
         },
       }
       RNCallKeep.displayIncomingCall(
@@ -520,6 +535,33 @@ export class CallStore {
         op,
       )
     }
+
+    const trySetCallkeepUuid = async () => {
+      if (isWeb || !c.incoming || c.callkeepUuid) {
+        return
+      }
+
+      if (!ca?.pushNotificationEnabled) {
+        await displayCall()
+        return
+      }
+
+      const uuidFromPN = this.getUuidFromPnId(c.pnId)
+      if (uuidFromPN) {
+        c.callkeepUuid = uuidFromPN
+        return
+      }
+
+      if (isIos) {
+        await displayCall()
+        c.bugIosOffPnServer = true
+        return
+      }
+    }
+
+    // fix bug ios turn off pn on the server side side
+    await trySetCallkeepUuid()
+
     // get and check callkeep if pending incoming call
     if (isWeb || !c.incoming || c.answered) {
       return
@@ -1174,7 +1216,7 @@ export class CallStore {
   @observable isLoudSpeakerEnabled = false
 
   @action updateLoudSpeakerStatus = async () => {
-    if (isIos && this.getOngoingCall()) {
+    if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
       this.isLoudSpeakerEnabled = await BrekekeUtils.isSpeakerOn()
     }
   }

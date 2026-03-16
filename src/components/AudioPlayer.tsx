@@ -5,6 +5,7 @@ import type { VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
 
 import { ctx } from '#/stores/ctx'
+import { RnAppState } from '#/stores/RnAppState'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 
 const css = StyleSheet.create({
@@ -24,7 +25,11 @@ export const AudioPlayer = observer(() => {
   const isPlaying = ctx.chat.chatNotificationSoundRunning
   // AVAudioSession will conflict if <Video> is mounted multiple times consecutively
   useEffect(() => {
-    if (!ctx.call.calls.length) {
+    if (
+      !ctx.call.calls.length &&
+      RnAppState.currentState === 'active' &&
+      isPlaying
+    ) {
       BrekekeUtils.resetAudioConfig()
     }
     if (isPlaying && videoRef.current) {
