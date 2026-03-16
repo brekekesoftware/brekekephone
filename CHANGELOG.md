@@ -1,6 +1,7 @@
 #### 2.17.0
 
 - Fix android compatibility policy: Support 16 KB page sizes
+- Fix it should connect properly with multi accounts (issue 1107)
 - Embed:
   - Notification call answered elsewhere
   - Add api to switch camera and microphone
