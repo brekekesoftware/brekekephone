@@ -30,7 +30,9 @@ export type EmbedNotificationOptions = {
   closeNotificationOnCallAnswer: boolean
   closeNotificationOnCallEnd: boolean
   notificationInterval: number
-  notificationCallCompletedElseWhere: boolean | 'incoming' | 'outgoing'
+  notificationCallCompletedElseWhere:
+    | boolean
+    | ((call: CallHistoryInfo) => boolean)
   notificationCallCompletedElseWhereInterval: number
 }
 
