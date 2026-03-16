@@ -145,7 +145,7 @@ public class RingtoneUtils {
   }
 
   static func getDestinationURL(for fileName: String) -> URL {
-    // Use the `Ringtones` folder name to sync with the
+    // use the `Ringtones` folder name to sync with the
     // @react-native-documents/picker library patch
     let doc = FileManager.default.urls(
       for: .documentDirectory,

@@ -7,13 +7,12 @@ export interface DeviceInfo {
   kind: MediaDeviceKind
 }
 class EmbedDevicesManager {
-  private _audioInputDeviceId: string | null = null
-  private _videoInputDeviceId: string | null = null
-  private _patched = false
+  _audioInputDeviceId: string | null = null
+  _videoInputDeviceId: string | null = null
+  _patched = false
 
-  private _originalGetUserMedia:
-    | typeof navigator.mediaDevices.getUserMedia
-    | null = null
+  _originalGetUserMedia: typeof navigator.mediaDevices.getUserMedia | null =
+    null
 
   async init() {
     this._audioInputDeviceId = this._getPreferredDeviceId(
@@ -129,11 +128,7 @@ class EmbedDevicesManager {
     this._videoInputDeviceId = null
   }
 
-  // -------------------------------------------------------------------------
-  // Private: Monkey-patch
-  // -------------------------------------------------------------------------
-
-  private _applyPatch(): void {
+  _applyPatch(): void {
     if (!this._isGetUserMediaAvailable()) {
       return
     }
@@ -160,7 +155,7 @@ class EmbedDevicesManager {
     )
   }
 
-  private _syncPatch() {
+  _syncPatch() {
     const hasAnyDevice =
       !!this._audioInputDeviceId || !!this._videoInputDeviceId
     if (hasAnyDevice) {
@@ -170,7 +165,7 @@ class EmbedDevicesManager {
     }
   }
 
-  private _restorePatch(): void {
+  _restorePatch(): void {
     if (!this._patched || !this._originalGetUserMedia) {
       return
     }
@@ -180,7 +175,7 @@ class EmbedDevicesManager {
     this._patched = false
   }
 
-  private _injectDeviceIds(
+  _injectDeviceIds(
     constraints: MediaStreamConstraints,
   ): MediaStreamConstraints {
     const result: MediaStreamConstraints = { ...constraints }
@@ -202,11 +197,7 @@ class EmbedDevicesManager {
     return result
   }
 
-  // -------------------------------------------------------------------------
-  // Private: Helpers
-  // -------------------------------------------------------------------------
-
-  private _isGetUserMediaAvailable(): boolean {
+  _isGetUserMediaAvailable(): boolean {
     return (
       typeof navigator !== 'undefined' &&
       !!navigator.mediaDevices &&
@@ -214,9 +205,7 @@ class EmbedDevicesManager {
     )
   }
 
-  private async _getDevicesByKind(
-    kind: MediaDeviceKind,
-  ): Promise<DeviceInfo[]> {
+  async _getDevicesByKind(kind: MediaDeviceKind): Promise<DeviceInfo[]> {
     if (!this._isGetUserMediaAvailable()) {
       return []
     }
@@ -232,7 +221,7 @@ class EmbedDevicesManager {
       }))
   }
 
-  private _getVideoSenders = (session?: Session): RTCRtpSender[] => {
+  _getVideoSenders = (session?: Session): RTCRtpSender[] => {
     if (!session) {
       console.error('[WebRTCDeviceManager] No active session found')
       return []
@@ -264,7 +253,7 @@ class EmbedDevicesManager {
     return senders
   }
 
-  private _getPreferredDeviceId(devices: DeviceInfo[]): string | null {
+  _getPreferredDeviceId(devices: DeviceInfo[]): string | null {
     if (devices.length === 0) {
       return null
     }

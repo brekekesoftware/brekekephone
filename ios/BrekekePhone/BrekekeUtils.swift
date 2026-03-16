@@ -27,7 +27,7 @@ public class BrekekeUtils: NSObject {
     logger.log("initialized")
   }
 
-  // Native module methods
+  // native module methods
 
   @objc
   func resetAudioConfig() {

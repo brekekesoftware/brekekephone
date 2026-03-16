@@ -146,13 +146,11 @@ export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
 
-  // === handle cache and retry requests
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
   @observable retryingRequests: string[] = []
 
-  // Methods that have retry mechanism via palRequestWithRetry
   private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
     'hold',
     'unhold',
@@ -441,7 +439,7 @@ export class PBX extends EventEmitter {
       callrecording: 'self',
       ...d.palParams,
       ...embedApi._palParams,
-      // From the version 2.14.x, please add ctype=2 to the URL for PAL.
+      // doc: From the version 2.14.x, please add ctype=2 to the URL for PAL.
       // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
       ctype: 2,
     })
