@@ -353,6 +353,7 @@ export const UserItem: FC<
         )}
         {icons?.map((_, i) => (
           <RnTouchableOpacity
+            disabled={ctx.call.isStartingCall}
             loading={loadings === true || loadings?.[i]}
             key={i}
             onPress={() => onPressIcons(i)}
