@@ -1,6 +1,12 @@
 #### 2.17.0
 
 - Fix android compatibility policy: Support 16 KB page sizes
+- Fix it should connect properly with multi accounts (issue 1107)
+- Fix android it should unlock if press the chat icon in incoming call screen (issue 1123)
+- Update some ringtone labels (issue 1158, 1162)
+- Update it should allow to upload custom ringtone when create a new account (issue 1161)
+- Fix ringtone preview should work with correct volume (issue 1167)
+- Fix android it should not play ringtone if there is a connected call, it should play ringtone after the call is disconnected (issue 1177)
 - Embed:
   - Notification call answered elsewhere
   - Add api to switch camera and microphone
