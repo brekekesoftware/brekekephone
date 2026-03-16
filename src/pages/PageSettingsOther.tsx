@@ -9,6 +9,7 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { RnPicker } from '#/stores/RnPicker'
 import { defaultRingtone } from '#/utils/BrekekeUtils'
 import type { RingtoneOption } from '#/utils/getRingtoneOptions'
 import {
@@ -40,6 +41,10 @@ export class PageSettingsOther extends Component {
     } catch (err) {
       console.error('PageSettingsOther componentDidMount:', err)
     }
+  }
+
+  componentWillUnmount(): void {
+    RnPicker.dismiss()
   }
 
   initData = async () => {
@@ -93,6 +98,18 @@ export class PageSettingsOther extends Component {
 
   onChangeRingtone = async (value: string, ca?: Account) => {
     this.stopPreview()
+    const hasCall =
+      Object.keys(ctx.call.callkeepMap).length ||
+      ctx.sip.phone?.getSessionCount() ||
+      ctx.call.calls.length
+
+    if (hasCall) {
+      const msg = intl`Cannot preview ringtone during a call`
+      if (ctx.toast.items.find(v => v.msg === msg) == null) {
+        ctx.toast.warning(msg, 2000)
+      }
+      return
+    }
     const r = await validateRingtone(value, ca)
     this.setState({ preview: r })
   }
