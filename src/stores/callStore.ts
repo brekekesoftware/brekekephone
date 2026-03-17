@@ -174,6 +174,14 @@ export class CallStore {
     if (c && !c.callkeepAlreadyAnswered) {
       c.callkeepAlreadyAnswered = true
       c.answer()
+      return
+    }
+    // Auto-answer call (answer-after=0) may have been answered before user tapped
+    // CallKit (kill app + wait >2s). setCurrentCallActive was called from background
+    // but iOS requires it in the CallKit tap context for proper audio routing.
+    const autoAnswered = this.getCallKeep(uuid, { includingAnswered: true })
+    if (autoAnswered?.isAutoAnswer) {
+      RNCallKeep.setCurrentCallActive(autoAnswered.callkeepUuid)
     }
   }
   @action onCallKeepEndCall = (uuid: string) => {
@@ -201,6 +209,9 @@ export class CallStore {
   @observable ongoingCallId: string = ''
   @observable displayingCallId = ''
   prevDisplayingCallId = ''
+  // Set when didActivateAudioSession fires before any SIP call exists (kill app +
+  // quick answer). Consumed by upsertCall to correctly set isAudioActive on the call.
+  pendingAudioActivated = false
 
   getOngoingCall = () => {
     this.updateCurrentCallDebounce()
@@ -574,6 +585,12 @@ export class CallStore {
     ) {
       c.isAutoAnswer =
         c.isAutoAnswer || this.getAutoAnswerFromPnId(c.pnId) || false
+      // If didActivateAudioSession already fired before this call existed (kill app +
+      // quick answer), set isAudioActive now so the auto-hold guard works correctly.
+      if (c.isAutoAnswer && this.pendingAudioActivated) {
+        c.isAudioActive = true
+        this.pendingAudioActivated = false
+      }
     }
 
     const callkeepAction = this.getCallKeepAction(c)

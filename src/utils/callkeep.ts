@@ -191,6 +191,10 @@ export const setupCallKeepEvents = async () => {
     if (c?.isAutoAnswer) {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
+    } else if (!c) {
+      // No call yet — audio activated before SIP arrived (kill app + quick answer).
+      // Store the fact so upsertCall can set isAudioActive when the call is created.
+      ctx.call.pendingAudioActivated = true
     }
 
     BrekekeUtils.webrtcSetAudioEnabled(true, 'didActivateAudioSession')
