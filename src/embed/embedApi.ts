@@ -68,6 +68,14 @@ export class EmbedApi extends EventEmitter {
     embedDevicesManager.setVideoInputDevice(deviceId)
   setVideoInputDevice = EmbedApi.setVideoInputDevice
 
+  static getVideoInputDevice = (): string | null =>
+    embedDevicesManager._videoInputDeviceId
+  getVideoInputDevice = EmbedApi.getVideoInputDevice
+
+  static getAudioInputDevice = (): string | null =>
+    embedDevicesManager._audioInputDeviceId
+  getAudioInputDevice = EmbedApi.getAudioInputDevice
+
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()
     await waitTimeout()

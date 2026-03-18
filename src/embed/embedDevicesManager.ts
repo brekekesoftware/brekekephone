@@ -7,8 +7,8 @@ export interface DeviceInfo {
   kind: MediaDeviceKind
 }
 class EmbedDevicesManager {
-  _audioInputDeviceId: string | null = null
-  _videoInputDeviceId: string | null = null
+  _audioInputDeviceId = ''
+  _videoInputDeviceId = ''
   _patched = false
 
   _originalGetUserMedia: typeof navigator.mediaDevices.getUserMedia | null =
@@ -25,7 +25,7 @@ class EmbedDevicesManager {
   }
 
   setAudioInputDevice(deviceId: string): boolean {
-    this._audioInputDeviceId = deviceId || null
+    this._audioInputDeviceId = deviceId
     this._syncPatch()
     const ca = ctx.call.getOngoingCall()
     if (ca) {
@@ -109,7 +109,7 @@ class EmbedDevicesManager {
       }
     }
     this._syncPatch()
-    this._videoInputDeviceId = deviceId || null
+    this._videoInputDeviceId = deviceId
 
     return true
   }
@@ -124,8 +124,8 @@ class EmbedDevicesManager {
 
   destroy(): void {
     this._restorePatch()
-    this._audioInputDeviceId = null
-    this._videoInputDeviceId = null
+    this._audioInputDeviceId = ''
+    this._videoInputDeviceId = ''
   }
 
   _applyPatch(): void {
@@ -253,9 +253,9 @@ class EmbedDevicesManager {
     return senders
   }
 
-  _getPreferredDeviceId(devices: DeviceInfo[]): string | null {
+  _getPreferredDeviceId(devices: DeviceInfo[]): string {
     if (devices.length === 0) {
-      return null
+      return ''
     }
     return (
       devices.find(d => d.deviceId === 'default')?.deviceId ??
