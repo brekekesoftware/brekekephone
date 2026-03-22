@@ -253,8 +253,17 @@ export class UnreadChatNoti extends Component {
     if (!this.unreadChat) {
       return
     }
+
     const { id, isGroup } = this.unreadChat
     this.clear()
+    const ca = ctx.auth.getCurrentAccount()
+    if (ca) {
+      const isAccountInMFA = ctx.account.isAccountInMFA(ca)
+      if (isAccountInMFA) {
+        ctx.toast.warning(intl`Please complete the verification process.`, 2000)
+        return
+      }
+    }
     return isGroup
       ? ctx.nav.goToPageChatGroupDetail({ groupId: id })
       : ctx.nav.goToPageChatDetail({ buddy: id })

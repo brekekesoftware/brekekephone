@@ -28,6 +28,7 @@ import { RnStacker } from '#/stores/RnStacker'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
+import { isMFAEnabled } from '#/utils/mfaUtils'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
@@ -57,6 +58,7 @@ export class AuthStore {
   @observable ucLoginFromAnotherPlace = false
 
   @observable pbxConnectedAt = 0
+  @observable pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -223,6 +225,7 @@ export class AuthStore {
 
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = true
     console.log(
       '=======================================================================',
     )
@@ -301,6 +304,7 @@ export class AuthStore {
     this.cRecentCalls = []
     this.rcPage = 0
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = false
   }
 
   @action resetFailureState = () => {

@@ -42,6 +42,7 @@ import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { isMFAEnabled } from '#/utils/mfaUtils'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -412,19 +413,46 @@ export class PBX extends EventEmitter {
     palParamUserReconnect?: boolean,
     forSyncPnToken?: boolean,
   ): Promise<boolean> => {
-    console.log('PBX PN debug: call pbx.connect')
+    console.log('[MFA DEBUG] PBX PN debug: call pbx.connect')
     if (this.client) {
       console.warn('PAL client already connected, ignore...')
       return true
     }
 
     const d = await ctx.account.findDataWithDefault(a)
+
+    // Clear invalid device_token after repeated connection failures
+    // so handleMFA can run again on next successful connection
+    console.log('[MFA DEBUG]: account data before connect pbx ', d.mfa)
+    if (
+      this.isMainInstance &&
+      ctx.auth.pbxTotalFailure >= 3 &&
+      d.palParams?.['device_token']
+    ) {
+      console.log(
+        '[MFA DEBUG] PBX connect: clearing device_token after repeated failures (likely invalid)',
+      )
+      delete d.palParams['device_token']
+      if (d.mfa) {
+        d.mfa.verified = false
+      }
+      ctx.account.saveAccountsToLocalStorageDebounced()
+    }
+
     const oldPalParamUser = d.palParams?.['user']
     console.log(
       `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
     )
 
     const wsUri = `wss://${a.pbxHostname}:${a.pbxPort}/pbx/ws`
+    console.log(
+      `[MFA DEBUG] PBX WSS connected: had device_token=${!!d.palParams?.['device_token']}`,
+    )
+    console.log(
+      `[MFA DEBUG] PBX WSS connected: had config=${ctx.auth.pbxConfig?.['webphone.pal.mfa']}`,
+    )
+    // mfa todo: Nếu device token invalid thì server sẽ ngắt và phải mfa lại
+    // mfa todo Kiểm tra các chỗ reconnect pbx xem có bị conflict không
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
@@ -445,7 +473,6 @@ export class PBX extends EventEmitter {
     })
     this.client = client
     client.debugLevel = 2
-
     // Check server availability before login
     if (isAndroid) {
       const serverReady = await new Promise<boolean>(resolve => {
@@ -817,7 +844,6 @@ export class PBX extends EventEmitter {
     const config = await this.client.call_pal('getProductInfo', {
       webphone: 'true',
     })
-
     if (!this.isMainInstance) {
       return config
     }
@@ -847,7 +873,16 @@ export class PBX extends EventEmitter {
     }
     const d = await ctx.auth.getCurrentDataAsync()
     if (d) {
-      d.palParams = parsePalParams(ctx.auth.pbxConfig)
+      const pp = d.palParams
+      const deviceToken = pp?.device_token
+
+      const p = parsePalParams(ctx.auth.pbxConfig)
+
+      if (isMFAEnabled() && deviceToken) {
+        p.device_token = deviceToken
+      }
+
+      d.palParams = p
       d.userAgent = ctx.auth.pbxConfig['webphone.useragent']
       d.pnExpires = ctx.auth.pbxConfig['webphone.pn_expires']
       ctx.account.updateAccountData(d)

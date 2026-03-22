@@ -2,6 +2,8 @@ import { AppState } from 'react-native'
 
 import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
+import { intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
 import { jsonStable } from '#/utils/jsonStable'
@@ -189,6 +191,36 @@ export const resetProcessedPn = () => {
   ctx.call.callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
 }
+// Hoang: không cho điều hướng sau khi end call
+const checkMFABlock = async (
+  n: ParsedPn,
+  isClickAction: boolean,
+): Promise<boolean> => {
+  const acc = await ctx.account.findByPn(n)
+  if (!acc || !ctx.account.isAccountInMFA(acc)) {
+    return false
+  }
+  if (n.isCall) {
+    console.log(
+      `[MFA GUARD] Rejecting incoming call for MFA-pending account: ${acc.pbxUsername}`,
+    )
+    if (n.callkeepUuid) {
+      ctx.call.onCallKeepEndCall(n.callkeepUuid)
+      console.log(`[MFA GUARD] onCallKeepEndCall: ${n.callkeepUuid}`)
+    }
+    return true
+  }
+  if (isClickAction) {
+    console.log(
+      `[MFA GUARD] Blocking chat navigation for MFA-pending account: ${acc.pbxUsername}`,
+    )
+    RnAlert.error({
+      message: intlDebug`Please complete MFA verification first`,
+    })
+    return true
+  }
+  return false
+}
 
 export const parse = async (
   raw?: { [k: string]: unknown },
@@ -200,8 +232,14 @@ export const parse = async (
   if (!raw || !n) {
     return
   }
+
   // received PN chat but don't click item notification
   if (!n.isCall && !isClickAction) {
+    return
+  }
+
+  // MFA guard: block events for accounts in MFA verification process
+  if (await checkMFABlock(n, isClickAction)) {
     return
   }
 

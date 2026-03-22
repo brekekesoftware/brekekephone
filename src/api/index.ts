@@ -16,6 +16,7 @@ import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
+import { isMFAEnabled } from '#/utils/mfaUtils'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 
@@ -70,14 +71,35 @@ class Api {
     ctx.auth.pbxState = 'success'
     ctx.auth.pbxTotalFailure = 0
 
-    ctx.authSIP.auth()
-    await ctx.auth.waitSip()
-
     await ctx.pbx.getConfig()
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return
     }
+
+    const mfaEnabled = isMFAEnabled()
+    if (mfaEnabled) {
+      const d = ctx.account.findDataSync(ca)
+      const connectedWithDeviceToken = d?.palParams?.['device_token']
+      const isFreshLogin = ctx.auth.pbxFreshLogin
+      console.log(
+        `[MFA DEBUG] onPBXConnectionStarted: isMFAEnabled=${mfaEnabled} connectedWithDeviceToken=${connectedWithDeviceToken}`,
+      )
+      if (!connectedWithDeviceToken || isFreshLogin) {
+        console.log(
+          `[MFA DEBUG] onPBXConnectionStarted: entering handleMFA for user=${ca.pbxUsername}`,
+        )
+        ctx.auth.pbxFreshLogin = false
+        await ctx.account.handleMFA(ca)
+      } else {
+        console.log(
+          '[MFA DEBUG] onPBXConnectionStarted: skip handleMFA, already connected with device_token (reconnection)',
+        )
+      }
+    }
+
+    ctx.authSIP.auth()
+    await ctx.auth.waitSip()
 
     if (!ctx.auth.userExtensionProperties) {
       updatePhoneAppli()
