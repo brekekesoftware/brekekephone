@@ -5,7 +5,6 @@ import { menus, normalizeSavedNavigation } from '#/components/navigationConfig'
 import { Page2StepVarification } from '#/pages/Page2StepVarification'
 import { PageAccountCreate } from '#/pages/PageAccountCreate'
 import { PageAccountSignIn } from '#/pages/PageAccountSignIn'
-import { PageAccountSignInMFA } from '#/pages/PageAccountSignInMFA'
 import { PageAccountUpdate } from '#/pages/PageAccountUpdate'
 import { PageCallBackgrounds } from '#/pages/PageCallBackgrounds'
 import { PageCallDtmfKeypad } from '#/pages/PageCallDtmfKeypad'
@@ -280,12 +279,6 @@ export class Nav {
   })
 
   // MFA
-  goToPageAccountSignInMFA = RnStacker.createGoTo<
-    ComponentProps<typeof PageAccountSignInMFA>
-  >({ PageAccountSignInMFA })
-  backToPageAccountSignInMFA = RnStacker.createBackTo<
-    ComponentProps<typeof PageAccountSignInMFA>
-  >({ PageAccountSignInMFA })
   goToPage2StepVarification = RnStacker.createGoTo<
     ComponentProps<typeof Page2StepVarification>
   >({ Page2StepVarification })

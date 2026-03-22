@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { RnSwitch } from '#/components/RnSwitch'

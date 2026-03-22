@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -10,7 +10,6 @@ import {
 import { mdiClose } from '#/assets/icons'
 import type { FormFields, FormMFARef } from '#/components/FormMFA'
 import { FormMFA } from '#/components/FormMFA'
-import { RnCheckBox } from '#/components/RnCheckbox'
 import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
@@ -20,11 +19,13 @@ import type { Account } from '#/stores/accountStore'
 import { getLastSignedInId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { getPublicIp } from '#/utils/publicIpAddress'
 
 const { width, height } = Dimensions.get('window')
 const width88 = '88%'
+const width95 = width * 0.95
 const css = StyleSheet.create({
-  Root: { flex: 1 },
+  Root: { flex: 1, alignItems: 'center' },
   Header: {
     paddingTop: '5%',
     height: height * 0.1,
@@ -32,18 +33,15 @@ const css = StyleSheet.create({
   },
   Body: {
     flex: 1,
-    alignItems: 'center',
+    width: width95,
   },
   Body_Web: {
     justifyContent: 'center',
   },
   TouchableBack: {
     flexDirection: 'row',
-    width: width * 0.8,
+    width: width95,
     gap: 15,
-  },
-  Icon: {
-    paddingLeft: 15,
   },
   Remember: {
     height: height * 0.03,
@@ -81,7 +79,7 @@ const css = StyleSheet.create({
     width: width88,
     paddingVertical: 20,
   },
-  Title: { width: width * 0.7 },
+  Title: { fontSize: 26 },
 })
 
 export const Page2StepVarification = ({
@@ -116,60 +114,59 @@ export const Page2StepVarification = ({
   )
 
   const [isVerify, setVerify] = useState(false)
-  const [isRemember, setRemember] = useState(false)
   const [isLoading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const veryfiFormRef = useRef<FormMFARef | null>(null)
 
+  useEffect(() => {
+    const loadAccount = async () => {
+      const d = await getLastSignedInId()
+      const ca = await ctx.account.findByUniqueId(d.id)
+      if (ca) {
+        setAccount(ca)
+      } else {
+        veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+      }
+    }
+    loadAccount()
+  }, [])
+
   const onSubmit = async (r: Record<string, string>) => {
+    if (!account) {
+      veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+      return
+    }
     setLoading(true)
-    setLoading(false)
-    const ca = await getAccount()
-    if (!ca) {
+    if (!validateSignIn(account, r.password)) {
       return
     }
-    if (!validateSignIn(ca, r.password)) {
-      return
-    }
-    signIn(ca)
+    signIn(account)
   }
 
   const signIn = async (ca: Account) => {
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.signIn: calling mfaStart for user=${ca.pbxUsername}`,
+    )
     const c = await ctx.account.mfaStart(ca, 'dev@nongdan.dev')
     if (!c) {
-      console.log(' Page2StepVarification: Start mfa false ')
+      console.log(
+        '[MFA DEBUG] Page2StepVarification.signIn: mfaStart returned false',
+      )
       veryfiFormRef.current?.showToast(
         intl`Unable to log in. Please try again.`,
         'err',
       )
       return
     }
-    if (typeof c === 'string' && c === 'none') {
-      console.log(' Page2StepVarification: Do not need to 2FA ')
-      return
-    }
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.signIn: mfaStart result=${c}`,
+    )
     setVerify(true)
     veryfiFormRef.current?.showToast(
       intl`A new OTP code was sent to your email`,
       'info',
     )
     setLoading(false)
-  }
-
-  const getAccount = async () => {
-    if (account) {
-      return account
-    }
-
-    const d = await getLastSignedInId()
-    const ca = await ctx.account.findByUniqueId(d.id)
-    if (ca) {
-      setAccount(ca)
-      return ca
-    }
-    setLoading(false)
-    veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
-    return
   }
 
   const onCheck2FA = async (r: Record<string, string>) => {
@@ -179,10 +176,38 @@ export const Page2StepVarification = ({
       setLoading(false)
       return
     }
-    const c = await ctx.account.mfaCheck(account, r.auth)
-    if (c) {
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.onCheck2FA: checking code for user=${account.pbxUsername}`,
+    )
+    const status = await ctx.account.mfaCheck(account, r.auth)
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.onCheck2FA: mfaCheck status=${status}`,
+    )
+    if (status === 'OK') {
+      const p = {
+        tenant: account.pbxTenant,
+        user: account.pbxUsername,
+        ip_address: await getPublicIp(),
+        user_agent: isWeb ? navigator.userAgent : 'react-native',
+      }
+      console.log(
+        '[MFA DEBUG] Page2StepVarification.onCheck2FA: creating device token',
+      )
+      await ctx.account.createMFADeviceToken(p, account)
+      setLoading(false)
       ctx.nav.backToPageContactUsers()
+    } else if (status === 'NO_SESSION') {
+      console.log(
+        '[MFA DEBUG] Page2StepVarification.onCheck2FA: session expired',
+      )
+      veryfiFormRef.current?.showToast(
+        intl`Session expired. Please request a new code`, // mfa todo: run intl
+        'err',
+      )
     } else {
+      console.log(
+        `[MFA DEBUG] Page2StepVarification.onCheck2FA: invalid code, status=${status}`,
+      )
       veryfiFormRef.current?.showToast(
         intl`Invalid verification code. Please check again or get another code`,
         'err',
@@ -196,19 +221,31 @@ export const Page2StepVarification = ({
     if (!account) {
       return
     }
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.resendNewCode: deleting old session for user=${account.pbxUsername}`,
+    )
     const d = await ctx.account.mfaDelete(account)
+    console.log(
+      `[MFA DEBUG] Page2StepVarification.resendNewCode: mfaDelete result=${d}`,
+    )
     if (d) {
+      veryfiFormRef.current?.clearFields()
       await signIn(account)
+    } else {
       veryfiFormRef.current?.showToast(
-        intl`A new OTP code was sent to your email`,
-        'info',
+        intl`Unable to resend code. Please try again.`,
+        'err',
       )
+      setLoading(false)
     }
   }
 
-  const onBack = () => {
+  const onBack = async () => {
     ctx.auth.signOut()
     ctx.nav.backToPageAccountSignIn()
+    if (account) {
+      await ctx.account.mfaDelete(account)
+    }
   }
 
   const validateSignIn = (ca: Account, pwd: string) => {
@@ -224,7 +261,7 @@ export const Page2StepVarification = ({
       <View style={css.Header}>
         <RnTouchableOpacity onPress={onBack} style={css.TouchableBack}>
           <View>
-            <RnIcon style={css.Icon} size={30} path={mdiClose} />
+            <RnIcon size={30} path={mdiClose} />
           </View>
           <RnText style={css.Title} title>
             {isVerify ? intl`2-Step Verification` : intl`Sign In`}
@@ -246,17 +283,6 @@ export const Page2StepVarification = ({
               ref={veryfiFormRef}
               formFields={formFields}
               buttonLabel={intl`Sign In`}
-              aboveButton={
-                <View style={css.Remember}>
-                  <RnCheckBox
-                    style={css.CheckBox}
-                    isSelected={isRemember}
-                    disabled={false}
-                    onPress={() => setRemember(!isRemember)}
-                  />
-                  <RnText>{intl`Remember Me`}</RnText>
-                </View>
-              }
               onSubmit={onSubmit}
             />
           ) : (

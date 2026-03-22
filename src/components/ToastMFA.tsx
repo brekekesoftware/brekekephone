@@ -17,7 +17,7 @@ const css = StyleSheet.create({
   },
   Body: {
     flexDirection: 'row',
-    width: width * 0.88,
+    width: width * 0.95,
     justifyContent: 'space-around',
     borderRadius: 5,
     paddingVertical: 10,

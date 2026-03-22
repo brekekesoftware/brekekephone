@@ -13,7 +13,9 @@ import { v } from '#/components/variables'
 
 const { height } = Dimensions.get('window')
 const css = StyleSheet.create({
-  Container: { flex: 1, maxHeight: 395, maxWidth: 400 },
+  Container: {
+    flex: 1,
+  },
   ContainerStyle: {
     paddingTop: 20,
   },
@@ -58,6 +60,7 @@ type ToastMFAType = {
 
 export interface FormMFARef {
   showToast: (body: string, type: ToastMFAType['type']) => void
+  clearFields: () => void
 }
 
 interface FormMFAProps {
@@ -84,6 +87,11 @@ export const FormMFA = forwardRef<FormMFARef, FormMFAProps>(
 
     useImperativeHandle(ref, () => ({
       showToast,
+      clearFields: () => {
+        for (const id of Object.keys(inputRefs.current)) {
+          inputRefs.current[id]?.clear()
+        }
+      },
     }))
 
     const showToast = (body: string, type: ToastMFAType['type']) => {
@@ -118,8 +126,8 @@ export const FormMFA = forwardRef<FormMFARef, FormMFAProps>(
           <View key={field.id} style={css.FieldContainer}>
             {field.label && <Text style={css.Label}>{field.label}</Text>}
             <FieldInput
-              ref={ref => {
-                inputRefs.current[field.id] = ref
+              ref={r => {
+                inputRefs.current[field.id] = r
               }}
               placeholder={field.placeholder}
               secureTextEntry={field.secureTextEntry}

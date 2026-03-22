@@ -329,6 +329,7 @@ export type PbxGetProductInfoRes = {
   'webphone.error_toast.suppress_patterns': string
   'webphone.pal.mfa': boolean
   'pal.mode_device_token': boolean
+  'webphone.pal.mode_device_token': boolean
   version: string
 }
 export type PbxGetProductInfoParam = {
@@ -1123,7 +1124,7 @@ export type MFADeviceTokenCheck = {
 
 export type MFADeviceTokenCheckRes = {
   status: string
-  options: MFADeviceTokenCheck
+  options?: any
 }
 
 export type MFADeviceTokenDelete = {

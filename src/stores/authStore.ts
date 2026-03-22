@@ -57,6 +57,7 @@ export class AuthStore {
   @observable ucLoginFromAnotherPlace = false
 
   @observable pbxConnectedAt = 0
+  @observable pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -223,6 +224,7 @@ export class AuthStore {
 
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = true
     console.log(
       '=======================================================================',
     )
@@ -301,6 +303,7 @@ export class AuthStore {
     this.cRecentCalls = []
     this.rcPage = 0
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = false
   }
 
   @action resetFailureState = () => {

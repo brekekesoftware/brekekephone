@@ -195,6 +195,7 @@ export const parse = async (
   isLocal = false,
   isClickAction = false,
 ) => {
+  // mfa todo: chặn lại chỗ này (nếu là call thì reject call)
   const n = parseNotificationData(raw)
 
   if (!raw || !n) {

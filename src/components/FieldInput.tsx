@@ -9,14 +9,13 @@ const { width, height } = Dimensions.get('window')
 
 const css = StyleSheet.create({
   Input: {
-    width: width * 0.88,
+    width: width * 0.95,
     height: height * 0.065,
     borderWidth: 1,
     borderRadius: 5,
     borderColor: v.borderBg,
     paddingHorizontal: 12,
     fontSize: 14,
-    maxWidth: 400,
     color: 'black',
   },
   Disable: {
@@ -56,12 +55,12 @@ export const FieldInput = forwardRef<FieldInputRef, FieldInputProps>(
         ref={inputRef}
         style={[css.Input, style, !props.editable && css.Disable]}
         value={value}
+        placeholderTextColor={v.borderBg}
+        {...props}
         onChangeText={text => {
           setValue(text)
           props.onChangeText?.(text)
         }}
-        placeholderTextColor={v.borderBg}
-        {...props}
       />
     )
   },

@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native'
 
-import { mdiHome } from '#/assets/icons'
 import { RnIcon } from '#/components/RnIcon'
 import { RnText } from '#/components/RnText'
 import { v } from '#/components/variables'
