@@ -30,7 +30,7 @@ import {
 } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
-import { isDeviceTokenModeEnabled } from '#/utils/mfaUtils'
+import { isDeviceTokenModeEnabled, isMFAEnabled } from '#/utils/mfaUtils'
 import { getPublicIp } from '#/utils/publicIpAddress'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -101,6 +101,7 @@ type MFAInfo = {
   checkedAt?: number
   expiration_time?: number
   verified?: boolean
+  pending?: boolean
 }
 
 type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
@@ -273,13 +274,17 @@ export class AccountStore {
   @action removeAccount = async (id: string) => {
     const a = this.accounts.find(_ => _.id === id)
     this.accounts = this.accounts.filter(_ => _.id !== id)
+
     this.saveAccountsToLocalStorageDebounced()
     if (a) {
       a.pushNotificationEnabled = false
       ctx.pnToken.sync(a, {
         noUpsert: true,
       })
-      await this.deleteMFADeviceToken(a)
+
+      if (isMFAEnabled()) {
+        await this.deleteMFADeviceToken(a)
+      }
     }
   }
 
@@ -388,6 +393,7 @@ export class AccountStore {
     } else {
       // success case
       mfa.verified = true
+      mfa.pending = false
       if (res.expiration_time) {
         mfa.expiration_time = res.expiration_time
       }
@@ -418,6 +424,29 @@ export class AccountStore {
     console.log(`[MFA DEBUG] getMFAToken: key=${key} hasToken=${!!token}`)
     return token
   }
+  setMFAPending = async (ca: AccountUnique, pending: boolean) => {
+    const d = await this.findDataWithDefault(ca)
+    const mfa = (d.mfa ??= { verified: false })
+    mfa.pending = pending
+    console.log(
+      `[MFA DEBUG] setMFAPending: user=${ca.pbxUsername} pending=${pending}`,
+    )
+    // use non-debounced save so native code can read immediately
+    await this.saveAccountsToLocalStorageWithoutDebounced()
+  }
+
+  isAccountInMFA = (a: AccountUnique): boolean => {
+    const d = this.findDataSync(a)
+    return !!d?.mfa?.pending
+  }
+
+  isAccountInMFAByPn = async (n: ParsedPn): Promise<boolean> => {
+    const acc = await this.findByPn(n)
+    if (!acc) {
+      return false
+    }
+    return this.isAccountInMFA(acc)
+  }
 
   createMFADeviceToken = async (p: MFADeviceTokenCreate, ca: Account) => {
     try {
@@ -435,7 +464,8 @@ export class AccountStore {
         res,
       )
       await this.updateTokenToAccountData(ca, res)
-      if (res.status === 'OK') {
+      const isOK = res.status === 'OK'
+      if (isOK) {
         if (isDeviceTokenModeEnabled() && res.token) {
           console.log(
             '[MFA DEBUG] createMFADeviceToken: reconnecting with device token',
@@ -443,9 +473,11 @@ export class AccountStore {
           await this.reconnectWithDeviceToken(ca, res.token)
         }
       }
+      return isOK
     } catch (err) {
       console.log('[MFA DEBUG] createMFADeviceToken: error:', err)
     }
+    return false
   }
 
   private reconnectWithDeviceToken = async (ca: Account, token: string) => {
@@ -526,12 +558,14 @@ export class AccountStore {
             token: undefined,
             expiration_time: undefined,
             verified: false,
+            pending: false,
           })
         }
         if (d.palParams?.['device_token']) {
           delete d.palParams['device_token']
         }
-        this.saveAccountsToLocalStorageDebounced()
+        // use non-debounced save so native code can read immediately
+        await this.saveAccountsToLocalStorageWithoutDebounced()
       }
       return res?.status === 'OK'
     } catch (err) {
@@ -660,6 +694,7 @@ export class AccountStore {
     }
 
     console.log('[MFA DEBUG] handleMFA: navigating to 2-step verification page')
+    await this.setMFAPending(ca, true)
     ctx.nav.goToPage2StepVarification({
       tenant: ca.pbxTenant,
       user: ca.pbxUsername,

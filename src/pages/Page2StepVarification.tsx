@@ -144,76 +144,92 @@ export const Page2StepVarification = ({
   }
 
   const signIn = async (ca: Account) => {
-    console.log(
-      `[MFA DEBUG] Page2StepVarification.signIn: calling mfaStart for user=${ca.pbxUsername}`,
-    )
-    const c = await ctx.account.mfaStart(ca, 'dev@nongdan.dev')
-    if (!c) {
-      console.log(
-        '[MFA DEBUG] Page2StepVarification.signIn: mfaStart returned false',
-      )
+    if (!ca) {
+      veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+      return
+    }
+    setLoading(true)
+    try {
+      console.log(`[MFA DEBUG] signIn: start MFA user=${ca.pbxUsername}`)
+      const email = 'dev@nongdan.dev'
+      const result = await ctx.account.mfaStart(ca, email)
+      if (!result) {
+        veryfiFormRef.current?.showToast(
+          intl`Unable to log in. Please try again.`,
+          'err',
+        )
+        return
+      }
+      setVerify(true)
       veryfiFormRef.current?.showToast(
-        intl`Unable to log in. Please try again.`,
+        intl`A new OTP code was sent to your email`,
+        'info',
+      )
+    } catch (e) {
+      console.error('[MFA ERROR] mfaStart failed', e)
+      veryfiFormRef.current?.showToast(
+        intl`Network error. Please try again.`,
+        'err',
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+  const onCheck2FA = async (r: Record<string, string>) => {
+    if (!account) {
+      veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
+      return
+    }
+    if (!r.auth?.trim()) {
+      veryfiFormRef.current?.showToast(
+        intl`Verification code is required`,
         'err',
       )
       return
     }
-    console.log(
-      `[MFA DEBUG] Page2StepVarification.signIn: mfaStart result=${c}`,
-    )
-    setVerify(true)
-    veryfiFormRef.current?.showToast(
-      intl`A new OTP code was sent to your email`,
-      'info',
-    )
-    setLoading(false)
-  }
-
-  const onCheck2FA = async (r: Record<string, string>) => {
     setLoading(true)
-    if (!account) {
-      veryfiFormRef.current?.showToast(intl`Account does not exist`, 'err')
-      setLoading(false)
-      return
-    }
-    console.log(
-      `[MFA DEBUG] Page2StepVarification.onCheck2FA: checking code for user=${account.pbxUsername}`,
-    )
-    const status = await ctx.account.mfaCheck(account, r.auth)
-    console.log(
-      `[MFA DEBUG] Page2StepVarification.onCheck2FA: mfaCheck status=${status}`,
-    )
-    if (status === 'OK') {
-      const p = {
+    try {
+      console.log(`[MFA DEBUG] checking code user=${account.pbxUsername}`)
+      const status = await ctx.account.mfaCheck(account, r.auth)
+      if (status === 'NO_SESSION') {
+        veryfiFormRef.current?.showToast(
+          intl`Session expired. Please request a new code`,
+          'err',
+        )
+        return
+      }
+      if (status !== 'OK') {
+        veryfiFormRef.current?.showToast(
+          intl`Invalid verification code. Please try again`,
+          'err',
+        )
+        return
+      }
+
+      const payload = {
         tenant: account.pbxTenant,
         user: account.pbxUsername,
         ip_address: await getPublicIp(),
         user_agent: isWeb ? navigator.userAgent : 'react-native',
       }
-      console.log(
-        '[MFA DEBUG] Page2StepVarification.onCheck2FA: creating device token',
-      )
-      await ctx.account.createMFADeviceToken(p, account)
-      setLoading(false)
+      const c = await ctx.account.createMFADeviceToken(payload, account)
+      if (!c) {
+        veryfiFormRef.current?.showToast(
+          intl`Token creation failed..Please check again or get another code`,
+          'err',
+        )
+        return
+      }
       ctx.nav.backToPageContactUsers()
-    } else if (status === 'NO_SESSION') {
-      console.log(
-        '[MFA DEBUG] Page2StepVarification.onCheck2FA: session expired',
-      )
+    } catch (e) {
+      console.error('[MFA ERROR]', e)
       veryfiFormRef.current?.showToast(
-        intl`Session expired. Please request a new code`, // mfa todo: run intl
+        intl`Something went wrong. Please try again`,
         'err',
       )
-    } else {
-      console.log(
-        `[MFA DEBUG] Page2StepVarification.onCheck2FA: invalid code, status=${status}`,
-      )
-      veryfiFormRef.current?.showToast(
-        intl`Invalid verification code. Please check again or get another code`,
-        'err',
-      )
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const resendNewCode = async () => {

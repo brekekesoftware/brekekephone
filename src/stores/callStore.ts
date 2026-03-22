@@ -27,6 +27,7 @@ import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import type { TEvent } from '#/utils/callkeep'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { isMFAEnabled } from '#/utils/mfaUtils'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -276,6 +277,20 @@ export class CallStore {
 
   private incallManagerStarted = false
   onCallUpsert: CallStore['upsertCall'] = async c => {
+    // Block new incoming calls if account is in MFA pending
+    if (isMFAEnabled()) {
+      const ca = ctx.auth.getCurrentAccount()
+      if (
+        ca &&
+        ctx.account.isAccountInMFA(ca) &&
+        c.incoming &&
+        !this.calls.find(_ => _.id === c.id)
+      ) {
+        console.log('[MFA GUARD] Blocking upsertCall for MFA-pending account')
+        return
+      }
+    }
+
     this.upsertCall(c)
     if (
       isAndroid &&

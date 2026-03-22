@@ -31,6 +31,7 @@ import com.brekeke.phonedev.utils.Account;
 import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
+import com.brekeke.phonedev.utils.NotificationHelper;
 import com.brekeke.phonedev.utils.PN;
 import com.brekeke.phonedev.utils.Perm;
 import com.brekeke.phonedev.utils.Ringtone;
@@ -189,14 +190,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       Emitter.error("onFcmMessageReceived", "account 404");
       return;
     }
-    // init services if not
-    initStaticServices();
-    acquireWakeLock();
-    // generate new uuid and store it to the PN bundle
+    // generate new uuid and store it to the PN bundle early
+    // so JS can receive callkeepUuid even if MFA blocks native display
     var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     m.put("callkeepAt", now);
     var uuid = UUID.randomUUID().toString().toUpperCase();
     m.put("callkeepUuid", uuid);
+    // block incoming call if account is in MFA verification process
+    if (Account.isMFAPending(m)) {
+      Emitter.debug("onFcmMessageReceived: MFA pending, rejecting call uuid=" + uuid);
+      userActions.put(uuid, "rejectCall");
+      NotificationHelper.showLocalPush(
+          Ctx.app(),
+          "Brekeke Phone",
+          "Incoming call rejected — MFA verification in progress",
+          m);
+      return;
+    }
+    // init services if not
+    initStaticServices();
+    acquireWakeLock();
     // setup callkeep and display
     var ctx = Ctx.app();
     RNCallKeepModule.registerPhoneAccount(ctx);
