@@ -28,6 +28,7 @@ import { RnStacker } from '#/stores/RnStacker'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
+import type { UrlParams } from '#/utils/deeplink-parse'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
@@ -462,8 +463,10 @@ export class AuthStore {
   }
 
   alreadyHandleDeepLinkMakeCall = false
+  alreadyHandleDeepLinkCustomPage = false
   clearUrlParams = () => {
     this.alreadyHandleDeepLinkMakeCall = false
+    this.alreadyHandleDeepLinkCustomPage = false
     clearUrlParams()
   }
 
@@ -472,85 +475,139 @@ export class AuthStore {
     if (!urlParams) {
       return false
     }
-    const { _wn, host, phone_idx, port, tenant, user, password, number } =
-      urlParams
+    const { host, port, tenant, user } = urlParams
     const a = await ctx.account.findPartial({
       pbxUsername: user,
       pbxTenant: tenant,
       pbxHostname: host,
       pbxPort: port,
     })
-    // handle deep link: make call from phoneappli app
-    if (number) {
-      // prevent double start call and check list account
-      if (this.alreadyHandleDeepLinkMakeCall || !ctx.account.accounts.length) {
-        return true
-      }
-      this.alreadyHandleDeepLinkMakeCall = true
+    if (urlParams.customPageId) {
+      return this.handleDeepLinkCustomPage(urlParams)
+    }
+    if (urlParams.number) {
+      return this.handleDeepLinkMakeCall(urlParams, a)
+    }
+    return this.handleDeepLinkUpdateAccount(urlParams, a)
+  }
 
-      // checking user login
-      const isUserLoginValid = port && tenant && user && host
-      if (isUserLoginValid) {
-        // checking user is current user or not
-        if (!(this.signedInId && this.signedInId === a?.id)) {
-          if (this.signedInId) {
-            this.signOut()
-          }
-          const signed = a
-            ? await this.signIn(a, true)
-            : await ctx.auth.autoSignInFirstAccount()
-          if (!signed) {
-            this.clearUrlParams()
-            return true
-          }
-        }
-      } else {
-        // checking current user is first account or user already login
-        if (
-          !this.signedInId ||
-          this.signedInId !== ctx.account.accounts[0]?.id
-        ) {
-          if (this.signedInId) {
-            this.signOut()
-          }
-          const success = await ctx.auth.autoSignInFirstAccount()
-          if (!success) {
-            this.clearUrlParams()
-            return true
-          }
-        }
-      }
-      // checking phoneappli is enabled
-      if (!ctx.auth.phoneappliEnabled()) {
-        this.clearUrlParams()
-        return true
-      }
-      await this.waitSip()
-      // handle transfer call from deep link
-      const cs = RnStacker.stacks[RnStacker.stacks.length - 1]
-      if (
-        ctx.call.calls.length &&
-        (cs.name === 'PageCallTransferChooseUser' ||
-          cs.name === 'PageCallTransferDial')
-      ) {
-        ctx.call.getOngoingCall()?.transferAttended(number)
-        this.clearUrlParams()
-        return true
-      }
+  private handleDeepLinkCustomPage = async (urlParams: UrlParams) => {
+    const { customPageId } = urlParams
+    // prevent double navigate and check list account
+    if (this.alreadyHandleDeepLinkCustomPage || !ctx.account.accounts.length) {
+      return true
+    }
+    // discard if there is an active call to avoid disrupting call UI
+    // do NOT set flag so user can retry after call ends
+    if (ctx.call.calls.length || Object.keys(ctx.call.callkeepMap).length) {
+      return true
+    }
+    this.alreadyHandleDeepLinkCustomPage = true
 
-      // make sure audio engine active before start call
-      // https://stackoverflow.com/a/60572329/25021683
-      if (isIos) {
-        await waitForActiveAppState()
-        await waitTimeout(100)
-      }
-
-      // handle start call
-      ctx.call.startCall(number)
+    const pageIndex = parseInt(customPageId!)
+    if (!pageIndex || pageIndex < 1 || pageIndex > 4) {
       this.clearUrlParams()
       return true
     }
-    //
+    const internalId = `webphone.custompage${pageIndex}`
+
+    // if not signed in → auto sign-in first account
+    if (!this.signedInId) {
+      const success = await ctx.auth.autoSignInFirstAccount()
+      if (!success) {
+        this.clearUrlParams()
+        return true
+      }
+    }
+
+    // wait for PBX config to load (custom pages parsed after pbxState=success)
+    await this.waitPbx()
+
+    const cp = ctx.auth.getCustomPageById(internalId)
+    if (cp) {
+      ctx.auth.activeCustomPageId = internalId
+      ctx.nav.goToPageCustomPage({ id: internalId })
+    }
+    this.clearUrlParams()
+    return true
+  }
+
+  private handleDeepLinkMakeCall = async (
+    urlParams: UrlParams,
+    a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
+  ) => {
+    const { host, port, tenant, user, number } = urlParams
+    // prevent double start call and check list account
+    if (this.alreadyHandleDeepLinkMakeCall || !ctx.account.accounts.length) {
+      return true
+    }
+    this.alreadyHandleDeepLinkMakeCall = true
+
+    // checking user login
+    const isUserLoginValid = port && tenant && user && host
+    if (isUserLoginValid) {
+      // checking user is current user or not
+      if (!(this.signedInId && this.signedInId === a?.id)) {
+        if (this.signedInId) {
+          this.signOut()
+        }
+        const signed = a
+          ? await this.signIn(a, true)
+          : await ctx.auth.autoSignInFirstAccount()
+        if (!signed) {
+          this.clearUrlParams()
+          return true
+        }
+      }
+    } else {
+      // checking current user is first account or user already login
+      if (!this.signedInId || this.signedInId !== ctx.account.accounts[0]?.id) {
+        if (this.signedInId) {
+          this.signOut()
+        }
+        const success = await ctx.auth.autoSignInFirstAccount()
+        if (!success) {
+          this.clearUrlParams()
+          return true
+        }
+      }
+    }
+    // checking phoneappli is enabled
+    if (!ctx.auth.phoneappliEnabled()) {
+      this.clearUrlParams()
+      return true
+    }
+    await this.waitSip()
+    // handle transfer call from deep link
+    const cs = RnStacker.stacks[RnStacker.stacks.length - 1]
+    if (
+      ctx.call.calls.length &&
+      (cs.name === 'PageCallTransferChooseUser' ||
+        cs.name === 'PageCallTransferDial')
+    ) {
+      ctx.call.getOngoingCall()?.transferAttended(number!)
+      this.clearUrlParams()
+      return true
+    }
+
+    // make sure audio engine active before start call
+    // https://stackoverflow.com/a/60572329/25021683
+    if (isIos) {
+      await waitForActiveAppState()
+      await waitTimeout(100)
+    }
+
+    // handle start call
+    ctx.call.startCall(number!)
+    this.clearUrlParams()
+    return true
+  }
+
+  private handleDeepLinkUpdateAccount = async (
+    urlParams: UrlParams,
+    a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
+  ) => {
+    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(ctx.call.callkeepMap).length ||
