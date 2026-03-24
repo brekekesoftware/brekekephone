@@ -34,10 +34,17 @@ export const getUrlParams = async () => {
   alreadyHandleFirstOpen = true
   Linking.addEventListener('url', e => {
     urlParams = parse(e.url)
+    if (!urlParams) {
+      return
+    }
+    // custom page URL has no account params → bypass account match check
+    if (urlParams.customPageId) {
+      ctx.auth.handleUrlParams()
+      return
+    }
     const ca = ctx.auth.getCurrentAccount()
     // check against the current user
     if (
-      !urlParams ||
       !ca ||
       compareAccountPartial(ca, {
         pbxHostname: urlParams.host,
