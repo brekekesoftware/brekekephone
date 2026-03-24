@@ -62,8 +62,10 @@ const App = observer(() => {
   const inputRef = useRef()
   const [cameras, setCameras] = useState([])
   const [microphones, setMicrophones] = useState([])
+  const [speakers, setSpeakers] = useState([])
   const [selectedCamera, setSelectedCamera] = useState('')
   const [selectedMicrophone, setSelectedMicrophone] = useState('')
+  const [selectedSpeaker, setSelectedSpeaker] = useState(null)
   const [isLoadingDevices, setIsLoadingDevices] = useState(true)
   const [switchError, setSwitchError] = useState('')
   const [switchSuccess, setSwitchSuccess] = useState('')
@@ -72,20 +74,15 @@ const App = observer(() => {
     const loadDevices = async () => {
       try {
         setIsLoadingDevices(true)
-        const [camerasData, microphonesData] = await Promise.all([
+        const [camerasData, microphonesData, speakersData] = await Promise.all([
           phone.getAvailableCameras(),
           phone.getAvailableMicrophones(),
+          phone.getAvailableSpeakers(),
         ])
 
-        setCameras(camerasData)
-        setMicrophones(microphonesData)
-
-        if (camerasData.length > 0) {
-          setSelectedCamera(camerasData[0].deviceId)
-        }
-        if (microphonesData.length > 0) {
-          setSelectedMicrophone(microphonesData[0].deviceId)
-        }
+        handleMic(microphonesData)
+        handleCamera(camerasData)
+        handleSpeaker(speakersData)
       } catch (error) {
         console.error('Error loading devices:', error)
       } finally {
@@ -153,6 +150,58 @@ const App = observer(() => {
       setTimeout(clearMessages, 2000)
     }
   }
+
+  const handleSpeakerChange = async (deviceId: string) => {
+    clearMessages()
+
+    try {
+      const c = await phone.setAudioOutputDevice(deviceId)
+      if (!c) {
+        setSwitchError(
+          'Failed to switch speaker. The device has automatically reverted to default settings.',
+        )
+        return
+      }
+      setSelectedSpeaker(phone.getAudioOutputDevice())
+      setSwitchSuccess('Speaker switched successfully')
+    } catch (error: any) {
+      const errorMsg =
+        error?.message ||
+        'Failed to switch speaker. Device may no longer be available.'
+      setSwitchError(errorMsg)
+      console.error('Speaker switch error:', error)
+
+      // reload devices in case one was unplugged
+      const updatedSpeakers = await phone.getAvailableSpeakers()
+      setSpeakers(updatedSpeakers)
+    } finally {
+      setTimeout(clearMessages, 2000)
+    }
+  }
+
+  const handleSpeaker = s => {
+    setSpeakers(s)
+    if (s.length > 0) {
+      setSelectedSpeaker(getPreferredDeviceId(s).deviceId)
+    }
+  }
+
+  const handleMic = m => {
+    setMicrophones(m)
+    if (m.length > 0) {
+      setSelectedMicrophone(getPreferredDeviceId(m).deviceId)
+    }
+  }
+
+  const handleCamera = c => {
+    setCameras(c)
+    if (c.length > 0) {
+      setSelectedCamera(getPreferredDeviceId(c).deviceId)
+    }
+  }
+
+  const getPreferredDeviceId = devices =>
+    devices.find(d => d.deviceId === 'default') ?? devices[0]
 
   const makeCallAudio = () => {
     ctx.call.startCall(inputRef.current.value)
@@ -222,6 +271,28 @@ const App = observer(() => {
           )}
         </select>
       </div>
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor='speaker-select' style={{ marginRight: '8px' }}>
+          Speaker:
+        </label>
+        <select
+          id='speaker-select'
+          value={selectedSpeaker?.deviceId || ''}
+          onChange={e => handleSpeakerChange(e.target.value)}
+          disabled={isLoadingDevices || speakers.length === 0}
+          style={{ padding: '4px', minWidth: '200px' }}
+        >
+          {speakers.length === 0 ? (
+            <option value=''>No speaker available</option>
+          ) : (
+            speakers.map(s => (
+              <option key={s.deviceId} value={s.deviceId}>
+                {getDeviceLabel(s)}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
 
       {switchError && (
         <div
@@ -252,6 +323,7 @@ const App = observer(() => {
           ✓ {switchSuccess}
         </div>
       )}
+      <hr />
 
       <input ref={inputRef} />
       <button onClick={makeCallAudio}>Make call audio</button>
