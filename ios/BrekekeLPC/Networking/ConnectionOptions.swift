@@ -74,7 +74,7 @@ public enum ConnectionOptions {
         self.publicKeyHash = publicKeyHash
       }
 
-      // attempt to verify the pinned certificate
+      /// attempt to verify the pinned certificate
       public var options: NWProtocolTLS.Options {
         let options = NWProtocolTLS.Options()
 
