@@ -9,19 +9,25 @@ export interface DeviceInfo {
 class EmbedDevicesManager {
   _audioInputDeviceId = ''
   _videoInputDeviceId = ''
+  _audioOutputDevice: DeviceInfo | null = null
+  _audioElements: Set<HTMLAudioElement> = new Set()
+  _deviceChangeHandler: (() => void) | null = null
   _patched = false
 
   _originalGetUserMedia: typeof navigator.mediaDevices.getUserMedia | null =
     null
-
   async init() {
-    this._audioInputDeviceId = this._getPreferredDeviceId(
-      await this.getAudioInputDevices(),
-    )
-    this._videoInputDeviceId = this._getPreferredDeviceId(
-      await this.getVideoInputDevices(),
-    )
+    const [audioInputs, videoInputs, audioOutputs] = await Promise.all([
+      this.getAudioInputDevices(),
+      this.getVideoInputDevices(),
+      this.getAudioOutputDevices(),
+    ])
+
+    this._audioInputDeviceId = this._getPreferredDeviceId(audioInputs)
+    this._videoInputDeviceId = this._getPreferredDeviceId(videoInputs)
+    this._audioOutputDevice = this._getPreferredOutputDeviceId(audioOutputs)
     this._syncPatch()
+    embedDevicesManager.initDeviceChangeListener()
   }
 
   setAudioInputDevice(deviceId: string): boolean {
@@ -114,6 +120,47 @@ class EmbedDevicesManager {
     return true
   }
 
+  async setAudioOutputDevice(deviceId: string): Promise<boolean> {
+    const devices = await this.getAudioOutputDevices()
+
+    const device = devices.find(d => d.deviceId === deviceId)
+
+    if (!device) {
+      console.warn('[WebRTCDeviceManager] Device not found, fallback default')
+
+      this._audioOutputDevice = {
+        deviceId: 'default',
+        label: 'default',
+        kind: 'audiooutput',
+      }
+    } else {
+      this._audioOutputDevice = device
+    }
+    let hasError = false
+    const p: Promise<void>[] = []
+
+    for (const el of this._audioElements) {
+      if (typeof el.setSinkId !== 'function') {
+        continue
+      }
+
+      p.push(
+        el.setSinkId(this._audioOutputDevice.deviceId).catch(async () => {
+          console.warn('[WebRTCDeviceManager] setSinkId failed, fallback')
+          try {
+            await el.setSinkId('default')
+          } catch {
+            hasError = true
+            console.warn('[WebRTCDeviceManager] setSinkId default also failed')
+          }
+        }),
+      )
+    }
+
+    await Promise.all(p)
+    return !hasError
+  }
+
   getAudioInputDevices(): Promise<DeviceInfo[]> {
     return this._getDevicesByKind('audioinput')
   }
@@ -122,10 +169,17 @@ class EmbedDevicesManager {
     return this._getDevicesByKind('videoinput')
   }
 
+  getAudioOutputDevices(): Promise<DeviceInfo[]> {
+    return this._getDevicesByKind('audiooutput')
+  }
+
   destroy(): void {
     this._restorePatch()
     this._audioInputDeviceId = ''
     this._videoInputDeviceId = ''
+    this._audioOutputDevice = null
+    this._audioElements.clear()
+    this.removeDeviceChangeListener()
   }
 
   _applyPatch(): void {
@@ -211,7 +265,6 @@ class EmbedDevicesManager {
     }
 
     const devices = await navigator.mediaDevices.enumerateDevices()
-    console.log('[WebRTCDeviceManager]: kind ', kind)
     return devices
       .filter(d => d.kind === kind)
       .map(d => ({
@@ -261,6 +314,118 @@ class EmbedDevicesManager {
       devices.find(d => d.deviceId === 'default')?.deviceId ??
       devices[0].deviceId
     )
+  }
+
+  // Output method
+
+  _getPreferredOutputDeviceId(devices: DeviceInfo[]) {
+    if (devices.length === 0) {
+      return null
+    }
+    return devices.find(d => d.deviceId === 'default') ?? devices[0]
+  }
+
+  async registerAudioElement(el: HTMLAudioElement) {
+    console.log(
+      '[WebRTCDeviceManager] registerAudioElement, _audioOutputDevice:',
+      this._audioOutputDevice,
+    )
+
+    this._audioElements.add(el)
+
+    if (!this._audioOutputDevice) {
+      return
+    }
+    if (typeof el.setSinkId !== 'function') {
+      return
+    }
+
+    try {
+      await el.setSinkId(this._audioOutputDevice.deviceId)
+    } catch {
+      // deviceId may have changed since last enumeration, re-match by label
+      const devices = await this.getAudioOutputDevices()
+      const matched =
+        devices.find(d => d.deviceId === this._audioOutputDevice!.deviceId) ||
+        devices.find(d => d.label === this._audioOutputDevice!.label)
+      const fallbackId = matched?.deviceId ?? 'default'
+      try {
+        await el.setSinkId(fallbackId)
+      } catch {
+        console.warn('[WebRTCDeviceManager] Failed to set sink on register')
+      }
+      if (matched) {
+        this._audioOutputDevice = matched
+      }
+    }
+  }
+
+  unregisterAudioElement(el: HTMLAudioElement) {
+    this._audioElements.delete(el)
+  }
+
+  initDeviceChangeListener() {
+    if (!navigator.mediaDevices?.addEventListener) {
+      return
+    }
+
+    // tránh register nhiều lần
+    if (this._deviceChangeHandler) {
+      return
+    }
+
+    this._deviceChangeHandler = async () => {
+      console.log('[WebRTCDeviceManager] devicechange triggered')
+
+      if (!this._audioOutputDevice) {
+        return
+      }
+
+      const devices = await this.getAudioOutputDevices()
+      const matched = devices.find(
+        d =>
+          d.deviceId === this._audioOutputDevice!.deviceId ||
+          d.label === this._audioOutputDevice!.label,
+      )
+
+      const newDeviceId = matched?.deviceId ?? 'default'
+
+      const p: Promise<void>[] = []
+      for (const el of this._audioElements) {
+        if (typeof el.setSinkId !== 'function') {
+          continue
+        }
+        p.push(
+          el.setSinkId(newDeviceId).catch(async () => {
+            try {
+              await el.setSinkId('default')
+            } catch {
+              // ignore
+            }
+          }),
+        )
+      }
+      await Promise.all(p)
+
+      if (matched) {
+        this._audioOutputDevice = matched
+      }
+    }
+
+    navigator.mediaDevices.addEventListener(
+      'devicechange',
+      this._deviceChangeHandler,
+    )
+  }
+
+  removeDeviceChangeListener() {
+    if (this._deviceChangeHandler) {
+      navigator.mediaDevices.removeEventListener(
+        'devicechange',
+        this._deviceChangeHandler,
+      )
+      this._deviceChangeHandler = null
+    }
   }
 }
 
