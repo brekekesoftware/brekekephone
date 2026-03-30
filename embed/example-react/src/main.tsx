@@ -91,6 +91,7 @@ const App = observer(() => {
     }
 
     loadDevices()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const clearMessages = () => {
