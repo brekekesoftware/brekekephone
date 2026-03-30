@@ -52,6 +52,7 @@ export class EmbedApi extends EventEmitter {
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
 
+  /* Input */
   static getAvailableCameras = (): Promise<DeviceInfo[]> =>
     embedDevicesManager.getVideoInputDevices()
   getAvailableCameras = EmbedApi.getAvailableCameras
@@ -75,6 +76,28 @@ export class EmbedApi extends EventEmitter {
   static getVideoInputDevice = (): string | null =>
     embedDevicesManager._videoInputDeviceId
   getVideoInputDevice = EmbedApi.getVideoInputDevice
+  /* Input */
+
+  /* Output */
+  static getAvailableSpeakers = (): Promise<DeviceInfo[]> =>
+    embedDevicesManager.getAudioOutputDevices()
+  getAvailableSpeakers = EmbedApi.getAvailableSpeakers
+
+  static setAudioOutputDevice = (deviceId: string): Promise<boolean> =>
+    embedDevicesManager.setAudioOutputDevice(deviceId)
+  setAudioOutputDevice = EmbedApi.setAudioOutputDevice
+
+  static getAudioOutputDevice = () => embedDevicesManager._audioOutputDevice
+  getAudioOutputDevice = EmbedApi.getAudioOutputDevice
+
+  static registerAudioElement = (el: HTMLAudioElement) =>
+    embedDevicesManager.registerAudioElement(el)
+  registerAudioElement = EmbedApi.registerAudioElement
+
+  static unregisterAudioElement = (el: HTMLAudioElement) =>
+    embedDevicesManager.unregisterAudioElement(el)
+  unregisterAudioElement = EmbedApi.unregisterAudioElement
+  /* Output */
 
   restart = async (options: EmbedSignInOptions) => {
     ctx.auth.signOutWithoutSaving()

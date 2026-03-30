@@ -13,7 +13,7 @@
 - Fix it should prevent user from quickly press multiple times start call button (issue 1193)
 - Embed:
   - Notification call answered elsewhere
-  - Add api to switch camera and microphone
+  - Add api to switch camera, microphone, speaker
   - Add api to close notification
   - Update api static getCurrentVersion
 
