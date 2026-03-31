@@ -1,9 +1,11 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import { Text } from 'react-native'
 
 import { mdiCheck, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
+import { RnTouchableOpacity } from '#/components/RnTouchableOpacity'
 import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -239,6 +241,18 @@ export class PageSettingsOther extends Component {
               onRnPickerDismiss={this.stopPreview}
             />
           </>
+        )}
+        {!isWeb && (
+          <RnTouchableOpacity
+            onPress={() => {
+              ctx.nav.goToPage2StepVarification({
+                tenant: 'nam',
+                user: 'mfa todo01',
+              })
+            }}
+          >
+            <Text>Test</Text>
+          </RnTouchableOpacity>
         )}
         {isIos && (
           <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />

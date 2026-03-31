@@ -2,7 +2,20 @@ import { debounce, uniqBy } from 'lodash'
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
-import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'
+import type {
+  MFACheck,
+  MFACheckRes,
+  MFADelete,
+  MFADeleteRes,
+  MFADeviceTokenCheck,
+  MFADeviceTokenCreate,
+  MFADeviceTokenCreateRes,
+  MFADeviceTokenDelete,
+  MFAStart,
+  MFAStartRes,
+  UcBuddy,
+  UcBuddyGroup,
+} from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
 import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -17,6 +30,8 @@ import {
 } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
+import { isDeviceTokenModeEnabled, isMFAEnabled } from '#/utils/mfaUtils'
+import { getPublicIp } from '#/utils/publicIpAddress'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -77,7 +92,19 @@ export type AccountData = {
   userAgent?: string
   pnExpires?: string
   phoneappliEnabled?: boolean
+  mfa?: MFAInfo
 }
+
+type MFAInfo = {
+  token?: Record<MFADeviceTokenKey, string>
+  createdAt?: number
+  checkedAt?: number
+  expiration_time?: number
+  verified?: boolean
+  pending?: boolean
+}
+
+type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 
 export class AccountStore {
   @observable appInitDone = false
@@ -91,6 +118,8 @@ export class AccountStore {
     }
   }
   @observable accountData: AccountData[] = []
+
+  private keySessionMFA: string = ''
 
   genEmptyAccount = (): Account => ({
     id: newUuid(),
@@ -242,15 +271,20 @@ export class AccountStore {
       })
     }
   }
-  @action removeAccount = (id: string) => {
+  @action removeAccount = async (id: string) => {
     const a = this.accounts.find(_ => _.id === id)
     this.accounts = this.accounts.filter(_ => _.id !== id)
+
     this.saveAccountsToLocalStorageDebounced()
     if (a) {
       a.pushNotificationEnabled = false
       ctx.pnToken.sync(a, {
         noUpsert: true,
       })
+
+      if (isMFAEnabled()) {
+        await this.deleteMFADeviceToken(a)
+      }
     }
   }
 
@@ -313,6 +347,7 @@ export class AccountStore {
       recentCalls: [],
       recentChats: [],
       pbxBuddyList: undefined,
+      mfa: { verified: false },
     }
     await waitTimeout(17)
     this.updateAccountData(newD)
@@ -328,6 +363,342 @@ export class AccountStore {
       this.accountData = arr
     })
     this.saveAccountsToLocalStorageDebounced()
+  }
+
+  updateTokenToAccountData = async (
+    a: AccountUnique,
+    res: MFADeviceTokenCreateRes,
+  ) => {
+    const d = await this.findData(a)
+    if (!d) {
+      console.log('[MFA DEBUG] updateTokenToAccountData: no data found')
+      return
+    }
+
+    const now = Date.now()
+    const isOK = res.status === 'OK'
+    console.log(
+      `[MFA DEBUG] updateTokenToAccountData: status=${res.status} isOK=${isOK}`,
+    )
+    const mfa = (d.mfa ??= { verified: false })
+    if (!isOK) {
+      console.log(
+        '[MFA DEBUG] updateTokenToAccountData: resetting mfa token (not OK)',
+      )
+      Object.assign(mfa, {
+        token: undefined,
+        expiration_time: undefined,
+        verified: false,
+      })
+    } else {
+      // success case
+      mfa.verified = true
+      mfa.pending = false
+      if (res.expiration_time) {
+        mfa.expiration_time = res.expiration_time
+      }
+      const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
+
+      mfa.token = Object.assign(mfa.token ?? {}, {
+        [key]: res.token || '',
+      })
+      mfa.createdAt = now
+      console.log(
+        `[MFA DEBUG] updateTokenToAccountData: saved token key=${key} expiration=${res.expiration_time}`,
+      )
+    }
+
+    this.saveAccountsToLocalStorageDebounced()
+  }
+
+  getMFAKey = (tenant: string, user: string) => `br+dtoken+${tenant}+${user}`
+
+  getMFAToken = async (a: AccountUnique): Promise<string> => {
+    const d = await this.findData(a)
+    if (!d) {
+      console.log('[MFA DEBUG] getMFAToken: no data found')
+      return ''
+    }
+    const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
+    const token = d.mfa?.token?.[key] || ''
+    console.log(`[MFA DEBUG] getMFAToken: key=${key} hasToken=${!!token}`)
+    return token
+  }
+  setMFAPending = async (ca: AccountUnique, pending: boolean) => {
+    const d = await this.findDataWithDefault(ca)
+    const mfa = (d.mfa ??= { verified: false })
+    mfa.pending = pending
+    console.log(
+      `[MFA DEBUG] setMFAPending: user=${ca.pbxUsername} pending=${pending}`,
+    )
+    // use non-debounced save so native code can read immediately
+    await this.saveAccountsToLocalStorageWithoutDebounced()
+  }
+
+  isAccountInMFA = (a: AccountUnique): boolean => {
+    const d = this.findDataSync(a)
+    return !!d?.mfa?.pending
+  }
+
+  isAccountInMFAByPn = async (n: ParsedPn): Promise<boolean> => {
+    const acc = await this.findByPn(n)
+    if (!acc) {
+      return false
+    }
+    return this.isAccountInMFA(acc)
+  }
+
+  createMFADeviceToken = async (p: MFADeviceTokenCreate, ca: Account) => {
+    try {
+      const o = { options: {}, ...p }
+      console.log(
+        `[MFA DEBUG] createMFADeviceToken: calling device_token/create for user=${p.user}`,
+      )
+      const res = await ctx.pbx.client?.call_pal('device_token/create', o)
+      if (!res) {
+        console.log('[MFA DEBUG] createMFADeviceToken: no response')
+        return
+      }
+      console.log(
+        `[MFA DEBUG] createMFADeviceToken: status=${res.status} hasToken= `,
+        res,
+      )
+      await this.updateTokenToAccountData(ca, res)
+      const isOK = res.status === 'OK'
+      if (isOK) {
+        if (isDeviceTokenModeEnabled() && res.token) {
+          console.log(
+            '[MFA DEBUG] createMFADeviceToken: reconnecting with device token',
+          )
+          await this.reconnectWithDeviceToken(ca, res.token)
+        }
+      }
+      return isOK
+    } catch (err) {
+      console.log('[MFA DEBUG] createMFADeviceToken: error:', err)
+    }
+    return false
+  }
+
+  private reconnectWithDeviceToken = async (ca: Account, token: string) => {
+    const d = await this.findData(ca)
+    if (!d) {
+      console.log('[MFA DEBUG] reconnectWithDeviceToken: no data found')
+      return
+    }
+    console.log(
+      `[MFA DEBUG] reconnectWithDeviceToken: setting device_token and re-auth PBX for user=${ca.pbxUsername}`,
+    )
+    d.palParams = { ...d.palParams, device_token: token }
+    this.saveAccountsToLocalStorageDebounced()
+    ctx.authPBX.dispose()
+    ctx.auth.pbxTotalFailure = 0
+    ctx.authPBX.auth()
+  }
+
+  checkMFADeviceToken = async (p: MFADeviceTokenCheck, ca: Account) => {
+    try {
+      console.log(
+        `[MFA DEBUG] checkMFADeviceToken: calling device_token/check for user=${p.user} hasToken=${!!p.token}`,
+      )
+
+      const res = await ctx.pbx.client?.call_pal('device_token/check', p)
+      if (!res) {
+        console.log('[MFA DEBUG] checkMFADeviceToken: no response')
+        return false
+      }
+      console.log(`[MFA DEBUG] checkMFADeviceToken: status=${res.status}`, res)
+      const isValid = res.status === 'OK'
+      const d = await this.findData(ca)
+      if (isValid) {
+        if (d?.mfa) {
+          d.mfa = {
+            ...d.mfa,
+            checkedAt: Date.now(),
+          }
+        }
+        return true
+      }
+      // invalid token → cleanup
+      if (d?.palParams?.device_token) {
+        console.log('[MFA DEBUG] Removing invalid device_token')
+        delete d.palParams.device_token
+        this.saveAccountsToLocalStorageDebounced()
+      }
+      return false
+    } catch (err) {
+      console.log('[MFA DEBUG] checkMFADeviceToken: error:', err)
+      return false
+    }
+  }
+
+  deleteMFADeviceToken = async (ca: Account) => {
+    try {
+      const p: MFADeviceTokenDelete = {
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        sa: true,
+      }
+      console.log(
+        `[MFA DEBUG] deleteMFADeviceToken: calling device_token/delete for user=${ca.pbxUsername}`,
+      )
+      const res = await ctx.pbx.client?.call_pal('device_token/delete', p)
+      console.log(
+        `[MFA DEBUG] deleteMFADeviceToken: status=${res?.status} res=${res}`,
+      )
+      // mfa todo: api này luôn luôn res = undefined -> Tạm thời set true để test flow
+      if (true) {
+        // if (res?.status === 'OK' || res?.status === 'NO_ENTRY') {
+        const d = await this.findData(ca)
+        if (!d) {
+          return
+        }
+        if (d.mfa) {
+          Object.assign(d.mfa, {
+            token: undefined,
+            expiration_time: undefined,
+            verified: false,
+            pending: false,
+          })
+        }
+        if (d.palParams?.['device_token']) {
+          delete d.palParams['device_token']
+        }
+        // use non-debounced save so native code can read immediately
+        await this.saveAccountsToLocalStorageWithoutDebounced()
+      }
+      return res?.status === 'OK'
+    } catch (err) {
+      console.log('[MFA DEBUG] deleteMFADeviceToken: error:', err)
+      return false
+    }
+  }
+
+  mfaStart = async (ca: Account, email?: string, url?: string) => {
+    try {
+      const param: MFAStart = {
+        ip_address: await getPublicIp(),
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        email,
+        url,
+      }
+      console.log(
+        `[MFA DEBUG] mfaStart: calling mfa/start for user=${ca.pbxUsername} email=${email}`,
+      )
+      const res: MFAStartRes | undefined = await ctx.pbx.client?.call_pal(
+        'mfa/start',
+        param,
+      )
+      console.log(
+        `[MFA DEBUG] mfaStart: status=${res?.status} none=${res?.none}`,
+      )
+      if (!res || res.status === 'FAILED') {
+        console.log('[MFA DEBUG] mfaStart: FAILED')
+        return false
+      }
+      if (res.status === 'OK') {
+        if (res.none) {
+          console.log('[MFA DEBUG] mfaStart: none=true, navigating back')
+          ctx.nav.backToPageContactUsers()
+          return 'none'
+        }
+        this.keySessionMFA = res.sess_key
+        console.log('[MFA DEBUG] mfaStart: OK, sess_key saved')
+        return true
+      }
+    } catch (err) {
+      console.log('[MFA DEBUG] mfaStart: error:', err)
+    }
+    return false
+  }
+  mfaCheck = async (ca: Account, code: string) => {
+    try {
+      const param: MFACheck = {
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        sess_key: this.keySessionMFA,
+        code,
+      }
+      console.log(
+        `[MFA DEBUG] mfaCheck: calling mfa/check for user=${ca.pbxUsername}`,
+      )
+      const res: MFACheckRes | undefined = await ctx.pbx.client?.call_pal(
+        'mfa/check',
+        param,
+      )
+      console.log(`[MFA DEBUG] mfaCheck: status=${res?.status}`)
+      return res?.status ?? 'FAILED'
+    } catch (err) {
+      console.log('[MFA DEBUG] mfaCheck: error:', err)
+    }
+    return 'FAILED'
+  }
+  mfaDelete = async (ca: Account) => {
+    try {
+      const param: MFADelete = {
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        sess_key: this.keySessionMFA,
+      }
+      console.log(
+        `[MFA DEBUG] mfaDelete: calling mfa/delete for user=${ca.pbxUsername}`,
+      )
+      const res: MFADeleteRes | undefined = await ctx.pbx.client?.call_pal(
+        'mfa/delete',
+        param,
+      )
+      console.log(`[MFA DEBUG] mfaDelete: status=${res?.status}`)
+      if (!res || res.status === 'NO_SESSION') {
+        console.log('[MFA DEBUG] mfaDelete: no session')
+        return false
+      }
+      this.keySessionMFA = ''
+      return res.status === 'OK'
+    } catch (err) {
+      console.log('[MFA DEBUG] mfaDelete: error:', err)
+    }
+
+    return false
+  }
+
+  handleMFA = async (ca: Account) => {
+    console.log(
+      `[MFA DEBUG] handleMFA: user=${ca.pbxUsername} tenant=${ca.pbxTenant}`,
+    )
+    const d = await ctx.account.findDataWithDefault(ca)
+    console.log(`[MFA DEBUG] handleMFA: mfa.verified=${d.mfa?.verified}`)
+    if (d.mfa?.verified) {
+      const t = await ctx.account.getMFAToken(ca)
+      const p = {
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        ip_address: await getPublicIp(),
+        user_agent: isWeb ? navigator.userAgent : 'react-native',
+        token: t,
+      }
+      const c = await this.checkMFADeviceToken(p, ca)
+      console.log(`[MFA DEBUG] handleMFA: checkMFADeviceToken result=${c}`)
+      console.log(
+        `[MFA DEBUG] handleMFA: checkMFADeviceToken isDeviceTokenModeEnabled=${isDeviceTokenModeEnabled()} shouldReconnect=${!d?.palParams?.['device_token']}`,
+      )
+      if (c) {
+        if (isDeviceTokenModeEnabled() && !d?.palParams?.['device_token']) {
+          console.log(
+            '[MFA DEBUG] handleMFA: device token mode enabled, reconnecting',
+          )
+          await this.reconnectWithDeviceToken(ca, t)
+        }
+        return
+      }
+    }
+
+    console.log('[MFA DEBUG] handleMFA: navigating to 2-step verification page')
+    await this.setMFAPending(ca, true)
+    ctx.nav.goToPage2StepVarification({
+      tenant: ca.pbxTenant,
+      user: ca.pbxUsername,
+    })
   }
 }
 

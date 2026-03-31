@@ -2,6 +2,7 @@ import type { ComponentProps } from 'react'
 import { Keyboard } from 'react-native'
 
 import { menus, normalizeSavedNavigation } from '#/components/navigationConfig'
+import { Page2StepVarification } from '#/pages/Page2StepVarification'
 import { PageAccountCreate } from '#/pages/PageAccountCreate'
 import { PageAccountSignIn } from '#/pages/PageAccountSignIn'
 import { PageAccountUpdate } from '#/pages/PageAccountUpdate'
@@ -276,6 +277,14 @@ export class Nav {
   >({
     PageContactGroupEdit,
   })
+
+  // MFA
+  goToPage2StepVarification = RnStacker.createGoTo<
+    ComponentProps<typeof Page2StepVarification>
+  >({ Page2StepVarification })
+  backToPage2StepVarification = RnStacker.createBackTo<
+    ComponentProps<typeof Page2StepVarification>
+  >({ Page2StepVarification })
 
   customPageIndex?: Function
   goToPageIndex = () => {
