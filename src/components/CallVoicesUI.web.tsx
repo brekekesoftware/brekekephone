@@ -36,7 +36,13 @@ export const IncomingItem = observer(() => {
     if (!r) {
       return
     }
-    if (r.startsWith('https://')) {
+    if (
+      r.startsWith('https://') ||
+      r.startsWith('http://') ||
+      r.startsWith('data:') ||
+      r.startsWith('blob:') ||
+      r.startsWith('file:')
+    ) {
       return r
     }
     if (ringtoneOptions[r]) {
@@ -58,8 +64,8 @@ export const IncomingItem = observer(() => {
   const ca = ctx.auth.getCurrentAccount()
   const c = ctx.call.getCallInNotify()
   const priority = [
-    c?.ringtoneFromSip,
     ctx.call.ringtone,
+    c?.ringtoneFromSip,
     ca?.ringtone,
     ca?.pbxRingtone,
   ]
