@@ -29,6 +29,7 @@ import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
+import { shouldUseResourceLine } from '#/utils/resourceLineUtils'
 import { waitTimeout } from '#/utils/waitTimeout'
 import {
   webCloseNotification,
@@ -755,11 +756,14 @@ export class CallStore {
       !this.isLineExist(args[0], ctx.auth.resourceLines)
     ) {
       try {
-        const extraHeaders = await this.getExtraHeader(
-          ctx.auth.resourceLines,
-          args[0],
-        )
-        args[0] = { ...args[0], extraHeaders }
+        const pattern = ctx.auth.pbxConfig?.['webphone.resource-line.pattern']
+        if (shouldUseResourceLine(pattern, number)) {
+          const extraHeaders = await this.getExtraHeader(
+            ctx.auth.resourceLines,
+            args[0],
+          )
+          args[0] = { ...args[0], extraHeaders }
+        }
       } catch (err) {
         console.error(err)
         return false
