@@ -346,7 +346,11 @@ export const Field: FC<
       props.onValueChange?.(newPark)
     }
     const onChangeNumber = (number: string) => {
-      number = number.replace(/[^0-9a-zA-Z-_]/g, '')
+      number = number
+        .split('')
+        .filter(char => /^[a-zA-Z0-9~+=!':/]$/.test(char))
+        .join('')
+
       const newPark = { ...$.park, number }
       $.set('park', newPark)
       props.onValueChange?.(newPark)
