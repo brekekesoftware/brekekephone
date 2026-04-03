@@ -1043,6 +1043,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void shouldPlayRingtone(Promise p) {
-    p.resolve(!activities.isEmpty());
+    p.resolve(!activities.isEmpty() && !BrekekeUtils.anyCallAnswered());
   }
 }
