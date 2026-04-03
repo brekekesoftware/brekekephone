@@ -3,7 +3,7 @@ import Foundation
 import NetworkExtension
 
 class BrekekeLPCManager: NSObject {
-  public static let shared = BrekekeLPCManager()
+  static let shared = BrekekeLPCManager()
   private var initialized = false
 
   private let dispatchQueue =
@@ -12,7 +12,7 @@ class BrekekeLPCManager: NSObject {
     prependString: "BrekekeLPCManager",
     subsystem: .general
   )
-  public var pushManager: NEAppPushManager?
+  var pushManager: NEAppPushManager?
   private let pushManagerDescription = "BrekekeLPCExtension"
   private let pushProviderBundleIdentifier =
     Settings.bundleIdentifier + ".BrekekeLPCExtension"
