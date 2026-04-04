@@ -524,7 +524,6 @@ export class CallStore {
 
     const displayCall = async () => {
       const uuid = newUuid().toUpperCase()
-      c.callkeepUuid = uuid
       const op = {
         ios: {
           ringtone: await BrekekeUtils.validateRingtone(
@@ -537,7 +536,7 @@ export class CallStore {
           pnid: c.pnId,
         },
       }
-      RNCallKeep.displayIncomingCall(
+      const existingUuid = await RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
         await c.getDisplayNameAsync(),
@@ -545,6 +544,8 @@ export class CallStore {
         undefined,
         op,
       )
+      console.log(`displayCall: existingUuid=${existingUuid} uuid=${uuid} `)
+      c.callkeepUuid = existingUuid ? existingUuid : uuid
     }
 
     const trySetCallkeepUuid = async () => {
