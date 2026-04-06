@@ -13,6 +13,7 @@ import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
+import { decodeParkNumber } from '#/utils/parkNumber'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
@@ -79,7 +80,10 @@ export class SIP extends EventEmitter {
         ev.sessionStatus === 'progress' &&
         !!m?.body
       //
-      const partyNumber = ev.rtcSession.remote_identity.uri.user
+      const partyNumber = decodeParkNumber(
+        ev.rtcSession.remote_identity.uri.user,
+      )
+
       let partyName = ev.rtcSession.remote_identity.display_name
       if (
         (!partyName || partyName.startsWith('uc')) &&
