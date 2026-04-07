@@ -11,7 +11,7 @@ public class RingtoneUtils {
   static var audioPlayer: AVAudioPlayer?
   private static var downloadingFiles = Set<String>()
 
-  // get ringtone from account
+  /// get ringtone from account
   @objc static func getRingtone(
     ringtone: String,
     username: String,
@@ -55,7 +55,7 @@ public class RingtoneUtils {
     return defaultRingtone
   }
 
-  // validate
+  /// validate
   @objc static func _validate(ringtone: String) -> String {
     if ringtone.isEmpty {
       return ""
@@ -89,7 +89,7 @@ public class RingtoneUtils {
     return r.lowercased().hasSuffix(".mp3")
   }
 
-  // handle save file to local
+  /// handle save file to local
   static func downloadAndSaveRingtone(
     from urlString: String,
     fileName: String,
@@ -161,7 +161,7 @@ public class RingtoneUtils {
     return doc.appendingPathComponent(fileName)
   }
 
-  // ringtone from picker
+  /// ringtone from picker
   static func getRingtonePicker() -> [String] {
     var results: [String] = []
     if let a = Storage.read(),

@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import com.brekeke.phonedev.R;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReadableArray;
@@ -20,15 +19,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.Map;
 import javax.net.ssl.*;
 import org.json.JSONObject;
@@ -153,84 +150,49 @@ public class LpcUtils {
     return "";
   }
 
-  // trust ca keyhash..
-
-  static TrustManager[] trustAllCerts =
-      new TrustManager[] {
-        new X509TrustManager() {
-          @Override
-          public void checkClientTrusted(
-              java.security.cert.X509Certificate[] chain, String authType)
-              throws CertificateException {}
-
-          @Override
-          public void checkServerTrusted(
-              java.security.cert.X509Certificate[] chain, String authType)
-              throws CertificateException {}
-
-          @Override
-          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return new java.security.cert.X509Certificate[] {};
-          }
-
-          private String getSha256(X509Certificate cert) throws CertificateException {
-            try {
-              MessageDigest digest = MessageDigest.getInstance("SHA-256");
-              byte[] encoded = digest.digest(cert.getEncoded());
-              return bytesToHex(encoded);
-            } catch (Exception e) {
-              throw new CertificateException("Could not generate SHA-256", e);
-            }
-          }
-
-          private String bytesToHex(byte[] bytes) {
-            Formatter formatter = new Formatter();
-            for (byte b : bytes) {
-              formatter.format("%02x", b);
-            }
-            String result = formatter.toString();
-            formatter.close();
-            return result;
-          }
-        }
-      };
-
+  // Verify the server certificate by comparing SHA-256(SubjectPublicKeyInfo DER) to the
+  // configured hash. PublicKey.getEncoded() returns the full SPKI DER bytes, which include
+  // the AlgorithmIdentifier OID — so this works for RSA, ECDSA, and any future algorithm
+  // without code changes.
   public static SSLContext createTrustedSSLContext(String sha256Fingerprint, Context mContext)
       throws Exception {
-    SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+    SSLContext sslContext = SSLContext.getInstance("TLS");
 
-    // TODO: handle CA
-    if (false) {
-      // convert SHA-256 fingerprint from base64 to byte array
-      byte[] sha256Bytes = Base64.decode(sha256Fingerprint, Base64.NO_WRAP);
-      // load certificate from file
-      CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-      InputStream raw = mContext.getResources().openRawResource(R.raw.ca);
-      X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(raw);
-      raw.close();
-      // calculate the SHA-256 fingerprint of the certificate
-      byte[] certFingerprint = certificate.getPublicKey().getEncoded();
-      String str = new String(certFingerprint, StandardCharsets.UTF_8);
-      // compare the fingerprints
-      if (!MessageDigest.isEqual(sha256Bytes, certFingerprint)) {
-        Log.d(
-            LpcUtils.TAG,
-            "Certificate fingerprint does not match the provided SHA-256 fingerprint.");
-      }
-      // create a TrustManager that trusts the certificate
-      KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      keyStore.load(null, null);
-      keyStore.setCertificateEntry("ca", certificate);
-      TrustManagerFactory trustManagerFactory =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      trustManagerFactory.init(keyStore);
+    TrustManager[] trustManagers =
+        new TrustManager[] {
+          new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {}
 
-      sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-    }
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException {
+              if (sha256Fingerprint == null || sha256Fingerprint.isEmpty()) {
+                return;
+              }
+              if (chain == null || chain.length == 0) {
+                throw new CertificateException("Empty certificate chain");
+              }
+              try {
+                byte[] spki = chain[0].getPublicKey().getEncoded();
+                byte[] hash = MessageDigest.getInstance("SHA-256").digest(spki);
+                String fingerprint = Base64.encodeToString(hash, Base64.NO_WRAP);
+                if (!fingerprint.equals(sha256Fingerprint)) {
+                  throw new CertificateException("Certificate fingerprint does not match");
+                }
+              } catch (NoSuchAlgorithmException e) {
+                throw new CertificateException("SHA-256 not available", e);
+              }
+            }
 
-    // TODO: accept all CA for now
-    sslContext.init(null, trustAllCerts, null);
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+              return new X509Certificate[] {};
+            }
+          }
+        };
 
+    sslContext.init(null, trustManagers, null);
     return sslContext;
   }
 

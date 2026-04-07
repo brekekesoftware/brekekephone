@@ -57,7 +57,7 @@ class SettingsManager: NSObject {
 
   // MARK: - Publishers
 
-  // a publisher that emits new settings following a call to `set(settings:)`
+  /// a publisher that emits new settings following a call to `set(settings:)`
   private(set) lazy var settingsDidWritePublisher = settingsWillWriteSubject
     .compactMap { [weak self] _ in
       self?.settingsPublisher
@@ -97,11 +97,10 @@ class SettingsManager: NSObject {
 
     do {
       let decoder = JSONDecoder()
-      let settings = try decoder.decode(
+      return try decoder.decode(
         Settings.self,
         from: encodedSettings
       )
-      return settings
     } catch {
       logger.log("Error decoding settings - \(error)")
       return nil

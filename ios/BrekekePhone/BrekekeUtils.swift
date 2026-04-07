@@ -174,7 +174,7 @@ public class BrekekeUtils: NSObject {
     }
   }
 
-  // ringtone
+  /// ringtone
   @objc
   func getRingtoneOptions(_ resolve: RCTPromiseResolveBlock,
                           rejecter _: RCTPromiseRejectBlock) {

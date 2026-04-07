@@ -105,7 +105,7 @@ class MainActivity : ReactActivity() {
   override fun onRequestPermissionsResult(
       requestCode: Int,
       @NonNull permissions: Array<String>,
-      @NonNull grantResults: IntArray
+      @NonNull grantResults: IntArray,
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     when (requestCode) {

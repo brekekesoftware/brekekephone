@@ -94,14 +94,12 @@ public class HeartbeatCoordinator {
         self.heartbeatCount += 1
         self.logger.log("Sending - \(heartbeatMessage.count)")
 
-        let heartbeatRequestPublisher = session
+        return session
           .requestPublisher(message: heartbeatMessage).publisher
           .mapError { error -> Error in
             .networkSessionError(error)
           }
           .eraseToAnyPublisher()
-
-        return heartbeatRequestPublisher
       }
       .receive(on: dispatchQueue)
       .sink(receiveCompletion: { [weak self] completion in

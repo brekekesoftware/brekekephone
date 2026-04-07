@@ -1,6 +1,7 @@
 #### 2.17.1
 
 - Fix ios it should support tls 1.3
+- Fix lpc it should support generic encryption algorithm, tested with: rsa2048, rsa4096, ecdsa256, ecdsa384
 
 #### 2.17.0
 

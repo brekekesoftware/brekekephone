@@ -29,11 +29,11 @@ class BaseChannel {
   private var cancellables = Set<AnyCancellable>()
   private let logger: Logger
 
-  public struct NewConnection: Equatable {
-    public var port: UInt16
-    public var host: String
-    public var tlsKeyHash: String
-    public init(port: UInt16, host: String, tlsKeyHash: String) {
+  struct NewConnection: Equatable {
+    var port: UInt16
+    var host: String
+    var tlsKeyHash: String
+    init(port: UInt16, host: String, tlsKeyHash: String) {
       self.port = port
       self.host = host
       self.tlsKeyHash = tlsKeyHash
@@ -155,12 +155,12 @@ class BaseChannel {
 
   // MARK: - Publishers
 
-  // a publisher that signals whether the subscriber connects
-  // to the server or disconnects an existing connection
-  // this publisher takes multiple variables into account, such as
-  // the network session's current state, whether this class's
-  // connect/disconnect method resulted from an external call,
-  // and whether the host changed
+  /// a publisher that signals whether the subscriber connects
+  /// to the server or disconnects an existing connection
+  /// this publisher takes multiple variables into account, such as
+  /// the network session's current state, whether this class's
+  /// connect/disconnect method resulted from an external call,
+  /// and whether the host changed
   private lazy var connectActionPublisher: AnyPublisher<
     ConnectAction,
     Never
@@ -220,10 +220,10 @@ class BaseChannel {
       }
       .eraseToAnyPublisher()
 
-  // a publisher that upon subscription drops all states from the
-  // control channel until receiving a `connected` state, waits for a
-  // `disconnecting` state, then finishes
-  public func isDisconnectingPublisher()
+  /// a publisher that upon subscription drops all states from the
+  /// control channel until receiving a `connected` state, waits for a
+  /// `disconnecting` state, then finishes
+  func isDisconnectingPublisher()
     -> AnyPublisher<NetworkSession.State, Never> {
     statePublisher
       .drop { state -> Bool in
@@ -262,14 +262,14 @@ class BaseChannel {
 
   // MARK: - Requests
 
-  public func request<Message: Codable>(
+  func request<Message: Codable>(
     message: Message,
     completion: ((Result<Bool, Swift.Error>) -> Void)? = nil
   ) {
     networkSession.request(message: message, completion: completion)
   }
 
-  public func requestPublisher<Message: Codable>(message: Message)
+  func requestPublisher<Message: Codable>(message: Message)
     -> (requestIdentifier: UInt32,
         publisher: AnyPublisher<Bool, Swift.Error>) {
     networkSession.requestPublisher(message: message)
@@ -277,7 +277,7 @@ class BaseChannel {
 
   // MARK: - Connection Health
 
-  public func checkConnectionHealth() {
+  func checkConnectionHealth() {
     heartbeatMonitor.evaluate()
   }
 }
