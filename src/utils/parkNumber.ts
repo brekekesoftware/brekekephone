@@ -1,20 +1,14 @@
 // Bijective hex encoding for park numbers with special chars (e.g. `%^`).
 // Encode before sending to PBX; decode after receiving from PBX.
-// Safe chars [A-Za-z0-9-_.] pass through unchanged.
+// Safe chars [A-Za-z0-9-_.] pass through unchanged for backward compatibility.
 
-const PREFIX = 'H'
+// PREFIX uses '~' which is valid in SIP URI (RFC 3986 unreserved)
+// but excluded from SAFE_RE, so old-version park numbers never start with it
+const PREFIX = '~'
 const SAFE_RE = /^[A-Za-z0-9\-_.]+$/
 
-const looksEncoded = (p: string): boolean => {
-  if (!p.startsWith(PREFIX)) {
-    return false
-  }
-  const hex = p.slice(PREFIX.length)
-  return hex.length > 0 && hex.length % 4 === 0 && /^[0-9a-f]+$/.test(hex)
-}
-
 export const encodeParkNumber = (p: string): string => {
-  if (SAFE_RE.test(p) && !looksEncoded(p)) {
+  if (SAFE_RE.test(p)) {
     return p
   }
   return (

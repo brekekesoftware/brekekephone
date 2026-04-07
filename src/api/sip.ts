@@ -13,7 +13,6 @@ import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
-import { decodeParkNumber } from '#/utils/parkNumber'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
@@ -75,14 +74,13 @@ export class SIP extends EventEmitter {
         header.startsWith('X-PBX-RPI:'),
       )
       const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
-      const withSDP =
-        ev.rtcSession.direction === 'outgoing' &&
-        ev.sessionStatus === 'progress' &&
-        !!m?.body
+      const isOutgoing = ev.rtcSession.direction === 'outgoing'
+      const withSDP = isOutgoing && ev.sessionStatus === 'progress' && !!m?.body
       //
-      const partyNumber = decodeParkNumber(
-        ev.rtcSession.remote_identity.uri.user,
-      )
+      const rawPartyNumber = ev.rtcSession.remote_identity.uri.user
+      const partyNumber =
+        (isOutgoing && ctx.call.parkPickupCallMap[rawPartyNumber]) ||
+        rawPartyNumber
 
       let partyName = ev.rtcSession.remote_identity.display_name
       if (
@@ -171,6 +169,10 @@ export class SIP extends EventEmitter {
       }
       if (ev.sessionStatus === 'terminated') {
         ctx.call.callTerminated[ev.sessionId] = true
+        const rawPartyNumber = ev.rtcSession?.remote_identity?.uri?.user
+        if (rawPartyNumber) {
+          delete ctx.call.parkPickupCallMap[rawPartyNumber]
+        }
         this.emit('session-stopped', ev)
         return
       }
