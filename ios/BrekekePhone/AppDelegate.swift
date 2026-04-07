@@ -56,7 +56,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     #endif
   }
 
-  // deep links
+  /// deep links
   func application(
     _ application: UIApplication,
     open url: URL,
@@ -84,7 +84,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     return true
   }
 
-  // react-native-voip-push-notification add PushKit delegate method
+  /// react-native-voip-push-notification add PushKit delegate method
   func pushRegistry(
     _: PKPushRegistry,
     didUpdate credentials: PKPushCredentials,
@@ -127,7 +127,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     // completion();
   }
 
-  // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
+  /// https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
   func application(
     _: UIApplication,
     didRegister notificationSettings: UIUserNotificationSettings
@@ -164,7 +164,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     )
   }
 
-  // process the user's response to a delivered notification
+  /// process the user's response to a delivered notification
   func userNotificationCenter(
     _: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
@@ -174,7 +174,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler()
   }
 
-  // manage notifications while app is in the foreground
+  /// manage notifications while app is in the foreground
   func userNotificationCenter(
     _: UNUserNotificationCenter,
     willPresent notification: UNNotification,
@@ -194,7 +194,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
     completionHandler([.sound, .badge, .banner])
   }
 
-  public static func reportNewIncomingCall(
+  static func reportNewIncomingCall(
     uuid: String,
     payload: [AnyHashable: Any],
     handler: (() -> Void)?

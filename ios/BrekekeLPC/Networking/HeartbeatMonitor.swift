@@ -63,8 +63,8 @@ public class HeartbeatMonitor {
     }
   }
 
-  // compare the current time to the lastCheckinTime and disconnect the session
-  // if the difference between now and lastCheckinTime exceeds the interval
+  /// compare the current time to the lastCheckinTime and disconnect the session
+  /// if the difference between now and lastCheckinTime exceeds the interval
   public func evaluate() {
     dispatchQueue.async { [weak self] in
       guard let self = self, self.isRunning
