@@ -27,6 +27,7 @@ import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import type { TEvent } from '#/utils/callkeep'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { encodeParkNumber } from '#/utils/parkNumber'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -636,6 +637,7 @@ export class CallStore {
     }
 
     this.calls = this.calls.filter(c0 => c0.id !== c.id)
+
     // set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
     // when if this is a outgoing call, try to insert a call history to uc chat
@@ -864,6 +866,17 @@ export class CallStore {
     return true
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
+
+  parkPickupCallMap: { [encoded: string]: string } = {} // encoded -> decoded
+  startParkPickupCall = async (parkNumber: string) => {
+    const encoded = encodeParkNumber(parkNumber)
+    this.parkPickupCallMap[encoded] = parkNumber
+    const result = await this.startCall(encoded)
+    if (!result) {
+      delete this.parkPickupCallMap[encoded]
+    }
+    return result
+  }
 
   updateBackgroundCalls = () => {
     // auto hold background calls

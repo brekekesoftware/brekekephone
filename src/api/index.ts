@@ -16,6 +16,7 @@ import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
+import { decodeParkNumber } from '#/utils/parkNumber'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 
@@ -163,11 +164,11 @@ class Api {
   }
   onPBXUserParkStarted = (parkNumber: string) => {
     console.log('onPBXUserParkStarted', parkNumber)
-    ctx.call.addParkNumber(parkNumber)
+    ctx.call.addParkNumber(decodeParkNumber(parkNumber))
   }
   onPBXUserParkStopped = (parkNumber: string) => {
     console.log('onPBXUserParkStopped', parkNumber)
-    ctx.call.removeParkNumber(parkNumber)
+    ctx.call.removeParkNumber(decodeParkNumber(parkNumber))
   }
   onPbxCallRecording = (ev: PbxEvent['callRecording']) => {
     ctx.call.calls

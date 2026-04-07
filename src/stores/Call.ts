@@ -13,6 +13,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { encodeParkNumber } from '#/utils/parkNumber'
 import { checkPermForCall } from '#/utils/permissions'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -426,7 +427,7 @@ export class Call {
 
   @action park = (number: string) =>
     ctx.pbx
-      .parkTalker(this.pbxTenant, this.pbxTalkerId, number)
+      .parkTalker(this.pbxTenant, this.pbxTalkerId, encodeParkNumber(number))
       .catch(this.onParkFailure)
   private onParkFailure = (err: Error) => {
     RnAlert.error({
