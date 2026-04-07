@@ -1,3 +1,7 @@
+#### 2.17.1
+
+- Fix ios it should support tls 1.3
+
 #### 2.17.0
 
 - Fix android compatibility policy: Support 16 KB page sizes

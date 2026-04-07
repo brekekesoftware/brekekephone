@@ -1,0 +1,339 @@
+diff --git a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
+index 3fd7238..5776e03 100644
+--- a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
++++ b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
+@@ -7,35 +7,33 @@
+ 
+ #import <React/RCTWebSocketModule.h>
+ 
+-#import <objc/runtime.h>
+-
+ #import <FBReactNativeSpec/FBReactNativeSpec.h>
+ #import <React/RCTConvert.h>
+ #import <React/RCTUtils.h>
+-#import <SocketRocket/SRWebSocket.h>
+ 
+ #import "CoreModulesPlugins.h"
+-
+-@implementation SRWebSocket (React)
+-
+-- (NSNumber *)reactTag
+-{
+-  return objc_getAssociatedObject(self, _cmd);
+-}
+-
+-- (void)setReactTag:(NSNumber *)reactTag
+-{
+-  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
+-}
+-
+-@end
+-
+-@interface RCTWebSocketModule () <SRWebSocketDelegate, NativeWebSocketModuleSpec>
++/*
++* Reasons:
++*  - Switch to using Apple's native WebSocket
++*  - NSURLSessionWebSocketTask uses a completely different delegate
++* Effects:
++*  - Requires implementing a new lifecycle (clearly separated open/close/error)
++*  - No more event-based callbacks like before
++*/
++@interface RCTWebSocketModule () <NSURLSessionWebSocketDelegate, NSURLSessionTaskDelegate, NativeWebSocketModuleSpec>
+ 
+ @end
+ 
+ @implementation RCTWebSocketModule {
+-  NSMutableDictionary<NSNumber *, SRWebSocket *> *_sockets;
++  // SRWebSocket is no longer used → it has been replaced with NSURLSessionWebSocketTask
++  NSMutableDictionary<NSNumber *, NSURLSessionWebSocketTask *> *_sockets;
++  /**
++  * Shared session for all WebSocket tasks.
++  * Reason: NSURLSession caches TLS sessions per session instance.
++  * Using one shared session allows TLS session resumption across reconnections,
++  * avoiding full TLS handshakes (which can take 20+ seconds on some servers).
++  */
++  NSURLSession *_sharedSession;
+   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
+ }
+ 
+@@ -51,15 +49,19 @@ RCT_EXPORT_MODULE()
+   return @[ @"websocketMessage", @"websocketOpen", @"websocketFailed", @"websocketClosed" ];
+ }
+ 
++// - NSURLSession needs to be manually invalidated (unlike SRWebSocket)
++// - Otherwise → memory leak + connection freeze
+ - (void)invalidate
+ {
+   [super invalidate];
+ 
+   _contentHandlers = nil;
+-  for (SRWebSocket *socket in _sockets.allValues) {
+-    socket.delegate = nil;
+-    [socket close];
++  for (NSNumber *key in _sockets) {
++    [_sockets[key] cancelWithCloseCode:NSURLSessionWebSocketCloseCodeGoingAway reason:nil];
+   }
++  _sockets = nil;
++  [_sharedSession invalidateAndCancel];
++  _sharedSession = nil;
+ }
+ 
+ RCT_EXPORT_METHOD(connect
+@@ -89,21 +91,37 @@ RCT_EXPORT_METHOD(connect
+       [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+     }];
+   }
++  // NSURLSessionWebSocketTask does not accept protocol parameters like SocketRocket.
++  // Set subprotocols via Sec-WebSocket-Protocol header. Avoid being rejected by the server during handshake
++  if (protocols.count > 0) {
++    [request setValue:[protocols componentsJoinedByString:@", "] forHTTPHeaderField:@"Sec-WebSocket-Protocol"];
++  }
++
++  // Lazily create a shared session so TLS sessions are cached and reused across reconnections.
++  // This avoids full TLS handshakes on every reconnect (e.g. during UC nonce re-auth).
++  if (!_sharedSession) {
++    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
++    _sharedSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
++  }
++  NSURLSessionWebSocketTask *task = [_sharedSession webSocketTaskWithRequest:request];
+ 
+-  SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+-  [webSocket setDelegateDispatchQueue:[self methodQueue]];
+-  webSocket.delegate = self;
+-  webSocket.reactTag = @(socketID);
+   if (!_sockets) {
+     _sockets = [NSMutableDictionary new];
+   }
+-  _sockets[@(socketID)] = webSocket;
+-  [webSocket open];
++  // STORE task only (session is shared)
++  _sockets[@(socketID)] = task;
++  // NSURLSessionTask doesn't start automatically → need to call resume()
++  [task resume];
++  // Apple doesn't push messages via delegates
++  // You have to pull messages using receiveMessage()
++  [self _receiveMessageForSocketID:@(socketID)];
+ }
+ 
++// The new API requires wrapping messages in NSURLSessionWebSocketMessage.
+ RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)
+ {
+-  [_sockets[@(socketID)] sendString:message error:nil];
++  NSURLSessionWebSocketMessage *msg = [[NSURLSessionWebSocketMessage alloc] initWithString:message];
++  [_sockets[@(socketID)] sendMessage:msg completionHandler:^(NSError * _Nullable error) {}];
+ }
+ 
+ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)socketID)
+@@ -113,18 +131,25 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
+ 
+ - (void)sendData:(NSData *)data forSocketID:(NSNumber *__nonnull)socketID
+ {
+-  [_sockets[socketID] sendData:data error:nil];
++  NSURLSessionWebSocketMessage *msg = [[NSURLSessionWebSocketMessage alloc] initWithData:data];
++  [_sockets[socketID] sendMessage:msg completionHandler:^(NSError * _Nullable error) {}];
+ }
+-
++// detect dead connection
+ RCT_EXPORT_METHOD(ping : (double)socketID)
+ {
+-  [_sockets[@(socketID)] sendPing:nil error:nil];
++  [_sockets[@(socketID)] sendPingWithPongReceiveHandler:^(NSError * _Nullable error) {}];
+ }
+-
++// Use cancel instead of close for NSURLSession
++// Reason must be converted to NSData
+ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (double)socketID)
+ {
+-  [_sockets[@(socketID)] closeWithCode:code reason:reason];
+-  [_sockets removeObjectForKey:@(socketID)];
++  NSData *reasonData = reason ? [reason dataUsingEncoding:NSUTF8StringEncoding] : nil;
++  [_sockets[@(socketID)] cancelWithCloseCode:(NSURLSessionWebSocketCloseCode)code reason:reasonData];
++  // Don't remove from _sockets here — delegate (didCloseWithCode: or didCompleteWithError:)
++  // will handle cleanup and emit websocketClosed event.
++  // With SocketRocket, the delegate could find socketID via reactTag (associated object on SRWebSocket),
++  // but NSURLSessionWebSocketTask has no such mechanism — we rely on _socketIDForTask: which
++  // iterates _sockets, so the task must remain in _sockets until the delegate fires.
+ }
+ 
+ - (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
+@@ -135,59 +160,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
+   _contentHandlers[socketID] = handler;
+ }
+ 
+-#pragma mark - RCTSRWebSocketDelegate methods
++#pragma mark - Receive loop
+ 
+-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
++/**
++ * Reason:
++ * - Apple employs a "pull model" for WebSocket tasks (not a push event system).
++ * - Must re-register the receive handler after each message (recursive call).
++ *
++ * Effect:
++ * - Without recursion, the socket will freeze.
++ */
++- (void)_receiveMessageForSocketID:(NSNumber *)socketID
++{
++  __weak RCTWebSocketModule *weakSelf = self;
++  NSURLSessionWebSocketTask *task = _sockets[socketID];
++  if (!task || task.state != NSURLSessionTaskStateRunning) {
++    return;
++  }
++  [task receiveMessageWithCompletionHandler:^(NSURLSessionWebSocketMessage *message, NSError *error) {
++    if (error) {
++      return;
++    }
++    RCTWebSocketModule *strongSelf = weakSelf;
++    if (!strongSelf) {
++      return;
++    }
++    dispatch_async(dispatch_get_main_queue(), ^{
++      [strongSelf _handleMessage:message forSocketID:socketID];
++      [strongSelf _receiveMessageForSocketID:socketID];
++    });
++  }];
++}
++
++- (void)_handleMessage:(NSURLSessionWebSocketMessage *)message forSocketID:(NSNumber *)socketID
+ {
+   NSString *type;
++  id messageData;
+ 
+-  NSNumber *socketID = [webSocket reactTag];
+   id contentHandler = _contentHandlers[socketID];
+-  if (contentHandler) {
+-    message = [contentHandler processWebsocketMessage:message forSocketID:socketID withType:&type];
+-  } else {
+-    if ([message isKindOfClass:[NSData class]]) {
+-      type = @"binary";
+-      message = [message base64EncodedStringWithOptions:0];
++
++  if (message.type == NSURLSessionWebSocketMessageTypeString) {
++    messageData = message.string;
++    if (contentHandler) {
++      messageData = [contentHandler processWebsocketMessage:messageData forSocketID:socketID withType:&type];
+     } else {
+       type = @"text";
+     }
++  } else {
++    messageData = message.data;
++    if (contentHandler) {
++      messageData = [contentHandler processWebsocketMessage:messageData forSocketID:socketID withType:&type];
++    } else {
++      type = @"binary";
++      messageData = [messageData base64EncodedStringWithOptions:0];
++    }
+   }
+ 
+-  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : webSocket.reactTag}];
++  [self sendEventWithName:@"websocketMessage" body:@{@"data" : messageData, @"type" : type, @"id" : socketID}];
+ }
+ 
+-- (void)webSocketDidOpen:(SRWebSocket *)webSocket
++#pragma mark - NSURLSessionWebSocketDelegate methods
++
++- (NSNumber *)_socketIDForTask:(NSURLSessionWebSocketTask *)task
++{
++  for (NSNumber *key in _sockets) {
++    if (_sockets[key] == task) {
++      return key;
++    }
++  }
++  return nil;
++}
++// Provide the protocol that is accepted by the server.
++- (void)URLSession:(NSURLSession *)session webSocketTask:(NSURLSessionWebSocketTask *)webSocketTask didOpenWithProtocol:(NSString *)protocol
+ {
+-  [self sendEventWithName:@"websocketOpen"
+-                     body:@{@"id" : webSocket.reactTag, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
++  NSNumber *socketID = [self _socketIDForTask:webSocketTask];
++  if (!socketID) {
++    return;
++  }
++  dispatch_async(dispatch_get_main_queue(), ^{
++    [self sendEventWithName:@"websocketOpen"
++                       body:@{@"id" : socketID, @"protocol" : protocol ?: @""}];
++  });
+ }
+-
+-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
++// Know the connection is closed
++- (void)URLSession:(NSURLSession *)session webSocketTask:(NSURLSessionWebSocketTask *)webSocketTask didCloseWithCode:(NSURLSessionWebSocketCloseCode)closeCode reason:(NSData *)reason
+ {
+-  NSNumber *socketID = [webSocket reactTag];
+-  _contentHandlers[socketID] = nil;
+-  _sockets[socketID] = nil;
+-  NSDictionary *body =
+-      @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
+-  [self sendEventWithName:@"websocketFailed" body:body];
++  NSNumber *socketID = [self _socketIDForTask:webSocketTask];
++  if (!socketID) {
++    return;
++  }
++  NSString *reasonString = reason ? [[NSString alloc] initWithData:reason encoding:NSUTF8StringEncoding] : @"";
++  dispatch_async(dispatch_get_main_queue(), ^{
++    self->_contentHandlers[socketID] = nil;
++    self->_sockets[socketID] = nil;
++    [self sendEventWithName:@"websocketClosed"
++                       body:@{
++                         @"code" : @(closeCode),
++                         @"reason" : RCTNullIfNil(reasonString),
++                         @"clean" : @(YES),
++                         @"id" : socketID
++                       }];
++  });
+ }
+ 
+-- (void)webSocket:(SRWebSocket *)webSocket
+-    didCloseWithCode:(NSInteger)code
+-              reason:(NSString *)reason
+-            wasClean:(BOOL)wasClean
++#pragma mark - NSURLSessionTaskDelegate methods
++// Clearly distinguish between a normal disconnection and a network error.
++- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+ {
+-  NSNumber *socketID = [webSocket reactTag];
+-  _contentHandlers[socketID] = nil;
+-  _sockets[socketID] = nil;
+-  [self sendEventWithName:@"websocketClosed"
+-                     body:@{
+-                       @"code" : @(code),
+-                       @"reason" : RCTNullIfNil(reason),
+-                       @"clean" : @(wasClean),
+-                       @"id" : socketID
+-                     }];
++  if (!error) {
++    return;
++  }
++  if (![task isKindOfClass:[NSURLSessionWebSocketTask class]]) {
++    return;
++  }
++  NSURLSessionWebSocketTask *wsTask = (NSURLSessionWebSocketTask *)task;
++  NSNumber *socketID = [self _socketIDForTask:wsTask];
++  if (!socketID) {
++    return;
++  }
++  // NSURLErrorCancelled means client called cancelWithCloseCode → treat as normal close, not error
++  BOOL isCancelled = (error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled);
++  dispatch_async(dispatch_get_main_queue(), ^{
++    self->_contentHandlers[socketID] = nil;
++    self->_sockets[socketID] = nil;
++    if (isCancelled) {
++      [self sendEventWithName:@"websocketClosed"
++                         body:@{
++                           @"code" : @(NSURLSessionWebSocketCloseCodeGoingAway),
++                           @"reason" : @"",
++                           @"clean" : @(YES),
++                           @"id" : socketID
++                         }];
++    } else {
++      NSDictionary *body = @{
++        @"message" : error.localizedDescription ?: @"Undefined, error is nil",
++        @"id" : socketID ?: @(-1)
++      };
++      [self sendEventWithName:@"websocketFailed" body:body];
++    }
++  });
+ }
+ 
+ - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
