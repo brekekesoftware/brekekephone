@@ -74,12 +74,14 @@ export class SIP extends EventEmitter {
         header.startsWith('X-PBX-RPI:'),
       )
       const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
-      const withSDP =
-        ev.rtcSession.direction === 'outgoing' &&
-        ev.sessionStatus === 'progress' &&
-        !!m?.body
+      const isOutgoing = ev.rtcSession.direction === 'outgoing'
+      const withSDP = isOutgoing && ev.sessionStatus === 'progress' && !!m?.body
       //
-      const partyNumber = ev.rtcSession.remote_identity.uri.user
+      const rawPartyNumber = ev.rtcSession.remote_identity.uri.user
+      const partyNumber =
+        (isOutgoing && ctx.call.parkPickupCallMap[rawPartyNumber]) ||
+        rawPartyNumber
+
       let partyName = ev.rtcSession.remote_identity.display_name
       if (
         (!partyName || partyName.startsWith('uc')) &&
@@ -167,6 +169,10 @@ export class SIP extends EventEmitter {
       }
       if (ev.sessionStatus === 'terminated') {
         ctx.call.callTerminated[ev.sessionId] = true
+        const rawPartyNumber = ev.rtcSession?.remote_identity?.uri?.user
+        if (rawPartyNumber) {
+          delete ctx.call.parkPickupCallMap[rawPartyNumber]
+        }
         this.emit('session-stopped', ev)
         return
       }

@@ -42,6 +42,7 @@ import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { encodeParkNumber } from '#/utils/parkNumber'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
 
@@ -431,7 +432,7 @@ export class PBX extends EventEmitter {
       login_password: a.pbxPassword,
       ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
-      park: a.parks || [],
+      park: (a.parks || []).map(encodeParkNumber),
       voicemail: 'self',
       status: true,
       secure_login_password: false,

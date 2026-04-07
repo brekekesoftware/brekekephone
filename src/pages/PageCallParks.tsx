@@ -41,9 +41,10 @@ export class PageCallParks extends Component<{
 
   park = () => {
     const p = this.state.selectedPark
-    return this.props.ongoing
-      ? ctx.call.getOngoingCall()?.park(p)
-      : ctx.call.startCall(p || '')
+    if (this.props.ongoing) {
+      return ctx.call.getOngoingCall()?.park(p)
+    }
+    return ctx.call.startParkPickupCall(p)
   }
 
   render() {
