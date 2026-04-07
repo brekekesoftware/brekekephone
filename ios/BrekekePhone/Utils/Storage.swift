@@ -65,8 +65,7 @@ public class Storage {
 
   static func readMd5(path: URL) -> String? {
     do {
-      let profile = try String(contentsOf: path, encoding: .utf8)
-      return profile
+      return try String(contentsOf: path, encoding: .utf8)
     } catch {}
     return nil
   }

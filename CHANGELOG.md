@@ -1,3 +1,8 @@
+#### 2.17.1
+
+- Fix ios it should support tls 1.3
+- Fix lpc it should support generic encryption algorithm, tested with: rsa2048, rsa4096, ecdsa256, ecdsa384
+
 #### 2.17.0
 
 - Fix android compatibility policy: Support 16 KB page sizes
@@ -13,7 +18,7 @@
 - Fix it should prevent user from quickly press multiple times start call button (issue 1193)
 - Embed:
   - Notification call answered elsewhere
-  - Add api to switch camera and microphone
+  - Add api to switch camera, microphone, speaker
   - Add api to close notification
   - Update api static getCurrentVersion
 

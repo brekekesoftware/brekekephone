@@ -31,9 +31,9 @@ extension Settings {
 }
 
 extension Settings.PushManagerSettings {
-  // convenience function that determines if the pushManagerSettings model has
-  // any valid configuration properties set. A valid configuration
-  // includes both a host value and an SSID or private LTE network configuration
+  /// convenience function that determines if the pushManagerSettings model has
+  /// any valid configuration properties set. A valid configuration
+  /// includes both a host value and an SSID or private LTE network configuration
   var isEmpty: Bool {
     if host.isEmpty {
       return true

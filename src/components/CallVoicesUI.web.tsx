@@ -1,8 +1,10 @@
 import { observer } from 'mobx-react'
-import { Component, createRef, useEffect, useState } from 'react'
+import { Component, createRef, useEffect, useRef, useState } from 'react'
 
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
+import { embedApi } from '#/embed/embedApi'
+import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import type { staticRingtones } from '#/utils/BrekekeUtils'
 
@@ -34,7 +36,13 @@ export const IncomingItem = observer(() => {
     if (!r) {
       return
     }
-    if (r.startsWith('https://')) {
+    if (
+      r.startsWith('https://') ||
+      r.startsWith('http://') ||
+      r.startsWith('data:') ||
+      r.startsWith('blob:') ||
+      r.startsWith('file:')
+    ) {
       return r
     }
     if (ringtoneOptions[r]) {
@@ -56,8 +64,8 @@ export const IncomingItem = observer(() => {
   const ca = ctx.auth.getCurrentAccount()
   const c = ctx.call.getCallInNotify()
   const priority = [
-    c?.ringtoneFromSip,
     ctx.call.ringtone,
+    c?.ringtoneFromSip,
     ca?.ringtone,
     ca?.pbxRingtone,
   ]
@@ -66,11 +74,36 @@ export const IncomingItem = observer(() => {
   )
   // reset to make sure it will rerender
   useEffect(reset, [r])
+  // register audio element for speaker selection in embed mode
+  const audioRef = useRef<HTMLAudioElement>(null)
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) {
+      return
+    }
+    let cancelled = false
+    const setup = async () => {
+      if (isEmbed) {
+        await embedApi.registerAudioElement(el)
+      }
+      if (!cancelled) {
+        el.play().catch(() => {})
+      }
+    }
+    setup()
+    return () => {
+      cancelled = true
+      if (isEmbed) {
+        embedApi.unregisterAudioElement(el)
+      }
+      el.pause()
+    }
+  }, [loading])
   // render
   return loading ? null : (
     <audio
+      ref={audioRef}
       src={r}
-      autoPlay
       loop
       muted={false}
       onPlay={() => onPlay(r)}
@@ -78,24 +111,62 @@ export const IncomingItem = observer(() => {
     />
   )
 })
-export const OutgoingItem = () => (
-  <audio
-    autoPlay
-    loop
-    src={ctx.global.buildEmbedStaticPath(ringback)}
-    muted={false}
-  />
-)
+export const OutgoingItem = () => {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) {
+      return
+    }
+    let cancelled = false
+    const setup = async () => {
+      if (isEmbed) {
+        await embedApi.registerAudioElement(el)
+      }
+      if (!cancelled) {
+        el.play().catch(() => {})
+      }
+    }
+    setup()
+    return () => {
+      cancelled = true
+      if (isEmbed) {
+        embedApi.unregisterAudioElement(el!)
+      }
+      el.pause()
+    }
+  }, [])
+  return (
+    <audio
+      ref={audioRef}
+      loop
+      src={ctx.global.buildEmbedStaticPath(ringback)}
+      muted={false}
+    />
+  )
+}
 
 export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
   audioRef = createRef<HTMLAudioElement>()
+  _unmounted = false
   componentDidMount = () => {
+    this._setup()
+  }
+  componentDidUpdate = () => {
+    this._setup()
+  }
+  _setup = async () => {
     if (!this.audioRef.current) {
       return
     }
-
+    if (isEmbed) {
+      await embedApi.registerAudioElement(this.audioRef.current)
+    }
+    if (this._unmounted) {
+      return
+    }
     if (
       this.props.earlyMedia &&
       this.props.earlyMedia !== this.audioRef.current.srcObject
@@ -104,19 +175,35 @@ export class OutgoingItemWithSDP extends Component<{
       this.audioRef.current.play()
     }
   }
-  componentDidUpdate = () => {
-    this.componentDidMount()
+  componentWillUnmount = () => {
+    this._unmounted = true
+    if (isEmbed && this.audioRef.current) {
+      embedApi.unregisterAudioElement(this.audioRef.current)
+    }
   }
   render() {
-    return <audio autoPlay ref={this.audioRef} muted={false} />
+    return <audio ref={this.audioRef} muted={false} />
   }
 }
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
   audioRef = createRef<HTMLAudioElement>()
+  _unmounted = false
   componentDidMount = () => {
+    this._setup()
+  }
+  componentDidUpdate = () => {
+    this._setup()
+  }
+  _setup = async () => {
     if (!this.audioRef.current) {
+      return
+    }
+    if (isEmbed) {
+      await embedApi.registerAudioElement(this.audioRef.current)
+    }
+    if (this._unmounted) {
       return
     }
     if (
@@ -127,10 +214,13 @@ export class AnsweredItem extends Component<{
       this.audioRef.current.play()
     }
   }
-  componentDidUpdate = () => {
-    this.componentDidMount()
+  componentWillUnmount = () => {
+    this._unmounted = true
+    if (isEmbed && this.audioRef.current) {
+      embedApi.unregisterAudioElement(this.audioRef.current)
+    }
   }
   render() {
-    return <audio autoPlay ref={this.audioRef} muted={false} />
+    return <audio ref={this.audioRef} muted={false} />
   }
 }
