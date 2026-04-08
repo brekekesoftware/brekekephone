@@ -114,7 +114,10 @@ export const addCallHistory = async (
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
   const line = (isTypeCall && c?.line) || undefined
   // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
-  const lineValue = line?.split('/')?.[0]?.trim() || line?.trim() || undefined
+  const isIncoming = isTypeCall && c.incoming
+  const lineValue = isIncoming
+    ? line?.split('/')?.[0]?.trim() || line?.trim() || undefined
+    : line?.trim() || undefined
   const lineLabel = lineValue
     ? ctx.auth.resourceLines?.find(item => item.value === lineValue)?.key
     : undefined
