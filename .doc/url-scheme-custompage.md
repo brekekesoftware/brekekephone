@@ -41,22 +41,19 @@ brekekephonedev://custompage?id=4
 - If the `id` is valid but the custom page is not configured on the PBX, the URL scheme is ignored
 - If there is an active call in progress, the URL scheme is ignored to avoid disrupting the call UI
 
+#### Triggering from a web page
+
+- The simplest way to trigger the URL scheme is via an HTML link. Create a static HTML file and open it in the mobile browser:
+
+```html
+<a href="brekekephone://custompage?id=1">Open Custom Page 1</a>
+<a href="brekekephone://custompage?id=2">Open Custom Page 2</a>
+```
+
+- Tapping the link in the mobile browser will launch BrekekePhone and open the corresponding custom page
+- For the dev build, replace `brekekephone://` with `brekekephonedev://`
+
 #### Platform notes
-
-- **iOS**: The URL scheme `brekekephone://` is registered in the app. Any app or browser on the same device can trigger it
-- **Android**: The URL scheme is registered in AndroidManifest. It can also be triggered via `adb` for testing:
-
-  ```
-  # Dev build
-  adb shell am start -a android.intent.action.VIEW \
-    -d "brekekephonedev://custompage?id=1" \
-    com.brekeke.phonedev
-
-  # Production build
-  adb shell am start -a android.intent.action.VIEW \
-    -d "brekekephone://custompage?id=1" \
-    com.brekeke.phone
-  ```
 
 - The URL scheme works both when the app is already open (foreground or background) and when the app is launched cold (killed completely)
 - The URL does not contain account credentials — the custom page always belongs to the currently signed-in account. There is no account switching via URL scheme
