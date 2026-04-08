@@ -30,7 +30,7 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { encodeParkNumber } from '#/utils/parkNumber'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
-import { shouldUseResourceLine } from '#/utils/resourceLineUtils'
+import { shouldUseResourceLine } from '#/utils/resourceLine'
 import { waitTimeout } from '#/utils/waitTimeout'
 import {
   webCloseNotification,
