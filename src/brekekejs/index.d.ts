@@ -293,6 +293,7 @@ export type PbxGetProductInfoRes = {
   'webphone.phonebook.personal.editable': string
   'webphone.recents.max': string
   'webphone.resource-line': string
+  'webphone.resource-line.pattern': string
   'webphone.http.useragent.product': string
   'webphone.error_toast.suppress_enabled': string
   'webphone.error_toast.suppress_patterns': string

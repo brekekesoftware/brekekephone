@@ -5,7 +5,7 @@
 // PREFIX uses '~' which is valid in SIP URI (RFC 3986 unreserved)
 // but excluded from SAFE_RE, so old-version park numbers never start with it
 const PREFIX = '~'
-const SAFE_RE = /^[A-Za-z0-9\-_.]+$/
+const SAFE_RE = /^[A-Za-z0-9\-_./*]+$/
 
 export const encodeParkNumber = (p: string): string => {
   if (SAFE_RE.test(p)) {
