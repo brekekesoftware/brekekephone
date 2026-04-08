@@ -187,6 +187,7 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="brekekephonedev" android:host="open" />
         <data android:scheme="brekekephonedev" android:host="call" />
+        <data android:scheme="brekekephonedev" android:host="custompage" />
       </intent-filter>
     </activity>
 

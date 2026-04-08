@@ -28,12 +28,22 @@ export const parse = (location: string | Url<any> | null) => {
     }
   }
   //
-  if (!params.host) {
-    params.host = location.hostname
+  // detect custom page URL: host is "custompage", map ?id= to customPageId
+  if (location.hostname === 'custompage') {
+    params.customPageId = params['id']
+    delete params['id']
+    // clear host so it's not mistaken for a PBX hostname
+    params.host = ''
+    params.port = ''
+  } else {
+    if (!params.host) {
+      params.host = location.hostname
+    }
+    if (!params.port) {
+      params.port = '' + location.port
+    }
   }
-  if (!params.port) {
-    params.port = '' + location.port
-  }
+  //
   if (!params.password) {
     params.password = ''
   }
@@ -50,4 +60,5 @@ export interface UrlParams {
   phone_idx: string
   _wn: string
   number: string | undefined
+  customPageId: string | undefined
 }
