@@ -1,8 +1,9 @@
 import type { FC } from 'react'
 import { Animated, StyleSheet, View } from 'react-native'
 
-import { RnText, RnTouchableOpacity } from '#/components/Rn'
-import { AnimatedText } from '#/components/RnText'
+import { RnTouchableOpacity } from '#/components/Rn'
+import type { TRnText } from '#/components/RnText'
+import { AnimatedText, RnText } from '#/components/RnText'
 import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
@@ -49,77 +50,61 @@ export const ParkItem: FC<ParkItemProps> = ({
   flashAnim,
   onPress,
 }) => {
-  const showAnimation = !!flashAnim
-  const WrapperView: any = showAnimation && !selected ? Animated.View : View
+  const useAnimated = !!flashAnim && !selected
+  const TextComp: TRnText = useAnimated ? AnimatedText : RnText
 
   const flashBg = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: ['transparent', v.colors.primaryFn(0.1)],
+    outputRange: ['white', v.colors.primary],
   })
   const flashTextColor = flashAnim?.interpolate({
     inputRange: [0, 1],
     outputRange: ['black', 'white'],
   })
 
-  let wrapperStyle: any
-  let nameTextColor: string | Animated.AnimatedInterpolation<string> | undefined
+  let wrapperStyle: Animated.WithAnimatedObject<object> | undefined
+  let textStyle:
+    | { color: string }
+    | { color: Animated.AnimatedInterpolation<string> }
+    | undefined
+  let subTextStyle: typeof textStyle | typeof css.subText
 
-  if (showAnimation) {
-    if (selected) {
-      wrapperStyle = css.solidBg
-      nameTextColor = 'white'
-    } else {
-      wrapperStyle = { backgroundColor: flashBg }
-      nameTextColor = flashTextColor
-    }
+  if (useAnimated) {
+    wrapperStyle = { backgroundColor: flashBg }
+    textStyle = { color: flashTextColor! }
+    subTextStyle = textStyle
+  } else if (selected && flashAnim) {
+    wrapperStyle = css.solidBg
+    textStyle = { color: 'white' }
+    subTextStyle = textStyle
   } else if (selected) {
     wrapperStyle = css.selectedBg
+  } else {
+    subTextStyle = css.subText
   }
 
   const displayName = name || intl`<Unnamed>`
 
+  const content = (
+    <RnTouchableOpacity onPress={available ? onPress : undefined}>
+      <View style={css.inner}>
+        <TextComp bold singleLine style={textStyle as any}>
+          {displayName}
+        </TextComp>
+        <TextComp normal small style={subTextStyle as any}>
+          {intl`Park number: ` + parkNumber}
+        </TextComp>
+      </View>
+    </RnTouchableOpacity>
+  )
+
   return (
     <View style={[css.outer, !available && css.disabled]}>
-      <WrapperView style={wrapperStyle}>
-        <RnTouchableOpacity onPress={available ? onPress : undefined}>
-          <View style={css.inner}>
-            {nameTextColor && typeof nameTextColor !== 'string' ? (
-              <AnimatedText
-                bold
-                singleLine
-                style={{ color: nameTextColor as any }}
-              >
-                {displayName}
-              </AnimatedText>
-            ) : (
-              <RnText
-                bold
-                singleLine
-                style={nameTextColor ? { color: nameTextColor } : undefined}
-              >
-                {displayName}
-              </RnText>
-            )}
-            {nameTextColor && typeof nameTextColor !== 'string' ? (
-              <AnimatedText
-                normal
-                small
-                style={{ color: nameTextColor as any }}
-              >
-                {intl`Park number: ` + parkNumber}
-              </AnimatedText>
-            ) : (
-              <RnText
-                normal
-                small
-                style={nameTextColor ? { color: nameTextColor } : css.subText}
-              >
-                {intl`Park number: ` + parkNumber}
-              </RnText>
-            )}
-          </View>
-        </RnTouchableOpacity>
-      </WrapperView>
+      {useAnimated ? (
+        <Animated.View style={wrapperStyle}>{content}</Animated.View>
+      ) : (
+        <View style={wrapperStyle}>{content}</View>
+      )}
     </View>
   )
 }

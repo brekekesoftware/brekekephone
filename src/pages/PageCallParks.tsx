@@ -32,14 +32,18 @@ export class PageCallParks extends Component<{
     ]),
   )
 
+  flashRunning = false
+
   componentDidMount = () => {
-    this.flashLoop.start()
+    this.updateFlashLoop()
     this.componentDidUpdate()
   }
   componentWillUnmount = () => {
     this.flashLoop.stop()
+    this.flashRunning = false
   }
   componentDidUpdate = () => {
+    this.updateFlashLoop()
     if (!this.props.ongoing) {
       return
     }
@@ -48,6 +52,20 @@ export class PageCallParks extends Component<{
       ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
+  }
+
+  // Only run animation when in pickup mode and there are occupied slots
+  updateFlashLoop = () => {
+    const cp2 = this.props.ongoing
+    const hasOccupied = !cp2 && Object.keys(ctx.call.parkNumbers).length > 0
+    if (hasOccupied && !this.flashRunning) {
+      this.flashLoop.start()
+      this.flashRunning = true
+    } else if (!hasOccupied && this.flashRunning) {
+      this.flashLoop.stop()
+      this.flashAnim.setValue(0)
+      this.flashRunning = false
+    }
   }
 
   state = {
