@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import javax.net.ssl.*;
 import org.json.JSONObject;
@@ -174,7 +175,11 @@ public class LpcUtils {
                 throw new CertificateException("Empty certificate chain");
               }
               try {
-                byte[] spki = chain[0].getPublicKey().getEncoded();
+                byte[] certDer = chain[0].getEncoded();
+                byte[] spki = extractSPKI(certDer);
+                if (spki == null) {
+                  throw new CertificateException("Failed to extract SPKI from certificate");
+                }
                 byte[] hash = MessageDigest.getInstance("SHA-256").digest(spki);
                 String fingerprint = Base64.encodeToString(hash, Base64.NO_WRAP);
                 if (!fingerprint.equals(sha256Fingerprint)) {
@@ -194,6 +199,58 @@ public class LpcUtils {
 
     sslContext.init(null, trustManagers, null);
     return sslContext;
+  }
+
+  // Extract SubjectPublicKeyInfo (SPKI) from raw certificate DER bytes.
+  // Reads bytes directly from the certificate DER instead of using
+  // getPublicKey().getEncoded(), which may re-encode differently across
+  // Android versions and manufacturers (causing keyhash mismatch on some devices).
+  private static byte[] extractSPKI(byte[] der) {
+    int[] i = {0};
+    if (!enterSequence(der, i)) return null; // Certificate
+    if (!enterSequence(der, i)) return null; // TBSCertificate
+    if (i[0] < der.length && (der[i[0]] & 0xFF) == 0xA0) {
+      if (!skipTLV(der, i)) return null; // version [0] EXPLICIT
+    }
+    if (!skipTLV(der, i)) return null; // serialNumber
+    if (!skipTLV(der, i)) return null; // signature
+    if (!skipTLV(der, i)) return null; // issuer
+    if (!skipTLV(der, i)) return null; // validity
+    if (!skipTLV(der, i)) return null; // subject
+    int spkiStart = i[0];
+    if (i[0] >= der.length || (der[i[0]] & 0xFF) != 0x30) return null;
+    i[0]++;
+    int spkiLen = readLength(der, i);
+    if (spkiLen < 0) return null;
+    int spkiEnd = i[0] + spkiLen;
+    if (spkiEnd > der.length) return null;
+    return Arrays.copyOfRange(der, spkiStart, spkiEnd);
+  }
+
+  private static boolean enterSequence(byte[] der, int[] i) {
+    if (i[0] >= der.length || (der[i[0]] & 0xFF) != 0x30) return false;
+    i[0]++;
+    return readLength(der, i) >= 0;
+  }
+
+  private static boolean skipTLV(byte[] der, int[] i) {
+    if (i[0] >= der.length) return false;
+    i[0]++; // skip tag
+    int len = readLength(der, i);
+    if (len < 0) return false;
+    i[0] += len;
+    return i[0] <= der.length;
+  }
+
+  private static int readLength(byte[] der, int[] i) {
+    if (i[0] >= der.length) return -1;
+    int first = der[i[0]++] & 0xFF;
+    if ((first & 0x80) == 0) return first;
+    int n = first & 0x7F;
+    if (n == 0 || n > 4 || i[0] + n > der.length) return -1;
+    int len = 0;
+    for (int k = 0; k < n; k++) len = (len << 8) | (der[i[0]++] & 0xFF);
+    return len;
   }
 
   public static ArrayList<String> convertReadableArrayToStringList(ReadableArray array) {

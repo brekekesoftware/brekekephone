@@ -1,11 +1,12 @@
 import { uniqBy } from 'lodash'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import { Animated } from 'react-native'
 
-import { UserItem } from '#/components/ContactUserItem'
 import { Field } from '#/components/Field'
 import { Layout } from '#/components/Layout'
-import { RnText, RnTouchableOpacity } from '#/components/Rn'
+import { ParkItem } from '#/components/ParkItem'
+import { RnText } from '#/components/Rn'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
@@ -14,10 +15,35 @@ export class PageCallParks extends Component<{
   ongoing: boolean
 }> {
   prevId?: string
+  flashAnim = new Animated.Value(0)
+  flashLoop = Animated.loop(
+    Animated.sequence([
+      Animated.timing(this.flashAnim, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: false,
+      }),
+      Animated.delay(1000),
+      Animated.timing(this.flashAnim, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: false,
+      }),
+    ]),
+  )
+
+  flashRunning = false
+
   componentDidMount = () => {
+    this.updateFlashLoop()
     this.componentDidUpdate()
   }
+  componentWillUnmount = () => {
+    this.flashLoop.stop()
+    this.flashRunning = false
+  }
   componentDidUpdate = () => {
+    this.updateFlashLoop()
     if (!this.props.ongoing) {
       return
     }
@@ -26,6 +52,20 @@ export class PageCallParks extends Component<{
       ctx.nav.backToPageCallManage()
     }
     this.prevId = oc?.id
+  }
+
+  // Only run animation when in pickup mode and there are occupied slots
+  updateFlashLoop = () => {
+    const cp2 = this.props.ongoing
+    const hasOccupied = !cp2 && Object.keys(ctx.call.parkNumbers).length > 0
+    if (hasOccupied && !this.flashRunning) {
+      this.flashLoop.start()
+      this.flashRunning = true
+    } else if (!hasOccupied && this.flashRunning) {
+      this.flashLoop.stop()
+      this.flashAnim.setValue(0)
+      this.flashRunning = false
+    }
   }
 
   state = {
@@ -41,6 +81,7 @@ export class PageCallParks extends Component<{
 
   park = () => {
     const p = this.state.selectedPark
+    this.setState({ selectedPark: '' })
     if (this.props.ongoing) {
       return ctx.call.getOngoingCall()?.park(p)
     }
@@ -63,17 +104,16 @@ export class PageCallParks extends Component<{
     const sp = this.state.selectedPark
     const cp2 = this.props.ongoing
     void ctx.call.getOngoingCall() // trigger componentDidUpdate
-    const isDisable = (parkNumber: string) => {
-      if (cp2) {
-        return !!ctx.call.parkNumbers[parkNumber]
-      }
-      return !ctx.call.parkNumbers[parkNumber]
-    }
+
+    // Only treat selection as active if that slot is still available
+    const selectedOccupied = !!ctx.call.parkNumbers[sp]
+    const selectedAvailable = sp && (cp2 ? !selectedOccupied : selectedOccupied)
+    const effectiveSp = selectedAvailable ? sp : ''
 
     return (
       <Layout
         description={intl`Your park numbers`}
-        fabOnNext={sp && !isDisable(sp) ? this.park : undefined}
+        fabOnNext={effectiveSp ? this.park : undefined}
         fabOnNextText={cp2 ? intl`START PARKING` : intl`CALL PARK`}
         menu={cp2 ? undefined : 'call'}
         onBack={cp2 ? ctx.nav.backToPageCallManage : undefined}
@@ -86,25 +126,28 @@ export class PageCallParks extends Component<{
             <RnText padding>{intl`This account has no park number`}</RnText>
           </>
         )}
-        {parks.map((p, i) => (
-          <RnTouchableOpacity
-            key={i}
-            onPress={() => {
-              if (!isDisable(p.park)) {
-                this.selectPark(p.park)
-              }
-            }}
-          >
-            <UserItem
-              key={i}
-              avatar=''
+        {parks.map((p, i) => {
+          const isOccupied = !!ctx.call.parkNumbers[p.park]
+          // park mode: available when slot is empty
+          // pickup mode: available when slot is occupied
+          const available = cp2 ? !isOccupied : isOccupied
+          return (
+            <ParkItem
+              key={p.park}
+              index={i}
               name={intl`Park` + ` ${i + 1}: ${p.name}`}
-              parkNumber={`${p.park}`}
-              selected={p.park === sp}
-              disabled={isDisable(p.park)}
+              parkNumber={p.park}
+              selected={p.park === effectiveSp}
+              available={available}
+              flashAnim={!cp2 && isOccupied ? this.flashAnim : undefined}
+              onPress={() => {
+                if (available) {
+                  this.selectPark(p.park)
+                }
+              }}
             />
-          </RnTouchableOpacity>
-        ))}
+          )
+        })}
       </Layout>
     )
   }
