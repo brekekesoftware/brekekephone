@@ -218,7 +218,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                      supportsUngrouping: false,
                                      fromPushKit: true,
                                      payload: payload,
-                                     withCompletionHandler: handler,
+                                     withCompletionHandler: { _ in handler?() },
                                      ringtone: RingtoneUtils.getRingtone(
                                        ringtone: ringtoneName,
                                        username: username,
