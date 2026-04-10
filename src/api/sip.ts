@@ -73,8 +73,12 @@ export class SIP extends EventEmitter {
       const xPbxRpi = extraHeaders.find(header =>
         header.startsWith('X-PBX-RPI:'),
       )
-      const line = m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
       const isOutgoing = ev.rtcSession.direction === 'outgoing'
+      // For outgoing calls: prioritize X-PBX-RPI from INVITE request (e.g. gaisen-6261/2)
+      // over 180/183 response (e.g. line/2 from Resource Map) to preserve correct lineValue
+      const line = isOutgoing
+        ? xPbxRpi?.split(':')?.[1] || m?.getHeader('X-PBX-RPI')
+        : m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
       const withSDP = isOutgoing && ev.sessionStatus === 'progress' && !!m?.body
       //
       const rawPartyNumber = ev.rtcSession.remote_identity.uri.user
