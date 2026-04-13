@@ -97,8 +97,10 @@ const css = StyleSheet.create({
 
 export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
+  const isBrowserOrEmbed = isBrowser || isEmbed
+
   let child: ReactElement | null = null
-  if (isBrowser) {
+  if (isBrowserOrEmbed) {
     child = <RnApp />
   } else {
     const params = parse(window.location as any as Url<any>)
@@ -142,7 +144,8 @@ export const App = () => {
       </>
     )
   }
-  const Container = isBrowser ? View : BrekekeGradient
+
+  const Container = isBrowserOrEmbed ? View : BrekekeGradient
   return <Container style={css.WebApp}>{child}</Container>
 }
 
