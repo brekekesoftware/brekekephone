@@ -27,6 +27,7 @@ type TBrekekeUtils = {
   getIncomingCallPendingUserAction(uuid: string): Promise<string>
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
+  clearProcessedPnIds(): void
   setPbxConfig(jsonStr: string): void
   setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
@@ -134,6 +135,7 @@ const Polyfill: TBrekekeUtils = {
   getIncomingCallPendingUserAction: () => Promise.resolve(''),
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
+  clearProcessedPnIds: () => undefined,
   setPbxConfig: () => undefined,
   setCallConfig: () => undefined,
   setIsAppActive: () => undefined,
