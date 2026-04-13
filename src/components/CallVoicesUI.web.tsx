@@ -7,6 +7,10 @@ import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import type { staticRingtones } from '#/utils/BrekekeUtils'
+import {
+  preActivatedRingback,
+  preActivatedRingtone,
+} from '#/utils/webPreActivateAudio'
 
 // all options are static on web
 const ringtoneOptions: {
@@ -77,14 +81,27 @@ export const IncomingItem = observer(() => {
   // register audio element for speaker selection in embed mode
   const audioRef = useRef<HTMLAudioElement>(null)
   useEffect(() => {
-    const el = audioRef.current
+    // loading=true means the audio element was just unmounted, skip
+    if (loading) {
+      return
+    }
+    // Use the pre-activated element on non-embed web (iOS Safari fix).
+    // preActivatedRingtone was play()+pause()d inside the user gesture handler,
+    // so iOS allows it to be replayed freely from async code.
+    const preActivated = !isEmbed ? preActivatedRingtone : null
+    const el = preActivated ?? audioRef.current
     if (!el) {
       return
+    }
+    if (preActivated) {
+      preActivated.src = r
+      preActivated.onplay = () => onPlay(r)
+      preActivated.onerror = () => onError(r)
     }
     let cancelled = false
     const setup = async () => {
       if (isEmbed) {
-        await embedApi.registerAudioElement(el)
+        await embedApi.registerAudioElement(audioRef.current!)
       }
       if (!cancelled) {
         el.play().catch(() => {})
@@ -93,8 +110,12 @@ export const IncomingItem = observer(() => {
     setup()
     return () => {
       cancelled = true
+      if (preActivated) {
+        preActivated.onplay = null
+        preActivated.onerror = null
+      }
       if (isEmbed) {
-        embedApi.unregisterAudioElement(el)
+        embedApi.unregisterAudioElement(audioRef.current!)
       }
       el.pause()
     }
@@ -114,14 +135,16 @@ export const IncomingItem = observer(() => {
 export const OutgoingItem = () => {
   const audioRef = useRef<HTMLAudioElement>(null)
   useEffect(() => {
-    const el = audioRef.current
+    // Use the pre-activated element on non-embed web (iOS Safari fix)
+    const preActivated = !isEmbed ? preActivatedRingback : null
+    const el = preActivated ?? audioRef.current
     if (!el) {
       return
     }
     let cancelled = false
     const setup = async () => {
       if (isEmbed) {
-        await embedApi.registerAudioElement(el)
+        await embedApi.registerAudioElement(audioRef.current!)
       }
       if (!cancelled) {
         el.play().catch(() => {})
@@ -131,7 +154,7 @@ export const OutgoingItem = () => {
     return () => {
       cancelled = true
       if (isEmbed) {
-        embedApi.unregisterAudioElement(el!)
+        embedApi.unregisterAudioElement(audioRef.current!)
       }
       el.pause()
     }
