@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 
@@ -66,6 +67,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   private static String TAG = "[BrekekeUtils]";
 
   public static WakeLock wl;
+
+  // Dedup incoming call push notifications by pn-id
+  // Both LPC and FCM call onFcmMessageReceived() independently for the same call,
+  // causing duplicate incoming call UI. This map tracks which pn-id has been processed.
+  // Using ConcurrentHashMap because LPC runs on its socket thread while FCM runs on
+  // FirebaseMessagingService thread — both can call onFcmMessageReceived() concurrently.
+  private static final ConcurrentHashMap<String, String> processedPnIds = new ConcurrentHashMap<>();
 
   public static void acquireWakeLock() {
     if (!wl.isHeld()) {
@@ -182,11 +190,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void onFcmMessageReceived(Map<String, String> m) {
     // check if it is a PN for incoming call
-    if (PN.id(m) == null) {
+    var pnId = PN.id(m);
+    if (pnId == null) {
+      return;
+    }
+    // skip duplicate: same pn-id already processed from LPC or FCM
+    if (processedPnIds.putIfAbsent(pnId, pnId) != null) {
+      Emitter.debug("onFcmMessageReceived skip duplicate pn-id=" + pnId);
       return;
     }
     if (Account.find(m) == null) {
       Emitter.error("onFcmMessageReceived", "account 404");
+      processedPnIds.remove(pnId);
       return;
     }
     // init services if not
@@ -716,6 +731,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void closeAllIncomingCalls() {
     Emitter.debug("closeAllIncomingCalls");
     removeAll();
+  }
+
+  // Clear processed pn-id cache
+  // Called from JS when SIP reconnects or PBX server resets,
+  // because pn-id on the server resets to 1, 2, 3... and old cache would block new calls
+  @ReactMethod
+  public void clearProcessedPnIds() {
+    processedPnIds.clear();
   }
 
   @ReactMethod
