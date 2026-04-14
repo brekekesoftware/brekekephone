@@ -10,7 +10,13 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '#/brekekejs'
-import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
+import {
+  bundleIdentifier,
+  currentVersion,
+  isAndroid,
+  isIos,
+  isWeb,
+} from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account, AccountUnique, RecentCall } from '#/stores/accountStore'
 import {
@@ -273,6 +279,9 @@ export class AuthStore {
       if (!isWeb) {
         // try to end callkeep if it's stuck
         ctx.call.endCallKeepAllCalls()
+      }
+      if (isAndroid) {
+        BrekekeUtils.clearProcessedPnIds()
       }
       this.resetState()
     } catch (err) {
