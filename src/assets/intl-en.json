@@ -285,6 +285,8 @@
   "You have rejected this group or it has been deleted",
   "Your park numbers",
   "Your phonebook contacts",
+  "answered by someone else",
+  "answered by {{$0}}",
   "label",
   "park number",
   "{{$0}} accounts in total",
