@@ -65,6 +65,19 @@ const getUserInfoFromReasons = (
     phoneNumber: m[2] ? m[2].trim() : m[1].trim(),
   }
 }
+const getReasonCancelCall = async (ms?: UserInfo) => {
+  if (!ms) {
+    return
+  }
+  if (ms.unknown) {
+    return intl`answered by someone else`
+  }
+  let name = ms.name
+  if (!name && ms.phoneNumber) {
+    name = (await getPbxNameWithUpdateContact(ms.phoneNumber)) || ms.phoneNumber
+  }
+  return intl`answered by ${name}`
+}
 
 export const addCallHistory = async (
   c: Call | ParsedPn,
@@ -112,6 +125,7 @@ export const addCallHistory = async (
   const id = newUuid()
   const created = moment().format('HH:mm - MMM D')
   const answeredBy = getUserInfoFromReasons(isTypeCall ? ms : completedBy)
+  const reason = await getReasonCancelCall(answeredBy)
   const line = (isTypeCall && c?.line) || undefined
   // with incoming: If the string includes /, you store only aaa to the log and ignore / and the following string.
   const isIncoming = isTypeCall && c.incoming
@@ -132,6 +146,7 @@ export const addCallHistory = async (
         partyNumber: c.partyNumber,
         duration: c.getDuration(),
         isAboutToHangup: c.isAboutToHangup,
+        reason,
         answeredBy,
         lineValue,
         lineLabel,
@@ -148,6 +163,7 @@ export const addCallHistory = async (
           c.from,
         partyNumber: c.from,
         duration: 0,
+        reason,
         answeredBy,
         // TODO: B killed app, A call B, B reject quickly, then A cancel quickly
         // -> B got cancel event from sip
@@ -193,6 +209,7 @@ export type CallHistoryInfo = {
   partyNumber: string
   duration: number
   isAboutToHangup: boolean
+  reason?: string
   answeredBy?: UserInfo
   lineLabel?: string
   lineValue?: string
