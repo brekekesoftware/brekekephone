@@ -188,7 +188,6 @@ let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
 export const resetProcessedPn = () => {
   ctx.call.callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
-  // BrekekeUtils.clearProcessedPnIds()
 }
 
 export const parse = async (

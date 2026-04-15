@@ -68,12 +68,16 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static WakeLock wl;
 
-  // Dedup incoming call push notifications by pn-id
+  // Dedup incoming call push notifications by compound key (pn-id + time)
   // Both LPC and FCM call onFcmMessageReceived() independently for the same call,
-  // causing duplicate incoming call UI. This map tracks which pn-id has been processed.
+  // causing duplicate incoming call UI. This map tracks which key has been processed.
+  // Using compound key (pn-id + time) instead of pn-id alone because pn-id resets
+  // to 1,2,3... after PBX restart, but time is always different for each call.
   // Using ConcurrentHashMap because LPC runs on its socket thread while FCM runs on
   // FirebaseMessagingService thread — both can call onFcmMessageReceived() concurrently.
-  private static final ConcurrentHashMap<String, String> processedPnIds = new ConcurrentHashMap<>();
+  // Cache is cleared on user logout via clearProcessedPnIds().
+  private static final ConcurrentHashMap<String, Boolean> processedPnIds =
+      new ConcurrentHashMap<>();
 
   public static void acquireWakeLock() {
     if (!wl.isHeld()) {
@@ -194,14 +198,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (pnId == null) {
       return;
     }
-    // skip duplicate: same pn-id already processed from LPC or FCM
-    if (processedPnIds.putIfAbsent(pnId, pnId) != null) {
-      Emitter.debug("onFcmMessageReceived skip duplicate pn-id=" + pnId);
+    // dedup by compound key: pn-id + time
+    // same call from LPC and FCM has identical pn-id and time
+    var time = PN.time(m);
+    var dedupKey = time != null ? pnId + "_" + time : pnId;
+    if (processedPnIds.putIfAbsent(dedupKey, Boolean.TRUE) != null) {
+      Emitter.debug("onFcmMessageReceived skip duplicate key=" + dedupKey);
       return;
     }
     if (Account.find(m) == null) {
       Emitter.error("onFcmMessageReceived", "account 404");
-      processedPnIds.remove(pnId);
+      processedPnIds.remove(dedupKey);
       return;
     }
     // init services if not
@@ -733,9 +740,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     removeAll();
   }
 
-  // Clear processed pn-id cache
-  // Called from JS when SIP reconnects or PBX server resets,
-  // because pn-id on the server resets to 1, 2, 3... and old cache would block new calls
+  // Clear processed PN dedup cache
+  // Called from JS on user logout — safe because no calls are active at that point
   @ReactMethod
   public void clearProcessedPnIds() {
     processedPnIds.clear();
