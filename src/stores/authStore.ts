@@ -270,10 +270,8 @@ export class AuthStore {
   signOutWithoutSaving = () => {
     try {
       ctx.call.calls.forEach(c => c.hangupWithUnhold())
-      if (!isWeb) {
-        // try to end callkeep if it's stuck
-        ctx.call.endCallKeepAllCalls()
-      }
+      ctx.call.endCallKeepAllCalls()
+      BrekekeUtils.clearProcessedPnIds()
       this.resetState()
     } catch (err) {
       console.error('signOut debug: signOutWithoutSaving error:', err)

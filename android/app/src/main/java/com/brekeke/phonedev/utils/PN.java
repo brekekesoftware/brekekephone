@@ -34,6 +34,10 @@ public class PN {
     return get(m, "image_size", "imageSize");
   }
 
+  public static String time(Map<String, String> m) {
+    return get(m, "time");
+  }
+
   public static String ringtone(Map<String, String> m) {
     return get(m, "ringtone");
   }
