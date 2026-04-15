@@ -10,13 +10,7 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '#/brekekejs'
-import {
-  bundleIdentifier,
-  currentVersion,
-  isAndroid,
-  isIos,
-  isWeb,
-} from '#/config'
+import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import type { Account, AccountUnique, RecentCall } from '#/stores/accountStore'
 import {
@@ -276,13 +270,8 @@ export class AuthStore {
   signOutWithoutSaving = () => {
     try {
       ctx.call.calls.forEach(c => c.hangupWithUnhold())
-      if (!isWeb) {
-        // try to end callkeep if it's stuck
-        ctx.call.endCallKeepAllCalls()
-      }
-      if (isAndroid) {
-        BrekekeUtils.clearProcessedPnIds()
-      }
+      ctx.call.endCallKeepAllCalls()
+      BrekekeUtils.clearProcessedPnIds()
       this.resetState()
     } catch (err) {
       console.error('signOut debug: signOutWithoutSaving error:', err)
