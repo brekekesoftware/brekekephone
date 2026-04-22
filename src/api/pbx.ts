@@ -42,6 +42,7 @@ import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { isMFASupported } from '#/utils/mfaUtils'
 import { encodeParkNumber } from '#/utils/parkNumber'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -421,10 +422,6 @@ export class PBX extends EventEmitter {
 
     const d = await ctx.account.findDataWithDefault(a)
     const oldPalParamUser = d.palParams?.['user']
-    console.log(
-      `PBX PN debug: construct pbx.client - webphone.pal.param.user=${oldPalParamUser}`,
-    )
-
     const wsUri = `wss://${a.pbxHostname}:${a.pbxPort}/pbx/ws`
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: a.pbxTenant,
@@ -446,36 +443,9 @@ export class PBX extends EventEmitter {
     })
     this.client = client
     client.debugLevel = 2
-
-    // Check server availability before login
+    // Check server availability before login (Android only)
     if (isAndroid) {
-      const serverReady = await new Promise<boolean>(resolve => {
-        const testWs = new WebSocket(`${wsUri}?status=true`)
-        let timeoutId: number | undefined = undefined
-        let isResolved = false
-
-        const cleanup = (result: boolean) => {
-          if (isResolved) {
-            return
-          }
-          isResolved = true
-
-          if (timeoutId) {
-            BackgroundTimer.clearTimeout(timeoutId)
-          }
-          try {
-            testWs.close()
-          } catch {}
-          resolve(result)
-        }
-
-        timeoutId = BackgroundTimer.setTimeout(() => cleanup(false), 5000)
-        testWs.onopen = () => cleanup(true)
-        testWs.onerror = () => cleanup(false)
-        testWs.onclose = e => cleanup(e.wasClean || e.code === 1000)
-      })
-
-      if (!serverReady) {
+      if (!(await this.probeServer(wsUri))) {
         this.logMainInstance('PAL Server not ready - aborting login')
         this.disconnect()
         return false
@@ -635,6 +605,24 @@ export class PBX extends EventEmitter {
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
 
+    // in syncPnToken, isMainInstance = false
+    if (!this.isMainInstance) {
+      if (forSyncPnToken) {
+        const mfaNeeded = await this.checkMFAForSyncPnToken(a)
+        if (mfaNeeded) {
+          return true
+        }
+      }
+      const r = await Promise.race([connected, newTimeoutPromise()])
+      this.clearConnectTimeoutId()
+      return r
+    }
+
+    const mfaResult = await this.handleMFAAfterLogin()
+    if (mfaResult) {
+      return true
+    }
+
     const isConnected = async () => {
       const r = await Promise.race([connected, newTimeoutPromise()])
       this.clearConnectTimeoutId()
@@ -642,12 +630,6 @@ export class PBX extends EventEmitter {
     }
     if (!(await isConnected())) {
       return false
-    }
-
-    // in syncPnToken, isMainInstance = false
-    // we will not proceed further in that case
-    if (!this.isMainInstance) {
-      return true
     }
 
     // check again webphone.pal.param.user
@@ -786,6 +768,108 @@ export class PBX extends EventEmitter {
       }
     }
   }
+  // Handle MFA after PAL login success (main instance only).
+  // When MFA is enabled, the server runs in restricted mode and does NOT fire
+  // notify_serverstatus until the client reconnects with a valid device_token.
+  // Returns true if MFA is in progress (OTP needed) — caller should return early.
+  private handleMFAAfterLogin = async (): Promise<boolean> => {
+    ctx.auth.pbxConfig = undefined
+    const pc = await this.getConfig(true)
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return false
+    }
+    const mfaSupported = isMFASupported(pc)
+    const inMFA = ctx.account.isAccountInMFA(ca)
+    if (!mfaSupported) {
+      if (inMFA) {
+        // PBX version < 3.18 — reset stale pending so navigation/calls are not blocked.
+        await ctx.account.setMFAPending(ca, false)
+      }
+      return false
+    }
+    const data = ctx.account.findDataSync(ca)
+    const connectedWithDeviceToken = data?.palParams?.['device_token']
+    const isFreshLogin = ctx.auth.pbxFreshLogin
+    ctx.auth.pbxFreshLogin = false
+    if (!connectedWithDeviceToken || isFreshLogin || inMFA) {
+      await ctx.account.handleMFA(ca)
+      // Re-check: handleMFA may have changed state to IN_PROGRESS (OTP required).
+      return ctx.account.isAccountInMFA(ca)
+    }
+    return false
+  }
+
+  // Handle MFA for syncPnToken flow (isMainInstance=false).
+  // When MFA is required and no device_token exists, lend the socket
+  // to ctx.pbx so the OTP page can use it, then return true to stop
+  // syncPnToken from continuing (which would disconnect the socket).
+  private checkMFAForSyncPnToken = async (a: Account): Promise<boolean> => {
+    const pc = await this.getConfig(true)
+    if (!isMFASupported(pc)) {
+      return false
+    }
+    const data = ctx.account.findDataSync(a)
+    if (data?.palParams?.['device_token']) {
+      return false
+    }
+
+    const savedClient = ctx.pbx.client
+    ctx.pbx.client = this.client
+    const started = await ctx.account.mfaStart(a)
+
+    if (!started || started === 'none') {
+      ctx.pbx.client = savedClient
+      return false
+    }
+
+    await ctx.account.setMFAPending(a, true)
+    ctx.mfa.show(a.id, { skipReconnect: true })
+
+    // Revert PN to previous value — UI should only change after
+    // MFA verify + sync succeed.
+    const pnEnabled = ctx.account.pendingPnEnabled ?? a.pushNotificationEnabled
+    a.pushNotificationEnabled = !pnEnabled
+    a.pushNotificationEnabledSynced = false
+    ctx.account.saveAccountsToLocalStorageDebounced()
+    ctx.account.pendingPnEnabled = undefined
+
+    const ok = await ctx.mfa.waitComplete()
+    ctx.pbx.client = savedClient
+    if (ok) {
+      ctx.account.upsertAccount({
+        id: a.id,
+        pushNotificationEnabled: pnEnabled,
+      })
+    }
+    this.disconnect()
+    return ok
+  }
+
+  private probeServer = (wsUri: string): Promise<boolean> =>
+    new Promise<boolean>(resolve => {
+      const testWs = new WebSocket(`${wsUri}?status=true`)
+      let isResolved = false
+      let timeoutId: number | undefined
+      const cleanup = (result: boolean) => {
+        if (isResolved) {
+          return
+        }
+        isResolved = true
+        if (timeoutId) {
+          BackgroundTimer.clearTimeout(timeoutId)
+        }
+        try {
+          testWs.close()
+        } catch {}
+        resolve(result)
+      }
+      timeoutId = BackgroundTimer.setTimeout(() => cleanup(false), 5000)
+      testWs.onopen = () => cleanup(true)
+      testWs.onerror = () => cleanup(false)
+      testWs.onclose = e => cleanup(e.wasClean || e.code === 1000)
+    })
+
   disconnect = () => {
     if (this.client) {
       this.logMainInstance('PAL client close')
@@ -848,7 +932,16 @@ export class PBX extends EventEmitter {
     }
     const d = await ctx.auth.getCurrentDataAsync()
     if (d) {
-      d.palParams = parsePalParams(ctx.auth.pbxConfig)
+      const pp = d.palParams
+      const deviceToken = pp?.device_token
+
+      const p = parsePalParams(ctx.auth.pbxConfig)
+
+      if (isMFASupported() && deviceToken) {
+        p.device_token = deviceToken
+      }
+
+      d.palParams = p
       d.userAgent = ctx.auth.pbxConfig['webphone.useragent']
       d.pnExpires = ctx.auth.pbxConfig['webphone.pn_expires']
       ctx.account.updateAccountData(d)

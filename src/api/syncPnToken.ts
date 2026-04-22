@@ -1,3 +1,5 @@
+import { AppState } from 'react-native'
+
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
@@ -6,6 +8,7 @@ import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
+import { isMFASupported } from '#/utils/mfaUtils'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
 
@@ -26,13 +29,24 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
-  const pnEnabled =
+  let pnEnabled =
     !ctx.auth.pbxLoginFromAnotherPlace && p.pushNotificationEnabled
+
   console.log(
     `PN sync debug: trying to turn ${pnEnabled ? 'on' : 'off'} PN for account ${
       p.pbxUsername
     }`,
   )
+  if (
+    AppState.currentState === 'active' &&
+    pnEnabled &&
+    isMFASupported() &&
+    ctx.account.isAccountInMFA(p) &&
+    ctx.call.calls.length === 0
+  ) {
+    console.log('PN sync debug: MFA verification pending')
+    pnEnabled = false
+  }
 
   const pbx = new PBX()
   pbx.isMainInstance = false
@@ -208,6 +222,9 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
 const syncPnTokenForAllAccounts = async () => {
   ctx.account.accounts.forEach(a => {
     if (a.pushNotificationEnabledSynced) {
+      return
+    }
+    if (ctx.account.isAccountInMFA(a)) {
       return
     }
     syncPnToken(a)

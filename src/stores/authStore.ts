@@ -58,6 +58,7 @@ export class AuthStore {
   @observable ucLoginFromAnotherPlace = false
 
   @observable pbxConnectedAt = 0
+  @observable pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -222,8 +223,14 @@ export class AuthStore {
       })
     }
 
+    if (ctx.mfa.accountId && ctx.mfa.accountId !== a.id) {
+      ctx.mfa.cancel()
+      ctx.account.setMFAPendingAfterCallsId('')
+    }
+
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = true
     console.log(
       '=======================================================================',
     )
@@ -300,6 +307,9 @@ export class AuthStore {
     this.cRecentCalls = []
     this.rcPage = 0
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = false
+    ctx.account.setMFAPendingAfterCallsId('')
+    ctx.mfa.cancel()
   }
 
   @action resetFailureState = () => {
@@ -518,15 +528,26 @@ export class AuthStore {
       }
     }
 
-    // wait for PBX config to load (custom pages parsed after pbxState=success)
-    await this.waitPbx()
-
-    const cp = ctx.auth.getCustomPageById(internalId)
-    if (cp) {
-      ctx.auth.activeCustomPageId = internalId
-      ctx.nav.goToPageCustomPage({ id: internalId })
+    const navigateToCustomPage = () => {
+      const cp = ctx.auth.getCustomPageById(internalId)
+      if (cp) {
+        ctx.auth.activeCustomPageId = internalId
+        ctx.nav.goToPageCustomPage({ id: internalId })
+      }
+      this.clearUrlParams()
     }
-    this.clearUrlParams()
+
+    await this.waitPbx()
+    const currentCa = ctx.auth.getCurrentAccount()
+    if (currentCa && ctx.account.isAccountInMFA(currentCa)) {
+      const ok = await ctx.mfa.waitComplete()
+      if (!ok) {
+        this.clearUrlParams()
+        return true
+      }
+    }
+
+    navigateToCustomPage()
     return true
   }
 

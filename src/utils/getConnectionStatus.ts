@@ -27,6 +27,10 @@ export const getConnectionStatus = () => {
     }
   }
 
+  const ca = ctx.auth.getCurrentAccount()
+  const isMFAPending =
+    !!ca &&
+    (ctx.mfa.isShowing(ca.id) || ctx.account.mfaPendingAfterCallsId === ca.id)
   if (isFailure) {
     if (ctx.auth.showMsgPbxLoginFromAnotherPlace) {
       message = intl`Logged in from another location as the same phone`
@@ -36,6 +40,8 @@ export const getConnectionStatus = () => {
       ctx.toast.clearAll()
       message = intl`Internet connection failed`
     }
+  } else if (isMFAPending) {
+    message = intl`Please complete the MFA verification to continue`
   } else if (!serviceConnectingOrFailure) {
     if (isRequestRetrying) {
       message = intl`Retrying connection...`
