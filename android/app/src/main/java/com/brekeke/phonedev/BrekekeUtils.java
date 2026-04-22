@@ -211,14 +211,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       processedPnIds.remove(dedupKey);
       return;
     }
-    // init services if not
-    initStaticServices();
-    acquireWakeLock();
-    // generate new uuid and store it to the PN bundle
+    // generate new uuid and store it to the PN bundle early
     var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     m.put("callkeepAt", now);
     var uuid = UUID.randomUUID().toString().toUpperCase();
     m.put("callkeepUuid", uuid);
+    // init services if not
+    initStaticServices();
+    acquireWakeLock();
     // setup callkeep and display
     var ctx = Ctx.app();
     RNCallKeepModule.registerPhoneAccount(ctx);

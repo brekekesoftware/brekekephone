@@ -34,6 +34,7 @@ public class BrekekeLpcService extends Service {
   public static Boolean isReconnectByNetworkChange = false;
   public static MonitorConnection con;
   private Boolean isServiceNotiExist = false;
+  private BrekekeLpcReceiver lpcReceiver;
 
   @Override
   public void onCreate() {
@@ -52,7 +53,8 @@ public class BrekekeLpcService extends Service {
     isServiceNotiExist = true;
     // register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-    registerReceiver(new BrekekeLpcReceiver(), filter);
+    lpcReceiver = new BrekekeLpcReceiver();
+    registerReceiver(lpcReceiver, filter);
 
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
@@ -126,6 +128,10 @@ public class BrekekeLpcService extends Service {
     Log.d(LpcUtils.TAG, "service destroy");
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
+    if (lpcReceiver != null) {
+      unregisterReceiver(lpcReceiver);
+      lpcReceiver = null;
+    }
     // clear local config
     LpcUtils.writeConfig(this, "");
   }
