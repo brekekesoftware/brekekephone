@@ -41,7 +41,7 @@ export const getConnectionStatus = () => {
       message = intl`Internet connection failed`
     }
   } else if (isMFAPending) {
-    message = intl`Please complete the MFA verification to continue`
+    message = ''
   } else if (!serviceConnectingOrFailure) {
     if (isRequestRetrying) {
       message = intl`Retrying connection...`

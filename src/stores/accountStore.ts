@@ -686,6 +686,18 @@ export class AccountStore {
       return
     }
 
+    // Resuming after call ended — session from previous mfaStart still valid,
+    // just re-show the modal without sending another OTP email.
+    if (this.keySessionMFA) {
+      if (ctx.call.calls.length > 0) {
+        ctx.account.setMFAPendingAfterCallsId(ca.id)
+        return
+      }
+      await this.setMFAPending(ca, true)
+      ctx.mfa.show(ca.id)
+      return
+    }
+
     const result = await this.mfaStart(ca)
     if (result === 'none') {
       return

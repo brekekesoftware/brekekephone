@@ -232,8 +232,14 @@ export const parse = async (
   const waitMfaIfNeeded = async (): Promise<boolean> => {
     await ctx.auth.waitPbx()
     const ca = ctx.auth.getCurrentAccount()
-    if (ca && ctx.account.isAccountInMFA(ca)) {
+    if (!ca) {
+      return false
+    }
+    if (ctx.account.isAccountInMFA(ca)) {
       return ctx.mfa.waitComplete()
+    }
+    if (ctx.mfa.wasCancelled) {
+      return false
     }
     return true
   }
@@ -241,6 +247,7 @@ export const parse = async (
   const navIndex = async (fn: () => void) => {
     ctx.nav.customPageIndex = fn
     if (!(await waitMfaIfNeeded())) {
+      ctx.nav.customPageIndex = undefined
       return
     }
     fn()
@@ -293,6 +300,7 @@ export const parse = async (
     }
     void waitMfaIfNeeded().then(async ok => {
       if (!ok) {
+        ctx.nav.customPageIndex = undefined
         return
       }
       await ctx.auth.waitUc()

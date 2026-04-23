@@ -371,7 +371,9 @@ export class PBX extends EventEmitter {
     const hasRetryMethod = this.methodsWithRetry.includes(method)
     const shouldHideError = isRetryableError && hasRetryMethod
 
-    if (!isPingMethod && !suppressErr(err) && !shouldHideError) {
+    const ca = ctx.auth.getCurrentAccount()
+    const inMFA = ca && ctx.account.isAccountInMFA(ca)
+    if (!isPingMethod && !suppressErr(err) && !shouldHideError && !inMFA) {
       ctx.toast.internet(err)
     }
 
@@ -452,8 +454,26 @@ export class PBX extends EventEmitter {
       }
       this.logMainInstance('PAL Server available - proceeding with login')
     }
+    const mfaAllowedMethods = [
+      'mfa/start',
+      'mfa/check',
+      'mfa/delete',
+      'device_token/create',
+      'device_token/check',
+      'device_token/delete',
+      'getProductInfo',
+      'ping',
+    ]
     client.call_pal = (method: keyof Pbx, params?: object) =>
       new Promise((resolve, reject) => {
+        const ca = ctx.auth.getCurrentAccount()
+        if (
+          ca &&
+          ctx.account.isAccountInMFA(ca) &&
+          !mfaAllowedMethods.includes(method)
+        ) {
+          return reject(new Error(`PAL call blocked during MFA: ${method}`))
+        }
         const start = Date.now()
         this.logMainInstance(
           `PAL call start, method: ${method}, params:`,

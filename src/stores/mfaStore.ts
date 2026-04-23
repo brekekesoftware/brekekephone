@@ -8,6 +8,7 @@ export class MFAStore {
   // Used by syncPnToken flow which only needs to save the token
   // without triggering a full PBX reconnect with device_token.
   skipReconnect = false
+  wasCancelled = false
   private _resolvers: Array<(ok: boolean) => void> = []
 
   @action show = (id: string, opts?: { skipReconnect?: boolean }) => {
@@ -20,6 +21,7 @@ export class MFAStore {
     this._resolvers = []
     this.accountId = id
     this.skipReconnect = opts?.skipReconnect ?? false
+    this.wasCancelled = false
   }
 
   @action hide = () => {
@@ -32,9 +34,9 @@ export class MFAStore {
     this._resolvers = []
     this.accountId = null
     this.skipReconnect = false
+    this.wasCancelled = false
     const hadAwaiters = rs.length > 0
-    rs.slice(0, -1).forEach(r => r(false))
-    rs[rs.length - 1]?.(true)
+    rs.forEach(r => r(true))
     return hadAwaiters
   }
 
@@ -43,6 +45,7 @@ export class MFAStore {
     this._resolvers = []
     this.accountId = null
     this.skipReconnect = false
+    this.wasCancelled = true
     rs.forEach(r => r(false))
   }
 
