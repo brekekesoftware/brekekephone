@@ -281,7 +281,11 @@ export const Page2StepVerification = () => {
     <Animated.View
       style={[
         css.ModalContainer,
-        { opacity: anim.opacity, bottom: -(safeInsets?.bottom ?? 0) },
+        {
+          opacity: anim.opacity,
+          top: safeInsets?.top ?? 0,
+          bottom: -(safeInsets?.bottom ?? 0),
+        },
       ]}
     >
       <KeyboardAvoidingView

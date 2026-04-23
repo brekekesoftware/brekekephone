@@ -359,10 +359,6 @@ export const App = observer(() => {
         <RnPickerRoot />
         <PhonebookAddItem />
         <RnAlertRoot />
-        {(() => {
-          const id = ctx.auth.getCurrentAccount()?.id || ctx.mfa.accountId
-          return !!id && ctx.mfa.isShowing(id) && <Page2StepVerification />
-        })()}
         {isFailure && (
           <RnTouchableOpacity
             style={css.App_ConnectionStatusIncreaseTouchSize}
@@ -377,6 +373,10 @@ export const App = observer(() => {
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
+      {(() => {
+        const id = ctx.auth.getCurrentAccount()?.id || ctx.mfa.accountId
+        return !!id && ctx.mfa.isShowing(id) && <Page2StepVerification />
+      })()}
     </RootView>
   )
 })

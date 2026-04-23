@@ -371,9 +371,7 @@ export class PBX extends EventEmitter {
     const hasRetryMethod = this.methodsWithRetry.includes(method)
     const shouldHideError = isRetryableError && hasRetryMethod
 
-    const ca = ctx.auth.getCurrentAccount()
-    const inMFA = ca && ctx.account.isAccountInMFA(ca)
-    if (!isPingMethod && !suppressErr(err) && !shouldHideError && !inMFA) {
+    if (!isPingMethod && !suppressErr(err) && !shouldHideError) {
       ctx.toast.internet(err)
     }
 
