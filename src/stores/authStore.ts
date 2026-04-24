@@ -714,36 +714,55 @@ export class AuthStore {
     },
   )
 
+  // Prevent concurrent signInByNotification calls that cause PBX stuck.
+  // On Android, multiple onNotification events can fire for the same tap
+  // (notification grouping, tray queue, app resume). On iOS, VoIP event +
+  // callkeep didDisplayIncomingCall can fire for the same call PN. Both
+  // lead to 2+ signIn(acc) running concurrently, racing on signedInId
+  // pre-clear and PBX reconnect, leaving PBX stuck in "connecting".
+  private isSigningInByNotification = false
+
   @action signInByNotification = async (n: ParsedPn) => {
+    if (this.isSigningInByNotification) {
+      console.log(
+        `SIP PN debug: signInByNotification already in progress, skip pnId=${n.id}`,
+      )
+      return
+    }
+    this.isSigningInByNotification = true
     console.log(
       `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
     )
     this.sipPn = n.sipPn
-    // find account for the notification target
-    const acc = await ctx.account.findByPn(n)
-    if (!acc) {
-      console.log('SIP PN debug: can not find account from notification')
-      return
+    try {
+      // find account for the notification target
+      const acc = await ctx.account.findByPn(n)
+      if (!acc) {
+        console.log('SIP PN debug: can not find account from notification')
+        return
+      }
+      // use isSignInByNotification to disable UC auto sign in for a while
+      if (n.isCall) {
+        this.isSignInByNotification = true
+        this.clearSignInByNotification()
+      }
+      this.resetFailureState()
+      if (this.signedInId === acc.id) {
+        return
+      }
+      // Dispose AuthSIP to prevent its reaction from firing during account switch.
+      // Without this, the sipPn assignment above triggers sipShouldAuth reaction,
+      // which calls authPnWithoutCatch while signedInId is being cleared/switched,
+      // causing "Already signed out after long await" error.
+      ctx.authSIP.dispose()
+      if (this.signedInId) {
+        this.signedInId = ''
+        await waitTimeout()
+      }
+      await this.signIn(acc)
+    } finally {
+      this.isSigningInByNotification = false
     }
-    // use isSignInByNotification to disable UC auto sign in for a while
-    if (n.isCall) {
-      this.isSignInByNotification = true
-      this.clearSignInByNotification()
-    }
-    this.resetFailureState()
-    if (this.signedInId === acc.id) {
-      return
-    }
-    // Dispose AuthSIP to prevent its reaction from firing during account switch.
-    // Without this, the sipPn assignment above triggers sipShouldAuth reaction,
-    // which calls authPnWithoutCatch while signedInId is being cleared/switched,
-    // causing "Already signed out after long await" error.
-    ctx.authSIP.dispose()
-    if (this.signedInId) {
-      this.signedInId = ''
-      await waitTimeout()
-    }
-    await this.signIn(acc)
   }
   phoneappliEnabled = () =>
     !isWeb &&
