@@ -223,9 +223,16 @@ export class AuthStore {
       })
     }
 
+    const isSwitchingAccount = this.signedInId && this.signedInId !== a.id
+    if (isSwitchingAccount) {
+      // Clear MFA session key from previous account — it's account-specific,
+      // so carrying it over would cause the new account to reuse a stale
+      // session (show OTP modal without sending a fresh mfa/start).
+      ctx.account.keySessionMFA = ''
+      ctx.account.setMFAPendingAfterCallsId('')
+    }
     if (ctx.mfa.accountId && ctx.mfa.accountId !== a.id) {
       ctx.mfa.reset()
-      ctx.account.setMFAPendingAfterCallsId('')
     }
 
     this.signedInId = a.id
@@ -309,6 +316,7 @@ export class AuthStore {
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = false
     ctx.account.setMFAPendingAfterCallsId('')
+    ctx.account.keySessionMFA = ''
     ctx.mfa.reset()
   }
 
