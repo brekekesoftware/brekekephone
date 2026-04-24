@@ -176,7 +176,9 @@ export const Page2StepVerification = () => {
         if (ctx.call.calls.length > 0) {
           ctx.account.setMFAPendingAfterCallsId(ca.id)
         }
-        ctx.mfa.hide()
+        // reset() resolves any pending waitComplete() promises with false,
+        // avoiding the 10min timeout hang that hide() would cause.
+        ctx.mfa.reset()
       }
     }
   }, [])

@@ -438,6 +438,8 @@ export class AccountStore {
       // success case
       mfa.verified = true
       mfa.pending = false
+      // Clear session key — no longer needed after successful verification
+      mfa.sessKey = undefined
       if (res.expiration_time) {
         mfa.expiration_time = res.expiration_time
       }
@@ -447,6 +449,7 @@ export class AccountStore {
         [key]: res.token,
       })
       mfa.createdAt = now
+      this.keySessionMFA = ''
     }
 
     this.saveAccountsToLocalStorageDebounced()
@@ -686,6 +689,14 @@ export class AccountStore {
       d.mfa.pending = false
       await this.saveAccountsToLocalStorageWithoutDebounced()
     }
+
+    // Already showing OTP for this account (e.g. syncPnToken triggered first)
+    // — user is actively verifying, skip everything else to avoid touching
+    // active session (no mfaDelete, no duplicate mfaStart, no verified check).
+    if (ctx.mfa.isShowing(ca.id)) {
+      return
+    }
+
     if (d.mfa?.verified) {
       const t = await ctx.account.getMFAToken(ca)
       if (t) {
@@ -712,16 +723,14 @@ export class AccountStore {
     if (savedSessKey && !this.keySessionMFA) {
       this.keySessionMFA = savedSessKey
       await this.mfaDelete(ca)
+      // Force clear — we want fresh mfaStart regardless of mfaDelete result.
+      // On success, mfaDelete already sets keySessionMFA=''. On failure (!res),
+      // need explicit clear to avoid falling into `if (keySessionMFA)` reuse block.
+      this.keySessionMFA = ''
       if (d.mfa) {
         d.mfa.sessKey = undefined
       }
       await this.saveAccountsToLocalStorageWithoutDebounced()
-    }
-
-    // Already showing OTP for this account (e.g. syncPnToken triggered first)
-    // — skip mfaStart to avoid sending a duplicate OTP email
-    if (ctx.mfa.isShowing(ca.id)) {
-      return
     }
 
     // Resuming after call ended — session from previous mfaStart still valid,

@@ -827,6 +827,11 @@ export class PBX extends EventEmitter {
     if (!isMFASupported(pc)) {
       return false
     }
+    // Main MFA flow already handling this account — don't duplicate mfaStart
+    // (would invalidate active session + send duplicate OTP email)
+    if (ctx.mfa.isShowing(a.id)) {
+      return false
+    }
     // Skip MFA if account has been removed — prevents spurious mfaStart
     // + "Account does not exist" on OTP screen during pnToken.sync(noUpsert)
     if (!ctx.account.accounts.some(acc => acc.id === a.id)) {
