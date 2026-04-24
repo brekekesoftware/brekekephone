@@ -223,15 +223,16 @@ export class AuthStore {
       })
     }
 
-    const isSwitchingAccount = this.signedInId && this.signedInId !== a.id
-    if (isSwitchingAccount) {
-      // Clear MFA session key from previous account — it's account-specific,
-      // so carrying it over would cause the new account to reuse a stale
-      // session (show OTP modal without sending a fresh mfa/start).
+    // Detect account switch using either signedInId OR mfa.accountId.
+    // signInByNotification pre-clears signedInId before calling signIn, so
+    // mfa.accountId is the reliable fallback to catch switches when the
+    // previous account had an active MFA modal.
+    const prevAccountId = this.signedInId || ctx.mfa.accountId
+    if (prevAccountId && prevAccountId !== a.id) {
+      // Clear MFA state from previous account — all three are account-specific
+      // and would cause stale-session bugs if carried over to the new account.
       ctx.account.keySessionMFA = ''
       ctx.account.setMFAPendingAfterCallsId('')
-    }
-    if (ctx.mfa.accountId && ctx.mfa.accountId !== a.id) {
       ctx.mfa.reset()
     }
 
