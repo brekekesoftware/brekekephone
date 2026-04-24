@@ -246,7 +246,7 @@ export const Page2StepVerification = () => {
       try {
         const result = await ctx.account.mfaStart(account)
         if (result === 'none') {
-          ctx.mfa.cancel()
+          ctx.mfa.reset()
           return
         }
         if (!result) {
@@ -267,14 +267,19 @@ export const Page2StepVerification = () => {
   }
 
   const onBack = async () => {
-    if (account) {
-      if (ctx.account.keySessionMFA) {
-        await ctx.account.mfaDelete(account)
-      }
-      await ctx.account.setMFAPending(account, false)
+    if (account && ctx.account.keySessionMFA) {
+      await ctx.account.mfaDelete(account)
     }
+    // Sync: cancel + signOut in same tick so MobX batches the state transitions
+    // into a single render. Avoids a brief flash where modal has unmounted but
+    // signedInId/sipState still show "Internet connection failed" banner.
     ctx.mfa.cancel()
     ctx.auth.signOut()
+    // Persist pending=false after UI has updated (stale state self-heals via
+    // handleMFA's stale pending reset on next sign-in).
+    if (account) {
+      void ctx.account.setMFAPending(account, false)
+    }
   }
 
   return (

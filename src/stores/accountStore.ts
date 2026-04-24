@@ -102,6 +102,7 @@ type MFAInfo = {
   expiration_time?: number
   verified?: boolean
   pending?: boolean
+  sessKey?: string
 }
 
 type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
@@ -298,17 +299,39 @@ export class AccountStore {
 
     this.saveAccountsToLocalStorageDebounced()
     if (a) {
+      // Cleanup MFA modal + deferred trigger for this account
+      if (ctx.mfa.isShowing(id)) {
+        ctx.mfa.reset()
+      }
+      if (this.mfaPendingAfterCallsId === id) {
+        this.setMFAPendingAfterCallsId('')
+      }
+
+      const d = await this.findData(a)
+
+      // Delete server MFA session if this account is mid-verification
+      if (this.keySessionMFA && d?.mfa?.pending) {
+        await this.mfaDelete(a)
+      }
+
+      // Clear persisted MFA pending/session so it doesn't resurface on recreate
+      if (d?.mfa) {
+        d.mfa.pending = false
+        d.mfa.sessKey = undefined
+      }
+
       a.pushNotificationEnabled = false
       ctx.pnToken.sync(a, {
         noUpsert: true,
       })
-      const d = await this.findData(a)
       const hasMFAToken =
         d?.palParams?.['device_token'] ||
         (d?.mfa?.verified && d?.mfa?.token && Object.keys(d.mfa.token).length)
       if (hasMFAToken) {
         await this.deleteMFADeviceToken(a)
       }
+      this.keySessionMFA = ''
+      await this.saveAccountsToLocalStorageWithoutDebounced()
     }
   }
 
@@ -603,6 +626,10 @@ export class AccountStore {
           return 'none'
         }
         this.keySessionMFA = res.sess_key
+        const sd = await this.findDataWithDefault(ca)
+        const smfa = (sd.mfa ??= { verified: false })
+        smfa.sessKey = res.sess_key
+        await this.saveAccountsToLocalStorageWithoutDebounced()
         return true
       }
     } catch (err) {
@@ -678,6 +705,17 @@ export class AccountStore {
           return
         }
       }
+    }
+
+    // Restore persisted sessKey after kill app — delete old session before starting new
+    const savedSessKey = d.mfa?.sessKey
+    if (savedSessKey && !this.keySessionMFA) {
+      this.keySessionMFA = savedSessKey
+      await this.mfaDelete(ca)
+      if (d.mfa) {
+        d.mfa.sessKey = undefined
+      }
+      await this.saveAccountsToLocalStorageWithoutDebounced()
     }
 
     // Already showing OTP for this account (e.g. syncPnToken triggered first)

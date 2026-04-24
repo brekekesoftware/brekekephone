@@ -827,6 +827,11 @@ export class PBX extends EventEmitter {
     if (!isMFASupported(pc)) {
       return false
     }
+    // Skip MFA if account has been removed — prevents spurious mfaStart
+    // + "Account does not exist" on OTP screen during pnToken.sync(noUpsert)
+    if (!ctx.account.accounts.some(acc => acc.id === a.id)) {
+      return false
+    }
     const data = ctx.account.findDataSync(a)
     if (data?.palParams?.['device_token']) {
       return false

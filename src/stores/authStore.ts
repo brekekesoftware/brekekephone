@@ -224,7 +224,7 @@ export class AuthStore {
     }
 
     if (ctx.mfa.accountId && ctx.mfa.accountId !== a.id) {
-      ctx.mfa.cancel()
+      ctx.mfa.reset()
       ctx.account.setMFAPendingAfterCallsId('')
     }
 
@@ -309,7 +309,7 @@ export class AuthStore {
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = false
     ctx.account.setMFAPendingAfterCallsId('')
-    ctx.mfa.cancel()
+    ctx.mfa.reset()
   }
 
   @action resetFailureState = () => {

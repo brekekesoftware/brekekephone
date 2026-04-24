@@ -49,6 +49,18 @@ export class MFAStore {
     rs.forEach(r => r(false))
   }
 
+  // Clean reset — for signIn/signOut where no user cancellation occurred.
+  // Unlike cancel(), this does NOT set wasCancelled=true, so subsequent
+  // PN navigation / deeplink flows won't be blocked by stale cancel state.
+  @action reset = () => {
+    const rs = this._resolvers
+    this._resolvers = []
+    this.accountId = null
+    this.skipReconnect = false
+    this.wasCancelled = false
+    rs.forEach(r => r(false))
+  }
+
   isShowing = (id: string) => this.accountId === id
 
   waitComplete = (): Promise<boolean> =>
