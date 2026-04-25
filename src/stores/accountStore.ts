@@ -17,7 +17,7 @@ import type {
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
-import { currentVersion, isAndroid, isWeb } from '#/config'
+import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { intl, intlDebug } from '#/stores/intl'
@@ -28,7 +28,6 @@ import {
   defaultRingtone,
   staticRingtones,
 } from '#/utils/BrekekeUtils'
-import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import { getPublicIp } from '#/utils/publicIpAddress'
@@ -128,10 +127,6 @@ export class AccountStore {
   @observable mfaPendingAfterCallsId = ''
   @action setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
-    if (isAndroid && id) {
-      const status = getConnectionStatus()
-      BrekekeUtils.updateConnectionStatus(status.message, status.isFailure)
-    }
   }
 
   genEmptyAccount = (): Account => ({
@@ -299,7 +294,6 @@ export class AccountStore {
 
     this.saveAccountsToLocalStorageDebounced()
     if (a) {
-      // Cleanup MFA modal + deferred trigger for this account
       if (ctx.mfa.isShowing(id)) {
         ctx.mfa.reset()
       }
@@ -309,7 +303,6 @@ export class AccountStore {
 
       const d = await this.findData(a)
 
-      // Delete server MFA session if this account is mid-verification
       if (this.keySessionMFA && d?.mfa?.pending) {
         await this.mfaDelete(a)
       }
@@ -435,10 +428,8 @@ export class AccountStore {
       if (!res.token) {
         return
       }
-      // success case
       mfa.verified = true
       mfa.pending = false
-      // Clear session key — no longer needed after successful verification
       mfa.sessKey = undefined
       if (res.expiration_time) {
         mfa.expiration_time = res.expiration_time
@@ -474,10 +465,6 @@ export class AccountStore {
       ctx.mfa.hide()
     }
     await this.saveAccountsToLocalStorageWithoutDebounced()
-    if (isAndroid && pending) {
-      const status = getConnectionStatus()
-      BrekekeUtils.updateConnectionStatus(status.message, status.isFailure)
-    }
   }
 
   isAccountInMFA = (a: AccountUnique): boolean => {
@@ -556,7 +543,6 @@ export class AccountStore {
         }
         return true
       }
-      // invalid token → cleanup
       if (d?.palParams?.device_token) {
         console.log('MFA: removing invalid device_token')
         delete d.palParams.device_token
@@ -579,9 +565,6 @@ export class AccountStore {
         user: ca.pbxUsername,
       }
       const res = await ctx.pbx.client?.call_pal('device_token/delete', p)
-
-      // device_token/delete always return undefined for now,
-      // if (res?.status === 'OK' || res?.status === 'NO_ENTRY') {}
 
       const d = await this.findData(ca)
       if (!d) {
@@ -607,14 +590,12 @@ export class AccountStore {
     }
   }
 
-  mfaStart = async (ca: Account, email?: string, url?: string) => {
+  mfaStart = async (ca: Account) => {
     try {
       const param: MFAStart = {
         ip_address: await getPublicIp(),
         tenant: ca.pbxTenant,
         user: ca.pbxUsername,
-        email,
-        url,
       }
       const res: MFAStartRes | undefined = await ctx.pbx.client?.call_pal(
         'mfa/start',
