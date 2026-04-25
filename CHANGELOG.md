@@ -1,3 +1,8 @@
+#### 2.17.2
+
+- Update ios build tools sdk ios 26
+- Implement MFA
+
 #### 2.17.1
 
 - Fix ios it should support tls 1.3

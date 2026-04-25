@@ -58,6 +58,7 @@ export class AuthStore {
   @observable ucLoginFromAnotherPlace = false
 
   @observable pbxConnectedAt = 0
+  @observable pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -222,8 +223,26 @@ export class AuthStore {
       })
     }
 
+    // Detect account switch using either signedInId OR mfa.accountId.
+    // signInByNotification pre-clears signedInId before calling signIn, so
+    // mfa.accountId is the reliable fallback to catch switches when the
+    // previous account had an active MFA modal.
+    const prevAccountId = this.signedInId || ctx.mfa.accountId
+    if (prevAccountId && prevAccountId !== a.id) {
+      // Clear MFA state from previous account — all three are account-specific
+      // and would cause stale-session bugs if carried over to the new account.
+      ctx.account.keySessionMFA = ''
+      ctx.account.setMFAPendingAfterCallsId('')
+      ctx.mfa.reset()
+    } else {
+      // Same account re-sign-in — clear cancel state so waitMfaIfNeeded
+      // and PN navigation are not blocked by a stale wasCancelled flag.
+      ctx.mfa.clearCancelled()
+    }
+
     this.signedInId = a.id
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = true
     console.log(
       '=======================================================================',
     )
@@ -300,6 +319,10 @@ export class AuthStore {
     this.cRecentCalls = []
     this.rcPage = 0
     this.pbxConnectedAt = 0
+    this.pbxFreshLogin = false
+    ctx.account.setMFAPendingAfterCallsId('')
+    ctx.account.keySessionMFA = ''
+    ctx.mfa.signOutReset()
   }
 
   @action resetFailureState = () => {
@@ -518,15 +541,26 @@ export class AuthStore {
       }
     }
 
-    // wait for PBX config to load (custom pages parsed after pbxState=success)
-    await this.waitPbx()
-
-    const cp = ctx.auth.getCustomPageById(internalId)
-    if (cp) {
-      ctx.auth.activeCustomPageId = internalId
-      ctx.nav.goToPageCustomPage({ id: internalId })
+    const navigateToCustomPage = () => {
+      const cp = ctx.auth.getCustomPageById(internalId)
+      if (cp) {
+        ctx.auth.activeCustomPageId = internalId
+        ctx.nav.goToPageCustomPage({ id: internalId })
+      }
+      this.clearUrlParams()
     }
-    this.clearUrlParams()
+
+    await this.waitPbx()
+    const currentCa = ctx.auth.getCurrentAccount()
+    if (currentCa && ctx.account.isAccountInMFA(currentCa)) {
+      const ok = await ctx.mfa.waitComplete()
+      if (!ok) {
+        this.clearUrlParams()
+        return true
+      }
+    }
+
+    navigateToCustomPage()
     return true
   }
 
@@ -684,36 +718,55 @@ export class AuthStore {
     },
   )
 
+  // Prevent concurrent signInByNotification calls that cause PBX stuck.
+  // On Android, multiple onNotification events can fire for the same tap
+  // (notification grouping, tray queue, app resume). On iOS, VoIP event +
+  // callkeep didDisplayIncomingCall can fire for the same call PN. Both
+  // lead to 2+ signIn(acc) running concurrently, racing on signedInId
+  // pre-clear and PBX reconnect, leaving PBX stuck in "connecting".
+  private isSigningInByNotification = false
+
   @action signInByNotification = async (n: ParsedPn) => {
+    if (this.isSigningInByNotification) {
+      console.log(
+        `SIP PN debug: signInByNotification already in progress, skip pnId=${n.id}`,
+      )
+      return
+    }
+    this.isSigningInByNotification = true
     console.log(
       `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
     )
     this.sipPn = n.sipPn
-    // find account for the notification target
-    const acc = await ctx.account.findByPn(n)
-    if (!acc) {
-      console.log('SIP PN debug: can not find account from notification')
-      return
+    try {
+      // find account for the notification target
+      const acc = await ctx.account.findByPn(n)
+      if (!acc) {
+        console.log('SIP PN debug: can not find account from notification')
+        return
+      }
+      // use isSignInByNotification to disable UC auto sign in for a while
+      if (n.isCall) {
+        this.isSignInByNotification = true
+        this.clearSignInByNotification()
+      }
+      this.resetFailureState()
+      if (this.signedInId === acc.id) {
+        return
+      }
+      // Dispose AuthSIP to prevent its reaction from firing during account switch.
+      // Without this, the sipPn assignment above triggers sipShouldAuth reaction,
+      // which calls authPnWithoutCatch while signedInId is being cleared/switched,
+      // causing "Already signed out after long await" error.
+      ctx.authSIP.dispose()
+      if (this.signedInId) {
+        this.signedInId = ''
+        await waitTimeout()
+      }
+      await this.signIn(acc)
+    } finally {
+      this.isSigningInByNotification = false
     }
-    // use isSignInByNotification to disable UC auto sign in for a while
-    if (n.isCall) {
-      this.isSignInByNotification = true
-      this.clearSignInByNotification()
-    }
-    this.resetFailureState()
-    if (this.signedInId === acc.id) {
-      return
-    }
-    // Dispose AuthSIP to prevent its reaction from firing during account switch.
-    // Without this, the sipPn assignment above triggers sipShouldAuth reaction,
-    // which calls authPnWithoutCatch while signedInId is being cleared/switched,
-    // causing "Already signed out after long await" error.
-    ctx.authSIP.dispose()
-    if (this.signedInId) {
-      this.signedInId = ''
-      await waitTimeout()
-    }
-    await this.signIn(acc)
   }
   phoneappliEnabled = () =>
     !isWeb &&
