@@ -9,6 +9,7 @@ export class MFAStore {
   // without triggering a full PBX reconnect with device_token.
   skipReconnect = false
   wasCancelled = false
+  cancelledAccountId: string | null = null
   private _resolvers: Array<(ok: boolean) => void> = []
 
   @action show = (id: string, opts?: { skipReconnect?: boolean }) => {
@@ -22,6 +23,7 @@ export class MFAStore {
     this.accountId = id
     this.skipReconnect = opts?.skipReconnect ?? false
     this.wasCancelled = false
+    this.cancelledAccountId = null
   }
 
   @action hide = () => {
@@ -35,6 +37,7 @@ export class MFAStore {
     this.accountId = null
     this.skipReconnect = false
     this.wasCancelled = false
+    this.cancelledAccountId = null
     const hadAwaiters = rs.length > 0
     rs.forEach(r => r(true))
     return hadAwaiters
@@ -43,6 +46,7 @@ export class MFAStore {
   @action cancel = () => {
     const rs = this._resolvers
     this._resolvers = []
+    this.cancelledAccountId = this.accountId
     this.accountId = null
     this.skipReconnect = false
     this.wasCancelled = true
@@ -58,7 +62,25 @@ export class MFAStore {
     this.accountId = null
     this.skipReconnect = false
     this.wasCancelled = false
+    this.cancelledAccountId = null
     rs.forEach(r => r(false))
+  }
+
+  // Called by signOut — preserves wasCancelled/cancelledAccountId so
+  // syncPnToken does not trigger a new mfa/start immediately after cancel.
+  @action signOutReset = () => {
+    const rs = this._resolvers
+    this._resolvers = []
+    this.accountId = null
+    this.skipReconnect = false
+    rs.forEach(r => r(false))
+  }
+
+  // Clear cancel state when a new sign-in begins for the same account,
+  // so waitMfaIfNeeded and PN navigation are not blocked by stale cancel state.
+  @action clearCancelled = () => {
+    this.wasCancelled = false
+    this.cancelledAccountId = null
   }
 
   isShowing = (id: string) => this.accountId === id

@@ -234,6 +234,10 @@ export class AuthStore {
       ctx.account.keySessionMFA = ''
       ctx.account.setMFAPendingAfterCallsId('')
       ctx.mfa.reset()
+    } else {
+      // Same account re-sign-in — clear cancel state so waitMfaIfNeeded
+      // and PN navigation are not blocked by a stale wasCancelled flag.
+      ctx.mfa.clearCancelled()
     }
 
     this.signedInId = a.id
@@ -318,7 +322,7 @@ export class AuthStore {
     this.pbxFreshLogin = false
     ctx.account.setMFAPendingAfterCallsId('')
     ctx.account.keySessionMFA = ''
-    ctx.mfa.reset()
+    ctx.mfa.signOutReset()
   }
 
   @action resetFailureState = () => {
