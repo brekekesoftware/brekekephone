@@ -27,6 +27,7 @@ import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import type { TEvent } from '#/utils/callkeep'
 import { checkMutedRemoteUser } from '#/utils/checkMutedRemoteUser'
 import { jsonSafe } from '#/utils/jsonSafe'
+import { isMFASupported } from '#/utils/mfaUtils'
 import { encodeParkNumber } from '#/utils/parkNumber'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
@@ -644,6 +645,15 @@ export class CallStore {
     // when if this is a outgoing call, try to insert a call history to uc chat
     if (ctx.auth.ucState === 'success' && c.answeredAt && !c.incoming) {
       ctx.uc.sendCallResult(c.getDuration(), c.partyNumber)
+    }
+    // trigger deferred MFA if all calls have ended
+    const pendingId = ctx.account.mfaPendingAfterCallsId
+    if (isMFASupported() && !this.calls.length && pendingId) {
+      ctx.account.setMFAPendingAfterCallsId('')
+      const mfaCa = ctx.account.accounts.find(a => a.id === pendingId)
+      if (mfaCa) {
+        ctx.account.handleMFA(mfaCa)
+      }
     }
     // reset loud speaker if there's no call left
     if (!isWeb && !this.calls.length) {

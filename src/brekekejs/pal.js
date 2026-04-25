@@ -113,6 +113,12 @@ Brekeke.pbx.getPalPrototype = function () {
     'getVoicemails',
     'getTalkerInfo',
     'ping',
+    'device_token/create',
+    'device_token/check',
+    'device_token/delete',
+    'mfa/start',
+    'mfa/delete',
+    'mfa/check',
   ]
   for (var i = 0; i < pal.methods.length; i++) {
     pal.regMethod(pal.methods[i])

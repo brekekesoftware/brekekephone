@@ -2,6 +2,7 @@ import '#/api/pbx'
 import '#/api/sip'
 import '#/api/uc'
 import '#/stores/accountStore'
+import '#/stores/mfaStore'
 import '#/stores/AuthPBX'
 import '#/stores/AuthSIP'
 import '#/stores/authStore'
@@ -35,6 +36,7 @@ import type { ContactStore } from '#/stores/contactStore'
 import type { DebugStore } from '#/stores/debugStore'
 import type { GlobalStore } from '#/stores/global'
 import type { IntlStore } from '#/stores/intlStore'
+import type { MFAStore } from '#/stores/mfaStore'
 import type { Nav } from '#/stores/Nav'
 import type { ToastStore } from '#/stores/toastStore'
 import type { UserStore } from '#/stores/userStore'
@@ -49,6 +51,7 @@ export type Ctx = {
   intl: IntlStore
   auth: AuthStore
   account: AccountStore
+  mfa: MFAStore
   call: CallStore
   chat: ChatStore
   contact: ContactStore

@@ -229,10 +229,28 @@ export const parse = async (
   console.log('SIP PN debug: call signInByNotification')
   await ctx.auth.signInByNotification(n)
 
-  const navIndex = async (k: keyof typeof ctx.nav, params?: any) => {
-    ctx.nav.customPageIndex = ctx.nav[k]
-    await waitTimeout()
-    ctx.nav[k]?.(params)
+  const waitMfaIfNeeded = async (): Promise<boolean> => {
+    await ctx.auth.waitPbx()
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return false
+    }
+    if (ctx.account.isAccountInMFA(ca)) {
+      return ctx.mfa.waitComplete()
+    }
+    if (ctx.mfa.wasCancelled) {
+      return false
+    }
+    return true
+  }
+
+  const navIndex = async (fn: () => void) => {
+    ctx.nav.customPageIndex = fn
+    if (!(await waitMfaIfNeeded())) {
+      ctx.nav.customPageIndex = undefined
+      return
+    }
+    fn()
   }
 
   const rawId = raw['id'] as string | undefined
@@ -243,13 +261,13 @@ export const parse = async (
     )
 
     if (ctx.auth.userExtensionProperties && ctx.auth.phoneappliEnabled()) {
-      navIndex('goToPageCallKeypad')
+      navIndex(() => ctx.nav.goToPageCallKeypad())
       if (isIos) {
         PushNotification.resetBadgeNumber()
       }
       openLinkSafely(urls.phoneappli.HISTORY_CALLED)
     } else {
-      navIndex('goToPageCallRecents')
+      navIndex(() => ctx.nav.goToPageCallRecents())
     }
     return
   }
@@ -276,20 +294,22 @@ export const parse = async (
     if (!acc.ucEnabled) {
       return
     }
+    ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
     if (!senderId && !confId) {
-      navIndex('goToPageChatRecents')
       return
     }
-    if ((isGroupChat || !senderId) && confId) {
-      ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
-      waitTimeout().then(() => ctx.chat.handleMoveToChatGroupDetail(confId))
-      return
-    }
-    if (senderId) {
-      ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
-      waitTimeout().then(() => ctx.nav.goToPageChatDetail({ buddy: senderId }))
-      return
-    }
+    void waitMfaIfNeeded().then(async ok => {
+      if (!ok) {
+        ctx.nav.customPageIndex = undefined
+        return
+      }
+      await ctx.auth.waitUc()
+      if ((isGroupChat || !senderId) && confId) {
+        ctx.chat.handleMoveToChatGroupDetail(confId)
+      } else if (senderId) {
+        ctx.nav.goToPageChatDetail({ buddy: senderId })
+      }
+    })
     return
   }
 

@@ -28,6 +28,7 @@ import { ToastRoot } from '#/components/ToastRoot'
 import { v } from '#/components/variables'
 import { defaultTimeout, isIos, isWeb } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
+import { Page2StepVerification } from '#/pages/Page2StepVerification'
 import { RenderAllCalls } from '#/pages/PageCallManage'
 import { PageCustomPageView } from '#/pages/PageCustomPageView'
 import { getLastSignedInId } from '#/stores/accountStore'
@@ -63,6 +64,11 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCall() || checkWakeFromPN()
 
   const autoLogin = async () => {
+    // skip autoLogin when MFA modal is showing
+    const cau = ctx.auth.getCurrentAccount()
+    if (cau && ctx.account.isAccountInMFA(cau)) {
+      return
+    }
     if (!(await checkPermForCall())) {
       ctx.nav.goToPageAccountSignIn()
       return
@@ -367,6 +373,10 @@ export const App = observer(() => {
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
+      {(() => {
+        const id = ctx.auth.getCurrentAccount()?.id || ctx.mfa.accountId
+        return !!id && ctx.mfa.isShowing(id) && <Page2StepVerification />
+      })()}
     </RootView>
   )
 })

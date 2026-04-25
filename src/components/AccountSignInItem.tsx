@@ -95,6 +95,11 @@ export const AccountSignInItem: FC<{
     if (e && !(await checkPermForCall(true, true))) {
       return
     }
+    if (ctx.account.needsMFAForPnSync(a)) {
+      ctx.account.pendingPnEnabled = e
+      ctx.pnToken.sync(a)
+      return
+    }
     ctx.account.upsertAccount({
       id: a.id,
       pushNotificationEnabled: e,
