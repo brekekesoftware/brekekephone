@@ -846,13 +846,19 @@ export class PBX extends EventEmitter {
     ctx.pbx.client = this.client
     const started = await ctx.account.mfaStart(a)
 
-    if (!started || started === 'none') {
+    if (started === false || started === 'none') {
       ctx.pbx.client = savedClient
       return false
     }
 
+    // started is true (OK) or { error } (server FAILED) — both surface modal.
+    // For the error case, propagate the message so the modal explains why.
+    const errorMsg =
+      typeof started === 'object' && 'error' in started
+        ? started.error
+        : undefined
     await ctx.account.setMFAPending(a, true)
-    ctx.mfa.show(a.id, { skipReconnect: true })
+    ctx.mfa.show(a.id, { skipReconnect: true, error: errorMsg })
 
     // Revert PN to previous value — UI should only change after
     // MFA verify + sync succeed.
