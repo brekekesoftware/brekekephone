@@ -66,6 +66,7 @@
     "react-native-svg": "15.12.0",
     "react-native-svg-web": "1.0.9",
     "react-native-video": "6.16.1",
+    "react-native-vision-camera": "^4.7.3",
     "react-native-voip-push-notification": "3.3.3",
     "react-native-web": "0.20.0",
     "react-native-web-linear-gradient": "1.1.2",
