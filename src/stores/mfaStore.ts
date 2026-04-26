@@ -10,12 +10,19 @@ export class MFAStore {
   skipReconnect = false
   wasCancelled = false
   cancelledAccountId: string | null = null
+  // Server error from mfa/start FAILED response (e.g. "No email address.").
+  // When non-empty, modal renders in error mode instead of normal OTP entry.
+  @observable error = ''
   private _resolvers: Array<(ok: boolean) => void> = []
 
-  @action show = (id: string, opts?: { skipReconnect?: boolean }) => {
+  @action show = (
+    id: string,
+    opts?: { skipReconnect?: boolean; error?: string },
+  ) => {
     if (this.accountId === id) {
       // If any caller needs reconnect, honor it
       this.skipReconnect = this.skipReconnect && (opts?.skipReconnect ?? false)
+      this.error = opts?.error || this.error
       return
     }
     this._resolvers.forEach(r => r(false))
@@ -24,11 +31,13 @@ export class MFAStore {
     this.skipReconnect = opts?.skipReconnect ?? false
     this.wasCancelled = false
     this.cancelledAccountId = null
+    this.error = opts?.error || ''
   }
 
   @action hide = () => {
     this.accountId = null
     this.skipReconnect = false
+    this.error = ''
   }
 
   @action complete = (): boolean => {
@@ -38,6 +47,7 @@ export class MFAStore {
     this.skipReconnect = false
     this.wasCancelled = false
     this.cancelledAccountId = null
+    this.error = ''
     const hadAwaiters = rs.length > 0
     rs.forEach(r => r(true))
     return hadAwaiters
@@ -50,6 +60,7 @@ export class MFAStore {
     this.accountId = null
     this.skipReconnect = false
     this.wasCancelled = true
+    this.error = ''
     rs.forEach(r => r(false))
   }
 
@@ -63,6 +74,7 @@ export class MFAStore {
     this.skipReconnect = false
     this.wasCancelled = false
     this.cancelledAccountId = null
+    this.error = ''
     rs.forEach(r => r(false))
   }
 
@@ -73,6 +85,7 @@ export class MFAStore {
     this._resolvers = []
     this.accountId = null
     this.skipReconnect = false
+    this.error = ''
     rs.forEach(r => r(false))
   }
 

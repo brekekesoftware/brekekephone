@@ -106,6 +106,13 @@ type MFAInfo = {
 
 type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 
+// Result of mfaStart():
+//   true            — server accepted, OTP session created (type=code/url)
+//   'none'          — server says no MFA required for this account
+//   { error }       — server returned status=FAILED with a message
+//   false           — network/exception, no usable response
+type MfaStartResult = true | 'none' | { error: string } | false
+
 export class AccountStore {
   @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
@@ -590,7 +597,7 @@ export class AccountStore {
     }
   }
 
-  mfaStart = async (ca: Account) => {
+  mfaStart = async (ca: Account): Promise<MfaStartResult> => {
     try {
       const param: MFAStart = {
         ip_address: await getPublicIp(),
@@ -601,8 +608,11 @@ export class AccountStore {
         'mfa/start',
         param,
       )
-      if (!res || res.status === 'FAILED') {
+      if (!res) {
         return false
+      }
+      if (res.status === 'FAILED') {
+        return { error: res.message || intl`MFA setup failed` }
       }
       if (res.status === 'OK') {
         if (res.type === 'none') {
@@ -730,9 +740,17 @@ export class AccountStore {
     if (result === 'none') {
       return
     }
-    if (!result) {
+    // Network/exception failure — no usable response from server
+    if (result === false) {
       ctx.toast.show(intl`Unable to log in. Please try again.`, 'error')
       ctx.auth.signOut()
+      return
+    }
+    // Server returned FAILED with message (e.g. account has no email).
+    // Show modal with error so user understands why; they cancel to sign out.
+    if (typeof result === 'object' && 'error' in result) {
+      await this.setMFAPending(ca, true)
+      ctx.mfa.show(ca.id, { error: result.error })
       return
     }
     if (ctx.call.calls.length > 0) {

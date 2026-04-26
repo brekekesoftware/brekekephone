@@ -16,31 +16,17 @@ export class PageCallParks extends Component<{
 }> {
   prevId?: string
   flashAnim = new Animated.Value(0)
-  flashLoop = Animated.loop(
-    Animated.sequence([
-      Animated.timing(this.flashAnim, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: false,
-      }),
-      Animated.delay(1000),
-      Animated.timing(this.flashAnim, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: false,
-      }),
-    ]),
-  )
-
-  flashRunning = false
+  // RN's Animated.loop sets an internal `isFinished` flag on stop() that is
+  // never reset, so the same loop instance cannot be restarted. We create a
+  // fresh loop each time we need to start animating.
+  flashLoop?: Animated.CompositeAnimation
 
   componentDidMount = () => {
     this.updateFlashLoop()
     this.componentDidUpdate()
   }
   componentWillUnmount = () => {
-    this.flashLoop.stop()
-    this.flashRunning = false
+    this.stopFlashLoop()
   }
   componentDidUpdate = () => {
     this.updateFlashLoop()
@@ -58,14 +44,36 @@ export class PageCallParks extends Component<{
   updateFlashLoop = () => {
     const cp2 = this.props.ongoing
     const hasOccupied = !cp2 && Object.keys(ctx.call.parkNumbers).length > 0
-    if (hasOccupied && !this.flashRunning) {
-      this.flashLoop.start()
-      this.flashRunning = true
-    } else if (!hasOccupied && this.flashRunning) {
-      this.flashLoop.stop()
-      this.flashAnim.setValue(0)
-      this.flashRunning = false
+    if (hasOccupied && !this.flashLoop) {
+      this.startFlashLoop()
+    } else if (!hasOccupied && this.flashLoop) {
+      this.stopFlashLoop()
     }
+  }
+
+  startFlashLoop = () => {
+    this.flashLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(this.flashAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.delay(1000),
+        Animated.timing(this.flashAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ]),
+    )
+    this.flashLoop.start()
+  }
+
+  stopFlashLoop = () => {
+    this.flashLoop?.stop()
+    this.flashLoop = undefined
+    this.flashAnim.setValue(0)
   }
 
   state = {
