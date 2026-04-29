@@ -642,6 +642,10 @@ export class CallStore {
 
     // set number of total calls in our custom java incoming call module
     BrekekeUtils.setJsCallsSize(this.calls.length)
+    // reset shouldSkipPlayRingtone so any remaining pending call can ring
+    if (isAndroid) {
+      BrekekeUtils.setShouldSkipPlayRingtone(this.hasActiveCall())
+    }
     // when if this is a outgoing call, try to insert a call history to uc chat
     if (ctx.auth.ucState === 'success' && c.answeredAt && !c.incoming) {
       ctx.uc.sendCallResult(c.getDuration(), c.partyNumber)
@@ -674,29 +678,44 @@ export class CallStore {
     c.callkeepUuid = ''
     c.callkeepAlreadyRejected = true
     if (isAndroid) {
-      await this.playRingtoneIfNeeded(c)
+      await this.playRingtoneIfNeeded()
     }
 
     // emit to embed api
     c.finishEmitEmbed()
   }
 
-  playRingtoneIfNeeded = async (c: Call) => {
+  playRingtoneIfNeeded = async () => {
     const ac = this.hasActiveCall()
     BrekekeUtils.setShouldSkipPlayRingtone(ac)
     if (ac) {
       return
     }
-    const ca = ctx.auth.getCurrentAccount()
-    if (ca && (await BrekekeUtils.shouldPlayRingtone())) {
-      BrekekeUtils.startRingtone(
-        c.ringtoneFromSip,
-        ca.pbxUsername,
-        ca.pbxTenant,
-        ca.pbxHostname,
-        ca.pbxPort,
-      )
+    const pendingCall = this.calls.find(c => c.incoming && !c.answered)
+    if (!pendingCall) {
+      return
     }
+    const ca = ctx.auth.getCurrentAccount()
+    if (!ca) {
+      return
+    }
+    // When PN ON: IncomingCallActivity.onResume() handles ringtone natively with PN ringtone
+    // Skip JS call to avoid overriding PN ringtone with SIP ringtone
+    if (ca.pushNotificationEnabled && pendingCall.callkeepUuid) {
+      const hasActivity = await BrekekeUtils.hasIncomingCallActivity(
+        pendingCall.callkeepUuid,
+      )
+      if (hasActivity) {
+        return
+      }
+    }
+    BrekekeUtils.startRingtone(
+      pendingCall.ringtoneFromSip ?? '',
+      ca.pbxUsername,
+      ca.pbxTenant,
+      ca.pbxHostname,
+      ca.pbxPort,
+    )
   }
 
   @computed get isAnyHoldLoading() {

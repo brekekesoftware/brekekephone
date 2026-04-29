@@ -221,6 +221,7 @@ public class Ringtone {
       }
       return get(u, t, h, p);
     } catch (Exception e) {
+      Log.e(TAG, "get(pn): exception -> " + e.getMessage());
     }
     return _default;
   }
@@ -238,6 +239,7 @@ public class Ringtone {
         return r;
       }
     } catch (Exception e) {
+      Log.e(TAG, "get(account): exception -> " + e.getMessage());
     }
     return _default;
   }
@@ -264,13 +266,11 @@ public class Ringtone {
       return false;
     }
 
-    Log.d(TAG, "play: shouldSkipPlayRingtone = " + shouldSkipPlayRingtone);
     if (shouldSkipPlayRingtone) {
       Emitter.debug("[Ringtone] Skip playing: a call is already connected.");
       return false;
     }
     if (mp != null) {
-      // return false if already playing
       Emitter.debug("[Ringtone] Ringtone is playing");
       return false;
     }
@@ -301,17 +301,17 @@ public class Ringtone {
     try {
       playMpWithoutCatch(get(d.r, d.u, d.t, d.h, d.p));
     } catch (Exception e) {
+      Emitter.error("Ringtone playMp 1", e.getMessage());
       try {
         playMpWithoutCatch(get(d.u, d.t, d.h, d.p));
       } catch (Exception e2) {
+        Emitter.error("Ringtone playMp 2", e2.getMessage());
         try {
           playMpWithoutCatch(_default);
         } catch (Exception e3) {
           Emitter.error("Ringtone playMp 3", e3.getMessage());
         }
-        Emitter.error("Ringtone playMp 2", e2.getMessage());
       }
-      Emitter.error("Ringtone playMp 1", e.getMessage());
     }
   }
 

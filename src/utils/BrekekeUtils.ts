@@ -65,7 +65,6 @@ type TBrekekeUtils = {
   ): Promise<boolean>
   stopRingtone(): Promise<boolean>
   setShouldSkipPlayRingtone(s: boolean): void
-  shouldPlayRingtone(): Promise<boolean>
   // android pending cache and retry pal
   updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
@@ -167,7 +166,6 @@ const Polyfill: TBrekekeUtils = {
   startRingtone: () => Promise.resolve(false),
   stopRingtone: () => Promise.resolve(false),
   setShouldSkipPlayRingtone: () => undefined,
-  shouldPlayRingtone: () => Promise.resolve(false),
   // android pending cache and retry pal
   updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,

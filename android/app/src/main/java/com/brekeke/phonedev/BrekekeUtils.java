@@ -1069,9 +1069,4 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void setShouldSkipPlayRingtone(Boolean s) {
     Ringtone.shouldSkipPlayRingtone = s;
   }
-
-  @ReactMethod
-  public void shouldPlayRingtone(Promise p) {
-    p.resolve(!activities.isEmpty() && !BrekekeUtils.anyCallAnswered());
-  }
 }
