@@ -198,6 +198,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     if (pnId == null) {
       return;
     }
+    // skip default-dialer popup since we have an incoming call (BUG-1203)
+    resultDefaultDialer("Skip during incoming call");
     // dedup by compound key: pn-id + time
     // same call from LPC and FCM has identical pn-id and time
     var time = PN.time(m);
@@ -485,6 +487,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
     if (dialerCheckState == DialerCheckState.COMPLETED) {
       resolveDefaultDialer("Already checked");
+      return;
+    }
+
+    // skip popup if there's an active call to avoid interrupting call UX (BUG-1203)
+    // use resolveDefaultDialer (not resultDefaultDialer) so state stays IDLE,
+    // allowing popup to fire normally after the call ends
+    if (jsCallsSize > 0 || activitiesSize > 0) {
+      resolveDefaultDialer("Skip during active call");
       return;
     }
 
