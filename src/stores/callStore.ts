@@ -94,7 +94,7 @@ export class CallStore {
         }
       }
     } else {
-      c = this.getCallKeep(uuid)
+      c = this.getCallKeep(uuid, { includingAnswered: true })
     }
     if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
@@ -634,8 +634,9 @@ export class CallStore {
       c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
-    if (c.callkeepUuid) {
-      this.endCallKeep(c.callkeepUuid)
+    const uuidToEnd = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
+    if (uuidToEnd) {
+      this.endCallKeep(uuidToEnd)
     }
 
     this.calls = this.calls.filter(c0 => c0.id !== c.id)

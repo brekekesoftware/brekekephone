@@ -243,6 +243,13 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
               i.putExtra("data", new HashMap<>(m));
               ctx.startActivity(i);
             };
+    if (activitiesSize > 0
+        && activities.isEmpty()
+        && RNCallKeepModule.onShowIncomingCallUiCallbacks.isEmpty()) {
+      Emitter.debug(
+          "onFcmMessageReceived: reset orphaned activitiesSize from " + activitiesSize + " to 0");
+      activitiesSize = 0;
+    }
     if (VoiceConnectionService.currentConnections.size() > 0
         || RNCallKeepModule.onShowIncomingCallUiCallbacks.size() > 0
         || activitiesSize > 0) {
