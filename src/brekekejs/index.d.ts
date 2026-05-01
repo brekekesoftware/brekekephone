@@ -312,6 +312,7 @@ export type PbxGetProductInfoRes = {
   'webphone.lpc.pn': string
   'webphone.lpc.port': string
   'webphone.lpc.wifi': string
+  'webphone.pal.mfa'?: string
   'webphone.pal.param.user': string
   'webphone.pn_expires': string
   'webphone.turn.credential': string
