@@ -94,7 +94,10 @@ export class CallStore {
         }
       }
     } else {
-      c = this.getCallKeep(uuid, { includingAnswered: true })
+      c = this.getCallKeep(
+        uuid,
+        isAndroid ? { includingAnswered: true } : undefined,
+      )
     }
     if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
@@ -635,7 +638,12 @@ export class CallStore {
     }
     this.onSipUaCancel({ pnId: c.pnId })
     const uuidToEnd = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
-    if (uuidToEnd) {
+    // safety: skip endCallKeep if uuid now belongs to another active call
+    // (pnId collision after PBX restart, or callkeepUuid reassignment)
+    if (
+      uuidToEnd &&
+      !this.calls.some(o => o.id !== c.id && o.callkeepUuid === uuidToEnd)
+    ) {
       this.endCallKeep(uuidToEnd)
     }
 
