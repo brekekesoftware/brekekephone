@@ -94,7 +94,10 @@ export class CallStore {
         }
       }
     } else {
-      c = this.getCallKeep(uuid)
+      c = this.getCallKeep(
+        uuid,
+        isAndroid ? { includingAnswered: true } : undefined,
+      )
     }
     if (n.sipPn.autoAnswer && c) {
       if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
@@ -372,10 +375,14 @@ export class CallStore {
         }
       }
 
+      // tied to sessionStatus transition, not to `e.answered` transition,
+      // because `c.answer()` may set e.answered=true before 'connected' arrives
+      if (e.sessionStatus !== 'connected' && p.sessionStatus === 'connected') {
+        BrekekeUtils.onCallConnected(e.callkeepUuid)
+      }
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now
-        BrekekeUtils.onCallConnected(e.callkeepUuid)
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
@@ -634,8 +641,14 @@ export class CallStore {
       c.rawSession = rawSession
     }
     this.onSipUaCancel({ pnId: c.pnId })
-    if (c.callkeepUuid) {
-      this.endCallKeep(c.callkeepUuid)
+    const uuidToEnd = c.callkeepUuid || this.getUuidFromPnId(c.pnId) || ''
+    // safety: skip endCallKeep if uuid now belongs to another active call
+    // (pnId collision after PBX restart, or callkeepUuid reassignment)
+    if (
+      uuidToEnd &&
+      !this.calls.some(o => o.id !== c.id && o.callkeepUuid === uuidToEnd)
+    ) {
+      this.endCallKeep(uuidToEnd)
     }
 
     this.calls = this.calls.filter(c0 => c0.id !== c.id)
