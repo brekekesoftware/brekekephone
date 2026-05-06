@@ -86,7 +86,9 @@ export class CallStore {
         delete this.callkeepMap[del]
         delete this.callkeepActionMap[del]
         delete this.calleeRejectedMap[del]
-        RNCallKeep.endCall(del)
+        if (del) {
+          RNCallKeep.endCall(del)
+        }
         c.callkeepUuid = uuid
         c.bugIosOffPnServer = false
         if (c.answered) {
@@ -109,7 +111,9 @@ export class CallStore {
       if (isIos) {
         c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {
-          RNCallKeep.answerIncomingCall(c.callkeepUuid)
+          if (c.callkeepUuid) {
+            RNCallKeep.answerIncomingCall(c.callkeepUuid)
+          }
         }, 2000)
       }
     }
@@ -186,7 +190,7 @@ export class CallStore {
     // CallKit (kill app + wait >2s). setCurrentCallActive was called from background
     // but iOS requires it in the CallKit tap context for proper audio routing.
     const autoAnswered = this.getCallKeep(uuid, { includingAnswered: true })
-    if (autoAnswered?.isAutoAnswer) {
+    if (autoAnswered?.isAutoAnswer && autoAnswered.callkeepUuid) {
       RNCallKeep.setCurrentCallActive(autoAnswered.callkeepUuid)
     }
   }
