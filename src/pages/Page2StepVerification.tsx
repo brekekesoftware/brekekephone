@@ -168,26 +168,27 @@ export const Page2StepVerification = () => {
     // TC-14: detect incoming call while modal is open → defer MFA, hide modal
     const disposeAutorun = autorun(() => {
       if (ctx.call.calls.length > 0) {
-        const ca = accountRef.current
-        if (ca && ctx.mfa.isShowing(ca.id)) {
-          ctx.account.setMFAPendingAfterCallsId(ca.id)
-          void ctx.account.setMFAPending(ca, false)
+        const a = accountRef.current
+        if (a && ctx.mfa.isShowing(a.id)) {
+          ctx.account.setMFAPendingAfterCallsId(a.id)
+          void ctx.account.setMFAPending(a, false)
         }
       }
     })
 
     return () => {
       disposeAutorun()
-      const ca = accountRef.current
-      if (ca && ctx.mfa.isShowing(ca.id)) {
+      const a = accountRef.current
+      if (a && ctx.mfa.isShowing(a.id)) {
         if (ctx.call.calls.length > 0) {
-          ctx.account.setMFAPendingAfterCallsId(ca.id)
+          ctx.account.setMFAPendingAfterCallsId(a.id)
         }
         // reset() resolves any pending waitComplete() promises with false,
         // avoiding the 10min timeout hang that hide() would cause.
         ctx.mfa.reset()
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onVerify = async () => {
