@@ -724,7 +724,8 @@ export class AuthStore {
   // callkeep didDisplayIncomingCall can fire for the same call PN. Both
   // lead to 2+ signIn(acc) running concurrently, racing on signedInId
   // pre-clear and PBX reconnect, leaving PBX stuck in "connecting".
-  private isSigningInByNotification = false
+  // Public so AuthSIP.authWithCheck can gate during account transition (BUG-1207).
+  isSigningInByNotification = false
 
   @action signInByNotification = async (n: ParsedPn) => {
     if (this.isSigningInByNotification) {
