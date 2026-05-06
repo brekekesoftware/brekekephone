@@ -375,10 +375,14 @@ export class CallStore {
         }
       }
 
+      // tied to sessionStatus transition, not to `e.answered` transition,
+      // because `c.answer()` may set e.answered=true before 'connected' arrives
+      if (e.sessionStatus !== 'connected' && p.sessionStatus === 'connected') {
+        BrekekeUtils.onCallConnected(e.callkeepUuid)
+      }
       if (!e.answered && p.answered) {
         e.answerCallKeep()
         p.answeredAt = now
-        BrekekeUtils.onCallConnected(e.callkeepUuid)
         this.prevDisplayingCallId = e.id
         BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
