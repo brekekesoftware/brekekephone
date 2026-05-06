@@ -884,7 +884,7 @@ export class PBX extends EventEmitter {
     new Promise<boolean>(resolve => {
       const testWs = new WebSocket(`${wsUri}?status=true`)
       let isResolved = false
-      let timeoutId: number | undefined
+      let timeoutId: number | undefined = undefined
       const cleanup = (result: boolean) => {
         if (isResolved) {
           return
