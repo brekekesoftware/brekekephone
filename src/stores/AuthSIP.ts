@@ -134,6 +134,17 @@ export class AuthSIP {
   }
 
   @action private authWithCheck = async () => {
+    // BUG-1207: while signInByNotification is mid-transition, dispose() sets
+    // sipState='stopped' and onCallKeepDidDisplayIncomingCall sees that and
+    // schedules a redundant sip.connect. The 2nd connect calls resetProcessedPn
+    // which wipes user actions captured between the two connects. Skip here so
+    // only the App.tsx onAuthUpdate reaction (after signIn completes) drives auth.
+    if (ctx.auth.isSigningInByNotification) {
+      console.log(
+        'SIP PN debug: skip authWithCheck during signInByNotification',
+      )
+      return
+    }
     if (isSipPnExpired(ctx.auth.sipPn)) {
       ctx.auth.sipPn = {}
     }
