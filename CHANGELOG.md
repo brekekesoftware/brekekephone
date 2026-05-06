@@ -1,3 +1,11 @@
+#### 2.17.3
+
+- Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
+- Hot fix ios CTI auto answer Call-Info header (issue 1210)
+- Hot fix ios should not crash call uuid empty (issue 1205)
+- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+- Hot fix webphone.pal.mfa (issue 1204)
+
 #### 2.17.2
 
 - Update ios build tools sdk ios 26
