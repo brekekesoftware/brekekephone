@@ -101,7 +101,8 @@ ls:
 # dev server
 
 phonedev:
-	export V=$$(jq -r ".version" package.json) \
+	yarn --check-files \
+	&& export V=$$(jq -r ".version" package.json) \
 	&& echo $$V \
 	&& make -Bs chmod \
 	&& scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa bre:/var/www/upload/brekeke_phonedev$$V.ipa \
@@ -112,7 +113,8 @@ phonedev:
 	&& cd .. && make -Bs chmod;
 
 phone:
-	export V=$$(jq -r ".version" package.json) \
+	yarn --check-files \
+	&& export V=$$(jq -r ".version" package.json) \
 	&& echo $$V \
 	&& make -Bs chmod \
 	&& scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa bre:/var/www/upload/brekeke_phone$$V.ipa \
