@@ -80,6 +80,9 @@ export class SIP extends EventEmitter {
         ? xPbxRpi?.split(':')?.[1] || m?.getHeader('X-PBX-RPI')
         : m?.getHeader('X-PBX-RPI') || xPbxRpi?.split(':')?.[1]
       const withSDP = isOutgoing && ev.sessionStatus === 'progress' && !!m?.body
+      // Mark paging auto-answer (Call-Info: ;answer-after=0) so JS state matches
+      const isCtiAutoAnswer =
+        !isOutgoing && !!m?.getHeader('Call-Info')?.includes('answer-after=0')
       //
       const rawPartyNumber = ev.rtcSession.remote_identity.uri.user
       const partyNumber =
@@ -119,6 +122,7 @@ export class SIP extends EventEmitter {
         sessionStatus: ev.sessionStatus,
         callConfig: getCallConfigFromHeader(m?.getHeader('X-WEBPHONE-CALL')),
         answered: ev.sessionStatus === 'connected',
+        isAutoAnswer: isCtiAutoAnswer || undefined,
         voiceStreamObject: ev.remoteStreamObject,
         withSDP,
         earlyMedia: withSDP ? ev.remoteStreamObject : null,
