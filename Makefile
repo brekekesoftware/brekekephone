@@ -164,7 +164,7 @@ dev:
 	&& cd ../.. && make -Bs chmod;
 
 chmod:
-	ssh bre "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
+	ssh bre "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d && sudo service nginx restart";
 
 ssl:
 	bash dev01/renewssl.sh;
