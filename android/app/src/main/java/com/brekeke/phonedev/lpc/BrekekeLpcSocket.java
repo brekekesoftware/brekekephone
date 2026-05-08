@@ -117,25 +117,42 @@ public class BrekekeLpcSocket {
     }
 
     private void handleCallToServer() {
+      Emitter.debug(
+          "[BrekekeLpcSocket] connecting host="
+              + this.settings.host
+              + " port="
+              + this.settings.port
+              + " tlsKeyHash="
+              + this.settings.tlsKeyHash);
       try {
         SSLContext sslContext =
             LpcUtils.createTrustedSSLContext(this.settings.tlsKeyHash, mContext);
         this.createChannel(sslContext);
       } catch (NoSuchAlgorithmException e) {
         Log.d(LpcUtils.TAG, "NoSuchAlgorithmException: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] NoSuchAlgorithmException: " + e.getMessage());
       } catch (KeyManagementException e) {
         Log.d(LpcUtils.TAG, "KeyManagementException: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] KeyManagementException: " + e.getMessage());
       } catch (NetworkOnMainThreadException | GeneralSecurityException e) {
         Log.d(LpcUtils.TAG, "NetworkOnMainThreadException: " + e.getMessage());
+        Emitter.error("[BrekekeLpcSocket] GeneralSecurityException: " + e.getMessage());
       } catch (IOException e) {
         Log.d(LpcUtils.TAG, "IOException: " + e.getMessage());
-        if (e.getMessage().equals("Connection refused")) {
+        if (e.getMessage() != null && e.getMessage().equals("Connection refused")) {
           // stop service
           LpcUtils.LpcCallback.cb.getStateServer(false);
           Emitter.error("[BrekekeLpcSocket] Connection refused");
+        } else {
+          Emitter.error("[BrekekeLpcSocket] IOException: " + e.getMessage());
         }
       } catch (Exception e) {
         Log.d(LpcUtils.TAG, "Exception: " + e.getMessage());
+        Emitter.error(
+            "[BrekekeLpcSocket] Exception: "
+                + e.getClass().getSimpleName()
+                + ": "
+                + e.getMessage());
       }
     }
 
