@@ -102,12 +102,20 @@ export class CallStore {
       )
     }
     if (n.sipPn.autoAnswer && c) {
-      if (RnAppState.foregroundOnce && AppState.currentState !== 'active') {
-        RNCallKeep.backToForeground()
-      }
-      // on android already answer in native java activity
-      // on ios, QA suggest to reject the call?
-      // TODO:
+      // history: this block previously called RNCallKeep.backToForeground()
+      // (b8d0c141, Jan 2023 - "Try improve auto answer case android press
+      // home btn") to wake the JS thread on Android when the app was
+      // backgrounded, so JS could schedule answerIncomingCall. removed
+      // because:
+      //   - android: autoAnswer is now fully handled in native
+      //     IncomingCallActivity.onCreate -> handleClickAnswerCall (no JS
+      //     needed). the redundant call only brings MainActivity briefly
+      //     to front and races with PageCustomPageView render in 2.17.x,
+      //     contributing to the "app reopens" symptom on 3pcc paging.
+      //   - ios: react-native-callkeep's ios JS layer returns early
+      //     before the native call (no-op), so removal is behavior-safe.
+      //     ios still relies on CallKit + the 2s deferred answer below
+      //     for kill-app slow-tap audio routing.
       if (isIos) {
         c.isAutoAnswer = true
         BackgroundTimer.setTimeout(() => {
