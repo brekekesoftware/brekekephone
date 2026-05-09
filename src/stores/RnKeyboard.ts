@@ -7,6 +7,8 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 class RnKeyboardStore {
   @observable isKeyboardShowing = false
   @observable isKeyboardAnimating = false
+  // tracked on all android, consumed by Layout only on android 15+ (BUG-1220)
+  @observable keyboardHeight = 0
   waitKeyboardTimeoutId = 0
 
   waitKeyboard =
@@ -63,13 +65,15 @@ Keyboard.addListener(
 // android
 Keyboard.addListener(
   'keyboardDidShow',
-  action(() => {
+  action(e => {
     RnKeyboard.isKeyboardShowing = true
+    RnKeyboard.keyboardHeight = e.endCoordinates.height
   }),
 )
 Keyboard.addListener(
   'keyboardDidHide',
   action(() => {
     RnKeyboard.isKeyboardShowing = false
+    RnKeyboard.keyboardHeight = 0
   }),
 )
