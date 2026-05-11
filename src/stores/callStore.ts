@@ -559,10 +559,15 @@ export class CallStore {
           pnid: c.pnId,
         },
       }
+      const displayName = await c.getDisplayNameAsync()
+      // abort if onCallKeepDidDisplayIncomingCall already swapped uuid during await
+      if (c.callkeepUuid !== uuid) {
+        return
+      }
       RNCallKeep.displayIncomingCall(
         uuid,
         c.partyNumber,
-        await c.getDisplayNameAsync(),
+        displayName,
         'generic',
         undefined,
         op,
@@ -586,8 +591,10 @@ export class CallStore {
       }
 
       if (isIos) {
-        await displayCall()
+        // set flag BEFORE await so onCallKeepDidDisplayIncomingCall can reconcile
+        // during validateRingtone/getDisplayNameAsync window
         c.bugIosOffPnServer = true
+        await displayCall()
         return
       }
     }
