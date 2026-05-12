@@ -1,3 +1,16 @@
+#### 2.17.5
+
+- Fix ios it should have voice and consistent CallKit UI when SIP INVITE arrives before PN didDisplay (issue 1216)
+- Fix android it should not put the ongoing call on hold when another outgoing call SIP-connects (issue 1219)
+- Fix android 15+ it should scroll past keyboard in long forms and contact add-item modal, and re-show keyboard on keypad re-focus (issue 1220)
+- Fix android lpc it should still receive PN calls after account switch (issue 1222)
+
+#### 2.17.4
+
+- Fix it should not signOut and drop active call when MFA starts during PBX client initialization on first install (issue 1215)
+- Fix android it should not flash app to foreground on auto answer (issue 1218)
+- Add android lpc native debug logs to diagnose disconnect cause
+
 #### 2.17.3
 
 - Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
