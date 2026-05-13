@@ -1379,7 +1379,7 @@ export class PBX extends EventEmitter {
       command,
       service_id,
       application_id,
-      user_agent: isWeb ? navigator.userAgent : 'react-native',
+      user_agent: ctx.auth.getUserAgentRaw(),
       username,
       device_id,
       device_id_voip,
