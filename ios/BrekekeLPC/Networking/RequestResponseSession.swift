@@ -35,7 +35,45 @@ public class RequestResponseSession: NetworkSession {
   private let messagesSubject = PassthroughSubject<Codable, Never>()
   private var pendingRequests = [UInt32: PendingRequest]()
   private let encoder = JSONEncoder()
-  private let decoder = JSONDecoder()
+  // BUG-1222: PBX server versions differ in which Base64 alphabet they emit for
+  // the payload.data field (current Brekeke PBX uses URL-safe '-'/'_'; standard
+  // is '+'/'/'). JSONDecoder's default `.base64` strategy is strict standard and
+  // rejects URL-safe input. Try variants in popularity order so any encoding
+  // the server sends decodes successfully. lazy var so self.logger is available
+  // when the closure runs (the property is initialized on first access, after
+  // super.init has finished).
+  private lazy var decoder: JSONDecoder = {
+    let logger = self.logger
+    let d = JSONDecoder()
+    d.dataDecodingStrategy = .custom { decoder in
+      let container = try decoder.singleValueContainer()
+      let str = try container.decode(String.self)
+      // 1. Standard alphabet ('+'/'/'), no wrap — most common default.
+      if let data = Data(base64Encoded: str) {
+        return data
+      }
+      // 2. URL-safe alphabet ('-'/'_') — current Brekeke PBX uses this.
+      let normalized = str
+        .replacingOccurrences(of: "-", with: "+")
+        .replacingOccurrences(of: "_", with: "/")
+      if let data = Data(base64Encoded: normalized) {
+        return data
+      }
+      // 3. Lenient: skip unknown chars + accept line wrapping — last resort.
+      if let data = Data(
+        base64Encoded: normalized,
+        options: .ignoreUnknownCharacters
+      ) {
+        return data
+      }
+      // All variants failed — log and return empty so this hot path stays
+      // exception-free; downstream keyCoder.decode on empty data will surface
+      // via the existing decode(data:) catch if needed.
+      logger.log("Cannot decode LPC payload base64 with any known variant")
+      return Data()
+    }
+    return d
+  }()
   private let keyCoder = KeyCoder()
   private var requestCancellables = [UInt32: AnyCancellable]()
   private var cancellables = Set<AnyCancellable>()

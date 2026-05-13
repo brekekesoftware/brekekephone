@@ -234,7 +234,7 @@ public class BrekekeLpcSocket {
         if (Objects.equals(wr.command, "request")) {
           requestSent = false;
           if (Objects.equals(wr.payload.codingKey, 3)) {
-            String res = new String(Base64.decode(wr.payload.data, Base64.NO_WRAP));
+            String res = new String(decodeLpcPayloadBase64(wr.payload.data));
             Log.d(LpcUtils.TAG, "handleResponse: " + res);
             JSONObject obj = new JSONObject(res);
             Map<String, String> m = gson.fromJson(obj.getString("custom"), Map.class);
@@ -251,6 +251,39 @@ public class BrekekeLpcSocket {
         Log.d(LpcUtils.TAG, "handleResponse error: " + e.getMessage());
         Emitter.error("[BrekekeLpcSocket] handleResponse " + e.getMessage());
       }
+    }
+
+    /**
+     * Decode LPC payload base64 with fallback across Base64 variants. PBX server
+     * versions differ in which alphabet they emit (current Brekeke PBX uses
+     * URL-safe '-'/'_'; future versions may switch to standard '+'/'/'), and
+     * historical clients shipped a strict standard decoder that fails on
+     * URL-safe input (BUG-1222). Try variants in popularity order so any
+     * encoding the server sends decodes successfully.
+     */
+    private byte[] decodeLpcPayloadBase64(String pd) {
+      // 1. Standard alphabet, no wrap — most common default in network APIs.
+      try {
+        return Base64.decode(pd, Base64.NO_WRAP);
+      } catch (IllegalArgumentException ignored) {
+      }
+      // 2. URL-safe alphabet — current Brekeke PBX uses this.
+      try {
+        return Base64.decode(pd, Base64.URL_SAFE | Base64.NO_WRAP);
+      } catch (IllegalArgumentException ignored) {
+      }
+      // 3. MIME decoder (skips unknown chars + accepts line wrapping) — last
+      // resort fallback for legacy/unexpected encodings.
+      try {
+        return java.util.Base64.getMimeDecoder().decode(pd);
+      } catch (IllegalArgumentException ignored) {
+      }
+      // All variants failed — log and return empty so this hot path stays
+      // exception-free; downstream JSON parsing on empty data will surface via
+      // the existing handleResponse catch if needed.
+      Emitter.error(
+          "[BrekekeLpcSocket] Cannot decode LPC payload base64 with any known variant");
+      return new byte[0];
     }
 
     // adds 4 bytes to the size of the message
