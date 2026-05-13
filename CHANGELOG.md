@@ -1,3 +1,10 @@
+#### 2.17.6
+
+- Fix ios 26 it should not drop active call when answering incoming during outgoing (issue 1224)
+- Fix android it should keep newer incoming call visible when older call is auto-answered (issue 1225)
+- Fix android and ios it should receive LPC PN call from phone-aplli caller (issue 1222)
+- Update SIP User-Agent and pnmanage user_agent to include OS version and device model
+
 #### 2.17.5
 
 - Fix ios it should have voice and consistent CallKit UI when SIP INVITE arrives before PN didDisplay (issue 1216)
