@@ -1,5 +1,6 @@
 import type { IReactionDisposer } from 'mobx'
 import { action, autorun, observable } from 'mobx'
+import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
 import type { Session, SessionStatus } from '#/brekekejs'
@@ -9,6 +10,7 @@ import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/callStore'
 import { getPbxName, getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
+import { compareSemVer } from '#/stores/debugStore'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
@@ -16,6 +18,15 @@ import { jsonSafe } from '#/utils/jsonSafe'
 import { encodeParkNumber } from '#/utils/parkNumber'
 import { checkPermForCall } from '#/utils/permissions'
 import { waitTimeout } from '#/utils/waitTimeout'
+
+// BUG-1224: iOS 26.0–26.4.1 removed the multi-call "End & Answer" popup;
+// Apple restored it in 26.4.2 (confirmed empirically). Behavior may toggle
+// in future minor releases, so we gate to all iOS 26+ — it's no-op when
+// the popup exists (iOS already cancels outgoing via End-and-Answer;
+// o.hangup self-guards via isAboutToHangup) and only effective when popup
+// is gone.
+const isIosBug1224Affected =
+  isIos && compareSemVer(String(Platform.Version), '26') >= 0
 
 export class Call {
   constructor(private store: CallStore) {}
@@ -86,6 +97,20 @@ export class Call {
     videoOptions?: object,
     exInfo?: string,
   ) => {
+    // BUG-1224: see isIosBug1224Affected at module top for rationale + range.
+    // Simulate the missing iOS multi-call popup default action ("End & Answer")
+    // by hanging up not-yet-answered outgoing siblings on answer.
+    if (isIosBug1224Affected && this.incoming) {
+      this.store.calls
+        .filter(
+          o =>
+            o.id !== this.id &&
+            !o.incoming &&
+            !o.answered &&
+            !o.isAboutToHangup,
+        )
+        .forEach(o => o.hangup())
+    }
     this.answerVideoEnabled = videoEnabled
     this.holding = false
     this.answered = true
