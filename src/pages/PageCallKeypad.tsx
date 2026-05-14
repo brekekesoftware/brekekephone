@@ -22,7 +22,10 @@ export class PageCallKeypad extends Component {
   txtSelection = { start: 0, end: 0 }
 
   showKeyboard = () => {
-    this.txtRef.current?.focus()
+    // android: focus() on an already-focused input is a no-op and the IME
+    // stays hidden after a back-press; blur first to force a real re-focus
+    this.txtRef.current?.blur()
+    setTimeout(() => this.txtRef.current?.focus(), 50)
   }
   callVoice = async () => {
     this.txt = this.txt.trim()

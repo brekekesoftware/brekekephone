@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 
 import type {
   PbxCustomPage,
@@ -29,6 +29,7 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
 import type { UrlParams } from '#/utils/deeplink-parse'
+import { deviceDetail, devicePlatform } from '#/utils/device'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
@@ -152,20 +153,19 @@ export class AuthStore {
   // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
   getUserAgent = async (a: ParsedPn | AccountUnique) =>
     embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
-  private _getUserAgent = async (a: ParsedPn | AccountUnique) => {
+  _getUserAgent = async (a: ParsedPn | AccountUnique) => {
     const au = 'to' in a ? await ctx.account.findByPn(a) : a
     const d = await ctx.account.findData(au)
     if (d?.userAgent) {
       return d.userAgent
     }
-    const osMap: { [k: string]: string } = {
-      ios: 'iOS',
-      android: 'Android',
-      web: 'Web',
-    }
-    const os = osMap[Platform.OS]
+    return this.getUserAgentRaw()
+  }
+  getUserAgentRaw = () => {
     const productName = ctx.global.productName
-    return `${productName} for ${os} ${currentVersion}, JsSIP 3.2.15, ${bundleIdentifier}`
+    const platform = devicePlatform()
+    const detail = deviceDetail()
+    return `${productName} for ${platform} ${currentVersion} (${detail}), ${bundleIdentifier}`
   }
 
   // user agent for http request such as iframe webview smart avatar...

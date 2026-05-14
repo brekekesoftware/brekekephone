@@ -1,10 +1,30 @@
+#### 2.17.6
+
+- Hot fix android and ios it should receive LPC PN call from phone-aplli caller (issue 1222)
+- Hot fix ios 26 it should not drop active call when answering incoming during outgoing (issue 1224)
+- Hot fix android it should keep newer incoming call visible when older call is auto-answered (issue 1225)
+- Update SIP User-Agent and pnmanage user_agent to include OS version and device model
+
+#### 2.17.5
+
+- Hot fix ios it should have voice and consistent CallKit UI when SIP INVITE arrives before PN didDisplay (issue 1216)
+- Hot fix android it should not put the ongoing call on hold when another outgoing call SIP-connects (issue 1219)
+- Hot fix android 15+ it should scroll past keyboard in long forms and contact add-item modal, and re-show keyboard on keypad re-focus (issue 1220)
+- Hot fix android lpc it should still receive PN calls after account switch (issue 1222)
+
+#### 2.17.4
+
+- Hot fix it should not signOut and drop active call when MFA starts during PBX client initialization on first install (issue 1215)
+- Hot fix android it should not flash app to foreground on auto answer (issue 1218)
+- Hot fix add android lpc native debug logs to diagnose disconnect cause
+
 #### 2.17.3
 
+- Hot fix webphone.pal.mfa (issue 1204)
+- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+- Hot fix ios should not crash call uuid empty (issue 1205)
 - Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
 - Hot fix ios CTI auto answer Call-Info header (issue 1210)
-- Hot fix ios should not crash call uuid empty (issue 1205)
-- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
-- Hot fix webphone.pal.mfa (issue 1204)
 
 #### 2.17.2
 

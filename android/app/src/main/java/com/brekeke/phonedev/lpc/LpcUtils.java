@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import com.brekeke.phonedev.utils.Emitter;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReadableArray;
@@ -169,23 +170,37 @@ public class LpcUtils {
             public void checkServerTrusted(X509Certificate[] chain, String authType)
                 throws CertificateException {
               if (sha256Fingerprint == null || sha256Fingerprint.isEmpty()) {
+                Emitter.debug("[LpcUtils] checkServerTrusted: empty configured hash, skip");
                 return;
               }
               if (chain == null || chain.length == 0) {
+                Emitter.error("[LpcUtils] checkServerTrusted: empty certificate chain");
                 throw new CertificateException("Empty certificate chain");
               }
               try {
                 byte[] certDer = chain[0].getEncoded();
                 byte[] spki = extractSPKI(certDer);
                 if (spki == null) {
+                  Emitter.error(
+                      "[LpcUtils] checkServerTrusted: extractSPKI returned null"
+                          + " (DER parse failed), certLen="
+                          + certDer.length);
                   throw new CertificateException("Failed to extract SPKI from certificate");
                 }
                 byte[] hash = MessageDigest.getInstance("SHA-256").digest(spki);
                 String fingerprint = Base64.encodeToString(hash, Base64.NO_WRAP);
                 if (!fingerprint.equals(sha256Fingerprint)) {
+                  Emitter.error(
+                      "[LpcUtils] checkServerTrusted: fingerprint mismatch"
+                          + " computed="
+                          + fingerprint
+                          + " expected="
+                          + sha256Fingerprint);
                   throw new CertificateException("Certificate fingerprint does not match");
                 }
+                Emitter.debug("[LpcUtils] checkServerTrusted: fingerprint match " + fingerprint);
               } catch (NoSuchAlgorithmException e) {
+                Emitter.error("[LpcUtils] checkServerTrusted: SHA-256 not available");
                 throw new CertificateException("SHA-256 not available", e);
               }
             }

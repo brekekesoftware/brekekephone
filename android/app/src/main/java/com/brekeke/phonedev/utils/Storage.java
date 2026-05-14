@@ -14,7 +14,6 @@ public class Storage {
 
   private static String kAccountsAndData = "_api_profiles";
   private static String kAccounts = "profiles";
-  private static String kData = "profileData";
   private static String kPicker = "ringtonePicker";
 
   private static String read(String k) throws Exception {
@@ -30,10 +29,6 @@ public class Storage {
 
   public static JSONArray accounts() throws Exception {
     return accountsAndData().optJSONArray(kAccounts);
-  }
-
-  public static JSONArray data() throws Exception {
-    return accountsAndData().optJSONArray(kData);
   }
 
   public static JSONObject picker() throws Exception {
