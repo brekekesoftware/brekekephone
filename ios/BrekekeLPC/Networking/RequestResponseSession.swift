@@ -37,7 +37,8 @@ public class RequestResponseSession: NetworkSession {
   private let encoder = JSONEncoder()
   // BUG-1222: PBX server versions differ in which Base64 alphabet they emit for
   // the payload.data field (current Brekeke PBX uses URL-safe '-'/'_'; standard
-  // is '+'/'/'). JSONDecoder's default `.base64` strategy is strict standard and
+  // is '+'/'/'). JSONDecoder's default `.base64` strategy is strict standard
+  // and
   // rejects URL-safe input. Try variants in popularity order so any encoding
   // the server sends decodes successfully. lazy var so self.logger is available
   // when the closure runs (the property is initialized on first access, after
@@ -74,6 +75,7 @@ public class RequestResponseSession: NetworkSession {
     }
     return d
   }()
+
   private let keyCoder = KeyCoder()
   private var requestCancellables = [UInt32: AnyCancellable]()
   private var cancellables = Set<AnyCancellable>()

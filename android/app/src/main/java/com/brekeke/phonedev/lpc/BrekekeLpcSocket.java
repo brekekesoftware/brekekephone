@@ -254,12 +254,11 @@ public class BrekekeLpcSocket {
     }
 
     /**
-     * Decode LPC payload base64 with fallback across Base64 variants. PBX server
-     * versions differ in which alphabet they emit (current Brekeke PBX uses
-     * URL-safe '-'/'_'; future versions may switch to standard '+'/'/'), and
-     * historical clients shipped a strict standard decoder that fails on
-     * URL-safe input (BUG-1222). Try variants in popularity order so any
-     * encoding the server sends decodes successfully.
+     * Decode LPC payload base64 with fallback across Base64 variants. PBX server versions differ in
+     * which alphabet they emit (current Brekeke PBX uses URL-safe '-'/'_'; future versions may
+     * switch to standard '+'/'/'), and historical clients shipped a strict standard decoder that
+     * fails on URL-safe input (BUG-1222). Try variants in popularity order so any encoding the
+     * server sends decodes successfully.
      */
     private byte[] decodeLpcPayloadBase64(String pd) {
       // 1. Standard alphabet, no wrap — most common default in network APIs.
@@ -281,8 +280,7 @@ public class BrekekeLpcSocket {
       // All variants failed — log and return empty so this hot path stays
       // exception-free; downstream JSON parsing on empty data will surface via
       // the existing handleResponse catch if needed.
-      Emitter.error(
-          "[BrekekeLpcSocket] Cannot decode LPC payload base64 with any known variant");
+      Emitter.error("[BrekekeLpcSocket] Cannot decode LPC payload base64 with any known variant");
       return new byte[0];
     }
 

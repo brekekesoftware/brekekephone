@@ -130,7 +130,8 @@ public class BrekekeLpcService extends Service {
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
     // unregister BrekekeLpcReceiver to avoid IntentReceiverLeaked across destroy/recreate cycles,
-    // which previously left dangling references and prevented clean LPC TLS reconnect on account switch
+    // which previously left dangling references and prevented clean LPC TLS reconnect on account
+    // switch
     if (lpcReceiver != null) {
       try {
         unregisterReceiver(lpcReceiver);

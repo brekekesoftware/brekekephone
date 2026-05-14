@@ -198,8 +198,7 @@ public class LpcUtils {
                           + sha256Fingerprint);
                   throw new CertificateException("Certificate fingerprint does not match");
                 }
-                Emitter.debug(
-                    "[LpcUtils] checkServerTrusted: fingerprint match " + fingerprint);
+                Emitter.debug("[LpcUtils] checkServerTrusted: fingerprint match " + fingerprint);
               } catch (NoSuchAlgorithmException e) {
                 Emitter.error("[LpcUtils] checkServerTrusted: SHA-256 not available");
                 throw new CertificateException("SHA-256 not available", e);

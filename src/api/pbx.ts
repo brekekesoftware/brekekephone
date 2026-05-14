@@ -30,7 +30,6 @@ import {
   bundleIdentifier,
   fcmApplicationId,
   isAndroid,
-  isWeb,
   retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
