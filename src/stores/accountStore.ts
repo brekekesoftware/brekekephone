@@ -726,6 +726,8 @@ export class AccountStore {
 
     // Resuming after call ended — session from previous mfaStart still valid,
     // just re-show the modal without sending another OTP email.
+    // Active-call guard still needed here: this branch returns before reaching
+    // the pre-mfaStart guard below.
     if (this.keySessionMFA) {
       if (ctx.call.calls.length > 0) {
         ctx.account.setMFAPendingAfterCallsId(ca.id)
@@ -733,6 +735,18 @@ export class AccountStore {
       }
       await this.setMFAPending(ca, true)
       ctx.mfa.show(ca.id)
+      return
+    }
+
+    // Defer fresh mfaStart while a call is active. Sending OTP now would expire
+    // before the call ends, and a transient pbx.client (e.g. mid PBX reconnect)
+    // can throw inside mfaStart — the false-result path below would then sign
+    // the user out and BYE the active call.
+    if (ctx.call.calls.length > 0) {
+      console.log(
+        `MFA debug: defer (${ctx.call.calls.length} active call) for ca=${ca.id}`,
+      )
+      ctx.account.setMFAPendingAfterCallsId(ca.id)
       return
     }
 
@@ -751,10 +765,6 @@ export class AccountStore {
     if (typeof result === 'object' && 'error' in result) {
       await this.setMFAPending(ca, true)
       ctx.mfa.show(ca.id, { error: result.error })
-      return
-    }
-    if (ctx.call.calls.length > 0) {
-      ctx.account.setMFAPendingAfterCallsId(ca.id)
       return
     }
     await this.setMFAPending(ca, true)

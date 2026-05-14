@@ -98,7 +98,8 @@ public enum ConnectionOptions {
 
       /// Extract SubjectPublicKeyInfo (SPKI) from raw certificate DER bytes.
       /// This is algorithm-independent: the SPKI sequence already contains the
-      /// AlgorithmIdentifier OID, so the resulting hash is valid for RSA, ECDSA,
+      /// AlgorithmIdentifier OID, so the resulting hash is valid for RSA,
+      /// ECDSA,
       /// or any future algorithm without code changes.
       private func extractSPKI(from certData: Data) -> Data? {
         let bytes = [UInt8](certData)

@@ -336,6 +336,20 @@ class PageCallManage extends Component<{
   private openJavaPnOnVisible = () => {
     const { call: c } = this.props
 
+    // BUG-1225: don't auto-reorder this already-answered call to front if a
+    // newer ringing call exists. Race: upsertCall sets displayingCallId=newCall,
+    // then debounced updateCurrentCall reverts it ~500ms later, retriggering
+    // this componentDidUpdate hook for the talking call — which would push the
+    // ringing call's IncomingCallActivity to background. Only auto-reorders are
+    // guarded; user-initiated Nav.goToPageCallManage / backToPageCallManage
+    // still proceed via their own direct BrekekeUtils.onPageCallManage call.
+    if (
+      c.answered &&
+      ctx.call.calls.some(o => o.id !== c.id && o.incoming && !o.answered)
+    ) {
+      return
+    }
+
     if (
       this.hasJavaPn &&
       this.isVisible() &&

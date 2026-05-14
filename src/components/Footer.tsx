@@ -1,7 +1,7 @@
 import { lowerFirst } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
 import { FooterActions } from '#/components/FooterActions'
 import { Navigation } from '#/components/FooterNavigation'
@@ -10,6 +10,10 @@ import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
 import { arrToMap } from '#/utils/arrToMap'
+
+// BUG-1220 followup: lift footer above IME on android 15+ where window doesn't
+// shrink, otherwise chat input and keypad toggle icon stay hidden behind keyboard
+const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
 const css = StyleSheet.create({
   Footer: {
@@ -66,10 +70,15 @@ export const Footer: FC<{
   ) {
     return null
   }
+  const bottomOffset =
+    shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
+      ? RnKeyboard.keyboardHeight
+      : 0
   return (
     <View
       style={[
         css.Footer,
+        { bottom: bottomOffset },
         (render || !RnKeyboard.isKeyboardShowing) && css.Footer__noKeyboard,
       ]}
     >

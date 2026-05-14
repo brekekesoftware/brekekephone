@@ -34,6 +34,8 @@ public class BrekekeLpcService extends Service {
   public static Boolean isReconnectByNetworkChange = false;
   public static MonitorConnection con;
   private Boolean isServiceNotiExist = false;
+  // keep ref so onDestroy can unregister; otherwise each service restart leaks a receiver
+  private BrekekeLpcReceiver lpcReceiver;
 
   @Override
   public void onCreate() {
@@ -52,7 +54,8 @@ public class BrekekeLpcService extends Service {
     isServiceNotiExist = true;
     // register action shutdown
     IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-    registerReceiver(new BrekekeLpcReceiver(), filter);
+    lpcReceiver = new BrekekeLpcReceiver();
+    registerReceiver(lpcReceiver, filter);
 
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
@@ -126,6 +129,17 @@ public class BrekekeLpcService extends Service {
     Log.d(LpcUtils.TAG, "service destroy");
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
+    // unregister BrekekeLpcReceiver to avoid IntentReceiverLeaked across destroy/recreate cycles,
+    // which previously left dangling references and prevented clean LPC TLS reconnect on account
+    // switch
+    if (lpcReceiver != null) {
+      try {
+        unregisterReceiver(lpcReceiver);
+      } catch (IllegalArgumentException ignored) {
+        // receiver already unregistered (e.g. by system on process death)
+      }
+      lpcReceiver = null;
+    }
     // clear local config
     LpcUtils.writeConfig(this, "");
   }

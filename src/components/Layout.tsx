@@ -8,14 +8,20 @@ import type {
   StyleProp,
   ViewStyle,
 } from 'react-native'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { Platform, ScrollView, StyleSheet, View } from 'react-native'
 
 import { Footer } from '#/components/Footer'
 import { Header } from '#/components/Header'
 import type { HeaderDropdownItem } from '#/components/HeaderDropdown'
 import { Toast } from '#/components/Toast'
 import { v } from '#/components/variables'
+import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/RnKeyboard'
+
+// BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME — ScrollView
+// thinks content fits screen and refuses to scroll under keyboard. Add bottom
+// padding equal to keyboard height so content becomes scrollable past the IME.
+const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
 const DEFAULT_TOAST_MESSAGE = 'new message'
 
@@ -109,7 +115,13 @@ export const Layout: FC<
   })
 
   if (!props.noScroll) {
-    containerProps.contentContainerStyle = [css.Scroller]
+    containerProps.contentContainerStyle = [
+      css.Scroller,
+      shouldApplyKbPadding &&
+        RnKeyboard.isKeyboardShowing && {
+          paddingBottom: RnKeyboard.keyboardHeight,
+        },
+    ]
     containerProps.keyboardShouldPersistTaps = 'always'
     containerProps.onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60

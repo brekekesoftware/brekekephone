@@ -11,10 +11,15 @@ import {
 
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/Rn'
 import { v } from '#/components/variables'
+import { isAndroid } from '#/config'
 import type { ItemPBForm, PickerItemOption } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { RnKeyboard } from '#/stores/RnKeyboard'
 import { useAnimationOnDidMount } from '#/utils/animation'
+
+// BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
+const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
 const css = StyleSheet.create({
   vBottom: {
@@ -119,7 +124,7 @@ const css = StyleSheet.create({
   },
 })
 
-const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
+const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
   const [items, updateItems] = useState(listOption)
   const [value, updateValue] = useState('')
@@ -129,6 +134,10 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
   const y = useAnimationOnDidMount({
     translateY: [Dimensions.get('screen').height, 0],
   })
+  const innerKbStyle =
+    shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
+      ? { bottom: 15 + RnKeyboard.keyboardHeight }
+      : null
   const onChangeText = (txt: string) => {
     if (!txt) {
       updateItems(listOption)
@@ -164,7 +173,9 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
-      <Animated.View style={[css.RnPicker_Inner, { transform: [y] }]}>
+      <Animated.View
+        style={[css.RnPicker_Inner, innerKbStyle, { transform: [y] }]}
+      >
         <View style={css.RnPicker_Options}>
           <RnTextInput
             // blurOnSubmit
@@ -203,7 +214,7 @@ const RNPickerInput = ({ onSelect, listOption }: PickerItemOption) => {
       </Animated.View>
     </View>
   )
-}
+})
 export const PhonebookAddItem = observer(
   () =>
     ctx.contact.showPickerItem && (
