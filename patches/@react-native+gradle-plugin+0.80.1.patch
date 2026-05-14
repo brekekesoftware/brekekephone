@@ -10,7 +10,7 @@ index c845624..108dae9 100644
 -        model.project?.android?.packageName
 -            ?: error(
 -                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
-+    val packageName = "com.brekeke.phonedev"
++    val packageName = "com.brekeke.phone"
 +        // model.project?.android?.packageName
 +        //     ?: error(
 +        //         "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")

@@ -76,7 +76,7 @@ android {
   ndkVersion rootProject.ext.ndkVersion
   buildToolsVersion rootProject.ext.buildToolsVersion
   compileSdk rootProject.ext.compileSdkVersion
-  namespace "com.brekeke.phonedev"
+  namespace "com.brekeke.phone"
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -84,7 +84,7 @@ android {
   }
 
   defaultConfig {
-    applicationId "com.brekeke.phonedev"
+    applicationId "com.brekeke.phone"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
