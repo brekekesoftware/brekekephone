@@ -1,0 +1,7 @@
+html.theme-sunny.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-sunny:not(.theme-light) {
+  }
+}

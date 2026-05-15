@@ -1,0 +1,25 @@
+{
+  "name": "@brekekephone/apps-embed-example-react",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "https": "cross-env HTTPS=true vite",
+    "build": "vite build"
+  },
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=10"
+  },
+  "dependencies": {
+    "react": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@vitejs/plugin-basic-ssl": "2.3.0",
+    "@vitejs/plugin-react-swc": "4.3.0",
+    "cross-env": "10.1.0",
+    "vite": "8.0.11"
+  }
+}

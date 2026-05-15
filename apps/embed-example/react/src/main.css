@@ -1,0 +1,42 @@
+#root,
+#brekeke_phone {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+}
+#root {
+  right: 50%;
+  left: 0;
+  border-right: 1px solid black;
+}
+#brekeke_phone {
+  right: 0;
+  left: 50%;
+  display: flex;
+}
+
+.app {
+  margin: 10px;
+}
+
+.call-answer {
+  color: green;
+}
+.call-hangup {
+  color: red;
+}
+.call-answer,
+.call-hangup {
+  margin-left: 10px;
+}
+
+.video-item {
+  display: block;
+  object-fit: cover;
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  background-color: black;
+}

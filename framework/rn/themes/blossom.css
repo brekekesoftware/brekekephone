@@ -1,0 +1,5 @@
+/* need to import here since those files are already transpiled into js object */
+@import './common.extract-variables.css';
+@import './common-dark.extract-variables.css';
+@import './blossom.extract-variables.css';
+@import './blossom-dark.extract-variables.css';

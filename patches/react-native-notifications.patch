@@ -1,0 +1,65 @@
+diff --git a/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java b/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+index f9c858b068b3f3dd29c5e0ab9c1aa3efcf7f88e0..94ea1884c8d84d6d81efeb8ebe91dacf41d2622b 100644
+--- a/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
++++ b/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+@@ -2,8 +2,8 @@
+ package com.wix.reactnativenotifications;
+ 
+ import android.content.Context;
+-import android.support.annotation.NonNull;
+-import android.support.v4.app.NotificationManagerCompat;
++import androidx.annotation.NonNull;
++import androidx.core.app.NotificationManagerCompat;
+ 
+ public abstract class NotificationManagerCompatFacade {
+     public static NotificationManagerCompat from(@NonNull Context context) {
+diff --git a/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java b/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
+index 1e7e8719bc39889a2fb7c6a5c6c05ab6d8ea501e..7fb516d104a9b1ce041f01ed7ca04e77e26ae44c 100644
+--- a/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
++++ b/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
+@@ -19,11 +19,15 @@ public class NotificationIntentAdapter {
+             intent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
+             return PendingIntent.getService(appContext, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+         } else {
++            // Modified: Removed TaskStackBuilder to avoid recreating MainActivity when tapping notification from background.
++            // TaskStackBuilder can cause the existing activity to be destroyed and recreated, leading to app restart.
++            // Using PendingIntent.getActivity directly simplifies the process and allows the existing activity to resume if possible.
+             Intent mainActivityIntent = appContext.getPackageManager().getLaunchIntentForPackage(appContext.getPackageName());
+             mainActivityIntent.putExtra(PUSH_NOTIFICATION_EXTRA_NAME, notification.asBundle());
+-            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(appContext);
+-            taskStackBuilder.addNextIntentWithParentStack(mainActivityIntent);
+-            return taskStackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
++            
++            // Direct PendingIntent creation without TaskStackBuilder to prevent unnecessary activity recreation.
++            // FLAG_UPDATE_CURRENT ensures the PendingIntent is updated if it exists, and FLAG_IMMUTABLE for security on Android 12+.
++            return PendingIntent.getActivity(appContext, (int) System.currentTimeMillis(), mainActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+         }
+     }
+ 
+diff --git a/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java b/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
+index ac0427481c98eb816e4ae73bf3e676145feb0ae6..d6741c37f0f873591bf959d710a710080a6cb275 100644
+--- a/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
++++ b/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
+@@ -150,6 +150,7 @@ public class PushNotification implements IPushNotification {
+                 .setContentTitle(mNotificationProps.getTitle())
+                 .setContentText(mNotificationProps.getBody())
+                 .setContentIntent(intent)
++                .setShowWhen(true)
+                 .setDefaults(Notification.DEFAULT_ALL)
+                 .setAutoCancel(true);
+ 
+diff --git a/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java b/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+index f9c858b068b3f3dd29c5e0ab9c1aa3efcf7f88e0..94ea1884c8d84d6d81efeb8ebe91dacf41d2622b 100644
+--- a/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
++++ b/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
+@@ -2,8 +2,8 @@
+ package com.wix.reactnativenotifications;
+ 
+ import android.content.Context;
+-import android.support.annotation.NonNull;
+-import android.support.v4.app.NotificationManagerCompat;
++import androidx.annotation.NonNull;
++import androidx.core.app.NotificationManagerCompat;
+ 
+ public abstract class NotificationManagerCompatFacade {
+     public static NotificationManagerCompat from(@NonNull Context context) {

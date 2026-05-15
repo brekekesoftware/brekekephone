@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "22177122297",
+    "firebase_url": "https://brekeke-phone-project.firebaseio.com",
+    "project_id": "brekeke-phone-project",
+    "storage_bucket": "brekeke-phone-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22177122297:android:36658603c6e22d3f",
+        "android_client_info": {
+          "package_name": "com.brekeke.phone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22177122297-e6vpp992r4smrjk8elqd57jn7h0e3sl9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdX4-7ondST185yZkXNrcZgqZl4fpGD3Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22177122297-e6vpp992r4smrjk8elqd57jn7h0e3sl9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22177122297:android:db03f9d3af0f6083079f28",
+        "android_client_info": {
+          "package_name": "com.brekeke.phonedev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22177122297-e6vpp992r4smrjk8elqd57jn7h0e3sl9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdX4-7ondST185yZkXNrcZgqZl4fpGD3Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22177122297-e6vpp992r4smrjk8elqd57jn7h0e3sl9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,33 @@
+diff --git a/lib/rules/no-extraneous-dependencies.js b/lib/rules/no-extraneous-dependencies.js
+index 0dcf9d0544610dcdfa04409d438e2f82b3b4b718..88d4cfbbdc9ab204e0b846556a07debb6eda15ff 100644
+--- a/lib/rules/no-extraneous-dependencies.js
++++ b/lib/rules/no-extraneous-dependencies.js
+@@ -219,6 +219,9 @@ function reportIfMissing(context, deps, depsOptions, node, name) {
+   // test the real name from the resolved package.json
+   // if not aliased imports (alias/react for example), importPackageName can be misinterpreted
+   var realPackageName = getModuleRealName(resolved);
++  if (depsOptions.ignore.includes(realPackageName)) {
++    return;
++  }
+   if (realPackageName && realPackageName !== importPackageName) {
+     declarationStatus = checkDependencyDeclaration(deps, realPackageName, declarationStatus);
+ 
+@@ -270,6 +273,10 @@ module.exports = {
+     {
+       type: 'object',
+       properties: {
++        ignore: {
++          type: 'array',
++          items: { type: 'string' },
++        },
+         devDependencies: { type: ['boolean', 'array'] },
+         optionalDependencies: { type: ['boolean', 'array'] },
+         peerDependencies: { type: ['boolean', 'array'] },
+@@ -289,6 +296,7 @@ module.exports = {
+       var deps = getDependencies(context, options.packageDir) || extractDepFields({});
+ 
+       var depsOptions = {
++        ignore: options.ignore || [],
+         allowDevDeps: testConfig(options.devDependencies, filename) !== false,
+         allowOptDeps: testConfig(options.optionalDependencies, filename) !== false,
+         allowPeerDeps: testConfig(options.peerDependencies, filename) !== false,

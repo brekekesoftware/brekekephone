@@ -78,17 +78,20 @@ yarn-error.log*
 .env.production.local
 **/.vscode/
 **/dist/
+**/dist-*/
 next-env.d.ts
 **/.next/
 **/.vercel/
-**/.velite/
 **/out/
+**/.velite/
+**/.tamagui/
 
 # local/debug output
 *.local
+*.local.*
+*.debug.*
 *.sqlite
 *.sqlite3
-*.debug.png
 
 # pick one between npm/yarn/pnpm
 package-lock.json
@@ -99,17 +102,7 @@ yarn.lock
 **/.*-cache/
 **/target/
 
-###############################################################################
-# others in this project
-
-# google service keys for firebase
-GoogleService-Info.plist
-google-services.json
-# turn server config
-turnConfig.*
-# intl output
-.intlNewEn.json
-
-# embed
-!embed/**/package-lock.json
-embed/**/brekeke_phone*
+# others
+**/GoogleService-Info.plist
+**/google-services.json
+**/brekeke_phone*/

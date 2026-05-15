@@ -1,0 +1,24 @@
+html.theme-corporate {
+  --primary-50: #f0f7ff;
+  --primary-100: #e0effe;
+  --primary-200: #b9ddfe;
+  --primary-300: #7cc0fd;
+  --primary-400: #3ba0fa;
+  --primary-500: #1182e8;
+  --primary-600: #0567c6;
+  --primary-700: #0652a1;
+  --primary-800: #094485;
+  --primary-900: #0e396e;
+  --primary-950: #092449;
+  --secondary-50: #f7f9fb;
+  --secondary-100: #f0f3f7;
+  --secondary-200: #e3e8ee;
+  --secondary-300: #d0d7e1;
+  --secondary-400: #9da8b8;
+  --secondary-500: #6e7c8f;
+  --secondary-600: #505d70;
+  --secondary-700: #3c4859;
+  --secondary-800: #222c3c;
+  --secondary-900: #141b27;
+  --secondary-950: #070b12;
+}

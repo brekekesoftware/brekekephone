@@ -1,0 +1,15 @@
+export const enforceUseClient = [
+  'useState',
+  'useEffect',
+  'useRef',
+  'createContext',
+  'useContext',
+  'useSyncExternalStore',
+  'useImmer',
+  'useClassState',
+  'useRefConstruct',
+  'useSafeContext',
+  'useIsMounted',
+  'useWindowDemensions',
+  'useResponsiveState',
+]

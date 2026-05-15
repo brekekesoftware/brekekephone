@@ -1,0 +1,7 @@
+html.theme-coffee.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-coffee:not(.theme-light) {
+  }
+}

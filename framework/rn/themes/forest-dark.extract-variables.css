@@ -1,0 +1,7 @@
+html.theme-forest.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-forest:not(.theme-light) {
+  }
+}
