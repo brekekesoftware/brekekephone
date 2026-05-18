@@ -10,7 +10,7 @@
   },
   "engines": {
     "node": ">=24.11",
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "dependencies": {
     "react": "19.1.0"

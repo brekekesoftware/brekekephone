@@ -1,16 +1,19 @@
 packages:
   - './*/*/*'
+
 allowBuilds:
   '@swc/core': true
   core-js: true
   core-js-pure: true
   sharp: true
+
 overrides:
   react: 19.1.0
   react-dom: 19.1.0
   react-native: 0.80.1
   '@typescript-eslint/parser': 8.59.3
   '@typescript-eslint/typescript-estree': 8.59.3
+
 patchedDependencies:
   react-native-web: patches/react-native-web.patch
   eslint-plugin-import: patches/eslint-plugin-import.patch

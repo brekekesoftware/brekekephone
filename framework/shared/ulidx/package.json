@@ -5,7 +5,7 @@
   "type": "commonjs",
   "engines": {
     "node": ">=24.11",
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "dependencies": {
     "ulidx": "2.4.1"

@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": ">=24.11",
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "dependencies": {
     "humanize-duration": "3.33.2",

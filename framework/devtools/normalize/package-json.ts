@@ -25,10 +25,6 @@ type PackageData = {
   path: string
 }
 
-const engines = {
-  node: '>=24.11',
-  pnpm: '>=10',
-}
 const whitelistTypesWithoutPackage = new Set(['node'])
 const invalidVersionRegex = /^[~^]/
 const validSemverRegex = /^\d/
@@ -106,7 +102,7 @@ export const normalizePackageJson = async () => {
       type: packageJson.type === 'module' ? 'module' : 'commonjs',
       scripts: packageJson.scripts,
       exports: packageJson.exports,
-      engines,
+      engines: rootPackageJson.engines,
       ...keys.reduce<StrMap>((d, k) => {
         const v = packageJson[k]
         d[k] = v && JSON.parse(jsonStable(v))

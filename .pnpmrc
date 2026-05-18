@@ -1,7 +1,0 @@
-engine-strict=true
-strict-peer-dependencies=true
-auto-install-peers=false
-dedupe-peer-dependents=true
-link-workspace-packages=true
-prefer-workspace-packages=true
-save-workspace-protocol=rolling

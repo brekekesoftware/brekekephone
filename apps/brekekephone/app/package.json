@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": ">=24.11",
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
