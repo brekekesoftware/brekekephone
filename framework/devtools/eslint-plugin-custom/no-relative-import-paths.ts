@@ -99,7 +99,9 @@ const isParentFolder = (
   >,
   rootDir: string,
 ): boolean => {
-  const absoluteRootPath = path.join(context.cwd, rootDir)
+  const absoluteRootPath = path.isAbsolute(rootDir)
+    ? rootDir
+    : path.join(context.cwd, rootDir)
   const absoluteFilePath = path.join(
     path.dirname(context.filename),
     relativeFilePath,
@@ -135,9 +137,12 @@ const getAbsolutePath = (
   rootDir: string,
   prefix: string,
 ): string => {
+  const absoluteRootDir = path.isAbsolute(rootDir)
+    ? rootDir
+    : path.join(context.cwd, rootDir)
   const parts = path
     .relative(
-      path.join(context.cwd, rootDir),
+      absoluteRootDir,
       path.join(path.dirname(context.filename), relativePath),
     )
     .split(path.sep)
