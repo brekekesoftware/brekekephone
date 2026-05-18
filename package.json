@@ -25,29 +25,5 @@
   "devDependencies": {
     "@types/node": "25.6.2",
     "typescript": "6.0.3"
-  },
-  "pnpm": {
-    "overrides": {
-      "react": "19.1.0",
-      "react-dom": "19.1.0",
-      "react-native": "0.80.1",
-      "@typescript-eslint/parser": "8.59.3",
-      "@typescript-eslint/typescript-estree": "8.59.3"
-    },
-    "patchedDependencies": {
-      "react-native-web": "patches/react-native-web.patch",
-      "eslint-plugin-import": "patches/eslint-plugin-import.patch",
-      "eslint-plugin-react": "patches/eslint-plugin-react.patch",
-      "react-native-callkeep": "patches/react-native-callkeep.patch",
-      "react-native-notifications": "patches/react-native-notifications.patch",
-      "react-native-webrtc": "patches/react-native-webrtc.patch",
-      "react-native-voip-push-notification": "patches/react-native-voip-push-notification.patch",
-      "react-native-splash-screen": "patches/react-native-splash-screen.patch",
-      "react-native": "patches/react-native.patch",
-      "jssip": "patches/jssip.patch",
-      "@react-native/gradle-plugin": "patches/@react-native__gradle-plugin.patch",
-      "@react-native-documents/picker": "patches/@react-native-documents__picker.patch",
-      "mobx-react": "patches/mobx-react.patch"
-    }
   }
 }
