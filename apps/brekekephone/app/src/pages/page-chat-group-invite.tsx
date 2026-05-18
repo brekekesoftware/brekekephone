@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
@@ -11,7 +10,7 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 
-const css = StyleSheet.create({
+const css = {
   PageChatGroupInvite: {},
   PageChatGroupInvite_TextInput: {
     padding: 10,
@@ -40,7 +39,7 @@ const css = StyleSheet.create({
     paddingTop: 15,
     fontSize: v.fontSizeTitle,
   },
-})
+}
 
 @observer
 export class PageChatGroupInvite extends Component<{

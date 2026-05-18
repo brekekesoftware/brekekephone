@@ -1,10 +1,9 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
-
+import { Animated, View } from 'react-native'
 import { RnText } from '#/components/rn'
 
-const css = StyleSheet.create({
+const css = {
   container: {
     position: 'absolute',
     right: 0,
@@ -17,7 +16,7 @@ const css = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 5,
   },
-})
+}
 
 type ToastProps = {
   title: string

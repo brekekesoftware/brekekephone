@@ -2,7 +2,6 @@
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
-import { StyleSheet } from 'react-native'
 import type Url from 'url-parse'
 
 import '../../tailwind.css'
@@ -21,11 +20,11 @@ import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
-const css = StyleSheet.create({
+const css = {
   WebApp_BtnTxt__browser: {
     color: 'white',
   },
-})
+}
 
 export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)

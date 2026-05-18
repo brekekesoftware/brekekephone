@@ -3,13 +3,12 @@ import type {
   NativeSyntheticEvent,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = StyleSheet.create({
+const css = {
   ChatInput: {
     flex: 1,
     flexDirection: 'row',
@@ -45,7 +44,7 @@ const css = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: v.borderBg,
   },
-})
+}
 
 export const ChatInput: FC<{
   onEmojiTurnOn?(): void

@@ -1,15 +1,14 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import type { TouchableOpacityProps, ViewProps } from 'react-native'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
-
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { isIos } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-const css = StyleSheet.create({
+const css = {
   ButtonIcon: {
     alignItems: 'center',
     marginHorizontal: 5,
@@ -23,7 +22,7 @@ const css = StyleSheet.create({
     minWidth: isIos ? 70 : 80,
     textAlign: 'center',
   },
-})
+}
 
 export const ButtonIcon: FC<{
   color: string

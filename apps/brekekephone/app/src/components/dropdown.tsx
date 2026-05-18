@@ -1,7 +1,6 @@
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
-import { Platform, StyleSheet, View } from 'react-native'
-
+import { Platform, View } from 'react-native'
 import type { DropdownItemProps } from '#/components/dropdown-item'
 import { DropdownItem } from '#/components/dropdown-item'
 import { v } from '#/components/variables'
@@ -12,7 +11,7 @@ type DropdownProps = {
   position: DropdownPosition
 }
 
-const css = StyleSheet.create({
+const css = {
   container: {
     position: 'absolute',
     borderRadius: 5,
@@ -37,7 +36,7 @@ const css = StyleSheet.create({
       },
     }),
   },
-})
+}
 
 export const Dropdown: FC<ViewProps & DropdownProps> = ({
   items = [],

@@ -1,12 +1,10 @@
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
-import { StyleSheet } from 'react-native'
-
 import { RnCheckBox } from '#/components/rn-checkbox'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
-const css = StyleSheet.create({
+const css = {
   SelectionItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -18,7 +16,7 @@ const css = StyleSheet.create({
   SelectionItem_Title: {
     marginLeft: 12,
   },
-})
+}
 
 export const SelectionItem: FC<
   ViewProps & {

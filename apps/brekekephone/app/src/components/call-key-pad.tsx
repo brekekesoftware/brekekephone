@@ -1,5 +1,4 @@
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import {
   mdiBackspace,
   mdiKeyboard,
@@ -10,7 +9,7 @@ import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 
-const css = StyleSheet.create({
+const css = {
   KeyPad_Number: {
     flexDirection: 'row',
   },
@@ -50,7 +49,7 @@ const css = StyleSheet.create({
     height: 50,
     borderRadius: 50 / 2,
   },
-})
+}
 
 const keys = [
   ['1', '2', '3'],

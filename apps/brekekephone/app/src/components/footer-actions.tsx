@@ -1,12 +1,11 @@
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { mdiCached, mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
-const css = StyleSheet.create({
+const css = {
   Actions: {
     flex: 1,
     flexDirection: 'row',
@@ -49,7 +48,7 @@ const css = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
   },
-})
+}
 
 export const FooterActions: FC<
   Partial<{

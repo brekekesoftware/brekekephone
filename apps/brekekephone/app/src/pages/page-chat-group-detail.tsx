@@ -7,8 +7,7 @@ import type {
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
@@ -28,7 +27,7 @@ import { formatFileType } from '#/utils/format-file-type'
 import { pickFile } from '#/utils/pick-file'
 import { saveBlob, saveBlobFile } from '#/utils/save-blob'
 
-const css = StyleSheet.create({
+const css = {
   LoadMore: {
     alignSelf: 'center',
     paddingBottom: 15,
@@ -41,7 +40,7 @@ const css = StyleSheet.create({
   LoadMore__finished: {
     color: v.colors.warning,
   },
-})
+}
 
 @observer
 export class PageChatGroupDetail extends Component<{

@@ -1,11 +1,10 @@
 import { darken } from 'polished'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { v } from '#/components/variables'
 
-const css = StyleSheet.create({
+const css = {
   RnSwitch: {
     height: 12,
     width: 32,
@@ -29,7 +28,7 @@ const css = StyleSheet.create({
     transform: [{ translateX: 20 }],
     backgroundColor: v.colors.primary,
   },
-})
+}
 
 export const RnSwitch: FC<
   ViewProps & {

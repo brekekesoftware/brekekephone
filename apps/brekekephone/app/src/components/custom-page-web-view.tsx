@@ -1,7 +1,7 @@
 import { forwardRef, useRef } from 'react'
-import { StyleSheet } from 'react-native'
 
-const css = StyleSheet.create({
+
+const css = {
   image: {
     overflow: 'hidden',
     backgroundColor: 'white',
@@ -26,7 +26,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-})
+}
 interface Props {
   url: string
   onTitle?: (title: string) => void

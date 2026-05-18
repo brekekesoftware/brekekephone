@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, Image, View } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
-
 import noPhoto from '#/assets/no_photo.png'
 
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
@@ -13,7 +12,7 @@ import { checkImageUrl } from '#/utils/check-image-url'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
-const css = StyleSheet.create({
+const css = {
   image: {
     overflow: 'hidden',
     backgroundColor: 'white',
@@ -38,7 +37,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-})
+}
 
 const js = `
 // set meta data config viewport

@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
-
+import { Dimensions, ScrollView, View } from 'react-native'
 import { VideoViewItem } from '#/components/video-view-item'
 import type { Call } from '#/stores/call'
 import { checkMutedRemoteUser } from '#/utils/check-muted-remote-user'
@@ -86,7 +85,7 @@ export const CallVideosCarousel = observer(
   },
 )
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     height: '100%',
     flex: 1,
@@ -104,4 +103,4 @@ const styles = StyleSheet.create({
     bottom: 0,
     pointerEvents: 'box-none',
   },
-})
+}

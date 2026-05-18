@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+import { Platform, View } from 'react-native'
 import { lowerFirst } from '@/shared/lodash'
 import { FooterActions } from '#/components/footer-actions'
 import { Navigation } from '#/components/footer-navigation'
@@ -15,7 +14,7 @@ import { arrToMap } from '#/utils/arr-to-map'
 // shrink, otherwise chat input and keypad toggle icon stay hidden behind keyboard
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const css = StyleSheet.create({
+const css = {
   Footer: {
     position: 'absolute',
     bottom: 0,
@@ -46,7 +45,7 @@ const css = StyleSheet.create({
     minWidth: 260,
     maxWidth: v.maxModalWidth,
   },
-})
+}
 
 export const Footer: FC<{
   menu: string

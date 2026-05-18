@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
-
+import { Animated, View } from 'react-native'
 import { RnText } from '#/components/rn'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
@@ -20,7 +19,7 @@ const getBg = (type: ToastType) => {
   }
 }
 
-const s = StyleSheet.create({
+const s = {
   root: {
     left: 0,
     right: 0,
@@ -41,7 +40,7 @@ const s = StyleSheet.create({
     color: 'white',
     marginLeft: 4,
   },
-})
+}
 
 const TOAST_DISPLAY_DURATION = 2700
 

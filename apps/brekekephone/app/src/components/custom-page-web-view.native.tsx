@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import { StyleSheet } from 'react-native'
 import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
@@ -8,7 +7,7 @@ import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-sen
 import { buildWebViewSource, isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   image: {
     overflow: 'hidden',
     backgroundColor: 'white',
@@ -33,7 +32,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-})
+}
 
 type Props = Pick<WebViewProps, 'onLoadStart' | 'onLoadEnd' | 'onError'> & {
   url: string

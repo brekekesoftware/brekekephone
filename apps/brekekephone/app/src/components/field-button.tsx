@@ -1,13 +1,12 @@
 import type { FC } from 'react'
 import type { TextInputProps, TouchableOpacityProps } from 'react-native'
-import { Platform, StyleSheet, View } from 'react-native'
-
+import { Platform, View } from 'react-native'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = StyleSheet.create({
+const css = {
   FieldButton: {
     alignSelf: 'center',
     marginTop: 15,
@@ -45,7 +44,7 @@ const css = StyleSheet.create({
       },
     ],
   },
-})
+}
 
 export const FieldButton: FC<
   Partial<{

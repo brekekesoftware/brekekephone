@@ -1,17 +1,16 @@
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
-
 import { mdiImageBrokenVariant } from '#/assets/icons'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
 import type { ChatFile } from '#/stores/chat-store'
 
 const size = 200
-const css = StyleSheet.create({
+const css = {
   image: {
     width: size,
     height: size,
@@ -54,7 +53,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: size,
   },
-})
+}
 
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,

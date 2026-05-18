@@ -2,9 +2,8 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { Dimensions, Linking, Platform, StyleSheet, View } from 'react-native'
+import { Dimensions, Linking, Platform, View } from 'react-native'
 import Share from 'react-native-share'
-
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
@@ -16,7 +15,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-const css = StyleSheet.create({
+const css = {
   Message: {
     position: 'relative',
     paddingBottom: 5,
@@ -107,7 +106,7 @@ const css = StyleSheet.create({
       },
     }),
   },
-})
+}
 
 const File: FC<
   Partial<{

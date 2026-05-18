@@ -1,19 +1,11 @@
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import {
-  ActivityIndicator,
-  Dimensions,
-  Modal,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Dimensions, Modal, StatusBar, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
-
 import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
@@ -25,7 +17,7 @@ import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 
-const css = StyleSheet.create({
+const css = {
   vVideoModal: {
     width: Dimensions.get('screen').width,
     height: Dimensions.get('window').height,
@@ -95,7 +87,7 @@ const css = StyleSheet.create({
   modal: {
     backgroundColor: 'blue',
   },
-})
+}
 
 const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({

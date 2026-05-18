@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
@@ -12,7 +11,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
-const css = StyleSheet.create({
+const css = {
   Row: {
     flexDirection: 'row',
     paddingHorizontal: 5,
@@ -50,7 +49,7 @@ const css = StyleSheet.create({
   bgUnread: {
     backgroundColor: v.colors.primaryFn(0.5),
   },
-})
+}
 
 export const WebchatItem: FC<{
   data: Conference

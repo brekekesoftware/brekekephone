@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react'
 import type { StyleProp, ViewStyle } from 'react-native'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
-const css = StyleSheet.create({
+const css = {
   video: {
     width: '100%',
     height: '100%',
   },
-})
+}
 
 declare global {
   interface MediaStream {

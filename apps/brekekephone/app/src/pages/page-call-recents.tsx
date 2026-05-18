@@ -2,8 +2,7 @@ import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
-import { AppState, StyleSheet } from 'react-native'
-
+import { AppState } from 'react-native'
 import { mdiMagnify, mdiPhone, mdiVideo } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
@@ -15,11 +14,11 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { PushNotification } from '#/utils/push-notification'
 
-const css = StyleSheet.create({
+const css = {
   Loading: {
     marginTop: 20,
   },
-})
+}
 
 @observer
 export class PageCallRecents extends Component {

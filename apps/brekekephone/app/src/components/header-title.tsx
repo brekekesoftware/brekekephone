@@ -1,13 +1,12 @@
 import type { FC } from 'react'
-import { Animated, StyleSheet } from 'react-native'
-
+import { Animated } from 'react-native'
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
 import { AnimatedText } from '#/components/rn-text'
 import { v } from '#/components/variables'
 import { useAnimation } from '#/utils/animation'
 
-const css = StyleSheet.create({
+const css = {
   Container: {
     paddingVertical: 15,
     paddingLeft: 15,
@@ -23,7 +22,7 @@ const css = StyleSheet.create({
     color: v.subColor,
     paddingRight: 15,
   },
-})
+}
 
 export const Title: FC<{
   compact: boolean

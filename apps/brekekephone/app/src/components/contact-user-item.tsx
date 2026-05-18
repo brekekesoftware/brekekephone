@@ -2,8 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
-import { Platform, Pressable, StyleSheet, View } from 'react-native'
-
+import { Platform, Pressable, View } from 'react-native'
 import { isEmpty } from '@/shared/lodash'
 import {
   mdiAccountGroup,
@@ -27,7 +26,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 
-const css = StyleSheet.create({
+const css = {
   Outer: {
     borderBottomWidth: 1,
     borderColor: v.borderBg,
@@ -102,7 +101,7 @@ const css = StyleSheet.create({
   disableContainer: {
     opacity: 0.5,
   },
-})
+}
 
 export const UserItem: FC<
   Partial<{

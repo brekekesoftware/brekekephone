@@ -1,11 +1,10 @@
 import type { FC } from 'react'
-import { Platform, StatusBar, StyleSheet, View } from 'react-native'
-
+import { Platform, StatusBar, View } from 'react-native'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 
-const css = StyleSheet.create({
+const css = {
   RnStatusBar: {
     backgroundColor: v.hoverBg,
     ...v.backdropZindex,
@@ -32,7 +31,7 @@ const css = StyleSheet.create({
     borderBottomWidth: 1,
     ...v.backdropZindex,
   },
-})
+}
 
 export type TRnStatusBarProps = {
   danger?: boolean

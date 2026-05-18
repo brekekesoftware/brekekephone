@@ -7,8 +7,10 @@ import type {
   StyleProp,
   ViewStyle,
 } from 'react-native'
-import { Platform, ScrollView, StyleSheet, View } from 'react-native'
+import { Platform } from 'react-native'
 
+import { ScrollView } from '@/rn/core/components/scroll-view'
+import { View } from '@/rn/core/components/view'
 import { lowerFirst } from '@/shared/lodash'
 import { Footer } from '#/components/footer'
 import { Header } from '#/components/header'
@@ -24,42 +26,6 @@ import { RnKeyboard } from '#/stores/rn-keyboard'
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
 const DEFAULT_TOAST_MESSAGE = 'new message'
-
-const css = StyleSheet.create({
-  FullScreen: {
-    width: '100%',
-    height: '100%',
-  },
-  Layout: {
-    flex: 1,
-    height: '100%',
-    backgroundColor: 'white',
-  },
-  Layout__transparent: {
-    backgroundColor: 'transparent',
-  },
-  Scroller: {
-    flexGrow: 1,
-  },
-  FooterSpaceInsideScroller: {
-    height: 15,
-  },
-  FooterSpaceFullContent: {
-    height: 0,
-  },
-  LoadMore: {
-    alignSelf: 'center',
-    paddingBottom: 15,
-    fontSize: v.fontSizeSmall,
-    paddingHorizontal: 10,
-  },
-  LoadMore__btn: {
-    color: v.colors.primary,
-  },
-  LoadMore__finished: {
-    color: v.colors.warning,
-  },
-})
 
 export const Layout: FC<
   Partial<{
@@ -111,17 +77,16 @@ export const Layout: FC<
   )
 
   Object.assign(containerProps, {
-    style: [css.Layout, props.transparent && css.Layout__transparent],
+    className: ['h-full flex-1', props.transparent ? 'bg-transparent' : 'bg-white'],
   })
 
   if (!props.noScroll) {
-    containerProps.contentContainerStyle = [
-      css.Scroller,
-      shouldApplyKbPadding &&
-        RnKeyboard.isKeyboardShowing && {
-          paddingBottom: RnKeyboard.keyboardHeight,
-        },
-    ]
+    containerProps.contentContainerClassName = 'grow'
+    if (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing) {
+      containerProps.contentContainerStyle = {
+        paddingBottom: RnKeyboard.keyboardHeight,
+      }
+    }
     containerProps.keyboardShouldPersistTaps = 'always'
     containerProps.onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const newHeaderOverflow = e.nativeEvent.contentOffset.y > 60
@@ -161,7 +126,7 @@ export const Layout: FC<
   }
 
   return (
-    <View style={[css.FullScreen, props.style]}>
+    <View className='h-full w-full' style={props.style}>
       <Container {...containerProps}>
         <View
           style={{
@@ -169,13 +134,7 @@ export const Layout: FC<
           }}
         />
         {props.children}
-        <View
-          style={
-            props?.isFullContent
-              ? css.FooterSpaceFullContent
-              : css.FooterSpaceInsideScroller
-          }
-        />
+        <View className={props?.isFullContent ? 'h-0' : 'h-3.75'} />
       </Container>
       {props.isShowToastMessage && (
         <Toast

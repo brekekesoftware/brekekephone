@@ -1,13 +1,12 @@
 import type { FC } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
-
+import { Animated, View } from 'react-native'
 import { RnTouchableOpacity } from '#/components/rn'
 import type { TRnText } from '#/components/rn-text'
 import { AnimatedText, RnText } from '#/components/rn-text'
 import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
-const css = StyleSheet.create({
+const css = {
   outer: {
     borderBottomWidth: 1,
     borderColor: v.borderBg,
@@ -28,7 +27,7 @@ const css = StyleSheet.create({
   subText: {
     color: v.subColor,
   },
-})
+}
 
 interface ParkItemProps {
   index: number

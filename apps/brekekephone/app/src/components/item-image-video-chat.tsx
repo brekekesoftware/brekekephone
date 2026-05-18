@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Dimensions, Platform, StyleSheet, View } from 'react-native'
-
+import { Dimensions, Platform, View } from 'react-native'
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
@@ -12,7 +11,7 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-const css = StyleSheet.create({
+const css = {
   vMessage: {
     marginBottom: 5,
     marginLeft: 10,
@@ -38,7 +37,7 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-})
+}
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =

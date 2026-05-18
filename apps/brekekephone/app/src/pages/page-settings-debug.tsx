@@ -1,8 +1,6 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
@@ -12,7 +10,7 @@ import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'
 
-const css = StyleSheet.create({
+const css = {
   BtnIcon: {
     transform: [
       {
@@ -23,7 +21,7 @@ const css = StyleSheet.create({
   Text: {
     paddingHorizontal: 20,
   },
-})
+}
 
 @observer
 export class PageSettingsDebug extends Component {

@@ -1,6 +1,4 @@
 import type { FC } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
@@ -11,14 +9,14 @@ export type DropdownItemProps = {
   disabled?: boolean
 }
 
-const css = StyleSheet.create({
+const css = {
   container: {
     paddingVertical: 5,
   },
   disableText: {
     color: v.colors.greyTextChat,
   },
-})
+}
 
 export const DropdownItem: FC<DropdownItemProps> = ({
   title,

@@ -1,11 +1,10 @@
 import { forwardRef } from 'react'
 import type { TextInputProps } from 'react-native'
-import { StyleSheet, TextInput } from 'react-native'
-
+import { TextInput } from 'react-native'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 
-const css = StyleSheet.create({
+const css = {
   RnTextInput: {
     position: 'relative',
     fontSize: v.fontSize,
@@ -13,7 +12,7 @@ const css = StyleSheet.create({
     fontFamily: v.fontFamily,
     color: v.color,
   },
-})
+}
 
 export type RnTextInputProps = TextInputProps & {
   disabled?: boolean

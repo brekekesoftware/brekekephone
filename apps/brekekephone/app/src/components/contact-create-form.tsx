@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { jsonStable } from '@/shared/json-stable'
 import { cloneDeep } from '@/shared/lodash'
 import { Layout } from '#/components/layout'
@@ -26,7 +24,7 @@ const genEmptyPhonebook = (lang: string) => {
     })
   return emptyObj
 }
-const css = StyleSheet.create({
+const css = {
   stylePreviewName: {
     marginHorizontal: 20,
   },
@@ -38,7 +36,7 @@ const css = StyleSheet.create({
     color: v.subColor,
     fontWeight: v.fontWeight,
   },
-})
+}
 
 export const ContactsCreateForm: FC<{
   updatingPhonebook?: Phonebook

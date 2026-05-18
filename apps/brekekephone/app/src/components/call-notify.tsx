@@ -1,8 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { IncomingItem } from '#/components/call-voices-ui'
@@ -13,7 +12,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-const css = StyleSheet.create({
+const css = {
   Notify: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -32,7 +31,7 @@ const css = StyleSheet.create({
   Notify_Btn_accept: {
     borderColor: v.colors.primary,
   },
-})
+}
 
 @observer
 export class DidMountTimer extends Component<any> {

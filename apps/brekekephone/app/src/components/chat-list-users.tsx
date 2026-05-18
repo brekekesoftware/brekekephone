@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { formatDateTimeSemantic } from '#/components/chat-config'
 import { UserItem } from '#/components/contact-user-item'
 import { RnTouchableOpacity } from '#/components/rn'
@@ -10,11 +8,11 @@ import { v } from '#/components/variables'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   Unread: {
     backgroundColor: v.colors.primaryFn(0.5),
   },
-})
+}
 
 export const ListUsers: FC<{
   recents: {

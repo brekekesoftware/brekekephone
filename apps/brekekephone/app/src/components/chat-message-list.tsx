@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { sortBy, uniqBy } from '@/shared/lodash'
 import { Avatar } from '#/components/avatar'
 import { groupByTimestamp } from '#/components/chat-config'
@@ -11,7 +10,7 @@ import { v } from '#/components/variables'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   DateGroup: {
     marginTop: 20,
   },
@@ -56,7 +55,7 @@ const css = StyleSheet.create({
   Right: {
     flexDirection: 'column',
   },
-})
+}
 
 export const MessageList: FC<{
   acceptFile: Function

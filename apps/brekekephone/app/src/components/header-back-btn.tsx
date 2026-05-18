@@ -1,11 +1,10 @@
 import type { FC } from 'react'
-import { Animated, StyleSheet } from 'react-native'
-
+import { Animated } from 'react-native'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
 import { useAnimation } from '#/utils/animation'
 
-const css = StyleSheet.create({
+const css = {
   BackBtn: {
     position: 'absolute',
     top: 0,
@@ -18,7 +17,7 @@ const css = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 0,
   },
-})
+}
 
 export const BackBtn: FC<{
   compact: boolean

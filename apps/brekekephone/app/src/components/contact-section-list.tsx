@@ -3,13 +3,7 @@ import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import type { ViewProps } from 'react-native'
-import {
-  SectionList,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-
+import { SectionList, TouchableWithoutFeedback, View } from 'react-native'
 import {
   mdiMenuDown,
   mdiMenuRight,
@@ -35,7 +29,7 @@ import type { GroupUserSectionListData } from '#/stores/user-store'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const css = StyleSheet.create({
+const css = {
   container: {
     marginTop: 15,
   },
@@ -62,7 +56,7 @@ const css = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   disableMarginTop: { marginTop: 0 },
-})
+}
 
 type ContactSectionListProps = {
   sectionListData: GroupUserSectionListData[]

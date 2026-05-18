@@ -1,11 +1,9 @@
 import type { FC } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { mdiPlus } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = StyleSheet.create({
+const css = {
   CreateBtn: {
     position: 'absolute',
     top: 11,
@@ -18,7 +16,7 @@ const css = StyleSheet.create({
   CreateBtn__white: {
     backgroundColor: v.bg,
   },
-})
+}
 
 export const CreateBtn: FC<{
   white: boolean

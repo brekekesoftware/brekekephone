@@ -4,12 +4,11 @@ import type {
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { Keyboard, StyleSheet, View } from 'react-native'
-
+import { Keyboard, View } from 'react-native'
 import { RnTextInput } from '#/components/rn'
 import { intl } from '#/stores/intl'
 
-const css = StyleSheet.create({
+const css = {
   ShowNumbers: {
     flexDirection: 'row',
   },
@@ -26,7 +25,7 @@ const css = StyleSheet.create({
     height: 40,
     borderRadius: 40,
   },
-})
+}
 
 export const ShowNumber: FC<{
   setTarget(v: string): void

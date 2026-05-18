@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, StyleSheet } from 'react-native'
-
+import { Platform } from 'react-native'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
@@ -10,7 +9,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const css = StyleSheet.create({
+const css = {
   invisible: {
     position: 'absolute',
     width: 0,
@@ -25,7 +24,7 @@ const css = StyleSheet.create({
     opacity: 1,
     overflow: 'hidden',
   },
-})
+}
 
 const getVisibleStyle = () => {
   if (Platform.OS === 'web') {

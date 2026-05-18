@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import {
   mdiAccountCircleOutline,
   mdiApplicationOutline,
@@ -13,38 +13,11 @@ import {
 import { Field } from '#/components/field'
 import { FooterActions } from '#/components/footer-actions'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
-
-const css = StyleSheet.create({
-  AccountSignInItem: {
-    backgroundColor: v.bg,
-    marginBottom: 15,
-    marginLeft: 15,
-    borderRadius: v.borderRadius,
-    width: 280,
-  },
-  AccountSignInItem__last: {
-    marginRight: 15,
-  },
-  AccountSignInItem__empty: {
-    height: '70%',
-    minHeight: 320,
-    marginVertical: 45,
-    marginLeft: 15,
-    padding: 15,
-  },
-  AccountSignInItem_Btns: {
-    position: 'absolute',
-    bottom: 15,
-    left: 15,
-    right: 15,
-  },
-})
 
 export const AccountSignInItem: FC<{
   empty?: boolean
@@ -59,11 +32,11 @@ export const AccountSignInItem: FC<{
       ctx.nav.goToPageAccountCreate()
     }
     return (
-      <View style={[css.AccountSignInItem, css.AccountSignInItem__empty]}>
+      <View className='mb-3.75 ml-3.75 h-[70%] min-h-80 w-70 rounded-[3px] bg-white p-3.75 my-11.25'>
         <RnText subTitle>{intl`No account`}</RnText>
         <RnText>{intl`There is no account created`}</RnText>
         <RnText>{intl`Tap the below button to create one`}</RnText>
-        <View style={css.AccountSignInItem_Btns}>
+        <View className='absolute bottom-3.75 left-3.75 right-3.75'>
           <FooterActions
             onNext={onPressCreateAccount}
             onNextText={intl`CREATE NEW ACCOUNT`}
@@ -112,7 +85,10 @@ export const AccountSignInItem: FC<{
   }
   return (
     <View
-      style={[css.AccountSignInItem, props.last && css.AccountSignInItem__last]}
+      className={[
+        'mb-3.75 ml-3.75 h-[70vh] min-h-80 w-70 rounded-[3px] bg-white',
+        props.last && 'mr-3.75',
+      ]}
     >
       <RnTouchableOpacity
         onPress={() => ctx.nav.goToPageAccountUpdate({ id: a.id })}
@@ -145,7 +121,7 @@ export const AccountSignInItem: FC<{
         type='Switch'
         value={a.ucEnabled}
       />
-      <View style={css.AccountSignInItem_Btns}>
+      <View className='absolute bottom-3.75 left-3.75 right-3.75'>
         <FooterActions
           onBack={() => {
             RnAlert.prompt({

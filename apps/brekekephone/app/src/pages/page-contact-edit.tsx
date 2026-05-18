@@ -1,13 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { ScrollView } from 'react-native'
-import {
-  ActivityIndicator,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-
+import { ActivityIndicator, TouchableWithoutFeedback, View } from 'react-native'
 import { mdiFolderPlus } from '#/assets/icons'
 import { ContactList } from '#/components/contact-list'
 import { ContactSectionList } from '#/components/contact-section-list'
@@ -24,7 +18,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-export const css = StyleSheet.create({
+export const css = {
   listHeaderSection: {
     paddingHorizontal: 10,
   },
@@ -48,7 +42,7 @@ export const css = StyleSheet.create({
   loadingIcon: {
     marginTop: 20,
   },
-})
+}
 
 @observer
 export class PageContactEdit extends Component {

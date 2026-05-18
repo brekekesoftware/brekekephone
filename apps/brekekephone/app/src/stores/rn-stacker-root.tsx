@@ -1,20 +1,12 @@
 import { observer } from 'mobx-react'
 import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
-import { Animated, Dimensions, StyleSheet, View } from 'react-native'
+import { Animated, Dimensions } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { v } from '#/components/variables'
 import { RnStacker } from '#/stores/rn-stacker'
 import { useAnimationOnDidMount } from '#/utils/animation'
-
-const css = StyleSheet.create({
-  Stack: {
-    backgroundColor: v.bg,
-  },
-  Stack__hidden: {
-    opacity: 0,
-  },
-})
 
 const Stack: FC<{
   Component: ReactComponentLike
@@ -24,18 +16,31 @@ const Stack: FC<{
   const x = useAnimationOnDidMount({
     translateX: [Dimensions.get('screen').width, 0],
   })
-  const OuterComponent = p.isRoot ? View : Animated.View
+  if (p.isRoot) {
+    return (
+      <View
+        className={['absolute inset-0', p.isBackgroundStack && 'opacity-0']}
+        style={{ backgroundColor: v.bg }}
+      >
+        <Component {...p} />
+      </View>
+    )
+  }
   return (
-    <OuterComponent
-      style={[
-        StyleSheet.absoluteFill,
-        css.Stack,
-        p.isBackgroundStack && css.Stack__hidden,
-        !p.isRoot && { transform: [x] },
-      ]}
+    <Animated.View
+      style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        backgroundColor: v.bg,
+        opacity: p.isBackgroundStack ? 0 : 1,
+        transform: [x],
+      }}
     >
       <Component {...p} />
-    </OuterComponent>
+    </Animated.View>
   )
 }
 

@@ -1,8 +1,6 @@
 import { filesize } from 'filesize'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
@@ -10,7 +8,7 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-const css = StyleSheet.create({
+const css = {
   BtnIcon: {
     transform: [
       {
@@ -21,7 +19,7 @@ const css = StyleSheet.create({
   Text: {
     paddingHorizontal: 20,
   },
-})
+}
 
 @observer
 export class PageSettingsDebugFiles extends Component {

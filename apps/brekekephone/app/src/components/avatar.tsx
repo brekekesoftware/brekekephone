@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react'
 import type { ViewProps } from 'react-native'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 import type { FastImageProps } from 'react-native-fast-image'
-
 import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 
 import { mdiRecord } from '#/assets/icons'
@@ -11,7 +10,7 @@ import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   Avatar: {
     width: 50,
     height: 50,
@@ -29,7 +28,7 @@ const css = StyleSheet.create({
     top: 27,
     left: 30,
   },
-})
+}
 
 const statusMapColor = {
   online: v.colors.primary,

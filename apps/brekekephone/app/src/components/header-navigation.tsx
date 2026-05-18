@@ -2,15 +2,14 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback, useEffect, useRef } from 'react'
 import type { ViewStyle } from 'react-native'
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
-
+import { Dimensions, ScrollView, View } from 'react-native'
 import { css as fcss } from '#/components/footer-navigation'
 import { getSubMenus, getTabs } from '#/components/navigation-config'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   Navigation: {
     flexDirection: 'row',
     alignSelf: 'stretch',
@@ -43,7 +42,7 @@ const css = StyleSheet.create({
     left: 35,
     width: 20,
   },
-})
+}
 
 export const Navigation: FC<{
   menu: string

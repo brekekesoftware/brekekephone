@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
-import { Animated, Dimensions, StyleSheet, View } from 'react-native'
+import { Animated, Dimensions } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { flow } from '@/shared/lodash'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
@@ -9,60 +10,6 @@ import { intl } from '#/stores/intl'
 import type { ErrorRnAlert2, PromptRnAlert } from '#/stores/rn-alert'
 import { RnAlert } from '#/stores/rn-alert'
 import { useAnimationOnDidMount } from '#/utils/animation'
-
-const css = StyleSheet.create({
-  RootRnAlert: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  RootRnAlert_Backdrop: {
-    backgroundColor: v.layerBg,
-  },
-  RootRnAlert_Modal: {
-    width: '90%',
-    maxWidth: v.maxModalWidth,
-    borderRadius: v.borderRadius,
-    padding: 15,
-    backgroundColor: v.bg,
-    ...v.boxShadow,
-  },
-  RootRnAlert_Message: {
-    marginTop: 15,
-  },
-  RootRnAlert_Err: {
-    alignSelf: 'flex-start',
-  },
-  RootRnAlert_ErrTxt: {
-    color: v.colors.danger,
-    fontWeight: v.fontWeight,
-  },
-  RootRnAlert_ErrTxt__title: {
-    fontWeight: 'bold',
-  },
-  RootRnAlert_Btns: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    top: 5,
-    left: 5,
-    marginTop: 15,
-  },
-  RootRnAlert_Btn: {
-    borderRadius: v.borderRadius,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: v.colors.primary,
-    width: 100,
-  },
-  RootRnAlert_Btn__cancel: {
-    backgroundColor: v.revBg,
-    marginRight: 10,
-  },
-  RootRnAlert_BtnTxt: {
-    textAlign: 'center',
-    color: v.revColor,
-  },
-})
 
 const RnAlertR = ({
   error,
@@ -89,9 +36,9 @@ const RnAlertR = ({
       title,
       message:
         typeof message === 'string' ? (
-          <RnText style={css.RootRnAlert_Message}>{message}</RnText>
+          <RnText className='mt-3.75'>{message}</RnText>
         ) : (
-          <View style={css.RootRnAlert_Message}>{message}</View>
+          <View className='mt-3.75'>{message}</View>
         ),
       dismissText: intl`CANCEL`,
       confirmText: intl`REMOVE`,
@@ -110,7 +57,7 @@ const RnAlertR = ({
       title: intl`Error`,
       message: (
         <>
-          <RnText style={css.RootRnAlert_Message}>
+          <RnText className='mt-3.75'>
             {unexpectedErr ? intl`An unexpected error occurred` : message}
           </RnText>
           {!!errMessage && <RnText small>{errMessage}</RnText>}
@@ -125,45 +72,54 @@ const RnAlertR = ({
     return null
   }
   return (
-    <View style={[StyleSheet.absoluteFill, css.RootRnAlert]}>
+    <View className='absolute inset-0 flex-row items-center justify-center'>
       <Animated.View
-        style={[
-          StyleSheet.absoluteFill,
-          css.RootRnAlert_Backdrop,
-          { opacity: a.opacity },
-        ]}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: v.layerBg,
+          opacity: a.opacity,
+        }}
       >
         <RnTouchableOpacity
           onPress={props.onDismiss}
-          style={StyleSheet.absoluteFill}
+          className='absolute inset-0'
         />
       </Animated.View>
       <Animated.View
-        style={[
-          css.RootRnAlert_Modal,
-          {
-            transform: [{ translateY: a.translateY }],
-          },
-        ]}
+        style={{
+          width: '90%',
+          maxWidth: v.maxModalWidth,
+          borderRadius: v.borderRadius,
+          padding: 15,
+          backgroundColor: v.bg,
+          ...v.boxShadow,
+          transform: [{ translateY: a.translateY }],
+        }}
       >
         {!!props.title && <RnText subTitle>{props.title}</RnText>}
         {props.message}
-        <View style={css.RootRnAlert_Btns}>
+        <View className='mt-3.75 flex-row self-end top-1.25 left-1.25'>
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              style={[css.RootRnAlert_Btn, css.RootRnAlert_Btn__cancel]}
+              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5'
+              style={{ backgroundColor: v.revBg }}
             >
-              <RnText small style={css.RootRnAlert_BtnTxt}>
+              <RnText small white className='text-center'>
                 {props.dismissText}
               </RnText>
             </RnTouchableOpacity>
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            style={css.RootRnAlert_Btn}
+            className='w-25 rounded-[3px] px-3.75 py-2.5'
+            style={{ backgroundColor: v.colors.primary }}
           >
-            <RnText small style={css.RootRnAlert_BtnTxt}>
+            <RnText small white className='text-center'>
               {props.confirmText}
             </RnText>
           </RnTouchableOpacity>

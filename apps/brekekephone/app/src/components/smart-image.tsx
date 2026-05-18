@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
-
+import { ActivityIndicator, Image, View } from 'react-native'
 import noPhoto from '#/assets/no_photo.png'
 
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
-const css = StyleSheet.create({
+const css = {
   image: {
     overflow: 'hidden',
     backgroundColor: 'white',
@@ -34,7 +33,7 @@ const css = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-})
+}
 
 export const SmartImage = (p: {
   uri: string

@@ -1,12 +1,10 @@
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
-import { StyleSheet } from 'react-native'
-
 import { mdiCheck } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
-const css = StyleSheet.create({
+const css = {
   CheckBoxBtn: {
     height: 22,
     width: 22,
@@ -17,7 +15,7 @@ const css = StyleSheet.create({
     backgroundColor: '#333',
     borderWidth: 0,
   },
-})
+}
 
 export const RnCheckBox: FC<
   ViewProps & {

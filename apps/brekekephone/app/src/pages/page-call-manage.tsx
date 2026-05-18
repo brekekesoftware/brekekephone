@@ -2,14 +2,9 @@ import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
-import {
-  ActivityIndicator,
-  AppState,
-  Dimensions,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, AppState, Dimensions } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -54,71 +49,7 @@ const minSizeH = height * 0.3
 const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
-const css = StyleSheet.create({
-  BtnSwitchCamera: {
-    position: 'absolute',
-    top: 10, // header compact height
-    right: 10,
-    zIndex: 100,
-  },
-  cameraStyle: {
-    position: 'absolute',
-    top: 50,
-    right: 10,
-    zIndex: 100,
-  },
-  Video: {
-    position: 'absolute',
-    top: 40, // header compact height
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'black',
-  },
-  Video_Space: {
-    flex: 1,
-    alignSelf: 'stretch',
-  },
-  BtnFuncCalls: {
-    marginBottom: 10,
-  },
-  Btns_Hidden: {
-    opacity: 0,
-  },
-  Btns_Inner: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    width,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  Btns_Space: {
-    height: 20,
-  },
-  Btns_VerticalMargin: {
-    flex: 1,
-  },
-  Hangup: {
-    marginBottom: 40,
-  },
-  Hangup_incoming: {
-    marginLeft: 180,
-  },
-  Hangup_answer: {
-    marginRight: 180,
-  },
-  Hangup_incomingText: {
-    bottom: undefined,
-    top: 100,
-  },
-  Hangup_incomingText_avoidLargeImg: {
-    bottom: undefined,
-    top: 200,
-  },
-  labelStyle: {
-    paddingRight: 50,
-  },
+const css = {
   Image_wrapper: {
     marginHorizontal: 15,
     flexDirection: 'column',
@@ -127,31 +58,14 @@ const css = StyleSheet.create({
     minHeight: minSizeImageWrapper,
     minWidth: minSizeImageWrapper,
   },
-  ImageSize: {
-    height: 130,
-    width: 130,
-    borderRadius: 75,
+  smallAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    overflow: 'hidden',
   },
-  ImageLargeSize: {
-    height: '100%',
-    width: (height * 30) / 100,
-    backgroundColor: 'white',
-  },
-  styleTextBottom: {
-    marginTop: 20,
-  },
-  Hangup_avoidAvatar: {
-    top: '35%',
-  },
-  Hangup_avoidAvatar_Large: {
-    top: '60%',
-  },
-  LoadingFullScreen: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 101,
+  btnFuncCalls: {
+    marginBottom: 10,
   },
   hidden: {
     position: 'absolute',
@@ -160,49 +74,10 @@ const css = StyleSheet.create({
     top: '-100%',
     left: '-100%',
   },
-  viewHangupBtns: {
-    marginBottom: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    marginTop: 10,
-    zIndex: 12,
+  pointerEventsBoxNone: {
     pointerEvents: 'box-none',
   },
-  viewHangupBtn: {
-    marginBottom: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    zIndex: 12,
-    flexDirection: 'row',
-    pointerEvents: 'box-none',
-  },
-  txtHold: {
-    height: 65,
-    marginBottom: 10,
-  },
-  smallAvatar: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    overflow: 'hidden',
-  },
-  vContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  vContainerVideo: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-})
+} as const
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
     ? ctx.nav.backToPageCallKeypad()
@@ -426,10 +301,10 @@ class PageCallManage extends Component<{
         transparent={!c.transferring}
       >
         <View
-          style={
+          className={
             this.props.call.localVideoEnabled || c.localVideoEnabled
-              ? css.vContainerVideo
-              : css.vContainer
+              ? 'absolute h-full w-full flex-col items-center justify-start'
+              : 'flex-1 flex-col items-center justify-start'
           }
         >
           {this.renderCall()}
@@ -442,7 +317,7 @@ class PageCallManage extends Component<{
     // render PageCallTransferAttend as a layer instead
     // so switching will not cause the avatar to reload
     const renderTransferring = () => (
-      <View style={css.LoadingFullScreen}>
+      <View className='absolute inset-0 z-101 items-center justify-center bg-white'>
         <PageCallTransferAttend />
       </View>
     )
@@ -451,7 +326,7 @@ class PageCallManage extends Component<{
         return renderTransferring()
       }
       return (
-        <View style={css.LoadingFullScreen}>
+        <View className='absolute inset-0 z-101 items-center justify-center bg-white'>
           <ActivityIndicator size='large' color='black' />
         </View>
       )
@@ -472,8 +347,8 @@ class PageCallManage extends Component<{
     const { call: c } = this.props
     return (
       <>
-        <View style={css.Video_Space} />
-        <View style={[css.Video]}>
+        <View className='flex-1 self-stretch' />
+        <View className='absolute top-10 right-0 bottom-0 left-0 bg-black'>
           <VideoPlayer
             sourceObject={
               checkMutedRemoteUser(
@@ -494,7 +369,7 @@ class PageCallManage extends Component<{
         <RnTouchableOpacity
           onPress={this.toggleButtons}
           activeOpacity={0}
-          style={[StyleSheet.absoluteFill, { zIndex: 10 }]}
+          className='absolute inset-0 z-10'
         />
       </>
     )
@@ -532,7 +407,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        <View style={!isShowAvatar ? css.styleTextBottom : {}}>
+        <View className={!isShowAvatar ? 'mt-5' : undefined}>
           <RnText title white center className='line-clamp-2'>
             {`${c.getDisplayName()}`}
           </RnText>
@@ -575,7 +450,7 @@ class PageCallManage extends Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={ctx.nav.goToPageCallBackgrounds}
-            textInputStyle={css.labelStyle}
+            textInputStyle={{ paddingRight: 50 }}
             disabled={ctx.call.isAnyHoldLoading}
             value={
               n > 1
@@ -585,10 +460,15 @@ class PageCallManage extends Component<{
           />
         )}
         <View style={{ paddingTop: 10 }} />
-        <View style={[css.Btns_Inner, isHideButtons && css.Btns_Hidden]}>
+        <View
+          className={[
+            'w-screen flex-row flex-wrap items-center justify-center self-center',
+            isHideButtons && 'opacity-0',
+          ]}
+        >
           {!this.isBtnHidden('transfer') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -602,7 +482,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('park') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -616,7 +496,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('video') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor={
                 c.localVideoEnabled && !c.mutedVideo ? activeColor : 'white'
@@ -634,7 +514,7 @@ class PageCallManage extends Component<{
           )}
           {!isWeb && !this.isBtnHidden('speaker') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={c.sessionStatus === 'dialing'}
               bgcolor={ctx.call.isLoudSpeakerEnabled ? activeColor : 'white'}
               color={ctx.call.isLoudSpeakerEnabled ? 'white' : 'black'}
@@ -650,7 +530,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('mute') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
@@ -664,7 +544,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('record') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
@@ -679,7 +559,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!(c.withSDPControls || c.answered)}
               bgcolor='white'
               color='black'
@@ -693,7 +573,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('hold') && (
             <ButtonIcon
-              styleContainer={css.BtnFuncCalls}
+              styleContainer={css.btnFuncCalls}
               disabled={!c.answered}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}
@@ -721,15 +601,24 @@ class PageCallManage extends Component<{
       (incoming && this.isBtnHidden('hangup')) ||
       (!this.showButtonsInVideoCall && c.answered)
     return (
-      <View style={[css.viewHangupBtns, { marginTop: isLarge ? 10 : 40 }]}>
+      <View
+        className={[
+          'mb-2 self-stretch items-center justify-center z-12',
+          isLarge ? 'mt-2.5' : 'mt-10',
+        ]}
+        style={css.pointerEventsBoxNone}
+      >
         {c.holding && !c.rqLoadings['hold'] ? (
-          <View style={css.txtHold}>
+          <View className='mb-2.5 h-16.25'>
             <RnText small white center>
               {intl`CALL IS ON HOLD`}
             </RnText>
           </View>
         ) : (
-          <View style={css.viewHangupBtn}>
+          <View
+            className='mb-2.5 flex-row self-stretch items-center justify-center z-12'
+            style={css.pointerEventsBoxNone}
+          >
             {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (
               <ButtonIcon

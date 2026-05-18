@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { BackBtn } from '#/components/header-back-btn'
 import { CreateBtn } from '#/components/header-create-btn'
 import type { HeaderDropdownItem } from '#/components/header-dropdown'
@@ -11,36 +11,6 @@ import { Title } from '#/components/header-title'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
-
-const css = StyleSheet.create({
-  Header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  Outer: {
-    backgroundColor: v.bg,
-  },
-  Outer__compact: {
-    ...v.boxShadow,
-  },
-  Outer__transparent: {
-    backgroundColor: 'transparent',
-  },
-  Inner__hasBackBtn: {
-    paddingLeft: 35,
-  },
-  ButtonIcon__right: {
-    position: 'absolute',
-    top: 0,
-    right: 30,
-    flexDirection: 'row',
-    bottom: 0,
-    alignItems: 'center',
-    paddingRight: 5,
-  },
-})
 
 export const Header: FC<
   Partial<{
@@ -82,15 +52,12 @@ export const Header: FC<
   }
   return (
     <>
-      <View style={css.Header}>
+      <View className='absolute top-0 right-0 left-0'>
         <View
-          style={[
-            css.Outer,
-            compact && css.Outer__compact,
-            transparent && css.Outer__transparent,
-          ]}
+          className={transparent ? 'bg-transparent' : 'bg-white'}
+          style={compact ? v.boxShadow : undefined}
         >
-          <View style={onBack && css.Inner__hasBackBtn}>
+          <View className={onBack ? 'pl-8.75' : undefined}>
             <Title
               compact={compact as boolean}
               description={description}
@@ -101,7 +68,8 @@ export const Header: FC<
             )}
             {iconRights && iconRights.length > 0 && (
               <View
-                style={[css.ButtonIcon__right, { right: dropdown ? 30 : 5 }]}
+                className='absolute top-0 bottom-0 flex-row items-center pr-1.25'
+                style={{ right: dropdown ? 30 : 5 }}
               >
                 {iconRights?.map((_, i) => (
                   <RnTouchableOpacity

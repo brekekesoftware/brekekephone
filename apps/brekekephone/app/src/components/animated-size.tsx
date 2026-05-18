@@ -1,11 +1,10 @@
 import type { FC, PropsWithChildren } from 'react'
 import { useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { Animated, StyleSheet, View } from 'react-native'
-
+import { Animated, View } from 'react-native'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
-const css = StyleSheet.create({
+const css = {
   Getter: {
     opacity: 0,
   },
@@ -16,7 +15,7 @@ const css = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
-})
+}
 
 // the style and innerStyle prop should only be used for positioning and theming
 // we should not use them for sizing like height/border/padding... -> use the children instead

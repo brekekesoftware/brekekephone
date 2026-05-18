@@ -1,21 +1,13 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import type { TouchableOpacityProps } from 'react-native'
-import {
-  Dimensions,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-
+import { Dimensions, Platform, ScrollView, Text, View } from 'react-native'
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-const css = StyleSheet.create({
+const css = {
   txtPb: {
     width: '100%',
     textAlign: 'left',
@@ -76,7 +68,7 @@ const css = StyleSheet.create({
       },
     }),
   },
-})
+}
 
 export const PhonebookAutoComplete: FC<
   Partial<{

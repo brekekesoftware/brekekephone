@@ -7,12 +7,10 @@ import {
   AppState,
   DeviceEventEmitter,
   Platform,
-  StyleSheet,
-  View,
 } from 'react-native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 import SplashScreen from 'react-native-splash-screen'
 
+import { View } from '@/rn/core/components/view'
 import { TwPeerProvider } from '@/rn/core/tw/marker.native'
 import { composeProviders } from '@/rn/core/utils/compose-providers'
 import { debounce } from '@/shared/lodash'
@@ -277,35 +275,18 @@ PushNotification.register(async () => {
   })
 })
 
-const css = StyleSheet.create({
-  App_Inner: {
-    flex: 1,
-  },
+const css = {
   App_ConnectionStatus: {
     backgroundColor: v.colors.warning,
   },
   App_ConnectionStatus__failure: {
     backgroundColor: v.colors.danger,
   },
-  App_ConnectionStatusInner: {
-    paddingHorizontal: 5,
-    paddingTop: 4,
-    paddingBottom: 5,
+  LoadingFullscreenBg: {
+    // old color from design, not v.colors.primary
+    backgroundColor: '#74bf53',
   },
-  App_ConnectionStatusIncreaseTouchSize: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 30,
-  },
-  LoadingFullscreen: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#74bf53', // old color from design, not g.colors.primary
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
+}
 
 const AppWithoutProviders = observer(() => {
   useEffect(() => {
@@ -333,7 +314,7 @@ const AppWithoutProviders = observer(() => {
           ]}
         >
           <RnTouchableOpacity
-            style={css.App_ConnectionStatusInner}
+            className='px-1.25 pt-1 pb-1.25'
             onPress={onPressConnMessage}
           >
             <RnText small white>
@@ -350,7 +331,7 @@ const AppWithoutProviders = observer(() => {
       <ChatGroupInvite />
       <UnreadChatNoti />
       <ToastRoot />
-      <View style={css.App_Inner}>
+      <View className='flex-1'>
         <RnStackerRoot />
         <RenderAllCalls />
         <View>
@@ -363,7 +344,7 @@ const AppWithoutProviders = observer(() => {
         <RnAlertRoot />
         {isFailure && (
           <RnTouchableOpacity
-            style={css.App_ConnectionStatusIncreaseTouchSize}
+            className='absolute top-0 right-0 left-0 h-7.5'
             onPress={onPressConnMessage}
           />
         )}
@@ -371,7 +352,10 @@ const AppWithoutProviders = observer(() => {
       {/* TODO: {isIos && <KeyboardSpacer />} */}
 
       {!ctx.account.appInitDone && (
-        <View style={css.LoadingFullscreen}>
+        <View
+          className='absolute inset-0 items-center justify-center'
+          style={css.LoadingFullscreenBg}
+        >
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
@@ -384,7 +368,6 @@ const AppWithoutProviders = observer(() => {
 })
 
 export const App = composeProviders(
-  SafeAreaProvider,
   TwPeerProvider,
   AppWithoutProviders,
 )

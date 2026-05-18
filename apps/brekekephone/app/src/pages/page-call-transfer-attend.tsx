@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
-
+import { Platform, View } from 'react-native'
 import {
   mdiArrowRight,
   mdiPhoneForward,
@@ -15,7 +14,7 @@ import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-export const css = StyleSheet.create({
+export const css = {
   Outer: {
     alignItems: 'center',
     backgroundColor: 'white',
@@ -89,7 +88,7 @@ export const css = StyleSheet.create({
   Space: {
     height: 10,
   },
-})
+}
 
 @observer
 export class PageCallTransferAttend extends Component {

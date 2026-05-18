@@ -1,13 +1,13 @@
 import type { FC } from 'react'
 import { forwardRef } from 'react'
-import { Animated, StyleSheet, Text } from 'react-native'
-
+import { Animated} from 'react-native'
 import type { TextProps } from '@/rn/core/components/text'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { pickBy } from '@/shared/lodash'
 import { v } from '#/components/variables'
+import { Text } from '@/rn/components/text'
 
-const css = StyleSheet.create({
+const css = {
   RnText: {
     position: 'relative',
     fontSize: v.fontSize,
@@ -61,7 +61,7 @@ const css = StyleSheet.create({
   padding: {
     paddingHorizontal: 10,
   },
-})
+}
 
 const wrap = (Component: any) =>
   forwardRef(

@@ -7,14 +7,9 @@ import type {
   TouchableOpacityProps,
   ViewProps,
 } from 'react-native'
-import {
-  ActivityIndicator,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Keyboard, Platform } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { flow, omit } from '@/shared/lodash'
 import {
   mdiCardsDiamond,
@@ -39,7 +34,7 @@ export type Park = {
   number: string
   name?: string
 }
-const css = StyleSheet.create({
+const css = {
   Field: {
     borderBottomWidth: 1,
     borderColor: v.borderBg,
@@ -98,11 +93,6 @@ const css = StyleSheet.create({
         top: -6,
       },
     }),
-  },
-  Field_ViewRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 40,
   },
   Field_Park_TextInput: {
     flex: 1,
@@ -174,15 +164,6 @@ const css = StyleSheet.create({
   Field_Btn__remove: {
     backgroundColor: v.colors.dangerFn(0.5),
   },
-  Field_Icon: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-  },
-  Field_Error: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   Field_ErrorInner: {
     alignSelf: 'flex-start',
     marginVertical: 2,
@@ -192,27 +173,10 @@ const css = StyleSheet.create({
     backgroundColor: v.colors.danger,
     borderRadius: v.borderRadius,
   },
-  Field_ErrorIcon: {
-    position: 'absolute',
-    top: -8,
-    left: 2,
-  },
   Field_ErrorLabel: {
     color: v.revColor,
   },
-  Loading: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'black',
-    opacity: 0.3,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
+} as const
 
 const noop = () => {}
 
@@ -352,7 +316,7 @@ export const Field: FC<
       props.onValueChange?.(newPark)
     }
     return (
-      <View style={css.Field_ViewRow}>
+      <View className='flex-row items-center mr-10'>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
@@ -547,7 +511,7 @@ export const Field: FC<
             />
           )}
           {!$.isFocusing && disablePark && (
-            <View style={StyleSheet.absoluteFill} />
+            <View className='absolute inset-0' />
           )}
         </View>
         {/* Fix form auto fill style on web */}
@@ -557,11 +521,14 @@ export const Field: FC<
             <RnIcon
               path={props.icon}
               pointerEvents='none'
-              style={css.Field_Icon}
+              className='absolute top-3.75 right-3.75'
             />
           ))}
         {props.loading && (
-          <View style={css.Loading}>
+          <View
+            className='absolute inset-0 flex items-center justify-center'
+            style={{ backgroundColor: 'black', opacity: 0.3 }}
+          >
             <ActivityIndicator size='small' color='white' />
           </View>
         )}
@@ -569,13 +536,13 @@ export const Field: FC<
       {props.error && (
         <RnTouchableOpacity
           onPress={() => inputRef.current?.focus()}
-          style={css.Field_Error}
+          className='items-center justify-center'
         >
           <View style={css.Field_ErrorInner}>
             <RnIcon
               color={v.colors.danger}
               path={mdiCardsDiamond}
-              style={css.Field_ErrorIcon}
+              className='absolute -top-2 left-0.5'
             />
             <RnText small style={css.Field_ErrorLabel}>
               {props.error}

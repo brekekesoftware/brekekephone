@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
-
+import { TouchableOpacity, View } from 'react-native'
 import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { VideoPlayer } from '#/components/video-player'
@@ -83,7 +82,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
   )
 })
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     position: 'relative',
     borderRadius: 4,
@@ -117,4 +116,4 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-})
+}

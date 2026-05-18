@@ -1,14 +1,8 @@
 import { observer } from 'mobx-react'
 import { useRef, useState } from 'react'
-import {
-  Animated,
-  Dimensions,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { Animated, Dimensions, Platform, ScrollView } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
@@ -21,40 +15,12 @@ import { useAnimationOnDidMount } from '#/utils/animation'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const css = StyleSheet.create({
-  vBottom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  listItem: {
-    width: '100%',
-  },
-  txtPb: {
-    width: '100%',
-    textAlign: 'left',
-    marginHorizontal: 10,
-  },
+const css = {
   itemPb: {
     width: '100%',
     paddingVertical: 5,
     borderBottomColor: 'grey',
     borderBottomWidth: 0.5,
-  },
-  RnPicker: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  RnPicker_Backdrop: {
-    backgroundColor: v.layerBg,
-  },
-  RnPicker_Inner: {
-    position: 'absolute',
-    bottom: 15,
-    width: '90%',
-    maxWidth: v.maxModalWidth,
-    maxHeight: '100%',
   },
   RnPicker_Options: {
     borderRadius: v.borderRadius,
@@ -75,12 +41,6 @@ const css = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  RnPicker_Option__last: {
-    borderBottomWidth: 0,
-  },
-  RnPicker_Option__selected: {
-    backgroundColor: v.hoverBg,
-  },
   RnPicker_Option__cancel: {
     marginTop: 15,
     borderBottomWidth: 0,
@@ -94,10 +54,6 @@ const css = StyleSheet.create({
     borderRadius: v.borderRadius,
     marginRight: 10,
     backgroundColor: v.colors.primary,
-  },
-  RnPicker_Text__selected: {
-    fontWeight: 'bold',
-    color: v.colors.primary,
   },
   RnPicker_Text__Ok: {
     fontWeight: 'bold',
@@ -122,7 +78,7 @@ const css = StyleSheet.create({
       },
     }),
   },
-})
+} as const
 
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
@@ -134,10 +90,10 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const y = useAnimationOnDidMount({
     translateY: [Dimensions.get('screen').height, 0],
   })
-  const innerKbStyle =
+  const innerBottom =
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
-      ? { bottom: 15 + RnKeyboard.keyboardHeight }
-      : null
+      ? 15 + RnKeyboard.keyboardHeight
+      : 15
   const onChangeText = (txt: string) => {
     if (!txt) {
       updateItems(listOption)
@@ -160,21 +116,36 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
       style={css.itemPb}
       onPress={() => onPressItem(item)}
     >
-      <RnText style={css.txtPb}>{item.label}</RnText>
+      <RnText className='mx-2.5 w-full text-left'>{item.label}</RnText>
     </RnTouchableOpacity>
   )
   return (
-    <View style={[StyleSheet.absoluteFill, css.RnPicker]}>
+    <View className='absolute inset-0 flex-col items-center justify-center'>
       <Animated.View
-        style={[StyleSheet.absoluteFill, css.RnPicker_Backdrop, backdropCss]}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: v.layerBg,
+          opacity: backdropCss.opacity,
+        }}
       >
         <RnTouchableOpacity
           onPress={ctx.contact.dismissPicker}
-          style={StyleSheet.absoluteFill}
+          className='absolute inset-0'
         />
       </Animated.View>
       <Animated.View
-        style={[css.RnPicker_Inner, innerKbStyle, { transform: [y] }]}
+        style={{
+          position: 'absolute',
+          bottom: innerBottom,
+          width: '90%',
+          maxWidth: v.maxModalWidth,
+          maxHeight: '100%',
+          transform: [y],
+        }}
       >
         <View style={css.RnPicker_Options}>
           <RnTextInput
@@ -190,14 +161,14 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             value={value}
           />
           <ScrollView
-            style={css.listItem}
+            style={{ width: '100%' }}
             keyboardShouldPersistTaps='always'
             keyboardDismissMode='on-drag'
           >
             {items?.map(renderItem)}
           </ScrollView>
         </View>
-        <View style={css.vBottom}>
+        <View className='flex-row items-center justify-between'>
           <RnTouchableOpacity
             onPress={() => onSelect(value)}
             style={[css.RnPicker_Option, css.RnPicker_Option__OK]}

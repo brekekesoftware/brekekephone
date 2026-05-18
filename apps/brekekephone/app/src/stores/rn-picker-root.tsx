@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import { useState } from 'react'
-import { Animated, Dimensions, StyleSheet, View } from 'react-native'
+import { Animated, Dimensions } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
@@ -13,23 +14,7 @@ import { useAnimationOnDidMount } from '#/utils/animation'
 
 const defaultBottomPosition = isIos ? 20 : 15
 
-const css = StyleSheet.create({
-  RnPicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  RnPicker_Backdrop: {
-    backgroundColor: v.layerBg,
-  },
-  RnPicker_Inner: {
-    position: 'absolute',
-    width: '90%',
-    maxWidth: v.maxModalWidth,
-    maxHeight: '80%',
-    marginBottom: 60,
-    bottom: defaultBottomPosition,
-  },
+const css = {
   RnPicker_Options: {
     borderRadius: v.borderRadius,
     backgroundColor: v.bg,
@@ -83,20 +68,13 @@ const css = StyleSheet.create({
     top: 10,
     right: 10,
   },
-  RnPicker_footer: {
-    flexDirection: 'row',
-    bottom: defaultBottomPosition,
-    position: 'absolute',
-    width: '90%',
-    maxWidth: v.maxModalWidth,
-  },
   Confirm_label: {
     color: 'white',
   },
   RnPicker_Label: {
     width: '95%',
   },
-})
+} as const
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(
@@ -116,22 +94,33 @@ const RnPickerR = (p: RnPickerOption) => {
   }
 
   return (
-    <View style={[StyleSheet.absoluteFill, css.RnPicker]}>
+    <View className='absolute inset-0 flex-row items-center justify-center'>
       <Animated.View
-        style={[StyleSheet.absoluteFill, css.RnPicker_Backdrop, backdropCss]}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: v.layerBg,
+          opacity: backdropCss.opacity,
+        }}
       >
         <RnTouchableOpacity
           onPress={RnPicker.dismiss}
-          style={StyleSheet.absoluteFill}
+          className='absolute inset-0'
         />
       </Animated.View>
       <Animated.ScrollView
-        style={[
-          css.RnPicker_Inner,
-          {
-            transform: [y],
-          },
-        ]}
+        style={{
+          position: 'absolute',
+          width: '90%',
+          maxWidth: v.maxModalWidth,
+          maxHeight: '80%',
+          marginBottom: 60,
+          bottom: defaultBottomPosition,
+          transform: [y],
+        }}
       >
         <View style={css.RnPicker_Options}>
           {p.options.map((o, i) => {
@@ -172,7 +161,15 @@ const RnPickerR = (p: RnPickerOption) => {
           })}
         </View>
       </Animated.ScrollView>
-      <View style={css.RnPicker_footer}>
+      <View
+        style={{
+          flexDirection: 'row',
+          bottom: defaultBottomPosition,
+          position: 'absolute',
+          width: '90%',
+          maxWidth: v.maxModalWidth,
+        }}
+      >
         <Animated.View style={[{ transform: [y] }, css.RnPicker_Button]}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}

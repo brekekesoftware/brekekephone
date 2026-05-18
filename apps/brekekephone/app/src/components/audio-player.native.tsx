@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
-import { StyleSheet } from 'react-native'
 import type { VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
 
@@ -8,7 +7,7 @@ import { ctx } from '#/stores/ctx'
 import { RnAppState } from '#/stores/rn-app-state'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 
-const css = StyleSheet.create({
+const css = {
   video: {
     position: 'absolute',
     top: 0,
@@ -18,7 +17,7 @@ const css = StyleSheet.create({
     opacity: 0,
     overflow: 'hidden',
   },
-})
+}
 
 export const AudioPlayer = observer(() => {
   const videoRef = useRef<VideoRef>(null)

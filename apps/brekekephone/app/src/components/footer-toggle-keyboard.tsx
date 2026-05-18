@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Keyboard, StyleSheet } from 'react-native'
-
+import { Keyboard } from 'react-native'
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
@@ -9,7 +8,7 @@ import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
-const css = StyleSheet.create({
+const css = {
   ToggleKeyboard: {
     flexDirection: 'row',
     marginRight: 8,
@@ -26,7 +25,7 @@ const css = StyleSheet.create({
     lineHeight: v.iconSize,
     overflow: 'hidden',
   },
-})
+}
 
 export const ToggleKeyboard: FC<{
   onShowKeyboard(): void

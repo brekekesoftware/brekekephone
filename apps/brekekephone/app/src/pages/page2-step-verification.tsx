@@ -4,12 +4,11 @@ import {
   Animated,
   KeyboardAvoidingView,
   ScrollView,
-  StyleSheet,
   useWindowDimensions,
-  View,
 } from 'react-native'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 
+import { View } from '@/rn/core/components/view'
 import { mdiClose } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
@@ -31,28 +30,7 @@ type ToastState = {
   type: 'err' | 'info'
 } | null
 
-const css = StyleSheet.create({
-  ModalContainer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: v.bg,
-  },
-  Header: {
-    paddingTop: 20,
-    paddingBottom: 12,
-  },
-  HeaderBack: {
-    flexDirection: 'row',
-    gap: 15,
-  },
-  Title: { fontSize: 26 },
-  Body: {
-    flexGrow: 1,
-    paddingTop: 8,
-  },
-  Description: {
-    marginBottom: 16,
-  },
-  // Input
+const css = {
   Input: {
     width: '100%',
     height: 48,
@@ -65,7 +43,6 @@ const css = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  // Button
   Button: {
     width: '100%',
     height: 48,
@@ -75,40 +52,11 @@ const css = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
   },
-  ButtonDisabled: {
-    opacity: 0.5,
-  },
-  // Resend
-  ResendCode: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingVertical: 12,
-    alignItems: 'center',
-    gap: 4,
-  },
   TouchResendCode: {
     color: v.colors.primary,
     textDecorationLine: 'underline',
   },
-  // Inline toast
-  ToastContainer: {
-    justifyContent: 'center',
-    width: '100%',
-  },
-  ToastBody: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
-    borderRadius: 5,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  ToastContent: {
-    width: '80%',
-  },
-  ToastErr: { backgroundColor: v.colors.danger },
-  ToastInfo: { backgroundColor: v.colors.info },
-})
+} as const
 
 export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
@@ -293,14 +241,15 @@ export const Page2StepVerification = () => {
 
   return (
     <Animated.View
-      style={[
-        css.ModalContainer,
-        {
-          opacity: anim.opacity,
-          top: safeInsets?.top ?? 0,
-          bottom: -(safeInsets?.bottom ?? 0),
-        },
-      ]}
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        backgroundColor: v.bg,
+        opacity: anim.opacity,
+        top: safeInsets?.top ?? 0,
+        bottom: -(safeInsets?.bottom ?? 0),
+      }}
     >
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: v.bg }}
@@ -308,21 +257,21 @@ export const Page2StepVerification = () => {
         keyboardVerticalOffset={isIos ? 100 : 0}
       >
         <View style={[innerStyle, { flex: 1 }]}>
-          <View style={css.Header}>
-            <RnTouchableOpacity onPress={onBack} style={css.HeaderBack}>
+          <View className='pt-5 pb-3'>
+            <RnTouchableOpacity onPress={onBack} className='flex-row gap-3.75'>
               <View>
                 <RnIcon size={30} path={mdiClose} />
               </View>
-              <RnText style={css.Title} title>
+              <RnText className='text-[26px]' title>
                 {intl`2-Step Verification`}
               </RnText>
             </RnTouchableOpacity>
           </View>
           <ScrollView
-            contentContainerStyle={css.Body}
+            contentContainerStyle={{ flexGrow: 1, paddingTop: 8 }}
             keyboardShouldPersistTaps='handled'
           >
-            <View style={css.Description}>
+            <View className='mb-4'>
               <RnText>
                 {intl`We sent an 6-digit code to your email. Please copy and paste here to verify your account.`}
               </RnText>
@@ -340,14 +289,15 @@ export const Page2StepVerification = () => {
             />
             <RnTouchableOpacity
               disabled={isLoading}
-              style={[css.Button, isLoading && css.ButtonDisabled]}
+              className={isLoading ? 'opacity-50' : undefined}
+              style={css.Button}
               onPress={onVerify}
             >
               <RnText white small>
                 {intl`VERIFY`}
               </RnText>
             </RnTouchableOpacity>
-            <View style={css.ResendCode}>
+            <View className='flex-row flex-wrap items-center gap-1 py-3'>
               <RnText>{intl`Can't find your code?`} </RnText>
               <RnTouchableOpacity disabled={isLoading} onPress={resendNewCode}>
                 <RnText style={css.TouchResendCode}>
@@ -356,15 +306,21 @@ export const Page2StepVerification = () => {
               </RnTouchableOpacity>
             </View>
             {toast && (
-              <View style={css.ToastContainer}>
+              <View className='w-full justify-center'>
                 <Animated.View
-                  style={[
-                    css.ToastBody,
-                    toast.type === 'err' ? css.ToastErr : css.ToastInfo,
-                    { opacity: fadeAnim },
-                  ]}
+                  style={{
+                    flexDirection: 'row',
+                    width: '100%',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    borderRadius: 5,
+                    paddingVertical: 10,
+                    backgroundColor:
+                      toast.type === 'err' ? v.colors.danger : v.colors.info,
+                    opacity: fadeAnim,
+                  }}
                 >
-                  <View style={css.ToastContent}>
+                  <View className='w-4/5'>
                     <RnText normal white>
                       {toast.msg}
                     </RnText>

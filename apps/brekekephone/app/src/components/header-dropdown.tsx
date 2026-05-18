@@ -1,13 +1,11 @@
 import { transparentize } from 'polished'
 import type { FC } from 'react'
-import { StyleSheet } from 'react-native'
-
 import { mdiDotsVertical } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = StyleSheet.create({
+const css = {
   Backdrop: {
     position: 'absolute',
     top: 0,
@@ -51,7 +49,7 @@ const css = StyleSheet.create({
     right: 0,
     width: 40,
   },
-})
+}
 
 export type HeaderDropdownItem = Partial<{
   danger: boolean

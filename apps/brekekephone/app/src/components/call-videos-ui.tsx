@@ -7,8 +7,7 @@ import type {
   PanResponderGestureState,
   PanResponderInstance,
 } from 'react-native'
-import { Dimensions, PanResponder, StyleSheet, View } from 'react-native'
-
+import { Dimensions, PanResponder, View } from 'react-native'
 import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/video-player'
 import { isWeb } from '#/config'
@@ -18,7 +17,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 const MINI_WIDTH = 150
 const MINI_HEIGHT = 150
 
-const css = StyleSheet.create({
+const css = {
   Mini: {
     position: isWeb ? 'fixed' : 'absolute',
     width: MINI_WIDTH,
@@ -36,7 +35,7 @@ const css = StyleSheet.create({
         touchAction: 'none',
       } as any)),
   },
-})
+}
 
 const calculateBoundedPosition = (
   currentLeft: number,

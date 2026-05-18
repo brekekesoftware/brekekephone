@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 
-const css = StyleSheet.create({
+const css = {
   loading: {
     flex: 1,
     width: '100%',
     height: '100%',
     padding: 50,
   },
-})
+}
 
 export const VideoPlayer = observer(
   ({

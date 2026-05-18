@@ -1,13 +1,12 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { menus } from '#/components/navigation-config'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-export const css = StyleSheet.create({
+export const css = {
   Navigation: {
     flexDirection: 'row',
     alignSelf: 'stretch',
@@ -46,7 +45,7 @@ export const css = StyleSheet.create({
     fontSize: v.fontSizeSmall - 2,
     lineHeight: v.fontSizeSmall - 2,
   },
-})
+}
 
 export const Navigation: FC<{
   menu: string

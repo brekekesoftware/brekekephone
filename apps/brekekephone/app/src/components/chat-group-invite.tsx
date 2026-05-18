@@ -2,8 +2,7 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import { sortBy } from '@/shared/lodash'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
@@ -18,7 +17,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const css = StyleSheet.create({
+const css = {
   Notify: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -45,7 +44,7 @@ const css = StyleSheet.create({
     flex: 1,
     backgroundColor: v.colors.primaryFn(0.5),
   },
-})
+}
 
 const Notify: FC<{
   id: string

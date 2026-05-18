@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
-import { StyleSheet, View } from 'react-native'
-
+import { View } from 'react-native'
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -20,7 +19,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
-const css = StyleSheet.create({
+const css = {
   CallBar: {
     borderBottomWidth: 1,
     borderColor: v.borderBg,
@@ -47,7 +46,7 @@ const css = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
-})
+}
 
 export const CallBar = observer(() => {
   const oc = ctx.call.getOngoingCall()
