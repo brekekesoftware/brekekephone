@@ -462,7 +462,7 @@ class PageCallManage extends Component<{
         <View style={{ paddingTop: 10 }} />
         <View
           className={[
-            'w-screen flex-row flex-wrap items-center justify-center self-center',
+            'w-full flex-row flex-wrap items-center justify-center self-center',
             isHideButtons && 'opacity-0',
           ]}
         >
