@@ -1,0 +1,7 @@
+html.theme-mystic.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-mystic:not(.theme-light) {
+  }
+}

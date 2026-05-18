@@ -1,0 +1,7 @@
+html.theme-ruby.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-ruby:not(.theme-light) {
+  }
+}

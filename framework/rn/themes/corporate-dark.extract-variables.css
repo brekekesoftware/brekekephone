@@ -1,0 +1,7 @@
+html.theme-corporate.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-corporate:not(.theme-light) {
+  }
+}

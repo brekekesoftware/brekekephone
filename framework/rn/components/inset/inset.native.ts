@@ -1,0 +1,5 @@
+export const insetShadowClassName = {
+  // should match with values in inset.css
+  boxShadow:
+    'inset 2px 2px 4px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(255,255,255,0.2)',
+}

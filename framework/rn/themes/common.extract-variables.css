@@ -1,0 +1,122 @@
+/*
+  Semantic Design Tokens
+  ======================
+
+  BACKGROUND SCALE
+  --background          Default page/screen background.
+  --subtle   One step off the main background - used for inset areas,
+                        sidebars, or section dividers that need slight separation
+                        without looking like a card.
+  --muted               Visually quiet fill - disabled inputs, skeleton loaders,
+                        tags, badges, or any surface that should recede.
+
+  FOREGROUND / TEXT SCALE
+  --foreground          Primary body text; highest contrast against --background.
+  --foreground-muted    Secondary text - captions, helper text, timestamps,
+                        placeholder labels. Readable but not dominant.
+  --foreground-subtle   Tertiary text - decorative labels, inactive nav items,
+                        metadata that users rarely need to read.
+  --foreground-disabled Text on disabled controls. Lower contrast is intentional
+                        to communicate non-interactivity.
+  --foreground-inverse  Text placed on dark/colored surfaces (e.g. filled buttons,
+                        dark toasts). Always contrasts against --foreground.
+
+  BORDER SCALE
+  --border              Default divider - table rows, input outlines, separators.
+  --border-subtle       Very quiet rule - used inside cards or between items
+                        when a full border would feel too heavy.
+  --border-strong       Emphasized border - active input focus outline (without
+                        using --ring), selected state on list items.
+
+  CARD / SURFACE
+  --card                Elevated container background - cards, panels, dropdowns.
+                        Sits on top of --background.
+  --card-border         Border around card edges; usually matches --border but
+                        can be tuned per theme.
+  --surface             Generic elevated layer - popovers, tooltips, inline menus.
+  --surface-raised      Second elevation level - floating action sheets, drawers,
+                        anything that lifts above --surface.
+
+  MODAL
+  --modal               Background of full-screen dialogs and bottom sheets.
+  --modal-overlay       Semi-transparent scrim behind modals; dims the content below.
+
+  FOCUS
+  --ring                Focus ring color for keyboard navigation. Applied via
+                        box-shadow or outline on interactive elements.
+*/
+
+html {
+  --background: #ffffff;
+  --subtle: #f8fafc;
+  --muted: #f1f5f9;
+
+  --foreground: #0f172a;
+  --foreground-muted: #475569;
+  --foreground-subtle: #94a3b8;
+  --foreground-disabled: #cbd5e1;
+  --foreground-inverse: #ffffff;
+
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-strong: #94a3b8;
+
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+
+  --modal: #ffffff;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+
+  --ring: #3b82f6;
+
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-200: #bfdbfe;
+  --info-300: #93c5fd;
+  --info-400: #60a5fa;
+  --info-500: #3b82f6;
+  --info-600: #2563eb;
+  --info-700: #1d4ed8;
+  --info-800: #1e40af;
+  --info-900: #1e3a8a;
+  --info-950: #172554;
+
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  --success-800: #166534;
+  --success-900: #14532d;
+  --success-950: #052e16;
+
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-800: #92400e;
+  --warning-900: #78350f;
+  --warning-950: #451a03;
+
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  --error-700: #b91c1c;
+  --error-800: #991b1b;
+  --error-900: #7f1d1d;
+  --error-950: #450a0a;
+}

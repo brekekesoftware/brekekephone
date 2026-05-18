@@ -1,0 +1,13 @@
+{
+  "name": "@brekekephone/nodejs-gitignore",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  },
+  "dependencies": {
+    "ignore": "7.0.5"
+  }
+}

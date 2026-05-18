@@ -1,0 +1,62 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "lib": ["DOM", "ESNext", "Webworker"],
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false
+  },
+  "exclude": [
+    /** taken from gitignore */
+    "**/build/",
+    "**/.cxx/",
+    "**/.idea/",
+    "**/.kotlin/",
+    "**/node_modules/",
+    "**/.pnpm/",
+    "**/.pnpm-store/",
+    "**/.pnp/",
+    "**/ios/Pods/",
+    "**/vendor/bundle/",
+    "**/coverage/",
+    "**/.vscode/",
+    "**/dist/",
+    "**/.next/",
+    "**/.vercel/",
+    "**/out/",
+    "**/.velite/",
+    "**/.tamagui/",
+    "**/.*-cache/",
+    "**/target/",
+    /** match with eslint */
+    "**/*.min.*"
+  ]
+}

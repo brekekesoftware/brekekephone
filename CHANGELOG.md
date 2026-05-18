@@ -1,3 +1,7 @@
+#### 3.0.0
+
+- Upgrade dev tools and framework to use tailwind and modern code base structure
+
 #### 2.17.6
 
 - Hot fix android and ios it should receive LPC PN call from phone-aplli caller (issue 1222)
@@ -22,6 +26,11 @@
 
 - Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+
+#### 2.17.3
+
+- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+- Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix ios should not crash call uuid empty (issue 1205)
 - Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
 - Hot fix ios CTI auto answer Call-Info header (issue 1210)
@@ -113,7 +122,7 @@
 
 #### 2.16.4
 
-- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
+- Initial implementation of [custom ringtone](./docs/custom-ringtone.md)
 - Initial implementation of multiple custom pages
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
@@ -852,3 +861,7 @@
   - bug with transfer hold/hangup
   - bug show `Connecting...` after end call
   - bug in debug log
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->

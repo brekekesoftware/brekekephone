@@ -1,0 +1,7 @@
+html.theme-blossom.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-blossom:not(.theme-light) {
+  }
+}

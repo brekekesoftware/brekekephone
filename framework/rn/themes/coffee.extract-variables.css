@@ -1,0 +1,24 @@
+html.theme-coffee {
+  --primary-50: #faf5f0;
+  --primary-100: #f3e5d3;
+  --primary-200: #e6c9a6;
+  --primary-300: #d5a57a;
+  --primary-400: #c07c4f;
+  --primary-500: #a35c2d;
+  --primary-600: #854420;
+  --primary-700: #673318;
+  --primary-800: #4a2412;
+  --primary-900: #31170b;
+  --primary-950: #1a0c05;
+  --secondary-50: #f8f6f4;
+  --secondary-100: #ede8e4;
+  --secondary-200: #dad0c9;
+  --secondary-300: #c2b4ab;
+  --secondary-400: #a0907f;
+  --secondary-500: #82726a;
+  --secondary-600: #66564e;
+  --secondary-700: #4d4039;
+  --secondary-800: #342c27;
+  --secondary-900: #1e1a17;
+  --secondary-950: #0e0d0a;
+}

@@ -1,0 +1,52 @@
+@custom-variant web {
+  html.web- & {
+    @slot;
+  }
+}
+
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    html:not(.theme-light) & {
+      @slot;
+    }
+  }
+  html.theme-dark & {
+    @slot;
+  }
+}
+
+/* safe area inset */
+html {
+  --safe-area-inset-t: env(safe-area-inset-top);
+  --safe-area-inset-l: env(safe-area-inset-left);
+  --safe-area-inset-b: env(safe-area-inset-bottom);
+  --safe-area-inset-r: env(safe-area-inset-right);
+}
+
+/* customize scrollbars on non mac platforms */
+html.mac-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+.mac-scrollbar ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.mac-scrollbar ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mac-scrollbar ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+}
+.mac-scrollbar ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+@media (prefers-color-scheme: dark) {
+  .mac-scrollbar ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .mac-scrollbar ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}

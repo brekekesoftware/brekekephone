@@ -1,0 +1,24 @@
+{
+  "name": "@brekekephone/devtools-babel-config",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  },
+  "dependencies": {
+    "@babel/preset-react": "7.28.5",
+    "@babel/preset-typescript": "7.28.5",
+    "babel-plugin-module-resolver": "5.0.3",
+    "babel-plugin-react-compiler": "1.0.0"
+  },
+  "peerDependencies": {
+    "@react-native/babel-preset": "*",
+    "react-native-worklets": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.0",
+    "@types/babel__core": "7.20.5"
+  }
+}

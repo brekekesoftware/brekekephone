@@ -1,0 +1,40 @@
+{
+  "name": "@brekekephone/rn-core",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  },
+  "dependencies": {
+    "bezier-easing": "3.0.0",
+    "color-rgba": "3.0.0",
+    "i18next": "26.2.0",
+    "js-cookie": "3.0.5",
+    "react-i18next": "17.0.8",
+    "react-native-css-animations": "0.1.1",
+    "tailwind-merge": "3.6.0"
+  },
+  "peerDependencies": {
+    "@react-navigation/native": "*",
+    "next": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-fast-image": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "tailwindcss": "*",
+    "twrnc": "*"
+  },
+  "devDependencies": {
+    "@types/color-rgba": "2.1.3",
+    "@types/js-cookie": "3.0.6",
+    "@types/react": "19.2.14",
+    "vitest": "4.1.6"
+  }
+}
