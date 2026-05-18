@@ -56,12 +56,12 @@ let tsconfig: string[] | undefined
 
 export const config = ({
   dir,
-  extraPlugins,
-  overriddenRules,
-  alias = true,
+  alias = false,
   ignoreShadowed = false,
   ignoreFramework = false,
   tsProjectService = false,
+  extraPlugins,
+  overriddenRules,
 }: Options) => {
   const jsShadowed: string[] = []
   if (ignoreShadowed) {

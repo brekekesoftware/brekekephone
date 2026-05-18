@@ -1,17 +1,25 @@
 import { bin, binRequireResolve, cmd, exec } from '@/nodejs/exec'
+import { fs } from '@/nodejs/fs'
 import { glob } from '@/nodejs/glob'
 import { path } from '@/nodejs/path'
 import { repoRoot } from '@/root'
 
 export const ts = async () => {
-  let tsconfigFiles = await glob('**/tsconfig.json')
+  const tsconfig: string[] = []
 
-  if (process.env._TS_IGNORE_FRAMEWORK) {
-    const repo = path.join(repoRoot, 'tsconfig.json')
-    tsconfigFiles = tsconfigFiles.filter(v => v !== repo)
-  }
+  const promises = (await glob('**/tsconfig.json')).map(async t => {
+    const p = path.join(path.dirname(t), 'package.json')
+    if (!(await fs.exists(p))) {
+      return
+    }
+    if (require(p).ignoreTsc) {
+      return
+    }
+    tsconfig.push(t)
+  })
+  await Promise.all(promises)
 
-  const tsc = tsconfigFiles.map(async p =>
+  const tsc = tsconfig.map(async p =>
     cmd({
       bin: await bin(repoRoot, 'tsc'),
       args: [
@@ -23,7 +31,7 @@ export const ts = async () => {
     }),
   )
 
-  const coverage = tsconfigFiles.map(async p =>
+  const coverage = tsconfig.map(async p =>
     cmd({
       bin: await binRequireResolve(__dirname, 'type-coverage'),
       args: [

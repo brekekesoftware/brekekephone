@@ -32,6 +32,7 @@ const Slottable = Object.assign(SlottableUntyped, {
 
 type SlotProps = {
   children?: ReactNode
+  [key: string]: any
 }
 
 const Slot = forwardRef<unknown, SlotProps>(
@@ -50,7 +51,7 @@ const Slot = forwardRef<unknown, SlotProps>(
       // Build the final children: replace Slottable with the real child's children
       const newChildren = [
         ...childrenArray.slice(0, slottableIndex),
-        newSlottableChild,
+        (newSlottableChild as any).props.children,
         ...childrenArray.slice(slottableIndex + 1),
       ]
 

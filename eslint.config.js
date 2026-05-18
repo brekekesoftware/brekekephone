@@ -3,6 +3,8 @@
 require('./devtools-register')
 module.exports = require('@/devtools/eslint/config').config({
   dir: __dirname,
+  alias: true,
+  ignoreFramework: true,
   overriddenRules: {
     'custom/enforce-use-client': 0,
   },
