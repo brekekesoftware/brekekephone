@@ -14,7 +14,7 @@ export const createTwrnc = (
 ) => {
   const wsPath = path.join(repoRoot, 'pnpm-workspace.yaml')
   const wsFile = fs.readFileSync(wsPath, 'utf8')
-  const { overrides } = parse(wsFile)
+  const overrides = parse(wsFile).overrides || {}
   const rnVersionStr = overrides['react-native']
   const matches = /(\d+)\.(\d+)\.(\d+)/.exec(rnVersionStr)
   if (!matches) {

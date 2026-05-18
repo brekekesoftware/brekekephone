@@ -70,7 +70,7 @@ export const normalizePackageJson = async () => {
   const rootPackageJson = require(path.join(repoRoot, './package.json'))
   const wsPath = path.join(repoRoot, 'pnpm-workspace.yaml')
   const wsFile = fs.readFileSync(wsPath, 'utf8')
-  const { overrides } = parse(wsFile)
+  const overrides = parse(wsFile).overrides || {}
 
   const allDependencies: StrMap<PackageData[]> = {}
 
