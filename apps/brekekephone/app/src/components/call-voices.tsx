@@ -5,10 +5,9 @@ import {
   OutgoingItem,
   OutgoingItemWithSDP,
 } from '#/components/call-voices-ui'
+import { IosRBT } from '#/components/call-voices-ui.native'
 import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
-
-import { IosRBT } from './call-voices-ui.native'
 
 export const CallVoices = observer(() => {
   // try trigger observer?

@@ -1,9 +1,9 @@
 import { createRoot } from 'react-dom/client'
 
 // @ts-ignore
-import '#/index.css'
+import './index.css'
 
-import { App } from '#/app/app'
+import { App } from './app/app'
 
 const d = document.getElementById('root')
 if (

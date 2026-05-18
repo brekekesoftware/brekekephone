@@ -17,7 +17,7 @@ declare module '*.css' {
 }
 declare module '*.svg' {
   const m: any
-  export default m
+  export = m
 }
 declare module 'bezier-easing' {
   const m: Function

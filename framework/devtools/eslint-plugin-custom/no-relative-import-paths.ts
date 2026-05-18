@@ -6,10 +6,8 @@ import type { TSESLint, TSESTree } from '@typescript-eslint/utils'
 import { path } from '@/nodejs/path'
 
 interface NoRelativeImportPathsOptions {
-  allowSameFolder?: boolean
-  rootDir?: string
-  prefix?: string
-  allowedDepth?: number
+  absPath: string
+  alias: string
 }
 
 export const noRelativeImportPaths: TSESLint.RuleModule<
@@ -29,60 +27,48 @@ export const noRelativeImportPaths: TSESLint.RuleModule<
       {
         type: 'object',
         properties: {
-          allowSameFolder: { type: 'boolean' },
-          rootDir: { type: 'string' },
-          prefix: { type: 'string' },
-          allowedDepth: { type: 'number' },
+          absPath: {
+            type: 'string',
+            required: true,
+          },
+          alias: {
+            type: 'string',
+            required: true,
+          },
         },
         additionalProperties: false,
+        required: true,
       },
     ],
   },
 
-  defaultOptions: [
-    {
-      allowSameFolder: false,
-      rootDir: '',
-      prefix: '',
-    },
-  ],
-
   create: c => {
-    const options = c.options[0] || {}
-    const allowedDepth = options.allowedDepth
-    const allowSameFolder = options.allowSameFolder || false
-    const rootDir = options.rootDir || ''
-    const prefix = options.prefix || ''
+    const { absPath, alias } = c.options[0]
 
     return {
       ImportDeclaration: (node: TSESTree.ImportDeclaration) => {
         const importPath = node.source.value
 
-        if (isParentFolder(importPath, c, rootDir)) {
-          if (
-            typeof allowedDepth === 'undefined' ||
-            getRelativePathDepth(importPath) > allowedDepth
-          ) {
-            c.report({
-              node,
-              messageId: 'relativeImportPath',
-              fix: fixer =>
-                fixer.replaceTextRange(
-                  [node.source.range[0] + 1, node.source.range[1] - 1],
-                  getAbsolutePath(importPath, c, rootDir, prefix),
-                ),
-            })
-          }
-        }
-
-        if (isSameFolder(importPath) && !allowSameFolder) {
+        if (isParentFolder(importPath, c, absPath)) {
           c.report({
             node,
             messageId: 'relativeImportPath',
             fix: fixer =>
               fixer.replaceTextRange(
                 [node.source.range[0] + 1, node.source.range[1] - 1],
-                getAbsolutePath(importPath, c, rootDir, prefix),
+                getAbsolutePath(importPath, c, absPath, alias),
+              ),
+          })
+        }
+
+        if (isSameFolder(importPath)) {
+          c.report({
+            node,
+            messageId: 'relativeImportPath',
+            fix: fixer =>
+              fixer.replaceTextRange(
+                [node.source.range[0] + 1, node.source.range[1] - 1],
+                getAbsolutePath(importPath, c, absPath, alias),
               ),
           })
         }
@@ -97,11 +83,8 @@ const isParentFolder = (
     'relativeImportPath',
     [NoRelativeImportPathsOptions]
   >,
-  rootDir: string,
+  absPath: string,
 ): boolean => {
-  const absoluteRootPath = path.isAbsolute(rootDir)
-    ? rootDir
-    : path.join(context.cwd, rootDir)
   const absoluteFilePath = path.join(
     path.dirname(context.filename),
     relativeFilePath,
@@ -109,24 +92,14 @@ const isParentFolder = (
 
   return (
     relativeFilePath.startsWith('../') &&
-    (rootDir === '' ||
-      (absoluteFilePath.startsWith(absoluteRootPath) &&
-        context.filename.startsWith(absoluteRootPath)))
+    (absPath === '' ||
+      (absoluteFilePath.startsWith(absPath) &&
+        context.filename.startsWith(absPath)))
   )
 }
 
 const isSameFolder = (importPath: string): boolean =>
   importPath.startsWith('./') || importPath === '.'
-
-const getRelativePathDepth = (importPath: string): number => {
-  let depth = 0
-  let remaining = importPath
-  while (remaining.startsWith('../')) {
-    depth += 1
-    remaining = remaining.substring(3)
-  }
-  return depth
-}
 
 const getAbsolutePath = (
   relativePath: string,
@@ -134,18 +107,12 @@ const getAbsolutePath = (
     'relativeImportPath',
     [NoRelativeImportPathsOptions]
   >,
-  rootDir: string,
-  prefix: string,
+  absPath: string,
+  alias: string,
 ): string => {
-  const absoluteRootDir = path.isAbsolute(rootDir)
-    ? rootDir
-    : path.join(context.cwd, rootDir)
   const parts = path
-    .relative(
-      absoluteRootDir,
-      path.join(path.dirname(context.filename), relativePath),
-    )
+    .relative(absPath, path.join(path.dirname(context.filename), relativePath))
     .split(path.sep)
 
-  return [prefix, ...parts].filter(Boolean).join('/')
+  return [alias, ...parts].filter(Boolean).join('/')
 }

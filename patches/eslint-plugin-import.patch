@@ -1,5 +1,18 @@
+diff --git a/lib/core/sourceType.js b/lib/core/sourceType.js
+index fa34d3424eb7789346b185a8f50481193ea05376..3552a05f7a9bd3225a315f6e538e45fb0c1d4326 100644
+--- a/lib/core/sourceType.js
++++ b/lib/core/sourceType.js
+@@ -5,7 +5,7 @@
+ sourceType; /**
+              * @param {import('eslint').Rule.RuleContext} context
+              * @returns 'module' | 'script' | 'commonjs' | undefined
+-             */function sourceType(context) {if ('sourceType' in context.parserOptions) {return context.parserOptions.sourceType;}
++             */function sourceType(context) {if (context.parserOptions && 'sourceType' in context.parserOptions) {return context.parserOptions.sourceType;}
+   if ('languageOptions' in context && context.languageOptions) {
+     return context.languageOptions.sourceType;
+   }
 diff --git a/lib/rules/no-extraneous-dependencies.js b/lib/rules/no-extraneous-dependencies.js
-index 0dcf9d0544610dcdfa04409d438e2f82b3b4b718..88d4cfbbdc9ab204e0b846556a07debb6eda15ff 100644
+index 0dcf9d0544610dcdfa04409d438e2f82b3b4b718..acd9b477d7f5b420f71d28bef9946f2c4cb8c761 100644
 --- a/lib/rules/no-extraneous-dependencies.js
 +++ b/lib/rules/no-extraneous-dependencies.js
 @@ -219,6 +219,9 @@ function reportIfMissing(context, deps, depsOptions, node, name) {

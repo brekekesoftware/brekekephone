@@ -39,28 +39,29 @@ const ignores = ({ dirs, exts = dirs }: IgnoresOptions) => [
 ]
 
 type Alias = {
-  rootDir: string
-  prefix: string
+  absPath: string
+  alias: string
 }
 type Options = {
   dir: string
   extraPlugins?: StrMap<string>
   overriddenRules?: StrMap
-  alias?: Alias[] | boolean
+  alias?: boolean
   ignoreShadowed?: boolean
   ignoreFramework?: boolean
   tsProjectService?: boolean
 }
 
+let tsconfig: string[] | undefined
+
 export const config = ({
   dir,
   extraPlugins,
   overriddenRules,
-  // use flags to esable those features since it can be slow
-  alias = !!process.env._ESLINT_ALIAS,
-  ignoreShadowed = !!process.env._ESLINT_IGNORE_SHADOWED,
-  ignoreFramework = !!process.env._ESLINT_IGNORE_FRAMEWORK,
-  tsProjectService = !!process.env._ESLINT_TS_PROJECT_SERVICE,
+  alias = true,
+  ignoreShadowed = false,
+  ignoreFramework = false,
+  tsProjectService = false,
 }: Options) => {
   const jsShadowed: string[] = []
   if (ignoreShadowed) {
@@ -238,40 +239,44 @@ export const config = ({
     }),
   }
 
-  const aliases: Alias[] = [
-    {
-      rootDir: frameworkRoot,
-      prefix: '@',
-    },
-  ]
-  if (Array.isArray(alias)) {
-    aliases.push(...alias)
-  } else if (alias) {
-    aliases.push(
-      ...globSync('**/src', {
-        cwd: dir,
-        onlyFiles: false,
-        relative: true,
-      }).map(srcDir => ({
-        rootDir: path.join(dir, srcDir),
-        prefix: '#',
-      })),
-    )
+  const aliases: Alias[] = []
+  if (alias) {
+    tsconfig = tsconfig || globSync('**/tsconfig.json')
+    tsconfig.forEach(t => {
+      const ts = require(t)
+      if (!ts.compilerOptions?.paths) {
+        return
+      }
+      Object.entries(ts.compilerOptions.paths).forEach(([k, v]) => {
+        if (
+          !Array.isArray(v) ||
+          typeof v[0] !== 'string' ||
+          !k.endsWith('/*') ||
+          !v[0].endsWith('/*')
+        ) {
+          return
+        }
+        const re = /\/\*$/
+        const a = k.replace(re, '')
+        const d = v[0].replace(re, '')
+        aliases.push({
+          absPath: path.join(path.dirname(t), d),
+          alias: a,
+        })
+      })
+    })
   }
 
   const noRelativeImport: ConfigWithExtends[] = aliases.map(d => ({
-    ...nonFixable,
-    files: base.files?.map(f => `${path.relative(dir, d.rootDir)}/${f}`),
+    ...base,
+    files: base.files?.map(f => `${path.relative(dir, d.absPath)}/${f}`),
     rules: mergeRules({
-      'custom/no-relative-import-paths': [
-        warn,
-        { allowSameFolder: false, ...d },
-      ],
+      'custom/no-relative-import-paths': [warn, d],
     }),
   }))
   const noRelativeExport: ConfigWithExtends[] = aliases.map(d => ({
-    ...nonFixable,
-    files: base.files?.map(f => `${path.relative(dir, d.rootDir)}/${f}`),
+    ...base,
+    files: base.files?.map(f => `${path.relative(dir, d.absPath)}/${f}`),
     rules: mergeRules({
       'custom/no-relative-export-paths': [warn, d],
     }),
@@ -281,8 +286,7 @@ export const config = ({
     ...nonFixable,
     ignores: ignoreDefaultExport,
     rules: mergeRules({
-      // TODO: not compatible eslint 10
-      'import/no-default-export': off,
+      'import/no-default-export': warn,
     }),
   }
 
@@ -290,7 +294,7 @@ export const config = ({
   let tsNonFixable: ConfigWithExtends[] = []
 
   if (tsProjectService) {
-    const tsconfig = globSync('**/tsconfig.json')
+    tsconfig = tsconfig || globSync('**/tsconfig.json')
     tsBase = tsconfig.map(p => ({
       ...base,
       languageOptions: {

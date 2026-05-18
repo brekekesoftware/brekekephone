@@ -1,10 +1,9 @@
-import './index.native'
+import '#/index.native'
 
 import { createRoot } from 'react-dom/client'
 
+import App from '#/components/app'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'
-
-import App from './components/app'
 
 const runApp = (rootTag: HTMLElement) => {
   const r = createRoot(rootTag)

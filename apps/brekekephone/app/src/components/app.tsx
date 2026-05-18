@@ -6,7 +6,7 @@ import { StyleSheet } from 'react-native'
 import type Url from 'url-parse'
 
 import '../../tailwind.css'
-import '../app.css'
+import '#/app.css'
 import brand from '#/assets/brand.png'
 import logo from '#/assets/logo.png'
 

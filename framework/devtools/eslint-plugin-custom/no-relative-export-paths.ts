@@ -1,14 +1,13 @@
 import type { TSESLint, TSESTree } from '@typescript-eslint/utils'
 
 import { path } from '@/nodejs/path'
-import { repoRoot } from '@/root'
 
 export const noRelativeExportPaths: TSESLint.RuleModule<
   'noRelativeExportPaths',
   [
     {
-      rootDir: string
-      prefix: string
+      absPath: string
+      alias: string
     },
   ]
 > = {
@@ -22,16 +21,17 @@ export const noRelativeExportPaths: TSESLint.RuleModule<
       {
         type: 'object',
         properties: {
-          rootDir: {
+          absPath: {
             type: 'string',
             required: true,
           },
-          prefix: {
+          alias: {
             type: 'string',
             required: true,
           },
         },
         additionalProperties: false,
+        required: true,
       },
     ],
     messages: {
@@ -39,25 +39,8 @@ export const noRelativeExportPaths: TSESLint.RuleModule<
     },
   },
 
-  defaultOptions: [
-    {
-      rootDir: '',
-      prefix: '',
-    },
-  ],
-
   create: c => {
-    let { rootDir } = c.options[0]
-    if (rootDir.startsWith('.')) {
-      rootDir = path.join(repoRoot, rootDir)
-    }
-    const { prefix } = c.options[0]
-    if (!rootDir) {
-      throw new Error('Missing rootDir')
-    }
-    if (!prefix) {
-      throw new Error('Missing prefix')
-    }
+    const { absPath, alias } = c.options[0]
 
     const check = (
       n: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
@@ -72,20 +55,20 @@ export const noRelativeExportPaths: TSESLint.RuleModule<
       }
 
       const abs = path.resolve(path.dirname(c.filename), s.value)
-      if (!isInDir(rootDir, abs)) {
+      if (!isInDir(absPath, abs)) {
         return
       }
 
-      const alias = `${prefix}/${path.relative(rootDir, abs)}`
+      const expectImportPath = `${alias}/${path.relative(absPath, abs)}`
 
       c.report({
         node: s,
         messageId: 'noRelativeExportPaths',
         data: {
-          alias,
+          alias: expectImportPath,
         },
         fix: fixer => {
-          const replacement = `'${alias}'`
+          const replacement = `'${expectImportPath}'`
           return fixer.replaceText(s, replacement)
         },
       })

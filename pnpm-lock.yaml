@@ -14,7 +14,7 @@ overrides:
 patchedDependencies:
   '@react-native-documents/picker': 16f974cd0eadaf29aae11e18edff3b7c0f53ce793e7358fba88aa7e64ea684b0
   '@react-native/gradle-plugin': 07ebd10d76d949aedbcbec9cc6d0a6f41d4f69065e60ddc8708f8bd7bdc3c4f1
-  eslint-plugin-import: 32c7d1c3eb4cf325054c716a73f77d1e34039216ec6c26c6d0b21546cee1f86f
+  eslint-plugin-import: 7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b
   eslint-plugin-react: 24ed0c82b63c09560e6a640404cb8b5769455a704db5068d2ac54d9c68e9b43e
   jssip: 8217b76a5fea6baa6498d5a96392c62eecb12ddc0de980e381fd8f377b6f8202
   mobx-react: d395ac57fab7f67055e41489420a53857251e11099b79b078c7ba6a5fa3d9c2a
@@ -544,7 +544,7 @@ importers:
         version: 10.3.0(jiti@2.7.0)
       eslint-plugin-import:
         specifier: 2.32.0
-        version: 2.32.0(patch_hash=32c7d1c3eb4cf325054c716a73f77d1e34039216ec6c26c6d0b21546cee1f86f)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))
+        version: 2.32.0(patch_hash=7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-prefer-arrow:
         specifier: 1.2.3
         version: 1.2.3(eslint@10.3.0(jiti@2.7.0))
@@ -14651,7 +14651,7 @@ snapshots:
       confusing-browser-globals: 1.0.11
       eslint: 10.3.0(jiti@2.7.0)
       eslint-plugin-flowtype: 8.0.3(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(eslint@10.3.0(jiti@2.7.0))
-      eslint-plugin-import: 2.32.0(patch_hash=32c7d1c3eb4cf325054c716a73f77d1e34039216ec6c26c6d0b21546cee1f86f)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(patch_hash=7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-jest: 25.7.0(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(jest@27.5.1(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3)))(typescript@6.0.3)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(patch_hash=24ed0c82b63c09560e6a640404cb8b5769455a704db5068d2ac54d9c68e9b43e)(eslint@10.3.0(jiti@2.7.0))
@@ -14693,7 +14693,7 @@ snapshots:
       lodash: 4.17.21
       string-natural-compare: 3.0.1
 
-  eslint-plugin-import@2.32.0(patch_hash=32c7d1c3eb4cf325054c716a73f77d1e34039216ec6c26c6d0b21546cee1f86f)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(patch_hash=7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
