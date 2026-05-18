@@ -19,7 +19,7 @@ clean_deep:
 	&& ./gradlew clean;
 
 clean_deep_rm:
-	rm -rf ../../node_modules node_modules ios/build ios/Pods ~/Library/Developer/Xcode/DerivedData/* android/.gradle android/app/.cxx android/build ~/.gradle/caches ~/.gradle/daemon $$TMPDIR/react-native* $$TMPDIR/metro* $$TMPDIR/haste-map*;
+	rm -rf ../../../node_modules node_modules ios/build ios/Pods ~/Library/Developer/Xcode/DerivedData/* android/.gradle android/app/.cxx android/build ~/.gradle/caches ~/.gradle/daemon $$TMPDIR/react-native* $$TMPDIR/metro* $$TMPDIR/haste-map*;
 
 intl:
 	make -Bs rm_babel_cache \
@@ -55,8 +55,8 @@ phonedev:
 	&& export V=$$(jq -r ".appVersion" package.json) \
 	&& echo $$V \
 	&& make -Bs chmod \
-	&& scp ../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa dev01:/var/www/upload/brekeke_phonedev$$V.ipa \
-	&& rm -rf ../0/build/BrekekePhone \
+	&& scp ../../../../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa dev01:/var/www/upload/brekeke_phonedev$$V.ipa \
+	&& rm -rf ../../../../0/build/BrekekePhone \
 	&& make -Bs chmod \
 	&& cd android && ./gradlew clean && ./gradlew assembleRelease \
 	&& scp app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$$V.apk \
@@ -67,8 +67,8 @@ phone:
 	&& export V=$$(jq -r ".appVersion" package.json) \
 	&& echo $$V \
 	&& make -Bs chmod \
-	&& scp ../0/build/BrekekePhone/Brekeke\ Phone.ipa dev01:/var/www/upload/brekeke_phone$$V.ipa \
-	&& rm -rf ../0/build/BrekekePhone \
+	&& scp ../../../../0/build/BrekekePhone/Brekeke\ Phone.ipa dev01:/var/www/upload/brekeke_phone$$V.ipa \
+	&& rm -rf ../../../../0/build/BrekekePhone \
 	&& make -Bs chmod \
 	&& cd android && ./gradlew clean && ./gradlew assembleRelease \
 	&& scp app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$$V.apk \
@@ -94,7 +94,7 @@ embed_b:
 	&& mv build ../../embed/example-react/public/brekeke_phone$$V;
 
 embed_u:
-	cd embed/example-react \
+	cd ../../embed/example-react \
 	&& npm i --force && npm run build \
 	&& mv dist embed && zip -vr embed.zip embed \
 	&& scp embed.zip dev01:/var/www \
@@ -126,4 +126,4 @@ keyhash1:
 	ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64";
 
 keyhash2:
-	openssl pkcs12 -in ../0/brekeke/tomcat7.p12 -clcerts -nokeys | openssl x509 -pubkey -in /dev/stdin -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64;
+	openssl pkcs12 -in ../../../../0/brekeke/tomcat7.p12 -clcerts -nokeys | openssl x509 -pubkey -in /dev/stdin -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64;

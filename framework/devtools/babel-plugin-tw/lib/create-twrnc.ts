@@ -1,15 +1,21 @@
 import type { Platform } from 'react-native'
 import type { TwConfig } from 'twrnc'
 import { create } from 'twrnc/create'
+import { parse } from 'yaml'
 
-import packageJson from '../../../../package.json'
+import { fs } from '@/nodejs/fs'
+import { path } from '@/nodejs/path'
+import { repoRoot } from '@/root'
 
 // can not import twrnc directly as it imports react-native which is not available in nodejs babel env
 export const createTwrnc = (
   platform: Platform['OS'],
   twrncConfig: TwConfig,
 ) => {
-  const rnVersionStr = packageJson.pnpm.overrides['react-native']
+  const wsPath = path.join(repoRoot, 'pnpm-workspace.yaml')
+  const wsFile = fs.readFileSync(wsPath, 'utf8')
+  const { overrides } = parse(wsFile)
+  const rnVersionStr = overrides['react-native']
   const matches = /(\d+)\.(\d+)\.(\d+)/.exec(rnVersionStr)
   if (!matches) {
     throw new Error('Can not parse react native version')

@@ -1,4 +1,5 @@
 import { compare } from 'semver'
+import { parse } from 'yaml'
 
 import { fs } from '@/nodejs/fs'
 import { glob } from '@/nodejs/glob'
@@ -70,8 +71,10 @@ const validSemverRegex = /^\d/
  */
 export const normalizePackageJson = async () => {
   const paths = await glob('**/package.json')
-  const root = require(path.join(repoRoot, './package.json'))
-  const overrides = root.pnpm?.overrides || {}
+  const rootPackageJson = require(path.join(repoRoot, './package.json'))
+  const wsPath = path.join(repoRoot, 'pnpm-workspace.yaml')
+  const wsFile = fs.readFileSync(wsPath, 'utf8')
+  const { overrides } = parse(wsFile)
 
   const allDependencies: StrMap<PackageData[]> = {}
 
@@ -79,7 +82,7 @@ export const normalizePackageJson = async () => {
     const dir = path.dirname(p)
     const packageJsonRelativePath = path.relative(repoRoot, p)
 
-    let name = root.name
+    let name = rootPackageJson.name
     if (!isRepoRoot(dir)) {
       const kebabPath = path
         .relative(isInFramework(p) ? frameworkRoot : repoRoot, dir)
@@ -90,7 +93,7 @@ export const normalizePackageJson = async () => {
         .map(v => v.replace(/-+/, '-'))
         .map(v => v.replace(/((^-)|(-$))+/, ''))
         .join('-')
-      name = `@${root.name}/${kebabPath}`
+      name = `@${rootPackageJson.name}/${kebabPath}`
     }
 
     const packageJson = require(p)

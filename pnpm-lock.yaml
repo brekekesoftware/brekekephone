@@ -298,7 +298,7 @@ importers:
         version: 4.2.4
       twrnc:
         specifier: 4.16.0
-        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.8.4)
+        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.9.0)
 
   apps/brekekephone/web:
     dependencies:
@@ -317,7 +317,7 @@ importers:
         version: 7.28.6(@babel/core@7.29.0)
       '@craco/craco':
         specifier: 7.1.0
-        version: 7.1.0(@swc/core@1.15.33)(@types/node@25.6.2)(postcss@8.5.14)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4))(typescript@6.0.3)
+        version: 7.1.0(@swc/core@1.15.33)(@types/node@25.6.2)(postcss@8.5.14)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0))(typescript@6.0.3)
       '@tailwindcss/postcss':
         specifier: 4.2.4
         version: 4.2.4
@@ -338,7 +338,7 @@ importers:
         version: 8.2.1(postcss@8.5.14)(typescript@6.0.3)(webpack@5.106.2(@swc/core@1.15.33))
       react-scripts:
         specifier: 5.0.1
-        version: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4)
+        version: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0)
 
   apps/dev01/api:
     dependencies:
@@ -381,7 +381,7 @@ importers:
         version: 1.0.3
       react-scripts:
         specifier: 5.0.1
-        version: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4)
+        version: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0)
 
   apps/embed-example/react:
     dependencies:
@@ -394,16 +394,16 @@ importers:
         version: 19.2.14
       '@vitejs/plugin-basic-ssl':
         specifier: 2.3.0
-        version: 2.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+        version: 2.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
       '@vitejs/plugin-react-swc':
         specifier: 4.3.0
-        version: 4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+        version: 4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
       cross-env:
         specifier: 10.1.0
         version: 10.1.0
       vite:
         specifier: 8.0.11
-        version: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+        version: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
 
   framework/devtools/babel-config:
     dependencies:
@@ -501,7 +501,10 @@ importers:
         version: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
       twrnc:
         specifier: 4.16.0
-        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.8.4)
+        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.9.0)
+      yaml:
+        specifier: 2.9.0
+        version: 2.9.0
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -613,6 +616,9 @@ importers:
       semver:
         specifier: 7.8.0
         version: 7.8.0
+      yaml:
+        specifier: 2.9.0
+        version: 2.9.0
     devDependencies:
       '@types/semver':
         specifier: 7.7.1
@@ -840,7 +846,7 @@ importers:
         version: 4.2.4
       twrnc:
         specifier: '*'
-        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.8.4)
+        version: 4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.9.0)
     devDependencies:
       '@types/color-rgba':
         specifier: 2.1.3
@@ -853,7 +859,7 @@ importers:
         version: 19.2.14
       vitest:
         specifier: 4.1.6
-        version: 4.1.6(@types/node@25.6.2)(jsdom@16.7.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+        version: 4.1.6(@types/node@25.6.2)(jsdom@16.7.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
 
   framework/rn/immer:
     dependencies:
@@ -9835,8 +9841,8 @@ packages:
     resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
 
-  yaml@2.8.4:
-    resolution: {integrity: sha512-ml/JPOj9fOQK8RNnWojA67GbZ0ApXAUlN2UQclwv2eVgTgn7O9gg9o7paZWKMp4g0H3nTLtS9LVzhkpOFIKzog==}
+  yaml@2.9.0:
+    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -10859,14 +10865,14 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@craco/craco@7.1.0(@swc/core@1.15.33)(@types/node@25.6.2)(postcss@8.5.14)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4))(typescript@6.0.3)':
+  '@craco/craco@7.1.0(@swc/core@1.15.33)(@types/node@25.6.2)(postcss@8.5.14)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0))(typescript@6.0.3)':
     dependencies:
       autoprefixer: 10.5.0(postcss@8.5.14)
       cosmiconfig: 7.1.0
       cosmiconfig-typescript-loader: 1.0.9(@swc/core@1.15.33)(@types/node@25.6.2)(cosmiconfig@7.1.0)(typescript@6.0.3)
       cross-spawn: 7.0.6
       lodash: 4.17.21
-      react-scripts: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4)
+      react-scripts: 5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0)
       semver: 7.8.0
       webpack-merge: 5.10.0
     transitivePeerDependencies:
@@ -11629,7 +11635,7 @@ snapshots:
       ora: 5.4.1
       semver: 7.8.0
       wcwidth: 1.0.1
-      yaml: 2.8.4
+      yaml: 2.9.0
     transitivePeerDependencies:
       - typescript
 
@@ -12945,15 +12951,15 @@ snapshots:
       '@typescript-eslint/types': 8.59.3
       eslint-visitor-keys: 5.0.1
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))':
     dependencies:
-      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
 
-  '@vitejs/plugin-react-swc@4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))':
+  '@vitejs/plugin-react-swc@4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.7
       '@swc/core': 1.15.33
-      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@swc/helpers'
 
@@ -12966,13 +12972,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.6(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))':
+  '@vitest/mocker@4.1.6(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.6
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.6':
     dependencies:
@@ -17682,13 +17688,13 @@ snapshots:
       postcss: 8.5.14
       postcss-value-parser: 4.2.0
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.14)(yaml@2.8.4):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.14)(yaml@2.9.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
       postcss: 8.5.14
-      yaml: 2.8.4
+      yaml: 2.9.0
 
   postcss-loader@6.2.1(postcss@8.5.14)(webpack@5.106.2(@swc/core@1.15.33)):
     dependencies:
@@ -18476,7 +18482,7 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.8.4):
+  react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0):
     dependencies:
       '@babel/core': 7.29.0
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.17(react-refresh@0.11.0)(type-fest@0.21.3)(webpack-dev-server@4.15.2(webpack@5.106.2(@swc/core@1.15.33)))(webpack@5.106.2(@swc/core@1.15.33))
@@ -18520,7 +18526,7 @@ snapshots:
       semver: 7.8.0
       source-map-loader: 3.0.2(webpack@5.106.2(@swc/core@1.15.33))
       style-loader: 3.3.4(webpack@5.106.2(@swc/core@1.15.33))
-      tailwindcss: 3.4.19(yaml@2.8.4)
+      tailwindcss: 3.4.19(yaml@2.9.0)
       terser-webpack-plugin: 5.5.0(@swc/core@1.15.33)(webpack@5.106.2(@swc/core@1.15.33))
       webpack: 5.106.2(@swc/core@1.15.33)
       webpack-dev-server: 4.15.2(webpack@5.106.2(@swc/core@1.15.33))
@@ -19517,7 +19523,7 @@ snapshots:
 
   tailwind-merge@3.6.0: {}
 
-  tailwindcss@3.4.19(yaml@2.8.4):
+  tailwindcss@3.4.19(yaml@2.9.0):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -19536,7 +19542,7 @@ snapshots:
       postcss: 8.5.14
       postcss-import: 15.1.0(postcss@8.5.14)
       postcss-js: 4.1.0(postcss@8.5.14)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.14)(yaml@2.8.4)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.14)(yaml@2.9.0)
       postcss-nested: 6.2.0(postcss@8.5.14)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.12
@@ -19702,10 +19708,10 @@ snapshots:
       tslib: 1.14.1
       typescript: 6.0.3
 
-  twrnc@4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.8.4):
+  twrnc@4.16.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(yaml@2.9.0):
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
-      tailwindcss: 3.4.19(yaml@2.8.4)
+      tailwindcss: 3.4.19(yaml@2.9.0)
     transitivePeerDependencies:
       - tsx
       - yaml
@@ -19953,7 +19959,7 @@ snapshots:
       unist-util-stringify-position: 2.0.3
       vfile-message: 2.0.4
 
-  vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4):
+  vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -19965,12 +19971,12 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.7.0
       terser: 5.47.1
-      yaml: 2.8.4
+      yaml: 2.9.0
 
-  vitest@4.1.6(@types/node@25.6.2)(jsdom@16.7.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)):
+  vitest@4.1.6(@types/node@25.6.2)(jsdom@16.7.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.6
-      '@vitest/mocker': 4.1.6(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@vitest/mocker': 4.1.6(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.6
       '@vitest/runner': 4.1.6
       '@vitest/snapshot': 4.1.6
@@ -19987,7 +19993,7 @@ snapshots:
       tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.6.2
@@ -20439,7 +20445,7 @@ snapshots:
 
   yaml@1.10.3: {}
 
-  yaml@2.8.4: {}
+  yaml@2.9.0: {}
 
   yargs-parser@18.1.3:
     dependencies:
