@@ -16,69 +16,23 @@ import { useAnimationOnDidMount } from '#/utils/animation'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const css = {
-  itemPb: {
-    width: '100%',
-    paddingVertical: 5,
-    borderBottomColor: 'grey',
-    borderBottomWidth: 0.5,
-  },
-  RnPicker_Options: {
-    borderRadius: v.borderRadius,
-    backgroundColor: v.bg,
-    overflow: 'hidden',
-    height: Dimensions.get('screen').height / 3,
-    width: '100%',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  RnPicker_Option: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: v.hoverBg,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  RnPicker_Option__cancel: {
-    marginTop: 15,
-    borderBottomWidth: 0,
-    borderRadius: v.borderRadius,
-    backgroundColor: v.bg,
-    marginLeft: 10,
-  },
-  RnPicker_Option__OK: {
-    marginTop: 15,
-    borderBottomWidth: 0,
-    borderRadius: v.borderRadius,
-    marginRight: 10,
-    backgroundColor: v.colors.primary,
-  },
-  RnPicker_Text__Ok: {
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  RnPicker_Text__cancel: {
-    fontWeight: 'bold',
-    color: v.layerBg,
-  },
-  inputFieldName: {
-    backgroundColor: 'white',
-    height: 40,
-    width: '100%',
-    borderRadius: v.borderRadius,
-    borderWidth: 0.8,
-    borderColor: v.borderBg,
-    paddingHorizontal: 10,
-    overflow: 'hidden',
-    ...Platform.select({
-      web: {
-        paddingVertical: 5,
-      },
-    }),
-  },
+const rnPickerOptionsStyle = {
+  height: Dimensions.get('screen').height / 3,
+} as const
+const inputFieldNameStyle = {
+  backgroundColor: 'white',
+  height: 40,
+  width: '100%' as const,
+  borderRadius: v.borderRadius,
+  borderWidth: 0.8,
+  borderColor: v.borderBg,
+  paddingHorizontal: 10,
+  overflow: 'hidden' as const,
+  ...Platform.select({
+    web: {
+      paddingVertical: 5,
+    },
+  }),
 } as const
 
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
@@ -114,7 +68,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const renderItem = (item: ItemPBForm, index: number) => (
     <RnTouchableOpacity
       key={index}
-      style={css.itemPb}
+      className='w-full py-1.25 border-b-[0.5px] border-[grey]'
       onPress={() => onPressItem(item)}
     >
       <RnText className='mx-2.5 w-full text-left'>{item.label}</RnText>
@@ -138,7 +92,10 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
           transform: [y],
         }}
       >
-        <View style={css.RnPicker_Options}>
+        <View
+          className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start'
+          style={rnPickerOptionsStyle}
+        >
           <RnTextInput
             // blurOnSubmit
             keyboardType='default'
@@ -148,7 +105,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             //  onSelectionChange={p.selectionChange}
             placeholder={intl`Enter field`}
             ref={refInput}
-            style={css.inputFieldName}
+            style={inputFieldNameStyle}
             value={value}
           />
           <ScrollView
@@ -162,13 +119,13 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         <View className='flex-row items-center justify-between'>
           <RnTouchableOpacity
             onPress={() => onSelect(value)}
-            style={[css.RnPicker_Option, css.RnPicker_Option__OK]}
+            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] mr-2.5 bg-primary'
           >
             <RnText bold white>OK</RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={ctx.contact.dismissPicker}
-            style={[css.RnPicker_Option, css.RnPicker_Option__cancel]}
+            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] bg-background ml-2.5'
           >
             <RnText bold className='text-foreground/80'>{intl`Cancel`}</RnText>
           </RnTouchableOpacity>

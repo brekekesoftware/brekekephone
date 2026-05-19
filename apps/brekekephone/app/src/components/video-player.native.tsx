@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
 import type { StyleProp, ViewStyle } from 'react-native'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
-const css = {
-  video: {
-    width: '100%',
-    height: '100%',
-  },
+import { View } from '@/rn/core/components/view'
+
+const videoStyle = {
+  width: '100%' as const,
+  height: '100%' as const,
 }
 
 declare global {
@@ -26,13 +26,13 @@ export const VideoPlayer = observer(
     p.sourceObject ? (
       <RTCView
         streamURL={p.sourceObject.toURL()}
-        style={[css.video, p.style]}
+        style={[videoStyle, p.style]}
         objectFit='cover'
         zOrder={p.zOrder}
       />
     ) : p.isShowLoading ? (
-      <ActivityIndicator style={css.video} />
+      <ActivityIndicator style={videoStyle} />
     ) : (
-      <View style={css.video} />
+      <View className='w-full h-full' />
     ),
 )

@@ -4,20 +4,6 @@ import { RnCheckBox } from '#/components/rn-checkbox'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
-const css = {
-  SelectionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  SelectionItem_Disabled: {
-    opacity: 0.5,
-  },
-  SelectionItem_Title: {
-    marginLeft: 12,
-  },
-}
-
 export const SelectionItem: FC<
   ViewProps & {
     isSelected: boolean
@@ -28,7 +14,8 @@ export const SelectionItem: FC<
 > = ({ isSelected, title, onPress, disabled = false, style, ...p }) => (
   <RnTouchableOpacity
     {...p}
-    style={[css.SelectionItem, disabled && css.SelectionItem_Disabled, style]}
+    className={['flex-row items-center my-1.25', disabled && 'opacity-50']}
+    style={style}
     onPress={() => {
       if (!disabled) {
         onPress()

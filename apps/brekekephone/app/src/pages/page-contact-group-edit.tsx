@@ -9,7 +9,6 @@ import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { defaultTimeout } from '#/config'
-import { css } from '#/pages/page-contact-edit'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnDropdown } from '#/stores/rn-dropdown'
@@ -112,7 +111,7 @@ const RenderItem = observer(
     return (
       <View key={`PageContactGroupEdit-${item.user_id}-${index}`}>
         <RnTouchableOpacity
-          style={css.loadingIcon}
+          className='mt-5'
           onPress={() => selectUser(item)}
         >
           <UserItem

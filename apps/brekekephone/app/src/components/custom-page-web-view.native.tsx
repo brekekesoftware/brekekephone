@@ -7,31 +7,9 @@ import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-sen
 import { buildWebViewSource, isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 
-const css = {
-  image: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-  },
-  imageError: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 100,
-  },
-  loading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: '#00000030',
-    overflow: 'hidden',
-    zIndex: 100,
-  },
-  full: {
-    width: '100%',
-    height: '100%',
-  },
+const fullStyle = {
+  width: '100%' as const,
+  height: '100%' as const,
 }
 
 type Props = Pick<WebViewProps, 'onLoadStart' | 'onLoadEnd' | 'onError'> & {
@@ -122,7 +100,7 @@ export const CustomPageWebView = ({
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
       injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-      style={css.full}
+      style={fullStyle}
       bounces={false}
       originWhitelist={['*']}
       javaScriptEnabled={true}

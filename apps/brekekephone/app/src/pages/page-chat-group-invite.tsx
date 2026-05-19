@@ -1,45 +1,14 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
-
-const css = {
-  PageChatGroupInvite: {},
-  PageChatGroupInvite_TextInput: {
-    padding: 10,
-    ...v.boxShadow,
-  },
-  PageChatGroupInvite_Outer: {
-    paddingTop: 5,
-    paddingHorizontal: 10,
-  },
-  PageChatGroupInvite_BtnSave: {
-    marginTop: 15,
-    padding: 10,
-    borderRadius: v.borderRadius,
-    backgroundColor: v.colors.primary,
-  },
-  PageChatGroupInvite_BtnText: {
-    alignItems: 'center',
-    color: 'white',
-    fontSize: v.fontSizeSubTitle,
-  },
-  PageChatGroupInvite_GroupName: {
-    fontSize: v.fontSizeTitle,
-    padding: 5,
-  },
-  PageChatGroupInvite_Text: {
-    paddingTop: 15,
-    fontSize: v.fontSizeTitle,
-  },
-}
 
 @observer
 export class PageChatGroupInvite extends Component<{
@@ -52,13 +21,13 @@ export class PageChatGroupInvite extends Component<{
   render() {
     return (
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
-        <View style={css.PageChatGroupInvite_Outer}>
+        <View className='pt-1.25 px-2.5'>
           <RnText className='p-1.25 text-[25.2px]'>
             {ctx.chat.getGroupById(this.props.groupId).name}
           </RnText>
           <RnTouchableOpacity
             onPress={this.invite}
-            style={css.PageChatGroupInvite_BtnSave}
+            className='mt-3.75 p-2.5 rounded-[3px] bg-primary'
           >
             <RnText
               white

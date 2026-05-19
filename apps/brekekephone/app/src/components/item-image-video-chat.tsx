@@ -1,43 +1,25 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Dimensions, Platform, View } from 'react-native'
+import { Dimensions, Platform } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import type { ChatFile } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-const css = {
-  vMessage: {
-    marginBottom: 5,
-    marginLeft: 10,
-    ...Platform.select({
-      web: {
-        width: 'calc(100vw - 119px)' as any,
-      },
-      default: {
-        width: Dimensions.get('screen').width - 119,
-      },
-    }),
+const vMessageWidthStyle = Platform.select({
+  web: {
+    width: 'calc(100vw - 119px)' as any,
   },
-  textFileInfo: {
-    color: v.colors.greyTextChat,
-    fontSize: 13,
+  default: {
+    width: Dimensions.get('screen').width - 119,
   },
-  textFileInfoLineThrough: {
-    color: v.colors.greyTextChat,
-    fontSize: 13,
-    textDecorationLine: 'line-through',
-  },
-  vHorizontal: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-}
+})
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
@@ -60,12 +42,12 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   }
   return (
     <View>
-      <View style={css.vMessage}>
+      <View className='mb-1.25 ml-2.5' style={vMessageWidthStyle}>
         <RnText className={['line-clamp-2', textClass]}>
           {p.name}
           {displaySendTo}
         </RnText>
-        <View style={css.vHorizontal}>
+        <View className='flex-row items-center'>
           <RnText className={textClass}>
             {formatBytes(p?.size || 0, 2)}
             {` (${p.transferPercent}%) `}

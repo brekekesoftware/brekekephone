@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated } from 'react-native'
 
 import { AnimatedView } from '@/rn/core/components/animated'
+import { View } from '@/rn/core/components/view'
 import { RnText } from '#/components/rn'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
@@ -19,29 +20,6 @@ const getBg = (type: ToastType) => {
     default:
       return v.colors.primary
   }
-}
-
-const s = {
-  root: {
-    left: 0,
-    right: 0,
-    top: 0,
-  },
-  item: {
-    paddingVertical: 2,
-    paddingHorizontal: 4,
-    marginBottom: 0,
-    marginHorizontal: 0,
-    borderEndEndRadius: 4,
-  },
-  text: {
-    color: 'white',
-  },
-  errorDetail: {
-    fontSize: 12,
-    color: 'white',
-    marginLeft: 4,
-  },
 }
 
 const TOAST_DISPLAY_DURATION = 2700
@@ -111,7 +89,7 @@ const Item = observer(
 )
 
 export const ToastRoot = observer(() => (
-  <View style={s.root}>
+  <View className='left-0 right-0 top-0'>
     {ctx.toast.items.map(t => (
       <Item key={t.id} data={t} onEnd={() => ctx.toast.hide(t.id)} />
     ))}

@@ -21,59 +21,10 @@ const css = {
     backgroundColor: v.bg,
     overflow: 'hidden',
   },
-  RnPicker_Option: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: v.hoverBg,
-  },
-  RnPicker_Option__last: {
-    borderBottomWidth: 0,
-  },
-  RnPicker_Option__selected: {
-    backgroundColor: v.hoverBg,
-  },
-  RnPicker_Option__general: {
-    marginTop: 15,
-    borderBottomWidth: 0,
-    borderRadius: v.borderRadius,
-    backgroundColor: v.bg,
-  },
-  RnPicker_Button: {
-    flex: 1,
-    maxWidth: v.maxModalWidth,
-  },
-  RnPicker_Button_confirm: {
-    alignItems: 'center',
-    backgroundColor: v.colors.primary,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    color: 'white',
-  },
-  RnPicker_Button_cancel: {
-    alignItems: 'center',
-    backgroundColor: v.colors.dangerFn(0.5),
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  RnPicker_Text__selected: {
-    fontWeight: 'bold',
-    color: v.colors.primary,
-  },
-  RnPicker_Text__cancel: {
-    fontWeight: 'bold',
-    color: v.colors.danger,
-  },
   RnPicker_Icon: {
     position: 'absolute',
     top: 10,
     right: 10,
-  },
-  Confirm_label: {
-    color: 'white',
-  },
-  RnPicker_Label: {
-    width: '95%',
   },
 } as const
 
@@ -123,10 +74,10 @@ const RnPickerR = (p: RnPickerOption) => {
                   setSelectedKey(o.key)
                   !p.onConfirm && RnPicker.dismiss()
                 }}
-                style={[
-                  css.RnPicker_Option,
-                  i + 1 === p.options.length && css.RnPicker_Option__last,
-                  isSelected && css.RnPicker_Option__selected,
+                className={[
+                  'py-3 px-3.75 border-b border-border',
+                  i + 1 === p.options.length && 'border-b-0',
+                  isSelected && 'bg-muted',
                 ]}
               >
                 <RnText
@@ -161,10 +112,9 @@ const RnPickerR = (p: RnPickerOption) => {
         <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
-            style={[
-              css.RnPicker_Option,
-              css.RnPicker_Option__general,
-              p.onConfirm && css.RnPicker_Button_cancel,
+            className={[
+              'py-3 px-3.75 mt-3.75 rounded-[3px] bg-background',
+              p.onConfirm && 'items-center bg-error-100 rounded-l-[3px] rounded-r-none',
             ]}
           >
             <RnText bold danger>
@@ -183,11 +133,7 @@ const RnPickerR = (p: RnPickerOption) => {
           <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
             <RnTouchableOpacity
               onPress={onConfirm}
-              style={[
-                css.RnPicker_Option,
-                css.RnPicker_Option__general,
-                p.onConfirm && css.RnPicker_Button_confirm,
-              ]}
+              className='py-3 px-3.75 mt-3.75 rounded-[3px] items-center bg-primary rounded-l-none rounded-r-[3px]'
             >
               <RnText bold white>
                 {p.confirmLabel || intl`SAVE`}

@@ -2,12 +2,13 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { Dimensions, Linking, Platform, View } from 'react-native'
+import { Dimensions, Linking, Platform } from 'react-native'
 import Share from 'react-native-share'
+
+import { View } from '@/rn/core/components/view'
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 import { intl, intlDebug } from '#/stores/intl'
@@ -15,98 +16,23 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-const css = {
-  Message: {
-    position: 'relative',
-    paddingBottom: 5,
-    paddingHorizontal: 10,
-    overflow: 'hidden',
-    ...Platform.select({
-      web: {
-        maxWidth: 'calc(100vw - 60px)' as any,
-      },
-      default: {
-        // 50px of avatar and 10px of padding
-        maxWidth: Dimensions.get('screen').width - 60,
-      },
-    }),
+const messageMaxWidthStyle = Platform.select({
+  web: {
+    maxWidth: 'calc(100vw - 60px)' as any,
   },
-  //
-  File: {
-    marginTop: 0,
+  default: {
+    // 50px of avatar and 10px of padding
+    maxWidth: Dimensions.get('screen').width - 60,
   },
-  Image: {
-    width: 150,
-    height: 150,
+})
+const previewInfoWidthStyle = Platform.select({
+  web: {
+    width: 'calc(100vw - 119px)' as any,
   },
-
-  Message__call: {
-    fontSize: v.fontSizeSmall,
-    color: v.colors.warning,
+  default: {
+    width: Dimensions.get('screen').width - 119,
   },
-
-  Message_File_Button_Wrapper: {
-    flexDirection: 'row',
-  },
-  Message_File_Button: {
-    flex: 1,
-    paddingVertical: 1,
-    paddingHorizontal: 8,
-    fontSize: 12,
-    marginTop: 4,
-    borderRadius: 4,
-  },
-  Message_File_Cancel_Button: {
-    color: v.colors.danger,
-    borderWidth: 1,
-    borderColor: v.colors.danger,
-  },
-  Message_File_Accept_Button: {
-    backgroundColor: v.colors.primary,
-    borderWidth: 1,
-    borderColor: v.colors.primary,
-    marginLeft: 4,
-    color: '#fff',
-  },
-  Message_File_Preview_Wrapper: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  Message_File_Preview_Info: {
-    marginLeft: 5,
-    ...Platform.select({
-      web: {
-        width: 'calc(100vw - 119px)' as any,
-      },
-      default: {
-        width: Dimensions.get('screen').width - 119,
-      },
-    }),
-  },
-  Message_File_Preview_Info_Size: {
-    color: '#9e9e9e',
-    fontSize: 13,
-  },
-  Message_File_Preview_Status: {
-    fontWeight: v.fontWeight,
-  },
-  Message_File_Preview_Status__Success: {
-    color: v.colors.primary,
-  },
-  Message_File_Preview_Status__Failed: {
-    color: v.colors.danger,
-  },
-
-  Link: {
-    color: v.colors.primary,
-    padding: 0,
-    ...Platform.select({
-      web: {
-        display: 'inline' as any as undefined,
-      },
-    }),
-  },
-}
+})
 
 const File: FC<
   Partial<{
@@ -121,18 +47,21 @@ const File: FC<
     createdByMe: boolean
   }>
 > = observer(p => (
-  <View style={[css.File, css.Message]}>
+  <View
+    className='relative pb-1.25 px-2.5 overflow-hidden mt-0'
+    style={messageMaxWidthStyle}
+  >
     <View>
-      <View style={css.Message_File_Preview_Wrapper}>
+      <View className='flex-row items-start'>
         <View>
           <RnIcon path={mdiFile} size={20} />
         </View>
-        <View style={css.Message_File_Preview_Info}>
+        <View className='ml-1.25' style={previewInfoWidthStyle}>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
       <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
-      <View style={css.Message_File_Button_Wrapper}>
+      <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity onPress={p.reject}>
             <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] text-error border border-error'>
@@ -255,16 +184,16 @@ export class Message extends Component<{
     return (
       <>
         {!!text && !file && (
-          <TextContainer style={css.Message} onLongPress={this.onMessagePress}>
-            {/* TODO: <Hyperlink
-              onPress={this.onLinkPress}
-              linkStyle={css.Link}
-              onLongPress={this.onLinkLongPress}
+          <TextContainer
+            className='relative pb-1.25 px-2.5 overflow-hidden'
+            style={messageMaxWidthStyle}
+            onLongPress={this.onMessagePress}
+          >
+            <RnText
+              className={!isTextOnly ? 'text-warning text-[11.2px]' : undefined}
             >
-              <RnText style={!isTextOnly && css.Message__call}>
-                {text.trim()}
-              </RnText>
-            </Hyperlink> */}
+              {text.trim()}
+            </RnText>
           </TextContainer>
         )}
         {!!file && isImage && <ItemImageVideoChat {...file} />}

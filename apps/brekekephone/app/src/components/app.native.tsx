@@ -25,7 +25,6 @@ import { AudioPlayer, RnStatusBar, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { RootView } from '#/components/root-view'
 import { ToastRoot } from '#/components/toast-root'
-import { v } from '#/components/variables'
 import { defaultTimeout, isIos, isWeb } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { RenderAllCalls } from '#/pages/page-call-manage'
@@ -275,19 +274,6 @@ PushNotification.register(async () => {
   })
 })
 
-const css = {
-  App_ConnectionStatus: {
-    backgroundColor: v.colors.warning,
-  },
-  App_ConnectionStatus__failure: {
-    backgroundColor: v.colors.danger,
-  },
-  LoadingFullscreenBg: {
-    // old color from design, not v.colors.primary
-    backgroundColor: '#74bf53',
-  },
-}
-
 const AppWithoutProviders = observer(() => {
   useEffect(() => {
     if (!isWeb) {
@@ -308,10 +294,7 @@ const AppWithoutProviders = observer(() => {
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
         <AnimatedSize
-          style={[
-            css.App_ConnectionStatus,
-            isFailure && css.App_ConnectionStatus__failure,
-          ]}
+          className={isFailure ? 'bg-error' : 'bg-warning'}
         >
           <RnTouchableOpacity
             className='px-1.25 pt-1 pb-1.25'
@@ -353,8 +336,7 @@ const AppWithoutProviders = observer(() => {
 
       {!ctx.account.appInitDone && (
         <View
-          className='absolute inset-0 items-center justify-center'
-          style={css.LoadingFullscreenBg}
+          className='absolute inset-0 items-center justify-center bg-[#74bf53]'
         >
           <ActivityIndicator size='large' color='white' />
         </View>

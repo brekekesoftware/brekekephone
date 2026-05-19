@@ -3,47 +3,19 @@ import type {
   NativeSyntheticEvent,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = {
-  ChatInput: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  Btn: {
-    width: 50,
-    paddingVertical: 8,
-  },
-  Btn__file: {
-    backgroundColor: v.hoverBg,
-    borderRightWidth: 1,
-    borderColor: v.borderBg,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-  },
-  Btn__emoji: {
-    backgroundColor: v.hoverBg,
-    borderRightWidth: 1,
-    borderColor: v.borderBg,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-  },
-  Btn__send: {
-    backgroundColor: v.colors.primary,
-    paddingLeft: 8,
-  },
-  Input: {
-    flex: 1,
-    // lineHeight: g.iconSize,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-  },
+const inputStyle = {
+  flex: 1,
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderTopWidth: 1,
+  borderBottomWidth: 1,
+  borderColor: v.borderBg,
 }
 
 export const ChatInput: FC<{
@@ -65,16 +37,16 @@ export const ChatInput: FC<{
     text,
   } = p
   return (
-    <View style={css.ChatInput}>
+    <View className='flex-1 flex-row'>
       <RnTouchableOpacity
         onPress={openFileRnPicker}
-        style={[css.Btn, css.Btn__file]}
+        className='w-12.5 py-2 bg-muted border-r border-t border-b border-border'
       >
         <RnIcon path={mdiPaperclip} size={20} />
       </RnTouchableOpacity>
       <RnTouchableOpacity
         onPress={onEmojiTurnOn}
-        style={[css.Btn, css.Btn__emoji]}
+        className='w-12.5 py-2 bg-muted border-r border-t border-b border-border'
       >
         <RnIcon color='gray' path={mdiEmoticon} />
       </RnTouchableOpacity>
@@ -83,12 +55,12 @@ export const ChatInput: FC<{
         onChangeText={onTextChange}
         onSelectionChange={onSelectionChange}
         onSubmitEditing={onTextSubmit}
-        style={css.Input}
+        style={inputStyle}
         value={text}
       />
       <RnTouchableOpacity
         onPress={onTextSubmit}
-        style={[css.Btn, css.Btn__send]}
+        className='w-12.5 py-2 pl-2 bg-primary'
       >
         <RnIcon color='white' path={mdiSend} />
       </RnTouchableOpacity>

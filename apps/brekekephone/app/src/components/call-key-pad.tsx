@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View } from '@/rn/core/components/view'
 import {
   mdiBackspace,
   mdiKeyboard,
@@ -6,50 +6,7 @@ import {
   mdiPhoneForward,
 } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { isWeb } from '#/config'
-
-const css = {
-  KeyPad_Number: {
-    flexDirection: 'row',
-  },
-  KeyPad_NumberTxt: {
-    fontSize: v.fontSizeTitle,
-    fontWeight: '600',
-    textAlign: 'center',
-    paddingVertical: 20,
-  },
-  KeyPad_NumberBtn: {
-    width: '33.3%',
-  },
-  KeyPad_Btn: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 25,
-  },
-  KeyPad_Btn__call: {
-    backgroundColor: v.colors.primary,
-    width: 64,
-    borderRadius: 40,
-    paddingVertical: 20,
-  },
-  KeyPad_Btn__call_2: {
-    backgroundColor: v.colors.primary,
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    borderRadius: 25,
-  },
-  KeyPad_view: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: v.colors.primaryFn(0.5),
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 50,
-    borderRadius: 50 / 2,
-  },
-}
 
 const keys = [
   ['1', '2', '3'],
@@ -66,27 +23,35 @@ export const KeyPad = (p: {
 }) => (
   <>
     {keys.map((row, i) => (
-      <View key={i} style={css.KeyPad_Number}>
+      <View key={i} className='flex-row'>
         {row.map(key => (
           <RnTouchableOpacity
             key={key}
             onPress={() => p.onPressNumber(key)}
-            style={css.KeyPad_NumberBtn}
+            className='w-1/3'
           >
-            <RnText center className='py-5 text-[25.2px] font-semibold'>{key}</RnText>
+            <RnText center className='py-5 text-[25.2px] font-semibold'>
+              {key}
+            </RnText>
           </RnTouchableOpacity>
         ))}
       </View>
     ))}
-    <View style={css.KeyPad_Btn}>
-      <RnTouchableOpacity onPress={p.showKeyboard} style={css.KeyPad_NumberBtn}>
+    <View className='flex-row justify-between mt-6.25'>
+      <RnTouchableOpacity onPress={p.showKeyboard} className='w-1/3'>
         <RnIcon color={isWeb ? 'white' : undefined} path={mdiKeyboard} />
       </RnTouchableOpacity>
-      <View style={p.callVoiceForward ? css.KeyPad_view : undefined}>
+      <View
+        className={
+          p.callVoiceForward
+            ? 'flex-1 flex-row bg-primary-100 items-center justify-between h-12.5 rounded-[25px]'
+            : undefined
+        }
+      >
         {p.callVoiceForward && (
           <RnTouchableOpacity
             onPress={p.callVoiceForward}
-            style={[css.KeyPad_NumberBtn, css.KeyPad_Btn__call_2]}
+            className='bg-primary w-12.5 h-12.5 justify-center rounded-full'
           >
             <RnIcon path={mdiPhoneForward} />
           </RnTouchableOpacity>
@@ -94,11 +59,11 @@ export const KeyPad = (p: {
         {p.callVoice && (
           <RnTouchableOpacity
             onPress={p.callVoice}
-            style={[
-              css.KeyPad_NumberBtn,
+            className={[
+              'bg-primary',
               !p.callVoiceForward
-                ? css.KeyPad_Btn__call
-                : css.KeyPad_Btn__call_2,
+                ? 'w-16 rounded-[40px] py-5'
+                : 'w-12.5 h-12.5 justify-center rounded-full',
             ]}
             loading
           >
@@ -108,7 +73,7 @@ export const KeyPad = (p: {
       </View>
       <RnTouchableOpacity
         onPress={() => p.onPressNumber('')}
-        style={css.KeyPad_NumberBtn}
+        className='w-1/3'
       >
         <RnIcon path={mdiBackspace} />
       </RnTouchableOpacity>

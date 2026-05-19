@@ -1,55 +1,13 @@
-import { transparentize } from 'polished'
 import type { FC } from 'react'
+
 import { mdiDotsVertical } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 
-const css = {
-  Backdrop: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: transparentize(0.8, 'black'),
-    ...v.backdropZindex,
-  },
-  //
-  Dropdown: {
-    position: 'absolute',
-    top: 60,
-    right: 15,
-    width: 250,
-    ...v.boxShadow,
-    ...v.backdropZindex,
-  },
-  Dropdown__compact: {
-    top: 35,
-  },
-  Inner: {
-    borderRadius: v.borderRadius,
-    backgroundColor: v.bg,
-  },
-  //
-  Item: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-  },
-  Item__last: {
-    borderBottomWidth: 0,
-  },
-  //
-  Btn: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: 40,
-  },
-}
+// RN-only shadow + elevation
+const shadowStyle = { ...v.boxShadow, elevation: 999 }
+const innerStyle = { borderRadius: v.borderRadius, backgroundColor: v.bg }
 
 export type HeaderDropdownItem = Partial<{
   danger: boolean
@@ -69,11 +27,16 @@ export const Dropdown: FC<{
       <RnTouchableOpacity
         activeOpacity={1}
         onPress={close}
-        style={css.Backdrop}
+        className='absolute inset-0 z-999 bg-black/20'
+        style={{ elevation: 999 }}
       />
       <AnimatedSize
-        innerStyle={css.Inner}
-        style={[css.Dropdown, compact && css.Dropdown__compact]}
+        innerStyle={innerStyle}
+        className={[
+          'absolute right-3.75 w-62.5 z-999',
+          compact ? 'top-8.75' : 'top-15',
+        ]}
+        style={shadowStyle}
       >
         {dropdown.map(({ danger, label, onPress, primary, warning }, i) => (
           <RnTouchableOpacity
@@ -82,7 +45,10 @@ export const Dropdown: FC<{
               close()
               onPress?.()
             }}
-            style={[css.Item, i === dropdown.length - 1 && css.Item__last]}
+            className={[
+              'py-2.5 px-3.75 border-b border-border',
+              i === dropdown.length - 1 && 'border-b-0',
+            ]}
           >
             <RnText {...{ primary, warning, danger }}>{label}</RnText>
           </RnTouchableOpacity>
@@ -93,7 +59,10 @@ export const Dropdown: FC<{
 }
 
 export const DropdownBtn: FC<{ onPress(): void }> = ({ onPress }) => (
-  <RnTouchableOpacity onPress={onPress} style={css.Btn}>
+  <RnTouchableOpacity
+    onPress={onPress}
+    className='absolute top-0 bottom-0 right-0 w-10'
+  >
     <RnIcon path={mdiDotsVertical} />
   </RnTouchableOpacity>
 )

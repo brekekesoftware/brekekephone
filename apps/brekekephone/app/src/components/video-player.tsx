@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 
-const css = {
-  loading: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    padding: 50,
-  },
+import { View } from '@/rn/core/components/view'
+
+const loadingStyle = {
+  flex: 1,
+  width: '100%' as const,
+  height: '100%' as const,
+  padding: 50,
 }
 
 export const VideoPlayer = observer(
@@ -35,8 +35,8 @@ export const VideoPlayer = observer(
         autoPlay
       />
     ) : isShowLoading ? (
-      <ActivityIndicator style={css.loading} />
+      <ActivityIndicator style={loadingStyle} />
     ) : (
-      <View style={css.loading} />
+      <View className='flex-1 w-full h-full p-12.5' />
     ),
 )

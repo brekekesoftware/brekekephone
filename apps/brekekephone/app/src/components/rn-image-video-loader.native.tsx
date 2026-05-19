@@ -1,11 +1,13 @@
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { ActivityIndicator, Dimensions, Modal, StatusBar, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Modal, StatusBar } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'
+
+import { View } from '@/rn/core/components/view'
 import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
@@ -17,76 +19,37 @@ import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 
-const css = {
-  vVideoModal: {
-    width: Dimensions.get('screen').width,
-    height: Dimensions.get('window').height,
-  },
-  video: {
-    width: 150,
-    height: 150,
-    alignSelf: 'center',
-    borderRadius: 5,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  vlayerVideo: {
-    width: 150,
-    height: 150,
-    borderRadius: 5,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    alignItems: 'center',
-    overflow: 'hidden',
-    zIndex: 100,
-    backgroundColor: v.layerBgVideo,
-  },
-  vVideo: {
-    width: 150,
-    height: 150,
-    borderRadius: 5,
-    alignItems: 'center',
-    overflow: 'hidden',
-    backgroundColor: v.borderBg,
-  },
-  image: {
-    width: 150,
-    height: 150,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  loading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: '#00000090',
-    width: 150,
-    height: 150,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  imageBroken: {
-    marginLeft: -20,
-    marginTop: -20,
-  },
-  btnClose: {
-    position: 'absolute',
-    top: isAndroid ? StatusBar.currentHeight : 44,
-    right: 15,
-    zIndex: 10,
-    elevation: 2,
-    borderRadius: 15,
-    backgroundColor: 'white',
-  },
-  btnPause: {
-    position: 'absolute',
-    alignSelf: 'center',
-    zIndex: 100,
-  },
-  modal: {
-    backgroundColor: 'blue',
-  },
+const vVideoModalStyle = {
+  width: Dimensions.get('screen').width,
+  height: Dimensions.get('window').height,
+}
+const videoStyle = {
+  width: 150,
+  height: 150,
+  alignSelf: 'center' as const,
+  borderRadius: 5,
+  alignItems: 'center' as const,
+  overflow: 'hidden' as const,
+}
+const imageStyle = {
+  width: 150,
+  height: 150,
+  borderRadius: 5,
+  overflow: 'hidden' as const,
+}
+const loadingStyle = {
+  position: 'absolute' as const,
+  top: 0,
+  left: 0,
+  backgroundColor: '#00000090',
+  width: 150,
+  height: 150,
+  borderRadius: 5,
+  overflow: 'hidden' as const,
+}
+const btnCloseStyle = {
+  top: isAndroid ? StatusBar.currentHeight : 44,
+  elevation: 2,
 }
 
 const size = 150
@@ -134,17 +97,17 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const renderVideo = () => {
     if (isAndroid) {
       return (
-        <View style={css.vVideo}>
+        <View className='w-37.5 h-37.5 rounded-[5px] items-center overflow-hidden bg-border'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             muted
             paused={true}
-            style={css.video}
+            style={videoStyle}
             enterPictureInPictureOnLeave
             preventsDisplaySleepDuringVideoPlayback={false}
           />
-          <View style={css.vlayerVideo}>
+          <View className='w-37.5 h-37.5 rounded-[5px] absolute top-0 left-0 items-center overflow-hidden z-100 bg-layer-video'>
             <RnTouchableOpacity onPress={onShowImage}>
               <RnIcon path={mdiPlayCircleOutline} color='white' size={40} />
             </RnTouchableOpacity>
@@ -153,12 +116,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )
     } else {
       return (
-        <View style={css.vVideo}>
+        <View className='w-37.5 h-37.5 rounded-[5px] items-center overflow-hidden bg-border'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             paused={true}
-            style={css.video}
+            style={videoStyle}
             controls={true}
             preventsDisplaySleepDuringVideoPlayback={false}
           />
@@ -169,7 +132,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const renderView = () =>
     fileType === 'image' ? (
       <RnTouchableOpacity onPress={onShowImage}>
-        <FastImage source={{ uri: convertUri(url) }} style={css.image} />
+        <FastImage source={{ uri: convertUri(url) }} style={imageStyle} />
       </RnTouchableOpacity>
     ) : (
       renderVideo()
@@ -178,9 +141,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     setIsVisible(false)
   }
   return (
-    <View style={css.image}>
+    <View className='w-37.5 h-37.5 rounded-[5px] overflow-hidden'>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={css.loading} />
+        <ActivityIndicator size='small' color='white' style={loadingStyle} />
       )}
       {isLoadSuccess && renderView()}
       {isLoadFailed && (
@@ -195,11 +158,14 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )}
       <Modal
         visible={visible}
-        style={css.modal}
         animationType='slide'
         onRequestClose={onRequestClose}
       >
-        <RnTouchableOpacity style={css.btnClose} onPress={onSwipeDown}>
+        <RnTouchableOpacity
+          className='absolute right-3.75 z-10 rounded-[15px] bg-background'
+          style={btnCloseStyle}
+          onPress={onSwipeDown}
+        >
           <RnIcon path={mdiCloseCircleOutline} color='black' size={30} />
         </RnTouchableOpacity>
         {isLoadSuccess &&
@@ -211,7 +177,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
               controls={true}
               paused={false}
               resizeMode='contain'
-              style={css.vVideoModal}
+              style={vVideoModalStyle}
             />
           ))}
       </Modal>

@@ -34,149 +34,74 @@ export type Park = {
   number: string
   name?: string
 }
-const css = {
-  Field: {
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    alignItems: 'stretch',
-    marginHorizontal: 15,
-    ...Platform.select({
-      android: {
-        paddingBottom: 2,
-      },
-    }),
-  },
-  Field__focusing: {
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-  Field__disabled: {
-    backgroundColor: v.hoverBg,
-  },
-  Field__group: {
-    marginHorizontal: 0,
-    marginTop: 15,
-    backgroundColor: v.borderBg,
-    padding: 15,
-  },
-  Field__groupMargin: {
-    marginTop: 30,
-  },
-  Field__transparent: {
-    borderColor: 'transparent',
-    marginHorizontal: 0,
-  },
-  Field_Label: {
-    paddingTop: 13,
-    paddingBottom: 0,
-    paddingLeft: 7,
-    ...Platform.select({
-      android: {
-        paddingTop: 3,
-        top: 6,
-      },
-      web: {
-        // fix form auto fill style on web
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-      },
-    }),
-  },
-  Field_LabelText: {
-    color: v.subColor,
-    fontWeight: v.fontWeight,
-  },
-  Field_LabelTextGroup: {
-    ...Platform.select({
-      android: {
-        top: -6,
-      },
-    }),
-  },
-  Field_Park_TextInput: {
-    flex: 1,
-    paddingBottom: 3,
-    paddingLeft: 7,
-    paddingRight: 10,
-    // fontWeight: 'bold',
-    overflow: 'hidden',
-    ...Platform.select({
-      android: {
-        paddingTop: 0,
-        paddingBottom: 0,
-        lineHeight: v.lineHeight,
-        // should not set height and overflow here
-        //    it will cause scroll issue with the input
-        // height: g.lineHeight,
-      },
-      web: {
-        // fix form auto fill style on web
-        paddingTop: 28,
-        width: '100%',
-      },
-      default: {
-        paddingTop: 1,
-      },
-    }),
-  },
-  Field_TextInput: {
-    width: '100%',
-    paddingBottom: 3,
-    paddingLeft: 7,
-    paddingRight: 40,
-    fontWeight: 'bold',
-    overflow: 'hidden',
-    ...Platform.select({
-      android: {
-        paddingTop: 0,
-        paddingBottom: 0,
-        lineHeight: v.lineHeight,
-        // should not set height and overflow here
-        //    it will cause scroll issue with the input
-        // height: g.lineHeight,
-      },
-      web: {
-        // fix form auto fill style on web
-        paddingTop: 28,
-      },
-      default: {
-        paddingTop: 1,
-      },
-    }),
-  },
-  Field_Switch: {
-    position: 'absolute',
-    top: 22,
-    right: 11,
-  },
-  Field_Btn: {
-    position: 'absolute',
-    top: 11,
-    right: 5,
-    width: 40,
-    height: 30,
-    borderRadius: v.borderRadius,
-  },
-  Field_Btn__create: {
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-  Field_Btn__remove: {
-    backgroundColor: v.colors.dangerFn(0.5),
-  },
-  Field_ErrorInner: {
-    alignSelf: 'flex-start',
-    marginVertical: 2,
-    marginHorizontal: 15,
-    paddingVertical: 2,
-    paddingHorizontal: 10,
-    backgroundColor: v.colors.danger,
-    borderRadius: v.borderRadius,
-  },
-  Field_ErrorLabel: {
-    color: v.revColor,
-  },
-} as const
+const fieldAndroidPad = Platform.select({
+  android: { paddingBottom: 2 },
+})
+const fieldLabelStyle = {
+  paddingTop: 13,
+  paddingBottom: 0,
+  paddingLeft: 7,
+  ...Platform.select({
+    android: {
+      paddingTop: 3,
+      top: 6,
+    },
+    web: {
+      // fix form auto fill style on web
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      right: 0,
+    },
+  }),
+}
+const fieldParkTextInputStyle = {
+  flex: 1,
+  paddingBottom: 3,
+  paddingLeft: 7,
+  paddingRight: 10,
+  overflow: 'hidden' as const,
+  ...Platform.select({
+    android: {
+      paddingTop: 0,
+      paddingBottom: 0,
+      lineHeight: v.lineHeight,
+    },
+    web: {
+      paddingTop: 28,
+      width: '100%' as const,
+    },
+    default: {
+      paddingTop: 1,
+    },
+  }),
+}
+const fieldTextInputStyle = {
+  width: '100%' as const,
+  paddingBottom: 3,
+  paddingLeft: 7,
+  paddingRight: 40,
+  fontWeight: 'bold' as const,
+  overflow: 'hidden' as const,
+  ...Platform.select({
+    android: {
+      paddingTop: 0,
+      paddingBottom: 0,
+      lineHeight: v.lineHeight,
+    },
+    web: {
+      paddingTop: 28,
+    },
+    default: {
+      paddingTop: 1,
+    },
+  }),
+}
+const fieldSwitchStyle = {
+  position: 'absolute' as const,
+  top: 22,
+  right: 11,
+}
 
 const noop = () => {}
 
@@ -247,11 +172,11 @@ export const Field: FC<
   if (isGroup) {
     return (
       <View
-        style={[
-          css.Field,
-          css.Field__group,
-          props.hasMargin && css.Field__groupMargin,
+        className={[
+          'border-b border-border items-stretch mt-3.75 bg-border p-3.75',
+          props.hasMargin && 'mt-7.5',
         ]}
+        style={fieldAndroidPad}
       >
         <RnText
           small
@@ -275,7 +200,8 @@ export const Field: FC<
       iconRender: () => (
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
-          style={[css.Field_Btn, css.Field_Btn__create, props.createBtnStyle]}
+          className='absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-primary-100'
+          style={props.createBtnStyle}
           disabled={props.disabled}
         >
           <RnIcon
@@ -293,7 +219,8 @@ export const Field: FC<
       iconRender: () => (
         <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
-          style={[css.Field_Btn, css.Field_Btn__remove, props.removeBtnStyle]}
+          className='absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-error-100'
+          style={props.removeBtnStyle}
         >
           <RnIcon
             color={v.colors.danger}
@@ -350,7 +277,7 @@ export const Field: FC<
             }
             $.set('isFocusing', true)
           }}
-          style={[css.Field_Park_TextInput, props.style]}
+          style={[fieldParkTextInputStyle, props.style]}
           value={value.number as string}
         />
         <RnTextInput
@@ -383,7 +310,7 @@ export const Field: FC<
             }
             $.set('isParkNameFocusing', true)
           }}
-          style={[css.Field_Park_TextInput, props.style]}
+          style={[fieldParkTextInputStyle, props.style]}
           value={value.name as string}
         />
       </View>
@@ -396,7 +323,7 @@ export const Field: FC<
           props.valueRender ||
           ((e: boolean) => (e ? intl`Enabled` : intl`Disabled`)),
         iconRender: (e: boolean) => (
-          <RnSwitch enabled={e} style={css.Field_Switch} />
+          <RnSwitch enabled={e} style={fieldSwitchStyle} />
         ),
         onTouchPress: () => {
           props.onValueChange?.(!props.value)
@@ -461,7 +388,7 @@ export const Field: FC<
               props.onCreateBtnPress || noop,
               props.onSubmitEditing || noop,
             ])}
-            style={[css.Field_TextInput, props.style]}
+            style={[fieldTextInputStyle, props.style]}
             value={props.value as string}
           />
         ),
@@ -475,7 +402,7 @@ export const Field: FC<
   }
   const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
-    <View pointerEvents='none' style={css.Field_Label}>
+    <View pointerEvents='none' style={fieldLabelStyle}>
       <RnText small normal className='text-foreground-muted'>
         {props.label}
       </RnText>
@@ -487,12 +414,13 @@ export const Field: FC<
       <Container
         accessible={!props.inputElement}
         onPress={props.onTouchPress}
-        style={[
-          css.Field,
-          ($.isFocusing || $.isParkNameFocusing) && css.Field__focusing,
-          props.disabled && css.Field__disabled,
-          props.transparent && css.Field__transparent,
+        className={[
+          'border-b border-border items-stretch mx-3.75',
+          ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
+          props.disabled && 'bg-muted',
+          props.transparent && 'border-transparent mx-0',
         ]}
+        style={fieldAndroidPad}
       >
         {/* Fix form auto fill style on web */}
         {!isWeb && label}
@@ -507,7 +435,7 @@ export const Field: FC<
               disabled
               maxLength={props?.maxLength || 100000}
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              style={[css.Field_TextInput, props.textInputStyle]}
+              style={[fieldTextInputStyle, props.textInputStyle]}
               value={
                 props.valueRender?.(props.value) || props.value || '\u200a'
               }
@@ -541,7 +469,7 @@ export const Field: FC<
           onPress={() => inputRef.current?.focus()}
           className='items-center justify-center'
         >
-          <View style={css.Field_ErrorInner}>
+          <View className='self-start my-0.5 mx-3.75 py-0.5 px-2.5 bg-error rounded-[3px]'>
             <RnIcon
               color={v.colors.danger}
               path={mdiCardsDiamond}

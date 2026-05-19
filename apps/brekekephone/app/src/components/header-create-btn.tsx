@@ -1,22 +1,6 @@
 import type { FC } from 'react'
 import { mdiPlus } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-
-const css = {
-  CreateBtn: {
-    position: 'absolute',
-    top: 11,
-    right: 5,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: v.colors.primary,
-  },
-  CreateBtn__white: {
-    backgroundColor: v.bg,
-  },
-}
 
 export const CreateBtn: FC<{
   white: boolean
@@ -26,7 +10,10 @@ export const CreateBtn: FC<{
   return (
     <RnTouchableOpacity
       onPress={onPress}
-      style={[css.CreateBtn, white && css.CreateBtn__white]}
+      className={[
+        'absolute top-2.75 right-1.25 w-12.5 h-12.5 rounded-full',
+        white ? 'bg-background' : 'bg-primary',
+      ]}
     >
       <RnIcon color={white ? 'black' : 'white'} path={mdiPlus} />
     </RnTouchableOpacity>

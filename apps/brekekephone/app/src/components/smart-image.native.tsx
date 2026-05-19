@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, Image, View } from 'react-native'
+import { ActivityIndicator, Image } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
-import noPhoto from '#/assets/no_photo.png'
 
+import { View } from '@/rn/core/components/view'
+import noPhoto from '#/assets/no_photo.png'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -12,31 +13,31 @@ import { checkImageUrl } from '#/utils/check-image-url'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
-const css = {
-  image: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-  },
-  imageError: {
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 100,
-  },
-  loading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: '#00000030',
-    overflow: 'hidden',
-    zIndex: 100,
-  },
-  full: {
-    width: '100%',
-    height: '100%',
-  },
+const imageFullStyle = {
+  overflow: 'hidden' as const,
+  backgroundColor: 'white',
+  width: '100%' as const,
+  height: '100%' as const,
+}
+const imageErrorFullStyle = {
+  overflow: 'hidden' as const,
+  backgroundColor: 'white',
+  position: 'absolute' as const,
+  top: 0,
+  left: 0,
+  zIndex: 100,
+  width: '100%' as const,
+  height: '100%' as const,
+}
+const loadingFullStyle = {
+  position: 'absolute' as const,
+  top: 0,
+  left: 0,
+  width: '100%' as const,
+  height: '100%' as const,
+  backgroundColor: '#00000030',
+  overflow: 'hidden' as const,
+  zIndex: 100,
 }
 
 const js = `
@@ -131,12 +132,15 @@ export const SmartImage = ({
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
   return (
-    <View style={[css.image, style]}>
+    <View
+      className='overflow-hidden bg-background'
+      style={style}
+    >
       {!statusImageLoading && (
         <ActivityIndicator
           size='small'
           color='white'
-          style={[css.loading, css.full]}
+          style={loadingFullStyle}
         />
       )}
       {!uri ? null : !isImageUrl ? (
@@ -144,7 +148,7 @@ export const SmartImage = ({
           source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-          style={[css.image, css.full]}
+          style={imageFullStyle}
           bounces={false}
           onLoadStart={onLoadStart}
           onMessage={onMessage}
@@ -160,7 +164,7 @@ export const SmartImage = ({
           source={{
             uri: nocacheUri,
           }}
-          style={[css.image, css.full]}
+          style={imageFullStyle}
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode='cover'
@@ -169,7 +173,7 @@ export const SmartImage = ({
       {statusImageLoading === StatusImage.error && isImageUrl && (
         <Image
           source={noPhotoImg}
-          style={[css.imageError, css.full]}
+          style={imageErrorFullStyle}
           resizeMode='cover'
         />
       )}

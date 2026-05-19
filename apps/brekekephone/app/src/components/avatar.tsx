@@ -1,34 +1,12 @@
 import { observer } from 'mobx-react'
-import type { ViewProps } from 'react-native'
-import { View } from 'react-native'
-import type { FastImageProps } from 'react-native-fast-image'
+
+import { Image } from '@/rn/core/components/image'
+import { View } from '@/rn/core/components/view'
 import avatarPlaceholder from '#/assets/avatar-placeholder.png'
-
 import { mdiRecord } from '#/assets/icons'
-import { RnIcon, RnImage } from '#/components/rn'
+import { RnIcon } from '#/components/rn-icon'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
-
-const css = {
-  Avatar: {
-    width: 50,
-    height: 50,
-  },
-  ImageOuter: {
-    flex: 1,
-    borderRadius: 50,
-    overflow: 'hidden',
-  },
-  Image: {
-    flex: 1,
-  },
-  Status: {
-    position: 'absolute',
-    top: 27,
-    left: 30,
-  },
-}
 
 const statusMapColor = {
   online: v.colors.primary,
@@ -41,28 +19,25 @@ export const Avatar = observer(
   (p: {
     source?: string | { uri: string }
     status?: string
-    style?: ViewProps['style']
+    className?: string | (string | false | undefined)[]
   }) => {
-    const { source, status, style } = p
+    const { source, status, className } = p
     const uri =
       (typeof source !== 'string' &&
         typeof source?.uri === 'string' &&
         source?.uri) ||
-      (isWeb && avatarPlaceholder) ||
-      avatarPlaceholder
-    const imgSource =
-      typeof uri === 'string' ? { uri } : (uri as FastImageProps['source'])
+      (typeof avatarPlaceholder === 'string' ? avatarPlaceholder : '')
     return (
-      <View style={[css.Avatar, style]}>
-        <View style={css.ImageOuter}>
-          <RnImage source={imgSource} style={css.Image} />
+      <View className={['w-12.5 h-12.5', className]}>
+        <View className='flex-1 rounded-[50px] overflow-hidden'>
+          <Image src={uri} className='flex-1' />
         </View>
         {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
               color={statusMapColor[status as keyof typeof statusMapColor]}
               path={mdiRecord}
-              style={css.Status}
+              className='absolute top-6.75 left-7.5'
             />
           )}
       </View>

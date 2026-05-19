@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
@@ -11,45 +12,10 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
-const css = {
-  Row: {
-    flexDirection: 'row',
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    borderBottomWidth: 0.5,
-    borderBottomColor: v.borderBg,
-  },
-  Column: {
-    // flex:1,
-    padding: 5,
-  },
-  BtnText: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    minWidth: 80,
-    backgroundColor: v.colors.primary,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  Text: {
-    paddingLeft: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 10,
-    textAlign: 'left',
-    minWidth: 80,
-  },
-  TextMessage: {
-    flex: 1,
-  },
-  icon: {
-    padding: 10,
-  },
-  bgUnread: {
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-}
+// Reused class strings
+const textColClassName = 'pl-2.5 pr-1.25 py-2.5 min-w-20'
+const btnBaseClassName =
+  'py-1.25 px-2.5 min-w-20 rounded justify-center items-center my-1.25'
 
 export const WebchatItem: FC<{
   data: Conference
@@ -81,22 +47,26 @@ export const WebchatItem: FC<{
   }, [data.conf_id])
 
   return (
-    <View style={[css.Row, isEnabledAnswer ? css.bgUnread : null]}>
-      <View style={css.Column}>
+    <View
+      className={[
+        'flex-row px-1.25 items-center border-b-[0.5px] border-border',
+        isEnabledAnswer && 'bg-primary-100',
+      ]}
+    >
+      <View className='p-1.25'>
         {isEnabledAnswer ? (
-          <RnTouchableOpacity onPress={answerPress} style={css.BtnText}>
+          <RnTouchableOpacity
+            onPress={answerPress}
+            className={[btnBaseClassName, 'bg-primary']}
+          >
             <RnText normal white bold>
               {intl`Answer`}
             </RnText>
           </RnTouchableOpacity>
         ) : (
           <RnTouchableOpacity
-            // disabled={!isDisplayShow}
             onPress={showPress}
-            style={[
-              css.BtnText,
-              { backgroundColor: isDisplayShow ? v.layerBg : v.borderBg },
-            ]}
+            className={[btnBaseClassName, isDisplayShow ? 'bg-black/80' : 'bg-border']}
           >
             <RnText normal white bold>
               {intl`Show`}
@@ -106,10 +76,7 @@ export const WebchatItem: FC<{
         <RnTouchableOpacity
           disabled={!isEnabledJoin}
           onPress={joinPress}
-          style={[
-            css.BtnText,
-            { backgroundColor: isEnabledJoin ? v.layerBg : v.borderBg },
-          ]}
+          className={[btnBaseClassName, isEnabledJoin ? 'bg-black/80' : 'bg-border']}
         >
           <RnText normal white bold>
             {intl`Join`}
@@ -117,22 +84,27 @@ export const WebchatItem: FC<{
         </RnTouchableOpacity>
       </View>
       {!isEnabledAnswer ? (
-        <RnText normal singleLine small className='pl-2.5 pr-1.25 py-2.5 min-w-20'>
+        <RnText normal singleLine small className={textColClassName}>
           {data.assigned.user_id || ''}
         </RnText>
       ) : (
-        <Duration normal singleLine small style={css.Text}>
+        <Duration
+          normal
+          singleLine
+          small
+          className='pl-2.5 px-1.25 py-2.5 min-w-20'
+        >
           {data.created_tstamp}
         </Duration>
       )}
 
-      <RnText normal singleLine small className='pl-2.5 pr-1.25 py-2.5 min-w-20'>
+      <RnText normal singleLine small className={textColClassName}>
         {data.webchatinfo.profinfo_formatted || ''}
       </RnText>
       <RnText
         normal
         small
-        className='flex-1 pl-2.5 pr-1.25 py-2.5 min-w-20'
+        className={['flex-1', textColClassName]}
         // className='line-clamp-5'
       >
         {textDisplay.map(
@@ -142,7 +114,7 @@ export const WebchatItem: FC<{
       </RnText>
       {isDisplayClose && (
         <RnTouchableOpacity onPress={closePress}>
-          <RnIcon path={mdiClose} style={css.icon} />
+          <RnIcon path={mdiClose} className='p-2.5' />
         </RnTouchableOpacity>
       )}
     </View>

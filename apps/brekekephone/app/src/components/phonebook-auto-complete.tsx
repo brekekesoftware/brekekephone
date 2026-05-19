@@ -1,57 +1,18 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import type { TouchableOpacityProps } from 'react-native'
-import { Dimensions, Platform, ScrollView, View } from 'react-native'
+import { Dimensions, Platform, ScrollView } from 'react-native'
 
 import { Text } from '@/rn/components/text'
+import { View } from '@/rn/core/components/view'
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
 const css = {
-  txtPb: {
-    width: '100%',
-    textAlign: 'left',
-    marginHorizontal: 10,
-  },
-  itemPb: {
-    width: '100%',
-    paddingVertical: 5,
-    borderBottomColor: 'grey',
-    borderBottomWidth: 0.5,
-  },
-  autocompleteContainer: {
-    // hack required to make the autocomplete
-    // work on Andrdoid
-    flex: 1,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 1,
-    padding: 5,
-    backgroundColor: 'blue',
-    ...Platform.select({
-      web: {
-        marginTop: 0,
-      },
-      default: {
-        marginTop: 25,
-      },
-    }),
-  },
   viewFlatList: {
-    position: 'absolute',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
     width: Dimensions.get('screen').width - 30,
-    maxHeight: 300,
-    top: 188,
-    zIndex: 100000,
-    marginHorizontal: 15,
     ...Platform.select({
       ios: {
         shadowColor: v.borderBg,
@@ -116,12 +77,15 @@ export const PhonebookAutoComplete: FC<
     return null
   }
   return (
-    <View style={css.viewFlatList}>
+    <View
+      style={css.viewFlatList}
+      className='absolute rounded-[5px] bg-background py-1.25 px-2.5 max-h-75 top-47 z-100000 mx-3.75'
+    >
       <ScrollView>
         {result.map((item, index) => (
           <RnTouchableOpacity
             key={index}
-            style={css.itemPb}
+            className='w-full py-1.25 border-b-[0.5px] border-[grey]'
             onPress={() => {
               setChoose(true)
               onPressItem?.(item)

@@ -5,7 +5,6 @@ import { cloneDeep } from '@/shared/lodash'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import type { ItemPBForm, Phonebook } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -23,19 +22,6 @@ const genEmptyPhonebook = (lang: string) => {
       Object.assign(emptyObj, { [u.name]: '' })
     })
   return emptyObj
-}
-const css = {
-  stylePreviewName: {
-    marginHorizontal: 20,
-  },
-  styleAddItem: {
-    marginVertical: 10,
-    marginHorizontal: 15,
-  },
-  labelAddItem: {
-    color: v.subColor,
-    fontWeight: v.fontWeight,
-  },
 }
 
 export const ContactsCreateForm: FC<{
@@ -189,7 +175,7 @@ export const ContactsCreateForm: FC<{
         onValidSubmit={$.onValidSubmit}
       />
       {!disabled && (
-        <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
+        <RnTouchableOpacity className='my-2.5 mx-3.75' onPress={openPicker}>
           <RnText small normal className='text-foreground-muted'>
             {'>>' + intl`Add item`}
           </RnText>

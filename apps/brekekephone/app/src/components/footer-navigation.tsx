@@ -1,56 +1,21 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { menus } from '#/components/navigation-config'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-export const css = {
-  Navigation: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-  },
-  Btn: {
-    flex: 1,
-    padding: 4,
-    alignItems: 'center',
-  },
-  BtnBg: {
-    paddingVertical: 8,
-    width: '100%',
-  },
-  BtnBg__active: {
-    borderRadius: 22,
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-  UnreadOuter: {
-    position: 'absolute',
-    top: 10,
-    left: 0,
-    right: 0,
-    flex: 1,
-    alignItems: 'center',
-  },
-  Unread: {
-    left: 15,
-    width: 20,
-    height: 15,
-    borderRadius: v.borderRadius,
-    paddingTop: 3,
-    backgroundColor: v.colors.danger,
-    overflow: 'hidden',
-  },
-  UnreadText: {
-    fontSize: v.fontSizeSmall - 2,
-    lineHeight: v.fontSizeSmall - 2,
-  },
-}
+// Shared by header-navigation.tsx
+export const unreadOuterClassName =
+  'absolute top-2.5 left-0 right-0 flex-1 items-center'
+export const unreadClassName =
+  'left-3.75 w-5 h-3.75 rounded-[3px] pt-0.75 bg-error overflow-hidden'
 
 export const Navigation: FC<{
   menu: string
 }> = observer(({ menu }) => (
-  <View style={css.Navigation}>
+  <View className='flex-row self-stretch'>
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = ctx.chat.unreadCount
@@ -65,15 +30,25 @@ export const Navigation: FC<{
         <RnTouchableOpacity
           key={m.key}
           onPress={active ? undefined : m.navFn}
-          style={css.Btn}
+          className='flex-1 p-1 items-center'
         >
-          <View style={[css.BtnBg, active && css.BtnBg__active]}>
+          <View
+            className={[
+              'py-2 w-full',
+              active && 'rounded-[22px] bg-primary-100',
+            ]}
+          >
             <RnIcon path={m.icon} />
           </View>
           {showUnreadChat && (
-            <View style={css.UnreadOuter}>
-              <View style={css.Unread}>
-                <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
+            <View className={unreadOuterClassName}>
+              <View className={unreadClassName}>
+                <RnText
+                  className='text-[9.2px] leading-[9.2px]'
+                  bold
+                  white
+                  center
+                >
                   {totalUnreadChat + totalNoticesWebchat}
                 </RnText>
               </View>

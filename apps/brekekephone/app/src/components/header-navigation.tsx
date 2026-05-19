@@ -1,48 +1,15 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback, useEffect, useRef } from 'react'
-import type { ViewStyle } from 'react-native'
-import { Dimensions, ScrollView, View } from 'react-native'
-import { css as fcss } from '#/components/footer-navigation'
+import type { ScrollView as RnScrollView } from 'react-native'
+import { Dimensions } from 'react-native'
+
+import { ScrollView } from '@/rn/core/components/scroll-view'
+import { View } from '@/rn/core/components/view'
+import { unreadClassName } from '#/components/footer-navigation'
 import { getSubMenus, getTabs } from '#/components/navigation-config'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
-
-const css = {
-  Navigation: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-
-    backgroundColor: v.bg,
-  },
-  Btn: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderBottomWidth: 3,
-    borderColor: v.borderBg,
-  },
-  BtnWithScroll: {
-    paddingHorizontal: 10,
-    maxWidth: 160,
-    minWidth: 100,
-  },
-  Btn__active: {
-    borderColor: v.colors.primary,
-  },
-  Text__active: {
-    color: v.colors.primary,
-  },
-  Unread: {
-    top: -5,
-    left: 25,
-  },
-  ml: {
-    left: 35,
-    width: 20,
-  },
-}
 
 export const Navigation: FC<{
   menu: string
@@ -53,9 +20,9 @@ export const Navigation: FC<{
   const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
 
   const renderIconNotices = useCallback(
-    (totalNotice: number, style?: ViewStyle) => (
-      <View style={fcss.UnreadOuter}>
-        <View style={[fcss.Unread, css.Unread, style]}>
+    (totalNotice: number, extraClass?: string) => (
+      <View className='absolute -top-1.25 left-6.25'>
+        <View className={[unreadClassName, extraClass]}>
           <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
             {totalNotice}
           </RnText>
@@ -67,7 +34,7 @@ export const Navigation: FC<{
   const needScroll = !isTab && tabs.length > 4
   const Container = needScroll ? ScrollView : View
 
-  const scrollRef = useRef<ScrollView>(null)
+  const scrollRef = useRef<RnScrollView>(null)
   const tabPositions = useRef<Map<string, { x: number; width: number }>>(
     new Map(),
   )
@@ -105,13 +72,13 @@ export const Navigation: FC<{
 
   return (
     <Container
-      style={css.Navigation}
-      ref={scrollRef}
+      className='flex-row self-stretch bg-background'
+      ref={scrollRef as any}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      {tabs.map((s, idx) => {
+      {tabs.map(s => {
         const active = s.key === subMenu
         const totalUnreadChat = ctx.chat.unreadCount
         const totalNoticesWebchat = ctx.chat.getNumberWebchatNoti()
@@ -121,10 +88,10 @@ export const Navigation: FC<{
             key={s.key}
             onPress={active ? undefined : s.navFn}
             onLayout={event => handleTabLayout(s.key, event)}
-            style={[
-              css.Btn,
-              needScroll && css.BtnWithScroll,
-              active && css.Btn__active,
+            className={[
+              'flex-1 py-2 items-center border-b-[3px] border-border',
+              needScroll && 'px-2.5 max-w-40 min-w-25',
+              active && 'border-primary',
             ]}
           >
             <RnText
@@ -139,7 +106,7 @@ export const Navigation: FC<{
               renderIconNotices(totalUnreadChat)}
             {s.key === 'webchat' &&
               !!totalNoticesWebchat &&
-              renderIconNotices(totalNoticesWebchat, css.ml)}
+              renderIconNotices(totalNoticesWebchat, 'left-8.75 w-5')}
           </RnTouchableOpacity>
         )
       })}

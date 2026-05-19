@@ -4,14 +4,12 @@ import { TextInput } from 'react-native'
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 
-const css = {
-  RnTextInput: {
-    position: 'relative',
-    fontSize: v.fontSize,
-    fontWeight: v.fontWeight,
-    fontFamily: v.fontFamily,
-    color: v.color,
-  },
+const baseInputStyle = {
+  position: 'relative' as const,
+  fontSize: v.fontSize,
+  fontWeight: v.fontWeight,
+  fontFamily: v.fontFamily,
+  color: v.color,
 }
 
 export type RnTextInputProps = TextInputProps & {
@@ -27,7 +25,7 @@ export const RnTextInput = forwardRef(
       keyboardType={
         (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
       }
-      style={[css.RnTextInput, style]}
+      style={[baseInputStyle, style]}
     />
   ),
 )

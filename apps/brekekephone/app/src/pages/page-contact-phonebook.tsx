@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { debounce, isEmpty, orderBy } from '@/shared/lodash'
 import {
   mdiBriefcase,
@@ -20,12 +21,6 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { BackgroundTimer } from '#/utils/background-timer'
-
-const css = {
-  Loading: {
-    marginTop: 20,
-  },
-}
 
 @observer
 export class PageContactPhonebook extends Component {

@@ -2,8 +2,10 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
-import { Platform, Pressable, View } from 'react-native'
+import { Platform, Pressable, View as RNView } from 'react-native'
 import { isEmpty } from '@/shared/lodash'
+
+import { View } from '@/rn/core/components/view'
 import {
   mdiAccountGroup,
   mdiContentCopy,
@@ -26,81 +28,15 @@ import { RnAlert } from '#/stores/rn-alert'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 
-const css = {
-  Outer: {
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-  },
-  Inner: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-  },
-  Inner_selected: {
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-  //
-  WithSpace: {
-    marginVertical: 5,
-  },
-  //
-  Text: {
-    flex: 1,
-    paddingTop: 7,
-    paddingLeft: 10,
-  },
-  NameWithStatus: {
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-  },
-  Status: {
-    top: 2,
-    left: 3,
-    color: v.subColor,
-  },
-  //
-  Detail: {
-    flexDirection: 'row',
-  },
-  CallIcon: {
-    flex: null as any,
-    ...Platform.select({
-      web: {
-        flex: 0,
-        paddingLeft: 6,
-        paddingRight: 10,
-      },
-    }),
-  },
-  CallCreatedAt: {
-    left: 3,
-    color: v.subColor,
-  },
-  //
-  ButtonIcon: {
-    padding: 10,
-  },
-  LastDate: {
-    marginVertical: 10,
-    marginRight: 15,
-    paddingTop: 7,
-  },
-  VGroup: {
-    overflow: 'hidden',
-    backgroundColor: v.borderBg,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginVertical: 5,
-    alignItems: 'center',
-  },
-  CheckboxContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginRight: 15,
-  },
-  disableContainer: {
-    opacity: 0.5,
-  },
+const callIconStyle = {
+  flex: null as any,
+  ...Platform.select({
+    web: {
+      flex: 0,
+      paddingLeft: 6,
+      paddingRight: 10,
+    },
+  }),
 }
 
 export const UserItem: FC<
@@ -173,7 +109,7 @@ export const UserItem: FC<
   } = p0
 
   // pressable for web with onLongPress
-  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : View
+  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : RNView
 
   const isGroupAvailable = (groupId: string) => {
     const groupInfo: Conference = ctx.uc.getChatGroupInfo(groupId)
@@ -253,13 +189,15 @@ export const UserItem: FC<
 
   return (
     <Container
-      style={[css.Outer, disabled && css.disableContainer]}
+      style={{ borderBottomWidth: 1, borderColor: v.borderBg, opacity: disabled ? 0.5 : 1 }}
       onPress={onPressItem}
       onLongPress={onLongPressItem}
     >
-      <View style={[css.Inner, selected && css.Inner_selected]}>
+      <View
+        className={['flex-row pl-2.5', selected && 'bg-primary-100']}
+      >
         {group ? (
-          <View style={css.VGroup}>
+          <View className='overflow-hidden bg-border w-12.5 h-12.5 rounded-full my-1.25 items-center'>
             <RnIcon
               path={mdiAccountGroup}
               size={40}
@@ -271,11 +209,11 @@ export const UserItem: FC<
             source={{ uri: avatar as string }}
             status={p0.status}
             {...p}
-            style={css.WithSpace}
+            className='my-1.25'
           />
         ) : null}
-        <View style={[css.Text, css.WithSpace]}>
-          <View style={css.NameWithStatus}>
+        <View className='flex-1 pt-1.75 pl-2.5 my-1.25'>
+          <View className='flex-row flex-nowrap'>
             <RnText
               bold
               singleLine
@@ -319,7 +257,7 @@ export const UserItem: FC<
             </RnText>
           )}
           {((isRecentCall && !lastMessage) || isVoicemail) && (
-            <View style={css.Detail}>
+            <View className='flex-row'>
               <RnIcon
                 color={
                   incoming && !answered
@@ -336,7 +274,7 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                style={css.CallIcon}
+                style={callIconStyle}
               />
               <RnText normal small className='left-0.75 text-foreground-muted'>
                 {isVoicemail
@@ -347,7 +285,7 @@ export const UserItem: FC<
           )}
         </View>
         {!isRecentCall && !!lastMessage && isRecentChat && (
-          <View style={css.LastDate}>
+          <View className='my-2.5 mr-3.75 pt-1.75'>
             <RnText normal singleLine small>
               {lastMessageDate}
             </RnText>
@@ -360,12 +298,12 @@ export const UserItem: FC<
             key={i}
             onPress={() => onPressIcons(i)}
           >
-            <RnIcon path={_} color={iconColors?.[i]} style={css.ButtonIcon} />
+            <RnIcon path={_} color={iconColors?.[i]} className='p-2.5' />
           </RnTouchableOpacity>
         ))}
 
         {!!isSelection && (
-          <View style={css.CheckboxContainer}>
+          <View className='items-center flex-row mr-3.75'>
             <RnCheckBox
               isSelected={!!isSelected}
               onPress={() => (onSelect ? onSelect() : true)}

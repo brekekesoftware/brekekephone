@@ -1,28 +1,14 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import type { TouchableOpacityProps, ViewProps } from 'react-native'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
+
+import { View } from '@/rn/core/components/view'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { isIos } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
-
-const css = {
-  ButtonIcon: {
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  ButtonIcon_Btn: {
-    borderWidth: 1,
-    padding: 12,
-  },
-  ButtonIcon_Name: {
-    paddingTop: 5,
-    minWidth: isIos ? 70 : 80,
-    textAlign: 'center',
-  },
-}
 
 export const ButtonIcon: FC<{
   color: string
@@ -53,16 +39,15 @@ export const ButtonIcon: FC<{
   }
   const size = p.size || 15
   return (
-    <View style={[css.ButtonIcon, p.styleContainer]}>
+    <View className='items-center mx-1.25' style={p.styleContainer}>
       <RnTouchableOpacity
         disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
+        className={['border p-3', p.noborder && 'border-0']}
         style={[
-          css.ButtonIcon_Btn,
           p.style,
           { borderRadius: size * 1.5 },
           { backgroundColor: p?.disabled ? v.subColor : p.bgcolor },
-          p.noborder && { borderWidth: 0 },
           { borderColor: p.bdcolor },
         ]}
       >

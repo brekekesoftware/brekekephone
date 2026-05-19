@@ -1,61 +1,14 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { sortBy, uniqBy } from '@/shared/lodash'
 import { Avatar } from '#/components/avatar'
 import { groupByTimestamp } from '#/components/chat-config'
 import { Message } from '#/components/chat-message'
 import { RnText } from '#/components/rn'
-import { v } from '#/components/variables'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
-
-const css = {
-  DateGroup: {
-    marginTop: 20,
-  },
-  DateGroup__first: {
-    marginTop: 0,
-  },
-  Date: {
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 10,
-  },
-  //
-  Border: {
-    position: 'absolute',
-    top: v.lineHeight / 2,
-    left: 2,
-    right: 2,
-    height: 1,
-    backgroundColor: v.hoverBg,
-  },
-  //
-  TimeGroup: {
-    flexDirection: 'row',
-    marginTop: 10,
-    paddingLeft: 10,
-  },
-  TimeGroup__first: {
-    marginTop: 0,
-    paddingLeft: 10,
-  },
-  Time: {
-    paddingHorizontal: 4,
-    color: v.subColor,
-    fontSize: v.fontSizeSmall,
-  },
-  //
-  Creator: {
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    paddingLeft: 10,
-  },
-  Right: {
-    flexDirection: 'column',
-  },
-}
 
 export const MessageList: FC<{
   acceptFile: Function
@@ -77,8 +30,8 @@ export const MessageList: FC<{
   return (
     <>
       {groupByTimestamp(list).map(({ date, groupByTime }, i) => (
-        <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
-          <View style={css.Border} />
+        <View key={date} className={i ? 'mt-5' : 'mt-0'}>
+          <View className='absolute top-2.5 left-0.5 right-0.5 h-px bg-muted' />
           <RnText className='self-center bg-white px-2.5'>{date}</RnText>
           {groupByTime.map(({ messages, time }, j) => {
             const id = messages[0]?.id
@@ -92,14 +45,14 @@ export const MessageList: FC<{
             return (
               <View
                 key={`${time}${id}`}
-                style={[css.TimeGroup, !j && css.TimeGroup__first]}
+                className={['flex-row pl-2.5', j && 'mt-2.5']}
               >
                 <Avatar
                   source={{ uri: c0.creatorAvatar as string }}
                   status={status}
                 />
-                <View style={css.Right}>
-                  <View style={css.Creator}>
+                <View className='flex-col'>
+                  <View className='flex-row flex-nowrap pl-2.5'>
                     <RnText bold singleLine>
                       {name}
                     </RnText>

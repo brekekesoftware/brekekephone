@@ -9,28 +9,26 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const css = {
-  invisible: {
-    position: 'absolute',
-    width: 0,
-    height: 0,
-    opacity: 0,
-    overflow: 'hidden',
-  },
-  visible: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    opacity: 1,
-    overflow: 'hidden',
-  },
+const invisibleStyle = {
+  position: 'absolute' as const,
+  width: 0,
+  height: 0,
+  opacity: 0,
+  overflow: 'hidden' as const,
+}
+const visibleStyle = {
+  position: 'relative' as const,
+  width: '100%' as const,
+  height: '100%' as const,
+  opacity: 1,
+  overflow: 'hidden' as const,
 }
 
 const getVisibleStyle = () => {
   if (Platform.OS === 'web') {
-    return [css.visible, { height: '100vh' } as any]
+    return [visibleStyle, { height: '100vh' } as any]
   }
-  return css.visible
+  return visibleStyle
 }
 
 @observer
@@ -152,7 +150,7 @@ export class PageCustomPageView extends Component<{
           },
         ]}
         isFullContent
-        style={isVisible ? getVisibleStyle() : css.invisible}
+        style={isVisible ? getVisibleStyle() : invisibleStyle}
       >
         {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
           <CustomPageWebView

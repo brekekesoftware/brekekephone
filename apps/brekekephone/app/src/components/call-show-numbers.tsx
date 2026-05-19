@@ -4,27 +4,16 @@ import type {
   TextInput,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { Keyboard, View } from 'react-native'
+import { Keyboard } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { RnTextInput } from '#/components/rn'
 import { intl } from '#/stores/intl'
 
-const css = {
-  ShowNumbers: {
-    flexDirection: 'row',
-  },
-  ShowNumbers_DisplayTxt: {
-    fontSize: 24,
-    padding: 15,
-    width: '100%',
-  },
-  ShowNumbers_BtnCall: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 40,
-  },
+const displayTxtStyle = {
+  fontSize: 24,
+  padding: 15,
+  width: '100%' as const,
 }
 
 export const ShowNumber: FC<{
@@ -35,7 +24,7 @@ export const ShowNumber: FC<{
   refInput: RefObject<TextInput | null>
   value: string
 }> = p => (
-  <View style={css.ShowNumbers}>
+  <View className='flex-row'>
     <RnTextInput
       blurOnSubmit
       keyboardType='default'
@@ -47,7 +36,7 @@ export const ShowNumber: FC<{
       onSelectionChange={p.selectionChange}
       placeholder={intl`Enter your number`}
       ref={p.refInput}
-      style={css.ShowNumbers_DisplayTxt}
+      style={displayTxtStyle}
       value={p.value}
     />
   </View>

@@ -7,13 +7,11 @@ import type {
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
-import { View } from 'react-native'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
 import { ChatInput } from '#/components/footer-chat-input'
 import { Layout } from '#/components/layout'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { defaultTimeout, isWeb } from '#/config'
 import type { ChatFile, ChatMessage } from '#/stores/chat-store'
 import { getPbxName } from '#/stores/contact-store'
@@ -25,21 +23,6 @@ import { BackgroundTimer } from '#/utils/background-timer'
 import { formatFileType } from '#/utils/format-file-type'
 import { pickFile } from '#/utils/pick-file'
 import { saveBlob, saveBlobFile } from '#/utils/save-blob'
-
-const css = {
-  LoadMore: {
-    alignSelf: 'center',
-    paddingBottom: 15,
-    fontSize: v.fontSizeSmall,
-    paddingHorizontal: 10,
-  },
-  LoadMore__btn: {
-    color: v.colors.primary,
-  },
-  LoadMore__finished: {
-    color: v.colors.warning,
-  },
-}
 
 @observer
 export class PageChatDetail extends Component<{

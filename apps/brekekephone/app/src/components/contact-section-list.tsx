@@ -3,7 +3,9 @@ import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import type { ViewProps } from 'react-native'
-import { SectionList, TouchableWithoutFeedback, View } from 'react-native'
+import { SectionList, TouchableWithoutFeedback, View as RNView } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import {
   mdiMenuDown,
   mdiMenuRight,
@@ -19,7 +21,6 @@ import type { DropdownItemProps } from '#/components/dropdown-item'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import { isIos } from '#/config'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
@@ -29,35 +30,6 @@ import type { GroupUserSectionListData } from '#/stores/user-store'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const css = {
-  container: {
-    marginTop: 15,
-  },
-  headerSectionList: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: v.borderBg,
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    paddingVertical: 12,
-    marginTop: 15,
-  },
-  leftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  editGroupIcon: {
-    paddingHorizontal: 10,
-  },
-  containerDropdown: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'transparent',
-  },
-  disableMarginTop: { marginTop: 0 },
-}
-
 type ContactSectionListProps = {
   sectionListData: GroupUserSectionListData[]
   isEditMode?: boolean
@@ -66,7 +38,7 @@ type ContactSectionListProps = {
 }
 export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
   observer(p => {
-    const sectionHeaderRefs = useRef<View[]>([])
+    const sectionHeaderRefs = useRef<RNView[]>([])
     const reCalculatedLayoutDropdownTimeoutId = useRef<number>(0)
 
     useEffect(() => {
@@ -107,7 +79,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         () => {
           reCalculatedLayoutDropdownTimeoutId.current = 0
           const listDropdownPosition: DropdownPosition[] = []
-          sectionHeaderRefs.current.forEach((ref: View, index) => {
+          sectionHeaderRefs.current.forEach((ref: RNView, index) => {
             if (ref) {
               ref.measure((fx, fy, w, h, px, py) => {
                 listDropdownPosition.push({
@@ -165,7 +137,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         />
         {openedIndex >= 0 && (
           <TouchableWithoutFeedback onPress={() => RnDropdown.close()}>
-            <View style={css.containerDropdown}>
+            <View className='absolute w-full h-full bg-transparent'>
               <Dropdown position={positions[openedIndex]} items={p.ddItems} />
             </View>
           </TouchableWithoutFeedback>
@@ -253,7 +225,7 @@ const RenderItemUser = observer(
   },
 )
 type SectionHeader = {
-  sectionHeaderRefs: MutableRefObject<View[]>
+  sectionHeaderRefs: MutableRefObject<RNView[]>
   sectionListData: GroupUserSectionListData[]
   isEditMode?: boolean
   title: string
@@ -281,9 +253,9 @@ const RenderHeaderSection = observer(
         onPress={() => RnDropdown.toggleSection(index, data.length)}
       >
         <View
-          style={[
-            css.headerSectionList,
-            isDisableMarginTop && css.disableMarginTop,
+          className={[
+            'flex-row justify-between bg-border px-1.25 items-center py-3 mt-3.75',
+            isDisableMarginTop && 'mt-0',
           ]}
           ref={c => {
             if (c && isEditMode) {
@@ -292,7 +264,7 @@ const RenderHeaderSection = observer(
           }}
         >
           <Fragment>
-            <View style={css.leftSection}>
+            <View className='flex-row items-center'>
               <View>
                 <RnIcon path={hidden ? mdiMenuRight : mdiMenuDown} />
               </View>
@@ -300,7 +272,7 @@ const RenderHeaderSection = observer(
             </View>
             {isEditMode && (
               <RnTouchableOpacity
-                style={css.editGroupIcon}
+                className='px-2.5'
                 onPress={() => {
                   if (RnDropdown.hiddenIndexes.some(i => i === index)) {
                     RnDropdown.toggleSection(index, data.length)

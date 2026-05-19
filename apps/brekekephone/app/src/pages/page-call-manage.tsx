@@ -49,34 +49,19 @@ const minSizeH = height * 0.3
 const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
-const css = {
-  Image_wrapper: {
-    marginHorizontal: 15,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    minHeight: minSizeImageWrapper,
-    minWidth: minSizeImageWrapper,
-  },
-  smallAvatar: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    overflow: 'hidden',
-  },
-  btnFuncCalls: {
-    marginBottom: 10,
-  },
-  hidden: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    top: '-100%',
-    left: '-100%',
-  },
-  pointerEventsBoxNone: {
-    pointerEvents: 'box-none',
-  },
+const imageWrapperStyle = {
+  minHeight: minSizeImageWrapper,
+  minWidth: minSizeImageWrapper,
+} as const
+const btnFuncCallsStyle = {
+  marginBottom: 10,
+} as const
+const hiddenStyle = {
+  position: 'absolute',
+  width: '100%' as const,
+  height: '100%' as const,
+  top: '-100%' as const,
+  left: '-100%' as const,
 } as const
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
@@ -384,11 +369,18 @@ class PageCallManage extends Component<{
     const styleBigAvatar = c.localVideoEnabled
       ? { flex: 1, maxHeight: height / 2 - 20 }
       : { flex: 1 }
-    const styleViewAvatar = isLarge ? styleBigAvatar : css.smallAvatar
     return (
-      <View style={[!c.localVideoEnabled && css.Image_wrapper, { flex: 1 }]}>
+      <View
+        className={!c.localVideoEnabled ? 'mx-3.75 flex-col items-center justify-start flex-1' : 'flex-1'}
+        style={!c.localVideoEnabled ? imageWrapperStyle : undefined}
+      >
         <View
-          style={isShowAvatar ? styleViewAvatar : { height: 0, opacity: 0 }}
+          className={isShowAvatar && !isLarge ? 'w-50 h-50 rounded-full overflow-hidden' : undefined}
+          style={
+            isShowAvatar
+              ? isLarge ? styleBigAvatar : undefined
+              : { height: 0, opacity: 0 }
+          }
         >
           {c.answered && (
             <SmartImage
@@ -468,7 +460,7 @@ class PageCallManage extends Component<{
         >
           {!this.isBtnHidden('transfer') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -482,7 +474,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('park') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -496,7 +488,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('video') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor={
                 c.localVideoEnabled && !c.mutedVideo ? activeColor : 'white'
@@ -514,7 +506,7 @@ class PageCallManage extends Component<{
           )}
           {!isWeb && !this.isBtnHidden('speaker') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={c.sessionStatus === 'dialing'}
               bgcolor={ctx.call.isLoudSpeakerEnabled ? activeColor : 'white'}
               color={ctx.call.isLoudSpeakerEnabled ? 'white' : 'black'}
@@ -530,7 +522,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('mute') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
@@ -544,7 +536,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('record') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
@@ -559,7 +551,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!(c.withSDPControls || c.answered)}
               bgcolor='white'
               color='black'
@@ -573,7 +565,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('hold') && (
             <ButtonIcon
-              styleContainer={css.btnFuncCalls}
+              styleContainer={btnFuncCallsStyle}
               disabled={!c.answered}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}
@@ -606,7 +598,7 @@ class PageCallManage extends Component<{
           'mb-2 self-stretch items-center justify-center z-12',
           isLarge ? 'mt-2.5' : 'mt-10',
         ]}
-        style={css.pointerEventsBoxNone}
+        pointerEvents='box-none'
       >
         {c.holding && !c.rqLoadings['hold'] ? (
           <View className='mb-2.5 h-16.25'>
@@ -617,7 +609,7 @@ class PageCallManage extends Component<{
         ) : (
           <View
             className='mb-2.5 flex-row self-stretch items-center justify-center z-12'
-            style={css.pointerEventsBoxNone}
+            pointerEvents='box-none'
           >
             {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (
@@ -655,7 +647,7 @@ class PageCallManage extends Component<{
     return (
       <BrekekeGradient
         white={this.props.call.localVideoEnabled}
-        style={this.isVisible() ? undefined : css.hidden}
+        style={this.isVisible() ? undefined : hiddenStyle}
       >
         {this.renderLayout()}
       </BrekekeGradient>

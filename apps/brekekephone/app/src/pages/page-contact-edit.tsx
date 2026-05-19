@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { ScrollView } from 'react-native'
-import { ActivityIndicator, TouchableWithoutFeedback, View } from 'react-native'
+import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiFolderPlus } from '#/assets/icons'
 import { ContactList } from '#/components/contact-list'
 import { ContactSectionList } from '#/components/contact-section-list'
@@ -19,26 +21,6 @@ import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const css = {
-  listHeaderSection: {
-    paddingHorizontal: 10,
-  },
-  listTitleSection: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  rowGroupTitle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  rowCapacity: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-  },
   loadingIcon: {
     marginTop: 20,
   },
@@ -174,7 +156,7 @@ export class PageContactEdit extends Component {
         containerRef={this.setViewRef}
       >
         <TouchableWithoutFeedback onPress={RnDropdown.close}>
-          <View style={css.listHeaderSection}>
+          <View className='px-2.5'>
             {!isDisableAddAllUserToTheList && (
               <SelectionItem
                 isSelected={isSelectedAddAllUser}
@@ -182,7 +164,7 @@ export class PageContactEdit extends Component {
                 title={intl`Add all user to the list`}
               />
             )}
-            <View style={css.rowGroupTitle}>
+            <View className='flex-row justify-between'>
               <SelectionItem
                 isSelected={isSelectEditGroupingAndUserOrder}
                 onPress={this.onSelectEditGroupingAndUserOrderOption}
@@ -198,8 +180,8 @@ export class PageContactEdit extends Component {
                 </RnTouchableOpacity>
               )}
             </View>
-            <View style={css.listTitleSection}>
-              <View style={css.rowCapacity}>
+            <View className='flex-row justify-end items-center my-2.5'>
+              <View className='flex-row items-center'>
                 <RnText>{`${intl`Capacity`}`}</RnText>
                 <RnText className={isCapacityInvalid ? 'text-red-500' : undefined}>{`    ${
                   isSelectedAddAllUser

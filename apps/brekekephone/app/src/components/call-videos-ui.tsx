@@ -17,24 +17,22 @@ import { RnStacker } from '#/stores/rn-stacker'
 const MINI_WIDTH = 150
 const MINI_HEIGHT = 150
 
-const css = {
-  Mini: {
-    position: isWeb ? 'fixed' : 'absolute',
-    width: MINI_WIDTH,
-    height: MINI_HEIGHT,
-    backgroundColor: 'black',
-    borderRadius: 75,
-    overflow: 'hidden',
-    ...v.boxShadow,
-    ...v.backdropZindex,
-    ...(isWeb &&
-      ({
-        cursor: 'move',
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-        touchAction: 'none',
-      } as any)),
-  },
+const miniStyle = {
+  position: (isWeb ? 'fixed' : 'absolute') as 'absolute',
+  width: MINI_WIDTH,
+  height: MINI_HEIGHT,
+  backgroundColor: 'black',
+  borderRadius: 75,
+  overflow: 'hidden' as const,
+  ...v.boxShadow,
+  ...v.backdropZindex,
+  ...(isWeb &&
+    ({
+      cursor: 'move',
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+      touchAction: 'none',
+    } as any)),
 }
 
 const calculateBoundedPosition = (
@@ -118,7 +116,7 @@ class Mini extends Component<Props> {
           this.view = view
         }}
         style={[
-          css.Mini,
+          miniStyle,
           {
             top: ctx.call.videoPositionT,
             left: ctx.call.videoPositionL,

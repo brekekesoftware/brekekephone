@@ -1,49 +1,22 @@
 import type { FC } from 'react'
 import type { TextInputProps, TouchableOpacityProps } from 'react-native'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 
-const css = {
-  FieldButton: {
-    alignSelf: 'center',
-    marginTop: 15,
-    paddingHorizontal: 10,
-    minWidth: 305,
-    maxWidth: 360,
-    backgroundColor: 'white',
-    borderRadius: v.borderRadius,
-    overflow: 'hidden',
-  },
-  Inner: {
-    ...Platform.select({
-      android: {
-        top: 1,
-      },
-      default: {
-        top: -5,
-      },
-    }),
-  },
-  CreateBtn: {
-    ...Platform.select({
-      android: {
-        top: 8,
-      },
-      default: {
-        top: 15,
-      },
-    }),
-  },
-  CreateBtnIcon: {
-    transform: [
-      {
-        rotate: '180deg',
-      },
-    ],
-  },
+const innerStyle = Platform.select({
+  android: { top: 1 },
+  default: { top: -5 },
+})
+const createBtnStyle = Platform.select({
+  android: { top: 8 },
+  default: { top: 15 },
+})
+const createBtnIconStyle = {
+  transform: [{ rotate: '180deg' }],
 }
 
 export const FieldButton: FC<
@@ -60,19 +33,19 @@ export const FieldButton: FC<
   return (
     <RnTouchableOpacity
       onPress={p.onCreateBtnPress}
-      style={[
-        css.FieldButton,
-        style,
-        { backgroundColor: p.disabled ? '#f0f0f0' : 'white' },
+      className={[
+        'self-center mt-3.75 px-2.5 min-w-76.25 max-w-90 rounded-[3px] overflow-hidden',
+        p.disabled ? 'bg-[#f0f0f0]' : 'bg-background',
       ]}
+      style={style}
       disabled={p.disabled}
     >
-      <View style={css.Inner}>
+      <View style={innerStyle}>
         <Field
           {...p}
           createBtnIcon={mdiKeyboardBackspace}
-          createBtnIconStyle={css.CreateBtnIcon}
-          createBtnStyle={css.CreateBtn}
+          createBtnIconStyle={createBtnIconStyle}
+          createBtnStyle={createBtnStyle}
           transparent
           disabled={p.disabled}
         />

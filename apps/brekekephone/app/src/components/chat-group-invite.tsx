@@ -2,7 +2,8 @@ import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { sortBy } from '@/shared/lodash'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
@@ -17,34 +18,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const css = {
-  Notify: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    backgroundColor: v.hoverBg,
-  },
-  Notify_Info: {
-    flex: 1,
-    paddingLeft: 12,
-    paddingVertical: 5,
-  },
-  Notify_Btn_reject: {
-    borderColor: v.colors.danger,
-  },
-  Notify_Btn_accept: {
-    borderColor: v.colors.primary,
-  },
-
-  NotifyUnread: {
-    borderBottomWidth: 0,
-  },
-  NotifyUnreadBtn: {
-    flex: 1,
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-}
+const notifyClassName = 'flex-row items-center border-b border-border bg-muted'
 
 const Notify: FC<{
   id: string
@@ -55,10 +29,10 @@ const Notify: FC<{
   accept: Function
   loading: boolean
 }> = observer(p => (
-  <View style={css.Notify}>
+  <View className={notifyClassName}>
     {!!p.type && (
       <>
-        <View style={css.Notify_Info}>
+        <View className='flex-1 pl-3 py-1.25'>
           <RnText bold>{p.name}</RnText>
           <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
         </View>
@@ -68,7 +42,7 @@ const Notify: FC<{
           onPress={() => p.reject(p.id)}
           path={mdiClose}
           size={20}
-          style={css.Notify_Btn_reject}
+          style={{ borderColor: v.colors.danger }}
         />
         <ButtonIcon
           bdcolor={v.colors.primary}
@@ -76,7 +50,7 @@ const Notify: FC<{
           onPress={() => p.accept(p.id)}
           path={mdiCheck}
           size={20}
-          style={css.Notify_Btn_accept}
+          style={{ borderColor: v.colors.primary }}
           disabled={p.loading}
         />
       </>
@@ -284,9 +258,9 @@ export class UnreadChatNoti extends Component {
       isGroup,
     } = this.unreadChat
     return (
-      <View style={[css.Notify, css.NotifyUnread]}>
+      <View className={[notifyClassName, 'border-b-0']}>
         <RnTouchableOpacity
-          style={css.NotifyUnreadBtn}
+          className='flex-1 bg-primary-100'
           onPress={this.onUnreadPress}
         >
           <UserItem

@@ -31,33 +31,19 @@ type ToastState = {
   type: 'err' | 'info'
 } | null
 
-const css = {
-  Input: {
-    width: '100%',
-    height: 48,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: v.borderBg,
-    paddingHorizontal: 12,
-    fontSize: 14,
-    color: 'black',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  Button: {
-    width: '100%',
-    height: 48,
-    backgroundColor: v.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  TouchResendCode: {
-    color: v.colors.primary,
-    textDecorationLine: 'underline',
-  },
-} as const
+// RnTextInput chưa support className → giữ inline style
+const inputStyle = {
+  width: '100%' as const,
+  height: 48,
+  borderWidth: 1,
+  borderRadius: 5,
+  borderColor: v.borderBg,
+  paddingHorizontal: 12,
+  fontSize: 14,
+  color: 'black',
+  textAlign: 'center' as const,
+  marginBottom: 16,
+}
 
 export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
@@ -283,12 +269,14 @@ export const Page2StepVerification = () => {
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
               placeholderTextColor={v.borderBg}
-              style={css.Input}
+              style={inputStyle}
             />
             <RnTouchableOpacity
               disabled={isLoading}
-              className={isLoading ? 'opacity-50' : undefined}
-              style={css.Button}
+              className={[
+                'w-full h-12 bg-primary justify-center items-center rounded-[5px] mb-2.5',
+                isLoading && 'opacity-50',
+              ]}
               onPress={onVerify}
             >
               <RnText white small>

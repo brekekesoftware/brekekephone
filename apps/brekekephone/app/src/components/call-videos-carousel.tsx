@@ -47,7 +47,7 @@ export const CallVideosCarousel = observer(
 
     return (
       !!localStreamObject && (
-        <View style={[styles.streams, { zIndex: 11 }]}>
+        <View style={[styles.streams, { zIndex: 11 }]} pointerEvents='box-none'>
           <ScrollView
             horizontal
             style={styles.scrollView}
@@ -87,20 +87,19 @@ export const CallVideosCarousel = observer(
 
 const styles = {
   container: {
-    height: '100%',
+    height: '100%' as const,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   scrollView: {
-    height: 'auto',
+    height: 'auto' as any,
   },
   contentScrollView: { gap: 16, padding: 16 },
   streams: {
-    position: 'absolute',
-    height: 'auto',
-    width: '100%',
+    position: 'absolute' as const,
+    height: 'auto' as any,
+    width: '100%' as const,
     bottom: 0,
-    pointerEvents: 'box-none',
   },
 }

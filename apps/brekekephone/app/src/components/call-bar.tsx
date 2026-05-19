@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -19,53 +20,24 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
-const css = {
-  CallBar: {
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    backgroundColor: v.hoverBg,
-  },
-  CallBar_Outer: {
-    flexDirection: 'row',
-    padding: 5,
-    alignItems: 'center',
-  },
-  CallBar_Icon: {
-    flex: 1,
-  },
-  CallBar_Info: {
-    flex: 2,
-  },
-
-  CallBar_BtnCall: {
-    flex: 5,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  Notify_Info_PartyName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-}
-
 export const CallBar = observer(() => {
   const oc = ctx.call.getOngoingCall()
   if (ctx.call.inPageCallManage || !oc || (oc.incoming && !oc.answered)) {
     return null
   }
   return (
-    <View style={css.CallBar}>
+    <View className='border-b border-border bg-muted'>
       <RnTouchableOpacity
         onPress={() => ctx.nav.goToPageCallManage({ isFromCallBar: true })}
-        style={css.CallBar_Outer}
+        className='flex-row p-1.25 items-center'
       >
-        <View style={css.CallBar_Icon}>
+        <View className='flex-1'>
           <RnIcon
             color={oc.incoming ? v.colors.primary : v.colors.warning}
             path={oc.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
           />
         </View>
-        <View style={css.CallBar_Info}>
+        <View className='flex-2'>
           <RnText bold className='text-[15px]'>
             {trimDisplayName(oc.getDisplayName())}
           </RnText>
@@ -78,7 +50,7 @@ export const CallBar = observer(() => {
           </RnText>
         </View>
 
-        <View style={css.CallBar_BtnCall}>
+        <View className='flex-5 flex-row justify-end'>
           {!oc.holding && (
             <>
               <ButtonIcon

@@ -68,8 +68,10 @@ export const Header: FC<
             )}
             {iconRights && iconRights.length > 0 && (
               <View
-                className='absolute top-0 bottom-0 flex-row items-center pr-1.25'
-                style={{ right: dropdown ? 30 : 5 }}
+                className={[
+                  'absolute top-0 bottom-0 flex-row items-center pr-1.25',
+                  dropdown ? 'right-7.5' : 'right-1.25',
+                ]}
               >
                 {iconRights?.map((_, i) => (
                   <RnTouchableOpacity

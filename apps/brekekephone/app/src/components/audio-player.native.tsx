@@ -7,16 +7,14 @@ import { ctx } from '#/stores/ctx'
 import { RnAppState } from '#/stores/rn-app-state'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 
-const css = {
-  video: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-    opacity: 0,
-    overflow: 'hidden',
-  },
+const videoStyle = {
+  position: 'absolute' as const,
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0,
+  opacity: 0,
+  overflow: 'hidden' as const,
 }
 
 export const AudioPlayer = observer(() => {
@@ -40,7 +38,7 @@ export const AudioPlayer = observer(() => {
     <Video
       ref={videoRef}
       source={require('../assets/ding.mp3')}
-      style={css.video}
+      style={videoStyle}
       disableAudioSessionManagement={true}
       paused={!isPlaying}
       preventsDisplaySleepDuringVideoPlayback={isPlaying}

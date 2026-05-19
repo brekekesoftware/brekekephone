@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import {
   mdiArrowRight,
   mdiPhoneForward,
@@ -9,86 +11,23 @@ import {
 } from '#/assets/icons'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-export const css = {
-  Outer: {
-    alignItems: 'center',
-    backgroundColor: 'white',
-    ...Platform.select({
-      web: {
-        width: '100%',
-      },
-    }),
+const outerWebStyle = Platform.select({
+  web: { width: '100%' as const },
+})
+const innerPlatformStyle = Platform.select({
+  web: {
+    maxWidth: 400,
+    minWidth: 250,
+    justifyContent: 'space-between' as const,
   },
-  Inner: {
-    width: '70%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    alignContent: 'center',
-    marginBottom: 30,
-    ...Platform.select({
-      web: {
-        // browser justify content center doesnt work as react native
-        maxWidth: 400,
-        minWidth: 250,
-        justifyContent: 'space-between',
-      },
-      default: {
-        justifyContent: 'center',
-      },
-    }),
+  default: {
+    justifyContent: 'center' as const,
   },
-  Inner__info: {
-    maxWidth: 'auto',
-    marginBottom: 80,
-  },
-  Info: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
-  Info__from: {
-    flex: 5,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  Info__to: {
-    flex: 5,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  Arrow: {
-    flex: 1,
-  },
-
-  BtnOuter: {
-    width: `${100 / 3}%`,
-    alignItems: 'center',
-  },
-  Btn: {
-    borderRadius: 25,
-    width: 50,
-    height: 50,
-  },
-  Btn__stop: {
-    backgroundColor: v.colors.warning,
-  },
-  Btn__hangup: {
-    backgroundColor: v.colors.danger,
-  },
-  Btn__conference: {
-    backgroundColor: v.colors.primary,
-  },
-  Space: {
-    height: 10,
-  },
-}
+})
 
 @observer
 export class PageCallTransferAttend extends Component {
@@ -173,11 +112,14 @@ export class PageCallTransferAttend extends Component {
     const usertarget = this.resolveMatch(oc.transferring)
     const { phoneappliSource, phoneappliTarget } = this.state
     return (
-      <View style={css.Outer}>
+      <View className='items-center bg-background' style={outerWebStyle}>
         <RnText center subTitle>{intl`Transferring`}</RnText>
-        <View style={css.Space} />
-        <View style={[css.Inner]}>
-          <View style={[css.Info__from]}>
+        <View className='h-2.5' />
+        <View
+          className='w-[70%] flex-row items-center self-center content-center mb-7.5'
+          style={innerPlatformStyle}
+        >
+          <View className='flex-5 flex-col items-center justify-center'>
             <Avatar
               source={{ uri: phoneappliSource.avatar || usersource?.avatar }}
             />
@@ -185,10 +127,10 @@ export class PageCallTransferAttend extends Component {
               {phoneappliSource.username || oc.getDisplayName()}
             </RnText>
           </View>
-          <View style={css.Arrow}>
+          <View className='flex-1'>
             <RnIcon path={mdiArrowRight} />
           </View>
-          <View style={[css.Info__to]}>
+          <View className='flex-5 flex-col items-center justify-center'>
             <Avatar
               source={{ uri: phoneappliTarget.avatar || usertarget?.avatar }}
             />
@@ -199,15 +141,18 @@ export class PageCallTransferAttend extends Component {
             </RnText>
           </View>
         </View>
-        <View style={css.Space} />
-        <View style={css.Inner}>
-          <View style={css.BtnOuter}>
+        <View className='h-2.5' />
+        <View
+          className='w-[70%] flex-row items-center self-center content-center mb-7.5'
+          style={innerPlatformStyle}
+        >
+          <View className='w-[33.333%] items-center'>
             <RnTouchableOpacity
               onPress={() => {
                 oc.stopTransferring()
                 ctx.nav.backToPageCallManage()
               }}
-              style={[css.Btn, css.Btn__stop]}
+              className='rounded-full w-12.5 h-12.5 bg-warning'
             >
               <RnIcon path={mdiPhoneOff} />
             </RnTouchableOpacity>
@@ -215,10 +160,10 @@ export class PageCallTransferAttend extends Component {
               {intl`CANCEL`}
             </RnText>
           </View>
-          <View style={css.BtnOuter}>
+          <View className='w-[33.333%] items-center'>
             <RnTouchableOpacity
               onPress={() => ctx.sip.hangupSession(oc.id)}
-              style={[css.Btn, css.Btn__hangup]}
+              className='rounded-full w-12.5 h-12.5 bg-error'
             >
               <RnIcon path={mdiPhoneHangup} />
             </RnTouchableOpacity>
@@ -226,13 +171,13 @@ export class PageCallTransferAttend extends Component {
               {intl`TRANSFER`}
             </RnText>
           </View>
-          <View style={css.BtnOuter}>
+          <View className='w-[33.333%] items-center'>
             <RnTouchableOpacity
               onPress={() => {
                 oc.conferenceTransferring()
                 ctx.nav.backToPageCallManage()
               }}
-              style={[css.Btn, css.Btn__conference]}
+              className='rounded-full w-12.5 h-12.5 bg-primary'
             >
               <RnIcon path={mdiPhoneForward} />
             </RnTouchableOpacity>

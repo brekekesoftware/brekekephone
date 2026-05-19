@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { lowerFirst } from '@/shared/lodash'
 import { FooterActions } from '#/components/footer-actions'
 import { Navigation } from '#/components/footer-navigation'
@@ -14,37 +16,10 @@ import { arrToMap } from '#/utils/arr-to-map'
 // shrink, otherwise chat input and keypad toggle icon stay hidden behind keyboard
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const css = {
-  Footer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-  },
-  Footer__noKeyboard: {
-    left: 0,
-    paddingBottom: 0,
-    backgroundColor: v.bg,
-    ...v.bottomBoxShadow,
-    ...(isAndroid && v.borderTopStyles),
-  },
-  //
-  // fix bug margin auto can not be used
-  ActionsOuter: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-    marginVertical: 8,
-  },
-  ActionsSpacing: {
-    flex: 1,
-  },
-  //
-  ActionsInner: {
-    flexDirection: 'row',
-    width: '100%',
-    minWidth: 260,
-    maxWidth: v.maxModalWidth,
-  },
+// RN-only shadow/border (kept inline)
+const noKeyboardShadowStyle = {
+  ...v.bottomBoxShadow,
+  ...(isAndroid && v.borderTopStyles),
 }
 
 export const Footer: FC<{
@@ -73,12 +48,16 @@ export const Footer: FC<{
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? RnKeyboard.keyboardHeight
       : 0
+  const noKeyboard = render || !RnKeyboard.isKeyboardShowing
   return (
     <View
+      className={[
+        'absolute right-0',
+        noKeyboard && 'left-0 pb-0 bg-background',
+      ]}
       style={[
-        css.Footer,
         { bottom: bottomOffset },
-        (render || !RnKeyboard.isKeyboardShowing) && css.Footer__noKeyboard,
+        noKeyboard && noKeyboardShadowStyle,
       ]}
     >
       {render ? (
@@ -86,12 +65,12 @@ export const Footer: FC<{
       ) : RnKeyboard.isKeyboardShowing ? (
         <ToggleKeyboard {...fabProps} />
       ) : onNext ? (
-        <View style={css.ActionsOuter}>
-          <View style={css.ActionsSpacing} />
-          <View style={css.ActionsInner}>
+        <View className='flex-row items-center px-2.5 my-2'>
+          <View className='flex-1' />
+          <View className='flex-row w-full min-w-65 max-w-95'>
             <FooterActions {...fabProps} />
           </View>
-          <View style={css.ActionsSpacing} />
+          <View className='flex-1' />
         </View>
       ) : null}
       {!RnKeyboard.isKeyboardShowing && menu && !isTab && (

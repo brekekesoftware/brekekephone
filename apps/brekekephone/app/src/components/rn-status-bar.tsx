@@ -1,37 +1,13 @@
 import type { FC } from 'react'
-import { Platform, StatusBar, View } from 'react-native'
+import { StatusBar } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
+import { isIos, isWeb } from '#/config'
 
-const css = {
-  RnStatusBar: {
-    backgroundColor: v.hoverBg,
-    ...v.backdropZindex,
-    ...Platform.select({
-      ios: {
-        height: 0,
-      },
-    }),
-  },
-  RnStatusBar__warning: {
-    backgroundColor: v.colors.warning,
-    borderColor: v.colors.warning,
-  },
-  RnStatusBar__danger: {
-    backgroundColor: v.colors.danger,
-    borderColor: v.colors.danger,
-  },
-  Border: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderColor: v.borderBg,
-    borderBottomWidth: 1,
-    ...v.backdropZindex,
-  },
-}
+// elevation (Android-only RN prop) — no Tailwind equivalent, keep inline
+const elevationStyle = { elevation: 999 }
 
 export type TRnStatusBarProps = {
   danger?: boolean
@@ -41,11 +17,13 @@ export type TRnStatusBarProps = {
 export const RnStatusBar: FC<TRnStatusBarProps> = p =>
   isWeb ? null : (
     <RnTouchableOpacity
-      style={[
-        css.RnStatusBar,
-        p.warning && css.RnStatusBar__warning,
-        p.danger && css.RnStatusBar__danger,
+      className={[
+        'z-999 bg-muted',
+        isIos && 'h-0',
+        p.warning && 'bg-warning border-warning',
+        p.danger && 'bg-error border-error',
       ]}
+      style={elevationStyle}
       onPress={p.onPress}
     >
       <StatusBar
@@ -54,6 +32,9 @@ export const RnStatusBar: FC<TRnStatusBarProps> = p =>
         }
         barStyle='dark-content'
       />
-      <View style={css.Border} />
+      <View
+        className='absolute bottom-0 left-0 right-0 border-b border-border z-999'
+        style={elevationStyle}
+      />
     </RnTouchableOpacity>
   )

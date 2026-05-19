@@ -84,9 +84,9 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
 
 const styles = {
   container: {
-    position: 'relative',
+    position: 'relative' as const,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
     borderWidth: 2,
     borderColor: 'white',
   },
@@ -95,25 +95,25 @@ const styles = {
     borderWidth: 4,
   },
   switchCameraView: {
-    position: 'absolute',
+    position: 'absolute' as const,
     zIndex: 1,
     bottom: 0,
     left: 0,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    width: '100%' as const,
+    flexDirection: 'row' as const,
+    justifyContent: 'space-evenly' as const,
+    alignItems: 'center' as const,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   switchCameraBtn: {
     width: 28,
     height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   touchable: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    width: '100%' as const,
+    height: '100%' as const,
   },
 }

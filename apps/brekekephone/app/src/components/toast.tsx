@@ -1,24 +1,10 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated } from 'react-native'
 
 import { AnimatedView } from '@/rn/core/components/animated'
+import { View } from '@/rn/core/components/view'
 import { RnText } from '#/components/rn'
-
-const css = {
-  container: {
-    position: 'absolute',
-    right: 0,
-    left: 0,
-    top: 10,
-    justifyContent: 'center',
-  },
-  content: {
-    paddingHorizontal: 5,
-    paddingTop: 4,
-    paddingBottom: 5,
-  },
-}
 
 type ToastProps = {
   title: string
@@ -53,7 +39,10 @@ export const Toast: FC<ToastProps> = ({
   }, [fadeAnim, isVisible])
 
   return (
-    <View style={[css.container, containerStyles]}>
+    <View
+      className='absolute right-0 left-0 top-2.5 justify-center'
+      style={containerStyles}
+    >
       <AnimatedView
         className='px-1.25 pt-1 pb-1.25'
         style={{ opacity: fadeAnim }}

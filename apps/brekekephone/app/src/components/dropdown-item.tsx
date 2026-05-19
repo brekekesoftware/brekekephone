@@ -8,12 +8,6 @@ export type DropdownItemProps = {
   disabled?: boolean
 }
 
-const css = {
-  container: {
-    paddingVertical: 5,
-  },
-}
-
 export const DropdownItem: FC<DropdownItemProps> = ({
   title,
   onPress,
@@ -21,7 +15,7 @@ export const DropdownItem: FC<DropdownItemProps> = ({
 }: DropdownItemProps) => (
   <RnTouchableOpacity
     onPress={onPress}
-    style={css.container}
+    className='py-1.25'
     disabled={disabled}
   >
     <RnText className={disabled ? 'text-[#9e9e9e]' : undefined}>{title}</RnText>

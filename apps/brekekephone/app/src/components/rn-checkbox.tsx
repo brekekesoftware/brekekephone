@@ -4,19 +4,6 @@ import { mdiCheck } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
-const css = {
-  CheckBoxBtn: {
-    height: 22,
-    width: 22,
-    borderWidth: 2,
-    borderRadius: 2,
-  },
-  CheckBox__selected: {
-    backgroundColor: '#333',
-    borderWidth: 0,
-  },
-}
-
 export const RnCheckBox: FC<
   ViewProps & {
     isSelected: boolean
@@ -27,7 +14,11 @@ export const RnCheckBox: FC<
   <RnTouchableOpacity
     {...p}
     onPress={onPress}
-    style={[css.CheckBoxBtn, isSelected && css.CheckBox__selected, style]}
+    className={[
+      'h-5.5 w-5.5 rounded-sm border-2',
+      isSelected && 'bg-[#333] border-0',
+    ]}
+    style={style}
     disabled={disabled}
   >
     {isSelected && <RnIcon path={mdiCheck} color='white' />}

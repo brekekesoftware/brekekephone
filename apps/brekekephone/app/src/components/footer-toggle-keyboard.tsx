@@ -10,20 +10,9 @@ import { RnKeyboard } from '#/stores/rn-keyboard'
 
 const css = {
   ToggleKeyboard: {
-    flexDirection: 'row',
-    marginRight: 8,
-    marginBottom: 4,
     borderRadius: v.borderRadius,
-    paddingVertical: 8,
-    width: v.iconSize + 24,
     backgroundColor: v.hoverBg,
     ...v.boxShadow,
-  },
-  Text: {
-    /* Fix button size does not equal with the Actions */
-    width: 0,
-    lineHeight: v.iconSize,
-    overflow: 'hidden',
   },
 }
 
@@ -39,6 +28,7 @@ export const ToggleKeyboard: FC<{
         onPress={
           RnKeyboard.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard
         }
+        className='flex-row mr-2 mb-1 py-2 w-12'
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}

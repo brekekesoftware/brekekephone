@@ -1,34 +1,11 @@
 import type { FC } from 'react'
 import type { Animated } from 'react-native'
-import { View } from 'react-native'
 
 import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
-import { RnTouchableOpacity } from '#/components/rn'
+import { View } from '@/rn/core/components/view'
 import { v } from '#/components/variables'
+import { RnTouchableOpacity } from '#/components/rn'
 import { intl } from '#/stores/intl'
-
-const css = {
-  outer: {
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-  },
-  inner: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  selectedBg: {
-    backgroundColor: v.colors.primaryFn(0.5),
-  },
-  solidBg: {
-    backgroundColor: v.colors.primary,
-  },
-  subText: {
-    color: v.subColor,
-  },
-}
 
 interface ParkItemProps {
   index: number
@@ -42,7 +19,6 @@ interface ParkItemProps {
 }
 
 export const ParkItem: FC<ParkItemProps> = ({
-  index,
   name,
   parkNumber,
   selected,
@@ -62,31 +38,33 @@ export const ParkItem: FC<ParkItemProps> = ({
   })
 
   let wrapperStyle: Animated.WithAnimatedObject<object> | undefined
+  let wrapperClass: string | undefined
   let textStyle:
     | { color: string }
     | { color: Animated.AnimatedInterpolation<string> }
     | undefined
-  let subTextStyle: typeof textStyle | typeof css.subText
+  let subTextStyle: typeof textStyle | undefined
+  let subTextClass: string | undefined
 
   if (useAnimated) {
     wrapperStyle = { backgroundColor: flashBg }
     textStyle = { color: flashTextColor! }
     subTextStyle = textStyle
   } else if (selected && flashAnim) {
-    wrapperStyle = css.solidBg
+    wrapperClass = 'bg-primary'
     textStyle = { color: 'white' }
     subTextStyle = textStyle
   } else if (selected) {
-    wrapperStyle = css.selectedBg
+    wrapperClass = 'bg-primary-100'
   } else {
-    subTextStyle = css.subText
+    subTextClass = 'text-foreground-muted'
   }
 
   const displayName = name || intl`<Unnamed>`
 
   const content = (
     <RnTouchableOpacity onPress={available ? onPress : undefined}>
-      <View style={css.inner}>
+      <View className='px-2.5 py-2.5'>
         <AnimatedText
           numberOfLines={1}
           className='font-bold'
@@ -95,7 +73,7 @@ export const ParkItem: FC<ParkItemProps> = ({
           {displayName}
         </AnimatedText>
         <AnimatedText
-          className='text-[11.2px] font-normal'
+          className={['text-[11.2px] font-normal', subTextClass]}
           style={subTextStyle as any}
         >
           {intl`Park number: ` + parkNumber}
@@ -105,11 +83,16 @@ export const ParkItem: FC<ParkItemProps> = ({
   )
 
   return (
-    <View style={[css.outer, !available && css.disabled]}>
+    <View
+      className={[
+        'border-b border-border',
+        !available && 'opacity-50',
+      ]}
+    >
       {useAnimated ? (
         <AnimatedView style={wrapperStyle}>{content}</AnimatedView>
       ) : (
-        <View style={wrapperStyle}>{content}</View>
+        <View className={wrapperClass}>{content}</View>
       )}
     </View>
   )

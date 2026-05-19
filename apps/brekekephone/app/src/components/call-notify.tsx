@@ -1,7 +1,8 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
-import { View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { IncomingItem } from '#/components/call-voices-ui'
@@ -11,27 +12,6 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/background-timer'
-
-const css = {
-  Notify: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: v.borderBg,
-    backgroundColor: v.hoverBg,
-  },
-  Notify_Info: {
-    flex: 1,
-    paddingLeft: 12,
-    paddingVertical: 5,
-  },
-  Notify_Btn_reject: {
-    borderColor: v.colors.danger,
-  },
-  Notify_Btn_accept: {
-    borderColor: v.colors.primary,
-  },
-}
 
 @observer
 export class DidMountTimer extends Component<any> {
@@ -83,10 +63,10 @@ export const CallNotify = observer(() => {
     <Wrapper>
       {ctx.call.shouldRingInNotify() && <IncomingItem />}
       <RnTouchableOpacity
-        style={css.Notify}
+        className='flex-row items-center border-b border-border bg-muted'
         onPress={() => ctx.nav.goToPageCallManage()}
       >
-        <View style={css.Notify_Info}>
+        <View className='flex-1 pl-3 py-1.25'>
           <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>
             {intl`Incoming Call`}
@@ -100,7 +80,7 @@ export const CallNotify = observer(() => {
             onPress={c.hangupWithUnhold}
             path={mdiClose}
             size={20}
-            style={css.Notify_Btn_reject}
+            style={{ borderColor: v.colors.danger }}
           />
         )}
         <ButtonIcon
@@ -114,7 +94,7 @@ export const CallNotify = observer(() => {
           }}
           path={mdiCheck}
           size={20}
-          style={css.Notify_Btn_accept}
+          style={{ borderColor: v.colors.primary }}
         />
       </RnTouchableOpacity>
     </Wrapper>
