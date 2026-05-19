@@ -7,12 +7,12 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
-// the style and innerStyle prop should only be used for positioning and theming
-// we should not use them for sizing like height/border/padding... -> use the children instead
+// the style prop only for positioning + Animated runtime binding.
+// Use innerClassName for theming/sizing on inner content wrapper.
 export const AnimatedSize: FC<
   ViewProps & {
     animateWidth?: boolean
-    innerStyle?: ViewProps['style']
+    innerClassName?: ClassName
     className?: ClassName
   }
 > = p => {
@@ -43,18 +43,18 @@ const Getter = (p: {
 const Animation = (p: {
   animateWidth?: boolean
   children?: PropsWithChildren<{}>['children']
-  innerStyle?: ViewProps['style']
+  innerClassName?: ClassName
   size: number
   style?: ViewProps['style']
   className?: ClassName
 }) => {
-  const { animateWidth, children, className, innerStyle, size, style } = p
+  const { animateWidth, children, className, innerClassName, size, style } = p
   const cssAnimation = useAnimationOnDidMount({
     [animateWidth ? 'width' : 'height']: [0, size],
   })
   return (
     <AnimatedView className={className} style={[style, cssAnimation]}>
-      <View className='flex-1 overflow-hidden' style={innerStyle}>
+      <View className={['flex-1 overflow-hidden', innerClassName]}>
         {children}
       </View>
     </AnimatedView>

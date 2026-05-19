@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useEffect } from 'react'
-import { View } from 'react-native'
 
+import { View } from '@/rn/core/components/view'
 import { cloneDeep, isEqual } from '@/shared/lodash'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn'

@@ -7,7 +7,6 @@ import { v } from '#/components/variables'
 
 // RN-only shadow + elevation
 const shadowStyle = { ...v.boxShadow, elevation: 999 }
-const innerStyle = { borderRadius: v.borderRadius, backgroundColor: v.bg }
 
 export type HeaderDropdownItem = Partial<{
   danger: boolean
@@ -31,7 +30,7 @@ export const Dropdown: FC<{
         style={{ elevation: 999 }}
       />
       <AnimatedSize
-        innerStyle={innerStyle}
+        innerClassName='rounded-[3px] bg-background'
         className={[
           'absolute right-3.75 w-62.5 z-999',
           compact ? 'top-8.75' : 'top-15',
