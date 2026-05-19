@@ -1,0 +1,12 @@
+#__brekeke_phone_web_root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+}
+#__brekeke_phone_web_root * {
+  box-sizing: border-box;
+  outline: none !important;
+}
+#__brekeke_phone_web_root a {
+  text-decoration: none;
+}

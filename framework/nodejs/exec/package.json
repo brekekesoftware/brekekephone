@@ -1,0 +1,10 @@
+{
+  "name": "@brekekephone/nodejs-exec",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  }
+}

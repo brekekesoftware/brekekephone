@@ -1,0 +1,7 @@
+html.theme-ocean.theme-dark {
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-ocean:not(.theme-light) {
+  }
+}

@@ -1,0 +1,24 @@
+html.theme-blossom {
+  --primary-50: #fdf2f8;
+  --primary-100: #fce7f3;
+  --primary-200: #fbcfe8;
+  --primary-300: #f9a8d4;
+  --primary-400: #f472b6;
+  --primary-500: #ec4899;
+  --primary-600: #db2777;
+  --primary-700: #be185d;
+  --primary-800: #9d174d;
+  --primary-900: #831843;
+  --primary-950: #500724;
+  --secondary-50: #fbf7fa;
+  --secondary-100: #f7f0f5;
+  --secondary-200: #f0e3ec;
+  --secondary-300: #e0d0da;
+  --secondary-400: #ae9da8;
+  --secondary-500: #816f7b;
+  --secondary-600: #5f515a;
+  --secondary-700: #473d45;
+  --secondary-800: #2e2630;
+  --secondary-900: #1b151a;
+  --secondary-950: #0a080a;
+}

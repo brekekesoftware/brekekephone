@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
+    "paths": {
+      "@/*": ["../../../framework/*"],
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["./*", "./src/**/*", "../../../framework/**/*"]
+}
