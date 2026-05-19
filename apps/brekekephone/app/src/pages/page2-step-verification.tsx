@@ -31,20 +31,6 @@ type ToastState = {
   type: 'err' | 'info'
 } | null
 
-// RnTextInput chưa support className → giữ inline style
-const inputStyle = {
-  width: '100%' as const,
-  height: 48,
-  borderWidth: 1,
-  borderRadius: 5,
-  borderColor: v.borderBg,
-  paddingHorizontal: 12,
-  fontSize: 14,
-  color: 'black',
-  textAlign: 'center' as const,
-  marginBottom: 16,
-}
-
 export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
   const safeInsets = useContext(SafeAreaInsetsContext)
@@ -269,7 +255,7 @@ export const Page2StepVerification = () => {
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
               placeholderTextColor={v.borderBg}
-              style={inputStyle}
+              className='w-full h-12 border rounded-[5px] border-border px-3 text-center mb-4'
             />
             <RnTouchableOpacity
               disabled={isLoading}

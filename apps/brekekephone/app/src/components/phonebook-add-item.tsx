@@ -5,8 +5,7 @@ import { Dimensions, Platform, ScrollView } from 'react-native'
 import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isAndroid } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import type { ItemPBForm, PickerItemOption } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -19,21 +18,10 @@ const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 const rnPickerOptionsStyle = {
   height: Dimensions.get('screen').height / 3,
 } as const
-const inputFieldNameStyle = {
-  backgroundColor: 'white',
-  height: 40,
-  width: '100%' as const,
-  borderRadius: v.borderRadius,
-  borderWidth: 0.8,
-  borderColor: v.borderBg,
-  paddingHorizontal: 10,
-  overflow: 'hidden' as const,
-  ...Platform.select({
-    web: {
-      paddingVertical: 5,
-    },
-  }),
-} as const
+const inputFieldNameClassName = [
+  'bg-background h-10 w-full rounded-[3px] border-[0.8px] border-border px-2.5 overflow-hidden',
+  isWeb && 'py-1.25',
+]
 
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
@@ -105,7 +93,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             //  onSelectionChange={p.selectionChange}
             placeholder={intl`Enter field`}
             ref={refInput}
-            style={inputFieldNameStyle}
+            className={inputFieldNameClassName}
             value={value}
           />
           <ScrollView

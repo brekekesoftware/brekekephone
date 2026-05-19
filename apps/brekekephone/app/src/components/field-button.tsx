@@ -1,51 +1,43 @@
 import type { FC } from 'react'
-import type { TextInputProps, TouchableOpacityProps } from 'react-native'
-import { Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { RnTouchableOpacity } from '#/components/rn'
+import { isAndroid } from '#/config'
 
-const innerStyle = Platform.select({
-  android: { top: 1 },
-  default: { top: -5 },
-})
-const createBtnStyle = Platform.select({
-  android: { top: 8 },
-  default: { top: 15 },
-})
-const createBtnIconStyle = {
-  transform: [{ rotate: '180deg' }],
-}
+// Platform-conditional top offsets — runtime constants (Platform.OS fixed per build)
+const innerClassName = isAndroid ? 'top-0.25' : '-top-1.25' // android top:1, default top:-5
+const createBtnClassName = isAndroid ? 'top-2' : 'top-3.75' // android top:8, default top:15
 
 export const FieldButton: FC<
   Partial<{
-    style: TouchableOpacityProps['style']
+    className: ClassName
     onCreateBtnPress(): void
     label: string
     value: string
-    textInputStyle?: TextInputProps['style']
+    textInputClassName?: ClassName
     disabled?: boolean
   }>
 > = p0 => {
-  const { style, ...p } = p0
+  const { className, ...p } = p0
   return (
     <RnTouchableOpacity
       onPress={p.onCreateBtnPress}
       className={[
         'self-center mt-3.75 px-2.5 min-w-76.25 max-w-90 rounded-[3px] overflow-hidden',
         p.disabled ? 'bg-[#f0f0f0]' : 'bg-background',
+        className,
       ]}
-      style={style}
       disabled={p.disabled}
     >
-      <View style={innerStyle}>
+      <View className={innerClassName}>
         <Field
           {...p}
           createBtnIcon={mdiKeyboardBackspace}
-          createBtnIconStyle={createBtnIconStyle}
-          createBtnStyle={createBtnStyle}
+          createBtnIconClassName='rotate-180'
+          createBtnClassName={createBtnClassName}
           transparent
           disabled={p.disabled}
         />

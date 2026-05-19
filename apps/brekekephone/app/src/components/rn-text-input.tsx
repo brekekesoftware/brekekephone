@@ -1,31 +1,33 @@
-import { forwardRef } from 'react'
+import type { ReactElement } from 'react'
 import type { TextInputProps } from 'react-native'
-import { TextInput } from 'react-native'
-import { v } from '#/components/variables'
+
+import type { InputProps } from '@/rn/core/components/input'
+import { Input } from '@/rn/core/components/input'
 import { isWeb } from '#/config'
 
-const baseInputStyle = {
-  position: 'relative' as const,
-  fontSize: v.fontSize,
-  fontWeight: v.fontWeight,
-  fontFamily: v.fontFamily,
-  color: v.color,
-}
 
-export type RnTextInputProps = TextInputProps & {
+// Loose `ref` for legacy callers using `useRef<HTMLInputElement>` (web bias).
+export type RnTextInputProps = Omit<InputProps, 'ref'> & {
+  ref?: any
   disabled?: boolean
+  placeholderTextColor?: string
+  caretHidden?: boolean
 }
 
-export const RnTextInput = forwardRef(
-  ({ keyboardType, style, ...props }: RnTextInputProps, ref) => (
-    <TextInput
-      autoCapitalize='none'
-      ref={ref as (instance: unknown) => void}
-      {...props}
-      keyboardType={
-        (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
-      }
-      style={[baseInputStyle, style]}
-    />
-  ),
+export const RnTextInput = ({
+  className,
+  keyboardType,
+  ...props
+}: RnTextInputProps): ReactElement => (
+  <Input
+    autoCapitalize='none'
+    {...props}
+    keyboardType={
+      (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
+    }
+    className={[
+      'relative text-sm font-normal font-sans text-foreground',
+      className,
+    ]}
+  />
 )

@@ -8,10 +8,6 @@ import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-const btnIconStyle = {
-  transform: [{ rotate: '180deg' }],
-}
-
 @observer
 export class PageSettingsDebugFiles extends Component {
   render() {
@@ -39,7 +35,7 @@ export class PageSettingsDebugFiles extends Component {
             <Field
               key={file.path}
               createBtnIcon={mdiKeyboardBackspace}
-              createBtnIconStyle={btnIconStyle}
+              createBtnIconClassName='rotate-180'
               label={file.name}
               onCreateBtnPress={() => ctx.debug.openLogFile(file)}
               onTouchPress={() => ctx.debug.openLogFile(file)}

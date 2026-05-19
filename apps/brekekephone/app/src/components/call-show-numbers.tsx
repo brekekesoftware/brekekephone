@@ -10,12 +10,6 @@ import { View } from '@/rn/core/components/view'
 import { RnTextInput } from '#/components/rn'
 import { intl } from '#/stores/intl'
 
-const displayTxtStyle = {
-  fontSize: 24,
-  padding: 15,
-  width: '100%' as const,
-}
-
 export const ShowNumber: FC<{
   setTarget(v: string): void
   selectionChange?(
@@ -36,7 +30,7 @@ export const ShowNumber: FC<{
       onSelectionChange={p.selectionChange}
       placeholder={intl`Enter your number`}
       ref={p.refInput}
-      style={displayTxtStyle}
+      className='text-2xl p-3.75 w-full'
       value={p.value}
     />
   </View>

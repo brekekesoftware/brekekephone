@@ -10,10 +10,6 @@ import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'
 
-const btnIconStyle = {
-  transform: [{ rotate: '180deg' }],
-}
-
 @observer
 export class PageSettingsDebug extends Component {
   render() {
@@ -51,7 +47,7 @@ export class PageSettingsDebug extends Component {
             />
             <Field
               createBtnIcon={mdiKeyboardBackspace}
-              createBtnIconStyle={btnIconStyle}
+              createBtnIconClassName='rotate-180'
               label={intl`OPEN DEBUG LOG`}
               onCreateBtnPress={ctx.nav.goToPageSettingsDebugFiles}
               onTouchPress={ctx.nav.goToPageSettingsDebugFiles}
@@ -61,7 +57,7 @@ export class PageSettingsDebug extends Component {
             <Field hasMargin isGroup label={intl`UPDATE`} />
             <Field
               createBtnIcon={mdiKeyboardBackspace}
-              createBtnIconStyle={btnIconStyle}
+              createBtnIconClassName='rotate-180'
               label={intl`UPDATE`}
               onCreateBtnPress={ctx.debug.openInStore}
               onTouchPress={ctx.debug.openInStore}

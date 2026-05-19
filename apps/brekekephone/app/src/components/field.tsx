@@ -2,14 +2,10 @@ import { observer } from 'mobx-react'
 import type { ReactElementLike } from 'prop-types'
 import type { FC } from 'react'
 import { useRef } from 'react'
-import type {
-  TextInputProps,
-  TouchableOpacityProps,
-  ViewProps,
-} from 'react-native'
 import { ActivityIndicator, Keyboard, Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { flow, omit } from '@/shared/lodash'
 import {
   mdiCardsDiamond,
@@ -25,7 +21,7 @@ import {
   RnTouchableOpacity,
 } from '#/components/rn'
 import { v } from '#/components/variables'
-import { isAndroid, isWeb } from '#/config'
+import { isAndroid, isIos, isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'
@@ -55,48 +51,21 @@ const fieldLabelStyle = {
     },
   }),
 }
-const fieldParkTextInputStyle = {
-  flex: 1,
-  paddingBottom: 3,
-  paddingLeft: 7,
-  paddingRight: 10,
-  overflow: 'hidden' as const,
-  ...Platform.select({
-    android: {
-      paddingTop: 0,
-      paddingBottom: 0,
-      lineHeight: v.lineHeight,
-    },
-    web: {
-      paddingTop: 28,
-      width: '100%' as const,
-    },
-    default: {
-      paddingTop: 1,
-    },
-  }),
-}
-const fieldTextInputStyle = {
-  width: '100%' as const,
-  paddingBottom: 3,
-  paddingLeft: 7,
-  paddingRight: 40,
-  fontWeight: 'bold' as const,
-  overflow: 'hidden' as const,
-  ...Platform.select({
-    android: {
-      paddingTop: 0,
-      paddingBottom: 0,
-      lineHeight: v.lineHeight,
-    },
-    web: {
-      paddingTop: 28,
-    },
-    default: {
-      paddingTop: 1,
-    },
-  }),
-}
+// fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
+// Platform.select branches: android lineHeight 20 ≡ leading-5 (= v.lineHeight)
+const fieldParkTextInputClassName = [
+  'flex-1 pb-0.75 pl-1.75 pr-2.5 overflow-hidden',
+  isAndroid && 'pt-0 pb-0 leading-5',
+  isWeb && 'pt-7 w-full',
+  isIos && 'pt-0.25',
+]
+// fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
+const fieldTextInputClassName = [
+  'w-full pb-0.75 pl-1.75 pr-10 font-bold overflow-hidden',
+  isAndroid && 'pt-0 pb-0 leading-5',
+  isWeb && 'pt-7',
+  isIos && 'pt-0.25',
+]
 const fieldSwitchStyle = {
   position: 'absolute' as const,
   top: 22,
@@ -112,17 +81,17 @@ export const Field: FC<
     label: string
     onCreateBtnPress(): void
     onValueChange: Function
-    createBtnStyle: TouchableOpacityProps['style']
+    createBtnClassName: ClassName
     createBtnIcon: string
-    createBtnIconStyle: ViewProps['style']
-    removeBtnStyle: TouchableOpacityProps['style']
+    createBtnIconClassName: ClassName
+    removeBtnClassName: ClassName
     removeBtnIcon: string
-    removeBtnIconStyle: ViewProps['style']
+    removeBtnIconClassName: ClassName
     onRemoveBtnPress(): void
     type: 'Switch' | 'RnPicker' | 'PARK'
     valueRender: Function
     value: string | boolean | Park
-    textInputStyle?: TextInputProps['style']
+    textInputClassName?: ClassName
     options: {
       key: string
       label: string
@@ -131,7 +100,6 @@ export const Field: FC<
     onBlur(): void
     onFocus(): void
     onSubmitEditing(): void
-    style: TextInputProps['style']
     disabled: boolean
     inputElement: ReactElementLike | null
     onTouchPress(): void
@@ -200,15 +168,17 @@ export const Field: FC<
       iconRender: () => (
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
-          className='absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-primary-100'
-          style={props.createBtnStyle}
+          className={[
+            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-primary-100',
+            props.createBtnClassName,
+          ]}
           disabled={props.disabled}
         >
           <RnIcon
             color={v.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
-            style={props.createBtnIconStyle}
+            className={props.createBtnIconClassName}
           />
         </RnTouchableOpacity>
       ),
@@ -219,14 +189,16 @@ export const Field: FC<
       iconRender: () => (
         <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
-          className='absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-error-100'
-          style={props.removeBtnStyle}
+          className={[
+            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-error-100',
+            props.removeBtnClassName,
+          ]}
         >
           <RnIcon
             color={v.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
-            style={props.removeBtnIconStyle}
+            className={props.removeBtnIconClassName}
           />
         </RnTouchableOpacity>
       ),
@@ -277,7 +249,7 @@ export const Field: FC<
             }
             $.set('isFocusing', true)
           }}
-          style={[fieldParkTextInputStyle, props.style]}
+          className={fieldParkTextInputClassName}
           value={value.number as string}
         />
         <RnTextInput
@@ -310,7 +282,7 @@ export const Field: FC<
             }
             $.set('isParkNameFocusing', true)
           }}
-          style={[fieldParkTextInputStyle, props.style]}
+          className={fieldParkTextInputClassName}
           value={value.name as string}
         />
       </View>
@@ -388,7 +360,7 @@ export const Field: FC<
               props.onCreateBtnPress || noop,
               props.onSubmitEditing || noop,
             ])}
-            style={[fieldTextInputStyle, props.style]}
+            className={fieldTextInputClassName}
             value={props.value as string}
           />
         ),
@@ -435,7 +407,7 @@ export const Field: FC<
               disabled
               maxLength={props?.maxLength || 100000}
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              style={[fieldTextInputStyle, props.textInputStyle]}
+              className={[fieldTextInputClassName, props.textInputClassName]}
               value={
                 props.valueRender?.(props.value) || props.value || '\u200a'
               }

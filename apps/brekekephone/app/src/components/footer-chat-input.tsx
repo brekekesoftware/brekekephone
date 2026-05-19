@@ -7,16 +7,6 @@ import type {
 import { View } from '@/rn/core/components/view'
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-
-const inputStyle = {
-  flex: 1,
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderTopWidth: 1,
-  borderBottomWidth: 1,
-  borderColor: v.borderBg,
-}
 
 export const ChatInput: FC<{
   onEmojiTurnOn?(): void
@@ -55,7 +45,7 @@ export const ChatInput: FC<{
         onChangeText={onTextChange}
         onSelectionChange={onSelectionChange}
         onSubmitEditing={onTextSubmit}
-        style={inputStyle}
+        className='flex-1 py-2 px-3 border-t border-b border-border'
         value={text}
       />
       <RnTouchableOpacity

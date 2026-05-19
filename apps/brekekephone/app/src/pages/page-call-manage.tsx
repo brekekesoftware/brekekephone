@@ -439,7 +439,7 @@ class PageCallManage extends Component<{
           <FieldButton
             label={intl`BACKGROUND CALLS`}
             onCreateBtnPress={ctx.nav.goToPageCallBackgrounds}
-            textInputStyle={{ paddingRight: 50 }}
+            textInputClassName='pr-12.5'
             disabled={ctx.call.isAnyHoldLoading}
             value={
               n > 1
