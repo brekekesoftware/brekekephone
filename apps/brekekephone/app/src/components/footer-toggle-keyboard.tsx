@@ -42,7 +42,7 @@ export const ToggleKeyboard: FC<{
         style={css.ToggleKeyboard}
       >
         {/* Fix button size does not equal with the Actions */}
-        <RnText style={css.Text}>{'\u200a'}</RnText>
+        <RnText className='w-0 overflow-hidden leading-6'>{'\u200a'}</RnText>
         <RnIcon
           path={
             RnKeyboard.isKeyboardShowing

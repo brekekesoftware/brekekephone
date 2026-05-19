@@ -281,7 +281,7 @@ export class PageContactPhonebook extends Component {
         </View>
         {ctx.contact.loading ? (
           <RnText
-            style={css.Loading}
+            className='mt-5'
             warning
             small
             normal
@@ -290,7 +290,7 @@ export class PageContactPhonebook extends Component {
         ) : ctx.contact.hasLoadmore ? (
           <RnTouchableOpacity onPress={ctx.contact.loadMoreContacts}>
             <RnText
-              style={css.Loading}
+              className='mt-5'
               primary
               small
               normal

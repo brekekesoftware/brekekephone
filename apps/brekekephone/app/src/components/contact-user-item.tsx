@@ -277,13 +277,11 @@ export const UserItem: FC<
         <View style={[css.Text, css.WithSpace]}>
           <View style={css.NameWithStatus}>
             <RnText
-              black
               bold
               singleLine
-              style={{
-                color:
-                  name === intl`<Unnamed>` ? v.colors.greyTextChat : 'black',
-              }}
+              className={
+                name === intl`<Unnamed>` ? 'text-[#9e9e9e]' : 'text-black'
+              }
             >
               {partyName ||
                 name ||
@@ -292,19 +290,24 @@ export const UserItem: FC<
                 id}
             </RnText>
             {!!statusText && (
-              <RnText normal singleLine small style={css.Status}>
+              <RnText
+                normal
+                singleLine
+                small
+                className='top-0.5 left-0.75 text-foreground-muted'
+              >
                 {statusText}
               </RnText>
             )}
           </View>
           {!!parkNumber && (
-            <RnText normal small style={css.CallCreatedAt}>
+            <RnText normal small className='left-0.75 text-foreground-muted'>
               {intl`Park number: ` + `${parkNumber}`}
             </RnText>
           )}
 
           {!!phonebook && (
-            <RnText normal small style={css.CallCreatedAt}>
+            <RnText normal small className='left-0.75 text-foreground-muted'>
               {phonebook}
             </RnText>
           )}
@@ -335,7 +338,7 @@ export const UserItem: FC<
                 size={14}
                 style={css.CallIcon}
               />
-              <RnText normal small style={css.CallCreatedAt}>
+              <RnText normal small className='left-0.75 text-foreground-muted'>
                 {isVoicemail
                   ? intl`Voicemail`
                   : intl`${reason} at ${created}`.trim()}

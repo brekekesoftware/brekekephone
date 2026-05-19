@@ -45,7 +45,9 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const isStopped = p.state === 'stopped'
   const isDisableCancel =
     isStopped || p.state === 'success' || p.state === 'failure'
-  const styleText = !isStopped ? css.textFileInfo : css.textFileInfoLineThrough
+  const textClass = isStopped
+    ? 'text-[#9e9e9e] text-[13px] line-through'
+    : 'text-[#9e9e9e] text-[13px]'
 
   const onCancelFile = () => {
     ctx.uc.rejectFile(p).catch(onRejectFileFailure)
@@ -59,12 +61,12 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   return (
     <View>
       <View style={css.vMessage}>
-        <RnText className='line-clamp-2' style={styleText}>
+        <RnText className={['line-clamp-2', textClass]}>
           {p.name}
           {displaySendTo}
         </RnText>
         <View style={css.vHorizontal}>
-          <RnText style={styleText}>
+          <RnText className={textClass}>
             {formatBytes(p?.size || 0, 2)}
             {` (${p.transferPercent}%) `}
           </RnText>

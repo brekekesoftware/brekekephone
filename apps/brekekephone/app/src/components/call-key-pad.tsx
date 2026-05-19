@@ -73,7 +73,7 @@ export const KeyPad = (p: {
             onPress={() => p.onPressNumber(key)}
             style={css.KeyPad_NumberBtn}
           >
-            <RnText style={css.KeyPad_NumberTxt}>{key}</RnText>
+            <RnText center className='py-5 text-[25.2px] font-semibold'>{key}</RnText>
           </RnTouchableOpacity>
         ))}
       </View>

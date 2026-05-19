@@ -1,6 +1,8 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Animated, View } from 'react-native'
+
+import { AnimatedView } from '@/rn/core/components/animated'
 import { RnText } from '#/components/rn'
 
 const css = {
@@ -52,11 +54,14 @@ export const Toast: FC<ToastProps> = ({
 
   return (
     <View style={[css.container, containerStyles]}>
-      <Animated.View style={[css.content, { opacity: fadeAnim }]}>
+      <AnimatedView
+        className='px-1.25 pt-1 pb-1.25'
+        style={{ opacity: fadeAnim }}
+      >
         <RnText normal white>
           {validTitle}
         </RnText>
-      </Animated.View>
+      </AnimatedView>
     </View>
   )
 }

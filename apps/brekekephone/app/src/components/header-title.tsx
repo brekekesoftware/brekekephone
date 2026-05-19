@@ -1,28 +1,10 @@
 import type { FC } from 'react'
-import { Animated } from 'react-native'
+
+import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
-import { AnimatedText } from '#/components/rn-text'
 import { v } from '#/components/variables'
 import { useAnimation } from '#/utils/animation'
-
-const css = {
-  Container: {
-    paddingVertical: 15,
-    paddingLeft: 15,
-    marginRight: 25,
-  },
-  Title: {
-    fontSize: v.fontSizeTitle,
-    lineHeight: v.lineHeightTitle,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  Description: {
-    color: v.subColor,
-    paddingRight: 15,
-  },
-}
 
 export const Title: FC<{
   compact: boolean
@@ -38,15 +20,19 @@ export const Title: FC<{
     lineHeight: [v.lineHeightTitle, 20],
   })
   return (
-    <Animated.View style={[css.Container, cssContainerA]}>
-      <AnimatedText singleLine style={[css.Title, cssTitleA]}>
+    <AnimatedView className='pl-3.75 mr-6.25' style={cssContainerA}>
+      <AnimatedText
+        numberOfLines={1}
+        className='leading-5 font-bold text-black'
+        style={cssTitleA}
+      >
         {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (
-        <RnText className='line-clamp-1' style={css.Description}>
+        <RnText className='line-clamp-1 pr-3.75 text-foreground-muted'>
           {description || '\u200a'}
         </RnText>
       )}
-    </Animated.View>
+    </AnimatedView>
   )
 }

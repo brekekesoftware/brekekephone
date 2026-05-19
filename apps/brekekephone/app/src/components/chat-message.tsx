@@ -131,54 +131,35 @@ const File: FC<
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
-      <RnText style={css.Message_File_Preview_Info_Size}>{p.size} KB</RnText>
+      <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
       <View style={css.Message_File_Button_Wrapper}>
         {p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity onPress={p.reject}>
-            <RnText
-              style={[css.Message_File_Button, css.Message_File_Cancel_Button]}
-            >
+            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] text-error border border-error'>
               Cancel
             </RnText>
           </RnTouchableOpacity>
         )}
         {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity onPress={p.accept}>
-            <RnText
-              style={[css.Message_File_Button, css.Message_File_Accept_Button]}
-            >
+            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] bg-primary border border-primary'>
               Accept
             </RnText>
           </RnTouchableOpacity>
         )}
       </View>
       {p.state === 'success' && p.fileType !== 'image' && (
-        <RnText
-          style={[
-            css.Message_File_Preview_Status,
-            css.Message_File_Preview_Status__Success,
-          ]}
-        >
+        <RnText normal primary>
           ({intl`Success`})
         </RnText>
       )}
       {p.state === 'failure' && p.fileType !== 'image' && (
-        <RnText
-          style={[
-            css.Message_File_Preview_Status,
-            css.Message_File_Preview_Status__Failed,
-          ]}
-        >
+        <RnText normal danger>
           ({intl`Failed`})
         </RnText>
       )}
       {p.state === 'stopped' && p.fileType !== 'image' && (
-        <RnText
-          style={[
-            css.Message_File_Preview_Status,
-            css.Message_File_Preview_Status__Failed,
-          ]}
-        >
+        <RnText normal danger>
           ({intl`Canceled`})
         </RnText>
       )}

@@ -79,7 +79,7 @@ export const MessageList: FC<{
       {groupByTimestamp(list).map(({ date, groupByTime }, i) => (
         <View key={date} style={[css.DateGroup, !i && css.DateGroup__first]}>
           <View style={css.Border} />
-          <RnText style={css.Date}>{date}</RnText>
+          <RnText className='self-center bg-white px-2.5'>{date}</RnText>
           {groupByTime.map(({ messages, time }, j) => {
             const id = messages[0]?.id
             const c0 = resolveChat(id) as ChatMessage & {
@@ -103,7 +103,7 @@ export const MessageList: FC<{
                     <RnText bold singleLine>
                       {name}
                     </RnText>
-                    <RnText style={css.Time}>{time}</RnText>
+                    <RnText className='px-1 text-foreground-muted text-[11.2px]'>{time}</RnText>
                   </View>
                   <View>
                     {messages.map(m => (

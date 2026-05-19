@@ -117,7 +117,7 @@ export const WebchatItem: FC<{
         </RnTouchableOpacity>
       </View>
       {!isEnabledAnswer ? (
-        <RnText normal singleLine small style={css.Text}>
+        <RnText normal singleLine small className='pl-2.5 pr-1.25 py-2.5 min-w-20'>
           {data.assigned.user_id || ''}
         </RnText>
       ) : (
@@ -126,13 +126,13 @@ export const WebchatItem: FC<{
         </Duration>
       )}
 
-      <RnText normal singleLine small style={css.Text}>
+      <RnText normal singleLine small className='pl-2.5 pr-1.25 py-2.5 min-w-20'>
         {data.webchatinfo.profinfo_formatted || ''}
       </RnText>
       <RnText
         normal
         small
-        style={[css.Text, css.TextMessage]}
+        className='flex-1 pl-2.5 pr-1.25 py-2.5 min-w-20'
         // className='line-clamp-5'
       >
         {textDisplay.map(

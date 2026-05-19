@@ -6,7 +6,7 @@ require('@/nodejs/entrypoint')({
 const { twPlugin } = require('@/devtools/babel-plugin-tw')
 const { asyncHookPlugin } = require('@/devtools/babel-plugin-async-hook')
 const { getAlias } = require('@/devtools/ts/get-alias')
-const twrncConfig = require('#/twrnc-config')
+const { twrncConfig } = require('#/twrnc-config')
 
 const twOptions = {
   twrncConfig,

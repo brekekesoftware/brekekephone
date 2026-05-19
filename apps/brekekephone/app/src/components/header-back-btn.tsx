@@ -1,23 +1,9 @@
 import type { FC } from 'react'
-import { Animated } from 'react-native'
+
+import { AnimatedView } from '@/rn/core/components/animated'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
 import { useAnimation } from '#/utils/animation'
-
-const css = {
-  BackBtn: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  Inner: {
-    width: 50,
-    height: 70,
-    paddingHorizontal: 0,
-    paddingVertical: 20,
-    borderRadius: 0,
-  },
-}
 
 export const BackBtn: FC<{
   compact: boolean
@@ -29,10 +15,10 @@ export const BackBtn: FC<{
     paddingVertical: [20, 5],
   })
   return (
-    <RnTouchableOpacity onPress={onPress} style={css.BackBtn}>
-      <Animated.View style={[css.Inner, cssInnerA]}>
+    <RnTouchableOpacity onPress={onPress} className='absolute top-0 left-0'>
+      <AnimatedView className='w-12.5 px-0 rounded-none' style={cssInnerA}>
         <RnIcon path={mdiKeyboardBackspace} />
-      </Animated.View>
+      </AnimatedView>
     </RnTouchableOpacity>
   )
 }

@@ -1,7 +1,9 @@
 import type { FC, PropsWithChildren } from 'react'
 import { useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { Animated, View } from 'react-native'
+import { View } from 'react-native'
+
+import { AnimatedView } from '@/rn/core/components/animated'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
 const css = {
@@ -61,8 +63,8 @@ const Animation = (p: {
     [animateWidth ? 'width' : 'height']: [0, size],
   })
   return (
-    <Animated.View style={[style, cssAnimation]}>
+    <AnimatedView style={[style, cssAnimation]}>
       <View style={[css.Inner, innerStyle]}>{children}</View>
-    </Animated.View>
+    </AnimatedView>
   )
 }

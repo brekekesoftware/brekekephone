@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import { useRef, useState } from 'react'
-import { Animated, Dimensions, Platform, ScrollView } from 'react-native'
+import { Dimensions, Platform, ScrollView } from 'react-native'
 
+import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
@@ -121,29 +122,19 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   )
   return (
     <View className='absolute inset-0 flex-col items-center justify-center'>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          backgroundColor: v.layerBg,
-          opacity: backdropCss.opacity,
-        }}
+      <AnimatedView
+        className='absolute inset-0 bg-modal-overlay'
+        style={{ opacity: backdropCss.opacity }}
       >
         <RnTouchableOpacity
           onPress={ctx.contact.dismissPicker}
           className='absolute inset-0'
         />
-      </Animated.View>
-      <Animated.View
+      </AnimatedView>
+      <AnimatedView
+        className='absolute w-[90%] max-w-95 max-h-full'
         style={{
-          position: 'absolute',
           bottom: innerBottom,
-          width: '90%',
-          maxWidth: v.maxModalWidth,
-          maxHeight: '100%',
           transform: [y],
         }}
       >
@@ -173,16 +164,16 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             onPress={() => onSelect(value)}
             style={[css.RnPicker_Option, css.RnPicker_Option__OK]}
           >
-            <RnText style={css.RnPicker_Text__Ok}>OK</RnText>
+            <RnText bold white>OK</RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={ctx.contact.dismissPicker}
             style={[css.RnPicker_Option, css.RnPicker_Option__cancel]}
           >
-            <RnText style={css.RnPicker_Text__cancel}>{intl`Cancel`}</RnText>
+            <RnText bold className='text-foreground/80'>{intl`Cancel`}</RnText>
           </RnTouchableOpacity>
         </View>
-      </Animated.View>
+      </AnimatedView>
     </View>
   )
 })

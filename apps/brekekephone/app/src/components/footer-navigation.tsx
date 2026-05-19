@@ -73,7 +73,7 @@ export const Navigation: FC<{
           {showUnreadChat && (
             <View style={css.UnreadOuter}>
               <View style={css.Unread}>
-                <RnText style={css.UnreadText} bold white center>
+                <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
                   {totalUnreadChat + totalNoticesWebchat}
                 </RnText>
               </View>

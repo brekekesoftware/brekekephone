@@ -20,12 +20,6 @@ import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
-const css = {
-  WebApp_BtnTxt__browser: {
-    color: 'white',
-  },
-}
-
 export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   const isBrowserOrEmbed = isBrowser || isEmbed
@@ -48,7 +42,7 @@ export const App = () => {
         />
         <a href={appUrl}>
           <RnTouchableOpacity className='relative mt-7.5 w-67.5 rounded-[3px] bg-black p-3.75'>
-            <RnText small style={css.WebApp_BtnTxt__browser}>
+            <RnText small white>
               {intl`OPEN IN APP`}
             </RnText>
             <RnIcon

@@ -14,12 +14,6 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { PushNotification } from '#/utils/push-notification'
 
-const css = {
-  Loading: {
-    marginTop: 20,
-  },
-}
-
 @observer
 export class PageCallRecents extends Component {
   appStateSubscription?: NativeEventSubscription
@@ -103,7 +97,7 @@ export class PageCallRecents extends Component {
         })}
         {ctx.auth.rcLoading ? (
           <RnText
-            style={css.Loading}
+            className='mt-5'
             warning
             small
             normal
@@ -112,7 +106,7 @@ export class PageCallRecents extends Component {
         ) : ctx.auth.cRecentCalls.length < ctx.auth.rcCount ? (
           <RnTouchableOpacity onPress={ctx.auth.rcLoadMore}>
             <RnText
-              style={css.Loading}
+              className='mt-5'
               primary
               small
               normal

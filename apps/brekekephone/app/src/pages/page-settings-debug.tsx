@@ -80,7 +80,7 @@ export class PageSettingsDebug extends Component {
               normal
               primary={!isUpdateAvailable}
               small
-              style={css.Text}
+              className='px-5'
               warning={isUpdateAvailable}
             >
               {intl`Current version: ${currentVersion}`}
@@ -97,10 +97,10 @@ export class PageSettingsDebug extends Component {
         )}
         {isWeb && (
           <>
-            <RnText normal primary small style={css.Text}>
+            <RnText normal primary small className='px-5'>
               {intl`Current version: ${currentVersion}`}
             </RnText>
-            <RnText normal warning small style={css.Text}>
+            <RnText normal warning small className='px-5'>
               {intl`You are running an in-browser version of ${ctx.global.productName}`}
             </RnText>
           </>

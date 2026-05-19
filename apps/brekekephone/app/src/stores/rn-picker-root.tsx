@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import { useState } from 'react'
-import { Animated, Dimensions } from 'react-native'
+import { Dimensions } from 'react-native'
 
+import { AnimatedScrollView, AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
@@ -95,29 +96,18 @@ const RnPickerR = (p: RnPickerOption) => {
 
   return (
     <View className='absolute inset-0 flex-row items-center justify-center'>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          backgroundColor: v.layerBg,
-          opacity: backdropCss.opacity,
-        }}
+      <AnimatedView
+        className='absolute inset-0 bg-modal-overlay'
+        style={{ opacity: backdropCss.opacity }}
       >
         <RnTouchableOpacity
           onPress={RnPicker.dismiss}
           className='absolute inset-0'
         />
-      </Animated.View>
-      <Animated.ScrollView
+      </AnimatedView>
+      <AnimatedScrollView
+        className='absolute w-[90%] max-w-95 max-h-[80%] mb-15'
         style={{
-          position: 'absolute',
-          width: '90%',
-          maxWidth: v.maxModalWidth,
-          maxHeight: '80%',
-          marginBottom: 60,
           bottom: defaultBottomPosition,
           transform: [y],
         }}
@@ -140,11 +130,9 @@ const RnPickerR = (p: RnPickerOption) => {
                 ]}
               >
                 <RnText
-                  className='line-clamp-1'
-                  style={[
-                    css.RnPicker_Label,
-                    isSelected && css.RnPicker_Text__selected,
-                  ]}
+                  className='line-clamp-1 w-[95%]'
+                  bold={isSelected}
+                  primary={isSelected}
                 >
                   {o.label}
                 </RnText>
@@ -160,7 +148,7 @@ const RnPickerR = (p: RnPickerOption) => {
             )
           })}
         </View>
-      </Animated.ScrollView>
+      </AnimatedScrollView>
       <View
         style={{
           flexDirection: 'row',
@@ -170,7 +158,7 @@ const RnPickerR = (p: RnPickerOption) => {
           maxWidth: v.maxModalWidth,
         }}
       >
-        <Animated.View style={[{ transform: [y] }, css.RnPicker_Button]}>
+        <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
             style={[
@@ -179,7 +167,7 @@ const RnPickerR = (p: RnPickerOption) => {
               p.onConfirm && css.RnPicker_Button_cancel,
             ]}
           >
-            <RnText style={css.RnPicker_Text__cancel}>
+            <RnText bold danger>
               {p.cancelLabel || intl`Cancel`}
             </RnText>
             {!p.onConfirm && (
@@ -190,9 +178,9 @@ const RnPickerR = (p: RnPickerOption) => {
               />
             )}
           </RnTouchableOpacity>
-        </Animated.View>
+        </AnimatedView>
         {p.onConfirm && (
-          <Animated.View style={[{ transform: [y] }, css.RnPicker_Button]}>
+          <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
             <RnTouchableOpacity
               onPress={onConfirm}
               style={[
@@ -201,11 +189,11 @@ const RnPickerR = (p: RnPickerOption) => {
                 p.onConfirm && css.RnPicker_Button_confirm,
               ]}
             >
-              <RnText style={[css.RnPicker_Text__selected, css.Confirm_label]}>
+              <RnText bold white>
                 {p.confirmLabel || intl`SAVE`}
               </RnText>
             </RnTouchableOpacity>
-          </Animated.View>
+          </AnimatedView>
         )}
       </View>
     </View>

@@ -53,7 +53,7 @@ export class PageChatGroupInvite extends Component<{
     return (
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
         <View style={css.PageChatGroupInvite_Outer}>
-          <RnText style={css.PageChatGroupInvite_GroupName}>
+          <RnText className='p-1.25 text-[25.2px]'>
             {ctx.chat.getGroupById(this.props.groupId).name}
           </RnText>
           <RnTouchableOpacity
@@ -61,10 +61,11 @@ export class PageChatGroupInvite extends Component<{
             style={css.PageChatGroupInvite_BtnSave}
           >
             <RnText
-              style={css.PageChatGroupInvite_BtnText}
+              white
+              className='items-center text-[16.8px]'
             >{intl`Invite`}</RnText>
           </RnTouchableOpacity>
-          <RnText style={css.PageChatGroupInvite_Text}>{intl`Members`}</RnText>
+          <RnText className='pt-3.75 text-[25.2px]'>{intl`Members`}</RnText>
         </View>
         <Field isGroup />
         {ctx.contact.ucUsers

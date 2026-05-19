@@ -1,8 +1,9 @@
 import type { FC } from 'react'
-import { Animated, View } from 'react-native'
+import type { Animated } from 'react-native'
+import { View } from 'react-native'
+
+import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { RnTouchableOpacity } from '#/components/rn'
-import type { TRnText } from '#/components/rn-text'
-import { AnimatedText, RnText } from '#/components/rn-text'
 import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
@@ -50,7 +51,6 @@ export const ParkItem: FC<ParkItemProps> = ({
   onPress,
 }) => {
   const useAnimated = !!flashAnim && !selected
-  const TextComp: TRnText = useAnimated ? AnimatedText : RnText
 
   const flashBg = flashAnim?.interpolate({
     inputRange: [0, 1],
@@ -87,12 +87,19 @@ export const ParkItem: FC<ParkItemProps> = ({
   const content = (
     <RnTouchableOpacity onPress={available ? onPress : undefined}>
       <View style={css.inner}>
-        <TextComp bold singleLine style={textStyle as any}>
+        <AnimatedText
+          numberOfLines={1}
+          className='font-bold'
+          style={textStyle as any}
+        >
           {displayName}
-        </TextComp>
-        <TextComp normal small style={subTextStyle as any}>
+        </AnimatedText>
+        <AnimatedText
+          className='text-[11.2px] font-normal'
+          style={subTextStyle as any}
+        >
           {intl`Park number: ` + parkNumber}
-        </TextComp>
+        </AnimatedText>
       </View>
     </RnTouchableOpacity>
   )
@@ -100,7 +107,7 @@ export const ParkItem: FC<ParkItemProps> = ({
   return (
     <View style={[css.outer, !available && css.disabled]}>
       {useAnimated ? (
-        <Animated.View style={wrapperStyle}>{content}</Animated.View>
+        <AnimatedView style={wrapperStyle}>{content}</AnimatedView>
       ) : (
         <View style={wrapperStyle}>{content}</View>
       )}

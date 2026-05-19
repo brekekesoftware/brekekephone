@@ -1,41 +1,31 @@
-import { darken } from 'polished'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
-import { View } from 'react-native'
-import { v } from '#/components/variables'
 
-const css = {
-  RnSwitch: {
-    height: 12,
-    width: 32,
-    backgroundColor: darken(0.05, v.hoverBg),
-    borderRadius: 12,
-  },
-  RnSwitch__enabled: {
-    backgroundColor: v.colors.primaryFn(0.1),
-  },
-  Circle: {
-    position: 'absolute',
-    top: -3,
-    left: -1,
-    width: 18,
-    height: 18,
-    borderRadius: 18,
-    backgroundColor: darken(0.05, v.borderBg),
-    ...v.boxShadow,
-  },
-  Circle__enabled: {
-    transform: [{ translateX: 20 }],
-    backgroundColor: v.colors.primary,
-  },
-}
+import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { v } from '#/components/variables'
 
 export const RnSwitch: FC<
   ViewProps & {
     enabled: boolean
+    className?: ClassName
   }
-> = ({ enabled, style, ...p }) => (
-  <View {...p} style={[css.RnSwitch, enabled && css.RnSwitch__enabled, style]}>
-    <View style={[css.Circle, enabled && css.Circle__enabled]} />
+> = ({ enabled, style, className, ...p }) => (
+  <View
+    {...p}
+    className={[
+      'h-3 w-8 rounded-xl',
+      enabled ? 'bg-primary-400' : 'bg-[#e6e6e6]',
+      className,
+    ]}
+    style={style}
+  >
+    <View
+      className={[
+        'absolute -top-0.75 -left-px h-4.5 w-4.5 rounded-full',
+        enabled ? 'translate-x-5 bg-primary' : 'bg-[#cccccc]',
+      ]}
+      style={v.boxShadow}
+    />
   </View>
 )

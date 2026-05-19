@@ -164,9 +164,9 @@ export class PageChatGroupDetail extends Component<{
         title={gr?.name}
       >
         {loadingRecent ? (
-          <RnText style={css.LoadMore}>{intl`Loading...`}</RnText>
+          <RnText className='self-center pb-3.75 px-2.5 text-[11.2px]'>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
-          <RnText center style={[css.LoadMore, css.LoadMore__finished]}>
+          <RnText center warning className='self-center pb-3.75 px-2.5 text-[11.2px]'>
             {!ctx.chat.getMessagesByThreadId(this.props.groupId).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
@@ -177,7 +177,8 @@ export class PageChatGroupDetail extends Component<{
           >
             <RnText
               bold={!loadingMore}
-              style={[css.LoadMore, !loadingMore && css.LoadMore__btn]}
+              primary={!loadingMore}
+              className='self-center pb-3.75 px-2.5 text-[11.2px]'
             >
               {loadingMore ? intl`Loading...` : intl`Load more messages`}
             </RnText>

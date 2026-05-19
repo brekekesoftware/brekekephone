@@ -25,7 +25,7 @@ import {
   RnTouchableOpacity,
 } from '#/components/rn'
 import { v } from '#/components/variables'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'
@@ -253,7 +253,10 @@ export const Field: FC<
           props.hasMargin && css.Field__groupMargin,
         ]}
       >
-        <RnText small style={css.Field_LabelTextGroup}>
+        <RnText
+          small
+          className={isAndroid ? '-top-1.5' : undefined}
+        >
           {props.label}
         </RnText>
       </View>
@@ -473,7 +476,7 @@ export const Field: FC<
   const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
     <View pointerEvents='none' style={css.Field_Label}>
-      <RnText small style={css.Field_LabelText}>
+      <RnText small normal className='text-foreground-muted'>
         {props.label}
       </RnText>
     </View>
@@ -544,7 +547,7 @@ export const Field: FC<
               path={mdiCardsDiamond}
               className='absolute -top-2 left-0.5'
             />
-            <RnText small style={css.Field_ErrorLabel}>
+            <RnText small white>
               {props.error}
             </RnText>
           </View>

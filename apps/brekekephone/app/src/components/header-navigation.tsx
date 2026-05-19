@@ -56,7 +56,7 @@ export const Navigation: FC<{
     (totalNotice: number, style?: ViewStyle) => (
       <View style={fcss.UnreadOuter}>
         <View style={[fcss.Unread, css.Unread, style]}>
-          <RnText style={fcss.UnreadText} bold white center>
+          <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
             {totalNotice}
           </RnText>
         </View>
@@ -129,9 +129,8 @@ export const Navigation: FC<{
           >
             <RnText
               small
-              className='line-clamp-1'
               ellipsizeMode='tail'
-              style={active && css.Text__active}
+              className={['line-clamp-1', active && 'text-primary']}
             >
               {s.label}
             </RnText>

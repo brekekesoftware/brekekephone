@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Animated, View } from 'react-native'
+
+import { AnimatedView } from '@/rn/core/components/animated'
 import { RnText } from '#/components/rn'
 import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
@@ -81,31 +83,29 @@ const Item = observer(
     const errorDetail = data.err?.message
 
     return (
-      <Animated.View
-        style={[
-          s.item,
-          {
-            backgroundColor: getBg(data.type),
-            opacity: fade,
-            transform: [{ translateY: y }],
-          },
-        ]}
+      <AnimatedView
+        className='py-0.5 px-1 rounded-br-sm'
+        style={{
+          backgroundColor: getBg(data.type),
+          opacity: fade,
+          transform: [{ translateY: y }],
+        }}
       >
         {data?.msg && (
-          <RnText className='line-clamp-1' ellipsizeMode='tail' style={s.text}>
+          <RnText className='line-clamp-1' ellipsizeMode='tail' white>
             {data.msg}
           </RnText>
         )}
         {errorDetail && (
           <RnText
-            className='line-clamp-2'
+            className='line-clamp-2 ml-1 text-[12px]'
             ellipsizeMode='tail'
-            style={s.errorDetail}
+            white
           >
             {errorDetail}
           </RnText>
         )}
-      </Animated.View>
+      </AnimatedView>
     )
   },
 )

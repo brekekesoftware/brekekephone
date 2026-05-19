@@ -1,3 +1,5 @@
 @import 'tailwindcss';
 @config './tailwind.config.js';
 @import '../../../framework/rn/core/tailwind.css';
+@import '../../../framework/rn/themes/common.extract-variables.css';
+@import './src/theme.css';

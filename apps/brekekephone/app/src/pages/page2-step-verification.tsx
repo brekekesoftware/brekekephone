@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 
+import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { mdiClose } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
@@ -240,12 +241,9 @@ export const Page2StepVerification = () => {
   }
 
   return (
-    <Animated.View
+    <AnimatedView
+      className='absolute right-0 left-0 bg-background'
       style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        backgroundColor: v.bg,
         opacity: anim.opacity,
         top: safeInsets?.top ?? 0,
         bottom: -(safeInsets?.bottom ?? 0),
@@ -300,25 +298,19 @@ export const Page2StepVerification = () => {
             <View className='flex-row flex-wrap items-center gap-1 py-3'>
               <RnText>{intl`Can't find your code?`} </RnText>
               <RnTouchableOpacity disabled={isLoading} onPress={resendNewCode}>
-                <RnText style={css.TouchResendCode}>
+                <RnText primary className='underline'>
                   {intl`Resend a new code`}
                 </RnText>
               </RnTouchableOpacity>
             </View>
             {toast && (
               <View className='w-full justify-center'>
-                <Animated.View
-                  style={{
-                    flexDirection: 'row',
-                    width: '100%',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    borderRadius: 5,
-                    paddingVertical: 10,
-                    backgroundColor:
-                      toast.type === 'err' ? v.colors.danger : v.colors.info,
-                    opacity: fadeAnim,
-                  }}
+                <AnimatedView
+                  className={[
+                    'flex-row w-full justify-around items-center rounded-[5px] py-2.5',
+                    toast.type === 'err' ? 'bg-error' : 'bg-info',
+                  ]}
+                  style={{ opacity: fadeAnim }}
                 >
                   <View className='w-4/5'>
                     <RnText normal white>
@@ -328,12 +320,12 @@ export const Page2StepVerification = () => {
                   <RnTouchableOpacity onPress={dismissToast}>
                     <RnIcon color='white' path={mdiClose} />
                   </RnTouchableOpacity>
-                </Animated.View>
+                </AnimatedView>
               </View>
             )}
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
-    </Animated.View>
+    </AnimatedView>
   )
 }

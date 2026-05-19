@@ -104,7 +104,7 @@ export const FooterActions: FC<
           },
         ]}
       >
-        <RnText style={css.Text}>{onNextText || intl`SAVE`}</RnText>
+        <RnText bold white className='text-[11px]'>{onNextText || intl`SAVE`}</RnText>
       </RnTouchableOpacity>
     </View>
   )

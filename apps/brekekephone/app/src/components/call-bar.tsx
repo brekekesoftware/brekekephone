@@ -66,7 +66,7 @@ export const CallBar = observer(() => {
           />
         </View>
         <View style={css.CallBar_Info}>
-          <RnText style={css.Notify_Info_PartyName}>
+          <RnText bold className='text-[15px]'>
             {trimDisplayName(oc.getDisplayName())}
           </RnText>
           <RnText>

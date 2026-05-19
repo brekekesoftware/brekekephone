@@ -166,7 +166,7 @@ export class PageChatRecents extends Component {
       >
         <Field isGroup label={intl`RECENT CHAT THREADS`} />
         {!arr.length && (
-          <RnText center normal small warning style={{ marginTop: 5 }}>
+          <RnText center normal small warning className='mt-1.25'>
             {intl`There's no active chat thread`}
           </RnText>
         )}

@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
-import { Animated, Dimensions } from 'react-native'
+import { Dimensions } from 'react-native'
 
+import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { flow } from '@/shared/lodash'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
@@ -73,29 +74,18 @@ const RnAlertR = ({
   }
   return (
     <View className='absolute inset-0 flex-row items-center justify-center'>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          backgroundColor: v.layerBg,
-          opacity: a.opacity,
-        }}
+      <AnimatedView
+        className='absolute inset-0 bg-modal-overlay'
+        style={{ opacity: a.opacity }}
       >
         <RnTouchableOpacity
           onPress={props.onDismiss}
           className='absolute inset-0'
         />
-      </Animated.View>
-      <Animated.View
+      </AnimatedView>
+      <AnimatedView
+        className='w-[90%] max-w-95 rounded-[3px] p-3.75 bg-background'
         style={{
-          width: '90%',
-          maxWidth: v.maxModalWidth,
-          borderRadius: v.borderRadius,
-          padding: 15,
-          backgroundColor: v.bg,
           ...v.boxShadow,
           transform: [{ translateY: a.translateY }],
         }}
@@ -106,8 +96,7 @@ const RnAlertR = ({
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5'
-              style={{ backgroundColor: v.revBg }}
+              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5 bg-reverse'
             >
               <RnText small white className='text-center'>
                 {props.dismissText}
@@ -116,15 +105,14 @@ const RnAlertR = ({
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            className='w-25 rounded-[3px] px-3.75 py-2.5'
-            style={{ backgroundColor: v.colors.primary }}
+            className='w-25 rounded-[3px] px-3.75 py-2.5 bg-primary'
           >
             <RnText small white className='text-center'>
               {props.confirmText}
             </RnText>
           </RnTouchableOpacity>
         </View>
-      </Animated.View>
+      </AnimatedView>
     </View>
   )
 }

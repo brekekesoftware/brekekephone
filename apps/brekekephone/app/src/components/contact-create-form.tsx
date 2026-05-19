@@ -174,9 +174,9 @@ export const ContactsCreateForm: FC<{
       {!disabled && (
         <RnText
           title
-          style={[
-            css.stylePreviewName,
-            { color: !previewName ? v.colors.greyTextChat : 'black' },
+          className={[
+            'mx-5',
+            !previewName ? 'text-[#9e9e9e]' : 'text-black',
           ]}
         >
           {previewName || intl`<Unnamed>`}
@@ -190,7 +190,7 @@ export const ContactsCreateForm: FC<{
       />
       {!disabled && (
         <RnTouchableOpacity style={css.styleAddItem} onPress={openPicker}>
-          <RnText small style={css.labelAddItem}>
+          <RnText small normal className='text-foreground-muted'>
             {'>>' + intl`Add item`}
           </RnText>
         </RnTouchableOpacity>

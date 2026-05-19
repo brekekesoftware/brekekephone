@@ -44,6 +44,6 @@ export const SelectionItem: FC<
       }}
       disabled={disabled}
     />
-    <RnText style={css.SelectionItem_Title}>{title}</RnText>
+    <RnText className='ml-3'>{title}</RnText>
   </RnTouchableOpacity>
 )

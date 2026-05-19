@@ -77,7 +77,10 @@ export const ButtonIcon: FC<{
       {p.name && (
         <RnText
           small
-          style={[css.ButtonIcon_Name, !!p.textcolor && { color: p.textcolor }]}
+          center
+          white={p.textcolor === 'white'}
+          black={p.textcolor === 'black'}
+          className={['pt-1.25', isIos ? 'min-w-17.5' : 'min-w-20']}
         >
           {p.name}
         </RnText>

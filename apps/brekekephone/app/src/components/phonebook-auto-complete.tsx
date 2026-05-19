@@ -1,7 +1,9 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import type { TouchableOpacityProps } from 'react-native'
-import { Dimensions, Platform, ScrollView, Text, View } from 'react-native'
+import { Dimensions, Platform, ScrollView, View } from 'react-native'
+
+import { Text } from '@/rn/components/text'
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { v } from '#/components/variables'
@@ -125,7 +127,7 @@ export const PhonebookAutoComplete: FC<
               onPressItem?.(item)
             }}
           >
-            <Text style={css.txtPb}>{item.phonebook}</Text>
+            <Text className='mx-2.5 w-full text-left'>{item.phonebook}</Text>
           </RnTouchableOpacity>
         ))}
       </ScrollView>

@@ -201,7 +201,7 @@ export class PageContactEdit extends Component {
             <View style={css.listTitleSection}>
               <View style={css.rowCapacity}>
                 <RnText>{`${intl`Capacity`}`}</RnText>
-                <RnText style={isCapacityInvalid && css.errorText}>{`    ${
+                <RnText className={isCapacityInvalid ? 'text-red-500' : undefined}>{`    ${
                   isSelectedAddAllUser
                     ? dataListAllUser.length
                     : Object.keys(selectedUserIds).length
@@ -212,7 +212,7 @@ export class PageContactEdit extends Component {
           </View>
         </TouchableWithoutFeedback>
         {!this.state.didMount ? (
-          <ActivityIndicator style={css.loadingIcon} size='large' />
+          <ActivityIndicator style={css.loadingIcon} size='small' />
         ) : isSelectEditGroupingAndUserOrder ? (
           <ContactSectionList
             sectionListData={dataGroupAllUser}
