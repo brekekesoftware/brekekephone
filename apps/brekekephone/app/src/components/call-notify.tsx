@@ -80,7 +80,6 @@ export const CallNotify = observer(() => {
             onPress={c.hangupWithUnhold}
             path={mdiClose}
             size={20}
-            style={{ borderColor: v.colors.danger }}
           />
         )}
         <ButtonIcon
@@ -94,7 +93,6 @@ export const CallNotify = observer(() => {
           }}
           path={mdiCheck}
           size={20}
-          style={{ borderColor: v.colors.primary }}
         />
       </RnTouchableOpacity>
     </Wrapper>

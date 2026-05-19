@@ -42,7 +42,6 @@ const Notify: FC<{
           onPress={() => p.reject(p.id)}
           path={mdiClose}
           size={20}
-          style={{ borderColor: v.colors.danger }}
         />
         <ButtonIcon
           bdcolor={v.colors.primary}
@@ -50,7 +49,6 @@ const Notify: FC<{
           onPress={() => p.accept(p.id)}
           path={mdiCheck}
           size={20}
-          style={{ borderColor: v.colors.primary }}
           disabled={p.loading}
         />
       </>

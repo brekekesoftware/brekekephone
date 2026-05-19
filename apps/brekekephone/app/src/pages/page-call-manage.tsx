@@ -53,9 +53,6 @@ const imageWrapperStyle = {
   minHeight: minSizeImageWrapper,
   minWidth: minSizeImageWrapper,
 } as const
-const btnFuncCallsStyle = {
-  marginBottom: 10,
-} as const
 const hiddenStyle = {
   position: 'absolute',
   width: '100%' as const,
@@ -460,7 +457,7 @@ class PageCallManage extends Component<{
         >
           {!this.isBtnHidden('transfer') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -474,7 +471,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('park') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor='white'
               color='black'
@@ -488,7 +485,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('video') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor={
                 c.localVideoEnabled && !c.mutedVideo ? activeColor : 'white'
@@ -506,7 +503,7 @@ class PageCallManage extends Component<{
           )}
           {!isWeb && !this.isBtnHidden('speaker') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={c.sessionStatus === 'dialing'}
               bgcolor={ctx.call.isLoudSpeakerEnabled ? activeColor : 'white'}
               color={ctx.call.isLoudSpeakerEnabled ? 'white' : 'black'}
@@ -522,7 +519,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('mute') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor={c.muted ? activeColor : 'white'}
               color={c.muted ? 'white' : 'black'}
@@ -536,7 +533,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('record') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor={c.recording ? activeColor : 'white'}
               color={c.recording ? 'white' : 'black'}
@@ -551,7 +548,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!(c.withSDPControls || c.answered)}
               bgcolor='white'
               color='black'
@@ -565,7 +562,7 @@ class PageCallManage extends Component<{
           )}
           {!this.isBtnHidden('hold') && (
             <ButtonIcon
-              styleContainer={btnFuncCallsStyle}
+              containerClassName='mb-2.5'
               disabled={!c.answered}
               bgcolor={c.holding ? activeColor : 'white'}
               color={c.holding ? 'white' : 'black'}

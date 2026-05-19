@@ -1,14 +1,31 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import type { TouchableOpacityProps, ViewProps } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { isIos } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
+
+// Map theme hex values caller passes back to tw class names
+const bgClass: { [k: string]: string } = {
+  [v.colors.primary]: 'bg-primary',
+  [v.colors.danger]: 'bg-error',
+  [v.colors.warning]: 'bg-warning',
+  [v.subColor]: 'bg-foreground-muted',
+  [v.borderBg]: 'bg-border',
+  white: 'bg-background',
+  black: 'bg-foreground',
+}
+const bdClass: { [k: string]: string } = {
+  [v.colors.primary]: 'border-primary',
+  [v.colors.danger]: 'border-error',
+  [v.colors.warning]: 'border-warning',
+  [v.borderBg]: 'border-border',
+}
 
 export const ButtonIcon: FC<{
   color: string
@@ -16,13 +33,13 @@ export const ButtonIcon: FC<{
   size?: number
   disabled?: boolean
   onPress?(): void
-  style?: TouchableOpacityProps['style']
+  className?: ClassName
   bgcolor?: string
   noborder?: boolean
   bdcolor?: string
   name?: string
   textcolor?: string
-  styleContainer?: ViewProps['style']
+  containerClassName?: ClassName
   msLoading?: number
   loading?: boolean
 }> = p => {
@@ -38,17 +55,18 @@ export const ButtonIcon: FC<{
     p.onPress?.()
   }
   const size = p.size || 15
+  const bg = p?.disabled ? v.subColor : p.bgcolor
   return (
-    <View className='items-center mx-1.25' style={p.styleContainer}>
+    <View className={['items-center mx-1.25', p.containerClassName]}>
       <RnTouchableOpacity
         disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
-        className={['border p-3', p.noborder && 'border-0']}
-        style={[
-          p.style,
-          { borderRadius: size * 1.5 },
-          { backgroundColor: p?.disabled ? v.subColor : p.bgcolor },
-          { borderColor: p.bdcolor },
+        className={[
+          'border p-3 rounded-full',
+          p.noborder && 'border-0',
+          bg && bgClass[bg],
+          p.bdcolor && bdClass[p.bdcolor],
+          p.className,
         ]}
       >
         {isLoading || p.loading ? (
