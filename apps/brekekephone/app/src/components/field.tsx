@@ -66,11 +66,6 @@ const fieldTextInputClassName = [
   isWeb && 'pt-7',
   isIos && 'pt-0.25',
 ]
-const fieldSwitchStyle = {
-  position: 'absolute' as const,
-  top: 22,
-  right: 11,
-}
 
 const noop = () => {}
 
@@ -295,7 +290,7 @@ export const Field: FC<
           props.valueRender ||
           ((e: boolean) => (e ? intl`Enabled` : intl`Disabled`)),
         iconRender: (e: boolean) => (
-          <RnSwitch enabled={e} style={fieldSwitchStyle} />
+          <RnSwitch enabled={e} className='absolute top-5.5 right-2.75' />
         ),
         onTouchPress: () => {
           props.onValueChange?.(!props.value)

@@ -6,6 +6,14 @@ import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
+// Map theme hex (caller pass v.colors.X) → tw class. Theme-aware via CSS var.
+const onNextBgClass: { [k: string]: string } = {
+  [v.colors.primary]: 'bg-primary',
+  [v.colors.danger]: 'bg-error',
+  [v.colors.warning]: 'bg-warning',
+  [v.colors.info]: 'bg-info',
+}
+
 export const FooterActions: FC<
   Partial<{
     onBack(): void
@@ -58,11 +66,10 @@ export const FooterActions: FC<
         onPress={onNext}
         className={[
           'rounded-none w-1/2 py-2 justify-center items-center',
-          !onNextColor && 'bg-primary',
+          onNextColor ? onNextBgClass[onNextColor] : 'bg-primary',
           !(onBack && onMore) && 'w-2/3',
           !(onBack || onMore) && 'w-full',
         ]}
-        style={onNextColor ? { backgroundColor: onNextColor } : undefined}
       >
         <RnText bold white className='text-[11px]'>
           {onNextText || intl`SAVE`}
