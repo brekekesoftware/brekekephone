@@ -38,7 +38,7 @@ const RnPickerR = (p: RnPickerOption) => {
     <View className='absolute inset-0 flex-row items-center justify-center'>
       <AnimatedView
         className={[
-          'absolute inset-0 bg-modal-overlay transition-opacity duration-15000',
+          'absolute inset-0 bg-modal-overlay transition-opacity duration-150',
           mounted ? 'opacity-100' : 'opacity-0',
         ]}
       >
