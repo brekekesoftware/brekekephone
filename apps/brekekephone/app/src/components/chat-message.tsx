@@ -52,15 +52,21 @@ const File: FC<
       <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
       <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.reject}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] text-error border border-error'>
+          <RnTouchableOpacity
+            onPress={p.reject}
+            className='py-px px-2 mt-1 rounded border border-error'
+          >
+            <RnText className='text-[12px] text-error text-center'>
               Cancel
             </RnText>
           </RnTouchableOpacity>
         )}
         {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.accept}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] bg-primary border border-primary'>
+          <RnTouchableOpacity
+            onPress={p.accept}
+            className='py-px px-2 mt-1 ml-1 rounded bg-primary border border-primary'
+          >
+            <RnText className='text-[12px] text-white text-center'>
               Accept
             </RnText>
           </RnTouchableOpacity>
