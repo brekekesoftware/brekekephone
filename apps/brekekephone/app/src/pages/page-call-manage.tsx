@@ -49,17 +49,8 @@ const minSizeH = height * 0.3
 const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
-const imageWrapperStyle = {
-  minHeight: minSizeImageWrapper,
-  minWidth: minSizeImageWrapper,
-} as const
-const hiddenStyle = {
-  position: 'absolute',
-  width: '100%' as const,
-  height: '100%' as const,
-  top: '-100%' as const,
-  left: '-100%' as const,
-} as const
+const imageWrapperCls = `min-h-[${minSizeImageWrapper}px] min-w-[${minSizeImageWrapper}px]`
+const hiddenCls = 'absolute w-full h-full top-[-100%] left-[-100%]'
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
     ? ctx.nav.backToPageCallKeypad()
@@ -318,7 +309,7 @@ class PageCallManage extends Component<{
         {c.localVideoEnabled && this.renderVideo()}
         {this.renderAvatar()}
         {this.renderBtns()}
-        {c.localVideoEnabled && <View style={{ flex: 1 }} />}
+        {c.localVideoEnabled && <View className='flex-1' />}
         {this.renderHangupBtn()}
         {c.transferring ? renderTransferring() : null}
       </>
@@ -363,27 +354,32 @@ class PageCallManage extends Component<{
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
-    const styleBigAvatar = c.localVideoEnabled
-      ? { flex: 1, maxHeight: height / 2 - 20 }
-      : { flex: 1 }
+    const bigAvatarCls = c.localVideoEnabled
+      ? `flex-1 max-h-[${height / 2 - 20}px]`
+      : 'flex-1'
     return (
       <View
-        className={!c.localVideoEnabled ? 'mx-3.75 flex-col items-center justify-start flex-1' : 'flex-1'}
-        style={!c.localVideoEnabled ? imageWrapperStyle : undefined}
+        className={[
+          !c.localVideoEnabled
+            ? 'mx-3.75 flex-col items-center justify-start flex-1'
+            : 'flex-1',
+          !c.localVideoEnabled && imageWrapperCls,
+        ]}
       >
         <View
-          className={isShowAvatar && !isLarge ? 'w-50 h-50 rounded-full overflow-hidden' : undefined}
-          style={
-            isShowAvatar
-              ? isLarge ? styleBigAvatar : undefined
-              : { height: 0, opacity: 0 }
-          }
+          className={[
+            isShowAvatar &&
+              (isLarge
+                ? bigAvatarCls
+                : 'w-50 h-50 rounded-full overflow-hidden'),
+            !isShowAvatar && 'h-0 opacity-0',
+          ]}
         >
           {c.answered && (
             <SmartImage
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
-              style={{ flex: 1, aspectRatio: 1 }}
+              className='flex-1 aspect-square'
               incoming={c.incoming}
             />
           )}
@@ -391,7 +387,7 @@ class PageCallManage extends Component<{
             <SmartImage
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
-              style={{ flex: 1, aspectRatio: 1 }}
+              className='flex-1 aspect-square'
               incoming={c.incoming}
             />
           )}
@@ -430,10 +426,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        style={{
-          marginTop: isHideButtons ? 30 : 0,
-          zIndex: 100,
-        }}
+        className={['z-100', isHideButtons && 'mt-7.5']}
       >
         {n > 0 && (
           <FieldButton
@@ -448,7 +441,7 @@ class PageCallManage extends Component<{
             }
           />
         )}
-        <View style={{ paddingTop: 10 }} />
+        <View className='pt-2.5' />
         <View
           className={[
             'w-full flex-row flex-wrap items-center justify-center self-center',
@@ -577,7 +570,7 @@ class PageCallManage extends Component<{
             />
           )}
         </View>
-        <View style={{ paddingBottom: 10 }} />
+        <View className='pb-2.5' />
       </Container>
     )
   }
@@ -621,7 +614,7 @@ class PageCallManage extends Component<{
               />
             )}
             {incoming && (
-              <View style={{ width: isHangupBtnHidden ? 0 : 100 }} />
+              <View className={isHangupBtnHidden ? 'w-0' : 'w-25'} />
             )}
             {!isHangupBtnHidden && (
               <ButtonIcon
@@ -644,7 +637,7 @@ class PageCallManage extends Component<{
     return (
       <BrekekeGradient
         white={this.props.call.localVideoEnabled}
-        style={this.isVisible() ? undefined : hiddenStyle}
+        className={!this.isVisible() && hiddenCls}
       >
         {this.renderLayout()}
       </BrekekeGradient>

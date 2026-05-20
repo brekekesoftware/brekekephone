@@ -1,16 +1,18 @@
+import type { FC } from 'react'
 import { useRef } from 'react'
 import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
-import WebView from 'react-native-webview'
+import WebViewWocn from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
 import { buildWebViewSource, isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 
-const fullStyle = {
-  width: '100%' as const,
-  height: '100%' as const,
-}
+const WebView = createClassNameComponent({ WebViewWocn }) as FC<
+  WebViewProps & { className?: ClassName }
+>
 
 type Props = Pick<WebViewProps, 'onLoadStart' | 'onLoadEnd' | 'onError'> & {
   url: string
@@ -100,7 +102,7 @@ export const CustomPageWebView = ({
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
       injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-      style={fullStyle}
+      className='w-full h-full'
       bounces={false}
       originWhitelist={['*']}
       javaScriptEnabled={true}

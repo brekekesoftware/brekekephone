@@ -10,7 +10,6 @@ import { Navigation } from '#/components/header-navigation'
 import { Title } from '#/components/header-title'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 
 export const Header: FC<
   Partial<{
@@ -54,8 +53,10 @@ export const Header: FC<
     <>
       <View className='absolute top-0 right-0 left-0'>
         <View
-          className={transparent ? 'bg-transparent' : 'bg-white'}
-          style={compact ? v.boxShadow : undefined}
+          className={[
+            transparent ? 'bg-transparent' : 'bg-white',
+            compact && 'shadow-sm',
+          ]}
         >
           <View className={onBack ? 'pl-8.75' : undefined}>
             <Title

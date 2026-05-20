@@ -1,35 +1,20 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform } from 'react-native'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
 import { Layout } from '#/components/layout'
+import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const invisibleStyle = {
-  position: 'absolute' as const,
-  width: 0,
-  height: 0,
-  opacity: 0,
-  overflow: 'hidden' as const,
-}
-const visibleStyle = {
-  position: 'relative' as const,
-  width: '100%' as const,
-  height: '100%' as const,
-  opacity: 1,
-  overflow: 'hidden' as const,
-}
-
-const getVisibleStyle = () => {
-  if (Platform.OS === 'web') {
-    return [visibleStyle, { height: '100vh' } as any]
-  }
-  return visibleStyle
-}
+const invisibleClassName = 'absolute w-0 h-0 opacity-0 overflow-hidden'
+// h-screen (100vh) only on web; built as a runtime string so babel-plugin-tw
+// doesn't compile-validate it through twrnc (twrnc rejects vh units).
+const visibleClassName = `relative w-full opacity-100 overflow-hidden ${
+  isWeb ? 'h-screen' : 'h-full'
+}`
 
 @observer
 export class PageCustomPageView extends Component<{
@@ -150,7 +135,7 @@ export class PageCustomPageView extends Component<{
           },
         ]}
         isFullContent
-        style={isVisible ? getVisibleStyle() : invisibleStyle}
+        className={isVisible ? visibleClassName : invisibleClassName}
       >
         {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
           <CustomPageWebView

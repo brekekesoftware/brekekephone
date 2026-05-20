@@ -1,10 +1,8 @@
 import type { FC } from 'react'
 
-import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
-import { v } from '#/components/variables'
-import { useAnimation } from '#/utils/animation'
+import { AnimatedText, AnimatedView } from '#/components/rn-animated'
 
 export const Title: FC<{
   compact: boolean
@@ -12,19 +10,19 @@ export const Title: FC<{
   title: string
 }> = p => {
   const { compact, description, title } = p
-  const cssContainerA = useAnimation(compact, {
-    paddingVertical: [15, 10],
-  })
-  const cssTitleA = useAnimation(compact, {
-    fontSize: [v.fontSizeTitle, v.fontSizeSubTitle],
-    lineHeight: [v.lineHeightTitle, 20],
-  })
   return (
-    <AnimatedView className='pl-3.75 mr-6.25' style={cssContainerA}>
+    <AnimatedView
+      className={[
+        'pl-3.75 mr-6.25 transition-all duration-150',
+        compact ? 'py-2.5' : 'py-3.75',
+      ]}
+    >
       <AnimatedText
         numberOfLines={1}
-        className='leading-5 font-bold text-black'
-        style={cssTitleA}
+        className={[
+          'font-bold text-black transition-all duration-150',
+          compact ? 'text-[16.8px] leading-5' : 'text-[25.2px] leading-9',
+        ]}
       >
         {trimDisplayName(title)}
       </AnimatedText>

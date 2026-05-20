@@ -1,10 +1,10 @@
 import type { FC } from 'react'
 import type { Animated } from 'react-native'
 
-import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { v } from '#/components/variables'
 import { RnTouchableOpacity } from '#/components/rn'
+import { AnimatedText, AnimatedView } from '#/components/rn-animated'
 import { intl } from '#/stores/intl'
 
 interface ParkItemProps {
@@ -39,10 +39,8 @@ export const ParkItem: FC<ParkItemProps> = ({
 
   let wrapperStyle: Animated.WithAnimatedObject<object> | undefined
   let wrapperClass: string | undefined
-  let textStyle:
-    | { color: string }
-    | { color: Animated.AnimatedInterpolation<string> }
-    | undefined
+  let textStyle: { color: Animated.AnimatedInterpolation<string> } | undefined
+  let textClass: string | undefined
   let subTextStyle: typeof textStyle | undefined
   let subTextClass: string | undefined
 
@@ -52,8 +50,8 @@ export const ParkItem: FC<ParkItemProps> = ({
     subTextStyle = textStyle
   } else if (selected && flashAnim) {
     wrapperClass = 'bg-primary'
-    textStyle = { color: 'white' }
-    subTextStyle = textStyle
+    textClass = 'text-white'
+    subTextClass = 'text-white'
   } else if (selected) {
     wrapperClass = 'bg-primary-100'
   } else {
@@ -67,7 +65,7 @@ export const ParkItem: FC<ParkItemProps> = ({
       <View className='px-2.5 py-2.5'>
         <AnimatedText
           numberOfLines={1}
-          className='font-bold'
+          className={['font-bold', textClass]}
           style={textStyle as any}
         >
           {displayName}

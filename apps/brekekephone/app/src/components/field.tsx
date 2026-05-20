@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import type { ReactElementLike } from 'prop-types'
 import type { FC } from 'react'
 import { useRef } from 'react'
-import { ActivityIndicator, Keyboard, Platform } from 'react-native'
+import { ActivityIndicator, Keyboard } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
@@ -30,27 +30,15 @@ export type Park = {
   number: string
   name?: string
 }
-const fieldAndroidPad = Platform.select({
-  android: { paddingBottom: 2 },
-})
-const fieldLabelStyle = {
-  paddingTop: 13,
-  paddingBottom: 0,
-  paddingLeft: 7,
-  ...Platform.select({
-    android: {
-      paddingTop: 3,
-      top: 6,
-    },
-    web: {
-      // fix form auto fill style on web
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      right: 0,
-    },
-  }),
-}
+// fieldLabelClassName per platform:
+// - ios: paddingTop 13px (pt-3.25), paddingBottom 0, paddingLeft 7px (pl-1.75)
+// - android: paddingTop 3px (pt-0.75) + top 6px (top-1.5)
+// - web: absolute, top/left/right: 0 (fix form auto fill style on web)
+const fieldLabelClassName = isAndroid
+  ? 'pb-0 pl-1.75 pt-0.75 top-1.5'
+  : isWeb
+    ? 'pb-0 pl-1.75 pt-3.25 absolute top-0 left-0 right-0'
+    : 'pb-0 pl-1.75 pt-3.25'
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
 // Platform.select branches: android lineHeight 20 ≡ leading-5 (= v.lineHeight)
 const fieldParkTextInputClassName = [
@@ -137,9 +125,9 @@ export const Field: FC<
       <View
         className={[
           'border-b border-border items-stretch mt-3.75 bg-border p-3.75',
+          isAndroid && 'pb-0.5',
           props.hasMargin && 'mt-7.5',
         ]}
-        style={fieldAndroidPad}
       >
         <RnText
           small
@@ -369,7 +357,7 @@ export const Field: FC<
   }
   const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
-    <View pointerEvents='none' style={fieldLabelStyle}>
+    <View className={['pointer-events-none', fieldLabelClassName]}>
       <RnText small normal className='text-foreground-muted'>
         {props.label}
       </RnText>
@@ -383,17 +371,19 @@ export const Field: FC<
         onPress={props.onTouchPress}
         className={[
           'border-b border-border items-stretch mx-3.75',
+          isAndroid && 'pb-0.5',
           ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
           props.disabled && 'bg-muted',
           props.transparent && 'border-transparent mx-0',
         ]}
-        style={fieldAndroidPad}
       >
         {/* Fix form auto fill style on web */}
         {!isWeb && label}
         <View
-          pointerEvents={
-            ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
+          className={
+            !$.isFocusing && !$.isParkNameFocusing
+              ? 'pointer-events-none'
+              : undefined
           }
         >
           {props.inputElement || (
@@ -418,15 +408,11 @@ export const Field: FC<
           (props.icon && (
             <RnIcon
               path={props.icon}
-              pointerEvents='none'
-              className='absolute top-3.75 right-3.75'
+              className='absolute top-3.75 right-3.75 pointer-events-none'
             />
           ))}
         {props.loading && (
-          <View
-            className='absolute inset-0 flex items-center justify-center'
-            style={{ backgroundColor: 'black', opacity: 0.3 }}
-          >
+          <View className='absolute inset-0 flex items-center justify-center bg-black opacity-30'>
             <ActivityIndicator size='small' color='white' />
           </View>
         )}

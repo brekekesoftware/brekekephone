@@ -3,10 +3,6 @@ import type { FC } from 'react'
 import { mdiDotsVertical } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-
-// RN-only shadow + elevation
-const shadowStyle = { ...v.boxShadow, elevation: 999 }
 
 export type HeaderDropdownItem = Partial<{
   danger: boolean
@@ -26,16 +22,14 @@ export const Dropdown: FC<{
       <RnTouchableOpacity
         activeOpacity={1}
         onPress={close}
-        className='absolute inset-0 z-999 bg-black/20'
-        style={{ elevation: 999 }}
+        className='absolute inset-0 z-999 bg-black/20 android:elevation-999'
       />
       <AnimatedSize
         innerClassName='rounded-[3px] bg-background'
         className={[
-          'absolute right-3.75 w-62.5 z-999',
+          'absolute right-3.75 w-62.5 z-999 shadow-sm android:elevation-999',
           compact ? 'top-8.75' : 'top-15',
         ]}
-        style={shadowStyle}
       >
         {dropdown.map(({ danger, label, onPress, primary, warning }, i) => (
           <RnTouchableOpacity

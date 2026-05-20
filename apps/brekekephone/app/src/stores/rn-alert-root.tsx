@@ -1,16 +1,13 @@
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
-import { Dimensions } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { flow } from '@/shared/lodash'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
+import { AnimatedView } from '#/components/rn-animated'
 import { intl } from '#/stores/intl'
 import type { ErrorRnAlert2, PromptRnAlert } from '#/stores/rn-alert'
 import { RnAlert } from '#/stores/rn-alert'
-import { useAnimationOnDidMount } from '#/utils/animation'
 
 const RnAlertR = ({
   error,
@@ -19,10 +16,6 @@ const RnAlertR = ({
   error?: ErrorRnAlert2
   prompt?: PromptRnAlert
 }) => {
-  const a = useAnimationOnDidMount({
-    opacity: [0, 1],
-    translateY: [Dimensions.get('screen').height, 0],
-  })
   let props: {
     title: string | ReactElement
     message: string | ReactElement
@@ -74,22 +67,13 @@ const RnAlertR = ({
   }
   return (
     <View className='absolute inset-0 flex-row items-center justify-center'>
-      <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
-        style={{ opacity: a.opacity }}
-      >
+      <AnimatedView className='absolute inset-0 bg-modal-overlay transition-opacity duration-500'>
         <RnTouchableOpacity
           onPress={props.onDismiss}
           className='absolute inset-0'
         />
       </AnimatedView>
-      <AnimatedView
-        className='w-[90%] max-w-95 rounded-[3px] p-3.75 bg-background'
-        style={{
-          ...v.boxShadow,
-          transform: [{ translateY: a.translateY }],
-        }}
-      >
+      <AnimatedView className='w-[90%] max-w-95 rounded-[3px] p-3.75 bg-background shadow-sm transition-transform duration-500'>
         {!!props.title && <RnText subTitle>{props.title}</RnText>}
         {props.message}
         <View className='mt-3.75 flex-row self-end top-1.25 left-1.25'>

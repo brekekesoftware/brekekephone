@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import {
@@ -11,23 +10,14 @@ import {
 } from '#/assets/icons'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
+import { isWeb } from '#/config'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-const outerWebStyle = Platform.select({
-  web: { width: '100%' as const },
-})
-const innerPlatformStyle = Platform.select({
-  web: {
-    maxWidth: 400,
-    minWidth: 250,
-    justifyContent: 'space-between' as const,
-  },
-  default: {
-    justifyContent: 'center' as const,
-  },
-})
+const innerCls = isWeb
+  ? 'max-w-100 min-w-62.5 justify-between'
+  : 'justify-center'
 
 @observer
 export class PageCallTransferAttend extends Component {
@@ -112,12 +102,14 @@ export class PageCallTransferAttend extends Component {
     const usertarget = this.resolveMatch(oc.transferring)
     const { phoneappliSource, phoneappliTarget } = this.state
     return (
-      <View className='items-center bg-background' style={outerWebStyle}>
+      <View className={['items-center bg-background', isWeb && 'w-full']}>
         <RnText center subTitle>{intl`Transferring`}</RnText>
         <View className='h-2.5' />
         <View
-          className='w-[70%] flex-row items-center self-center content-center mb-7.5'
-          style={innerPlatformStyle}
+          className={[
+            'w-[70%] flex-row items-center self-center content-center mb-7.5',
+            innerCls,
+          ]}
         >
           <View className='flex-5 flex-col items-center justify-center'>
             <Avatar
@@ -143,8 +135,10 @@ export class PageCallTransferAttend extends Component {
         </View>
         <View className='h-2.5' />
         <View
-          className='w-[70%] flex-row items-center self-center content-center mb-7.5'
-          style={innerPlatformStyle}
+          className={[
+            'w-[70%] flex-row items-center self-center content-center mb-7.5',
+            innerCls,
+          ]}
         >
           <View className='w-[33.333%] items-center'>
             <RnTouchableOpacity

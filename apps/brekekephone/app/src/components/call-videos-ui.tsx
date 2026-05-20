@@ -7,8 +7,10 @@ import type {
   PanResponderGestureState,
   PanResponderInstance,
 } from 'react-native'
-import { Dimensions, PanResponder, View } from 'react-native'
-import { v } from '#/components/variables'
+import { Dimensions, PanResponder } from 'react-native'
+
+import type { ViewRn } from '@/rn/core/components/view'
+import { View } from '@/rn/core/components/view'
 import { VideoPlayer } from '#/components/video-player'
 import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -17,23 +19,8 @@ import { RnStacker } from '#/stores/rn-stacker'
 const MINI_WIDTH = 150
 const MINI_HEIGHT = 150
 
-const miniStyle = {
-  position: (isWeb ? 'fixed' : 'absolute') as 'absolute',
-  width: MINI_WIDTH,
-  height: MINI_HEIGHT,
-  backgroundColor: 'black',
-  borderRadius: 75,
-  overflow: 'hidden' as const,
-  ...v.boxShadow,
-  ...v.backdropZindex,
-  ...(isWeb &&
-    ({
-      cursor: 'move',
-      userSelect: 'none',
-      WebkitUserSelect: 'none',
-      touchAction: 'none',
-    } as any)),
-}
+const miniClassName =
+  'bg-foreground rounded-[75px] overflow-hidden z-[999] shadow-sm w-[150px] h-[150px] android:elevation-999'
 
 const calculateBoundedPosition = (
   currentLeft: number,
@@ -66,7 +53,7 @@ type Props = {
 @observer
 class Mini extends Component<Props> {
   panResponder: PanResponderInstance
-  view: View | null = null
+  view: ViewRn | null = null
   private lastTap?: number
   private isDragging = false
   private startX = 0
@@ -88,6 +75,11 @@ class Mini extends Component<Props> {
   componentDidMount() {
     if (isWeb && this.view) {
       const el = this.view as any
+      // web-only CSS not expressible via tailwind className:
+      // position fixed (anchor to viewport — RNW defaults every View to
+      // relative) and touch-action none (block page scroll while dragging)
+      el.style.position = 'fixed'
+      el.style.touchAction = 'none'
       el.addEventListener('mousedown', this.onMouseDown)
       el.addEventListener('touchstart', this.onTouchStart)
       document.addEventListener('mousemove', this.onMouseMove)
@@ -115,13 +107,15 @@ class Mini extends Component<Props> {
         ref={view => {
           this.view = view
         }}
-        style={[
-          miniStyle,
-          {
-            top: ctx.call.videoPositionT,
-            left: ctx.call.videoPositionL,
-          },
+        className={[
+          miniClassName,
+          'native:absolute',
+          isWeb && 'cursor-move select-none',
         ]}
+        style={{
+          top: ctx.call.videoPositionT,
+          left: ctx.call.videoPositionL,
+        }}
         {...(!isWeb && this.panResponder.panHandlers)}
       >
         <VideoPlayer sourceObject={this.props.sourceObject} />

@@ -1,6 +1,10 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
-import { Dimensions, ScrollView, View } from 'react-native'
+import { Dimensions } from 'react-native'
+
+import type { ScrollViewRn } from '@/rn/core/components/scroll-view'
+import { ScrollView } from '@/rn/core/components/scroll-view'
+import { View } from '@/rn/core/components/view'
 import { VideoViewItem } from '#/components/video-view-item'
 import type { Call } from '#/stores/call'
 import { checkMutedRemoteUser } from '#/utils/check-muted-remote-user'
@@ -25,7 +29,7 @@ export const CallVideosCarousel = observer(
       toggleVideo,
     },
   }: CallVideoCarouselProps) => {
-    const refScroll = useRef<ScrollView>(null)
+    const refScroll = useRef<ScrollViewRn>(null)
 
     useEffect(() => {
       if (
@@ -47,11 +51,11 @@ export const CallVideosCarousel = observer(
 
     return (
       !!localStreamObject && (
-        <View style={[styles.streams, { zIndex: 11 }]} pointerEvents='box-none'>
+        <View className='absolute h-auto w-full bottom-0 z-11 pointer-events-box-none'>
           <ScrollView
             horizontal
-            style={styles.scrollView}
-            contentContainerStyle={[styles.contentScrollView]}
+            className='h-auto'
+            contentContainerClassName='gap-4 p-4'
             showsHorizontalScrollIndicator={false}
             ref={refScroll}
             overScrollMode='never'
@@ -85,21 +89,3 @@ export const CallVideosCarousel = observer(
   },
 )
 
-const styles = {
-  container: {
-    height: '100%' as const,
-    flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  scrollView: {
-    height: 'auto' as any,
-  },
-  contentScrollView: { gap: 16, padding: 16 },
-  streams: {
-    position: 'absolute' as const,
-    height: 'auto' as any,
-    width: '100%' as const,
-    bottom: 0,
-  },
-}

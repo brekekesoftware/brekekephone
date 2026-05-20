@@ -1,26 +1,18 @@
 import { observer } from 'mobx-react'
-import { useEffect, useRef } from 'react'
-import { Animated } from 'react-native'
+import { useEffect, useState } from 'react'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { RnText } from '#/components/rn'
-import { v } from '#/components/variables'
+import { AnimatedView } from '#/components/rn-animated'
 import { ctx } from '#/stores/ctx'
 import type { ToastType } from '#/stores/toast-store'
 
-const getBg = (type: ToastType) => {
-  switch (type) {
-    case 'success':
-      return v.colors.primary
-    case 'error':
-      return v.colors.danger
-    case 'warning':
-      return v.colors.warning
-    default:
-      return v.colors.primary
-  }
+const bgClassMap: { [k: string]: string } = {
+  success: 'bg-primary',
+  error: 'bg-error',
+  warning: 'bg-warning',
 }
+const getBgClass = (type: ToastType) => bgClassMap[type] || 'bg-primary'
 
 const TOAST_DISPLAY_DURATION = 2700
 
@@ -37,37 +29,27 @@ const Item = observer(
     }
     onEnd: () => void
   }) => {
-    const fade = useRef(new Animated.Value(0)).current
-    const y = useRef(new Animated.Value(0)).current
+    const [visible, setVisible] = useState(false)
 
     useEffect(() => {
-      Animated.timing(fade, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start()
-
+      setVisible(true)
       const timer = setTimeout(() => {
-        Animated.timing(fade, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }).start(onEnd)
+        setVisible(false)
+        setTimeout(onEnd, 500)
       }, TOAST_DISPLAY_DURATION)
-
       return () => clearTimeout(timer)
-    }, [fade, onEnd])
+    }, [onEnd])
 
     const errorDetail = data.err?.message
+    const bgCls = getBgClass(data.type)
 
     return (
       <AnimatedView
-        className='py-0.5 px-1 rounded-br-sm'
-        style={{
-          backgroundColor: getBg(data.type),
-          opacity: fade,
-          transform: [{ translateY: y }],
-        }}
+        className={[
+          'py-0.5 px-1 rounded-br-sm transition-opacity duration-500',
+          bgCls,
+          visible ? 'opacity-100' : 'opacity-0',
+        ]}
       >
         {data?.msg && (
           <RnText className='line-clamp-1' ellipsizeMode='tail' white>

@@ -2,7 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
-import { Platform, Pressable, View as RNView } from 'react-native'
+import { Pressable } from 'react-native'
 import { isEmpty } from '@/shared/lodash'
 
 import { View } from '@/rn/core/components/view'
@@ -27,17 +27,6 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
-
-const callIconStyle = {
-  flex: null as any,
-  ...Platform.select({
-    web: {
-      flex: 0,
-      paddingLeft: 6,
-      paddingRight: 10,
-    },
-  }),
-}
 
 export const UserItem: FC<
   Partial<{
@@ -109,7 +98,7 @@ export const UserItem: FC<
   } = p0
 
   // pressable for web with onLongPress
-  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : RNView
+  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : View
 
   const isGroupAvailable = (groupId: string) => {
     const groupInfo: Conference = ctx.uc.getChatGroupInfo(groupId)
@@ -189,7 +178,10 @@ export const UserItem: FC<
 
   return (
     <Container
-      style={{ borderBottomWidth: 1, borderColor: v.borderBg, opacity: disabled ? 0.5 : 1 }}
+      className={[
+        'border-b border-border',
+        disabled ? 'opacity-50' : 'opacity-100',
+      ]}
       onPress={onPressItem}
       onLongPress={onLongPressItem}
     >
@@ -274,7 +266,7 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                style={callIconStyle}
+                className={['flex-none', isWeb && 'pl-1.5 pr-2.5']}
               />
               <RnText normal small className='left-0.75 text-foreground-muted'>
                 {isVoicemail

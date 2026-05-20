@@ -76,7 +76,7 @@ export const Navigation: FC<{
       ref={scrollRef as any}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerClassName='grow'
     >
       {tabs.map(s => {
         const active = s.key === subMenu

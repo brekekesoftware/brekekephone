@@ -1,17 +1,14 @@
 import { autorun } from 'mobx'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Animated,
-  KeyboardAvoidingView,
-  ScrollView,
-  useWindowDimensions,
-} from 'react-native'
+import { useWindowDimensions } from 'react-native'
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
 
-import { AnimatedView } from '@/rn/core/components/animated'
+import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
 import { mdiClose } from '#/assets/icons'
+import { AnimatedView } from '#/components/rn-animated'
 import { RnIcon } from '#/components/rn-icon'
+import { RnKeyboardAvoidingView } from '#/components/rn-keyboard-avoiding-view'
 import { RnText } from '#/components/rn-text'
 import { RnTextInput } from '#/components/rn-text-input'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
@@ -20,11 +17,9 @@ import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { useAnimationOnDidMount } from '#/utils/animation'
 import { getPublicIp } from '#/utils/public-ip-address'
 
 const WEB_CONTAINER_MAX_WIDTH = 480
-const TOAST_ANIMATION_DURATION = 800
 
 type ToastState = {
   msg: string
@@ -35,13 +30,11 @@ export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
   const safeInsets = useContext(SafeAreaInsetsContext)
 
-  const innerStyle = useMemo(
-    () => ({
-      width: '100%' as const,
-      maxWidth: isWeb ? WEB_CONTAINER_MAX_WIDTH : undefined,
-      alignSelf: 'center' as const,
-      paddingHorizontal: isWeb ? 16 : windowWidth * 0.025,
-    }),
+  const innerCls = useMemo(
+    () =>
+      isWeb
+        ? `w-full self-center max-w-[${WEB_CONTAINER_MAX_WIDTH}px] px-4`
+        : `w-full self-center px-[${windowWidth * 0.025}px]`,
     [windowWidth],
   )
 
@@ -49,21 +42,23 @@ export const Page2StepVerification = () => {
   const [isLoading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const [toast, setToast] = useState<ToastState>(null)
-  const [fadeAnim] = useState(() => new Animated.Value(0))
   const accountRef = useRef<Account | null>(null)
 
-  const anim = useAnimationOnDidMount({
-    opacity: [0, 1],
-  })
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const [toastShown, setToastShown] = useState(false)
+  useEffect(() => {
+    if (!toast) {
+      setToastShown(false)
+      return
+    }
+    setToastShown(false)
+    const id = requestAnimationFrame(() => setToastShown(true))
+    return () => cancelAnimationFrame(id)
+  }, [toast])
 
   const showToast = (msg: string, type: 'err' | 'info') => {
     setToast({ msg, type })
-    fadeAnim.setValue(0)
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: TOAST_ANIMATION_DURATION,
-      useNativeDriver: true,
-    }).start()
   }
 
   const dismissToast = () => setToast(null)
@@ -212,21 +207,22 @@ export const Page2StepVerification = () => {
     }
   }
 
+  const insetsCls = `top-[${safeInsets?.top ?? 0}px] bottom-[${-(safeInsets?.bottom ?? 0)}px]`
+
   return (
     <AnimatedView
-      className='absolute right-0 left-0 bg-background'
-      style={{
-        opacity: anim.opacity,
-        top: safeInsets?.top ?? 0,
-        bottom: -(safeInsets?.bottom ?? 0),
-      }}
+      className={[
+        'absolute right-0 left-0 bg-background transition-opacity duration-150',
+        insetsCls,
+        mounted ? 'opacity-100' : 'opacity-0',
+      ]}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: v.bg }}
+      <RnKeyboardAvoidingView
+        className='flex-1 bg-background'
         behavior={isIos ? 'padding' : 'height'}
         keyboardVerticalOffset={isIos ? 100 : 0}
       >
-        <View style={[innerStyle, { flex: 1 }]}>
+        <View className={['flex-1', innerCls]}>
           <View className='pt-5 pb-3'>
             <RnTouchableOpacity onPress={onBack} className='flex-row gap-3.75'>
               <View>
@@ -238,7 +234,7 @@ export const Page2StepVerification = () => {
             </RnTouchableOpacity>
           </View>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingTop: 8 }}
+            contentContainerClassName='grow pt-2'
             keyboardShouldPersistTaps='handled'
           >
             <View className='mb-4'>
@@ -281,10 +277,10 @@ export const Page2StepVerification = () => {
               <View className='w-full justify-center'>
                 <AnimatedView
                   className={[
-                    'flex-row w-full justify-around items-center rounded-[5px] py-2.5',
+                    'flex-row w-full justify-around items-center rounded-[5px] py-2.5 transition-opacity duration-800',
                     toast.type === 'err' ? 'bg-error' : 'bg-info',
+                    toastShown ? 'opacity-100' : 'opacity-0',
                   ]}
-                  style={{ opacity: fadeAnim }}
                 >
                   <View className='w-4/5'>
                     <RnText normal white>
@@ -299,7 +295,7 @@ export const Page2StepVerification = () => {
             )}
           </ScrollView>
         </View>
-      </KeyboardAvoidingView>
+      </RnKeyboardAvoidingView>
     </AnimatedView>
   )
 }

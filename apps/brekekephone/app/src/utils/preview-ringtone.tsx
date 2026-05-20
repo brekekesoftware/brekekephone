@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { View } from 'react-native'
 import type { ReactVideoSource, VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
+
+import { View } from '@/rn/core/components/view'
 import { BrekekeUtils, staticRingtones } from '#/utils/brekeke-utils'
 import { isSameSource } from '#/utils/ringtone-picker'
 
@@ -10,10 +11,6 @@ interface PreviewRingtoneProps {
   onReady?: () => void
   onError?: (e: any) => void
   onFinished?: () => void
-}
-
-const css = {
-  video: { width: 0, height: 0 },
 }
 
 export default function PreviewRingtone({
@@ -81,7 +78,7 @@ export default function PreviewRingtone({
   }
 
   return (
-    <View style={css.video}>
+    <View className='w-0 h-0'>
       <Video
         ref={playerRef}
         source={currentSource}

@@ -7,7 +7,6 @@ import { lowerFirst } from '@/shared/lodash'
 import { FooterActions } from '#/components/footer-actions'
 import { Navigation } from '#/components/footer-navigation'
 import { ToggleKeyboard } from '#/components/footer-toggle-keyboard'
-import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 import { arrToMap } from '#/utils/arr-to-map'
@@ -16,11 +15,9 @@ import { arrToMap } from '#/utils/arr-to-map'
 // shrink, otherwise chat input and keypad toggle icon stay hidden behind keyboard
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-// RN-only shadow/border (kept inline)
-const noKeyboardShadowStyle = {
-  ...v.bottomBoxShadow,
-  ...(isAndroid && v.borderTopStyles),
-}
+// layout + bottom shadow (v.bottomBoxShadow) + android top border (v.borderTopStyles)
+const noKeyboardClassName =
+  'left-0 pb-0 bg-background shadow-black shadow-opacity-10 shadow-radius-[2px] shadow-offset-[0px]/[-2px] android:border-t android:border-black/5'
 
 export const Footer: FC<{
   menu: string
@@ -48,16 +45,15 @@ export const Footer: FC<{
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? RnKeyboard.keyboardHeight
       : 0
+  // keyboard mới runtime → `bottom-[Npx]` twrnc resolve native
+  const bottomCls = bottomOffset ? `bottom-[${bottomOffset}px]` : 'bottom-0'
   const noKeyboard = render || !RnKeyboard.isKeyboardShowing
   return (
     <View
       className={[
         'absolute right-0',
-        noKeyboard && 'left-0 pb-0 bg-background',
-      ]}
-      style={[
-        { bottom: bottomOffset },
-        noKeyboard && noKeyboardShadowStyle,
+        noKeyboard && noKeyboardClassName,
+        bottomCls,
       ]}
     >
       {render ? (

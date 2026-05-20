@@ -3,19 +3,10 @@ import { useEffect, useRef } from 'react'
 import type { VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
 
+import { View } from '@/rn/core/components/view'
 import { ctx } from '#/stores/ctx'
 import { RnAppState } from '#/stores/rn-app-state'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
-
-const videoStyle = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  width: 0,
-  height: 0,
-  opacity: 0,
-  overflow: 'hidden' as const,
-}
 
 export const AudioPlayer = observer(() => {
   const videoRef = useRef<VideoRef>(null)
@@ -35,13 +26,14 @@ export const AudioPlayer = observer(() => {
   }, [isPlaying])
 
   return (
-    <Video
-      ref={videoRef}
-      source={require('../assets/ding.mp3')}
-      style={videoStyle}
-      disableAudioSessionManagement={true}
-      paused={!isPlaying}
-      preventsDisplaySleepDuringVideoPlayback={isPlaying}
-    />
+    <View className='absolute top-0 left-0 w-0 h-0 opacity-0 overflow-hidden'>
+      <Video
+        ref={videoRef}
+        source={require('../assets/ding.mp3')}
+        disableAudioSessionManagement={true}
+        paused={!isPlaying}
+        preventsDisplaySleepDuringVideoPlayback={isPlaying}
+      />
+    </View>
   )
 })

@@ -1,11 +1,11 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import { ActivityIndicator } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { v } from '#/components/variables'
 import { isIos } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
@@ -55,6 +55,7 @@ export const ButtonIcon: FC<{
     p.onPress?.()
   }
   const size = p.size || 15
+  const spinnerSizeCls = `w-[${size}px] h-[${size}px]`
   const bg = p?.disabled ? v.subColor : p.bgcolor
   return (
     <View className={['items-center mx-1.25', p.containerClassName]}>
@@ -70,7 +71,7 @@ export const ButtonIcon: FC<{
         ]}
       >
         {isLoading || p.loading ? (
-          <ActivityIndicator style={{ width: size, height: size }} />
+          <RnActivityIndicator className={spinnerSizeCls} />
         ) : (
           <Svg height={size} viewBox='0 0 24 24' width={size}>
             <Path d={p.path} fill={p.color || 'black'} />

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { ScrollView } from 'react-native'
-import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
+import { TouchableWithoutFeedback } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { mdiFolderPlus } from '#/assets/icons'
@@ -9,6 +9,7 @@ import { ContactList } from '#/components/contact-list'
 import { ContactSectionList } from '#/components/contact-section-list'
 import type { DropdownItemProps } from '#/components/dropdown-item'
 import { Layout } from '#/components/layout'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
@@ -19,12 +20,6 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
-
-export const css = {
-  loadingIcon: {
-    marginTop: 20,
-  },
-}
 
 @observer
 export class PageContactEdit extends Component {
@@ -194,7 +189,7 @@ export class PageContactEdit extends Component {
           </View>
         </TouchableWithoutFeedback>
         {!this.state.didMount ? (
-          <ActivityIndicator style={css.loadingIcon} size='small' />
+          <RnActivityIndicator className='mt-5' size='small' />
         ) : isSelectEditGroupingAndUserOrder ? (
           <ContactSectionList
             sectionListData={dataGroupAllUser}

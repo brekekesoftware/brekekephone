@@ -1,41 +1,15 @@
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Image } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import noPhoto from '#/assets/no_photo.png'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
 
-const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
-
-const imageStyle = {
-  overflow: 'hidden' as const,
-  backgroundColor: 'white',
-  justifyContent: 'center' as const,
-  alignItems: 'center' as const,
-}
-const imageErrorStyle = {
-  overflow: 'hidden' as const,
-  backgroundColor: 'white',
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  zIndex: 100,
-}
-const loadingStyle = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  width: '100%' as const,
-  height: '100%' as const,
-  backgroundColor: '#00000030',
-  overflow: 'hidden' as const,
-  zIndex: 100,
-}
-
 export const SmartImage = (p: {
   uri: string
-  style: object
+  className?: ClassName
   incoming: boolean
 }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(0)
@@ -59,15 +33,21 @@ export const SmartImage = (p: {
 
   return (
     <View
-      className='overflow-hidden bg-background justify-center items-center'
-      style={p.style}
+      className={[
+        'overflow-hidden bg-background justify-center items-center',
+        p.className,
+      ]}
       onLayout={event => {
         const { height } = event.nativeEvent.layout
         setSize(height)
       }}
     >
       {!statusImageLoading && (
-        <ActivityIndicator size='small' color='white' style={loadingStyle} />
+        <RnActivityIndicator
+          size='small'
+          color='white'
+          className='absolute top-0 left-0 w-full h-full overflow-hidden z-100 bg-[#00000030]'
+        />
       )}
       {!isImageUrl ? (
         <div>
@@ -81,21 +61,19 @@ export const SmartImage = (p: {
           />
         </div>
       ) : (
-        <Image
-          source={{
-            uri: p.uri,
-          }}
-          style={[imageStyle, { width: size, height: size }]}
+        <img
+          src={p.uri}
+          className='overflow-hidden bg-background justify-center items-center object-cover'
+          style={{ width: size, height: size }}
           onError={onImageLoadError}
           onLoad={onImageLoad}
-          resizeMode='cover'
         />
       )}
       {statusImageLoading === 2 && isImageUrl && (
-        <Image
-          source={noPhotoImg}
-          style={[imageErrorStyle, { width: size, height: size }]}
-          resizeMode='cover'
+        <img
+          src={noPhoto}
+          className='overflow-hidden bg-background absolute top-0 left-0 z-100 object-cover'
+          style={{ width: size, height: size }}
         />
       )}
     </View>

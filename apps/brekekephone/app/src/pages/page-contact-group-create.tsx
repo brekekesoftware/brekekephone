@@ -1,15 +1,15 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { ActivityIndicator, FlatList, View } from 'react-native'
+import { FlatList, View } from 'react-native'
 
 import type { UcBuddy } from '#/brekekejs'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { defaultTimeout } from '#/config'
-import { css } from '#/pages/page-contact-edit'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -47,7 +47,7 @@ export class PageContactGroupCreate extends Component {
         />
         <Field isGroup label={intl`Members`} />
         {!this.state.didMount ? (
-          <ActivityIndicator style={css.loadingIcon} size='large' />
+          <RnActivityIndicator className='mt-5' size='large' />
         ) : (
           <FlatList
             data={ctx.user.dataListAllUser}

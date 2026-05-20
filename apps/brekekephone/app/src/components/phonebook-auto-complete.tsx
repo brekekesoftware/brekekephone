@@ -1,41 +1,18 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import type { TouchableOpacityProps } from 'react-native'
-import { Dimensions, Platform, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 
 import { Text } from '@/rn/components/text'
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
+import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
-
-const css = {
-  viewFlatList: {
-    width: Dimensions.get('screen').width - 30,
-    ...Platform.select({
-      ios: {
-        shadowColor: v.borderBg,
-        shadowOpacity: 0.45,
-        shadowRadius: 5,
-        shadowOffset: {
-          width: 5,
-          height: 10,
-        },
-      },
-      android: {
-        elevation: 10,
-      },
-      web: {
-        boxShadow: `${0}px ${0}px ${10}px ${v.borderBg}`,
-      },
-    }),
-  },
-}
 
 export const PhonebookAutoComplete: FC<
   Partial<{
-    style?: TouchableOpacityProps['style']
+    className?: ClassName
     // onCreateBtnPress(): void
     // label: string
     value: string
@@ -44,7 +21,7 @@ export const PhonebookAutoComplete: FC<
     onPressItem(item: PbxBook): void
   }>
 > = p0 => {
-  const { value, onPressItem } = p0
+  const { value, onPressItem, className } = p0
   const [isChoose, setChoose] = useState(false)
 
   useEffect(() => {
@@ -78,8 +55,12 @@ export const PhonebookAutoComplete: FC<
   }
   return (
     <View
-      style={css.viewFlatList}
-      className='absolute rounded-[5px] bg-background py-1.25 px-2.5 max-h-75 top-47 z-100000 mx-3.75'
+      className={[
+        'absolute rounded-[5px] bg-background py-1.25 px-2.5 max-h-75 top-47 z-100000 left-3.75 right-3.75',
+        'shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px]',
+        isWeb && 'shadow-opacity-100 shadow-radius-[10px] shadow-offset-[0px]/[0px]',
+        className,
+      ]}
     >
       <ScrollView>
         {result.map((item, index) => (

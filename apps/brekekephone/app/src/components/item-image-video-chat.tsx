@@ -1,25 +1,21 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Dimensions, Platform } from 'react-native'
+import { Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
+import { isWeb } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-const vMessageWidthStyle = Platform.select({
-  web: {
-    width: 'calc(100vw - 119px)' as any,
-  },
-  default: {
-    width: Dimensions.get('screen').width - 119,
-  },
-})
+const vMessageWidthClassName = isWeb
+  ? 'w-[calc(100vw-119px)]'
+  : `w-[${Dimensions.get('screen').width - 119}px]`
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
@@ -42,7 +38,7 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   }
   return (
     <View>
-      <View className='mb-1.25 ml-2.5' style={vMessageWidthStyle}>
+      <View className={['mb-1.25 ml-2.5', vMessageWidthClassName]}>
         <RnText className={['line-clamp-2', textClass]}>
           {p.name}
           {displaySendTo}

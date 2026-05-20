@@ -1,20 +1,19 @@
 import type { FC, PropsWithChildren } from 'react'
 import { useState } from 'react'
-import type { ViewProps } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { AnimatedView } from '#/components/rn-animated'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
-// the style prop only for positioning + Animated runtime binding.
-// Use innerClassName for theming/sizing on inner content wrapper.
+// className: positioning + outer styling on the animated wrapper.
+// innerClassName: theming/sizing on inner content wrapper.
 export const AnimatedSize: FC<
-  ViewProps & {
+  PropsWithChildren<{
     animateWidth?: boolean
     innerClassName?: ClassName
     className?: ClassName
-  }
+  }>
 > = p => {
   const [size, setSize] = useState(0)
   const Component = size ? Animation : Getter
@@ -45,15 +44,14 @@ const Animation = (p: {
   children?: PropsWithChildren<{}>['children']
   innerClassName?: ClassName
   size: number
-  style?: ViewProps['style']
   className?: ClassName
 }) => {
-  const { animateWidth, children, className, innerClassName, size, style } = p
+  const { animateWidth, children, className, innerClassName, size } = p
   const cssAnimation = useAnimationOnDidMount({
     [animateWidth ? 'width' : 'height']: [0, size],
   })
   return (
-    <AnimatedView className={className} style={[style, cssAnimation]}>
+    <AnimatedView className={className} style={cssAnimation}>
       <View className={['flex-1 overflow-hidden', innerClassName]}>
         {children}
       </View>

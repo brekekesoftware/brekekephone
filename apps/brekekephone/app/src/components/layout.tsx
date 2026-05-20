@@ -1,22 +1,17 @@
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import type {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleProp,
-  ViewStyle,
-} from 'react-native'
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 import { Platform } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { lowerFirst } from '@/shared/lodash'
 import { Footer } from '#/components/footer'
 import { Header } from '#/components/header'
 import type { HeaderDropdownItem } from '#/components/header-dropdown'
 import { Toast } from '#/components/toast'
-import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
@@ -50,7 +45,7 @@ export const Layout: FC<
     isShowToastMessage: boolean
     incomingMessage: string
     children: ReactNode
-    style?: StyleProp<ViewStyle>
+    className?: ClassName
     isFullContent?: boolean
     iconRights?: string[]
     iconRightColors?: string[]
@@ -60,6 +55,8 @@ export const Layout: FC<
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
   const props = { ...originalProps } // clone so it can be mutated
+  const outerClassName = props.className // applied to outer View only
+  delete props.className // don't leak className to Footer/Header via {...props}
 
   const Container = props.noScroll ? View : ScrollView
   const containerProps = Object.entries(props).reduce(
@@ -125,14 +122,14 @@ export const Layout: FC<
     }
   }
 
+  const headerSpaceH = props?.isFullContent ? headerSpace - 15 : headerSpace
+  const headerSpaceCls = `h-[${headerSpaceH}px]`
+  const footerSpaceCls = `h-[${footerSpace}px]`
+  const cl = outerClassName ? outerClassName : 'h-full w-full'
   return (
-    <View className='h-full w-full' style={props.style}>
+    <View className={cl}>
       <Container {...containerProps}>
-        <View
-          style={{
-            height: props?.isFullContent ? headerSpace - 15 : headerSpace,
-          }}
-        />
+        <View className={headerSpaceCls} />
         {props.children}
         <View className={props?.isFullContent ? 'h-0' : 'h-3.75'} />
       </Container>
@@ -140,13 +137,11 @@ export const Layout: FC<
         <Toast
           isVisible
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
-          containerStyles={{
-            marginTop: headerSpace,
-            backgroundColor: v.colors.warning,
-          }}
+          containerClassName='bg-warning'
+          containerMarginTop={headerSpace}
         />
       )}
-      {!props.isTab && <View style={{ height: footerSpace }} />}
+      {!props.isTab && <View className={footerSpaceCls} />}
       <Footer {...props} menu={props.menu as string} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </View>

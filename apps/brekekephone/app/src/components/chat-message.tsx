@@ -2,7 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { Dimensions, Linking, Platform } from 'react-native'
+import { Dimensions, Linking } from 'react-native'
 import Share from 'react-native-share'
 
 import { View } from '@/rn/core/components/view'
@@ -16,23 +16,13 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-const messageMaxWidthStyle = Platform.select({
-  web: {
-    maxWidth: 'calc(100vw - 60px)' as any,
-  },
-  default: {
-    // 50px of avatar and 10px of padding
-    maxWidth: Dimensions.get('screen').width - 60,
-  },
-})
-const previewInfoWidthStyle = Platform.select({
-  web: {
-    width: 'calc(100vw - 119px)' as any,
-  },
-  default: {
-    width: Dimensions.get('screen').width - 119,
-  },
-})
+// 50px of avatar and 10px of padding
+const messageMaxWidthClassName = isWeb
+  ? 'max-w-[calc(100vw-60px)]'
+  : `max-w-[${Dimensions.get('screen').width - 60}px]`
+const previewInfoWidthClassName = isWeb
+  ? 'w-[calc(100vw-119px)]'
+  : `w-[${Dimensions.get('screen').width - 119}px]`
 
 const File: FC<
   Partial<{
@@ -48,15 +38,17 @@ const File: FC<
   }>
 > = observer(p => (
   <View
-    className='relative pb-1.25 px-2.5 overflow-hidden mt-0'
-    style={messageMaxWidthStyle}
+    className={[
+      'relative pb-1.25 px-2.5 overflow-hidden mt-0',
+      messageMaxWidthClassName,
+    ]}
   >
     <View>
       <View className='flex-row items-start'>
         <View>
           <RnIcon path={mdiFile} size={20} />
         </View>
-        <View className='ml-1.25' style={previewInfoWidthStyle}>
+        <View className={['ml-1.25', previewInfoWidthClassName]}>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
@@ -185,8 +177,10 @@ export class Message extends Component<{
       <>
         {!!text && !file && (
           <TextContainer
-            className='relative pb-1.25 px-2.5 overflow-hidden'
-            style={messageMaxWidthStyle}
+            className={[
+              'relative pb-1.25 px-2.5 overflow-hidden',
+              messageMaxWidthClassName,
+            ]}
             onLongPress={this.onMessagePress}
           >
             <RnText
