@@ -5,7 +5,10 @@ import { v4 as newUuid } from 'uuid'
 
 import { isIos } from '#/config'
 import { RnPicker } from '#/stores/rn-picker'
-import { onPickFileNativeError, pickFileNativeOptions } from '#/utils/pick-file'
+import {
+  onPickFileNativeError,
+  pickFileNativeOptions,
+} from '#/utils/pick-file-shared'
 
 const actionSheetHandlers = [
   () =>
