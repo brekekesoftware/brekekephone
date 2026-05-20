@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CommonProps } from '@/rn/core/components/lib/common-props'
 import { useDarkModeState } from '@/rn/core/dark-mode/use-dark-mode-state'
 import { useResponsiveState } from '@/rn/core/responsive/use-responsive-state'
+import { useWindowDimensions } from '@/rn/core/responsive/use-window-dimensions'
 import { useThemeVariables } from '@/rn/core/theme/use-theme-variables'
 import type {
   ClassName,
@@ -73,8 +74,10 @@ export const createClassNameComponent = ({
     }
 
     // theme is rarely changed, so we can just get it here
-    // other selectors should be checked in inner component and only wrap when necessary
     const variables = await useThemeVariables()
+    // dimensions rarely changed, so we can just get it here
+    const dimensions = useWindowDimensions()
+    // other selectors should be checked in inner component and only wrap when necessary
 
     return (
       <ClassNameComponent
@@ -85,8 +88,9 @@ export const createClassNameComponent = ({
         // initial state is the props state where we can get from the props
         state={propsState}
         // theme is rarely changed, so we can just get it here
-        // other selectors should be checked in inner component and only wrap when necessary
         variables={variables}
+        // dimensions rarely changed, so we can just get it here
+        dimensions={dimensions}
         // pass metadata to try to collect class name selector dependencie
         metadata={getInitialMetadata(twStableProvider)}
       />
@@ -97,7 +101,10 @@ export const createClassNameComponent = ({
   return Outer
 }
 
-type ClassNameComponentProps = Pick<ClassNameToStylesOptions, 'variables'> & {
+type ClassNameComponentProps = Pick<
+  ClassNameToStylesOptions,
+  'variables' | 'dimensions'
+> & {
   Component: any
   props: any
   classNameKeys: string[]
@@ -113,6 +120,7 @@ const ClassNameComponent = ({
   styleKeys,
   state,
   variables,
+  dimensions,
   metadata,
 }: ClassNameComponentProps) => {
   const styles = classNameKeys.map((k, i) => {
@@ -122,6 +130,7 @@ const ClassNameComponent = ({
       style: props[sk],
       state,
       variables,
+      dimensions,
       metadata,
       extraClassNameKey: i ? k : undefined,
     })
@@ -145,6 +154,7 @@ const ClassNameComponent = ({
       styleKeys={styleKeys}
       state={state}
       variables={variables}
+      dimensions={dimensions}
       metadata={metadata}
     />
   )
@@ -158,6 +168,7 @@ const ClassNameComponentWithMetadata = ({
   styleKeys,
   state,
   variables,
+  dimensions,
   metadata,
 }: ClassNameComponentWithMetadataProps) => {
   let Inner: FC<InnerProps> = InitialInner
@@ -215,6 +226,7 @@ const ClassNameComponentWithMetadata = ({
         styleKeys,
         state,
         variables,
+        dimensions,
         metadata,
       }}
     />
@@ -238,7 +250,15 @@ type InnerProps = {
 }
 
 const InitialInner = ({
-  outer: { Component, props, classNameKeys, styleKeys, state, variables },
+  outer: {
+    Component,
+    props,
+    classNameKeys,
+    styleKeys,
+    state,
+    variables,
+    dimensions,
+  },
   responsiveState,
   darkModeState,
   active,
@@ -262,6 +282,7 @@ const InitialInner = ({
       ...peerState,
     }}
     variables={variables}
+    dimensions={dimensions}
     // remove metadata to actual compute the style in above class name component with the correct state
     metadata={undefined}
   />
@@ -416,7 +437,7 @@ const composeHandlers = (props: any, handlers: StrMap<Function> | Falsish) => {
 
 type RuntimeStyleWithMetadataOptions = Pick<
   ClassNameComponentProps,
-  'state' | 'variables' | 'metadata'
+  'state' | 'variables' | 'dimensions' | 'metadata'
 > & {
   className: ClassName
   style: StyleSingle
@@ -428,18 +449,20 @@ const runtimeStyleWithMetadata = ({
   style,
   state,
   variables,
+  dimensions,
   ...options
 }: RuntimeStyleWithMetadataOptions) =>
   runtimeStyle(className, {
     style,
     state,
-    variables,
     onSelector: selector =>
       onSelectorWithMetadata({
         className: selector,
         state,
         ...options,
       }),
+    dimensions,
+    variables,
     warnOnString: true,
   })
 

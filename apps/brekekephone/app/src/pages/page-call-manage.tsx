@@ -588,7 +588,6 @@ class PageCallManage extends Component<{
           'mb-2 self-stretch items-center justify-center z-12',
           isLarge ? 'mt-2.5' : 'mt-10',
         ]}
-        pointerEvents='box-none'
       >
         {c.holding && !c.rqLoadings['hold'] ? (
           <View className='mb-2.5 h-16.25'>
@@ -599,7 +598,6 @@ class PageCallManage extends Component<{
         ) : (
           <View
             className='mb-2.5 flex-row self-stretch items-center justify-center z-12'
-            pointerEvents='box-none'
           >
             {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (

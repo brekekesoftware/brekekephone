@@ -12,7 +12,7 @@ import { normalizeStyle } from '@/rn/core/tw/lib/normalize-style'
 
 type Options = Partial<
   Omit<ClassNameToStylesOptions, 'className'> &
-    Pick<ClassNameToStylesOptions, 'variables'> & {
+    Pick<ClassNameToStylesOptions, 'variables' | 'dimensions'> & {
       state: ClassNameState
       style: Style
     }
@@ -20,14 +20,15 @@ type Options = Partial<
 
 export const runtimeStyle = (
   className: ClassName,
-  { state, variables, style, onSelector, ...options }: Options = {},
+  { state, variables, dimensions, style, onSelector, ...options }: Options = {},
 ): StyleSingle | undefined => {
   const styles = classNameToStyles({
     className,
-    variables,
     onSelector:
       onSelector ||
       (selector => defaultOnSelector({ className: selector, state })),
+    variables,
+    dimensions,
     ...options,
   })
 
