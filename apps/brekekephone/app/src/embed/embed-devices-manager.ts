@@ -369,7 +369,6 @@ class EmbedDevicesManager {
       return
     }
 
-    // tránh register nhiều lần
     if (this._deviceChangeHandler) {
       return
     }

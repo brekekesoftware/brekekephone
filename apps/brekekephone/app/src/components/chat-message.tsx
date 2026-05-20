@@ -2,7 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
-import { Dimensions, Linking } from 'react-native'
+import { Linking } from 'react-native'
 import Share from 'react-native-share'
 
 import { View } from '@/rn/core/components/view'
@@ -16,16 +16,10 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-// 50px of avatar and 10px of padding.
-// Dimensions giữ inline style (tạm, per Nam) — chỉ web calc giữ ở className.
-const messageMaxWidthClassName = isWeb ? 'max-w-[calc(100vw-60px)]' : undefined
-const messageMaxWidthStyle = isWeb
-  ? undefined
-  : { maxWidth: Dimensions.get('screen').width - 60 }
-const previewInfoWidthClassName = isWeb ? 'w-[calc(100vw-119px)]' : undefined
-const previewInfoWidthStyle = isWeb
-  ? undefined
-  : { width: Dimensions.get('screen').width - 119 }
+// 50px of avatar and 10px of padding. calc(100vw-…) resolves on native too via
+// the framework's runtime vw support, so no Dimensions inline style needed.
+const messageMaxWidthClassName = 'max-w-[calc(100vw-60px)]'
+const previewInfoWidthClassName = 'w-[calc(100vw-119px)]'
 
 const File: FC<
   Partial<{
@@ -45,32 +39,34 @@ const File: FC<
       'relative pb-1.25 px-2.5 overflow-hidden mt-0',
       messageMaxWidthClassName,
     ]}
-    style={messageMaxWidthStyle}
   >
     <View>
       <View className='flex-row items-start'>
         <View>
           <RnIcon path={mdiFile} size={20} />
         </View>
-        <View
-          className={['ml-1.25', previewInfoWidthClassName]}
-          style={previewInfoWidthStyle}
-        >
+        <View className={['ml-1.25', previewInfoWidthClassName]}>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
       <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
       <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.reject}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] text-error border border-error'>
+          <RnTouchableOpacity
+            onPress={p.reject}
+            className='py-px px-2 mt-1 rounded border border-error'
+          >
+            <RnText className='text-[12px] text-error text-center'>
               Cancel
             </RnText>
           </RnTouchableOpacity>
         )}
         {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.accept}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] bg-primary border border-primary'>
+          <RnTouchableOpacity
+            onPress={p.accept}
+            className='py-px px-2 mt-1 ml-1 rounded bg-primary border border-primary'
+          >
+            <RnText className='text-[12px] text-white text-center'>
               Accept
             </RnText>
           </RnTouchableOpacity>
@@ -188,7 +184,6 @@ export class Message extends Component<{
               'relative pb-1.25 px-2.5 overflow-hidden',
               messageMaxWidthClassName,
             ]}
-            style={messageMaxWidthStyle}
             onLongPress={this.onMessagePress}
           >
             <RnText

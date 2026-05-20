@@ -1,7 +1,7 @@
 import type { ComponentProps, FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { Dimensions, Modal, StatusBar } from 'react-native'
+import { Modal, StatusBar } from 'react-native'
 import FastImageWocn from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import Svg, { Path } from 'react-native-svg'
@@ -29,11 +29,7 @@ const Video = createClassNameComponent({ VideoWocn }) as FC<
   ComponentProps<typeof VideoWocn> & { className?: ClassName }
 >
 
-const vVideoModalStyle = {
-  width: Dimensions.get('screen').width,
-  height: Dimensions.get('window').height,
-}
-const btnCloseCls = `top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
+const btnCloseCls =`top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
 
 const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
@@ -166,7 +162,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
               controls={true}
               paused={false}
               resizeMode='contain'
-              style={vVideoModalStyle}
+              className='w-screen h-screen'
             />
           ))}
       </Modal>

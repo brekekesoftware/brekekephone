@@ -45,7 +45,6 @@ export const Footer: FC<{
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? RnKeyboard.keyboardHeight
       : 0
-  // keyboard mới runtime → `bottom-[Npx]` twrnc resolve native
   const bottomCls = bottomOffset ? `bottom-[${bottomOffset}px]` : 'bottom-0'
   const noKeyboard = render || !RnKeyboard.isKeyboardShowing
   return (

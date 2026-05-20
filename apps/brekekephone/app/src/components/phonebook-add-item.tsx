@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import { Dimensions, Platform } from 'react-native'
+import { Platform } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
@@ -15,7 +15,6 @@ import { RnKeyboard } from '#/stores/rn-keyboard'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const rnPickerOptionsStyle = { height: Dimensions.get('screen').height / 3 }
 const inputFieldNameClassName = [
   'bg-background h-10 w-full rounded-[3px] border-[0.8px] border-border px-2.5 overflow-hidden',
   isWeb && 'py-1.25',
@@ -27,16 +26,12 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const [value, updateValue] = useState('')
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  // off-screen start = full screen height. Android native can't cast a
-  // percentage translate string ('100%') to double, so use numeric px there;
-  // web keeps the % utility (tailwind resolves it at build time).
-  const offscreenY = isWeb
-    ? 'translate-y-full'
-    : `translate-y-[${Dimensions.get('screen').height}px]`
-  const innerBottom =
+  // keyboard lift (android 15+ only) uses the live IME height → runtime
+  // arbitrary class; everywhere else it stays the static 15px bottom.
+  const bottomCls =
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
-      ? 15 + RnKeyboard.keyboardHeight
-      : 15
+      ? `bottom-[${15 + RnKeyboard.keyboardHeight}px]`
+      : 'bottom-3.75'
   const onChangeText = (txt: string) => {
     if (!txt) {
       updateItems(listOption)
@@ -78,14 +73,13 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
       <AnimatedView
         className={[
           'absolute w-[90%] max-w-95 max-h-full transition-transform duration-150',
-          mounted ? 'translate-y-0' : offscreenY,
+          bottomCls,
+          // slide-up only animates on web (native anim disabled); '100%' stays
+          // web-side so it never reaches native transform (Android crash).
+          isWeb && !mounted ? 'translate-y-full' : 'translate-y-0',
         ]}
-        style={{ bottom: innerBottom }}
       >
-        <View
-          className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start'
-          style={rnPickerOptionsStyle}
-        >
+        <View className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start h-[33.333vh]'>
           <RnTextInput
             // blurOnSubmit
             keyboardType='default'
