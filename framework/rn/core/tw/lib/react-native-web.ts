@@ -86,10 +86,10 @@ const map: StrMap<Function> = {
     d.stickyHeader && tw`sticky top-0 z-10`,
     d.pagingEnabledChild && tw`snap-start`,
     d.contentContainerCenterContent && tw`grow justify-center`,
-    d.pagingEnabledHorizontal && tw`flex-row snap-x snap-mandatory`,
-    d.pagingEnabledVertical && tw`flex-col snap-y snap-mandatory`,
+    d.pagingEnabledHorizontal && tw`snap-x snap-mandatory`,
+    d.pagingEnabledVertical && tw`snap-y snap-mandatory`,
     d.base && tw`shrink grow transform-[translateZ(0)]`,
-    d.baseVertical && tw`flex-col overflow-x-hidden overflow-y-auto`,
+    d.baseHorizontal && tw`flex-col overflow-x-hidden overflow-y-auto`,
     d.baseHorizontal && tw`flex-row overflow-x-auto overflow-y-hidden`,
   ],
   TextInput: (d: TextInput) => [
