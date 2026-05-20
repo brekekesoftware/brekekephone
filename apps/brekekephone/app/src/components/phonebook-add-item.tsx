@@ -15,7 +15,7 @@ import { RnKeyboard } from '#/stores/rn-keyboard'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const rnPickerOptionsClassName = `h-[${Dimensions.get('screen').height / 3}px]`
+const rnPickerOptionsStyle = { height: Dimensions.get('screen').height / 3 }
 const inputFieldNameClassName = [
   'bg-background h-10 w-full rounded-[3px] border-[0.8px] border-border px-2.5 overflow-hidden',
   isWeb && 'py-1.25',
@@ -27,6 +27,12 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const [value, updateValue] = useState('')
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+  // off-screen start = full screen height. Android native can't cast a
+  // percentage translate string ('100%') to double, so use numeric px there;
+  // web keeps the % utility (tailwind resolves it at build time).
+  const offscreenY = isWeb
+    ? 'translate-y-full'
+    : `translate-y-[${Dimensions.get('screen').height}px]`
   const innerBottom =
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? 15 + RnKeyboard.keyboardHeight
@@ -72,15 +78,13 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
       <AnimatedView
         className={[
           'absolute w-[90%] max-w-95 max-h-full transition-transform duration-150',
-          mounted ? 'translate-y-0' : 'translate-y-full',
+          mounted ? 'translate-y-0' : offscreenY,
         ]}
         style={{ bottom: innerBottom }}
       >
         <View
-          className={[
-            'rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start',
-            rnPickerOptionsClassName,
-          ]}
+          className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start'
+          style={rnPickerOptionsStyle}
         >
           <RnTextInput
             // blurOnSubmit

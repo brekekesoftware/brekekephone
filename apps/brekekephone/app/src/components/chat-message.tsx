@@ -16,13 +16,16 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-// 50px of avatar and 10px of padding
-const messageMaxWidthClassName = isWeb
-  ? 'max-w-[calc(100vw-60px)]'
-  : `max-w-[${Dimensions.get('screen').width - 60}px]`
-const previewInfoWidthClassName = isWeb
-  ? 'w-[calc(100vw-119px)]'
-  : `w-[${Dimensions.get('screen').width - 119}px]`
+// 50px of avatar and 10px of padding.
+// Dimensions giữ inline style (tạm, per Nam) — chỉ web calc giữ ở className.
+const messageMaxWidthClassName = isWeb ? 'max-w-[calc(100vw-60px)]' : undefined
+const messageMaxWidthStyle = isWeb
+  ? undefined
+  : { maxWidth: Dimensions.get('screen').width - 60 }
+const previewInfoWidthClassName = isWeb ? 'w-[calc(100vw-119px)]' : undefined
+const previewInfoWidthStyle = isWeb
+  ? undefined
+  : { width: Dimensions.get('screen').width - 119 }
 
 const File: FC<
   Partial<{
@@ -42,13 +45,17 @@ const File: FC<
       'relative pb-1.25 px-2.5 overflow-hidden mt-0',
       messageMaxWidthClassName,
     ]}
+    style={messageMaxWidthStyle}
   >
     <View>
       <View className='flex-row items-start'>
         <View>
           <RnIcon path={mdiFile} size={20} />
         </View>
-        <View className={['ml-1.25', previewInfoWidthClassName]}>
+        <View
+          className={['ml-1.25', previewInfoWidthClassName]}
+          style={previewInfoWidthStyle}
+        >
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
@@ -181,6 +188,7 @@ export class Message extends Component<{
               'relative pb-1.25 px-2.5 overflow-hidden',
               messageMaxWidthClassName,
             ]}
+            style={messageMaxWidthStyle}
             onLongPress={this.onMessagePress}
           >
             <RnText

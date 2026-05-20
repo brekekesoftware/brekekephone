@@ -29,8 +29,10 @@ const Video = createClassNameComponent({ VideoWocn }) as FC<
   ComponentProps<typeof VideoWocn> & { className?: ClassName }
 >
 
-// native-only file → runtime className OK (twrnc resolve runtime, no web safelist)
-const vVideoModalCls = `w-[${Dimensions.get('screen').width}px] h-[${Dimensions.get('window').height}px]`
+const vVideoModalStyle = {
+  width: Dimensions.get('screen').width,
+  height: Dimensions.get('window').height,
+}
 const btnCloseCls = `top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
 
 const size = 150
@@ -164,7 +166,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
               controls={true}
               paused={false}
               resizeMode='contain'
-              className={vVideoModalCls}
+              style={vVideoModalStyle}
             />
           ))}
       </Modal>

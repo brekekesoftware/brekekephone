@@ -13,9 +13,10 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-const vMessageWidthClassName = isWeb
-  ? 'w-[calc(100vw-119px)]'
-  : `w-[${Dimensions.get('screen').width - 119}px]`
+const vMessageWidthClassName = isWeb ? 'w-[calc(100vw-119px)]' : undefined
+const vMessageWidthStyle = isWeb
+  ? undefined
+  : { width: Dimensions.get('screen').width - 119 }
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
@@ -38,7 +39,10 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   }
   return (
     <View>
-      <View className={['mb-1.25 ml-2.5', vMessageWidthClassName]}>
+      <View
+        className={['mb-1.25 ml-2.5', vMessageWidthClassName]}
+        style={vMessageWidthStyle}
+      >
         <RnText className={['line-clamp-2', textClass]}>
           {p.name}
           {displaySendTo}
