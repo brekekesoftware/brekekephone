@@ -2,7 +2,6 @@ import { observer } from 'mobx-react'
 import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { AnimatedView } from '#/components/rn-animated'
@@ -28,18 +27,15 @@ const Stack: FC<{
       </View>
     )
   }
-  // off-screen start = full screen width. Android native can't cast a
-  // percentage translate string ('100%') to double, so use numeric px there;
-  // web keeps the % utility (tailwind resolves it at build time).
-  const offscreenX = isWeb
-    ? 'translate-x-full'
-    : `translate-x-[${Dimensions.get('screen').width}px]`
+  // slide-in only animates on web (native anim disabled). translate-x-full
+  // ('100%') is only picked on the web branch, so it never reaches the native
+  // transform (Android crashes casting String '100%' to double).
   return (
     <AnimatedView
       className={[
         'absolute inset-0 bg-background transition-transform duration-500',
         p.isBackgroundStack && 'opacity-0',
-        mounted ? 'translate-x-0' : offscreenX,
+        isWeb && !mounted ? 'translate-x-full' : 'translate-x-0',
       ]}
     >
       <Component {...p} />

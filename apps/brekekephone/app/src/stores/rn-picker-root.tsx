@@ -1,20 +1,17 @@
 import { observer } from 'mobx-react'
 import { useEffect, useState } from 'react'
-import { Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedScrollView, AnimatedView } from '#/components/rn-animated'
 import { v } from '#/components/variables'
-import { isIos } from '#/config'
+import { isIos, isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
-import { useAnimationOnDidMount } from '#/utils/animation'
 
-// bottom + slide giữ inline style (Dimensions/positioning, per Nam)
-const defaultBottomPosition = isIos ? 20 : 15
+const bottomCls = isIos ? 'bottom-5' : 'bottom-3.75'
 const iconCls = 'absolute top-2.5 right-2.5'
 
 const RnPickerR = (p: RnPickerOption) => {
@@ -24,10 +21,8 @@ const RnPickerR = (p: RnPickerOption) => {
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-
-  const y = useAnimationOnDidMount({
-    translateY: [Dimensions.get('screen').height, 0],
-  })
+  
+  const slideY = isWeb && !mounted ? 'translate-y-full' : 'translate-y-0'
 
   const onConfirm = () => {
     p.onConfirm?.(selectedKey)
@@ -48,8 +43,11 @@ const RnPickerR = (p: RnPickerOption) => {
         />
       </AnimatedView>
       <AnimatedScrollView
-        className='absolute w-[90%] max-w-95 max-h-[80%] mb-15'
-        style={{ bottom: defaultBottomPosition, transform: [y] }}
+        className={[
+          'absolute w-[90%] max-w-95 max-h-[80%] mb-15 transition-transform duration-150',
+          bottomCls,
+          slideY,
+        ]}
       >
         <View className='rounded-[3px] bg-background overflow-hidden'>
           {p.options.map((o, i) => {
@@ -88,11 +86,13 @@ const RnPickerR = (p: RnPickerOption) => {
           })}
         </View>
       </AnimatedScrollView>
-      <View
-        className='flex-row absolute w-[90%] max-w-95'
-        style={{ bottom: defaultBottomPosition }}
-      >
-        <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
+      <View className={['flex-row absolute w-[90%] max-w-95', bottomCls]}>
+        <AnimatedView
+          className={[
+            'flex-1 max-w-95 transition-transform duration-150',
+            slideY,
+          ]}
+        >
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
             className={[
@@ -113,7 +113,12 @@ const RnPickerR = (p: RnPickerOption) => {
           </RnTouchableOpacity>
         </AnimatedView>
         {p.onConfirm && (
-          <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
+          <AnimatedView
+            className={[
+              'flex-1 max-w-95 transition-transform duration-150',
+              slideY,
+            ]}
+          >
             <RnTouchableOpacity
               onPress={onConfirm}
               className='py-3 px-3.75 mt-3.75 rounded-[3px] items-center bg-primary rounded-l-none rounded-r-[3px]'
