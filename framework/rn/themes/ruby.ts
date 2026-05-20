@@ -1,7 +1,7 @@
-import common from '@/rn/themes/common.extract-variables.css'
-import commonDark from '@/rn/themes/common-dark.extract-variables.css'
-import override from '@/rn/themes/ruby.extract-variables.css'
-import overrideDark from '@/rn/themes/ruby-dark.extract-variables.css'
+import common from '@/rn/themes/common.extract-variables.scss'
+import commonDark from '@/rn/themes/common-dark.extract-variables.scss'
+import override from '@/rn/themes/ruby.extract-variables.scss'
+import overrideDark from '@/rn/themes/ruby-dark.extract-variables.scss'
 
 import type { ThemeConfig } from '@/rn/core/theme/config'
 import { tw } from '@/rn/core/tw/tw'

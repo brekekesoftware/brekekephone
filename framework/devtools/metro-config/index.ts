@@ -25,8 +25,10 @@ export const config = ({ dir }: Options) => {
         resolver: 'enhanced-resolve',
       }),
       unstable_conditionNames: ['react-native', 'import', 'require', 'default'],
-      assetExts: assetExts.filter(e => e !== 'svg' && e !== 'css'),
-      sourceExts: [...sourceExts, 'svg', 'css'],
+      assetExts: assetExts.filter(
+        e => e !== 'svg' && e !== 'css' && e !== 'scss',
+      ),
+      sourceExts: [...sourceExts, 'svg', 'css', 'scss'],
     },
     transformer: {
       babelTransformerPath: require.resolve('./transformer'),

@@ -8,8 +8,10 @@ import type { CommonProps } from '@/rn/core/components/lib/common-props'
 import { normalizePropsRnw } from '@/rn/core/components/lib/normalize-props-rnw'
 import type { StrMap } from '@/shared/ts-utils'
 
-export type PressablePropsWocn = CommonProps<PressableRn> &
-  PropsWithChildren<Omit<PressableProps, 'children'>>
+export type PressablePropsWocn = CommonProps<
+  PropsWithChildren<Omit<PressableProps, 'children'>>,
+  PressableRn
+>
 
 // export native type for ref
 export type PressableRn = ViewComponent & NativeMethods

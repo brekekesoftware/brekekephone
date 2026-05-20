@@ -5,7 +5,7 @@ require('@/nodejs/entrypoint')({
 
 const path = require('node:path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
-const { getAlias } = require('@/devtools/ts/get-alias')
+const { getAlias } = require('@/devtools/babel-config/get-alias')
 
 const babel = require('../app/.babelrc')
 
@@ -28,6 +28,15 @@ babel.plugins.forEach(p => {
 const nullAlias = path.join(__dirname, '../app/src/polyfill/null.ts')
 
 module.exports = {
+  style: {
+    sass: {
+      loaderOptions: {
+        sassOptions: {
+          silenceDeprecations: ['legacy-js-api'],
+        },
+      },
+    },
+  },
   webpack: {
     configure: c => {
       c.resolve.alias = {

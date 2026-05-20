@@ -89,8 +89,8 @@ const map: StrMap<Function> = {
     d.baseVertical && tw`flex-col overflow-x-hidden overflow-y-auto`,
     d.baseHorizontal && tw`flex-row overflow-x-auto overflow-y-hidden`,
     d.pagingEnabledChild && tw`snap-start`,
-    d.pagingEnabledVertical && tw`flex-col snap-y snap-mandatory`,
-    d.pagingEnabledHorizontal && tw`flex-row snap-x snap-mandatory`,
+    d.pagingEnabledVertical && tw`snap-y snap-mandatory flex-col`,
+    d.pagingEnabledHorizontal && tw`snap-x snap-mandatory flex-row`,
   ],
   TextInput: (d: TextInput) => [
     tw`rounded-0 font-sm m-0 resize-none [appearance:textfield] border-0 border-solid border-black bg-transparent p-0 font-sans outline-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`,

@@ -1,6 +1,7 @@
 'use client'
 
 import type { PropsWithChildren } from 'react'
+import { useEffect } from 'react'
 
 import { Portal } from '@/rn/components/portal'
 import { Pressable } from '@/rn/core/components/pressable'
@@ -9,8 +10,7 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import type { Variant } from '@/rn/core/tw/cva'
 import { cva } from '@/rn/core/tw/cva'
-import { useControllableState } from '@/rn/core/utils/use-controllable-state'
-import type { ValueProps } from '@/shared/ts-utils'
+import { isWeb } from '@/rn/core/utils/platform'
 
 const drawerCva = cva({
   classNames: {
@@ -37,9 +37,10 @@ const drawerCva = cva({
   },
 })
 
-export type DrawerProps = ValueProps<boolean> &
-  Variant<typeof drawerCva> &
+export type DrawerProps = Variant<typeof drawerCva> &
   PropsWithChildren<{
+    open: boolean
+    onClose: () => void
     className?: ClassName
     contentClassName?: ClassName
     contentContainerClassName?: ClassName
@@ -47,19 +48,25 @@ export type DrawerProps = ValueProps<boolean> &
 
 export const Drawer = ({
   side = 'bottom',
-  value,
-  defaultValue = false,
-  onChange,
+  open,
+  onClose,
   className,
   contentClassName,
   contentContainerClassName,
   children,
 }: DrawerProps) => {
-  const [open, setOpen] = useControllableState({
-    value,
-    defaultValue,
-    onChange,
-  })
+  useEffect(() => {
+    if (!open || !isWeb) {
+      return
+    }
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [open, onClose])
 
   if (!open) {
     return null
@@ -70,7 +77,7 @@ export const Drawer = ({
 
   return (
     <Portal disableBodyScroll>
-      <Pressable className={cn.backdrop} onPress={() => setOpen(false)} />
+      <Pressable className={cn.backdrop} onPress={onClose} />
       <View className={[cn.panel, className]}>
         {showHandle && (
           <View className={cn.handleZone}>

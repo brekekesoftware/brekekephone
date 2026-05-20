@@ -11,7 +11,13 @@ declare module 'json5/lib/register' {
 
 // tsconfig commonjs, some of the type definitions are not
 // compatible with our setup, so we declare it here
+// we also need some modules to be any since we use a webpack loader
+// to convert those file to js object
 declare module '*.css' {
+  const m: any
+  export = m
+}
+declare module '*.scss' {
   const m: any
   export = m
 }

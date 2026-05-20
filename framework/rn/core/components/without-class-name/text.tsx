@@ -7,12 +7,14 @@ import type { CommonProps } from '@/rn/core/components/lib/common-props'
 import { normalizePropsRnw } from '@/rn/core/components/lib/normalize-props-rnw'
 import type { StrMap } from '@/shared/ts-utils'
 
-export type TextPropsWocn = CommonProps<TextRn> &
+export type TextPropsWocn = CommonProps<
   Omit<
     TextProps,
     // should be supported using class name in native
     'numberOfLines' | 'selectable'
-  >
+  >,
+  TextRn
+>
 
 // export native type for ref
 export type TextRn = TextComponent & NativeMethods

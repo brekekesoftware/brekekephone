@@ -2,10 +2,11 @@ packages:
   - './*/*/*'
 
 allowBuilds:
+  '@parcel/watcher': false
   '@swc/core': true
   core-js: true
   core-js-pure: true
-  sharp: true
+  sharp: false
 
 overrides:
   react: 19.1.0

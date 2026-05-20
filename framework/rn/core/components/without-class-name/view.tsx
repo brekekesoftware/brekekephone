@@ -7,7 +7,7 @@ import type { CommonProps } from '@/rn/core/components/lib/common-props'
 import { normalizePropsRnw } from '@/rn/core/components/lib/normalize-props-rnw'
 import type { StrMap } from '@/shared/ts-utils'
 
-export type ViewPropsWocn = CommonProps<ViewRn> & ViewProps
+export type ViewPropsWocn = CommonProps<ViewProps, ViewRn>
 
 // export native type for ref
 export type ViewRn = ViewComponent & NativeMethods

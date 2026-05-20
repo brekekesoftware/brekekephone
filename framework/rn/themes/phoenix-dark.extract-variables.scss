@@ -1,0 +1,13 @@
+@mixin phoenix-dark {
+  // add here
+}
+
+html.theme-phoenix.theme-dark {
+  @include phoenix-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-phoenix:not(.theme-light) {
+    @include phoenix-dark;
+  }
+}

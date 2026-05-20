@@ -1,8 +1,8 @@
 import type { NextConfig } from 'next'
 
+import { getAlias } from '@/devtools/babel-config/get-alias'
 import { shouldTranspileExtension } from '@/devtools/babel-config/should-transpile'
-import { getAlias } from '@/devtools/ts/get-alias'
-import { cssVariablesFilenameRegex } from '@/devtools/webpack-css-variables/transform-css-variables'
+import { cssExtractVariablesRegex } from '@/devtools/webpack-css-extract-variables/transform'
 import { ResolveClientExtension } from '@/devtools/webpack-resolve-client-extension'
 import { glob } from '@/nodejs/glob'
 import { repoRoot } from '@/root'
@@ -33,7 +33,8 @@ export const config = async (o: Options): Promise<NextConfig> => ({
 const webpack = async (o: Options): Promise<NextConfig> => {
   const alias = getAlias(o.dir)
   const clients = await glob('**/*.client.{ts,tsx}')
-  const cssVariablesLoader = require.resolve('@/devtools/webpack-css-variables')
+  const cssExtractVariablesLoader =
+    require.resolve('@/devtools/webpack-css-extract-variables')
 
   return {
     webpack: (c, { isServer }) => {
@@ -46,10 +47,10 @@ const webpack = async (o: Options): Promise<NextConfig> => {
 
       // css extract variables
       c.module.rules.unshift({
-        test: cssVariablesFilenameRegex,
+        test: cssExtractVariablesRegex,
         type: 'javascript/auto',
         use: {
-          loader: cssVariablesLoader,
+          loader: cssExtractVariablesLoader,
         },
       })
 
@@ -112,16 +113,18 @@ const traverseWebpackRule = (rule: any): any => {
     // }
 
     // exclude css extract variables
-    if (
-      k === 'test' &&
-      typeof v === 'object' &&
-      v?.toString().includes('\\.css')
-    ) {
-      rule.exclude = rule.exclude || []
-      if (Array.isArray(rule.exclude)) {
-        rule.exclude.push(cssVariablesFilenameRegex)
-      } else {
-        rule.exclude = [rule.exclude, cssVariablesFilenameRegex]
+    if (k === 'test' && typeof v === 'object' && v) {
+      const regexps = (Array.isArray(v) ? v : [v]).filter(
+        r => typeof r?.test === 'function',
+      )
+      const exts = ['css', 'scss'].map(e => `example.extract-variables.${e}`)
+      if (exts.some(e => regexps.some(r => r.test(e)))) {
+        rule.exclude = rule.exclude || []
+        if (Array.isArray(rule.exclude)) {
+          rule.exclude.push(cssExtractVariablesRegex)
+        } else {
+          rule.exclude = [rule.exclude, cssExtractVariablesRegex]
+        }
       }
     }
 

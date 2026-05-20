@@ -1,3 +1,4 @@
+import '#/theme.scss'
 import '#/index.native'
 
 import { createRoot } from 'react-dom/client'

@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @config './tailwind.config.js';
 @import '../../../framework/rn/core/tailwind.css';
-@import '../../../framework/rn/themes/common.extract-variables.css';
-@import './src/theme.css';
 
 /* Safelist runtime-composed sizes (e.g. `h-[${headerSpace}px]` /
    `h-[${footerSpace}px]` in layout.tsx, `w-[${size}px]`/`h-[${size}px]` in

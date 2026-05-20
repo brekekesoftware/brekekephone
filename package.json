@@ -11,7 +11,9 @@
     "eslint": "node ./devtools eslint",
     "stylelint": "node ./devtools stylelint",
     "prettier": "node ./devtools prettier",
-    "ts": "node ./devtools ts"
+    "ts": "node ./devtools ts",
+    "tsc": "node ./devtools tsc",
+    "type-coverage": "node ./devtools type-coverage"
   },
   "engines": {
     "node": ">=24.11",

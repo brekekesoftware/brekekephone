@@ -3,9 +3,9 @@ require('@/nodejs/entrypoint')({
   dir: __dirname,
 })
 
+const { getAlias } = require('@/devtools/babel-config/get-alias')
 const { twPlugin } = require('@/devtools/babel-plugin-tw')
 const { asyncHookPlugin } = require('@/devtools/babel-plugin-async-hook')
-const { getAlias } = require('@/devtools/ts/get-alias')
 const { twrncConfig } = require('#/twrnc-config')
 
 const twOptions = {

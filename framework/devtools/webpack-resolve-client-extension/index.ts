@@ -1,11 +1,11 @@
 import type { Resolver } from 'enhanced-resolve'
 
+import { getAlias } from '@/devtools/babel-config/get-alias'
 import { getClientVariant } from '@/devtools/babel-config/get-client-variant'
 import {
   shouldTranspile,
   shouldTranspileExtension,
 } from '@/devtools/babel-config/should-transpile'
-import { getAlias } from '@/devtools/ts/get-alias'
 import { isRelative, path } from '@/nodejs/path'
 import { get } from '@/shared/lodash'
 import type { StrMap } from '@/shared/ts-utils'

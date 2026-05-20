@@ -1,7 +1,7 @@
 import type { Ref } from 'react'
 
-export type CommonProps<T = any> = {
-  ref?: Ref<T>
+export type CommonProps<P = {}, R = any> = Omit<P, 'pointerEvents'> & {
+  ref?: Ref<R>
   rnwTag?: string
   reanimatedStyle?: any
   twStableProvider?: boolean

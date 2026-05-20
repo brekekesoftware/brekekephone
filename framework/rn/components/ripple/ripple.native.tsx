@@ -39,8 +39,10 @@ export const Ripple = ({ className, ...props }: RippleNativeProps) => {
   return (
     <View
       {...props}
-      pointerEvents='none'
-      className={['absolute bg-[rgba(255,255,255,0.5)]', className]}
+      className={[
+        'pointer-events-none absolute bg-[rgba(255,255,255,0.5)]',
+        className,
+      ]}
       reanimatedStyle={animation}
     />
   )

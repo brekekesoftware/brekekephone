@@ -46,10 +46,10 @@ export type FieldRenderProps = {
 }
 
 // ------------------------------------------------------------------
-// Field
+// FormField
 // ------------------------------------------------------------------
 
-export type FieldProps<T extends FieldValues = FieldValues> = {
+export type FormFieldProps<T extends FieldValues = FieldValues> = {
   name: Path<T>
   label?: string
   // shorthand: auto-adds required rule with a sensible message
@@ -62,14 +62,14 @@ export type FieldProps<T extends FieldValues = FieldValues> = {
   className?: ClassName
 }
 
-export const Field = <T extends FieldValues = FieldValues>({
+export const FormField = <T extends FieldValues = FieldValues>({
   name,
   label,
   required,
   rules,
   children,
   className,
-}: FieldProps<T>) => {
+}: FormFieldProps<T>) => {
   const { control } = useFormContext<T>()
 
   const mergedRules = required
