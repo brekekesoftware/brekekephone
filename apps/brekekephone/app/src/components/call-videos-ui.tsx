@@ -110,7 +110,7 @@ class Mini extends Component<Props> {
         className={[
           miniClassName,
           'native:absolute',
-          isWeb && 'cursor-move select-none',
+          'web:cursor-move web:select-none',
         ]}
         style={{
           top: ctx.call.videoPositionT,

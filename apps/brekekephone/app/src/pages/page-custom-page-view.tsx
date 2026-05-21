@@ -6,17 +6,12 @@ import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
 import { Layout } from '#/components/layout'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
 const invisibleClassName = tw`absolute w-0 h-0 opacity-0 overflow-hidden`
-// h-screen (100vh) only on web; built as a runtime string so babel-plugin-tw
-// doesn't compile-validate it through twrnc (twrnc rejects vh units).
-const visibleClassName = `relative w-full opacity-100 overflow-hidden ${
-  isWeb ? 'h-screen' : 'h-full'
-}`
+const visibleClassName = tw`relative w-full opacity-100 overflow-hidden web:h-screen native:h-full`
 
 @observer
 export class PageCustomPageView extends Component<{

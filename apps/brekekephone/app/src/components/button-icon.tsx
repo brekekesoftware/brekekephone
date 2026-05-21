@@ -7,7 +7,6 @@ import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { v } from '#/components/variables'
-import { isIos } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 // Map theme hex values caller passes back to tw class names
@@ -84,7 +83,7 @@ export const ButtonIcon: FC<{
           center
           white={p.textcolor === 'white'}
           black={p.textcolor === 'black'}
-          className={['pt-1.25', isIos ? 'min-w-17.5' : 'min-w-20']}
+          className='pt-1.25 min-w-20 ios:min-w-17.5'
         >
           {p.name}
         </RnText>

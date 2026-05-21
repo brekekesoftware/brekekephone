@@ -266,7 +266,7 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                className={['flex-none', isWeb && 'pl-1.5 pr-2.5']}
+                className='flex-none web:pl-1.5 web:pr-2.5'
               />
               <RnText normal small className='left-0.75 text-foreground-muted'>
                 {isVoicemail

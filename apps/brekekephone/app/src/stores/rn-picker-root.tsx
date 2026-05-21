@@ -7,12 +7,12 @@ import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedScrollView, AnimatedView } from '#/components/rn-animated'
 import { v } from '#/components/variables'
-import { isIos, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 
-const bottomCls = isIos ? 'bottom-5' : 'bottom-3.75'
+const bottomCls = tw`bottom-3.75 ios:bottom-5`
 const iconCls = tw`absolute top-2.5 right-2.5`
 
 const RnPickerR = (p: RnPickerOption) => {

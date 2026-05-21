@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import { Component } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import {
   mdiArrowRight,
   mdiPhoneForward,
@@ -10,14 +11,11 @@ import {
 } from '#/assets/icons'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { isWeb } from '#/config'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-const innerCls = isWeb
-  ? 'max-w-100 min-w-62.5 justify-between'
-  : 'justify-center'
+const innerCls = tw`justify-center web:max-w-100 web:min-w-62.5 web:justify-between`
 
 @observer
 export class PageCallTransferAttend extends Component {
@@ -102,7 +100,7 @@ export class PageCallTransferAttend extends Component {
     const usertarget = this.resolveMatch(oc.transferring)
     const { phoneappliSource, phoneappliTarget } = this.state
     return (
-      <View className={['items-center bg-background', isWeb && 'w-full']}>
+      <View className='items-center bg-background web:w-full'>
         <RnText center subTitle>{intl`Transferring`}</RnText>
         <View className='h-2.5' />
         <View

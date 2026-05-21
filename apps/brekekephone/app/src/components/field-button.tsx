@@ -2,14 +2,13 @@ import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { RnTouchableOpacity } from '#/components/rn'
-import { isAndroid } from '#/config'
 
-// Platform-conditional top offsets — runtime constants (Platform.OS fixed per build)
-const innerClassName = isAndroid ? 'top-0.25' : '-top-1.25' // android top:1, default top:-5
-const createBtnClassName = isAndroid ? 'top-2' : 'top-3.75' // android top:8, default top:15
+const innerClassName = tw`-top-1.25 android:top-0.25`
+const createBtnClassName = tw`top-3.75 android:top-2`
 
 export const FieldButton: FC<
   Partial<{

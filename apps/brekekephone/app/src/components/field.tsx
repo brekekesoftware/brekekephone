@@ -6,6 +6,7 @@ import { ActivityIndicator, Keyboard } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
 import { flow, omit } from '@/shared/lodash'
 import {
   mdiCardsDiamond,
@@ -21,7 +22,7 @@ import {
   RnTouchableOpacity,
 } from '#/components/rn'
 import { v } from '#/components/variables'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'
@@ -34,26 +35,11 @@ export type Park = {
 // - ios: paddingTop 13px (pt-3.25), paddingBottom 0, paddingLeft 7px (pl-1.75)
 // - android: paddingTop 3px (pt-0.75) + top 6px (top-1.5)
 // - web: absolute, top/left/right: 0 (fix form auto fill style on web)
-const fieldLabelClassName = isAndroid
-  ? 'pb-0 pl-1.75 pt-0.75 top-1.5'
-  : isWeb
-    ? 'pb-0 pl-1.75 pt-3.25 absolute top-0 left-0 right-0'
-    : 'pb-0 pl-1.75 pt-3.25'
+const fieldLabelClassName = tw`pb-0 pl-1.75 android:pt-0.75 android:top-1.5 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25`
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
-// Platform.select branches: android lineHeight 20 ≡ leading-5 (= v.lineHeight)
-const fieldParkTextInputClassName = [
-  'flex-1 pb-0.75 pl-1.75 pr-2.5 overflow-hidden',
-  isAndroid && 'pt-0 pb-0 leading-5',
-  isWeb && 'pt-7 w-full',
-  isIos && 'pt-0.25',
-]
+const fieldParkTextInputClassName = tw`flex-1 pb-0.75 pl-1.75 pr-2.5 overflow-hidden android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25`
 // fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
-const fieldTextInputClassName = [
-  'w-full pb-0.75 pl-1.75 pr-10 font-bold overflow-hidden',
-  isAndroid && 'pt-0 pb-0 leading-5',
-  isWeb && 'pt-7',
-  isIos && 'pt-0.25',
-]
+const fieldTextInputClassName = tw`w-full pb-0.75 pl-1.75 pr-10 font-bold overflow-hidden android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25`
 
 const noop = () => {}
 
@@ -125,13 +111,13 @@ export const Field: FC<
       <View
         className={[
           'border-b border-border items-stretch mt-3.75 bg-border p-3.75',
-          isAndroid && 'pb-0.5',
+          'android:pb-0.5',
           props.hasMargin && 'mt-7.5',
         ]}
       >
         <RnText
           small
-          className={isAndroid ? '-top-1.5' : undefined}
+          className='android:-top-1.5'
         >
           {props.label}
         </RnText>
@@ -371,7 +357,7 @@ export const Field: FC<
         onPress={props.onTouchPress}
         className={[
           'border-b border-border items-stretch mx-3.75',
-          isAndroid && 'pb-0.5',
+          'android:pb-0.5',
           ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
           props.disabled && 'bg-muted',
           props.transparent && 'border-transparent mx-0',
