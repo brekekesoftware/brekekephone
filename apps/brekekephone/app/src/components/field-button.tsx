@@ -7,8 +7,8 @@ import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { RnTouchableOpacity } from '#/components/rn'
 
-const innerClassName = tw`-top-1.25 android:top-0.25`
-const createBtnClassName = tw`top-3.75 android:top-2`
+const innerClassName = tw`android:top-0.25 -top-1.25`
+const createBtnClassName = tw`android:top-2 top-3.75`
 
 export const FieldButton: FC<
   Partial<{
@@ -25,7 +25,7 @@ export const FieldButton: FC<
     <RnTouchableOpacity
       onPress={p.onCreateBtnPress}
       className={[
-        'self-center mt-3.75 px-2.5 min-w-76.25 max-w-90 rounded-[3px] overflow-hidden',
+        'mt-3.75 max-w-90 min-w-76.25 self-center overflow-hidden rounded-[3px] px-2.5',
         p.disabled ? 'bg-[#f0f0f0]' : 'bg-background',
         className,
       ]}

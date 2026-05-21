@@ -1,18 +1,20 @@
 'use client'
 
-import { View, ViewProps } from '@/rn/core/components/view'
-import { cloneElement, isValidElement, ReactElement, ReactNode } from 'react'
-
-import {
+import type { ReactElement, ReactNode } from 'react'
+import { cloneElement, isValidElement } from 'react'
+import type {
   Control,
-  Controller,
   ControllerFieldState,
   ControllerRenderProps,
   FieldValues,
   Path,
   RegisterOptions,
 } from 'react-hook-form'
-import { Span } from '../text'
+import { Controller } from 'react-hook-form'
+
+import { Span } from '@/rn/components/text'
+import type { ViewProps } from '@/rn/core/components/view'
+import { View } from '@/rn/core/components/view'
 
 type Rules<T extends FieldValues> = Omit<
   RegisterOptions<T, Path<T>>,
@@ -105,15 +107,13 @@ export const FormField = <T extends FieldValues, K extends Path<T>>({
       rules={rules}
       name={name}
       control={control}
-      render={({ field, fieldState }) => {
-        return (
-          <View {...props}>
-            {renderLabel()}
-            {renderChildren(field, fieldState)}
-            {renderErrorMessage(fieldState)}
-          </View>
-        )
-      }}
+      render={({ field, fieldState }) => (
+        <View {...props}>
+          {renderLabel()}
+          {renderChildren(field, fieldState)}
+          {renderErrorMessage(fieldState)}
+        </View>
+      )}
     />
   )
 }

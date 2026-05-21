@@ -18,17 +18,17 @@ const { fs } = require('@/nodejs/fs')
 const polyfill = k => path.join(__dirname, `./src/polyfill/${k}.ts`)
 const nullPolyfill = polyfill('null')
 
-const alias = [
-  'react-native-reanimated',
-  'react-native-css-animations',
-].reduce((m, k) => {
-  let v = polyfill(k)
-  if (!fs.existsSync(v)) {
-    v = nullPolyfill
-  }
-  m[k] = v
-  return m
-}, {})
+const alias = ['react-native-reanimated', 'react-native-css-animations'].reduce(
+  (m, k) => {
+    let v = polyfill(k)
+    if (!fs.existsSync(v)) {
+      v = nullPolyfill
+    }
+    m[k] = v
+    return m
+  },
+  {},
+)
 
 const resolveRequest = config.resolver.resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {

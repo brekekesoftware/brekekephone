@@ -9,13 +9,13 @@ import '#/stores/ctx-imports'
 
 import { AppRegistry } from 'react-native'
 
+import { initDarkModeNative } from '@/rn/core/dark-mode/index.native'
 import { initTheme } from '@/rn/core/theme/config'
 import { isWeb } from '@/rn/core/utils/platform'
 import App from '#/components/app'
+import { ctx } from '#/stores/ctx'
+import { brekekeTheme } from '#/theme/brekeke'
 import { registerValidatorLabels } from '#/utils/validator'
-import { brekekeTheme } from './theme/brekeke'
-import { initDarkModeNative } from '@/rn/core/dark-mode/index.native'
-import { ctx } from './stores/ctx'
 
 registerValidatorLabels()
 

@@ -7,6 +7,7 @@ import type {
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
+
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
@@ -147,9 +148,13 @@ export class PageChatGroupDetail extends Component<{
         title={gr?.name}
       >
         {loadingRecent ? (
-          <RnText className='self-center pb-3.75 px-2.5 text-[11.2px]'>{intl`Loading...`}</RnText>
+          <RnText className='self-center px-2.5 pb-3.75 text-[11.2px]'>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
-          <RnText center warning className='self-center pb-3.75 px-2.5 text-[11.2px]'>
+          <RnText
+            center
+            warning
+            className='self-center px-2.5 pb-3.75 text-[11.2px]'
+          >
             {!ctx.chat.getMessagesByThreadId(this.props.groupId).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
@@ -161,7 +166,7 @@ export class PageChatGroupDetail extends Component<{
             <RnText
               bold={!loadingMore}
               primary={!loadingMore}
-              className='self-center pb-3.75 px-2.5 text-[11.2px]'
+              className='self-center px-2.5 pb-3.75 text-[11.2px]'
             >
               {loadingMore ? intl`Loading...` : intl`Load more messages`}
             </RnText>

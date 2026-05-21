@@ -294,9 +294,7 @@ const AppWithoutProviders = observer(() => {
       <AudioPlayer />
       <RnStatusBar />
       {!!signedInId && !!connMessage && (
-        <AnimatedSize
-          className={isFailure ? 'bg-error' : 'bg-warning'}
-        >
+        <AnimatedSize className={isFailure ? 'bg-error' : 'bg-warning'}>
           <RnTouchableOpacity
             className='px-1.25 pt-1 pb-1.25'
             onPress={onPressConnMessage}
@@ -336,9 +334,7 @@ const AppWithoutProviders = observer(() => {
       {isIos && <KeyboardSpacer />}
 
       {(ctx.global.darkModeLoading || !ctx.account.appInitDone) && (
-        <View
-          className='absolute inset-0 items-center justify-center bg-[#74bf53]'
-        >
+        <View className='absolute inset-0 items-center justify-center bg-[#74bf53]'>
           <ActivityIndicator size='large' color='white' />
         </View>
       )}
@@ -350,9 +346,6 @@ const AppWithoutProviders = observer(() => {
   )
 })
 
-export const App = composeProviders(
-  TwPeerProvider,
-  AppWithoutProviders,
-)
+export const App = composeProviders(TwPeerProvider, AppWithoutProviders)
 
 export default App

@@ -21,7 +21,7 @@ export const RnSwitch: FC<
     <View
       className={[
         'absolute -top-0.75 -left-px h-4.5 w-4.5 rounded-full shadow-sm',
-        enabled ? 'translate-x-5 bg-primary' : 'bg-[#cccccc]',
+        enabled ? 'bg-primary translate-x-5' : 'bg-[#cccccc]',
       ]}
     />
   </View>

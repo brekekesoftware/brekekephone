@@ -30,7 +30,7 @@ export const ShowNumber: FC<{
       onSelectionChange={p.selectionChange}
       placeholder={intl`Enter your number`}
       ref={p.refInput}
-      className='text-2xl p-3.75 w-full'
+      className='w-full p-3.75 text-2xl'
       value={p.value}
     />
   </View>

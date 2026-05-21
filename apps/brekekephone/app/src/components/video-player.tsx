@@ -19,13 +19,13 @@ export const VideoPlayer = observer(
             video.srcObject = sourceObject
           }
         }}
-        className='w-full h-full object-cover'
+        className='h-full w-full object-cover'
         playsInline
         autoPlay
       />
     ) : isShowLoading ? (
-      <RnActivityIndicator className='flex-1 w-full h-full p-12.5' />
+      <RnActivityIndicator className='h-full w-full flex-1 p-12.5' />
     ) : (
-      <View className='flex-1 w-full h-full p-12.5' />
+      <View className='h-full w-full flex-1 p-12.5' />
     ),
 )

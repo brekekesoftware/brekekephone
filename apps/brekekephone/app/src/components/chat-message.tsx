@@ -37,7 +37,7 @@ const File: FC<
 > = observer(p => (
   <View
     className={[
-      'relative pb-1.25 px-2.5 overflow-hidden mt-0',
+      'relative mt-0 overflow-hidden px-2.5 pb-1.25',
       messageMaxWidthClassName,
     ]}
   >
@@ -50,14 +50,14 @@ const File: FC<
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
-      <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
+      <RnText className='text-[13px] text-[#9e9e9e]'>{p.size} KB</RnText>
       <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity
             onPress={p.reject}
-            className='py-px px-2 mt-1 rounded border border-error'
+            className='border-error mt-1 rounded border px-2 py-px'
           >
-            <RnText className='text-[12px] text-error text-center'>
+            <RnText className='text-error text-center text-[12px]'>
               Cancel
             </RnText>
           </RnTouchableOpacity>
@@ -65,9 +65,9 @@ const File: FC<
         {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity
             onPress={p.accept}
-            className='py-px px-2 mt-1 ml-1 rounded bg-primary border border-primary'
+            className='bg-primary border-primary mt-1 ml-1 rounded border px-2 py-px'
           >
-            <RnText className='text-[12px] text-white text-center'>
+            <RnText className='text-center text-[12px] text-white'>
               Accept
             </RnText>
           </RnTouchableOpacity>
@@ -182,7 +182,7 @@ export class Message extends Component<{
         {!!text && !file && (
           <TextContainer
             className={[
-              'relative pb-1.25 px-2.5 overflow-hidden',
+              'relative overflow-hidden px-2.5 pb-1.25',
               messageMaxWidthClassName,
             ]}
             onLongPress={this.onMessagePress}

@@ -117,12 +117,12 @@ export const SmartImage = ({
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
   return (
-    <View className={['overflow-hidden bg-background', className]}>
+    <View className={['bg-background overflow-hidden', className]}>
       {!statusImageLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
-          className='absolute top-0 left-0 w-full h-full overflow-hidden z-100 bg-[#00000030]'
+          className='absolute top-0 left-0 z-100 h-full w-full overflow-hidden bg-[#00000030]'
         />
       )}
       {!uri ? null : !isImageUrl ? (
@@ -130,7 +130,7 @@ export const SmartImage = ({
           source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-          className='overflow-hidden bg-background w-full h-full'
+          className='bg-background h-full w-full overflow-hidden'
           bounces={false}
           onLoadStart={onLoadStart}
           onMessage={onMessage}
@@ -146,7 +146,7 @@ export const SmartImage = ({
           source={{
             uri: nocacheUri,
           }}
-          className='overflow-hidden bg-background w-full h-full'
+          className='bg-background h-full w-full overflow-hidden'
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode='cover'
@@ -155,7 +155,7 @@ export const SmartImage = ({
       {statusImageLoading === StatusImage.error && isImageUrl && (
         <Image
           source={noPhotoImg}
-          className='overflow-hidden bg-background absolute top-0 left-0 z-100 w-full h-full'
+          className='bg-background absolute top-0 left-0 z-100 h-full w-full overflow-hidden'
           resizeMode='cover'
         />
       )}

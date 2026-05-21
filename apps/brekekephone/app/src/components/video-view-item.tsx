@@ -35,7 +35,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
   return (
     <View
       className={[
-        'relative rounded overflow-hidden border-2 border-white',
+        'relative overflow-hidden rounded border-2 border-white',
         active && 'border-4 border-[#4cc5de]',
         !enabled && 'bg-black',
         sizeCls,
@@ -43,7 +43,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     >
       <View className='flex-1'>
         <RnTouchableOpacity
-          className='flex-1 w-full h-full'
+          className='h-full w-full flex-1'
           onPress={() => onSelect?.(sourceObject)}
         >
           <VideoPlayer
@@ -53,10 +53,10 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         </RnTouchableOpacity>
       </View>
       {showSwitchCamera && c && (
-        <View className='absolute z-1 bottom-0 left-0 w-full flex-row justify-evenly items-center bg-black/30'>
+        <View className='absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly bg-black/30'>
           <RnTouchableOpacity
             onPress={toggleVideo}
-            className='w-7 h-7 justify-center items-center'
+            className='h-7 w-7 items-center justify-center'
           >
             <RnIcon
               path={
@@ -68,7 +68,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
 
           <RnTouchableOpacity
             onPress={onSwitchCamera}
-            className='w-7 h-7 justify-center items-center'
+            className='h-7 w-7 items-center justify-center'
           >
             <RnIcon path={mdiCameraRotate} color='white' />
           </RnTouchableOpacity>

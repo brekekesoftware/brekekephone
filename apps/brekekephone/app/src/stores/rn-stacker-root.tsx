@@ -21,7 +21,7 @@ const Stack: FC<{
     return (
       <View
         className={[
-          'absolute inset-0 bg-background',
+          'bg-background absolute inset-0',
           p.isBackgroundStack && 'opacity-0',
         ]}
       >
@@ -32,7 +32,7 @@ const Stack: FC<{
   return (
     <AnimatedView
       className={[
-        'absolute inset-0 bg-background',
+        'bg-background absolute inset-0',
         p.isBackgroundStack && 'opacity-0',
       ]}
       style={{ transform: [x] }}

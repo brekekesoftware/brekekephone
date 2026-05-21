@@ -20,7 +20,7 @@ export const Title: FC<{
     lineHeight: [v.lineHeightTitle, 20],
   })
   return (
-    <AnimatedView className='pl-3.75 mr-6.25' style={cssContainerA}>
+    <AnimatedView className='mr-6.25 pl-3.75' style={cssContainerA}>
       <AnimatedText
         numberOfLines={1}
         className='font-bold text-black'
@@ -29,7 +29,7 @@ export const Title: FC<{
         {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (
-        <RnText className='line-clamp-1 pr-3.75 text-foreground-muted'>
+        <RnText className='text-foreground-muted line-clamp-1 pr-3.75'>
           {description || '\u200a'}
         </RnText>
       )}

@@ -21,13 +21,13 @@ export class PageChatGroupInvite extends Component<{
   render() {
     return (
       <Layout onBack={this.back} title={intl`Inviting Group Member`}>
-        <View className='pt-1.25 px-2.5'>
+        <View className='px-2.5 pt-1.25'>
           <RnText className='p-1.25 text-[25.2px]'>
             {ctx.chat.getGroupById(this.props.groupId).name}
           </RnText>
           <RnTouchableOpacity
             onPress={this.invite}
-            className='mt-3.75 p-2.5 rounded-[3px] bg-primary'
+            className='bg-primary mt-3.75 rounded-[3px] p-2.5'
           >
             <RnText
               white

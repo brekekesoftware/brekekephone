@@ -57,12 +57,12 @@ export const ButtonIcon: FC<{
   const spinnerSizeCls = `w-[${size}px] h-[${size}px]`
   const bg = p?.disabled ? v.subColor : p.bgcolor
   return (
-    <View className={['items-center mx-1.25', p.containerClassName]}>
+    <View className={['mx-1.25 items-center', p.containerClassName]}>
       <RnTouchableOpacity
         disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
         className={[
-          'border p-3 rounded-full',
+          'rounded-full border p-3',
           p.noborder && 'border-0',
           bg && bgClass[bg],
           p.bdcolor && bdClass[p.bdcolor],
@@ -83,7 +83,7 @@ export const ButtonIcon: FC<{
           center
           white={p.textcolor === 'white'}
           black={p.textcolor === 'black'}
-          className='pt-1.25 min-w-20 ios:min-w-17.5'
+          className='ios:min-w-17.5 min-w-20 pt-1.25'
         >
           {p.name}
         </RnText>

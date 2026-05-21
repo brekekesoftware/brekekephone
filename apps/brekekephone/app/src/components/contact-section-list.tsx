@@ -2,11 +2,11 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
-import type {   View as RNView,ViewProps } from 'react-native'
+import type { View as RNView, ViewProps } from 'react-native'
 import {
   findNodeHandle,
   SectionList,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
@@ -106,9 +106,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
                 collect(index, y + h, h),
               )
             } else {
-              ref.measure((fx, fy, w, h, px, py) =>
-                collect(index, py + h, h),
-              )
+              ref.measure((fx, fy, w, h, px, py) => collect(index, py + h, h))
             }
           })
         },
@@ -154,7 +152,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         />
         {openedIndex >= 0 && (
           <TouchableWithoutFeedback onPress={() => RnDropdown.close()}>
-            <View className='absolute w-full h-full bg-transparent'>
+            <View className='absolute h-full w-full bg-transparent'>
               <Dropdown position={positions[openedIndex]} items={p.ddItems} />
             </View>
           </TouchableWithoutFeedback>
@@ -285,7 +283,7 @@ const RenderHeaderSection = observer(
       >
         <View
           className={[
-            'flex-row justify-between bg-border px-1.25 items-center py-3 mt-3.75',
+            'bg-border mt-3.75 flex-row items-center justify-between px-1.25 py-3',
             isDisableMarginTop && 'mt-0',
           ]}
           ref={c => {

@@ -51,7 +51,7 @@ const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 const imageWrapperCls = `min-h-[${minSizeImageWrapper}px] min-w-[${minSizeImageWrapper}px]`
-const hiddenCls = tw`absolute w-full h-full top-[-100%] left-[-100%]`
+const hiddenCls = tw`absolute top-[-100%] left-[-100%] h-full w-full`
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
     ? ctx.nav.backToPageCallKeypad()
@@ -362,7 +362,7 @@ class PageCallManage extends Component<{
       <View
         className={[
           !c.localVideoEnabled
-            ? 'mx-3.75 flex-col items-center justify-start flex-1'
+            ? 'mx-3.75 flex-1 flex-col items-center justify-start'
             : 'flex-1',
           !c.localVideoEnabled && imageWrapperCls,
         ]}
@@ -372,7 +372,7 @@ class PageCallManage extends Component<{
             isShowAvatar &&
               (isLarge
                 ? bigAvatarCls
-                : 'w-50 h-50 rounded-full overflow-hidden'),
+                : 'h-50 w-50 overflow-hidden rounded-full'),
             !isShowAvatar && 'h-0 opacity-0',
           ]}
         >
@@ -380,7 +380,7 @@ class PageCallManage extends Component<{
             <SmartImage
               key={c.talkingImageUrl}
               uri={`${c.talkingImageUrl}`}
-              className='flex-1 aspect-square'
+              className='aspect-square flex-1'
               incoming={c.incoming}
             />
           )}
@@ -388,7 +388,7 @@ class PageCallManage extends Component<{
             <SmartImage
               key={c.partyImageUrl}
               uri={`${c.partyImageUrl}`}
-              className='flex-1 aspect-square'
+              className='aspect-square flex-1'
               incoming={c.incoming}
             />
           )}
@@ -586,7 +586,7 @@ class PageCallManage extends Component<{
     return (
       <View
         className={[
-          'mb-2 self-stretch items-center justify-center z-12',
+          'z-12 mb-2 items-center justify-center self-stretch',
           isLarge ? 'mt-2.5' : 'mt-10',
         ]}
       >
@@ -597,9 +597,7 @@ class PageCallManage extends Component<{
             </RnText>
           </View>
         ) : (
-          <View
-            className='mb-2.5 flex-row self-stretch items-center justify-center z-12'
-          >
+          <View className='z-12 mb-2.5 flex-row items-center justify-center self-stretch'>
             {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (
               <ButtonIcon

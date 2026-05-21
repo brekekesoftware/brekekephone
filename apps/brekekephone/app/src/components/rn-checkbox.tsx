@@ -19,7 +19,7 @@ export const RnCheckBox: FC<
     onPress={onPress}
     className={[
       'h-5.5 w-5.5 rounded-sm border-2',
-      isSelected && 'bg-[#333] border-0',
+      isSelected && 'border-0 bg-[#333]',
       className,
     ]}
     disabled={disabled}

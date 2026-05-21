@@ -26,10 +26,10 @@ export const CallBar = observer(() => {
     return null
   }
   return (
-    <View className='border-b border-border bg-muted'>
+    <View className='border-border bg-muted border-b'>
       <RnTouchableOpacity
         onPress={() => ctx.nav.goToPageCallManage({ isFromCallBar: true })}
-        className='flex-row p-1.25 items-center'
+        className='flex-row items-center p-1.25'
       >
         <View className='flex-1'>
           <RnIcon

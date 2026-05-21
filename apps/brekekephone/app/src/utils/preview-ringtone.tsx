@@ -78,7 +78,7 @@ export default function PreviewRingtone({
   }
 
   return (
-    <View className='w-0 h-0'>
+    <View className='h-0 w-0'>
       <Video
         ref={playerRef}
         source={currentSource}

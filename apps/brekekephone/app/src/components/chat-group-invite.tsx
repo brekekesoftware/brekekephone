@@ -19,7 +19,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const notifyClassName = tw`flex-row items-center border-b border-border bg-muted`
+const notifyClassName = tw`border-border bg-muted flex-row items-center border-b`
 
 const Notify: FC<{
   id: string
@@ -33,7 +33,7 @@ const Notify: FC<{
   <View className={notifyClassName}>
     {!!p.type && (
       <>
-        <View className='flex-1 pl-3 py-1.25'>
+        <View className='flex-1 py-1.25 pl-3'>
           <RnText bold>{p.name}</RnText>
           <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
         </View>
@@ -259,7 +259,7 @@ export class UnreadChatNoti extends Component {
     return (
       <View className={[notifyClassName, 'border-b-0']}>
         <RnTouchableOpacity
-          className='flex-1 bg-primary-100'
+          className='bg-primary-100 flex-1'
           onPress={this.onUnreadPress}
         >
           <UserItem

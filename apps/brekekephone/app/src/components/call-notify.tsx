@@ -63,10 +63,10 @@ export const CallNotify = observer(() => {
     <Wrapper>
       {ctx.call.shouldRingInNotify() && <IncomingItem />}
       <RnTouchableOpacity
-        className='flex-row items-center border-b border-border bg-muted'
+        className='border-border bg-muted flex-row items-center border-b'
         onPress={() => ctx.nav.goToPageCallManage()}
       >
-        <View className='flex-1 pl-3 py-1.25'>
+        <View className='flex-1 py-1.25 pl-3'>
           <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>
             {intl`Incoming Call`}

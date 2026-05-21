@@ -26,13 +26,13 @@ export const VideoPlayer = observer(
     p.sourceObject ? (
       <RTCView
         streamURL={p.sourceObject.toURL()}
-        className='w-full h-full'
+        className='h-full w-full'
         objectFit='cover'
         zOrder={p.zOrder}
       />
     ) : p.isShowLoading ? (
-      <RnActivityIndicator className='w-full h-full' />
+      <RnActivityIndicator className='h-full w-full' />
     ) : (
-      <View className='w-full h-full' />
+      <View className='h-full w-full' />
     ),
 )

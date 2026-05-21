@@ -75,7 +75,7 @@ const RnAlertR = ({
   return (
     <View className='absolute inset-0 flex-row items-center justify-center'>
       <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
+        className='bg-modal-overlay absolute inset-0'
         style={{ opacity: a.opacity }}
       >
         <RnTouchableOpacity
@@ -84,25 +84,25 @@ const RnAlertR = ({
         />
       </AnimatedView>
       <AnimatedView
-        className='w-[90%] max-w-95 rounded-[3px] p-3.75 bg-background shadow-sm'
+        className='bg-background w-[90%] max-w-95 rounded-[3px] p-3.75 shadow-sm'
         style={{ transform: [{ translateY: a.translateY }] }}
       >
         {!!props.title && <RnText subTitle>{props.title}</RnText>}
         {props.message}
-        <View className='mt-3.75 flex-row self-end top-1.25 left-1.25'>
+        <View className='top-1.25 left-1.25 mt-3.75 flex-row self-end'>
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5 bg-foreground'
+              className='bg-foreground mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5'
             >
-              <RnText small className='text-center text-background'>
+              <RnText small className='text-background text-center'>
                 {props.dismissText}
               </RnText>
             </RnTouchableOpacity>
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            className='w-25 rounded-[3px] px-3.75 py-2.5 bg-primary'
+            className='bg-primary w-25 rounded-[3px] px-3.75 py-2.5'
           >
             <RnText small white className='text-center'>
               {props.confirmText}

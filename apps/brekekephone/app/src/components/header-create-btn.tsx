@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+
 import { mdiPlus } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
 
@@ -11,7 +12,7 @@ export const CreateBtn: FC<{
     <RnTouchableOpacity
       onPress={onPress}
       className={[
-        'absolute top-2.75 right-1.25 w-12.5 h-12.5 rounded-full',
+        'absolute top-2.75 right-1.25 h-12.5 w-12.5 rounded-full',
         white ? 'bg-background' : 'bg-primary',
       ]}
     >

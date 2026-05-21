@@ -26,7 +26,7 @@ export const AudioPlayer = observer(() => {
   }, [isPlaying])
 
   return (
-    <View className='absolute top-0 left-0 w-0 h-0 opacity-0 overflow-hidden'>
+    <View className='absolute top-0 left-0 h-0 w-0 overflow-hidden opacity-0'>
       <Video
         ref={videoRef}
         source={require('../assets/ding.mp3')}

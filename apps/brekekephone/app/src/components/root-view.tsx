@@ -17,7 +17,7 @@ export const RootView = memo(({ children }: RootViewProps) => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className='absolute inset-0 bg-background'>
+      <SafeAreaView className='bg-background absolute inset-0'>
         {children}
       </SafeAreaView>
     </SafeAreaProvider>

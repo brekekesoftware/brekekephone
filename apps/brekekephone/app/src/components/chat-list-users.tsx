@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+
 import { formatDateTimeSemantic } from '#/components/chat-config'
 import { UserItem } from '#/components/contact-user-item'
 import { RnTouchableOpacity } from '#/components/rn'

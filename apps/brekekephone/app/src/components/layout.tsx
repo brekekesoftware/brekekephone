@@ -74,7 +74,10 @@ export const Layout: FC<
   )
 
   Object.assign(containerProps, {
-    className: ['h-full flex-1', props.transparent ? 'bg-transparent' : 'bg-white'],
+    className: [
+      'h-full flex-1',
+      props.transparent ? 'bg-transparent' : 'bg-white',
+    ],
   })
 
   if (!props.noScroll) {

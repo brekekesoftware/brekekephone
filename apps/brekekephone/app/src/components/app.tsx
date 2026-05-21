@@ -10,6 +10,8 @@ import brand from '#/assets/brand.png'
 import logo from '#/assets/logo.png'
 
 import { View } from '@/rn/core/components/view'
+import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
+import { darkClassName, lightClassName } from '@/rn/core/tailwind'
 import { qsStableStringify } from '@/shared/qs'
 import { mdiAndroid, mdiApple, mdiWeb } from '#/assets/icons'
 import { App as RnApp } from '#/components/app.native'
@@ -19,8 +21,6 @@ import { bundleIdentifier } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
-import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
-import { darkClassName, lightClassName } from '@/rn/core/tailwind'
 
 export const App = () => {
   const darkMode = useDarkModeUser()

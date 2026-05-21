@@ -29,7 +29,7 @@ const Video = createClassNameComponent({ VideoWocn }) as FC<
   ComponentProps<typeof VideoWocn> & { className?: ClassName }
 >
 
-const btnCloseCls =`top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
+const btnCloseCls = `top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
 
 const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
@@ -76,17 +76,17 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const renderVideo = () => {
     if (isAndroid) {
       return (
-        <View className='w-37.5 h-37.5 rounded-[5px] items-center overflow-hidden bg-border'>
+        <View className='bg-border h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             muted
             paused={true}
-            className='w-37.5 h-37.5 self-center rounded-[5px] items-center overflow-hidden'
+            className='h-37.5 w-37.5 items-center self-center overflow-hidden rounded-[5px]'
             enterPictureInPictureOnLeave
             preventsDisplaySleepDuringVideoPlayback={false}
           />
-          <View className='w-37.5 h-37.5 rounded-[5px] absolute top-0 left-0 items-center overflow-hidden z-100 bg-modal-overlay'>
+          <View className='bg-modal-overlay absolute top-0 left-0 z-100 h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
             <RnTouchableOpacity onPress={onShowImage}>
               <RnIcon path={mdiPlayCircleOutline} color='white' size={40} />
             </RnTouchableOpacity>
@@ -95,12 +95,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )
     } else {
       return (
-        <View className='w-37.5 h-37.5 rounded-[5px] items-center overflow-hidden bg-border'>
+        <View className='bg-border h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             paused={true}
-            className='w-37.5 h-37.5 self-center rounded-[5px] items-center overflow-hidden'
+            className='h-37.5 w-37.5 items-center self-center overflow-hidden rounded-[5px]'
             controls={true}
             preventsDisplaySleepDuringVideoPlayback={false}
           />
@@ -113,7 +113,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       <RnTouchableOpacity onPress={onShowImage}>
         <FastImage
           source={{ uri: convertUri(url) }}
-          className='w-37.5 h-37.5 rounded-[5px] overflow-hidden'
+          className='h-37.5 w-37.5 overflow-hidden rounded-[5px]'
         />
       </RnTouchableOpacity>
     ) : (
@@ -123,12 +123,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     setIsVisible(false)
   }
   return (
-    <View className='w-37.5 h-37.5 rounded-[5px] overflow-hidden'>
+    <View className='h-37.5 w-37.5 overflow-hidden rounded-[5px]'>
       {isLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
-          className='absolute top-0 left-0 w-37.5 h-37.5 rounded-[5px] overflow-hidden bg-[#00000090]'
+          className='absolute top-0 left-0 h-37.5 w-37.5 overflow-hidden rounded-[5px] bg-[#00000090]'
         />
       )}
       {isLoadSuccess && renderView()}
@@ -148,7 +148,10 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
         onRequestClose={onRequestClose}
       >
         <RnTouchableOpacity
-          className={['absolute right-3.75 z-10 rounded-[15px] bg-background', btnCloseCls]}
+          className={[
+            'bg-background absolute right-3.75 z-10 rounded-[15px]',
+            btnCloseCls,
+          ]}
           onPress={onSwipeDown}
         >
           <RnIcon path={mdiCloseCircleOutline} color='black' size={30} />
@@ -162,7 +165,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
               controls={true}
               paused={false}
               resizeMode='contain'
-              className='w-screen h-screen'
+              className='h-screen w-screen'
             />
           ))}
       </Modal>

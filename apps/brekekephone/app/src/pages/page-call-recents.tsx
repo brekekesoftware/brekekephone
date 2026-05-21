@@ -3,6 +3,7 @@ import moment from 'moment'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
 import { AppState } from 'react-native'
+
 import { mdiMagnify, mdiPhone, mdiVideo } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'

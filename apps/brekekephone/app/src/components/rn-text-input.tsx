@@ -5,7 +5,6 @@ import type { InputProps } from '@/rn/core/components/input'
 import { Input } from '@/rn/core/components/input'
 import { isWeb } from '#/config'
 
-
 // Loose `ref` for legacy callers using `useRef<HTMLInputElement>` (web bias).
 export type RnTextInputProps = Omit<InputProps, 'ref'> & {
   ref?: any
@@ -26,7 +25,7 @@ export const RnTextInput = ({
       (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
     }
     className={[
-      'relative text-sm font-normal font-sans text-foreground',
+      'text-foreground relative font-sans text-sm font-normal',
       className,
     ]}
   />

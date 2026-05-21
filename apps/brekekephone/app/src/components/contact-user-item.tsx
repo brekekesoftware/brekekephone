@@ -179,17 +179,15 @@ export const UserItem: FC<
   return (
     <Container
       className={[
-        'border-b border-border',
+        'border-border border-b',
         disabled ? 'opacity-50' : 'opacity-100',
       ]}
       onPress={onPressItem}
       onLongPress={onLongPressItem}
     >
-      <View
-        className={['flex-row pl-2.5', selected && 'bg-primary-100']}
-      >
+      <View className={['flex-row pl-2.5', selected && 'bg-primary-100']}>
         {group ? (
-          <View className='overflow-hidden bg-border w-12.5 h-12.5 rounded-full my-1.25 items-center'>
+          <View className='bg-border my-1.25 h-12.5 w-12.5 items-center overflow-hidden rounded-full'>
             <RnIcon
               path={mdiAccountGroup}
               size={40}
@@ -204,7 +202,7 @@ export const UserItem: FC<
             className='my-1.25'
           />
         ) : null}
-        <View className='flex-1 pt-1.75 pl-2.5 my-1.25'>
+        <View className='my-1.25 flex-1 pt-1.75 pl-2.5'>
           <View className='flex-row flex-nowrap'>
             <RnText
               bold
@@ -224,20 +222,20 @@ export const UserItem: FC<
                 normal
                 singleLine
                 small
-                className='top-0.5 left-0.75 text-foreground-muted'
+                className='text-foreground-muted top-0.5 left-0.75'
               >
                 {statusText}
               </RnText>
             )}
           </View>
           {!!parkNumber && (
-            <RnText normal small className='left-0.75 text-foreground-muted'>
+            <RnText normal small className='text-foreground-muted left-0.75'>
               {intl`Park number: ` + `${parkNumber}`}
             </RnText>
           )}
 
           {!!phonebook && (
-            <RnText normal small className='left-0.75 text-foreground-muted'>
+            <RnText normal small className='text-foreground-muted left-0.75'>
               {phonebook}
             </RnText>
           )}
@@ -266,9 +264,9 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                className='flex-none web:pl-1.5 web:pr-2.5'
+                className='web:pl-1.5 web:pr-2.5 flex-none'
               />
-              <RnText normal small className='left-0.75 text-foreground-muted'>
+              <RnText normal small className='text-foreground-muted left-0.75'>
                 {isVoicemail
                   ? intl`Voicemail`
                   : intl`${reason} at ${created}`.trim()}
@@ -295,7 +293,7 @@ export const UserItem: FC<
         ))}
 
         {!!isSelection && (
-          <View className='items-center flex-row mr-3.75'>
+          <View className='mr-3.75 flex-row items-center'>
             <RnCheckBox
               isSelected={!!isSelected}
               onPress={() => (onSelect ? onSelect() : true)}

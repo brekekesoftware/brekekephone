@@ -60,9 +60,9 @@ export const Footer: FC<{
       ) : RnKeyboard.isKeyboardShowing ? (
         <ToggleKeyboard {...fabProps} />
       ) : onNext ? (
-        <View className='flex-row items-center px-2.5 my-2'>
+        <View className='my-2 flex-row items-center px-2.5'>
           <View className='flex-1' />
-          <View className='flex-row w-full min-w-65 max-w-95'>
+          <View className='w-full max-w-95 min-w-65 flex-row'>
             <FooterActions {...fabProps} />
           </View>
           <View className='flex-1' />

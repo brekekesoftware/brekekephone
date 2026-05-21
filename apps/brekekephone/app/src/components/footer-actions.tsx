@@ -36,12 +36,12 @@ export const FooterActions: FC<
   } = p
 
   return (
-    <View className='flex-1 flex-row rounded-[3px] overflow-hidden'>
+    <View className='flex-1 flex-row overflow-hidden rounded-[3px]'>
       {onBack && (
         <RnTouchableOpacity
           onPress={onBack}
           className={[
-            'rounded-none w-1/4 py-2 bg-error-100',
+            'bg-error-100 w-1/4 rounded-none py-2',
             !onMore && 'w-1/3',
           ]}
         >
@@ -54,10 +54,7 @@ export const FooterActions: FC<
       {onMore && (
         <RnTouchableOpacity
           onPress={onMore}
-          className={[
-            'rounded-none w-1/4 py-2 bg-muted',
-            !onBack && 'w-1/3',
-          ]}
+          className={['bg-muted w-1/4 rounded-none py-2', !onBack && 'w-1/3']}
         >
           <RnIcon path={onMoreIcon || mdiCached} />
         </RnTouchableOpacity>
@@ -65,7 +62,7 @@ export const FooterActions: FC<
       <RnTouchableOpacity
         onPress={onNext}
         className={[
-          'rounded-none w-1/2 py-2 justify-center items-center',
+          'w-1/2 items-center justify-center rounded-none py-2',
           onNextColor ? onNextBgClass[onNextColor] : 'bg-primary',
           !(onBack && onMore) && 'w-2/3',
           !(onBack || onMore) && 'w-full',

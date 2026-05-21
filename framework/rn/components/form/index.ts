@@ -1,2 +1,2 @@
-export * from './form'
-export * from './form-field'
+export * from '@/rn/components/form/form'
+export * from '@/rn/components/form/form-field'

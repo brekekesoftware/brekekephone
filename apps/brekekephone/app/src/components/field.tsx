@@ -35,11 +35,11 @@ export type Park = {
 // - ios: paddingTop 13px (pt-3.25), paddingBottom 0, paddingLeft 7px (pl-1.75)
 // - android: paddingTop 3px (pt-0.75) + top 6px (top-1.5)
 // - web: absolute, top/left/right: 0 (fix form auto fill style on web)
-const fieldLabelClassName = tw`pb-0 pl-1.75 android:pt-0.75 android:top-1.5 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25`
+const fieldLabelClassName = tw`android:pt-0.75 android:top-1.5 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25 pb-0 pl-1.75`
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
-const fieldParkTextInputClassName = tw`flex-1 pb-0.75 pl-1.75 pr-2.5 overflow-hidden android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25`
+const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
 // fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
-const fieldTextInputClassName = tw`w-full pb-0.75 pl-1.75 pr-10 font-bold overflow-hidden android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25`
+const fieldTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25 w-full overflow-hidden pr-10 pb-0.75 pl-1.75 font-bold`
 
 const noop = () => {}
 
@@ -110,15 +110,12 @@ export const Field: FC<
     return (
       <View
         className={[
-          'border-b border-border items-stretch mt-3.75 bg-border p-3.75',
+          'border-border bg-border mt-3.75 items-stretch border-b p-3.75',
           'android:pb-0.5',
           props.hasMargin && 'mt-7.5',
         ]}
       >
-        <RnText
-          small
-          className='android:-top-1.5'
-        >
+        <RnText small className='android:-top-1.5'>
           {props.label}
         </RnText>
       </View>
@@ -138,7 +135,7 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
           className={[
-            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-primary-100',
+            'bg-primary-100 absolute top-2.75 right-1.25 h-7.5 w-10 rounded-[3px]',
             props.createBtnClassName,
           ]}
           disabled={props.disabled}
@@ -159,7 +156,7 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
           className={[
-            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-error-100',
+            'bg-error-100 absolute top-2.75 right-1.25 h-7.5 w-10 rounded-[3px]',
             props.removeBtnClassName,
           ]}
         >
@@ -187,7 +184,7 @@ export const Field: FC<
       props.onValueChange?.(newPark)
     }
     return (
-      <View className='flex-row items-center mr-10'>
+      <View className='mr-10 flex-row items-center'>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
@@ -356,11 +353,11 @@ export const Field: FC<
         accessible={!props.inputElement}
         onPress={props.onTouchPress}
         className={[
-          'border-b border-border items-stretch mx-3.75',
+          'border-border mx-3.75 items-stretch border-b',
           'android:pb-0.5',
           ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
           props.disabled && 'bg-muted',
-          props.transparent && 'border-transparent mx-0',
+          props.transparent && 'mx-0 border-transparent',
         ]}
       >
         {/* Fix form auto fill style on web */}
@@ -394,7 +391,7 @@ export const Field: FC<
           (props.icon && (
             <RnIcon
               path={props.icon}
-              className='absolute top-3.75 right-3.75 pointer-events-none'
+              className='pointer-events-none absolute top-3.75 right-3.75'
             />
           ))}
         {props.loading && (
@@ -408,7 +405,7 @@ export const Field: FC<
           onPress={() => inputRef.current?.focus()}
           className='items-center justify-center'
         >
-          <View className='self-start my-0.5 mx-3.75 py-0.5 px-2.5 bg-error rounded-[3px]'>
+          <View className='bg-error mx-3.75 my-0.5 self-start rounded-[3px] px-2.5 py-0.5'>
             <RnIcon
               color={v.colors.danger}
               path={mdiCardsDiamond}

@@ -56,9 +56,10 @@ export const PhonebookAutoComplete: FC<
   return (
     <View
       className={[
-        'absolute rounded-[5px] bg-background py-1.25 px-2.5 max-h-75 top-47 z-100000 left-3.75 right-3.75',
+        'bg-background absolute top-47 right-3.75 left-3.75 z-100000 max-h-75 rounded-[5px] px-2.5 py-1.25',
         'shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px]',
-        isWeb && 'shadow-opacity-100 shadow-radius-[10px] shadow-offset-[0px]/[0px]',
+        isWeb &&
+          'shadow-opacity-100 shadow-radius-[10px] shadow-offset-[0px]/[0px]',
         className,
       ]}
     >
@@ -66,7 +67,7 @@ export const PhonebookAutoComplete: FC<
         {result.map((item, index) => (
           <RnTouchableOpacity
             key={index}
-            className='w-full py-1.25 border-b-[0.5px] border-[grey]'
+            className='w-full border-b-[0.5px] border-[grey] py-1.25'
             onPress={() => {
               setChoose(true)
               onPressItem?.(item)

@@ -47,7 +47,7 @@ export const Toast: FC<ToastProps> = ({
   return (
     <View
       className={[
-        'absolute right-0 left-0 top-2.5 justify-center',
+        'absolute top-2.5 right-0 left-0 justify-center',
         mtCls,
         containerClassName,
       ]}

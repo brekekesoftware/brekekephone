@@ -110,10 +110,7 @@ const RenderItem = observer(
     })
     return (
       <View key={`PageContactGroupEdit-${item.user_id}-${index}`}>
-        <RnTouchableOpacity
-          className='mt-5'
-          onPress={() => selectUser(item)}
-        >
+        <RnTouchableOpacity className='mt-5' onPress={() => selectUser(item)}>
           <UserItem
             id={item.user_id}
             name={item.name || item.user_id}

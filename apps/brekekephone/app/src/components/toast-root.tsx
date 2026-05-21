@@ -53,7 +53,7 @@ const Item = observer(
 
     return (
       <AnimatedView
-        className={['py-0.5 px-1 rounded-br-sm', bgCls]}
+        className={['rounded-br-sm px-1 py-0.5', bgCls]}
         style={{ opacity: fade }}
       >
         {data?.msg && (
@@ -63,7 +63,7 @@ const Item = observer(
         )}
         {errorDetail && (
           <RnText
-            className='line-clamp-2 ml-1 text-[12px]'
+            className='ml-1 line-clamp-2 text-[12px]'
             ellipsizeMode='tail'
             white
           >
@@ -76,7 +76,7 @@ const Item = observer(
 )
 
 export const ToastRoot = observer(() => (
-  <View className='left-0 right-0 top-0'>
+  <View className='top-0 right-0 left-0'>
     {ctx.toast.items.map(t => (
       <Item key={t.id} data={t} onEnd={() => ctx.toast.hide(t.id)} />
     ))}

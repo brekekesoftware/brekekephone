@@ -72,7 +72,7 @@ export const Navigation: FC<{
 
   return (
     <Container
-      className='flex-row self-stretch bg-background'
+      className='bg-background flex-row self-stretch'
       ref={scrollRef as any}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -89,8 +89,8 @@ export const Navigation: FC<{
             onPress={active ? undefined : s.navFn}
             onLayout={event => handleTabLayout(s.key, event)}
             className={[
-              'flex-1 py-2 items-center border-b-[3px] border-border',
-              needScroll && 'px-2.5 max-w-40 min-w-25',
+              'border-border flex-1 items-center border-b-[3px] py-2',
+              needScroll && 'max-w-40 min-w-25 px-2.5',
               active && 'border-primary',
             ]}
           >

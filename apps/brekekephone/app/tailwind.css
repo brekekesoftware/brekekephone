@@ -6,5 +6,5 @@
    `h-[${footerSpace}px]` in layout.tsx, `w-[${size}px]`/`h-[${size}px]` in
    button-icon.tsx). Tailwind v4 source scan can't see these since they're
    built at runtime, so force-generate the range. */
-@source inline("h-[{0..200}px]");
-@source inline("w-[{0..200}px]");
+@source inline('h-[{0..200}px]');
+@source inline('w-[{0..200}px]');

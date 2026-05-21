@@ -1,6 +1,12 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
+
+import { darkModeDisabled, darkModeEnabled } from '@/rn/core/dark-mode/config'
+import {
+  useDarkModeUser,
+  useSetDarkMode,
+} from '@/rn/core/dark-mode/index.native'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
@@ -9,16 +15,17 @@ import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'
-import { darkModeDisabled, darkModeEnabled } from '@/rn/core/dark-mode/config'
-import { useDarkModeUser, useSetDarkMode } from '@/rn/core/dark-mode/index.native'
 
 const DarkModePicker = () => {
   const d = useDarkModeUser()
   const setDarkMode = useSetDarkMode()
-   return <Field
+  return (
+    <Field
       label={intl`DARKMODE`}
       onValueChange={v => {
-        setDarkMode(v === 'undefined' ? undefined : v === darkModeEnabled ? true : false)
+        setDarkMode(
+          v === 'undefined' ? undefined : v === darkModeEnabled ? true : false,
+        )
       }}
       type='RnPicker'
       options={[
@@ -26,8 +33,11 @@ const DarkModePicker = () => {
         { key: darkModeDisabled, label: intl`Always Light` },
         { key: 'undefined', label: intl`System Automatic` },
       ]}
-      value={d === undefined ? 'undefined' : d ? darkModeEnabled : darkModeDisabled}
+      value={
+        d === undefined ? 'undefined' : d ? darkModeEnabled : darkModeDisabled
+      }
     />
+  )
 }
 
 @observer

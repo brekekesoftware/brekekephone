@@ -8,8 +8,8 @@ import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { ctx } from '#/stores/ctx'
 
 // Shared by header-navigation.tsx
-export const unreadOuterClassName = tw`absolute top-2.5 left-0 right-0 flex-1 items-center`
-export const unreadClassName = tw`left-3.75 w-5 h-3.75 rounded-[3px] pt-0.75 bg-error overflow-hidden`
+export const unreadOuterClassName = tw`absolute top-2.5 right-0 left-0 flex-1 items-center`
+export const unreadClassName = tw`bg-error left-3.75 h-3.75 w-5 overflow-hidden rounded-[3px] pt-0.75`
 
 export const Navigation: FC<{
   menu: string
@@ -29,12 +29,12 @@ export const Navigation: FC<{
         <RnTouchableOpacity
           key={m.key}
           onPress={active ? undefined : m.navFn}
-          className='flex-1 p-1 items-center'
+          className='flex-1 items-center p-1'
         >
           <View
             className={[
               'h-10 w-full items-center justify-center',
-              active && 'rounded-[22px] bg-primary-100',
+              active && 'bg-primary-100 rounded-[22px]',
             ]}
           >
             <RnIcon path={m.icon} />

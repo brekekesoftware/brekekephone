@@ -17,7 +17,7 @@ import { useAnimationOnDidMount } from '#/utils/animation'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const inputFieldNameClassName = tw`bg-background h-10 w-full rounded-[3px] border-[0.8px] border-border px-2.5 overflow-hidden web:py-1.25`
+const inputFieldNameClassName = tw`bg-background border-border web:py-1.25 h-10 w-full overflow-hidden rounded-[3px] border-[0.8px] px-2.5`
 
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
@@ -53,7 +53,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const renderItem = (item: ItemPBForm, index: number) => (
     <RnTouchableOpacity
       key={index}
-      className='w-full py-1.25 border-b-[0.5px] border-[grey]'
+      className='w-full border-b-[0.5px] border-[grey] py-1.25'
       onPress={() => onPressItem(item)}
     >
       <RnText className='mx-2.5 w-full text-left'>{item.label}</RnText>
@@ -62,7 +62,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   return (
     <View className='absolute inset-0 flex-col items-center justify-center'>
       <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
+        className='bg-modal-overlay absolute inset-0'
         style={{ opacity: backdropCss.opacity }}
       >
         <RnTouchableOpacity
@@ -71,10 +71,10 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         />
       </AnimatedView>
       <AnimatedView
-        className={['absolute w-[90%] max-w-95 max-h-full', bottomCls]}
+        className={['absolute max-h-full w-[90%] max-w-95', bottomCls]}
         style={{ transform: [y] }}
       >
-        <View className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start h-[33.333vh]'>
+        <View className='bg-background h-[33.333vh] w-full items-center justify-start overflow-hidden rounded-[3px] px-2.5 py-2.5'>
           <RnTextInput
             // blurOnSubmit
             keyboardType='default'
@@ -98,13 +98,15 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         <View className='flex-row items-center justify-between'>
           <RnTouchableOpacity
             onPress={() => onSelect(value)}
-            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] mr-2.5 bg-primary'
+            className='bg-primary mt-3.75 mr-2.5 flex-1 items-center justify-center rounded-[3px] py-2.5'
           >
-            <RnText bold white>OK</RnText>
+            <RnText bold white>
+              OK
+            </RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={ctx.contact.dismissPicker}
-            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] bg-background ml-2.5'
+            className='bg-background mt-3.75 ml-2.5 flex-1 items-center justify-center rounded-[3px] py-2.5'
           >
             <RnText bold className='text-foreground/80'>{intl`Cancel`}</RnText>
           </RnTouchableOpacity>

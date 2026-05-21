@@ -15,7 +15,7 @@ export const RnStatusBar: FC<TRnStatusBarProps> = p =>
   isWeb ? null : (
     <RnTouchableOpacity
       className={[
-        'z-999 android:elevation-999 bg-muted',
+        'android:elevation-999 bg-muted z-999',
         isIos && 'h-0',
         p.warning && 'bg-warning border-warning',
         p.danger && 'bg-error border-error',
@@ -28,6 +28,6 @@ export const RnStatusBar: FC<TRnStatusBarProps> = p =>
         }
         barStyle='dark-content'
       />
-      <View className='absolute bottom-0 left-0 right-0 border-b border-border z-999 android:elevation-999' />
+      <View className='border-border android:elevation-999 absolute right-0 bottom-0 left-0 z-999 border-b' />
     </RnTouchableOpacity>
   )

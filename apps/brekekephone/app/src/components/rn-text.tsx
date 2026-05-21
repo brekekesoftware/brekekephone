@@ -24,7 +24,7 @@ const classMap: { [k: string]: string } = {
   padding: 'px-2.5',
 }
 
-const baseClass = tw`leading-5 text-foreground`
+const baseClass = tw`text-foreground leading-5`
 
 const wrap = (Component: any) =>
   forwardRef(
@@ -43,10 +43,7 @@ const wrap = (Component: any) =>
         .sort(k =>
           k === 'title' || k === 'subTitle' || k === 'small' ? -1 : 1,
         )
-        .map(
-          k =>
-            (props as any)[k] && classMap[k as keyof typeof classMap],
-        )
+        .map(k => (props as any)[k] && classMap[k as keyof typeof classMap])
         .filter(Boolean)
         .join(' ')
       const cn = clsx(baseClass, variantClasses, callerClassName)

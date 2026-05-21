@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-imports */
-
 import { Animated } from 'react-native'
 
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'

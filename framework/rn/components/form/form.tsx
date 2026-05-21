@@ -1,9 +1,12 @@
 'use client'
 
-import { View, ViewProps } from '@/rn/core/components/view'
-import { useSafeContext } from '@/rn/core/utils/use-safe-context'
 import { createContext } from 'react'
-import { Button, ButtonProps } from '../button'
+
+import type { ButtonProps } from '@/rn/components/button'
+import { Button } from '@/rn/components/button'
+import type { ViewProps } from '@/rn/core/components/view'
+import { View } from '@/rn/core/components/view'
+import { useSafeContext } from '@/rn/core/utils/use-safe-context'
 
 // ─────────────────────────────────────────────
 // FormContext
@@ -24,13 +27,11 @@ const useFormContext = () => useSafeContext(FormContext)
 
 type FormProps = ViewProps & FormContextType
 
-const Form = ({ onSubmit, ...props }: FormProps) => {
-  return (
-    <FormContext.Provider value={{ onSubmit }}>
-      <View {...props} />
-    </FormContext.Provider>
-  )
-}
+const Form = ({ onSubmit, ...props }: FormProps) => (
+  <FormContext.Provider value={{ onSubmit }}>
+    <View {...props} />
+  </FormContext.Provider>
+)
 
 // ─────────────────────────────────────────────
 // FormTrigger

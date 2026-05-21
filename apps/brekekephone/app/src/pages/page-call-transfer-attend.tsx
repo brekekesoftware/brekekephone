@@ -15,7 +15,7 @@ import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-const innerCls = tw`justify-center web:max-w-100 web:min-w-62.5 web:justify-between`
+const innerCls = tw`web:max-w-100 web:min-w-62.5 web:justify-between justify-center`
 
 @observer
 export class PageCallTransferAttend extends Component {
@@ -100,12 +100,12 @@ export class PageCallTransferAttend extends Component {
     const usertarget = this.resolveMatch(oc.transferring)
     const { phoneappliSource, phoneappliTarget } = this.state
     return (
-      <View className='items-center bg-background web:w-full'>
+      <View className='bg-background web:w-full items-center'>
         <RnText center subTitle>{intl`Transferring`}</RnText>
         <View className='h-2.5' />
         <View
           className={[
-            'w-[70%] flex-row items-center self-center content-center mb-7.5',
+            'mb-7.5 w-[70%] flex-row content-center items-center self-center',
             innerCls,
           ]}
         >
@@ -134,7 +134,7 @@ export class PageCallTransferAttend extends Component {
         <View className='h-2.5' />
         <View
           className={[
-            'w-[70%] flex-row items-center self-center content-center mb-7.5',
+            'mb-7.5 w-[70%] flex-row content-center items-center self-center',
             innerCls,
           ]}
         >
@@ -144,7 +144,7 @@ export class PageCallTransferAttend extends Component {
                 oc.stopTransferring()
                 ctx.nav.backToPageCallManage()
               }}
-              className='rounded-full w-12.5 h-12.5 bg-warning'
+              className='bg-warning h-12.5 w-12.5 rounded-full'
             >
               <RnIcon path={mdiPhoneOff} />
             </RnTouchableOpacity>
@@ -155,7 +155,7 @@ export class PageCallTransferAttend extends Component {
           <View className='w-[33.333%] items-center'>
             <RnTouchableOpacity
               onPress={() => ctx.sip.hangupSession(oc.id)}
-              className='rounded-full w-12.5 h-12.5 bg-error'
+              className='bg-error h-12.5 w-12.5 rounded-full'
             >
               <RnIcon path={mdiPhoneHangup} />
             </RnTouchableOpacity>
@@ -169,7 +169,7 @@ export class PageCallTransferAttend extends Component {
                 oc.conferenceTransferring()
                 ctx.nav.backToPageCallManage()
               }}
-              className='rounded-full w-12.5 h-12.5 bg-primary'
+              className='bg-primary h-12.5 w-12.5 rounded-full'
             >
               <RnIcon path={mdiPhoneForward} />
             </RnTouchableOpacity>

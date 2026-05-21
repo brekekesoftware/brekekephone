@@ -1,6 +1,5 @@
 import 'es6-shim'
 import 'es7-shim'
-
 import '@/rn/storage/polyfill-async-storage'
 import '#/polyfill/mobx-configure'
 

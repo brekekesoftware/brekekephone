@@ -32,11 +32,11 @@ export const AccountSignInItem: FC<{
       ctx.nav.goToPageAccountCreate()
     }
     return (
-      <View className='mb-3.75 ml-3.75 h-[70%] min-h-80 w-70 rounded-[3px] bg-white p-3.75 my-11.25'>
+      <View className='my-11.25 mb-3.75 ml-3.75 h-[70%] min-h-80 w-70 rounded-[3px] bg-white p-3.75'>
         <RnText subTitle>{intl`No account`}</RnText>
         <RnText>{intl`There is no account created`}</RnText>
         <RnText>{intl`Tap the below button to create one`}</RnText>
-        <View className='absolute bottom-3.75 left-3.75 right-3.75'>
+        <View className='absolute right-3.75 bottom-3.75 left-3.75'>
           <FooterActions
             onNext={onPressCreateAccount}
             onNextText={intl`CREATE NEW ACCOUNT`}
@@ -86,7 +86,7 @@ export const AccountSignInItem: FC<{
   return (
     <View
       className={[
-        'mb-3.75 ml-3.75 h-[90%] min-h-80 w-70 rounded-[3px] bg-white my-11.25',
+        'my-11.25 mb-3.75 ml-3.75 h-[90%] min-h-80 w-70 rounded-[3px] bg-white',
         props.last && 'mr-3.75',
       ]}
     >
@@ -121,7 +121,7 @@ export const AccountSignInItem: FC<{
         type='Switch'
         value={a.ucEnabled}
       />
-      <View className='absolute bottom-3.75 left-3.75 right-3.75'>
+      <View className='absolute right-3.75 bottom-3.75 left-3.75'>
         <FooterActions
           onBack={() => {
             RnAlert.prompt({

@@ -209,7 +209,7 @@ export const Page2StepVerification = () => {
 
   return (
     <AnimatedView
-      className='absolute right-0 left-0 bg-background'
+      className='bg-background absolute right-0 left-0'
       style={{
         opacity: anim.opacity,
         top: safeInsets?.top ?? 0,
@@ -217,7 +217,7 @@ export const Page2StepVerification = () => {
       }}
     >
       <RnKeyboardAvoidingView
-        className='flex-1 bg-background'
+        className='bg-background flex-1'
         behavior={isIos ? 'padding' : 'height'}
         keyboardVerticalOffset={isIos ? 100 : 0}
       >
@@ -250,12 +250,12 @@ export const Page2StepVerification = () => {
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
               placeholderTextColor={v.borderBg}
-              className='w-full h-12 border rounded-[5px] border-border px-3 text-center mb-4'
+              className='border-border mb-4 h-12 w-full rounded-[5px] border px-3 text-center'
             />
             <RnTouchableOpacity
               disabled={isLoading}
               className={[
-                'w-full h-12 bg-primary justify-center items-center rounded-[5px] mb-2.5',
+                'bg-primary mb-2.5 h-12 w-full items-center justify-center rounded-[5px]',
                 isLoading && 'opacity-50',
               ]}
               onPress={onVerify}
@@ -276,7 +276,7 @@ export const Page2StepVerification = () => {
               <View className='w-full justify-center'>
                 <AnimatedView
                   className={[
-                    'flex-row w-full justify-around items-center rounded-[5px] py-2.5',
+                    'w-full flex-row items-center justify-around rounded-[5px] py-2.5',
                     toast.type === 'err' ? 'bg-error' : 'bg-info',
                   ]}
                   style={{ opacity: fadeAnim }}

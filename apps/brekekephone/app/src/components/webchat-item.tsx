@@ -14,8 +14,8 @@ import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
 // Reused class strings
-const textColClassName = tw`pl-2.5 pr-1.25 py-2.5 min-w-20`
-const btnBaseClassName = tw`py-1.25 px-2.5 min-w-20 rounded justify-center items-center my-1.25`
+const textColClassName = tw`min-w-20 py-2.5 pr-1.25 pl-2.5`
+const btnBaseClassName = tw`my-1.25 min-w-20 items-center justify-center rounded px-2.5 py-1.25`
 
 export const WebchatItem: FC<{
   data: Conference
@@ -49,7 +49,7 @@ export const WebchatItem: FC<{
   return (
     <View
       className={[
-        'flex-row px-1.25 items-center border-b-[0.5px] border-border',
+        'border-border flex-row items-center border-b-[0.5px] px-1.25',
         isEnabledAnswer && 'bg-primary-100',
       ]}
     >
@@ -66,7 +66,10 @@ export const WebchatItem: FC<{
         ) : (
           <RnTouchableOpacity
             onPress={showPress}
-            className={[btnBaseClassName, isDisplayShow ? 'bg-black/80' : 'bg-border']}
+            className={[
+              btnBaseClassName,
+              isDisplayShow ? 'bg-black/80' : 'bg-border',
+            ]}
           >
             <RnText normal white bold>
               {intl`Show`}
@@ -76,7 +79,10 @@ export const WebchatItem: FC<{
         <RnTouchableOpacity
           disabled={!isEnabledJoin}
           onPress={joinPress}
-          className={[btnBaseClassName, isEnabledJoin ? 'bg-black/80' : 'bg-border']}
+          className={[
+            btnBaseClassName,
+            isEnabledJoin ? 'bg-black/80' : 'bg-border',
+          ]}
         >
           <RnText normal white bold>
             {intl`Join`}
@@ -92,7 +98,7 @@ export const WebchatItem: FC<{
           normal
           singleLine
           small
-          className='pl-2.5 px-1.25 py-2.5 min-w-20'
+          className='min-w-20 px-1.25 py-2.5 pl-2.5'
         >
           {data.created_tstamp}
         </Duration>

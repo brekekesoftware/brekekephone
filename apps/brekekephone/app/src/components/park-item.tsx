@@ -76,9 +76,11 @@ export const ParkItem: FC<ParkItemProps> = ({
   )
 
   return (
-    <View className={['border-b border-border', !available && 'opacity-50']}>
+    <View className={['border-border border-b', !available && 'opacity-50']}>
       {useAnimated ? (
-        <AnimatedView style={{ backgroundColor: flashBg } as any}>{content}</AnimatedView>
+        <AnimatedView style={{ backgroundColor: flashBg } as any}>
+          {content}
+        </AnimatedView>
       ) : (
         <View className={wrapperClass}>{content}</View>
       )}

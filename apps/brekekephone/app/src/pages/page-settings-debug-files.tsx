@@ -1,6 +1,7 @@
 import { filesize } from 'filesize'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'

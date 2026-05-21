@@ -1,5 +1,5 @@
 import type { ThemeConfig } from '@/rn/core/theme/config'
-import { darkVariables, variables } from './brekeke-scss'
+import { darkVariables, variables } from '#/theme/brekeke-scss'
 
 export const brekekeTheme: ThemeConfig = {
   name: 'brekeke',
