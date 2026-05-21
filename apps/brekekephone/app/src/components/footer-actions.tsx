@@ -41,13 +41,13 @@ export const FooterActions: FC<
         <RnTouchableOpacity
           onPress={onBack}
           className={[
-            'bg-error-100 w-1/4 rounded-none py-2',
+            'bg-error-100 dark:bg-error-900 w-1/4 rounded-none py-2',
             !onMore && 'w-1/3',
           ]}
         >
           <RnIcon
-            color={v.colors.danger}
             path={onBackIcon || mdiKeyboardBackspace}
+            className={'text-error dark:text-error-300'}
           />
         </RnTouchableOpacity>
       )}

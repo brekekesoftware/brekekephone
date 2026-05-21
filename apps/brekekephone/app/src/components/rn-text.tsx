@@ -8,20 +8,20 @@ import { clsx } from '@/rn/core/tw/clsx'
 import { tw } from '@/rn/core/tw/tw'
 import { pickBy } from '@/shared/lodash'
 
-const classMap: { [k: string]: string } = {
-  title: 'text-[25.2px] leading-9 font-bold',
-  subTitle: 'text-[16.8px] leading-6 font-bold',
-  small: 'text-[11.2px] leading-4 font-bold',
-  black: 'text-black',
-  white: 'text-white',
-  primary: 'text-primary',
-  warning: 'text-warning',
-  danger: 'text-error',
-  normal: 'font-normal',
-  bold: 'font-bold',
-  center: 'text-center',
-  right: 'text-right',
-  padding: 'px-2.5',
+const classMap: { [k: string]: ClassName } = {
+  title: tw`text-[25.2px] leading-9 font-bold`,
+  subTitle: tw`text-[16.8px] leading-6 font-bold`,
+  small: tw`text-[11.2px] leading-4 font-bold`,
+  black: tw`text-black`,
+  white: tw`text-white`,
+  primary: tw`text-primary`,
+  warning: tw`text-warning`,
+  danger: tw`text-error`,
+  normal: tw`font-normal`,
+  bold: tw`font-bold`,
+  center: tw`text-center`,
+  right: tw`text-right`,
+  padding: tw`px-2.5`,
 }
 
 const baseClass = tw`text-foreground leading-5`
