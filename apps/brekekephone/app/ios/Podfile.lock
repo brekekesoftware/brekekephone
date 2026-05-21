@@ -1699,35 +1699,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-get-random-values (2.0.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
+  - react-native-get-random-values (1.11.0):
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - react-native-image-picker (8.2.1):
     - boost
     - DoubleConversion
@@ -2750,7 +2723,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: d9499269ad1f484ae71319bac1d9231447f2094e
   react-native-background-timer: 4638ae3bee00320753647900b21260b10587b6f7
   react-native-document-picker: feff5690a44e700f6df8f34860d069dfde9089b0
-  react-native-get-random-values: 78b28a02814f145659961a225ea676f68f32ca2a
+  react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-image-picker: 3d04db95b47c6b45d433523f20085ffdd0a934ab
   react-native-netinfo: bed7e7b8f68e22e0862a77d7df28d31faa66375d
   react-native-notifications: 3bafa1237ae8a47569a84801f17d80242fe9f6a5
@@ -2810,4 +2783,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b9b9e167f40a7fab53b092561220c328b5f18dd3
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
