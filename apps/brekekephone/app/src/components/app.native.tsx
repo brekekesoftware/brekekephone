@@ -20,6 +20,7 @@ import { CallNotify } from '#/components/call-notify'
 import { CallVideos } from '#/components/call-videos'
 import { CallVoices } from '#/components/call-voices'
 import { ChatGroupInvite, UnreadChatNoti } from '#/components/chat-group-invite'
+import { KeyboardSpacer } from '#/components/keyboard-spacer.native'
 import { PhonebookAddItem } from '#/components/phonebook-add-item'
 import { AudioPlayer, RnStatusBar, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
@@ -332,7 +333,7 @@ const AppWithoutProviders = observer(() => {
           />
         )}
       </View>
-      {/* TODO: {isIos && <KeyboardSpacer />} */}
+      {isIos && <KeyboardSpacer />}
 
       {(ctx.global.darkModeLoading || !ctx.account.appInitDone) && (
         <View

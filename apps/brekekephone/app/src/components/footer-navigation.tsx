@@ -33,7 +33,7 @@ export const Navigation: FC<{
         >
           <View
             className={[
-              'py-2 w-full',
+              'h-10 w-full items-center justify-center',
               active && 'rounded-[22px] bg-primary-100',
             ]}
           >
