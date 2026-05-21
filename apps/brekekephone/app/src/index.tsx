@@ -1,7 +1,8 @@
-import '#/theme.scss'
 import '#/index.native'
 
 import { createRoot } from 'react-dom/client'
+
+import '#/theme.scss'
 
 import App from '#/components/app'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'

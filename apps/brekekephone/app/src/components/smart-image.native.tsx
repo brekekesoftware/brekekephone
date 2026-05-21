@@ -5,10 +5,11 @@ import type { WebViewMessageEvent } from 'react-native-webview'
 import WebViewWocn from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
+import noPhoto from '#/assets/no_photo.png'
+
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
-import noPhoto from '#/assets/no_photo.png'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
 import { isAndroid } from '#/config'

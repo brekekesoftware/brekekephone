@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
+import { Animated } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
@@ -15,6 +16,7 @@ type ToastProps = {
 }
 
 const MAX_LENGTH_TEXT = 50
+const TOAST_ANIMATION_DURATION = 3000
 
 export const Toast: FC<ToastProps> = ({
   title,
@@ -22,21 +24,22 @@ export const Toast: FC<ToastProps> = ({
   containerClassName,
   containerMarginTop,
 }: ToastProps) => {
-  const [phase, setPhase] = useState<'hidden' | 'shown' | 'fading'>('hidden')
+  const [fadeAnim] = useState(new Animated.Value(0))
   const validTitle =
     title.length > MAX_LENGTH_TEXT
       ? `${title.substring(0, MAX_LENGTH_TEXT)}...`
       : title
 
   useEffect(() => {
-    if (!isVisible) {
-      setPhase('hidden')
-      return
+    if (isVisible) {
+      fadeAnim.setValue(1)
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: TOAST_ANIMATION_DURATION,
+        useNativeDriver: true,
+      }).start()
     }
-    setPhase('shown')
-    const id = requestAnimationFrame(() => setPhase('fading'))
-    return () => cancelAnimationFrame(id)
-  }, [isVisible])
+  }, [fadeAnim, isVisible])
 
   const mtCls =
     containerMarginTop !== undefined ? `mt-[${containerMarginTop}px]` : ''
@@ -50,11 +53,8 @@ export const Toast: FC<ToastProps> = ({
       ]}
     >
       <AnimatedView
-        className={[
-          'px-1.25 pt-1 pb-1.25',
-          phase === 'fading' && 'transition-opacity duration-3000',
-          phase === 'shown' ? 'opacity-100' : 'opacity-0',
-        ]}
+        className='px-1.25 pt-1 pb-1.25'
+        style={{ opacity: fadeAnim }}
       >
         <RnText normal white>
           {validTitle}

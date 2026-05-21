@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+import { Animated } from 'react-native'
 
 import { uniqBy } from '@/shared/lodash'
 import { Field } from '#/components/field'
@@ -14,19 +15,21 @@ export class PageCallParks extends Component<{
   ongoing: boolean
 }> {
   prevId?: string
-  // pickup mode: occupied slots flash to grab attention. We toggle a boolean
-  // on a timer and let ParkItem's `transition-*` classes animate the color.
-  flashTimer?: ReturnType<typeof setTimeout>
+  flashAnim = new Animated.Value(0)
+  // RN's Animated.loop sets an internal `isFinished` flag on stop() that is
+  // never reset, so the same loop instance cannot be restarted. We create a
+  // fresh loop each time we need to start animating.
+  flashLoop?: Animated.CompositeAnimation
 
   componentDidMount = () => {
-    this.updateFlash()
+    this.updateFlashLoop()
     this.componentDidUpdate()
   }
   componentWillUnmount = () => {
-    this.clearFlashTimer()
+    this.stopFlashLoop()
   }
   componentDidUpdate = () => {
-    this.updateFlash()
+    this.updateFlashLoop()
     if (!this.props.ongoing) {
       return
     }
@@ -38,44 +41,43 @@ export class PageCallParks extends Component<{
   }
 
   // Only run animation when in pickup mode and there are occupied slots
-  updateFlash = () => {
+  updateFlashLoop = () => {
     const cp2 = this.props.ongoing
     const hasOccupied = !cp2 && Object.keys(ctx.call.parkNumbers).length > 0
-    if (hasOccupied && !this.flashTimer) {
-      this.startFlash()
-    } else if (!hasOccupied && this.flashTimer) {
-      this.stopFlash()
+    if (hasOccupied && !this.flashLoop) {
+      this.startFlashLoop()
+    } else if (!hasOccupied && this.flashLoop) {
+      this.stopFlashLoop()
     }
   }
 
-  // true for 2500ms (1500ms rise + 1000ms hold), false for 1000ms (fall) —
-  // same rhythm as the old Animated.sequence loop.
-  startFlash = () => {
-    const tick = () => {
-      this.setState({ flashOn: true })
-      this.flashTimer = setTimeout(() => {
-        this.setState({ flashOn: false })
-        this.flashTimer = setTimeout(tick, 1000)
-      }, 2500)
-    }
-    tick()
+  startFlashLoop = () => {
+    this.flashLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(this.flashAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.delay(1000),
+        Animated.timing(this.flashAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ]),
+    )
+    this.flashLoop.start()
   }
 
-  clearFlashTimer = () => {
-    if (this.flashTimer) {
-      clearTimeout(this.flashTimer)
-      this.flashTimer = undefined
-    }
-  }
-
-  stopFlash = () => {
-    this.clearFlashTimer()
-    this.setState({ flashOn: false })
+  stopFlashLoop = () => {
+    this.flashLoop?.stop()
+    this.flashLoop = undefined
+    this.flashAnim.setValue(0)
   }
 
   state = {
     selectedPark: '',
-    flashOn: false,
   }
 
   selectPark = (selectedPark: string) => {
@@ -145,8 +147,7 @@ export class PageCallParks extends Component<{
               parkNumber={p.park}
               selected={p.park === effectiveSp}
               available={available}
-              flash={!cp2 && isOccupied}
-              flashOn={this.state.flashOn}
+              flashAnim={!cp2 && isOccupied ? this.flashAnim : undefined}
               onPress={() => {
                 if (available) {
                   this.selectPark(p.park)

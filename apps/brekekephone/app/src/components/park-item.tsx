@@ -1,9 +1,11 @@
 import type { FC } from 'react'
+import type { Animated } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnTouchableOpacity } from '#/components/rn'
 import { AnimatedText, AnimatedView } from '#/components/rn-animated'
+import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
 
 interface ParkItemProps {
@@ -12,10 +14,8 @@ interface ParkItemProps {
   parkNumber: string
   selected: boolean
   available: boolean
-  // pickup mode only: occupied slot flashes (bg + text) to grab attention
-  flash?: boolean
-  // shared on/off toggle that drives the flash transition
-  flashOn?: boolean
+  // pickup mode only: slot is occupied → flash bg+text via Animated.Value
+  flashAnim?: Animated.Value
   onPress: () => void
 }
 
@@ -24,22 +24,26 @@ export const ParkItem: FC<ParkItemProps> = ({
   parkNumber,
   selected,
   available,
-  flash,
-  flashOn,
+  flashAnim,
   onPress,
 }) => {
-  const animating = !!flash && !selected
+  const useAnimated = !!flashAnim && !selected
+
+  const flashBg = flashAnim?.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['white', v.colors.primary],
+  })
+  const flashTextColor = flashAnim?.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['black', 'white'],
+  })
 
   let wrapperClass: ClassName
   let textClass: ClassName
   let subTextClass: ClassName
-  if (animating) {
-    // longer rise (1500ms), shorter fall (1000ms) — matches the old timing
-    const duration = flashOn ? 'duration-1500' : 'duration-1000'
-    wrapperClass = ['transition-all', duration, flashOn ? 'bg-primary' : 'bg-white']
-    textClass = ['transition-all', duration, flashOn ? 'text-white' : 'text-black']
-    subTextClass = textClass
-  } else if (selected && flash) {
+  if (useAnimated) {
+    // no className for bg/text — animated style drives the colors
+  } else if (selected && flashAnim) {
     wrapperClass = 'bg-primary'
     textClass = 'text-white'
     subTextClass = 'text-white'
@@ -54,10 +58,17 @@ export const ParkItem: FC<ParkItemProps> = ({
   const content = (
     <RnTouchableOpacity onPress={available ? onPress : undefined}>
       <View className='px-2.5 py-2.5'>
-        <AnimatedText numberOfLines={1} className={['font-bold', textClass]}>
+        <AnimatedText
+          numberOfLines={1}
+          className={['font-bold', textClass]}
+          style={useAnimated ? ({ color: flashTextColor } as any) : undefined}
+        >
           {displayName}
         </AnimatedText>
-        <AnimatedText className={['text-[11.2px] font-normal', subTextClass]}>
+        <AnimatedText
+          className={['text-[11.2px] font-normal', subTextClass]}
+          style={useAnimated ? ({ color: flashTextColor } as any) : undefined}
+        >
           {intl`Park number: ` + parkNumber}
         </AnimatedText>
       </View>
@@ -66,8 +77,8 @@ export const ParkItem: FC<ParkItemProps> = ({
 
   return (
     <View className={['border-b border-border', !available && 'opacity-50']}>
-      {animating ? (
-        <AnimatedView className={wrapperClass}>{content}</AnimatedView>
+      {useAnimated ? (
+        <AnimatedView style={{ backgroundColor: flashBg } as any}>{content}</AnimatedView>
       ) : (
         <View className={wrapperClass}>{content}</View>
       )}

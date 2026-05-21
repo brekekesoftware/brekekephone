@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { Animated } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { RnText } from '#/components/rn'
@@ -29,27 +30,31 @@ const Item = observer(
     }
     onEnd: () => void
   }) => {
-    const [visible, setVisible] = useState(false)
+    const fade = useRef(new Animated.Value(0)).current
 
     useEffect(() => {
-      setVisible(true)
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start()
       const timer = setTimeout(() => {
-        setVisible(false)
-        setTimeout(onEnd, 500)
+        Animated.timing(fade, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(onEnd)
       }, TOAST_DISPLAY_DURATION)
       return () => clearTimeout(timer)
-    }, [onEnd])
+    }, [fade, onEnd])
 
     const errorDetail = data.err?.message
     const bgCls = getBgClass(data.type)
 
     return (
       <AnimatedView
-        className={[
-          'py-0.5 px-1 rounded-br-sm transition-opacity duration-500',
-          bgCls,
-          visible ? 'opacity-100' : 'opacity-0',
-        ]}
+        className={['py-0.5 px-1 rounded-br-sm', bgCls]}
+        style={{ opacity: fade }}
       >
         {data?.msg && (
           <RnText className='line-clamp-1' ellipsizeMode='tail' white>

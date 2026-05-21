@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react'
 
+import avatarPlaceholder from '#/assets/avatar-placeholder.png'
+
 import { Image } from '@/rn/core/components/image'
 import { View } from '@/rn/core/components/view'
-import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 import { mdiRecord } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { v } from '#/components/variables'

@@ -1,3 +1,3 @@
-document.documentElement.classList.add('web-', 'mac-scrollbar')
-
 import '../../app'
+
+document.documentElement.classList.add('web-', 'mac-scrollbar')

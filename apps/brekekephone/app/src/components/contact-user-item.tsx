@@ -3,9 +3,9 @@ import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { isEmpty } from '@/shared/lodash'
 
 import { View } from '@/rn/core/components/view'
+import { isEmpty } from '@/shared/lodash'
 import {
   mdiAccountGroup,
   mdiContentCopy,

@@ -2,12 +2,11 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
-import type { ViewProps } from 'react-native'
+import type {   View as RNView,ViewProps } from 'react-native'
 import {
   findNodeHandle,
   SectionList,
-  TouchableWithoutFeedback,
-  View as RNView,
+  TouchableWithoutFeedback
 } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
