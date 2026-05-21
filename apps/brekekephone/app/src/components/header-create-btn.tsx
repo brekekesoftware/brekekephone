@@ -16,7 +16,10 @@ export const CreateBtn: FC<{
         white ? 'bg-background' : 'bg-primary',
       ]}
     >
-      <RnIcon color={white ? 'black' : 'white'} path={mdiPlus} />
+      <RnIcon
+        className={white ? 'text-foreground' : 'text-white'}
+        path={mdiPlus}
+      />
     </RnTouchableOpacity>
   )
 }

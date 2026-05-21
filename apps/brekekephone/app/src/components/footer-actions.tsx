@@ -56,7 +56,7 @@ export const FooterActions: FC<
           onPress={onMore}
           className={['bg-muted w-1/4 rounded-none py-2', !onBack && 'w-1/3']}
         >
-          <RnIcon path={onMoreIcon || mdiCached} />
+          <RnIcon path={onMoreIcon || mdiCached} className='text-foreground' />
         </RnTouchableOpacity>
       )}
       <RnTouchableOpacity

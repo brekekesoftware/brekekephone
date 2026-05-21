@@ -23,7 +23,7 @@ export const Title: FC<{
     <AnimatedView className='mr-6.25 pl-3.75' style={cssContainerA}>
       <AnimatedText
         numberOfLines={1}
-        className='font-bold text-black'
+        className='text-foreground font-bold'
         style={cssTitleA}
       >
         {trimDisplayName(title)}

@@ -54,7 +54,7 @@ export const Header: FC<
       <View className='absolute top-0 right-0 left-0'>
         <View
           className={[
-            transparent ? 'bg-transparent' : 'bg-white',
+            transparent ? 'bg-transparent' : 'bg-background',
             compact && 'shadow-sm',
           ]}
         >

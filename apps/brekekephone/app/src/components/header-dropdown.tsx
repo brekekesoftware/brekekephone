@@ -56,6 +56,6 @@ export const DropdownBtn: FC<{ onPress(): void }> = ({ onPress }) => (
     onPress={onPress}
     className='absolute top-0 right-0 bottom-0 w-10'
   >
-    <RnIcon path={mdiDotsVertical} />
+    <RnIcon path={mdiDotsVertical} className='text-foreground' />
   </RnTouchableOpacity>
 )

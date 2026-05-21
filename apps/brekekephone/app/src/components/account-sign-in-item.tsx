@@ -86,7 +86,7 @@ export const AccountSignInItem: FC<{
   return (
     <View
       className={[
-        'my-11.25 mb-3.75 ml-3.75 h-[90%] min-h-80 w-70 rounded-[3px] bg-white',
+        'bg-background my-11.25 mb-3.75 ml-3.75 h-[90%] min-h-80 w-70 rounded-[3px]',
         props.last && 'mr-3.75',
       ]}
     >

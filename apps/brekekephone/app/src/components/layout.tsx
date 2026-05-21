@@ -76,7 +76,7 @@ export const Layout: FC<
   Object.assign(containerProps, {
     className: [
       'h-full flex-1',
-      props.transparent ? 'bg-transparent' : 'bg-white',
+      props.transparent ? 'bg-transparent' : 'bg-background',
     ],
   })
 

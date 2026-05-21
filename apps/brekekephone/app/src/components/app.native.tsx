@@ -2,12 +2,7 @@ import NetInfo from '@react-native-community/netinfo'
 import { reaction, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
-import {
-  ActivityIndicator,
-  AppState,
-  DeviceEventEmitter,
-  Platform,
-} from 'react-native'
+import { AppState, DeviceEventEmitter, Platform } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 
 import { View } from '@/rn/core/components/view'
@@ -23,6 +18,7 @@ import { ChatGroupInvite, UnreadChatNoti } from '#/components/chat-group-invite'
 import { KeyboardSpacer } from '#/components/keyboard-spacer.native'
 import { PhonebookAddItem } from '#/components/phonebook-add-item'
 import { AudioPlayer, RnStatusBar, RnText } from '#/components/rn'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { RootView } from '#/components/root-view'
 import { ToastRoot } from '#/components/toast-root'
@@ -290,59 +286,62 @@ const AppWithoutProviders = observer(() => {
   } = getConnectionStatus()
 
   return (
-    <RootView>
-      <AudioPlayer />
-      <RnStatusBar />
-      {!!signedInId && !!connMessage && (
-        <AnimatedSize className={isFailure ? 'bg-error' : 'bg-warning'}>
-          <RnTouchableOpacity
-            className='px-1.25 pt-1 pb-1.25'
-            onPress={onPressConnMessage}
-          >
-            <RnText small white>
-              {connMessage}
-            </RnText>
-          </RnTouchableOpacity>
-        </AnimatedSize>
-      )}
-
-      <CallNotify />
-      <CallBar />
-      <CallVideos />
-      <CallVoices />
-      <ChatGroupInvite />
-      <UnreadChatNoti />
-      <ToastRoot />
-      <View className='flex-1'>
-        <RnStackerRoot />
-        <RenderAllCalls />
-        <View>
-          {ctx.auth.listCustomPage.map(cp => (
-            <PageCustomPageView key={cp.id} id={cp.id} />
-          ))}
-        </View>
-        <RnPickerRoot />
-        <PhonebookAddItem />
-        <RnAlertRoot />
-        {isFailure && (
-          <RnTouchableOpacity
-            className='absolute top-0 right-0 left-0 h-7.5'
-            onPress={onPressConnMessage}
-          />
+    <>
+      <RootView>
+        <AudioPlayer />
+        <RnStatusBar />
+        {!!signedInId && !!connMessage && (
+          <AnimatedSize className={isFailure ? 'bg-error' : 'bg-warning'}>
+            <RnTouchableOpacity
+              className='px-1.25 pt-1 pb-1.25'
+              onPress={onPressConnMessage}
+            >
+              <RnText small white>
+                {connMessage}
+              </RnText>
+            </RnTouchableOpacity>
+          </AnimatedSize>
         )}
-      </View>
-      {isIos && <KeyboardSpacer />}
+
+        <CallNotify />
+        <CallBar />
+        <CallVideos />
+        <CallVoices />
+        <ChatGroupInvite />
+        <UnreadChatNoti />
+        <ToastRoot />
+        <View className='flex-1'>
+          <RnStackerRoot />
+          <RenderAllCalls />
+          <View>
+            {ctx.auth.listCustomPage.map(cp => (
+              <PageCustomPageView key={cp.id} id={cp.id} />
+            ))}
+          </View>
+          <RnPickerRoot />
+          <PhonebookAddItem />
+          <RnAlertRoot />
+          {isFailure && (
+            <RnTouchableOpacity
+              className='absolute top-0 right-0 left-0 h-7.5'
+              onPress={onPressConnMessage}
+            />
+          )}
+        </View>
+        {isIos && <KeyboardSpacer />}
+
+        {(() => {
+          const id = ctx.auth.getCurrentAccount()?.id || ctx.mfa.accountId
+          return !!id && ctx.mfa.isShowing(id) && <Page2StepVerification />
+        })()}
+      </RootView>
 
       {(ctx.global.darkModeLoading || !ctx.account.appInitDone) && (
         <View className='absolute inset-0 items-center justify-center bg-[#74bf53]'>
-          <ActivityIndicator size='large' color='white' />
+          <RnActivityIndicator className='h-8 w-8' size='large' color='white' />
         </View>
       )}
-      {(() => {
-        const id = ctx.auth.getCurrentAccount()?.id || ctx.mfa.accountId
-        return !!id && ctx.mfa.isShowing(id) && <Page2StepVerification />
-      })()}
-    </RootView>
+    </>
   )
 })
 

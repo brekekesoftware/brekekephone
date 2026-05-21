@@ -16,6 +16,7 @@ import App from '#/components/app'
 import { ctx } from '#/stores/ctx'
 import { brekekeTheme } from '#/theme/brekeke'
 import { registerValidatorLabels } from '#/utils/validator'
+import { waitTimeout } from '#/utils/wait-timeout'
 
 registerValidatorLabels()
 
@@ -23,7 +24,8 @@ registerValidatorLabels()
 // the init theme native is only useful if we want to switch between themes
 initTheme([brekekeTheme], brekekeTheme)
 
-initDarkModeNative().then(() => {
+initDarkModeNative().then(async () => {
+  await waitTimeout()
   ctx.global.darkModeLoading = false
 })
 

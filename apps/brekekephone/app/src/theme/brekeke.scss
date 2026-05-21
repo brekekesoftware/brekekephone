@@ -8,14 +8,14 @@
 
 html {
   --background: #ffffff;
+  --subtle: #fafafa;
+  --muted: #f2f2f2;
+
   --foreground: #000000;
   --foreground-muted: #404040;
   --foreground-subtle: #808080;
   --foreground-disabled: #b3b3b3;
   --foreground-inverse: #ffffff;
-
-  --muted: #f2f2f2;
-  --subtle: #fafafa;
 
   --border: #d9d9d9;
   --border-subtle: #f2f2f2;
@@ -110,7 +110,7 @@ html {
   --subtle: #1a2436;
   --muted: #222c3c;
 
-  --foreground: #f0f3f7;
+  --foreground: #ffffff;
   --foreground-muted: #94a3b8;
   --foreground-subtle: #64748b;
   --foreground-disabled: #334155;
@@ -129,7 +129,7 @@ html {
   --surface: #1a2436;
   --surface-raised: #222c3c;
 
-  --ring: #3b82f6;
+  --ring: #609b3a;
 }
 
 html.theme-dark {

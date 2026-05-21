@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'
 
+import { View } from '@/rn/core/components/view'
 import { darkModeDisabled, darkModeEnabled } from '@/rn/core/dark-mode/config'
 import {
   useDarkModeUser,
@@ -115,6 +116,7 @@ export class PageSettingsDebug extends Component {
         )}
         {isWeb && (
           <>
+            <View className='h-4 w-full' />
             <RnText normal primary small className='px-5'>
               {intl`Current version: ${currentVersion}`}
             </RnText>

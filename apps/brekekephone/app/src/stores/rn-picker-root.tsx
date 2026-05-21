@@ -14,7 +14,7 @@ import { RnPicker } from '#/stores/rn-picker'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
 const bottomCls = tw`ios:bottom-5 bottom-3.75`
-const iconCls = tw`absolute top-2.5 right-2.5`
+const iconCls = tw`text-foreground absolute top-2.5 right-2.5`
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(
@@ -72,12 +72,11 @@ const RnPickerR = (p: RnPickerOption) => {
                   {o.label}
                 </RnText>
                 <RnIcon
-                  color={isSelected ? v.colors.primary : undefined}
                   path={
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
-                  className={iconCls}
+                  className={[iconCls, isSelected && 'text-primary']}
                 />
               </RnTouchableOpacity>
             )
@@ -98,11 +97,7 @@ const RnPickerR = (p: RnPickerOption) => {
               {p.cancelLabel || intl`Cancel`}
             </RnText>
             {!p.onConfirm && (
-              <RnIcon
-                color={v.colors.danger}
-                path={mdiClose}
-                className={iconCls}
-              />
+              <RnIcon path={mdiClose} className={[iconCls, 'text-error']} />
             )}
           </RnTouchableOpacity>
         </AnimatedView>

@@ -109,7 +109,7 @@ export const darkVariables: Partial<ThemeVariables> = {
   '--subtle': '#1a2436',
   '--muted': '#222c3c',
 
-  '--foreground': '#f0f3f7',
+  '--foreground': '#ffffff',
   '--foreground-muted': '#94a3b8',
   '--foreground-subtle': '#64748b',
   '--foreground-disabled': '#334155',
@@ -128,5 +128,5 @@ export const darkVariables: Partial<ThemeVariables> = {
   '--surface': '#1a2436',
   '--surface-raised': '#222c3c',
 
-  '--ring': '#3b82f6',
+  '--ring': '#609b3a',
 }

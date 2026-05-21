@@ -391,7 +391,7 @@ export const Field: FC<
           (props.icon && (
             <RnIcon
               path={props.icon}
-              className='pointer-events-none absolute top-3.75 right-3.75'
+              className='text-foreground pointer-events-none absolute top-3.75 right-3.75'
             />
           ))}
         {props.loading && (

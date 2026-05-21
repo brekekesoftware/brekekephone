@@ -57,8 +57,7 @@ export const PageAccountSignIn = observer(() => {
       >
         <View className='flex-row justify-end pl-4.75'>
           <RnIcon
-            className='absolute top-0.5 left-0'
-            color='white'
+            className='absolute top-0.5 left-0 text-white'
             path={mdiLadybug}
             size={16}
           />
@@ -76,14 +75,13 @@ export const PageAccountSignIn = observer(() => {
             {ctx.intl.localeLoading ? '\u200a' : ctx.intl.getLocaleName()}
           </RnText>
           <RnIcon
-            color='white'
             path={
               ctx.intl.localeLoading
                 ? mdiDotsHorizontal
                 : mdiUnfoldMoreHorizontal
             }
             size={16}
-            className='absolute top-0.5 right-0'
+            className='absolute top-0.5 right-0 text-white'
           />
         </View>
       </RnTouchableOpacity>

@@ -17,7 +17,7 @@ export const BackBtn: FC<{
   return (
     <RnTouchableOpacity onPress={onPress} className='absolute top-0 left-0'>
       <AnimatedView className='w-12.5 rounded-none px-0' style={cssInnerA}>
-        <RnIcon path={mdiKeyboardBackspace} />
+        <RnIcon className='text-foreground' path={mdiKeyboardBackspace} />
       </AnimatedView>
     </RnTouchableOpacity>
   )
