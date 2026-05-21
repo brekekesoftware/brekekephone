@@ -43,7 +43,7 @@ export const SmartImage = (p: {
         setSize(height)
       }}
     >
-      {statusImageLoading && (
+      {!statusImageLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
