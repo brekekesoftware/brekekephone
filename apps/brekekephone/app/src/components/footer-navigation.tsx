@@ -2,15 +2,14 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { menus } from '#/components/navigation-config'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { ctx } from '#/stores/ctx'
 
 // Shared by header-navigation.tsx
-export const unreadOuterClassName =
-  'absolute top-2.5 left-0 right-0 flex-1 items-center'
-export const unreadClassName =
-  'left-3.75 w-5 h-3.75 rounded-[3px] pt-0.75 bg-error overflow-hidden'
+export const unreadOuterClassName = tw`absolute top-2.5 left-0 right-0 flex-1 items-center`
+export const unreadClassName = tw`left-3.75 w-5 h-3.75 rounded-[3px] pt-0.75 bg-error overflow-hidden`
 
 export const Navigation: FC<{
   menu: string

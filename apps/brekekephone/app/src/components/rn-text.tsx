@@ -5,6 +5,7 @@ import { Text } from '@/rn/components/text'
 import type { TextProps } from '@/rn/core/components/text'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { clsx } from '@/rn/core/tw/clsx'
+import { tw } from '@/rn/core/tw/tw'
 import { pickBy } from '@/shared/lodash'
 
 const classMap: { [k: string]: string } = {
@@ -23,7 +24,7 @@ const classMap: { [k: string]: string } = {
   padding: 'px-2.5',
 }
 
-const baseClass = 'leading-5 text-foreground'
+const baseClass = tw`leading-5 text-foreground`
 
 const wrap = (Component: any) =>
   forwardRef(

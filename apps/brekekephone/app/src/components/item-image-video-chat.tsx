@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
@@ -12,7 +13,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
 // calc(100vw-…) resolves on native too via the framework's runtime vw support.
-const vMessageWidthClassName = 'w-[calc(100vw-119px)]'
+const vMessageWidthClassName = tw`w-[calc(100vw-119px)]`
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =

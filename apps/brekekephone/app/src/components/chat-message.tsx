@@ -6,6 +6,7 @@ import { Linking } from 'react-native'
 import Share from 'react-native-share'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
@@ -18,8 +19,8 @@ import { formatChatContent } from '#/utils/format-chat-content'
 
 // 50px of avatar and 10px of padding. calc(100vw-…) resolves on native too via
 // the framework's runtime vw support, so no Dimensions inline style needed.
-const messageMaxWidthClassName = 'max-w-[calc(100vw-60px)]'
-const previewInfoWidthClassName = 'w-[calc(100vw-119px)]'
+const messageMaxWidthClassName = tw`max-w-[calc(100vw-60px)]`
+const previewInfoWidthClassName = tw`w-[calc(100vw-119px)]`
 
 const File: FC<
   Partial<{

@@ -4,6 +4,7 @@ import type { FC } from 'react'
 import { Component } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { sortBy } from '@/shared/lodash'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
@@ -18,7 +19,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const notifyClassName = 'flex-row items-center border-b border-border bg-muted'
+const notifyClassName = tw`flex-row items-center border-b border-border bg-muted`
 
 const Notify: FC<{
   id: string

@@ -1,5 +1,7 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
+
+import { tw } from '@/rn/core/tw/tw'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
@@ -9,7 +11,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const invisibleClassName = 'absolute w-0 h-0 opacity-0 overflow-hidden'
+const invisibleClassName = tw`absolute w-0 h-0 opacity-0 overflow-hidden`
 // h-screen (100vh) only on web; built as a runtime string so babel-plugin-tw
 // doesn't compile-validate it through twrnc (twrnc rejects vh units).
 const visibleClassName = `relative w-full opacity-100 overflow-hidden ${

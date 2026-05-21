@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { useCallback } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
@@ -13,9 +14,8 @@ import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
 // Reused class strings
-const textColClassName = 'pl-2.5 pr-1.25 py-2.5 min-w-20'
-const btnBaseClassName =
-  'py-1.25 px-2.5 min-w-20 rounded justify-center items-center my-1.25'
+const textColClassName = tw`pl-2.5 pr-1.25 py-2.5 min-w-20`
+const btnBaseClassName = tw`py-1.25 px-2.5 min-w-20 rounded justify-center items-center my-1.25`
 
 export const WebchatItem: FC<{
   data: Conference

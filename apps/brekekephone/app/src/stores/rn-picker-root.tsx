@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import { useEffect, useState } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedScrollView, AnimatedView } from '#/components/rn-animated'
@@ -12,7 +13,7 @@ import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 
 const bottomCls = isIos ? 'bottom-5' : 'bottom-3.75'
-const iconCls = 'absolute top-2.5 right-2.5'
+const iconCls = tw`absolute top-2.5 right-2.5`
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(

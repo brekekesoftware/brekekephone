@@ -5,6 +5,7 @@ import type { NativeEventSubscription } from 'react-native'
 import { ActivityIndicator, AppState, Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -50,7 +51,7 @@ const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 const imageWrapperCls = `min-h-[${minSizeImageWrapper}px] min-w-[${minSizeImageWrapper}px]`
-const hiddenCls = 'absolute w-full h-full top-[-100%] left-[-100%]'
+const hiddenCls = tw`absolute w-full h-full top-[-100%] left-[-100%]`
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
     ? ctx.nav.backToPageCallKeypad()
