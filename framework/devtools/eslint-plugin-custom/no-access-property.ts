@@ -21,11 +21,10 @@ export const noAccessProperty: TSESLint.RuleModule<
         additionalProperties: {
           type: 'string',
         },
+        required: true,
       },
     ],
   },
-
-  defaultOptions: [{}],
 
   create: c => {
     const props = c.options[0]

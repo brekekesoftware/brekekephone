@@ -12,8 +12,6 @@ export const noJsonStringify: TSESLint.RuleModule<'noJsonStringify', []> = {
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => ({
     CallExpression: n => {
       if (

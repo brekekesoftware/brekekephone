@@ -19,11 +19,12 @@ export const noImportDefault: TSESLint.RuleModule<
         items: {
           type: 'string',
         },
+        minItems: 1,
+        uniqueItems: true,
+        required: true,
       },
     ],
   },
-
-  defaultOptions: [[]],
 
   create: c => {
     const pkgs = new Set(c.options[0])

@@ -67,9 +67,9 @@ export const noRelativeExportPaths: TSESLint.RuleModule<
         data: {
           alias: expectImportPath,
         },
-        fix: fixer => {
+        fix: f => {
           const replacement = `'${expectImportPath}'`
-          return fixer.replaceText(s, replacement)
+          return f.replaceText(s, replacement)
         },
       })
     }

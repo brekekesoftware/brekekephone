@@ -97,7 +97,7 @@ export const FormField = <T extends FieldValues, K extends Path<T>>({
     return null
   }
 
-  const renderErrorMessage = ({ error }: ControllerFieldState) =>
+  const renderErr = ({ error }: ControllerFieldState) =>
     error?.message ? (
       <Span className='text-xs text-error'>{error.message}</Span>
     ) : null
@@ -111,7 +111,7 @@ export const FormField = <T extends FieldValues, K extends Path<T>>({
         <View {...props}>
           {renderLabel()}
           {renderChildren(field, fieldState)}
-          {renderErrorMessage(fieldState)}
+          {renderErr(fieldState)}
         </View>
       )}
     />

@@ -12,8 +12,6 @@ export const errName: TSESLint.RuleModule<'errName', []> = {
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => {
     const check = (n: TSESTree.BindingName | TSESTree.Parameter) => {
       if (!n) {

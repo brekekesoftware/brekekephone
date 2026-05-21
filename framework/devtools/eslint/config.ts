@@ -234,6 +234,7 @@ export const config = ({
       'custom/no-import-outside': off,
       'custom/no-json-stringify': warn,
       'custom/no-nullish-coalescing': warn,
+      'custom/no-single-item-array-prop': [warn, ['style', 'className']],
       'custom/no-use-state': off,
       'custom/no-void-union': off,
     }),

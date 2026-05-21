@@ -11,6 +11,7 @@ import { noMissingExport } from '@/devtools/eslint-plugin-custom/no-missing-expo
 import { noNullishCoalescing } from '@/devtools/eslint-plugin-custom/no-nullish-coalescing'
 import { noRelativeExportPaths } from '@/devtools/eslint-plugin-custom/no-relative-export-paths'
 import { noRelativeImportPaths } from '@/devtools/eslint-plugin-custom/no-relative-import-paths'
+import { noSingleItemArrayProp } from '@/devtools/eslint-plugin-custom/no-single-item-array-prop'
 import { noUseState } from '@/devtools/eslint-plugin-custom/no-use-state'
 import { noVoidUnion } from '@/devtools/eslint-plugin-custom/no-void-union'
 
@@ -30,6 +31,7 @@ export const customPlugin = {
     'no-nullish-coalescing': noNullishCoalescing,
     'no-relative-export-paths': noRelativeExportPaths,
     'no-relative-import-paths': noRelativeImportPaths,
+    'no-single-item-array-prop': noSingleItemArrayProp,
     'no-use-state': noUseState,
     'no-void-union': noVoidUnion,
   },

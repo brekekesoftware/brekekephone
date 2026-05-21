@@ -12,8 +12,6 @@ export const noVoidUnion: TSESLint.RuleModule<'noVoidUnion', []> = {
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => ({
     TSUnionType: n => {
       for (const t of n.types) {
