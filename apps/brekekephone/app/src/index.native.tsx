@@ -1,7 +1,6 @@
 import '#/utils/capture-console-output'
 import '#/polyfill'
 import '#/embed/polyfill'
-import '#/polyfill/mobx-configure'
 import '#/brekekejs/pal'
 import '#/brekekejs/webrtcclient'
 import '#/brekekejs/phonebook'
@@ -13,11 +12,21 @@ import { AppRegistry } from 'react-native'
 import { initTheme } from '@/rn/core/theme/config'
 import { isWeb } from '@/rn/core/utils/platform'
 import App from '#/components/app'
-import { brekekeTheme } from '#/theme'
 import { registerValidatorLabels } from '#/utils/validator'
+import { brekekeTheme } from './theme/brekeke'
+import { initDarkModeNative } from '@/rn/core/dark-mode/index.native'
+import { ctx } from './stores/ctx'
 
-initTheme([brekekeTheme], brekekeTheme)
 registerValidatorLabels()
+
+// we dont need init theme native, since we use only 1 theme
+// the init theme native is only useful if we want to switch between themes
+initTheme([brekekeTheme], brekekeTheme)
+
+initDarkModeNative().then(() => {
+  ctx.global.darkModeLoading = false
+})
+
 if (!isWeb) {
   AppRegistry.registerComponent('BrekekePhone', () => App)
 }

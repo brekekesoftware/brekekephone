@@ -7,6 +7,7 @@ import { ctx } from '#/stores/ctx'
 export class GlobalStore {
   @observable productName = isWeb ? 'Web Phone' : 'Brekeke Phone'
   @observable embedStaticPath = ''
+  @observable darkModeLoading = true
 
   buildEmbedStaticPath = (path: string) => {
     if (!isEmbed || !this.embedStaticPath) {

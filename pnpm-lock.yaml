@@ -146,8 +146,8 @@ importers:
         specifier: 2.20.0
         version: 2.20.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-get-random-values:
-        specifier: 2.0.0
-        version: 2.0.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
+        specifier: 1.11.0
+        version: 1.11.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-image-picker:
         specifier: 8.2.1
         version: 8.2.1(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -8220,8 +8220,8 @@ packages:
       react-native-windows:
         optional: true
 
-  react-native-get-random-values@2.0.0:
-    resolution: {integrity: sha512-wx7/aPqsUIiWsG35D+MsUJd8ij96e3JKddklSdrdZUrheTx89gPtz3Q2yl9knBArj5u26Cl23T88ai+Q0vypdQ==}
+  react-native-get-random-values@1.11.0:
+    resolution: {integrity: sha512-4BTbDbRmS7iPdhYLRcz3PGFIpFJBwNZg9g42iwa2P6FOv9vZj/xJc678RZXnLNZzd0qd7Q3CCF6Yd+CU2eoXKQ==}
     peerDependencies:
       react-native: 0.80.1
 
@@ -18449,7 +18449,7 @@ snapshots:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
       utf8: 3.0.0
 
-  react-native-get-random-values@2.0.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
+  react-native-get-random-values@1.11.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
     dependencies:
       fast-base64-decode: 1.0.0
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)

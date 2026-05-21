@@ -1,7 +1,11 @@
-import type { ThemeConfig } from '@/rn/core/theme/config'
-import type { ThemeVariables } from '@/rn/core/twrnc-config'
+import { ThemeVariables } from "@/rn/core/twrnc-config"
 
-const variables = {
+// The framework has a configuration to load variables automatically using
+// .extract-variables.scss but it is difficult to setup with craco react-scripts here.
+// To make it simple, we extract variables manually here.
+// Any change here also need to be made in ./brekeke.scss
+
+export const variables: ThemeVariables = {
   '--background': '#ffffff',
   '--foreground': '#000000',
   '--foreground-muted': '#404040',
@@ -26,9 +30,6 @@ const variables = {
   '--surface-raised': '#ffffff',
 
   '--ring': '#609b3a',
-
-  '--reverse': '#1a1a1a',
-  '--layer-video': 'rgba(0, 0, 0, 0.5)',
 
   '--primary-50': '#f7faf4',
   '--primary-100': '#ecf4e6',
@@ -101,10 +102,31 @@ const variables = {
   '--error-800': '#610518',
   '--error-900': '#440411',
   '--error-950': '#27020a',
-} as ThemeVariables
+}
 
-export const brekekeTheme: ThemeConfig = {
-  name: 'brekeke',
-  className: '',
-  variables,
+export const darkVariables: Partial<ThemeVariables> = {
+  '--background': '#141c28',
+  '--subtle': '#1a2436',
+  '--muted': '#222c3c',
+
+  '--foreground': '#f0f3f7',
+  '--foreground-muted': '#94a3b8',
+  '--foreground-subtle': '#64748b',
+  '--foreground-disabled': '#334155',
+  '--foreground-inverse': '#0f172a',
+
+  '--border': '#2d3a4f',
+  '--border-subtle': '#222c3c',
+  '--border-strong': '#475569',
+
+  '--card': '#1a2436',
+  '--card-border': '#2d3a4f',
+
+  '--modal': '#1a2436',
+  '--modal-overlay': 'rgba(0, 0, 0, 0.7)',
+
+  '--surface': '#1a2436',
+  '--surface-raised': '#222c3c',
+
+  '--ring': '#3b82f6',
 }

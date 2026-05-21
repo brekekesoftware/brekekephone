@@ -1,6 +1,6 @@
 // main entry for the create-react-app web bundle
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import type Url from 'url-parse'
 
@@ -19,8 +19,26 @@ import { bundleIdentifier } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
+import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
+import { darkClassName, lightClassName } from '@/rn/core/tailwind'
 
 export const App = () => {
+  const darkMode = useDarkModeUser()
+  useEffect(() => {
+    const { classList } = document.documentElement
+    if (darkMode === undefined) {
+      classList.remove(darkClassName, lightClassName)
+      return
+    }
+    if (darkMode) {
+      classList.add(darkClassName)
+      classList.remove(lightClassName)
+      return
+    }
+    classList.add(lightClassName)
+    classList.remove(darkClassName)
+  }, [darkMode])
+
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   const isBrowserOrEmbed = isBrowser || isEmbed
 
@@ -56,7 +74,7 @@ export const App = () => {
           onPress={() => setIsBrowser(true)}
           className='relative mt-2.5 mb-12.5 w-67.5 rounded-[3px] bg-white p-3.75'
         >
-          <RnText small>{intl`OPEN IN BROWSER`}</RnText>
+          <RnText small black>{intl`OPEN IN BROWSER`}</RnText>
           <RnIcon path={mdiWeb} className='absolute top-2.75 right-2.5' />
         </RnTouchableOpacity>
       </>

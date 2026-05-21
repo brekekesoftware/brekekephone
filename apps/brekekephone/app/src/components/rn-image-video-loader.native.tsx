@@ -86,7 +86,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
             enterPictureInPictureOnLeave
             preventsDisplaySleepDuringVideoPlayback={false}
           />
-          <View className='w-37.5 h-37.5 rounded-[5px] absolute top-0 left-0 items-center overflow-hidden z-100 bg-layer-video'>
+          <View className='w-37.5 h-37.5 rounded-[5px] absolute top-0 left-0 items-center overflow-hidden z-100 bg-modal-overlay'>
             <RnTouchableOpacity onPress={onShowImage}>
               <RnIcon path={mdiPlayCircleOutline} color='white' size={40} />
             </RnTouchableOpacity>

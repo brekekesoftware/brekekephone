@@ -169,6 +169,7 @@ const traverseWebpackRule = rule => {
   }
 
   for (const [k, v] of Object.entries(rule)) {
+    // remove loaders since we already have above
     if (typeof v === 'string' && /babel[/-]loader/.test(v)) {
       return
     }

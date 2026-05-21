@@ -334,7 +334,7 @@ const AppWithoutProviders = observer(() => {
       </View>
       {/* TODO: {isIos && <KeyboardSpacer />} */}
 
-      {!ctx.account.appInitDone && (
+      {(ctx.global.darkModeLoading || !ctx.account.appInitDone) && (
         <View
           className='absolute inset-0 items-center justify-center bg-[#74bf53]'
         >

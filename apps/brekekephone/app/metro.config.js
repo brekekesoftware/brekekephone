@@ -21,7 +21,6 @@ const nullPolyfill = polyfill('null')
 const alias = [
   'react-native-reanimated',
   'react-native-css-animations',
-  'react-native-mmkv',
 ].reduce((m, k) => {
   let v = polyfill(k)
   if (!fs.existsSync(v)) {

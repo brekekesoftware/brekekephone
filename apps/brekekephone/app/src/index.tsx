@@ -2,7 +2,7 @@ import '#/index.native'
 
 import { createRoot } from 'react-dom/client'
 
-import '#/theme.scss'
+import '#/theme/brekeke.scss'
 
 import App from '#/components/app'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'

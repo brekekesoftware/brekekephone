@@ -93,9 +93,9 @@ const RnAlertR = ({
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5 bg-reverse'
+              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5 bg-foreground'
             >
-              <RnText small white className='text-center'>
+              <RnText small className='text-center text-background'>
                 {props.dismissText}
               </RnText>
             </RnTouchableOpacity>

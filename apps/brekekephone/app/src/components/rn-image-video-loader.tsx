@@ -66,7 +66,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )
     } else {
       return (
-        <View className='bg-layer-video h-50 w-50 overflow-hidden rounded-[5px]'>
+        <View className='bg-modal-overlay h-50 w-50 overflow-hidden rounded-[5px]'>
           <video
             controls
             src={objectUrl}
