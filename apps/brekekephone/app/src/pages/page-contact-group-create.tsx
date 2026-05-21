@@ -47,7 +47,10 @@ export class PageContactGroupCreate extends Component {
         />
         <Field isGroup label={intl`Members`} />
         {!this.state.didMount ? (
-          <RnActivityIndicator className='mt-5' size='large' />
+          <RnActivityIndicator
+            className='mt-5 h-9 w-9 self-center'
+            size='small'
+          />
         ) : (
           <FlatList
             data={ctx.user.dataListAllUser}

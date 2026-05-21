@@ -1,8 +1,9 @@
-import type { ClassName } from '@/rn/core/tw/class-name'
 import { useEffect, useState } from 'react'
 
-import { View } from '@/rn/core/components/view'
 import noPhoto from '#/assets/no_photo.png'
+
+import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
@@ -34,7 +35,7 @@ export const SmartImage = (p: {
   return (
     <View
       className={[
-        'overflow-hidden bg-background justify-center items-center',
+        'bg-background items-center justify-center overflow-hidden',
         p.className,
       ]}
       onLayout={event => {
@@ -42,11 +43,11 @@ export const SmartImage = (p: {
         setSize(height)
       }}
     >
-      {!statusImageLoading && (
+      {statusImageLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
-          className='absolute top-0 left-0 w-full h-full overflow-hidden z-100 bg-[#00000030]'
+          className='absolute z-100 h-9 w-9 self-center overflow-hidden bg-[#00000000]'
         />
       )}
       {!isImageUrl ? (
@@ -63,7 +64,7 @@ export const SmartImage = (p: {
       ) : (
         <img
           src={p.uri}
-          className='overflow-hidden bg-background justify-center items-center object-cover'
+          className='bg-background items-center justify-center overflow-hidden object-cover'
           style={{ width: size, height: size }}
           onError={onImageLoadError}
           onLoad={onImageLoad}
@@ -72,7 +73,7 @@ export const SmartImage = (p: {
       {statusImageLoading === 2 && isImageUrl && (
         <img
           src={noPhoto}
-          className='overflow-hidden bg-background absolute top-0 left-0 z-100 object-cover'
+          className='bg-background absolute top-0 left-0 z-100 overflow-hidden object-cover'
           style={{ width: size, height: size }}
         />
       )}

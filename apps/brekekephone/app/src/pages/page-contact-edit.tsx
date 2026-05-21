@@ -175,10 +175,12 @@ export class PageContactEdit extends Component {
                 </RnTouchableOpacity>
               )}
             </View>
-            <View className='flex-row justify-end items-center my-2.5'>
+            <View className='my-2.5 flex-row items-center justify-end'>
               <View className='flex-row items-center'>
                 <RnText>{`${intl`Capacity`}`}</RnText>
-                <RnText className={isCapacityInvalid ? 'text-red-500' : undefined}>{`    ${
+                <RnText
+                  className={isCapacityInvalid ? 'text-red-500' : undefined}
+                >{`    ${
                   isSelectedAddAllUser
                     ? dataListAllUser.length
                     : Object.keys(selectedUserIds).length
@@ -189,7 +191,10 @@ export class PageContactEdit extends Component {
           </View>
         </TouchableWithoutFeedback>
         {!this.state.didMount ? (
-          <RnActivityIndicator className='mt-5' size='small' />
+          <RnActivityIndicator
+            className='mt-5 h-9 w-9 self-center'
+            size='small'
+          />
         ) : isSelectEditGroupingAndUserOrder ? (
           <ContactSectionList
             sectionListData={dataGroupAllUser}
