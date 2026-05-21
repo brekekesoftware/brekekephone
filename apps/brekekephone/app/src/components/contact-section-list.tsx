@@ -3,7 +3,12 @@ import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import type { ViewProps } from 'react-native'
-import { SectionList, TouchableWithoutFeedback, View as RNView } from 'react-native'
+import {
+  findNodeHandle,
+  SectionList,
+  TouchableWithoutFeedback,
+  View as RNView,
+} from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import {
@@ -21,7 +26,7 @@ import type { DropdownItemProps } from '#/components/dropdown-item'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isIos } from '#/config'
+import { isWeb } from '#/config'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import type { DropdownPosition } from '#/stores/rn-dropdown'
@@ -39,6 +44,7 @@ type ContactSectionListProps = {
 export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
   observer(p => {
     const sectionHeaderRefs = useRef<RNView[]>([])
+    const rootRef = useRef<RNView | null>(null)
     const reCalculatedLayoutDropdownTimeoutId = useRef<number>(0)
 
     useEffect(() => {
@@ -79,19 +85,31 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
         () => {
           reCalculatedLayoutDropdownTimeoutId.current = 0
           const listDropdownPosition: DropdownPosition[] = []
+          const collect = (index: number, top: number, h: number) => {
+            listDropdownPosition.push({ top, right: 20 })
+            // after get all section list dropdown position
+            if (index === sectionHeaderRefs.current.length - 1) {
+              RnDropdown.setPositions(listDropdownPosition)
+              RnDropdown.setHeaderHeight(h)
+            }
+          }
+          // native: measure relative to the wrapper (rootRef) so the dropdown
+          // shares the same coordinate origin as its absolute overlay
+          // (window-absolute measure was off on Android). web: keep the original
+          // window-absolute measure (findNodeHandle/measureLayout throw on web).
+          const rootNode = isWeb ? null : findNodeHandle(rootRef.current)
           sectionHeaderRefs.current.forEach((ref: RNView, index) => {
-            if (ref) {
-              ref.measure((fx, fy, w, h, px, py) => {
-                listDropdownPosition.push({
-                  top: isIos ? py : py + h,
-                  right: 20,
-                })
-                // after get all section list dropdown position
-                if (index === sectionHeaderRefs.current.length - 1) {
-                  RnDropdown.setPositions(listDropdownPosition)
-                  RnDropdown.setHeaderHeight(h)
-                }
-              })
+            if (!ref) {
+              return
+            }
+            if (rootNode) {
+              ref.measureLayout(rootNode, (x, y, w, h) =>
+                collect(index, y + h, h),
+              )
+            } else {
+              ref.measure((fx, fy, w, h, px, py) =>
+                collect(index, py + h, h),
+              )
             }
           })
         },
@@ -104,7 +122,11 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
     const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) // p.sectionListData
 
     return (
-      <Fragment>
+      <View
+        ref={c => {
+          rootRef.current = c
+        }}
+      >
         <SectionList
           sections={sectionListData}
           keyExtractor={item => item.user_id}
@@ -142,7 +164,7 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
             </View>
           </TouchableWithoutFeedback>
         )}
-      </Fragment>
+      </View>
     )
   })
 const getLastMessageChat = (id: string) => {
