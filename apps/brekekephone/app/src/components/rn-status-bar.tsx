@@ -13,9 +13,11 @@ export type TRnStatusBarProps = {
 }
 
 const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
-  const style = useRuntimeStyle(
-    p.danger ? 'bg-error-500' : p.warning ? 'bg-warning-500' : 'bg-muted',
-  )
+  const color = useRuntimeStyle(
+    p.danger ? 'text-error-500' : p.warning ? 'text-warning-500' : 'text-muted',
+  )?.color as string
+  const barStyle = isDark(color) ? 'light-content' : 'dark-content'
+
   return (
     <RnTouchableOpacity
       className={[
@@ -26,7 +28,7 @@ const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
       ]}
       onPress={p.onPress}
     >
-      <StatusBar {...style} barStyle='dark-content' />
+      <StatusBar backgroundColor={color} barStyle={barStyle} />
       <View className='border-border android:elevation-999 absolute right-0 bottom-0 left-0 z-999 border-b' />
     </RnTouchableOpacity>
   )
@@ -34,3 +36,12 @@ const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
 
 export const RnStatusBar: FC<TRnStatusBarProps> = p =>
   isWeb ? null : <RnStatusBarNative {...p} />
+
+const isDark = (hex: string) => {
+  const c = hex.replace('#', '')
+  const r = parseInt(c.substring(0, 2), 16)
+  const g = parseInt(c.substring(2, 4), 16)
+  const b = parseInt(c.substring(4, 6), 16)
+  // Perceived luminance (ITU-R BT.709)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128
+}

@@ -6,7 +6,6 @@ import { v4 as newUuid } from 'uuid'
 
 import { jsonStable } from '@/shared/json-stable'
 import { isAndroid, isIos } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import { Call } from '#/stores/call'
 import {
@@ -274,7 +273,8 @@ const presentNotification = async (c: CallHistoryInfo) => {
   const body = await getBodyForNotification(c)
 
   // show notification call completed elsewhere in web embed api
-  const ccew = embedApi._notificationOptions?.notificationCallCompletedElseWhere
+  const ccew =
+    ctx.embed._notificationOptions?.notificationCallCompletedElseWhere
   if (
     isEmbed &&
     c.answeredBy &&
@@ -287,7 +287,7 @@ const presentNotification = async (c: CallHistoryInfo) => {
       tag: title,
       title,
       interval:
-        embedApi._notificationOptions
+        ctx.embed._notificationOptions
           ?.notificationCallCompletedElseWhereInterval,
     })
     return

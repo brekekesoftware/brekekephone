@@ -25,6 +25,7 @@ import {
   transitionTimingFunctionDefault,
   transitionTimingFunctionMap,
 } from '@/rn/core/tw/lib/normalize-style-config'
+import { jsonSafe } from '@/shared/json-safe'
 import { camelCase } from '@/shared/lodash'
 import type { Falsish, StrMap } from '@/shared/ts-utils'
 
@@ -36,7 +37,7 @@ type Options = {
 }
 
 const throwOnUnknown = (className: string) => {
-  throw new Error(`Unknown or invalid class name ${className}`)
+  throw new Error(`Unknown or invalid class name ${jsonSafe(className)}`)
 }
 
 export const classNameToNative = (options: Options): ClassNameNative => {

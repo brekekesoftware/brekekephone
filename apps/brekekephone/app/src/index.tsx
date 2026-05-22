@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 
 import '#/theme/brekeke.scss'
 
-import App from '#/components/app'
+import { App } from '#/components/app'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'
 
 const runApp = (rootTag: HTMLElement) => {

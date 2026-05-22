@@ -6,7 +6,6 @@ import RNCallKeep from 'react-native-callkeep'
 import { jsonSafe } from '@/shared/json-safe'
 import type { Session, SessionStatus } from '#/brekekejs'
 import { defaultTimeout, isIos } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/call-store'
 import { getPbxName, getPbxNameWithUpdateContact } from '#/stores/contact-store'
@@ -490,7 +489,7 @@ export class Call {
     if (!isEmbed) {
       return
     }
-    embedApi.emit('call', this)
+    ctx.embed.emit('call', this)
     this._disposeEmitEmbed = autorun(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { store, ...c } = this // do not autorun on store
@@ -502,7 +501,7 @@ export class Call {
       if (this.isAboutToHangup) {
         return
       }
-      embedApi.emit('call_update', this)
+      ctx.embed.emit('call_update', this)
     })
   }
   disposeEmitEmbed = () => {
@@ -514,7 +513,7 @@ export class Call {
       return
     }
     this.disposeEmitEmbed()
-    embedApi.emit('call_end', this)
+    ctx.embed.emit('call_end', this)
   }
 }
 

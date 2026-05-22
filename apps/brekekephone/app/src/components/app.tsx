@@ -14,7 +14,7 @@ import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
 import { darkClassName, lightClassName } from '@/rn/core/tailwind'
 import { qsStableStringify } from '@/shared/qs'
 import { mdiAndroid, mdiApple, mdiWeb } from '#/assets/icons'
-import { App as RnApp } from '#/components/app.native'
+import { AppShared } from '#/components/app-shared'
 import { BrekekeGradient } from '#/components/brekeke-gradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/rn'
 import { bundleIdentifier } from '#/config'
@@ -44,7 +44,7 @@ export const App = () => {
 
   let child: ReactElement | null = null
   if (isBrowserOrEmbed) {
-    child = <RnApp />
+    child = <AppShared />
   } else {
     const params = parse(window.location as any as Url<any>)
     const q = qsStableStringify(params || {})
@@ -88,5 +88,3 @@ export const App = () => {
     </Container>
   )
 }
-
-export default App

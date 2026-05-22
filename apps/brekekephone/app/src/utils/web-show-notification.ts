@@ -1,6 +1,5 @@
 import { jsonStable } from '@/shared/json-stable'
 import { isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 
@@ -10,7 +9,7 @@ if (isWeb) {
   window.addEventListener('focus', () => {
     if (
       !isEmbed ||
-      !embedApi._notificationOptions?.closeAllNotificationOnFocus
+      !ctx.embed._notificationOptions?.closeAllNotificationOnFocus
     ) {
       return
     }
@@ -63,7 +62,7 @@ export const webShowNotification = ({
 
   if (
     isEmbed &&
-    embedApi._notificationOptions?.dontShowNotificationIfFocusing &&
+    ctx.embed._notificationOptions?.dontShowNotificationIfFocusing &&
     document.hasFocus()
   ) {
     return
@@ -71,8 +70,8 @@ export const webShowNotification = ({
 
   if (!interval) {
     interval = 15000
-    if (isEmbed && embedApi._notificationOptions?.notificationInterval) {
-      interval = embedApi._notificationOptions.notificationInterval
+    if (isEmbed && ctx.embed._notificationOptions?.notificationInterval) {
+      interval = ctx.embed._notificationOptions.notificationInterval
     }
   }
 

@@ -45,7 +45,6 @@ const wrap = (Component: any) =>
         )
         .map(k => (props as any)[k] && classMap[k as keyof typeof classMap])
         .filter(Boolean)
-        .join(' ')
       const cn = clsx(baseClass, variantClasses, callerClassName)
       return (
         <Component

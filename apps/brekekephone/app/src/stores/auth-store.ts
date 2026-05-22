@@ -11,7 +11,6 @@ import type {
   UcConfig,
 } from '#/brekekejs'
 import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import type { Account, AccountUnique, RecentCall } from '#/stores/account-store'
 import {
   getAccountUniqueId,
@@ -153,7 +152,7 @@ export class AuthStore {
   // user agent for sip pal client
   // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
   getUserAgent = async (a: ParsedPn | AccountUnique) =>
-    embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
+    ctx.embed._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
   _getUserAgent = async (a: ParsedPn | AccountUnique) => {
     const au = 'to' in a ? await ctx.account.findByPn(a) : a
     const d = await ctx.account.findData(au)
@@ -186,7 +185,7 @@ export class AuthStore {
     this.userAgentConfig = userAgent
   }
   getUserAgentConfig = () =>
-    embedApi._pbxConfig['webphone.http.useragent.product'] ||
+    ctx.embed._pbxConfig['webphone.http.useragent.product'] ||
     this.userAgentConfig
 
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'

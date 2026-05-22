@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parse-params-with-prefix'
 import type {
@@ -148,14 +147,14 @@ export class EmbedApi extends EventEmitter {
     await ctx.account.waitStorageLoaded()
 
     // reassign options on each sign in
-    embedApi._palEvents = palEvents
-    embedApi._palParams = parsePalParams(o)
-    embedApi._pbxConfig = o // TODO: pick fields
+    this._palEvents = palEvents
+    this._palParams = parsePalParams(o)
+    this._pbxConfig = o // TODO: pick fields
 
     // init devices manager to get default devices
     await embedDevicesManager.init()
 
-    ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
+    ctx.pbx.parseResourceLines(this._pbxConfig['webphone.resource-line'])
     // check if cleanup existing account
     if (o.clearExistingAccount) {
       ctx.account.accounts = []
@@ -197,13 +196,13 @@ export class EmbedApi extends EventEmitter {
 
   static _renderApp: Function
   static render = (rootTag, options) => {
-    embedApi._rootTag = this._renderApp(rootTag)
-    embedApi._signIn(options)
-    return embedApi
+    ctx.embed._rootTag = this._renderApp(rootTag)
+    ctx.embed._signIn(options)
+    return ctx.embed
   }
 }
 
-export const embedApi = new EmbedApi()
+ctx.embed = new EmbedApi()
 
 type EmbedAccount = {
   hostname: string

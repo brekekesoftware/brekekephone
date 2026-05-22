@@ -17,6 +17,7 @@ import '#/stores/nav'
 import '#/stores/toast-store'
 import '#/api/sync-pn-token'
 import '#/stores/global'
+import '#/embed/embed-api'
 // api was a component but had been rewritten to a listener
 // need to import this last since it requires other modules
 import '#/api'
@@ -25,6 +26,7 @@ import type { PBX } from '#/api/pbx'
 import type { SIP } from '#/api/sip'
 import type { SyncPnToken } from '#/api/sync-pn-token'
 import type { UC } from '#/api/uc'
+import type { EmbedApi } from '#/embed/embed-api'
 import type { AccountStore } from '#/stores/account-store'
 import type { AuthPBX } from '#/stores/auth-pbx'
 import type { AuthSIP } from '#/stores/auth-sip'
@@ -61,4 +63,5 @@ export type Ctx = {
   nav: Nav
   pnToken: SyncPnToken
   global: GlobalStore
+  embed: EmbedApi
 }

@@ -226,12 +226,6 @@ export const staticRingtones = [
   // strong typing to make sure not missing static ringtone mp3
 ] as const
 
-export const staticRingtoneMap: {
-  [k in (typeof staticRingtones)[number]]: () => string
-} = {
-  incallmanager_ringtone: () => intl`Brekeke ringtone`,
-}
-
 export type RemoteStream = {
   vId: string
   streamUrl: string

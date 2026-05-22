@@ -33,7 +33,6 @@ import {
   isAndroid,
   retryInterval,
 } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/account-store'
 import type { PbxUser, Phonebook } from '#/stores/contact-store'
@@ -435,7 +434,7 @@ export class PBX extends EventEmitter {
       phonetype: 'webphone',
       callrecording: 'self',
       ...d.palParams,
-      ...embedApi._palParams,
+      ...ctx.embed._palParams,
       // doc: From the version 2.14.x, please add ctype=2 to the URL for PAL.
       // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
       ctype: 2,
@@ -511,11 +510,11 @@ export class PBX extends EventEmitter {
     // emit to embed api
     const embedListeners: { [k in keyof Pbx]?: Function } = {}
     if (isEmbed) {
-      embedApi.emit('pal', client)
-      embedApi._palEvents?.forEach(k => {
+      ctx.embed.emit('pal', client)
+      ctx.embed._palEvents?.forEach(k => {
         const listener = (...args: unknown[]) => {
           console.log(`Embed api emitting pal event ${k}`)
-          embedApi.emit(`pal.${k}`, ...args)
+          ctx.embed.emit(`pal.${k}`, ...args)
         }
         embedListeners[k] = listener
         client[k] = listener

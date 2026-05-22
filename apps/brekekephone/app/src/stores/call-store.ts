@@ -9,7 +9,6 @@ import { debounce, isEmpty } from '@/shared/lodash'
 import { mdiPhone } from '#/assets/icons'
 import type { MakeCallFn, PbxPhoneappliContact, Session } from '#/brekekejs'
 import { defaultTimeout, isAndroid, isIos, isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import { addCallHistory } from '#/stores/add-call-history'
 import type { ConnectionState } from '#/stores/auth-store'
@@ -409,7 +408,7 @@ export class CallStore {
 
         if (
           isEmbed &&
-          embedApi._notificationOptions?.closeNotificationOnCallAnswer
+          ctx.embed._notificationOptions?.closeNotificationOnCallAnswer
         ) {
           webCloseNotification({ type: 'call', id: e.id })
         }
@@ -639,7 +638,7 @@ export class CallStore {
 
   callTerminated: { [sessionId: string]: true } = {}
   @action onCallRemove = async (rawSession: Session) => {
-    if (isEmbed && embedApi._notificationOptions?.closeNotificationOnCallEnd) {
+    if (isEmbed && ctx.embed._notificationOptions?.closeNotificationOnCallEnd) {
       webCloseNotification({ type: 'call', id: rawSession.sessionId })
     }
 

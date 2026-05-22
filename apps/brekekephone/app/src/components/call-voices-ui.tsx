@@ -3,7 +3,6 @@ import { Component, createRef, useEffect, useRef, useState } from 'react'
 
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import type { staticRingtones } from '#/utils/brekeke-utils'
@@ -84,7 +83,7 @@ export const IncomingItem = observer(() => {
     let cancelled = false
     const setup = async () => {
       if (isEmbed) {
-        await embedApi.registerAudioElement(el)
+        await ctx.embed.registerAudioElement(el)
       }
       if (!cancelled) {
         el.play().catch(() => {})
@@ -94,7 +93,7 @@ export const IncomingItem = observer(() => {
     return () => {
       cancelled = true
       if (isEmbed) {
-        embedApi.unregisterAudioElement(el)
+        ctx.embed.unregisterAudioElement(el)
       }
       el.pause()
     }
@@ -121,7 +120,7 @@ export const OutgoingItem = () => {
     let cancelled = false
     const setup = async () => {
       if (isEmbed) {
-        await embedApi.registerAudioElement(el)
+        await ctx.embed.registerAudioElement(el)
       }
       if (!cancelled) {
         el.play().catch(() => {})
@@ -131,7 +130,7 @@ export const OutgoingItem = () => {
     return () => {
       cancelled = true
       if (isEmbed) {
-        embedApi.unregisterAudioElement(el!)
+        ctx.embed.unregisterAudioElement(el!)
       }
       el.pause()
     }
@@ -162,7 +161,7 @@ export class OutgoingItemWithSDP extends Component<{
       return
     }
     if (isEmbed) {
-      await embedApi.registerAudioElement(this.audioRef.current)
+      await ctx.embed.registerAudioElement(this.audioRef.current)
     }
     if (this._unmounted) {
       return
@@ -178,7 +177,7 @@ export class OutgoingItemWithSDP extends Component<{
   componentWillUnmount = () => {
     this._unmounted = true
     if (isEmbed && this.audioRef.current) {
-      embedApi.unregisterAudioElement(this.audioRef.current)
+      ctx.embed.unregisterAudioElement(this.audioRef.current)
     }
   }
   render() {
@@ -201,7 +200,7 @@ export class AnsweredItem extends Component<{
       return
     }
     if (isEmbed) {
-      await embedApi.registerAudioElement(this.audioRef.current)
+      await ctx.embed.registerAudioElement(this.audioRef.current)
     }
     if (this._unmounted) {
       return
@@ -217,7 +216,7 @@ export class AnsweredItem extends Component<{
   componentWillUnmount = () => {
     this._unmounted = true
     if (isEmbed && this.audioRef.current) {
-      embedApi.unregisterAudioElement(this.audioRef.current)
+      ctx.embed.unregisterAudioElement(this.audioRef.current)
     }
   }
   render() {

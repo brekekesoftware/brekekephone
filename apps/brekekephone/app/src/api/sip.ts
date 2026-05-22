@@ -6,7 +6,6 @@ import { getCameraSourceIds } from '#/api/get-camera-source-id'
 import { turnConfig } from '#/api/turn-config.local'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/account-store'
 import type { Call, CallConfig } from '#/stores/call'
@@ -41,7 +40,7 @@ export class SIP extends EventEmitter {
 
     // emit to embed api
     if (isEmbed) {
-      embedApi.emit('webrtcclient', phone)
+      ctx.embed.emit('webrtcclient', phone)
     }
 
     const h = (ev: { phoneStatus: string }) => {
