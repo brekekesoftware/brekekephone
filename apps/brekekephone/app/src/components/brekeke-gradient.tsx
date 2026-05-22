@@ -13,8 +13,10 @@ export type BrekekeGradientProps = Omit<LinearGradientProps, 'colors'> & {
 }
 export const BrekekeGradient: FC<BrekekeGradientProps> = props => {
   const color1 = useRuntimeStyle('text-background')?.color as string
-  const color2 = useRuntimeStyle('text-primary-400 dark:text-primary-700')?.color as string
-  const color3 = useRuntimeStyle('text-secondary-900 dark:text-background')?.color as string
+  const color2 = useRuntimeStyle('text-primary-400 dark:text-primary-700')
+    ?.color as string
+  const color3 = useRuntimeStyle('text-secondary-900 dark:text-background')
+    ?.color as string
   const colors = props.white ? [color1, color1] : [color2, color3]
   return (
     <LinearGradient

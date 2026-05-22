@@ -16,10 +16,8 @@ import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
 import { useAnimationOnDidMount } from '#/utils/animation'
 import { getPublicIp } from '#/utils/public-ip-address'
-import { useThemeVariables } from '#/utils/rn-core-hooks'
 
 const WEB_CONTAINER_MAX_WIDTH = 480
 const TOAST_ANIMATION_DURATION = 800
@@ -32,7 +30,6 @@ type ToastState = {
 export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
   const safeInsets = useContext(SafeAreaInsetsContext)
-  const variables = useThemeVariables() || defaultVariables
 
   const innerCls = useMemo(
     () =>
@@ -83,7 +80,7 @@ export const Page2StepVerification = () => {
       showToast(intl`Account does not exist`, 'err')
     }
 
-    // TC-14: detect incoming call while modal is open → defer MFA, hide modal
+    // TC-14: detect incoming call while modal is open -> defer MFA, hide modal
     const disposeAutorun = autorun(() => {
       if (ctx.call.calls.length > 0) {
         const a = accountRef.current
@@ -251,8 +248,7 @@ export const Page2StepVerification = () => {
               }}
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
-              placeholderTextColor={variables['--border']}
-              className='border-border mb-4 h-12 w-full rounded-[5px] border px-3 text-center'
+              className='border-border placeholder-border mb-4 h-12 w-full rounded-[5px] border px-3 text-center'
             />
             <RnTouchableOpacity
               disabled={isLoading}

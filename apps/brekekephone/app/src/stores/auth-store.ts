@@ -533,7 +533,7 @@ export class AuthStore {
     }
     const internalId = `webphone.custompage${pageIndex}`
 
-    // if not signed in → auto sign-in first account
+    // if not signed in -> auto sign-in first account
     if (!this.signedInId) {
       const success = await ctx.auth.autoSignInFirstAccount()
       if (!success) {

@@ -6,8 +6,8 @@ import { toBoolean } from '#/utils/string'
 
 // Check if MFA flow should be triggered for this PBX.
 // 3-tier decision rule:
-//   1. webphone.pal.mfa explicit (true/false) → trust admin's intent absolutely.
-//   2. webphone.pal.mfa absent → fallback to per-user model (trust mfa/start).
+//   1. webphone.pal.mfa explicit (true/false) -> trust admin's intent absolutely.
+//   2. webphone.pal.mfa absent -> fallback to per-user model (trust mfa/start).
 // Embed mode: always skip — host owns UX.
 export const isMFASupported = (pc?: PbxGetProductInfoRes) => {
   if (isEmbed) {
@@ -20,11 +20,11 @@ export const isMFASupported = (pc?: PbxGetProductInfoRes) => {
   if (compareSemVer(c.version, '3.18') < 0) {
     return false
   }
-  // Tier 1: explicit flag → trust admin's intent
+  // Tier 1: explicit flag -> trust admin's intent
   const flag = c['webphone.pal.mfa']
   if (flag !== undefined) {
     return toBoolean(flag)
   }
-  // Tier 2: flag absent → fallback to per-user model (trust mfa/start)
+  // Tier 2: flag absent -> fallback to per-user model (trust mfa/start)
   return true
 }

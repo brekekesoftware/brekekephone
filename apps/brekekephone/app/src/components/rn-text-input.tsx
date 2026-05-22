@@ -9,8 +9,6 @@ import { isWeb } from '#/config'
 export type RnTextInputProps = Omit<InputProps, 'ref'> & {
   ref?: any
   disabled?: boolean
-  placeholderTextColor?: string
-  caretHidden?: boolean
 }
 
 export const RnTextInput = ({

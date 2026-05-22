@@ -6,8 +6,7 @@ import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnTouchableOpacity } from '#/components/rn'
 import { AnimatedText, AnimatedView } from '#/components/rn-animated'
 import { intl } from '#/stores/intl'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
-import { useThemeVariables } from '#/utils/rn-core-hooks'
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 interface ParkItemProps {
   index: number
@@ -15,7 +14,7 @@ interface ParkItemProps {
   parkNumber: string
   selected: boolean
   available: boolean
-  // pickup mode only: slot is occupied → flash bg+text via Animated.Value
+  // pickup mode only: slot is occupied -> flash bg+text via Animated.Value
   flashAnim?: Animated.Value
   onPress: () => void
 }
@@ -30,15 +29,18 @@ export const ParkItem: FC<ParkItemProps> = ({
 }) => {
   const useAnimated = !!flashAnim && !selected
 
-  const variables = useThemeVariables() || defaultVariables
+  const color1 = useRuntimeStyle('text-background')?.color as string
+  const color2 = useRuntimeStyle('text-primary')?.color as string
   const flashBg = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: [variables['--background'], variables['--primary-500']],
+    outputRange: [color1, color2],
   })
 
+  const color3 = useRuntimeStyle('text-foreground')?.color as string
+  const color4 = useRuntimeStyle('text-foreground-inverse')?.color as string
   const flashTextColor = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: [variables['--foreground'], variables['--foreground-inverse']],
+    outputRange: [color3, color4],
   })
 
   let wrapperClass: ClassName

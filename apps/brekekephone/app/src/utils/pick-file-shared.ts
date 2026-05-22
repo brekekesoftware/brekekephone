@@ -5,7 +5,7 @@ import { RnAlert } from '#/stores/rn-alert'
 // Shared (non-platform) module so the intl strings get bundled by the web build
 // AND pick-file.native.ts can import these. Importing them from
 // '#/utils/pick-file' inside pick-file.native.ts resolves back to that same
-// native file (.native has priority) → self-import → undefined.
+// native file (.native has priority) -> self-import -> undefined.
 export const pickFileNativeOptions = () => [
   {
     key: 0,

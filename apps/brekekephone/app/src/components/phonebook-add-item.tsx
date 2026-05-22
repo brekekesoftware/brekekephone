@@ -28,7 +28,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const y = useAnimationOnDidMount({
     translateY: [height, 0],
   })
-  // keyboard lift (android 15+ only) uses the live IME height → runtime
+  // keyboard lift (android 15+ only) uses the live IME height -> runtime
   // arbitrary class; everywhere else it stays the static 15px bottom.
   const bottomCls =
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing

@@ -4,8 +4,7 @@ import { StatusBar } from 'react-native'
 import { View } from '@/rn/core/components/view'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { isIos, isWeb } from '#/config'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
-import { useThemeVariables } from '#/utils/rn-core-hooks'
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export type TRnStatusBarProps = {
   danger?: boolean
@@ -14,7 +13,9 @@ export type TRnStatusBarProps = {
 }
 
 const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
-  const variables = useThemeVariables() || defaultVariables
+  const style = useRuntimeStyle(
+    p.danger ? 'bg-error-500' : p.warning ? 'bg-warning-500' : 'bg-muted',
+  )
   return (
     <RnTouchableOpacity
       className={[
@@ -25,16 +26,7 @@ const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
       ]}
       onPress={p.onPress}
     >
-      <StatusBar
-        backgroundColor={
-          p.danger
-            ? variables['--error-500']
-            : p.warning
-              ? variables['--warning-500']
-              : variables['--muted']
-        }
-        barStyle='dark-content'
-      />
+      <StatusBar {...style} barStyle='dark-content' />
       <View className='border-border android:elevation-999 absolute right-0 bottom-0 left-0 z-999 border-b' />
     </RnTouchableOpacity>
   )

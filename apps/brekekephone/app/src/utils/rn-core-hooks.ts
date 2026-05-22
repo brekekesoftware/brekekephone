@@ -33,7 +33,7 @@ export const useRuntimeStyle = (className: ClassName) => {
   })
 }
 
-export const useThemeVariables = () => {
+const useThemeVariables = () => {
   const theme = useTheme()
   const darkModeState = useDarkModeState()
   if (!darkModeState) {

@@ -25,8 +25,6 @@ import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
-import { useThemeVariables } from '#/utils/rn-core-hooks'
 import { useStore } from '#/utils/use-store'
 
 export type Park = {
@@ -39,7 +37,7 @@ export type Park = {
 // - web: absolute, top/left/right: 0 (fix form auto fill style on web)
 const fieldLabelClassName = tw`android:pt-0.75 android:top-1.5 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25 pb-0 pl-1.75`
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
-const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
+const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 placeholder-foreground-muted flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
 // fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
 const fieldTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25 w-full overflow-hidden pr-10 pb-0.75 pl-1.75 font-bold`
 
@@ -106,7 +104,6 @@ export const Field: FC<
   }
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
-  const variables = useThemeVariables() || defaultVariables
   const isGroup = props.isGroup
   // https://react.dev/warnings/invalid-hook-call-warning
   if (isGroup) {
@@ -203,7 +200,6 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
-          placeholderTextColor={variables['--foreground-muted']}
           onBlur={() => {
             if (isWeb) {
               $.set('isFocusing', false)
@@ -236,7 +232,6 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`label`}
-          placeholderTextColor={variables['--foreground-muted']}
           onBlur={() => {
             if (isWeb) {
               $.set('isParkNameFocusing', false)
