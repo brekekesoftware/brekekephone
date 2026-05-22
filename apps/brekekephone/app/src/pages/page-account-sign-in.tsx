@@ -3,8 +3,8 @@ import { observer } from 'mobx-react'
 import { FlatList } from '@/rn/core/components/flat-list'
 import { View } from '@/rn/core/components/view'
 import {
+  mdiCogOutline,
   mdiDotsHorizontal,
-  mdiLadybug,
   mdiUnfoldMoreHorizontal,
 } from '#/assets/icons'
 import { AccountSignInItem } from '#/components/account-sign-in-item'
@@ -58,7 +58,7 @@ export const PageAccountSignIn = observer(() => {
         <View className='flex-row justify-end pl-4.75'>
           <RnIcon
             className='absolute top-0.5 left-0 text-white'
-            path={mdiLadybug}
+            path={mdiCogOutline}
             size={16}
           />
           <RnText bold white>

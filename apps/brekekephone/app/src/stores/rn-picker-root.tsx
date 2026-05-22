@@ -81,7 +81,7 @@ const RnPickerR = (p: RnPickerOption) => {
           })}
         </View>
       </AnimatedScrollView>
-      <View className='flex-rowios:bottom-5 absolute bottom-3.75 w-[90%] max-w-95'>
+      <View className='ios:bottom-5 absolute bottom-3.75 w-[90%] max-w-95 flex-row'>
         <AnimatedView className='max-w-95 flex-1' style={{ transform: [y] }}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}

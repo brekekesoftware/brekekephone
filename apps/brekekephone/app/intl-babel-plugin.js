@@ -1,7 +1,8 @@
 const { path } = require('@/nodejs/path')
 const { fs } = require('@/nodejs/fs')
+const { jsonSafe } = require('@/shared/json-safe')
 
-const jsonOutputPath = path.join(__dirname, './.intlNewEn.local.json')
+const jsonOutputPath = path.join(__dirname, './intl-new-en.local.json')
 
 // only add brackets if there's no existing brackets
 const withBrackets = (exprName, rawTemplate, i) =>
@@ -70,16 +71,16 @@ const intlBabelPlugin = () => ({
       // extract the normalized template
       if (process.env.EXTRACT_INTL) {
         let arr = fs.existsSync(jsonOutputPath)
-          ? JSON.parse(fs.readFileSync(jsonOutputPath))
+          ? fs.readJsonSync(jsonOutputPath)
           : []
         if (!arr.includes(normalizedTemplate)) {
           arr.push(normalizedTemplate)
           arr = arr.sort()
         }
-        fs.outputFileSync(jsonOutputPath, `${JSON.stringify(arr, null, 2)}\n`)
+        fs.writeJsonSync(jsonOutputPath, arr, { spaces: 2 })
       }
       // replace the tagged template with a function call
-      const p1 = JSON.stringify(normalizedTemplate)
+      const p1 = jsonSafe(normalizedTemplate)
       const p2 = `{${exprNames.map((v, i) => `${v}:${exprs[i]}`).join(',')}}`
       p.replaceWithSourceString(`${tagName}(${p1}, ${p2})`)
     },

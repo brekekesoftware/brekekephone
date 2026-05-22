@@ -312,9 +312,6 @@ importers:
         specifier: 1.99.0
         version: 1.99.0
     devDependencies:
-      '@babel/plugin-transform-typescript':
-        specifier: 7.28.6
-        version: 7.28.6(@babel/core@7.29.0)
       '@craco/craco':
         specifier: 7.1.0
         version: 7.1.0(@swc/core@1.15.33)(@types/node@25.6.2)(postcss@8.5.14)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.28.6(@babel/core@7.29.0))(@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0))(@swc/core@1.15.33)(@types/babel__core@7.20.5)(eslint@10.3.0(jiti@2.7.0))(react@19.1.0)(sass@1.99.0)(ts-node@10.9.2(@swc/core@1.15.33)(@types/node@25.6.2)(typescript@6.0.3))(type-fest@0.21.3)(typescript@6.0.3)(yaml@2.9.0))(typescript@6.0.3)

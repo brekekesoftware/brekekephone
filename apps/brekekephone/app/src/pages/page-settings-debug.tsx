@@ -16,6 +16,7 @@ import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'
+import { localeOptions } from '#/stores/intl-store'
 
 const DarkModePicker = () => {
   const d = useDarkModeUser()
@@ -30,9 +31,9 @@ const DarkModePicker = () => {
       }}
       type='RnPicker'
       options={[
-        { key: darkModeEnabled, label: intl`Always Dark` },
-        { key: darkModeDisabled, label: intl`Always Light` },
-        { key: 'undefined', label: intl`System Automatic` },
+        { key: darkModeEnabled, label: intl`Always dark` },
+        { key: darkModeDisabled, label: intl`Always light` },
+        { key: 'undefined', label: intl`System automatic` },
       ]}
       value={
         d === undefined ? 'undefined' : d ? darkModeEnabled : darkModeDisabled
@@ -48,7 +49,7 @@ export class PageSettingsDebug extends Component {
       !isWeb && compareSemVer(ctx.debug.remoteVersion, currentVersion) > 0
     return (
       <Layout
-        description={intl`App information and debugging`}
+        description={intl`App settings and information`}
         dropdown={
           !isWeb
             ? [
@@ -65,8 +66,15 @@ export class PageSettingsDebug extends Component {
             : undefined
         }
         onBack={ctx.nav.backToPageAccountSignIn}
-        title={intl`Debug`}
+        title={intl`Settings`}
       >
+        <Field
+          label={intl`LANGUAGE`}
+          onValueChange={v => ctx.intl.setLocale(v)}
+          type='RnPicker'
+          options={localeOptions}
+          value={ctx.intl.locale}
+        />
         <DarkModePicker />
         {!isWeb && (
           <>

@@ -20,9 +20,11 @@ fs.readFileSync(path.join(b, './index.html'), 'utf-8')
   })
 
 if (!contents.length) {
-  console.error('.embed.js error: can not find any script tag for embed api')
+  console.error(
+    'embed-build.js error: can not find any script tag for embed api',
+  )
   process.exit(1)
 }
 
-console.log(`.embed.js total script tags: ${contents.length}`)
+console.log(`embed-build.js total script tags: ${contents.length}`)
 fs.writeFileSync(path.join(b, 'webphone.js'), contents.join(';\n'))

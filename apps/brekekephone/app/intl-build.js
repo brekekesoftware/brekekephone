@@ -1,8 +1,13 @@
-const fs = require('node:fs')
+require('tsconfig-paths/register')
+require('@/nodejs/entrypoint')({
+  dir: __dirname,
+})
+
+const { fs } = require('@/nodejs/fs')
 
 const currentEn = './src/assets/intl-en.json'
 const currentJa = './src/assets/intl-ja.json'
-const newEn = './.intlNewEn.local.json'
+const newEn = './intl-new-en.local.json'
 
 const en = require(currentEn)
 const ja = require(currentJa)
@@ -18,5 +23,5 @@ en2.forEach((l, i) => {
   ja2[i] = ja[enMap[l.toLowerCase()]] || `**TRANSLATE**${l}`
 })
 
-fs.writeFileSync(currentJa, JSON.stringify(ja2, null, 2) + '\n')
-fs.writeFileSync(currentEn, JSON.stringify(en2, null, 2) + '\n')
+fs.writeJsonSync(currentJa, ja2, { spaces: 2 })
+fs.writeJsonSync(currentEn, en2, { spaces: 2 })

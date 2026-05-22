@@ -26,7 +26,7 @@ module.exports = {
     [asyncHookPlugin, asyncHookOptions],
     [twPlugin, twOptions],
 
-    require.resolve('./.intlBabelPlugin'),
+    require.resolve('./intl-babel-plugin'),
 
     ['babel-plugin-module-resolver', moduleResolverOptions],
 

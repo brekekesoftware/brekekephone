@@ -1,10 +1,3 @@
 @import 'tailwindcss';
 @config './tailwind.config.js';
 @import '../../../framework/rn/core/tailwind.css';
-
-/* Safelist runtime-composed sizes (e.g. `h-[${headerSpace}px]` /
-   `h-[${footerSpace}px]` in layout.tsx, `w-[${size}px]`/`h-[${size}px]` in
-   button-icon.tsx). Tailwind v4 source scan can't see these since they're
-   built at runtime, so force-generate the range. */
-@source inline('h-[{0..200}px]');
-@source inline('w-[{0..200}px]');

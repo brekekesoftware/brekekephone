@@ -7,9 +7,8 @@ const path = require('node:path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 const { getAlias } = require('@/devtools/babel-config/get-alias')
 
-const babel = require('../app/.babelrc')
+const babel = require('../app/babel.config')
 
-babel.plugins.push('@babel/plugin-transform-typescript')
 babel.plugins.forEach(p => {
   if (!Array.isArray(p)) {
     return
