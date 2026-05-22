@@ -105,7 +105,7 @@ export class PageSettingsOther extends Component {
 
     if (hasCall) {
       const msg = intl`Cannot preview ringtone during a call`
-      if (ctx.toast.items.find(v => v.msg === msg) == null) {
+      if (!ctx.toast.items.some(v => v.msg === msg)) {
         ctx.toast.warning(msg, 2000)
       }
       return

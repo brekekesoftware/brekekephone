@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
-import { ActivityIndicator, FlatList, View } from 'react-native'
+import { FlatList, View } from 'react-native'
 
 import type { UcBuddy } from '#/brekekejs'
 import { UserItem } from '#/components/contact-user-item'

@@ -1,10 +1,12 @@
 /* eslint-disable no-restricted-imports */
 
+import type { EdgeInsets } from 'react-native-safe-area-context'
 import { useSafeAreaInsets as useSafeAreaInsetsOriginal } from 'react-native-safe-area-context'
 
 import type { ClassName } from '@/rn/core/tw/class-name'
 
-export const useSafeAreaInsets = useSafeAreaInsetsOriginal as () => ClassName
+export const useSafeAreaInsets = (): EdgeInsets | undefined =>
+  useSafeAreaInsetsOriginal()
 
 export const useSafeAreaPadding = (): ClassName => {
   const insets = useSafeAreaInsetsOriginal()

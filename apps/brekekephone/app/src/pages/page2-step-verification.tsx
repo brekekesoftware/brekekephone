@@ -1,10 +1,10 @@
 import { autorun } from 'mobx'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, useWindowDimensions } from 'react-native'
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
+import { useEffect, useRef, useState } from 'react'
+import { Animated } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
+import { useSafeAreaInsets } from '@/rn/core/responsive/use-safe-area'
 import { mdiClose } from '#/assets/icons'
 import { AnimatedView } from '#/components/rn-animated'
 import { RnIcon } from '#/components/rn-icon'
@@ -28,16 +28,7 @@ type ToastState = {
 } | null
 
 export const Page2StepVerification = () => {
-  const { width: windowWidth } = useWindowDimensions()
-  const safeInsets = useContext(SafeAreaInsetsContext)
-
-  const innerCls = useMemo(
-    () =>
-      isWeb
-        ? `w-full self-center max-w-[${WEB_CONTAINER_MAX_WIDTH}px] px-4`
-        : `w-full self-center px-[${windowWidth * 0.025}px]`,
-    [windowWidth],
-  )
+  const safeInsets = useSafeAreaInsets()
 
   const [otp, setOtp] = useState('')
   const [isLoading, setLoading] = useState(false)
@@ -220,7 +211,10 @@ export const Page2StepVerification = () => {
         behavior={isIos ? 'padding' : 'height'}
         keyboardVerticalOffset={isIos ? 100 : 0}
       >
-        <View className={['flex-1', innerCls]}>
+        <View
+          className='web:px-4 native:px-[2.5vw] w-full flex-1 self-center'
+          style={isWeb ? { maxWidth: WEB_CONTAINER_MAX_WIDTH } : undefined}
+        >
           <View className='pt-5 pb-3'>
             <RnTouchableOpacity onPress={onBack} className='flex-row gap-3.75'>
               <View>

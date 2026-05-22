@@ -6,7 +6,6 @@ import {
   mdiPhoneForward,
 } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { isWeb } from '#/config'
 
 const keys = [
   ['1', '2', '3'],

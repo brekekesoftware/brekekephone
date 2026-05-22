@@ -138,7 +138,7 @@ export class AuthStore {
   @observable activeCustomPageId?: string
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
-  getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)
+  getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id === id)
   updateCustomPage = (cp: PbxCustomPage) => {
     const found = this.listCustomPage.find(p => p.id === cp.id)
     if (!found) {

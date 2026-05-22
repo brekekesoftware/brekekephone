@@ -2,7 +2,6 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
-import { tw } from '@/rn/core/tw/tw'
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'

@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { tw } from '@/rn/core/tw/tw'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
@@ -79,7 +78,7 @@ export class PageCustomPageView extends Component<{
       cp.incoming === 'open'
     ) {
       ctx.auth.saveActionOpenCustomPage = false
-      if (s.name != 'PageCustomPage') {
+      if (s.name !== 'PageCustomPage') {
         // update stacker flow
         ctx.nav.customPageIndex = ctx.nav.goToPageCustomPage
         ctx.nav.goToPageCustomPage({ id: cp.id })
@@ -96,8 +95,8 @@ export class PageCustomPageView extends Component<{
       s &&
       cp &&
       s.isRoot &&
-      s.name == 'PageCustomPage' &&
-      RnStacker.stacks.length == 1 &&
+      s.name === 'PageCustomPage' &&
+      RnStacker.stacks.length === 1 &&
       !ctx.call.inPageCallManage &&
       cp.id === ctx.auth.activeCustomPageId
     // onLoadEnd not fire with website load image from url camera

@@ -41,16 +41,17 @@ export const Toast: FC<ToastProps> = ({
     }
   }, [fadeAnim, isVisible])
 
-  const mtCls =
-    containerMarginTop !== undefined ? `mt-[${containerMarginTop}px]` : ''
-
   return (
     <View
       className={[
         'absolute top-2.5 right-0 left-0 justify-center',
-        mtCls,
         containerClassName,
       ]}
+      style={
+        containerMarginTop !== undefined
+          ? { marginTop: containerMarginTop }
+          : undefined
+      }
     >
       <AnimatedView
         className='px-1.25 pt-1 pb-1.25'

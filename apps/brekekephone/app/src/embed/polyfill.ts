@@ -1,5 +1,6 @@
 import * as Mobx from 'mobx'
 import * as MobxReact from 'mobx-react'
+// eslint-disable-next-line custom/no-import-default
 import * as React from 'react'
 import * as ReactDOMClient from 'react-dom/client'
 import { Platform } from 'react-native'
@@ -28,6 +29,7 @@ if (isEmbed) {
   window._BrekekePhoneEmbedImports = {
     mobx: Mobx,
     'mobx-react': MobxReact,
+
     react: React,
     'react-dom/client': ReactDOMClient,
   }

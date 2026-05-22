@@ -1,4 +1,4 @@
-import React from 'react'
+import { Component } from 'react'
 import type { AppStateStatus, NativeEventSubscription } from 'react-native'
 import { AppState } from 'react-native'
 
@@ -12,7 +12,7 @@ type State = {
   appState: AppStateStatus
 }
 
-export class SyncRingtoneOnForeground extends React.Component<Props, State> {
+export class SyncRingtoneOnForeground extends Component<Props, State> {
   private appStateListener: NativeEventSubscription | null = null
 
   constructor(props: Props) {

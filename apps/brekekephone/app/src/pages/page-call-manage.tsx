@@ -355,9 +355,6 @@ class PageCallManage extends Component<{
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
-    const bigAvatarCls = c.localVideoEnabled
-      ? `flex-1 max-h-[${height / 2 - 20}px]`
-      : 'flex-1'
     return (
       <View
         className={[
@@ -372,11 +369,16 @@ class PageCallManage extends Component<{
         <View
           className={[
             isShowAvatar &&
-              (isLarge
-                ? bigAvatarCls
-                : 'h-50 w-50 overflow-hidden rounded-full'),
+              (isLarge ? 'flex-1' : 'h-50 w-50 overflow-hidden rounded-full'),
             !isShowAvatar && 'h-0 opacity-0',
           ]}
+          style={
+            isShowAvatar && isLarge && c.localVideoEnabled
+              ? {
+                  maxHeight: height / 2 - 20,
+                }
+              : undefined
+          }
         >
           {c.answered && (
             <SmartImage

@@ -4,7 +4,6 @@ import { NativeModules } from 'react-native'
 import { get, set } from '@/shared/lodash'
 import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/call-store'
-import { intl } from '#/stores/intl'
 
 type TBrekekeUtils = {
   // ==========================================================================
