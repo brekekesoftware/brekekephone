@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 
+import { tw } from '@/rn/core/tw/tw'
 import { mdiPhone, mdiPhoneHangup } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
@@ -19,8 +20,8 @@ export const PageCallBackgrounds = observer(() => {
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
     ]
     const iconClassNames = [
-      'text-error',
-      ...(!c.answered && c.incoming ? ['text-primary'] : []),
+      tw`text-error`,
+      ...(!c.answered && c.incoming ? [tw`text-primary`] : []),
     ]
     const iconFuncs = [
       c.hangupWithUnhold,

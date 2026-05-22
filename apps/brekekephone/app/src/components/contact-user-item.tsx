@@ -5,6 +5,7 @@ import type { FC, ReactNode } from 'react'
 import { Pressable } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { isEmpty } from '@/shared/lodash'
 import {
   mdiAccountGroup,
@@ -33,7 +34,7 @@ export const UserItem: FC<
     avatar: string
     created: string
     icons: string[]
-    iconClassNames: string[]
+    iconClassNames: ClassName[]
     iconFuncs: Function[]
     loadings?: number[] | true
     id: string

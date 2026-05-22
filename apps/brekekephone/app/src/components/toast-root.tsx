@@ -3,17 +3,18 @@ import { useEffect, useRef } from 'react'
 import { Animated } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { RnText } from '#/components/rn'
 import { AnimatedView } from '#/components/rn-animated'
 import { ctx } from '#/stores/ctx'
 import type { ToastType } from '#/stores/toast-store'
 
-const bgClassMap: { [k: string]: string } = {
-  success: 'bg-primary',
-  error: 'bg-error',
-  warning: 'bg-warning',
+const bgClassMap = {
+  success: tw`bg-primary`,
+  error: tw`bg-error`,
+  warning: tw`bg-warning`,
 }
-const getBgClass = (type: ToastType) => bgClassMap[type] || 'bg-primary'
+const getBgClass = (type: ToastType) => bgClassMap[type] || tw`bg-primary`
 
 const TOAST_DISPLAY_DURATION = 2700
 

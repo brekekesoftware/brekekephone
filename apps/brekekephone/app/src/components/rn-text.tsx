@@ -8,7 +8,7 @@ import { clsx } from '@/rn/core/tw/clsx'
 import { tw } from '@/rn/core/tw/tw'
 import { pickBy } from '@/shared/lodash'
 
-const classMap: { [k: string]: ClassName } = {
+const classMap = {
   title: tw`text-[25.2px] leading-9 font-bold`,
   subTitle: tw`text-[16.8px] leading-6 font-bold`,
   small: tw`text-[11.2px] leading-4 font-bold`,

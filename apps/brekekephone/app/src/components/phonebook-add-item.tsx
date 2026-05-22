@@ -4,7 +4,6 @@ import { Platform, useWindowDimensions } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
-import { tw } from '@/rn/core/tw/tw'
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedView } from '#/components/rn-animated'
 import { isAndroid } from '#/config'
@@ -17,8 +16,6 @@ import { useAnimationOnDidMount } from '#/utils/animation'
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
-const inputFieldNameClassName = tw`bg-background border-border web:py-1.25 h-10 w-full overflow-hidden rounded-[3px] border-[0.8px] px-2.5`
-
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
   const [items, updateItems] = useState(listOption)
@@ -28,12 +25,6 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const y = useAnimationOnDidMount({
     translateY: [height, 0],
   })
-  // keyboard lift (android 15+ only) uses the live IME height -> runtime
-  // arbitrary class; everywhere else it stays the static 15px bottom.
-  const bottomCls =
-    shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
-      ? `bottom-[${15 + RnKeyboard.keyboardHeight}px]`
-      : 'bottom-3.75'
   const onChangeText = (txt: string) => {
     if (!txt) {
       updateItems(listOption)
@@ -71,8 +62,18 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         />
       </AnimatedView>
       <AnimatedView
-        className={['absolute max-h-full w-[90%] max-w-95', bottomCls]}
-        style={{ transform: [y] }}
+        className='absolute max-h-full w-[90%] max-w-95'
+        style={{
+          transform: [y],
+
+          // keyboard lift (android 15+ only) uses the live IME height -> runtime
+          // arbitrary class; everywhere else it stays the static 15px bottom.
+          bottom:
+            15 +
+            (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
+              ? RnKeyboard.keyboardHeight
+              : 0),
+        }}
       >
         <View className='bg-background h-[33.333vh] w-full items-center justify-start overflow-hidden rounded-[3px] px-2.5 py-2.5'>
           <RnTextInput
@@ -84,7 +85,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             //  onSelectionChange={p.selectionChange}
             placeholder={intl`Enter field`}
             ref={refInput}
-            className={inputFieldNameClassName}
+            className='bg-background border-border web:py-1.25 h-10 w-full overflow-hidden rounded-[3px] border-[0.8px] px-2.5'
             value={value}
           />
           <ScrollView
