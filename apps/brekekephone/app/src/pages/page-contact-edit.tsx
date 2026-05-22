@@ -179,7 +179,7 @@ export class PageContactEdit extends Component {
               <View className='flex-row items-center'>
                 <RnText>{`${intl`Capacity`}`}</RnText>
                 <RnText
-                  className={isCapacityInvalid ? 'text-red-500' : undefined}
+                  className={!isCapacityInvalid ? 'text-error' : undefined}
                 >{`    ${
                   isSelectedAddAllUser
                     ? dataListAllUser.length
