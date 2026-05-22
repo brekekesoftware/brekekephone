@@ -23,7 +23,7 @@ export const RnTextInput = ({
       (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
     }
     className={[
-      'text-foreground relative font-sans text-sm font-normal',
+      'placeholder-slate-400 text-foreground relative font-sans text-sm font-normal',
       className,
     ]}
   />
