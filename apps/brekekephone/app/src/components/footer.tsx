@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { lowerFirst } from '@/shared/lodash'
 import { FooterActions } from '#/components/footer-actions'
 import { Navigation } from '#/components/footer-navigation'
@@ -16,8 +17,7 @@ import { arrToMap } from '#/utils/arr-to-map'
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
 
 // layout + bottom shadow (v.bottomBoxShadow) + android top border (v.borderTopStyles)
-const noKeyboardClassName =
-  'left-0 pb-0 bg-background shadow-black shadow-opacity-10 shadow-radius-[2px] shadow-offset-[0px]/[-2px] android:border-t android:border-black/5'
+const noKeyboardClassName = tw`bg-background shadow-opacity-10 shadow-radius-[2px] shadow-offset-[0px]/[-2px] android:border-t android:border-black/5 left-0 pb-0 shadow-black`
 
 export const Footer: FC<{
   menu: string
@@ -45,15 +45,13 @@ export const Footer: FC<{
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? RnKeyboard.keyboardHeight
       : 0
-  const bottomCls = bottomOffset ? `bottom-[${bottomOffset}px]` : 'bottom-0'
   const noKeyboard = render || !RnKeyboard.isKeyboardShowing
   return (
     <View
-      className={[
-        'absolute right-0',
-        noKeyboard && noKeyboardClassName,
-        bottomCls,
-      ]}
+      className={['absolute right-0', noKeyboard && noKeyboardClassName]}
+      style={{
+        bottom: bottomOffset,
+      }}
     >
       {render ? (
         render()
