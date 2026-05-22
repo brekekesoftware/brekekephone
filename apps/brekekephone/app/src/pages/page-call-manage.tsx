@@ -429,7 +429,7 @@ class PageCallManage extends Component<{
     return (
       <Container
         onPress={c.localVideoEnabled ? this.toggleButtons : undefined}
-        className={['z-100', isHideButtons && 'mt-7.5']}
+        className={['z-100 self-stretch', isHideButtons && 'mt-7.5']}
       >
         {n > 0 && (
           <FieldButton
