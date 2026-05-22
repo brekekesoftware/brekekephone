@@ -182,6 +182,10 @@ export const config = ({
         },
       ],
       'import/enforce-node-protocol-usage': [warn, 'always'],
+
+      'custom/concat-classname-strings': warn,
+      'custom/enforce-use-client': [warn, enforceUseClient],
+      'custom/no-single-item-array-prop': [warn, ['style', 'className']],
     }),
   }
 
@@ -225,7 +229,6 @@ export const config = ({
         { destructureInSignature: 'always' },
       ],
 
-      'custom/enforce-use-client': [warn, enforceUseClient],
       'custom/err-name': warn,
       'custom/no-missing-export': warn,
       'custom/no-access-property': off,
@@ -234,7 +237,6 @@ export const config = ({
       'custom/no-import-outside': off,
       'custom/no-json-stringify': warn,
       'custom/no-nullish-coalescing': warn,
-      'custom/no-single-item-array-prop': [warn, ['style', 'className']],
       'custom/no-use-state': off,
       'custom/no-void-union': off,
     }),

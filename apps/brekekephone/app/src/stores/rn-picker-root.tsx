@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
-import { tw } from '@/rn/core/tw/tw'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedScrollView, AnimatedView } from '#/components/rn-animated'
@@ -11,9 +10,6 @@ import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 import { useAnimationOnDidMount } from '#/utils/animation'
-
-const bottomCls = tw`ios:bottom-5 bottom-3.75`
-const iconCls = tw`text-foreground absolute top-2.5 right-2.5`
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(
@@ -43,7 +39,7 @@ const RnPickerR = (p: RnPickerOption) => {
         />
       </AnimatedView>
       <AnimatedScrollView
-        className={['absolute mb-15 max-h-[80%] w-[90%] max-w-95', bottomCls]}
+        className='ios:bottom-5 absolute bottom-3.75 mb-15 max-h-[80%] w-[90%] max-w-95'
         style={{ transform: [y] }}
       >
         <View className='bg-background overflow-hidden rounded-[3px]'>
@@ -75,14 +71,17 @@ const RnPickerR = (p: RnPickerOption) => {
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
-                  className={[iconCls, isSelected && 'text-primary']}
+                  className={[
+                    'text-foreground absolute top-2.5 right-2.5',
+                    isSelected && 'text-primary',
+                  ]}
                 />
               </RnTouchableOpacity>
             )
           })}
         </View>
       </AnimatedScrollView>
-      <View className={['absolute w-[90%] max-w-95 flex-row', bottomCls]}>
+      <View className='flex-rowios:bottom-5 absolute bottom-3.75 w-[90%] max-w-95'>
         <AnimatedView className='max-w-95 flex-1' style={{ transform: [y] }}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
@@ -96,7 +95,10 @@ const RnPickerR = (p: RnPickerOption) => {
               {p.cancelLabel || intl`Cancel`}
             </RnText>
             {!p.onConfirm && (
-              <RnIcon path={mdiClose} className={[iconCls, 'text-error']} />
+              <RnIcon
+                path={mdiClose}
+                className='text-foreground text-error absolute top-2.5 right-2.5'
+              />
             )}
           </RnTouchableOpacity>
         </AnimatedView>

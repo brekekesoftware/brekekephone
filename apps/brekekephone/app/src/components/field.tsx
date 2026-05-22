@@ -110,8 +110,7 @@ export const Field: FC<
     return (
       <View
         className={[
-          'border-border bg-border mt-3.75 items-stretch border-b p-3.75',
-          'android:pb-0.5',
+          'border-border bg-border android:pb-0.5 mt-3.75 items-stretch border-b p-3.75',
           props.hasMargin && 'mt-7.5',
         ]}
       >
@@ -349,8 +348,7 @@ export const Field: FC<
         accessible={!props.inputElement}
         onPress={props.onTouchPress}
         className={[
-          'border-border mx-3.75 items-stretch border-b',
-          'android:pb-0.5',
+          'border-border android:pb-0.5 mx-3.75 items-stretch border-b',
           ($.isFocusing || $.isParkNameFocusing) && 'bg-muted',
           props.disabled && 'bg-muted',
           props.transparent && 'mx-0 border-transparent',

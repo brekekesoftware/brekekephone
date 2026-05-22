@@ -10,9 +10,6 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const invisibleClassName = tw`absolute h-0 w-0 overflow-hidden opacity-0`
-const visibleClassName = tw`web:h-screen native:h-full relative w-full overflow-hidden opacity-100`
-
 @observer
 export class PageCustomPageView extends Component<{
   id: string
@@ -132,7 +129,11 @@ export class PageCustomPageView extends Component<{
           },
         ]}
         isFullContent
-        className={isVisible ? visibleClassName : invisibleClassName}
+        className={
+          isVisible
+            ? 'web:h-screen native:h-full relative w-full overflow-hidden opacity-100'
+            : 'absolute h-0 w-0 overflow-hidden opacity-0'
+        }
       >
         {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
           <CustomPageWebView

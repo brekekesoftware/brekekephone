@@ -44,8 +44,7 @@ export const FooterActions: FC<
       <RnTouchableOpacity
         onPress={onNext}
         className={[
-          'w-1/2 items-center justify-center rounded-none py-2',
-          'bg-primary',
+          'bg-primary w-1/2 items-center justify-center rounded-none py-2',
           !(onBack && onMore) && 'w-2/3',
           !(onBack || onMore) && 'w-full',
         ]}
