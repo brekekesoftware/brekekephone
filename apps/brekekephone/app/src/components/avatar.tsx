@@ -4,15 +4,16 @@ import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 
 import { Image } from '@/rn/core/components/image'
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiRecord } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
 import { ctx } from '#/stores/ctx'
 
 const statusMapClassName = {
-  online: 'text-primary',
-  idle: 'text-warning',
-  busy: 'text-error',
-  offline: 'text-foreground-muted',
+  online: tw`text-primary`,
+  idle: tw`text-warning`,
+  busy: tw`text-error`,
+  offline: tw`text-foreground-muted`,
 }
 
 export const Avatar = observer(
