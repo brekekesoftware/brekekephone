@@ -47,7 +47,7 @@ export const FooterActions: FC<
         >
           <RnIcon
             path={onBackIcon || mdiKeyboardBackspace}
-            className={'text-error dark:text-error-300'}
+            className='text-error dark:text-error-300'
           />
         </RnTouchableOpacity>
       )}

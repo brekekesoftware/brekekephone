@@ -34,10 +34,10 @@ export const Navigation: FC<{
           <View
             className={[
               'h-10 w-full items-center justify-center',
-              active && 'bg-primary-100 rounded-[22px]',
+              active && 'bg-primary-100 dark:bg-primary-900 rounded-[22px]',
             ]}
           >
-            <RnIcon path={m.icon} />
+            <RnIcon path={m.icon} className='text-foreground' />
           </View>
           {showUnreadChat && (
             <View className={unreadOuterClassName}>

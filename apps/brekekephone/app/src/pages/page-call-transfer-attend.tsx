@@ -100,7 +100,7 @@ export class PageCallTransferAttend extends Component {
     const usertarget = this.resolveMatch(oc.transferring)
     const { phoneappliSource, phoneappliTarget } = this.state
     return (
-      <View className='bg-background web:w-full items-center'>
+      <View className='bg-background web:w-full web:h-full flex-1 items-center justify-center'>
         <RnText center subTitle>{intl`Transferring`}</RnText>
         <View className='h-2.5' />
         <View
@@ -118,7 +118,7 @@ export class PageCallTransferAttend extends Component {
             </RnText>
           </View>
           <View className='flex-1'>
-            <RnIcon path={mdiArrowRight} />
+            <RnIcon path={mdiArrowRight} className='text-foreground' />
           </View>
           <View className='flex-5 flex-col items-center justify-center'>
             <Avatar

@@ -171,7 +171,7 @@ export class PageContactEdit extends Component {
               />
               {isSelectEditGroupingAndUserOrder && buddyMode === 2 && (
                 <RnTouchableOpacity onPress={this.onAddGroup}>
-                  <RnIcon path={mdiFolderPlus} />
+                  <RnIcon path={mdiFolderPlus} className='text-foreground' />
                 </RnTouchableOpacity>
               )}
             </View>

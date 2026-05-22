@@ -79,7 +79,11 @@ export const Header: FC<
                     key={i}
                     onPress={e => onPressRightIcons(i)}
                   >
-                    <RnIcon path={_} color={iconRightColors?.[i]} />
+                    <RnIcon
+                      path={_}
+                      color={iconRightColors?.[i]}
+                      className='text-foreground'
+                    />
                   </RnTouchableOpacity>
                 ))}
               </View>

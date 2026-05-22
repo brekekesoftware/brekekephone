@@ -7,7 +7,6 @@ import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { IncomingItem } from '#/components/call-voices-ui'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -75,16 +74,14 @@ export const CallNotify = observer(() => {
         </View>
         {!hideHangup && (
           <ButtonIcon
-            bdcolor={v.colors.danger}
-            color={v.colors.danger}
+            className='border-error text-error'
             onPress={c.hangupWithUnhold}
             path={mdiClose}
             size={20}
           />
         )}
         <ButtonIcon
-          bdcolor={v.colors.primary}
-          color={v.colors.primary}
+          className='border-primary text-primary'
           onPress={() => {
             c.answer()
             if (ctx.call.calls.some(_ => _.answered && _.id !== c.id)) {

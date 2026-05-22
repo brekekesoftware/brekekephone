@@ -295,9 +295,14 @@ const RenderHeaderSection = observer(
           <Fragment>
             <View className='flex-row items-center'>
               <View>
-                <RnIcon path={hidden ? mdiMenuRight : mdiMenuDown} />
+                <RnIcon
+                  className='text-foreground'
+                  path={hidden ? mdiMenuRight : mdiMenuDown}
+                />
               </View>
-              <RnText small>{titleHeaderRender}</RnText>
+              <RnText small className='text-foreground'>
+                {titleHeaderRender}
+              </RnText>
             </View>
             {isEditMode && (
               <RnTouchableOpacity
@@ -309,7 +314,7 @@ const RenderHeaderSection = observer(
                   RnDropdown.toggle(index)
                 }}
               >
-                <RnIcon path={mdiMoreHoriz} />
+                <RnIcon path={mdiMoreHoriz} className='text-foreground' />
               </RnTouchableOpacity>
             )}
           </Fragment>

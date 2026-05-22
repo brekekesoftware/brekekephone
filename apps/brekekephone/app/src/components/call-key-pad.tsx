@@ -39,7 +39,7 @@ export const KeyPad = (p: {
     ))}
     <View className='mt-6.25 flex-row justify-between'>
       <RnTouchableOpacity onPress={p.showKeyboard} className='w-1/3'>
-        <RnIcon color={isWeb ? 'white' : undefined} path={mdiKeyboard} />
+        <RnIcon className='text-foreground' path={mdiKeyboard} />
       </RnTouchableOpacity>
       <View
         className={
@@ -53,7 +53,7 @@ export const KeyPad = (p: {
             onPress={p.callVoiceForward}
             className='bg-primary h-12.5 w-12.5 justify-center rounded-full'
           >
-            <RnIcon path={mdiPhoneForward} />
+            <RnIcon className='text-foreground' path={mdiPhoneForward} />
           </RnTouchableOpacity>
         )}
         {p.callVoice && (
@@ -67,12 +67,12 @@ export const KeyPad = (p: {
             ]}
             loading
           >
-            <RnIcon path={mdiPhone} />
+            <RnIcon className='text-foreground' path={mdiPhone} />
           </RnTouchableOpacity>
         )}
       </View>
       <RnTouchableOpacity onPress={() => p.onPressNumber('')} className='w-1/3'>
-        <RnIcon path={mdiBackspace} />
+        <RnIcon className='text-foreground' path={mdiBackspace} />
       </RnTouchableOpacity>
     </View>
   </>

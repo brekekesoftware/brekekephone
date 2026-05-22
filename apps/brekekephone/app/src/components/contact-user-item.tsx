@@ -191,7 +191,7 @@ export const UserItem: FC<
             <RnIcon
               path={mdiAccountGroup}
               size={40}
-              color={v.colors.greyTextChat}
+              className='text-foreground-muted'
             />
           </View>
         ) : !parkNumber ? (
@@ -208,7 +208,9 @@ export const UserItem: FC<
               bold
               singleLine
               className={
-                name === intl`<Unnamed>` ? 'text-[#9e9e9e]' : 'text-black'
+                name === intl`<Unnamed>`
+                  ? 'text-foreground-muted'
+                  : 'text-foreground'
               }
             >
               {partyName ||
@@ -288,7 +290,11 @@ export const UserItem: FC<
             key={i}
             onPress={() => onPressIcons(i)}
           >
-            <RnIcon path={_} color={iconColors?.[i]} className='p-2.5' />
+            <RnIcon
+              path={_}
+              color={iconColors?.[i]}
+              className='text-foreground p-2.5'
+            />
           </RnTouchableOpacity>
         ))}
 

@@ -33,7 +33,6 @@ import { Layout } from '#/components/layout'
 import { RnTouchableOpacity } from '#/components/rn'
 import { RnText } from '#/components/rn-text'
 import { SmartImage } from '#/components/smart-image'
-import { v } from '#/components/variables'
 import { VideoPlayer } from '#/components/video-player'
 import { defaultTimeout, isAndroid, isWeb } from '#/config'
 import { PageCallTransferAttend } from '#/pages/page-call-transfer-attend'
@@ -419,9 +418,8 @@ class PageCallManage extends Component<{
       return null
     }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
-    const activeColor = c.localVideoEnabled
-      ? v.colors.primary
-      : v.colors.warning
+    // active state bg class — primary when in video call, warning otherwise.
+    const activeBg = c.localVideoEnabled ? 'bg-primary' : 'bg-warning'
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && isWeb)) && !c.answered
     return (
@@ -453,38 +451,35 @@ class PageCallManage extends Component<{
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor='white'
-              color='black'
+              className='bg-background text-foreground'
               name={intl`TRANSFER`}
               noborder
               onPress={ctx.nav.goToPageCallTransferChooseUser}
               path={mdiCallSplit}
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('park') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor='white'
-              color='black'
+              className='bg-background text-foreground'
               name={intl`PARK`}
               noborder
               onPress={ctx.nav.goToPageCallParksOngoing}
               path={mdiAlphaPCircle}
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('video') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor={
-                c.localVideoEnabled && !c.mutedVideo ? activeColor : 'white'
+              className={
+                c.localVideoEnabled && !c.mutedVideo
+                  ? [activeBg, 'text-white']
+                  : 'bg-background text-foreground'
               }
-              color={c.localVideoEnabled && !c.mutedVideo ? 'white' : 'black'}
               name={intl`VIDEO`}
               noborder
               onPress={c.toggleVideo}
@@ -492,15 +487,17 @@ class PageCallManage extends Component<{
                 c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
               }
               size={40}
-              textcolor='white'
             />
           )}
           {!isWeb && !this.isBtnHidden('speaker') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={c.sessionStatus === 'dialing'}
-              bgcolor={ctx.call.isLoudSpeakerEnabled ? activeColor : 'white'}
-              color={ctx.call.isLoudSpeakerEnabled ? 'white' : 'black'}
+              className={
+                ctx.call.isLoudSpeakerEnabled
+                  ? [activeBg, 'text-white']
+                  : 'bg-background text-foreground'
+              }
               name={intl`SPEAKER`}
               noborder
               onPress={ctx.call.toggleLoudSpeaker}
@@ -508,58 +505,62 @@ class PageCallManage extends Component<{
                 ctx.call.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
               }
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('mute') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor={c.muted ? activeColor : 'white'}
-              color={c.muted ? 'white' : 'black'}
+              className={
+                c.muted
+                  ? [activeBg, 'text-white']
+                  : 'bg-background text-foreground'
+              }
               name={c.muted ? intl`UNMUTE` : intl`MUTE`}
               noborder
               onPress={() => c.toggleMuted()}
               path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('record') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor={c.recording ? activeColor : 'white'}
-              color={c.recording ? 'white' : 'black'}
+              className={
+                c.recording
+                  ? [activeBg, 'text-white']
+                  : 'bg-background text-foreground'
+              }
               name={intl`RECORD`}
               noborder
               onPress={c.toggleRecording}
               path={c.recording ? mdiRecordCircle : mdiRecord}
               loading={c.rqLoadings['record']}
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('dtmf') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!(c.withSDPControls || c.answered)}
-              bgcolor='white'
-              color='black'
+              className='bg-background text-foreground'
               name={intl`KEYPAD`}
               noborder
               onPress={ctx.nav.goToPageCallDtmfKeypad}
               path={mdiDialpad}
               size={40}
-              textcolor='white'
             />
           )}
           {!this.isBtnHidden('hold') && (
             <ButtonIcon
               containerClassName='mb-2.5'
               disabled={!c.answered}
-              bgcolor={c.holding ? activeColor : 'white'}
-              color={c.holding ? 'white' : 'black'}
+              className={
+                c.holding
+                  ? [activeBg, 'text-white']
+                  : 'bg-background text-foreground'
+              }
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}
               noborder
               onPress={c.toggleHoldWithCheck}
@@ -567,7 +568,6 @@ class PageCallManage extends Component<{
               size={40}
               loading={c.rqLoadings['hold']}
               msLoading={defaultTimeout}
-              textcolor='white'
             />
           )}
         </View>
@@ -601,13 +601,11 @@ class PageCallManage extends Component<{
             {incoming && this.isVisible() && <IncomingItemWithTimer />}
             {incoming && (
               <ButtonIcon
-                bgcolor={v.colors.primary}
-                color='white'
+                className='bg-primary text-white'
                 noborder
                 onPress={() => c.answer({ ignoreNav: true })}
                 path={mdiPhone}
                 size={40}
-                textcolor='white'
               />
             )}
             {incoming && (
@@ -615,13 +613,11 @@ class PageCallManage extends Component<{
             )}
             {!isHangupBtnHidden && (
               <ButtonIcon
-                bgcolor={v.colors.danger}
-                color='white'
+                className='bg-error text-white'
                 noborder
                 onPress={c.hangupWithUnhold}
                 path={mdiPhoneHangup}
                 size={40}
-                textcolor='white'
               />
             )}
           </View>

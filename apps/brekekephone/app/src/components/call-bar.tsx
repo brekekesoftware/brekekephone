@@ -14,7 +14,6 @@ import {
 } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { defaultTimeout, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -33,7 +32,7 @@ export const CallBar = observer(() => {
       >
         <View className='flex-1'>
           <RnIcon
-            color={oc.incoming ? v.colors.primary : v.colors.warning}
+            className={oc.incoming ? 'text-primary' : 'text-warning'}
             path={oc.incoming ? mdiPhoneInTalkOutline : mdiPhoneOutgoingOutline}
           />
         </View>
@@ -54,27 +53,28 @@ export const CallBar = observer(() => {
           {!oc.holding && (
             <>
               <ButtonIcon
-                bdcolor={v.borderBg}
-                color={v.colors.danger}
+                className='border-border text-error'
                 onPress={oc.hangupWithUnhold}
                 path={mdiPhoneHangup}
               />
               {oc.answered && (
                 <>
                   <ButtonIcon
-                    bdcolor={v.borderBg}
-                    color={oc.muted ? v.colors.primary : v.color}
+                    className={[
+                      'border-border',
+                      oc.muted ? 'text-primary' : 'text-foreground',
+                    ]}
                     onPress={() => oc.toggleMuted()}
                     path={oc.muted ? mdiMicrophoneOff : mdiMicrophone}
                   />
                   {!isWeb && (
                     <ButtonIcon
-                      bdcolor={v.borderBg}
-                      color={
+                      className={[
+                        'border-border',
                         ctx.call.isLoudSpeakerEnabled
-                          ? v.colors.primary
-                          : v.color
-                      }
+                          ? 'text-primary'
+                          : 'text-foreground',
+                      ]}
                       onPress={ctx.call.toggleLoudSpeaker}
                       path={
                         ctx.call.isLoudSpeakerEnabled
@@ -88,8 +88,10 @@ export const CallBar = observer(() => {
             </>
           )}
           <ButtonIcon
-            bdcolor={v.borderBg}
-            color={oc.holding ? v.colors.primary : v.color}
+            className={[
+              'border-border',
+              oc.holding ? 'text-primary' : 'text-foreground',
+            ]}
             onPress={oc.toggleHoldWithCheck}
             path={oc.holding ? mdiPlay : mdiPause}
             loading={oc.rqLoadings['hold']}

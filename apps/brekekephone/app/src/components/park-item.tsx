@@ -5,8 +5,9 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnTouchableOpacity } from '#/components/rn'
 import { AnimatedText, AnimatedView } from '#/components/rn-animated'
-import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
+import { variables as defaultVariables } from '#/theme/brekeke-scss'
+import { useThemeVariables } from '#/utils/rn-core-hooks'
 
 interface ParkItemProps {
   index: number
@@ -29,13 +30,15 @@ export const ParkItem: FC<ParkItemProps> = ({
 }) => {
   const useAnimated = !!flashAnim && !selected
 
+  const variables = useThemeVariables() || defaultVariables
   const flashBg = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: ['white', v.colors.primary],
+    outputRange: [variables['--background'], variables['--primary-500']],
   })
+
   const flashTextColor = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: ['black', 'white'],
+    outputRange: [variables['--foreground'], variables['--foreground-inverse']],
   })
 
   let wrapperClass: ClassName
@@ -45,12 +48,13 @@ export const ParkItem: FC<ParkItemProps> = ({
     // no className for bg/text — animated style drives the colors
   } else if (selected && flashAnim) {
     wrapperClass = 'bg-primary'
-    textClass = 'text-white'
-    subTextClass = 'text-white'
+    textClass = 'text-foreground'
+    subTextClass = 'text-foreground-muted'
   } else if (selected) {
     wrapperClass = 'bg-primary-100'
   } else {
     subTextClass = 'text-foreground-muted'
+    textClass = 'text-foreground'
   }
 
   const displayName = name || intl`<Unnamed>`

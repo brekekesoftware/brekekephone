@@ -11,7 +11,6 @@ import { ButtonIcon } from '#/components/button-icon'
 import { formatDateTimeSemantic } from '#/components/chat-config'
 import { UserItem } from '#/components/contact-user-item'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -38,15 +37,13 @@ const Notify: FC<{
           <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
         </View>
         <ButtonIcon
-          bdcolor={v.colors.danger}
-          color={v.colors.danger}
+          className='border-error text-error'
           onPress={() => p.reject(p.id)}
           path={mdiClose}
           size={20}
         />
         <ButtonIcon
-          bdcolor={v.colors.primary}
-          color={v.colors.primary}
+          className='border-primary text-primary'
           onPress={() => p.accept(p.id)}
           path={mdiCheck}
           size={20}

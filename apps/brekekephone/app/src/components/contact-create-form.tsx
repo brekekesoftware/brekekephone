@@ -161,7 +161,10 @@ export const ContactsCreateForm: FC<{
       {!disabled && (
         <RnText
           title
-          className={['mx-5', !previewName ? 'text-[#9e9e9e]' : 'text-black']}
+          className={[
+            'mx-5',
+            !previewName ? 'text-foreground-muted' : 'text-foreground',
+          ]}
         >
           {previewName || intl`<Unnamed>`}
         </RnText>
