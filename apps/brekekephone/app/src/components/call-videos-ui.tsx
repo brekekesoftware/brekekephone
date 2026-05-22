@@ -19,9 +19,6 @@ import { RnStacker } from '#/stores/rn-stacker'
 const MINI_WIDTH = 150
 const MINI_HEIGHT = 150
 
-const miniClassName =
-  'bg-foreground rounded-[75px] overflow-hidden z-[999] shadow-sm w-[150px] h-[150px] android:elevation-999'
-
 const calculateBoundedPosition = (
   currentLeft: number,
   currentTop: number,
@@ -107,11 +104,7 @@ class Mini extends Component<Props> {
         ref={view => {
           this.view = view
         }}
-        className={[
-          miniClassName,
-          'native:absolute',
-          'web:cursor-move web:select-none',
-        ]}
+        className='bg-foreground android:elevation-999 native:absolute web:cursor-move web:select-none z-999 h-37.5 w-37.5 overflow-hidden rounded-[75px] shadow-sm'
         style={{
           top: ctx.call.videoPositionT,
           left: ctx.call.videoPositionL,
