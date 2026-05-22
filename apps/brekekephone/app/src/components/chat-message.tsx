@@ -17,7 +17,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-// 50px of avatar and 10px of padding. calc(100vw-…) resolves on native too via
+// 50px of avatar and 10px of padding. calc(100vw-..) resolves on native too via
 // the framework's runtime vw support, so no Dimensions inline style needed.
 const messageMaxWidthClassName = tw`max-w-[calc(100vw-60px)]`
 const previewInfoWidthClassName = tw`w-[calc(100vw-119px)]`

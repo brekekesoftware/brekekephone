@@ -64,7 +64,7 @@ export class MFAStore {
     rs.forEach(r => r(false))
   }
 
-  // Clean reset — for signIn/signOut where no user cancellation occurred.
+  // Clean reset - for signIn/signOut where no user cancellation occurred.
   // Unlike cancel(), this does NOT set wasCancelled=true, so subsequent
   // PN navigation / deeplink flows won't be blocked by stale cancel state.
   @action reset = () => {
@@ -78,7 +78,7 @@ export class MFAStore {
     rs.forEach(r => r(false))
   }
 
-  // Called by signOut — preserves wasCancelled/cancelledAccountId so
+  // Called by signOut - preserves wasCancelled/cancelledAccountId so
   // syncPnToken does not trigger a new mfa/start immediately after cancel.
   @action signOutReset = () => {
     const rs = this._resolvers

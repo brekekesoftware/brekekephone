@@ -107,10 +107,10 @@ type MFAInfo = {
 type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 
 // Result of mfaStart():
-//   true            — server accepted, OTP session created (type=code/url)
-//   'none'          — server says no MFA required for this account
-//   { error }       — server returned status=FAILED with a message
-//   false           — network/exception, no usable response
+//   true            - server accepted, OTP session created (type=code/url)
+//   'none'          - server says no MFA required for this account
+//   { error }       - server returned status=FAILED with a message
+//   false           - network/exception, no usable response
 type MfaStartResult = true | 'none' | { error: string } | false
 
 export class AccountStore {
@@ -131,7 +131,7 @@ export class AccountStore {
   pendingPnEnabled?: boolean
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
-  // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.
+  // Not persisted - if app restarts without calls, onPBXConnectionStarted handles MFA normally.
   @observable mfaPendingAfterCallsId = ''
   @action setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
@@ -272,7 +272,7 @@ export class AccountStore {
       (typeof p.pushNotificationEnabled === 'boolean' &&
         p.pushNotificationEnabled !== clonedA.pushNotificationEnabled)
     ) {
-      // When MFA verification is needed, revert the PN change — the actual
+      // When MFA verification is needed, revert the PN change - the actual
       // toggle will happen after MFA verify + sync succeeds, triggered by
       // onSwitchEnableNotification in AccountSignInItem.
       if (this.needsMFAForPnSync(a)) {
@@ -664,7 +664,7 @@ export class AccountStore {
       if (!res) {
         return false
       }
-      // NO_SESSION means session already gone — treat as success so resend can proceed
+      // NO_SESSION means session already gone - treat as success so resend can proceed
       this.keySessionMFA = ''
       return res.status === 'OK' || res.status === 'NO_SESSION'
     } catch (err) {
@@ -683,7 +683,7 @@ export class AccountStore {
     }
 
     // Already showing OTP for this account (e.g. syncPnToken triggered first)
-    // — user is actively verifying, skip everything else to avoid touching
+    // - user is actively verifying, skip everything else to avoid touching
     // active session (no mfaDelete, no duplicate mfaStart, no verified check).
     if (ctx.mfa.isShowing(ca.id)) {
       return
@@ -710,12 +710,12 @@ export class AccountStore {
       }
     }
 
-    // Restore persisted sessKey after kill app — delete old session before starting new
+    // Restore persisted sessKey after kill app - delete old session before starting new
     const savedSessKey = d.mfa?.sessKey
     if (savedSessKey && !this.keySessionMFA) {
       this.keySessionMFA = savedSessKey
       await this.mfaDelete(ca)
-      // Force clear — we want fresh mfaStart regardless of mfaDelete result.
+      // Force clear - we want fresh mfaStart regardless of mfaDelete result.
       // On success, mfaDelete already sets keySessionMFA=''. On failure (!res),
       // need explicit clear to avoid falling into `if (keySessionMFA)` reuse block.
       this.keySessionMFA = ''
@@ -725,7 +725,7 @@ export class AccountStore {
       await this.saveAccountsToLocalStorageWithoutDebounced()
     }
 
-    // Resuming after call ended — session from previous mfaStart still valid,
+    // Resuming after call ended - session from previous mfaStart still valid,
     // just re-show the modal without sending another OTP email.
     // Active-call guard still needed here: this branch returns before reaching
     // the pre-mfaStart guard below.
@@ -741,7 +741,7 @@ export class AccountStore {
 
     // Defer fresh mfaStart while a call is active. Sending OTP now would expire
     // before the call ends, and a transient pbx.client (e.g. mid PBX reconnect)
-    // can throw inside mfaStart — the false-result path below would then sign
+    // can throw inside mfaStart - the false-result path below would then sign
     // the user out and BYE the active call.
     if (ctx.call.calls.length > 0) {
       console.log(
@@ -755,7 +755,7 @@ export class AccountStore {
     if (result === 'none') {
       return
     }
-    // Network/exception failure — no usable response from server
+    // Network/exception failure - no usable response from server
     if (result === false) {
       ctx.toast.show(intl`Unable to log in. Please try again.`, 'error')
       ctx.auth.signOut()

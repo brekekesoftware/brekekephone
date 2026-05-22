@@ -68,7 +68,7 @@ export const AccountSignInItem: FC<{
     if (e && !(await checkPermForCall(true, true))) {
       return
     }
-    // Block toggle when offline — sync would silently fail otherwise.
+    // Block toggle when offline - sync would silently fail otherwise.
     if (ctx.auth.hasInternetConnected === false) {
       ctx.toast.internet()
       return

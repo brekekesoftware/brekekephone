@@ -36,7 +36,7 @@ export const ButtonIcon: FC<{
   }
   const size = p.size || 15
   const spinnerSizeCls = `w-[${size}px] h-[${size}px]`
-  // Resolve icon fill from className text-* class — theme-aware via variables.
+  // Resolve icon fill from className text-* class - theme-aware via variables.
   const style = useRuntimeStyle(['text-foreground', p.className])
   const iconFill = style?.color as string
   return (

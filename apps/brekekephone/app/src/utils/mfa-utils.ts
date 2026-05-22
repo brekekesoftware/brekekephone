@@ -8,7 +8,7 @@ import { toBoolean } from '#/utils/string'
 // 3-tier decision rule:
 //   1. webphone.pal.mfa explicit (true/false) -> trust admin's intent absolutely.
 //   2. webphone.pal.mfa absent -> fallback to per-user model (trust mfa/start).
-// Embed mode: always skip — host owns UX.
+// Embed mode: always skip - host owns UX.
 export const isMFASupported = (pc?: PbxGetProductInfoRes) => {
   if (isEmbed) {
     return false

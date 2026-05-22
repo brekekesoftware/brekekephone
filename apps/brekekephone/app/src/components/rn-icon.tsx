@@ -3,7 +3,6 @@ import Svg, { Path } from 'react-native-svg'
 
 import type { ViewProps } from '@/rn/core/components/view'
 import { View } from '@/rn/core/components/view'
-import { v } from '#/components/variables'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export const RnIcon: FC<
@@ -13,7 +12,7 @@ export const RnIcon: FC<
     size?: number
     viewBox?: string
   }
-> = ({ color, path, size = v.iconSize, viewBox, className, ...p }) => {
+> = ({ color, path, size = 24, viewBox, className, ...p }) => {
   const style = useRuntimeStyle(['text-foreground', className])
   const color2 = style?.color || color
   return (

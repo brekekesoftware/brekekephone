@@ -188,7 +188,7 @@ class PageCallManage extends Component<{
     // BUG-1225: don't auto-reorder this already-answered call to front if a
     // newer ringing call exists. Race: upsertCall sets displayingCallId=newCall,
     // then debounced updateCurrentCall reverts it ~500ms later, retriggering
-    // this componentDidUpdate hook for the talking call — which would push the
+    // this componentDidUpdate hook for the talking call - which would push the
     // ringing call's IncomingCallActivity to background. Only auto-reorders are
     // guarded; user-initiated Nav.goToPageCallManage / backToPageCallManage
     // still proceed via their own direct BrekekeUtils.onPageCallManage call.
@@ -422,7 +422,7 @@ class PageCallManage extends Component<{
       return null
     }
     const Container = c.localVideoEnabled ? RnTouchableOpacity : View
-    // active state bg class — primary when in video call, warning otherwise.
+    // active state bg class - primary when in video call, warning otherwise.
     const activeBg = c.localVideoEnabled ? 'bg-primary' : 'bg-warning'
     const isHideButtons =
       (c.incoming || (!c.withSDPControls && isWeb)) && !c.answered

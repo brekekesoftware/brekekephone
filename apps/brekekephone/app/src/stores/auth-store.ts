@@ -230,13 +230,13 @@ export class AuthStore {
     // previous account had an active MFA modal.
     const prevAccountId = this.signedInId || ctx.mfa.accountId
     if (prevAccountId && prevAccountId !== a.id) {
-      // Clear MFA state from previous account — all three are account-specific
+      // Clear MFA state from previous account - all three are account-specific
       // and would cause stale-session bugs if carried over to the new account.
       ctx.account.keySessionMFA = ''
       ctx.account.setMFAPendingAfterCallsId('')
       ctx.mfa.reset()
     } else {
-      // Same account re-sign-in — clear cancel state so waitMfaIfNeeded
+      // Same account re-sign-in - clear cancel state so waitMfaIfNeeded
       // and PN navigation are not blocked by a stale wasCancelled flag.
       ctx.mfa.clearCancelled()
     }

@@ -69,7 +69,7 @@ export const Page2StepVerification = () => {
       accountRef.current = ca
       setAccount(ca)
       // Surface server error from mfa/start FAILED (e.g. "No email address.").
-      // When present, no OTP session exists so verify will not work — user
+      // When present, no OTP session exists so verify will not work - user
       // should read the error and dismiss via the back button.
       if (ctx.mfa.error) {
         showToast(ctx.mfa.error, 'err')

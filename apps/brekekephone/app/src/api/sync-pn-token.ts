@@ -227,7 +227,7 @@ const syncPnTokenForAllAccounts = async () => {
     if (ctx.account.isAccountInMFA(a)) {
       return
     }
-    // Skip if user just cancelled MFA for this account — prevents
+    // Skip if user just cancelled MFA for this account - prevents
     // checkMFAForSyncPnToken from triggering a new mfa/start immediately.
     if (ctx.mfa.wasCancelled && ctx.mfa.cancelledAccountId === a.id) {
       return

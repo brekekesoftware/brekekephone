@@ -47,7 +47,7 @@ export const ParkItem: FC<ParkItemProps> = ({
   let textClass: ClassName
   let subTextClass: ClassName
   if (useAnimated) {
-    // no className for bg/text — animated style drives the colors
+    // no className for bg/text - animated style drives the colors
   } else if (selected && flashAnim) {
     wrapperClass = 'bg-primary'
     textClass = 'text-foreground'

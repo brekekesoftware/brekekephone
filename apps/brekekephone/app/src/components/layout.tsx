@@ -15,7 +15,7 @@ import { Toast } from '#/components/toast'
 import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
-// BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME — ScrollView
+// BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME - ScrollView
 // thinks content fits screen and refuses to scroll under keyboard. Add bottom
 // padding equal to keyboard height so content becomes scrollable past the IME.
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35

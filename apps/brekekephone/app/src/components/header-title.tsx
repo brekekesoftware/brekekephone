@@ -3,7 +3,6 @@ import type { FC } from 'react'
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
 import { AnimatedText, AnimatedView } from '#/components/rn-animated'
-import { v } from '#/components/variables'
 import { useAnimation } from '#/utils/animation'
 
 export const Title: FC<{
@@ -16,8 +15,8 @@ export const Title: FC<{
     paddingVertical: [15, 10],
   })
   const cssTitleA = useAnimation(compact, {
-    fontSize: [v.fontSizeTitle, v.fontSizeSubTitle],
-    lineHeight: [v.lineHeightTitle, 20],
+    fontSize: [1.8 * 14, 1.2 * 14],
+    lineHeight: [1.8 * 20, 20],
   })
   return (
     <AnimatedView className='mr-6.25 pl-3.75' style={cssContainerA}>

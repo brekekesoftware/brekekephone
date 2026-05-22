@@ -19,9 +19,9 @@ import { encodeParkNumber } from '#/utils/park-number'
 import { checkPermForCall } from '#/utils/permissions'
 import { waitTimeout } from '#/utils/wait-timeout'
 
-// BUG-1224: iOS 26.0–26.4.1 removed the multi-call "End & Answer" popup;
+// BUG-1224: iOS 26.0-26.4.1 removed the multi-call "End & Answer" popup;
 // Apple restored it in 26.4.2 (confirmed empirically). Behavior may toggle
-// in future minor releases, so we gate to all iOS 26+ — it's no-op when
+// in future minor releases, so we gate to all iOS 26+ - it's no-op when
 // the popup exists (iOS already cancels outgoing via End-and-Answer;
 // o.hangup self-guards via isAboutToHangup) and only effective when popup
 // is gone.
@@ -139,7 +139,7 @@ export class Call {
     }
   }
   answerCallKeep = async () => {
-    // BUG-1219: don't steal focus if another call is already ongoing — would
+    // BUG-1219: don't steal focus if another call is already ongoing - would
     // trigger updateBackgroundCalls to spuriously hold user's chosen call.
     const otherCallIsOngoing =
       !!this.store.ongoingCallId && this.store.ongoingCallId !== this.id
@@ -320,7 +320,7 @@ export class Call {
       ctx.pbx.cancelRequest(id)
     })
     this.pendingRequestIds = []
-    // BUG-1219: defensive clear loading — toggleHold pushes requestId AFTER
+    // BUG-1219: defensive clear loading - toggleHold pushes requestId AFTER
     // await, so a remote BYE racing with that push leaves the PAL promise
     // hanging and native loading indicator stuck.
     Object.keys(this.rqLoadings).forEach(k => {

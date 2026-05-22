@@ -12,7 +12,7 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-// calc(100vw-…) resolves on native too via the framework's runtime vw support.
+// calc(100vw-..) resolves on native too via the framework's runtime vw support.
 const vMessageWidthClassName = tw`w-[calc(100vw-119px)]`
 
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {

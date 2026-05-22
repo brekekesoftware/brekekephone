@@ -76,7 +76,7 @@ class Mini extends Component<Props> {
     if (isWeb && this.view) {
       const el = this.view as any
       // web-only CSS not expressible via tailwind className:
-      // position fixed (anchor to viewport — RNW defaults every View to
+      // position fixed (anchor to viewport - RNW defaults every View to
       // relative) and touch-action none (block page scroll while dragging)
       el.style.position = 'fixed'
       el.style.touchAction = 'none'

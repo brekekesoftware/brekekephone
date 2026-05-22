@@ -788,7 +788,7 @@ export class PBX extends EventEmitter {
   // Handle MFA after PAL login success (main instance only).
   // When MFA is enabled, the server runs in restricted mode and does NOT fire
   // notify_serverstatus until the client reconnects with a valid device_token.
-  // Returns true if MFA is in progress (OTP needed) — caller should return early.
+  // Returns true if MFA is in progress (OTP needed) - caller should return early.
   private handleMFAAfterLogin = async (): Promise<boolean> => {
     ctx.auth.pbxConfig = undefined
     const pc = await this.getConfig(true)
@@ -800,7 +800,7 @@ export class PBX extends EventEmitter {
     const inMFA = ctx.account.isAccountInMFA(ca)
     if (!mfaSupported) {
       if (inMFA) {
-        // PBX version < 3.18 — reset stale pending so navigation/calls are not blocked.
+        // PBX version < 3.18 - reset stale pending so navigation/calls are not blocked.
         await ctx.account.setMFAPending(ca, false)
       }
       return false
@@ -826,12 +826,12 @@ export class PBX extends EventEmitter {
     if (!isMFASupported(pc)) {
       return false
     }
-    // Main MFA flow already handling this account — don't duplicate mfaStart
+    // Main MFA flow already handling this account - don't duplicate mfaStart
     // (would invalidate active session + send duplicate OTP email)
     if (ctx.mfa.isShowing(a.id)) {
       return false
     }
-    // Skip MFA if account has been removed — prevents spurious mfaStart
+    // Skip MFA if account has been removed - prevents spurious mfaStart
     // + "Account does not exist" on OTP screen during pnToken.sync(noUpsert)
     if (!ctx.account.accounts.some(acc => acc.id === a.id)) {
       return false
@@ -850,7 +850,7 @@ export class PBX extends EventEmitter {
       return false
     }
 
-    // started is true (OK) or { error } (server FAILED) — both surface modal.
+    // started is true (OK) or { error } (server FAILED) - both surface modal.
     // For the error case, propagate the message so the modal explains why.
     const errorMsg =
       typeof started === 'object' && 'error' in started
@@ -859,7 +859,7 @@ export class PBX extends EventEmitter {
     await ctx.account.setMFAPending(a, true)
     ctx.mfa.show(a.id, { skipReconnect: true, error: errorMsg })
 
-    // Revert PN to previous value — UI should only change after
+    // Revert PN to previous value - UI should only change after
     // MFA verify + sync succeed.
     const pnEnabled = ctx.account.pendingPnEnabled ?? a.pushNotificationEnabled
     a.pushNotificationEnabled = !pnEnabled
