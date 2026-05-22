@@ -4,7 +4,8 @@ import Svg, { Path } from 'react-native-svg'
 import type { ViewProps } from '@/rn/core/components/view'
 import { View } from '@/rn/core/components/view'
 import { v } from '#/components/variables'
-import { useRuntimeStyle } from '#/utils/rn-core-hooks'
+import { variables as defaultVariables } from '#/theme/brekeke-scss'
+import { useRuntimeStyle, useThemeVariables } from '#/utils/rn-core-hooks'
 
 export const RnIcon: FC<
   ViewProps & {
@@ -15,7 +16,8 @@ export const RnIcon: FC<
   }
 > = ({ color, path, size = v.iconSize, viewBox, className, ...p }) => {
   const style = useRuntimeStyle(className)
-  const color2 = style?.color || color || 'black'
+  const variables = useThemeVariables() || defaultVariables
+  const color2 = style?.color || color || variables['--foreground']
   return (
     <View {...p} className={['flex-1 items-center justify-center', className]}>
       <Svg

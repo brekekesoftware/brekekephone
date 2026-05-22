@@ -22,8 +22,8 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const isDisableCancel =
     isStopped || p.state === 'success' || p.state === 'failure'
   const textClass = isStopped
-    ? 'text-[#9e9e9e] text-[13px] line-through'
-    : 'text-[#9e9e9e] text-[13px]'
+    ? 'text-foreground-subtle text-[13px] line-through'
+    : 'text-foreground text-[13px]'
 
   const onCancelFile = () => {
     ctx.uc.rejectFile(p).catch(onRejectFileFailure)
@@ -42,13 +42,17 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
           {displaySendTo}
         </RnText>
         <View className='flex-row items-center'>
-          <RnText className={textClass}>
+          <RnText className='text-foreground-subtle text-[13px]'>
             {formatBytes(p?.size || 0, 2)}
             {` (${p.transferPercent}%) `}
           </RnText>
           {!isDisableCancel && (
             <RnTouchableOpacity onPress={onCancelFile}>
-              <RnIcon path={mdiCloseCircle} color='black' size={13} />
+              <RnIcon
+                path={mdiCloseCircle}
+                className='text-foreground'
+                size={13}
+              />
             </RnTouchableOpacity>
           )}
         </View>

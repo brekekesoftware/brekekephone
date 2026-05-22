@@ -32,13 +32,13 @@ export const ChatInput: FC<{
         onPress={openFileRnPicker}
         className='bg-muted border-border w-12.5 border-t border-r border-b py-2'
       >
-        <RnIcon path={mdiPaperclip} size={20} />
+        <RnIcon path={mdiPaperclip} className='text-foreground' size={20} />
       </RnTouchableOpacity>
       <RnTouchableOpacity
         onPress={onEmojiTurnOn}
         className='bg-muted border-border w-12.5 border-t border-r border-b py-2'
       >
-        <RnIcon color='gray' path={mdiEmoticon} />
+        <RnIcon className='text-foreground-subtle' path={mdiEmoticon} />
       </RnTouchableOpacity>
       <RnTextInput
         blurOnSubmit={false}
@@ -52,7 +52,7 @@ export const ChatInput: FC<{
         onPress={onTextSubmit}
         className='bg-primary w-12.5 py-2 pl-2'
       >
-        <RnIcon color='white' path={mdiSend} />
+        <RnIcon className='text-white' path={mdiSend} />
       </RnTouchableOpacity>
     </View>
   )

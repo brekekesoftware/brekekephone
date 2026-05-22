@@ -122,7 +122,7 @@ export const SmartImage = ({
         <RnActivityIndicator
           size='small'
           color='white'
-          className='absolute top-0 left-0 z-100 h-full w-full overflow-hidden bg-[#00000030]'
+          className='bg-modal-overlay absolute top-0 left-0 z-100 h-full w-full overflow-hidden opacity-30'
         />
       )}
       {!uri ? null : !isImageUrl ? (

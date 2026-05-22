@@ -36,7 +36,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     <View
       className={[
         'relative overflow-hidden rounded border-2 border-white',
-        active && 'border-4 border-[#4cc5de]',
+        active && 'border-info border-4',
         !enabled && 'bg-black',
         sizeCls,
       ]}

@@ -3,16 +3,7 @@ import type { FC } from 'react'
 import { View } from '@/rn/core/components/view'
 import { mdiCached, mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
-
-// Map theme hex (caller pass v.colors.X) → tw class. Theme-aware via CSS var.
-const onNextBgClass: { [k: string]: string } = {
-  [v.colors.primary]: 'bg-primary',
-  [v.colors.danger]: 'bg-error',
-  [v.colors.warning]: 'bg-warning',
-  [v.colors.info]: 'bg-info',
-}
 
 export const FooterActions: FC<
   Partial<{
@@ -21,19 +12,10 @@ export const FooterActions: FC<
     onMore(): void
     onMoreIcon: string
     onNext(): void
-    onNextColor: string
     onNextText: string
   }>
 > = p => {
-  const {
-    onBack,
-    onBackIcon,
-    onMore,
-    onMoreIcon,
-    onNext,
-    onNextColor,
-    onNextText,
-  } = p
+  const { onBack, onBackIcon, onMore, onMoreIcon, onNext, onNextText } = p
 
   return (
     <View className='flex-1 flex-row overflow-hidden rounded-[3px]'>
@@ -63,7 +45,7 @@ export const FooterActions: FC<
         onPress={onNext}
         className={[
           'w-1/2 items-center justify-center rounded-none py-2',
-          onNextColor ? onNextBgClass[onNextColor] : 'bg-primary',
+          'bg-primary',
           !(onBack && onMore) && 'w-2/3',
           !(onBack || onMore) && 'w-full',
         ]}

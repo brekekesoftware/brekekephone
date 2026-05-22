@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import type { ReactElementLike } from 'prop-types'
 import type { FC } from 'react'
 import { useRef } from 'react'
-import { ActivityIndicator, Keyboard } from 'react-native'
+import { Keyboard } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
@@ -21,10 +21,12 @@ import {
   RnTextInput,
   RnTouchableOpacity,
 } from '#/components/rn'
-import { v } from '#/components/variables'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
+import { variables as defaultVariables } from '#/theme/brekeke-scss'
+import { useThemeVariables } from '#/utils/rn-core-hooks'
 import { useStore } from '#/utils/use-store'
 
 export type Park = {
@@ -104,6 +106,7 @@ export const Field: FC<
   }
   const inputRef = useRef<HTMLInputElement>(null)
   const inputRefName = useRef<HTMLInputElement>(null)
+  const variables = useThemeVariables() || defaultVariables
   const isGroup = props.isGroup
   // https://react.dev/warnings/invalid-hook-call-warning
   if (isGroup) {
@@ -141,10 +144,9 @@ export const Field: FC<
           disabled={props.disabled}
         >
           <RnIcon
-            color={v.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
-            className={props.createBtnIconClassName}
+            className={['text-primary', props.createBtnIconClassName]}
           />
         </RnTouchableOpacity>
       ),
@@ -161,10 +163,9 @@ export const Field: FC<
           ]}
         >
           <RnIcon
-            color={v.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
-            className={props.removeBtnIconClassName}
+            className={['text-error', props.removeBtnIconClassName]}
           />
         </RnTouchableOpacity>
       ),
@@ -202,7 +203,7 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
-          placeholderTextColor='grey'
+          placeholderTextColor={variables['--foreground-muted']}
           onBlur={() => {
             if (isWeb) {
               $.set('isFocusing', false)
@@ -235,7 +236,7 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`label`}
-          placeholderTextColor='grey'
+          placeholderTextColor={variables['--foreground-muted']}
           onBlur={() => {
             if (isWeb) {
               $.set('isParkNameFocusing', false)
@@ -355,7 +356,7 @@ export const Field: FC<
         className={[
           'border-border mx-3.75 items-stretch border-b',
           'android:pb-0.5',
-          ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
+          ($.isFocusing || $.isParkNameFocusing) && 'bg-muted',
           props.disabled && 'bg-muted',
           props.transparent && 'mx-0 border-transparent',
         ]}
@@ -396,7 +397,7 @@ export const Field: FC<
           ))}
         {props.loading && (
           <View className='absolute inset-0 flex items-center justify-center bg-black opacity-30'>
-            <ActivityIndicator size='small' color='white' />
+            <RnActivityIndicator size='small' className='h-9 w-9 text-white' />
           </View>
         )}
       </Container>
@@ -407,9 +408,8 @@ export const Field: FC<
         >
           <View className='bg-error mx-3.75 my-0.5 self-start rounded-[3px] px-2.5 py-0.5'>
             <RnIcon
-              color={v.colors.danger}
               path={mdiCardsDiamond}
-              className='absolute -top-2 left-0.5'
+              className='text-error absolute -top-2 left-0.5'
             />
             <RnText small white>
               {props.error}

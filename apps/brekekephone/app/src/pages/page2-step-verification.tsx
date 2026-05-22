@@ -12,13 +12,14 @@ import { RnKeyboardAvoidingView } from '#/components/rn-keyboard-avoiding-view'
 import { RnText } from '#/components/rn-text'
 import { RnTextInput } from '#/components/rn-text-input'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import { variables as defaultVariables } from '#/theme/brekeke-scss'
 import { useAnimationOnDidMount } from '#/utils/animation'
 import { getPublicIp } from '#/utils/public-ip-address'
+import { useThemeVariables } from '#/utils/rn-core-hooks'
 
 const WEB_CONTAINER_MAX_WIDTH = 480
 const TOAST_ANIMATION_DURATION = 800
@@ -31,6 +32,7 @@ type ToastState = {
 export const Page2StepVerification = () => {
   const { width: windowWidth } = useWindowDimensions()
   const safeInsets = useContext(SafeAreaInsetsContext)
+  const variables = useThemeVariables() || defaultVariables
 
   const innerCls = useMemo(
     () =>
@@ -249,7 +251,7 @@ export const Page2StepVerification = () => {
               }}
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
-              placeholderTextColor={v.borderBg}
+              placeholderTextColor={variables['--border']}
               className='border-border mb-4 h-12 w-full rounded-[5px] border px-3 text-center'
             />
             <RnTouchableOpacity

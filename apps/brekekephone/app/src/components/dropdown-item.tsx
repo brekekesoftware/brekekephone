@@ -15,6 +15,8 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   disabled = false,
 }: DropdownItemProps) => (
   <RnTouchableOpacity onPress={onPress} className='py-1.25' disabled={disabled}>
-    <RnText className={disabled ? 'text-[#9e9e9e]' : undefined}>{title}</RnText>
+    <RnText className={disabled ? 'text-foreground-subtle' : undefined}>
+      {title}
+    </RnText>
   </RnTouchableOpacity>
 )

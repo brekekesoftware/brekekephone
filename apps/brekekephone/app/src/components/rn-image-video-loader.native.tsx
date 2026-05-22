@@ -4,7 +4,6 @@ import type { ViewProps } from 'react-native'
 import { Modal, StatusBar } from 'react-native'
 import FastImageWocn from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
-import Svg, { Path } from 'react-native-svg'
 import VideoWocn from 'react-native-video'
 
 import { View } from '@/rn/core/components/view'
@@ -18,7 +17,6 @@ import {
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import { isAndroid } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 
@@ -123,24 +121,21 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     setIsVisible(false)
   }
   return (
-    <View className='h-37.5 w-37.5 overflow-hidden rounded-[5px]'>
+    <View className='h-37.5 w-37.5 items-center justify-center overflow-hidden rounded-[5px]'>
       {isLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
-          className='absolute top-0 left-0 h-37.5 w-37.5 overflow-hidden rounded-[5px] bg-[#00000090]'
+          className='bg-modal-overlay absolute top-0 left-0 h-37.5 w-37.5 overflow-hidden rounded-[5px]'
         />
       )}
       {isLoadSuccess && renderView()}
       {isLoadFailed && (
-        <Svg
-          preserveAspectRatio='xMinYMin slice'
-          height={size}
-          viewBox='3 3  18 18'
-          width={size}
-        >
-          <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
-        </Svg>
+        <RnIcon
+          path={mdiImageBrokenVariant}
+          size={size}
+          className='text-foreground-subtle flex-none'
+        />
       )}
       <Modal
         visible={visible}
@@ -154,7 +149,11 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           ]}
           onPress={onSwipeDown}
         >
-          <RnIcon path={mdiCloseCircleOutline} color='black' size={30} />
+          <RnIcon
+            path={mdiCloseCircleOutline}
+            className='text-foreground'
+            size={30}
+          />
         </RnTouchableOpacity>
         {isLoadSuccess &&
           (fileType === 'image' ? (

@@ -6,14 +6,13 @@ import { Image } from '@/rn/core/components/image'
 import { View } from '@/rn/core/components/view'
 import { mdiRecord } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-const statusMapColor = {
-  online: v.colors.primary,
-  idle: v.colors.warning,
-  busy: v.colors.danger,
-  offline: v.subColor,
+const statusMapClassName = {
+  online: 'text-primary',
+  idle: 'text-warning',
+  busy: 'text-error',
+  offline: 'text-foreground-muted',
 }
 
 export const Avatar = observer(
@@ -36,9 +35,11 @@ export const Avatar = observer(
         {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
-              color={statusMapColor[status as keyof typeof statusMapColor]}
               path={mdiRecord}
-              className='absolute top-6.75 left-7.5'
+              className={[
+                'absolute top-6.75 left-7.5',
+                statusMapClassName[status as keyof typeof statusMapClassName],
+              ]}
             />
           )}
       </View>

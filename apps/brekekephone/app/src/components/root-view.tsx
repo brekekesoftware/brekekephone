@@ -12,7 +12,7 @@ interface RootViewProps {
 
 export const RootView = memo(({ children }: RootViewProps) => {
   if (isWeb) {
-    return <View className='absolute inset-0 bg-white'>{children}</View>
+    return <View className='bg-background absolute inset-0'>{children}</View>
   }
 
   return (

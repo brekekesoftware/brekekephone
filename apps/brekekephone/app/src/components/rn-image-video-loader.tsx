@@ -2,15 +2,14 @@ import type { ComponentProps, FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import FastImageWocn from 'react-native-fast-image'
-import Svg, { Path } from 'react-native-svg'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { mdiImageBrokenVariant } from '#/assets/icons'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import type { ChatFile } from '#/stores/chat-store'
 
 const FastImage = createClassNameComponent({ FastImageWocn }) as FC<
@@ -86,22 +85,20 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return null
   }
   return (
-    <View className='h-50 w-50 overflow-hidden rounded-[5px]'>
+    <View className='h-50 w-50 items-center justify-center overflow-hidden rounded-[5px]'>
       {isLoading && (
         <View className='bg-modal-overlay absolute top-0 left-0 h-50 w-50 items-center justify-center overflow-hidden rounded-[5px]'>
-          <RnActivityIndicator size='small' color='white' className='h-9 w-9' />
+          <RnActivityIndicator size='small' className='h-9 w-9 text-white' />
         </View>
       )}
       {isLoadSuccess && renderView()}
       {isLoadFailed && (
-        <Svg
-          preserveAspectRatio='xMinYMin slice'
-          height={size}
+        <RnIcon
+          path={mdiImageBrokenVariant}
+          size={size}
           viewBox='3 3  18 18'
-          width={size}
-        >
-          <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
-        </Svg>
+          className='text-foreground-subtle'
+        />
       )}
     </View>
   )

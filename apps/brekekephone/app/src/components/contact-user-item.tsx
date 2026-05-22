@@ -18,7 +18,6 @@ import { Constants } from '#/brekekejs/ucclient'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnCheckBox } from '#/components/rn-checkbox'
-import { v } from '#/components/variables'
 import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contact-store'
 import { getPbxName } from '#/stores/contact-store'
@@ -34,7 +33,7 @@ export const UserItem: FC<
     avatar: string
     created: string
     icons: string[]
-    iconColors: string[]
+    iconClassNames: string[]
     iconFuncs: Function[]
     loadings?: number[] | true
     id: string
@@ -68,7 +67,7 @@ export const UserItem: FC<
     avatar,
     created,
     icons,
-    iconColors,
+    iconClassNames,
     iconFuncs,
     loadings,
     id,
@@ -251,13 +250,6 @@ export const UserItem: FC<
           {((isRecentCall && !lastMessage) || isVoicemail) && (
             <View className='flex-row'>
               <RnIcon
-                color={
-                  incoming && !answered
-                    ? v.colors.danger
-                    : incoming && answered
-                      ? v.colors.primary
-                      : v.colors.warning
-                }
                 path={
                   incoming && !answered
                     ? mdiPhoneMissed
@@ -266,7 +258,14 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                className='web:pl-1.5 web:pr-2.5 flex-none'
+                className={[
+                  'web:pl-1.5 web:pr-2.5 flex-none',
+                  incoming && !answered
+                    ? 'text-error'
+                    : incoming && answered
+                      ? 'text-primary'
+                      : 'text-warning',
+                ]}
               />
               <RnText normal small className='text-foreground-muted left-0.75'>
                 {isVoicemail
@@ -292,8 +291,7 @@ export const UserItem: FC<
           >
             <RnIcon
               path={_}
-              color={iconColors?.[i]}
-              className='text-foreground p-2.5'
+              className={['text-foreground p-2.5', iconClassNames?.[i]]}
             />
           </RnTouchableOpacity>
         ))}

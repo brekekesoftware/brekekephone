@@ -7,6 +7,7 @@ import type { UcBuddy } from '#/brekekejs'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -51,7 +52,7 @@ export class PageContactGroupEdit extends Component<{
         />
         <Field isGroup label={intl`Members`} disabled={true} />
         {!this.state.didMount ? (
-          <ActivityIndicator size='large' />
+          <RnActivityIndicator className='h-10 w-10 self-center' size='large' />
         ) : (
           <FlatList
             data={ctx.user.dataListAllUser}

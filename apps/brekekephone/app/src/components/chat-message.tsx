@@ -44,13 +44,15 @@ const File: FC<
     <View>
       <View className='flex-row items-start'>
         <View>
-          <RnIcon path={mdiFile} size={20} />
+          <RnIcon path={mdiFile} className='text-foreground' size={20} />
         </View>
         <View className={['ml-1.25', previewInfoWidthClassName]}>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
-      <RnText className='text-[13px] text-[#9e9e9e]'>{p.size} KB</RnText>
+      <RnText className='text-foreground-subtle text-[13px]'>
+        {p.size} KB
+      </RnText>
       <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
           <RnTouchableOpacity

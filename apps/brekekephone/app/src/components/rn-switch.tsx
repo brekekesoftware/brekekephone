@@ -14,14 +14,14 @@ export const RnSwitch: FC<
     {...p}
     className={[
       'h-3 w-8 rounded-xl',
-      enabled ? 'bg-primary-400' : 'bg-[#e6e6e6]',
+      enabled ? 'bg-primary-400' : 'bg-foreground-disabled',
       className,
     ]}
   >
     <View
       className={[
         'absolute -top-0.75 -left-px h-4.5 w-4.5 rounded-full shadow-sm',
-        enabled ? 'bg-primary translate-x-5' : 'bg-[#cccccc]',
+        enabled ? 'bg-primary translate-x-5' : 'bg-foreground-disabled',
       ]}
     />
   </View>

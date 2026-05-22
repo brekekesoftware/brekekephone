@@ -26,7 +26,7 @@ export const FieldButton: FC<
       onPress={p.onCreateBtnPress}
       className={[
         'mt-3.75 max-w-90 min-w-76.25 self-center overflow-hidden rounded-[3px] px-2.5',
-        p.disabled ? 'bg-[#f0f0f0]' : 'bg-background',
+        p.disabled ? 'bg-muted' : 'bg-background',
         className,
       ]}
       disabled={p.disabled}

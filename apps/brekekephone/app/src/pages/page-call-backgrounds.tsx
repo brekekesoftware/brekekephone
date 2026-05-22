@@ -5,7 +5,6 @@ import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import type { Call } from '#/stores/call'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -19,9 +18,9 @@ export const PageCallBackgrounds = observer(() => {
       mdiPhoneHangup,
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
     ]
-    const iconColors = [
-      v.colors.danger,
-      ...(!c.answered && c.incoming ? [v.colors.primary] : []),
+    const iconClassNames = [
+      'text-error',
+      ...(!c.answered && c.incoming ? ['text-primary'] : []),
     ]
     const iconFuncs = [
       c.hangupWithUnhold,
@@ -37,7 +36,7 @@ export const PageCallBackgrounds = observer(() => {
     return (
       <UserItem
         icons={icons}
-        iconColors={iconColors}
+        iconClassNames={iconClassNames}
         iconFuncs={iconFuncs}
         key={c.id}
         lastMessage={

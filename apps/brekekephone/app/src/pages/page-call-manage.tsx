@@ -31,6 +31,7 @@ import { CallVideosCarousel } from '#/components/call-videos-carousel'
 import { FieldButton } from '#/components/field-button'
 import { Layout } from '#/components/layout'
 import { RnTouchableOpacity } from '#/components/rn'
+import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnText } from '#/components/rn-text'
 import { SmartImage } from '#/components/smart-image'
 import { VideoPlayer } from '#/components/video-player'
@@ -299,8 +300,11 @@ class PageCallManage extends Component<{
         return renderTransferring()
       }
       return (
-        <View className='absolute inset-0 z-101 items-center justify-center bg-white'>
-          <ActivityIndicator size='large' color='black' />
+        <View className='bg-background absolute inset-0 z-101 items-center justify-center'>
+          <RnActivityIndicator
+            size='large'
+            className='text-foreground h-10 w-10'
+          />
         </View>
       )
     }
