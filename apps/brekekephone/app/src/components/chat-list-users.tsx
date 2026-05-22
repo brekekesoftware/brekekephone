@@ -29,7 +29,7 @@ export const ListUsers: FC<{
         <RnTouchableOpacity
           key={id}
           onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO: group
-          className={isUnread ? 'bg-primary-100' : undefined}
+          className={isUnread ? 'bg-primary-100 dark:bg-muted' : undefined}
         >
           <UserItem
             key={id}
