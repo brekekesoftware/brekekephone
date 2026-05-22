@@ -184,7 +184,7 @@ export const UserItem: FC<
       onPress={onPressItem}
       onLongPress={onLongPressItem}
     >
-      <View className={['flex-row pl-2.5', selected && 'bg-primary-100']}>
+      <View className={['flex-row pl-2.5', selected && 'bg-muted']}>
         {group ? (
           <View className='bg-border my-1.25 h-12.5 w-12.5 items-center overflow-hidden rounded-full'>
             <RnIcon
