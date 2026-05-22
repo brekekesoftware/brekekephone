@@ -61,7 +61,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
     },
     {
       key: 'other',
-      label: intl`OTHER SETTINGS`,
+      label: intl`SETTINGS`,
       navFnKey: 'goToPageSettingsOther',
     },
     ...settingSubMenusRight,

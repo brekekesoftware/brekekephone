@@ -8,7 +8,7 @@ import {
   useDarkModeUser,
   useSetDarkMode,
 } from '@/rn/core/dark-mode/index.native'
-import { mdiKeyboardBackspace } from '#/assets/icons'
+import { mdiKeyboardBackspace, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn'
@@ -16,9 +16,20 @@ import { currentVersion, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'
-import { localeOptions } from '#/stores/intl-store'
 
-const DarkModePicker = () => {
+export const LanguagePicker = observer(
+  ({ onSelect }: { onSelect?: Function }) => (
+    <Field
+      icon={mdiTranslate}
+      label={intl`LANGUAGE`}
+      onTouchPress={() => ctx.intl.selectLocaleWithCallback(() => onSelect?.())}
+      value={ctx.intl.locale}
+      valueRender={() => ctx.intl.getLocaleName()}
+    />
+  ),
+)
+
+export const DarkModePicker = () => {
   const d = useDarkModeUser()
   const setDarkMode = useSetDarkMode()
   return (
@@ -31,8 +42,8 @@ const DarkModePicker = () => {
       }}
       type='RnPicker'
       options={[
-        { key: darkModeEnabled, label: intl`Always dark` },
         { key: darkModeDisabled, label: intl`Always light` },
+        { key: darkModeEnabled, label: intl`Always dark` },
         { key: 'undefined', label: intl`System automatic` },
       ]}
       value={
@@ -68,13 +79,8 @@ export class PageSettingsDebug extends Component {
         onBack={ctx.nav.backToPageAccountSignIn}
         title={intl`Settings`}
       >
-        <Field
-          label={intl`LANGUAGE`}
-          onValueChange={v => ctx.intl.setLocale(v)}
-          type='RnPicker'
-          options={localeOptions}
-          value={ctx.intl.locale}
-        />
+        <Field isGroup label={intl`DISPLAY`} />
+        <LanguagePicker />
         <DarkModePicker />
         {!isWeb && (
           <>
@@ -124,7 +130,8 @@ export class PageSettingsDebug extends Component {
         )}
         {isWeb && (
           <>
-            <View className='h-4 w-full' />
+            <Field hasMargin isGroup label={intl`VERSION`} />
+            <View className='h-3 w-full' />
             <RnText normal primary small className='px-5'>
               {intl`Current version: ${currentVersion}`}
             </RnText>

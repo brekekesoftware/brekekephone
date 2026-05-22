@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
-import { mdiCheck, mdiTranslate } from '#/assets/icons'
+import { mdiCheck } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { isIos, isWeb } from '#/config'
+import { DarkModePicker, LanguagePicker } from '#/pages/page-settings-debug'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -184,22 +185,15 @@ export class PageSettingsOther extends Component {
 
     return (
       <Layout
-        description={intl`Other settings for PBX/UC`}
+        description={intl`App settings and configs`}
         dropdown={this.getDropDown()}
         menu='settings'
         subMenu='other'
-        title={intl`Other Settings`}
+        title={intl`Settings`}
       >
-        <Field isGroup label={intl`LOCALIZATION`} />
-        <Field
-          icon={mdiTranslate}
-          label={intl`LANGUAGE`}
-          onTouchPress={() =>
-            ctx.intl.selectLocaleWithCallback(() => this.initData())
-          }
-          value={ctx.intl.locale}
-          valueRender={() => ctx.intl.getLocaleName()}
-        />
+        <Field isGroup label={intl`DISPLAY`} />
+        <LanguagePicker onSelect={this.initData} />
+        <DarkModePicker />
         {ca?.ucEnabled && (
           <>
             <Field isGroup label='UC' />
