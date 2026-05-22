@@ -16,7 +16,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnStacker } from '#/stores/rn-stacker'
 import { arrToMap } from '#/utils/arr-to-map'
 import { openLinkSafely, urls } from '#/utils/deeplink.native'
-import { PushNotification } from '#/utils/push-notification'
+import { resetBadgeNumber } from '#/utils/reset-badge-number'
 
 export type Menu = {
   key: string
@@ -159,7 +159,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             s.navFnKey === 'backToPageCallRecents'
           ) {
             if (isIos) {
-              PushNotification.resetBadgeNumber()
+              resetBadgeNumber()
             }
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return

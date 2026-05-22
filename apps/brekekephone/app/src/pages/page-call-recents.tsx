@@ -13,7 +13,7 @@ import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { PushNotification } from '#/utils/push-notification'
+import { resetBadgeNumber } from '#/utils/reset-badge-number'
 
 @observer
 export class PageCallRecents extends Component {
@@ -22,7 +22,7 @@ export class PageCallRecents extends Component {
     if (isIos) {
       const h = () => {
         if (AppState.currentState === 'active') {
-          PushNotification.resetBadgeNumber()
+          resetBadgeNumber()
         }
       }
       // reset notification badge whenever go to this page

@@ -157,9 +157,6 @@ export const PushNotification = {
   },
 
   getToken: () => fcmToken,
-  resetBadgeNumber: () => {
-    // TODO:
-  },
 }
 
 // TODO:
