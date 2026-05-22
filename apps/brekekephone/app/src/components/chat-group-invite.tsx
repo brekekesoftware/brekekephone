@@ -256,7 +256,7 @@ export class UnreadChatNoti extends Component {
     return (
       <View className={[notifyClassName, 'border-b-0']}>
         <RnTouchableOpacity
-          className='bg-primary-100 flex-1'
+          className='bg-primary-100 flex-1 dark:bg-muted'
           onPress={this.onUnreadPress}
         >
           <UserItem

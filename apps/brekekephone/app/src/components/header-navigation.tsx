@@ -20,9 +20,9 @@ export const Navigation: FC<{
   const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
 
   const renderIconNotices = useCallback(
-    (totalNotice: number, extraClass?: string) => (
-      <View className='absolute -top-1.25 left-6.25'>
-        <View className={[unreadClassName, extraClass]}>
+    (totalNotice: number) => (
+      <View className='absolute -top-2 -right-1.5'>
+        <View className={unreadClassName}>
           <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
             {totalNotice}
           </RnText>
@@ -94,19 +94,21 @@ export const Navigation: FC<{
               active && 'border-primary',
             ]}
           >
-            <RnText
-              small
-              ellipsizeMode='tail'
-              className={['line-clamp-1', active && 'text-primary']}
-            >
-              {s.label}
-            </RnText>
-            {s.key === 'chat' &&
-              !!totalUnreadChat &&
-              renderIconNotices(totalUnreadChat)}
-            {s.key === 'webchat' &&
-              !!totalNoticesWebchat &&
-              renderIconNotices(totalNoticesWebchat, 'left-8.75 w-5')}
+            <View className='relative'>
+              <RnText
+                small
+                ellipsizeMode='tail'
+                className={['line-clamp-1', active && 'text-primary']}
+              >
+                {s.label}
+              </RnText>
+              {s.key === 'chat' &&
+                !!totalUnreadChat &&
+                renderIconNotices(totalUnreadChat)}
+              {s.key === 'webchat' &&
+                !!totalNoticesWebchat &&
+                renderIconNotices(totalNoticesWebchat)}
+            </View>
           </RnTouchableOpacity>
         )
       })}
