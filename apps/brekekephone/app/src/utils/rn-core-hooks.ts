@@ -42,7 +42,7 @@ export const useThemeVariables = () => {
   return getThemeVariables(theme, darkModeState.dark)
 }
 
-export const useClassNameState = () => {
+const useClassNameState = () => {
   const responsiveState = useResponsiveState()
   const darkModeState = useDarkModeState()
   const groupState = useMarkerGroupState()
@@ -55,7 +55,7 @@ export const useClassNameState = () => {
   }
 }
 
-export const useDarkModeState = () => {
+const useDarkModeState = () => {
   const mounted = useIsMounted()
   const user = useDarkModeUser()
   const os = useColorScheme()

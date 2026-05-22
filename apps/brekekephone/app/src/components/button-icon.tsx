@@ -6,9 +6,8 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
 import { BackgroundTimer } from '#/utils/background-timer'
-import { useRuntimeStyle, useThemeVariables } from '#/utils/rn-core-hooks'
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export const ButtonIcon: FC<{
   path: string
@@ -38,9 +37,8 @@ export const ButtonIcon: FC<{
   const size = p.size || 15
   const spinnerSizeCls = `w-[${size}px] h-[${size}px]`
   // Resolve icon fill from className text-* class — theme-aware via variables.
-  const style = useRuntimeStyle(p.className)
-  const variables = useThemeVariables() || defaultVariables
-  const iconFill = (style?.color as string) || variables['--foreground']
+  const style = useRuntimeStyle(['text-foreground', p.className])
+  const iconFill = style?.color as string
   return (
     <View className={['mx-1.25 items-center', p.containerClassName]}>
       <RnTouchableOpacity

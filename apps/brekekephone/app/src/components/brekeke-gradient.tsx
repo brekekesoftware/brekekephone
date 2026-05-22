@@ -4,8 +4,7 @@ import LinearGradientWocn from 'react-native-linear-gradient'
 
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
-import { variables as defaultVariables } from '#/theme/brekeke-scss'
-import { useDarkModeState, useThemeVariables } from '#/utils/rn-core-hooks'
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 const LinearGradient = createClassNameComponent({ LinearGradientWocn })
 export type BrekekeGradientProps = Omit<LinearGradientProps, 'colors'> & {
@@ -13,14 +12,10 @@ export type BrekekeGradientProps = Omit<LinearGradientProps, 'colors'> & {
   className?: ClassName
 }
 export const BrekekeGradient: FC<BrekekeGradientProps> = props => {
-  const dark = useDarkModeState()
-  const variables = useThemeVariables() || defaultVariables
-  const colors = props.white
-    ? [variables['--background'], variables['--background']]
-    : [
-        dark?.dark ? variables['--primary-700'] : variables['--primary-400'],
-        dark?.dark ? variables['--background'] : variables['--secondary-900'],
-      ]
+  const color1 = useRuntimeStyle('text-background')?.color as string
+  const color2 = useRuntimeStyle('text-primary-400 dark:text-primary-700')?.color as string
+  const color3 = useRuntimeStyle('text-secondary-900 dark:text-background')?.color as string
+  const colors = props.white ? [color1, color1] : [color2, color3]
   return (
     <LinearGradient
       {...props}
