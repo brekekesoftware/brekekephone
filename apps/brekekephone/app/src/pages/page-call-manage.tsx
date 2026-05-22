@@ -2,10 +2,9 @@ import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
-import { ActivityIndicator, AppState, Dimensions } from 'react-native'
+import { AppState, Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
-import { tw } from '@/rn/core/tw/tw'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -50,8 +49,6 @@ const minSizeH = height * 0.3
 const minSizeW = width * 0.8
 const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
-const imageWrapperCls = `min-h-[${minSizeImageWrapper}px] min-w-[${minSizeImageWrapper}px]`
-const hiddenCls = tw`absolute top-[-100%] left-[-100%] h-full w-full`
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
     ? ctx.nav.backToPageCallKeypad()
@@ -364,11 +361,13 @@ class PageCallManage extends Component<{
     return (
       <View
         className={[
-          !c.localVideoEnabled
-            ? 'mx-3.75 flex-1 flex-col items-center justify-start'
-            : 'flex-1',
-          !c.localVideoEnabled && imageWrapperCls,
+          'flex-1',
+          !c.localVideoEnabled && 'mx-3.75 flex-col items-center justify-start',
         ]}
+        style={{
+          minWidth: minSizeImageWrapper,
+          minHeight: minSizeImageWrapper,
+        }}
       >
         <View
           className={[
@@ -634,7 +633,9 @@ class PageCallManage extends Component<{
     return (
       <BrekekeGradient
         white={this.props.call.localVideoEnabled}
-        className={!this.isVisible() && hiddenCls}
+        className={
+          !this.isVisible() && 'absolute -top-full -left-full h-full w-full'
+        }
       >
         {this.renderLayout()}
       </BrekekeGradient>

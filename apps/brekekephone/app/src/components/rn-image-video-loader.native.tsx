@@ -27,8 +27,6 @@ const Video = createClassNameComponent({ VideoWocn }) as FC<
   ComponentProps<typeof VideoWocn> & { className?: ClassName }
 >
 
-const btnCloseCls = `top-[${isAndroid ? StatusBar.currentHeight : 44}px] android:elevation-2`
-
 const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
@@ -143,10 +141,8 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
         onRequestClose={onRequestClose}
       >
         <RnTouchableOpacity
-          className={[
-            'bg-background absolute right-3.75 z-10 rounded-[15px]',
-            btnCloseCls,
-          ]}
+          className='bg-background android:elevation-2 absolute top-11 right-3.75 z-10 rounded-[15px]'
+          style={isAndroid ? { top: StatusBar.currentHeight } : undefined}
           onPress={onSwipeDown}
         >
           <RnIcon

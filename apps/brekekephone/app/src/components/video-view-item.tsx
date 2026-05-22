@@ -31,15 +31,14 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
     enabled = true,
   } = props
   const c = ctx.call.getOngoingCall()
-  const sizeCls = `w-[${view.width}px] h-[${view.height}px]`
   return (
     <View
       className={[
         'relative overflow-hidden rounded border-2 border-white',
         active && 'border-info border-4',
         !enabled && 'bg-black',
-        sizeCls,
       ]}
+      style={view}
     >
       <View className='flex-1'>
         <RnTouchableOpacity

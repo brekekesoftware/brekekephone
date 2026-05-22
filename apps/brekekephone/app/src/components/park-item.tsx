@@ -3,6 +3,7 @@ import type { Animated } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
 import { RnTouchableOpacity } from '#/components/rn'
 import { AnimatedText, AnimatedView } from '#/components/rn-animated'
 import { intl } from '#/stores/intl'
@@ -49,14 +50,14 @@ export const ParkItem: FC<ParkItemProps> = ({
   if (useAnimated) {
     // no className for bg/text - animated style drives the colors
   } else if (selected && flashAnim) {
-    wrapperClass = 'bg-primary'
-    textClass = 'text-foreground'
-    subTextClass = 'text-foreground-muted'
+    wrapperClass = tw`bg-primary`
+    textClass = tw`text-foreground`
+    subTextClass = tw`text-foreground-muted`
   } else if (selected) {
-    wrapperClass = 'bg-primary-100'
+    wrapperClass = tw`bg-primary-100`
   } else {
-    subTextClass = 'text-foreground-muted'
-    textClass = 'text-foreground'
+    subTextClass = tw`text-foreground-muted`
+    textClass = tw`text-foreground`
   }
 
   const displayName = name || intl`<Unnamed>`

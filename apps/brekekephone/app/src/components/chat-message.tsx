@@ -20,7 +20,6 @@ import { formatChatContent } from '#/utils/format-chat-content'
 // 50px of avatar and 10px of padding. calc(100vw-..) resolves on native too via
 // the framework's runtime vw support, so no Dimensions inline style needed.
 const messageMaxWidthClassName = tw`max-w-[calc(100vw-60px)]`
-const previewInfoWidthClassName = tw`w-[calc(100vw-119px)]`
 
 const File: FC<
   Partial<{
@@ -46,7 +45,7 @@ const File: FC<
         <View>
           <RnIcon path={mdiFile} className='text-foreground' size={20} />
         </View>
-        <View className={['ml-1.25', previewInfoWidthClassName]}>
+        <View className='ml-1.25 w-[calc(100vw-119px)]'>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>

@@ -7,6 +7,7 @@ import { Platform } from 'react-native'
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
 import { lowerFirst } from '@/shared/lodash'
 import { Footer } from '#/components/footer'
 import { Header } from '#/components/header'
@@ -75,13 +76,13 @@ export const Layout: FC<
 
   Object.assign(containerProps, {
     className: [
-      'h-full flex-1',
-      props.transparent ? 'bg-transparent' : 'bg-background',
+      tw`h-full flex-1`,
+      props.transparent ? tw`bg-transparent` : tw`bg-background`,
     ],
   })
 
   if (!props.noScroll) {
-    containerProps.contentContainerClassName = 'grow'
+    containerProps.contentContainerClassName = tw`grow`
     if (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing) {
       containerProps.contentContainerStyle = {
         paddingBottom: RnKeyboard.keyboardHeight,
@@ -126,13 +127,11 @@ export const Layout: FC<
   }
 
   const headerSpaceH = props?.isFullContent ? headerSpace - 15 : headerSpace
-  const headerSpaceCls = `h-[${headerSpaceH}px]`
-  const footerSpaceCls = `h-[${footerSpace}px]`
-  const cl = outerClassName ? outerClassName : 'h-full w-full'
+  const cl = outerClassName ? outerClassName : tw`h-full w-full`
   return (
     <View className={cl}>
       <Container {...containerProps}>
-        <View className={headerSpaceCls} />
+        <View style={{ height: headerSpaceH }} />
         {props.children}
         <View className={props?.isFullContent ? 'h-0' : 'h-3.75'} />
       </Container>
@@ -144,7 +143,7 @@ export const Layout: FC<
           containerMarginTop={headerSpace}
         />
       )}
-      {!props.isTab && <View className={footerSpaceCls} />}
+      {!props.isTab && <View style={{ height: footerSpace }} />}
       <Footer {...props} menu={props.menu as string} />
       <Header {...props} compact={props.compact || headerOverflow} />
     </View>

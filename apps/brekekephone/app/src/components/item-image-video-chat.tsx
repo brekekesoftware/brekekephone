@@ -12,18 +12,12 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-// calc(100vw-..) resolves on native too via the framework's runtime vw support.
-const vMessageWidthClassName = tw`w-[calc(100vw-119px)]`
-
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
     p.incoming || !p.target?.user_id ? '' : ` -> ${p.target?.user_id}`
   const isStopped = p.state === 'stopped'
   const isDisableCancel =
     isStopped || p.state === 'success' || p.state === 'failure'
-  const textClass = isStopped
-    ? 'text-foreground-subtle text-[13px] line-through'
-    : 'text-foreground text-[13px]'
 
   const onCancelFile = () => {
     ctx.uc.rejectFile(p).catch(onRejectFileFailure)
@@ -36,8 +30,15 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   }
   return (
     <View>
-      <View className={['mb-1.25 ml-2.5', vMessageWidthClassName]}>
-        <RnText className={['line-clamp-2', textClass]}>
+      <View className='mb-1.25 ml-2.5 w-[calc(100vw-119px)]'>
+        <RnText
+          className={[
+            'line-clamp-2 text-[13px]',
+            isStopped
+              ? 'text-foreground-subtle line-through'
+              : 'text-foreground',
+          ]}
+        >
           {p.name}
           {displaySendTo}
         </RnText>
