@@ -35,7 +35,6 @@ export const ButtonIcon: FC<{
     p.onPress?.()
   }
   const size = p.size || 15
-  const spinnerSizeCls = `w-[${size}px] h-[${size}px]`
   // Resolve icon fill from className text-* class - theme-aware via variables.
   const style = useRuntimeStyle(['text-foreground', p.className])
   const iconFill = style?.color as string
@@ -53,7 +52,7 @@ export const ButtonIcon: FC<{
         ]}
       >
         {isLoading || p.loading ? (
-          <RnActivityIndicator className={spinnerSizeCls} />
+          <RnActivityIndicator style={{ width: size, height: size }} />
         ) : (
           <Svg height={size} viewBox='0 0 24 24' width={size}>
             <Path d={p.path} fill={iconFill} />
