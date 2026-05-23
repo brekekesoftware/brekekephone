@@ -11,15 +11,15 @@ export const useSvgIconProps = ({
   ...props
 }: SvgIconProps) => {
   const ctx = useTextStyle()
-  className = clsx(ctx, className)
-  const styleComposed = runtimeStyle([className, style] as ClassName)
-  size = size || styleComposed?.fontSize || 24
-  const lineHeight = styleComposed?.lineHeight || size
+  const classNameComposed = clsx(ctx, className)
+  const styleComposed = runtimeStyle([classNameComposed, style as ClassName])
+  const width = size || styleComposed?.fontSize || 24
+  const height = size || styleComposed?.lineHeight || width
 
   return {
     ...props,
-    className,
-    width: size,
-    height: lineHeight,
+    className: classNameComposed,
+    width,
+    height,
   }
 }

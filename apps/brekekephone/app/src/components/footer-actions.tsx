@@ -8,14 +8,14 @@ import { intl } from '#/stores/intl'
 export const FooterActions: FC<
   Partial<{
     onBack(): void
-    onBackIcon: string
+    BackIcon: FC<any>
     onMore(): void
-    onMoreIcon: string
+    MoreIcon: FC<any>
     onNext(): void
     onNextText: string
   }>
 > = p => {
-  const { onBack, onBackIcon, onMore, onMoreIcon, onNext, onNextText } = p
+  const { onBack, BackIcon, onMore, MoreIcon, onNext, onNextText } = p
 
   return (
     <View className='flex-1 flex-row overflow-hidden rounded-[3px]'>
@@ -23,22 +23,33 @@ export const FooterActions: FC<
         <RnTouchableOpacity
           onPress={onBack}
           className={[
-            'bg-error-100 dark:bg-error-900 w-1/4 rounded-none py-2',
+            'bg-error-100 dark:bg-error-800 w-1/4 items-center justify-center rounded-none py-2',
             !onMore && 'w-1/3',
           ]}
         >
-          <RnIcon
-            path={onBackIcon || mdiKeyboardBackspace}
-            className='text-error dark:text-error-300'
-          />
+          {BackIcon ? (
+            <BackIcon className='text-error dark:text-white' size={18} />
+          ) : (
+            <RnIcon
+              path={mdiKeyboardBackspace}
+              className='text-error dark:text-white'
+            />
+          )}
         </RnTouchableOpacity>
       )}
       {onMore && (
         <RnTouchableOpacity
           onPress={onMore}
-          className={['bg-muted w-1/4 rounded-none py-2', !onBack && 'w-1/3']}
+          className={[
+            'bg-muted w-1/4 items-center justify-center rounded-none py-2',
+            !onBack && 'w-1/3',
+          ]}
         >
-          <RnIcon path={onMoreIcon || mdiCached} className='text-foreground' />
+          {MoreIcon ? (
+            <MoreIcon className='text-foreground' size={18} />
+          ) : (
+            <RnIcon path={mdiCached} className='text-foreground' />
+          )}
         </RnTouchableOpacity>
       )}
       <RnTouchableOpacity

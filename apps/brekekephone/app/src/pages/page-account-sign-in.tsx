@@ -2,16 +2,13 @@ import { observer } from 'mobx-react'
 
 import { FlatList } from '@/rn/core/components/flat-list'
 import { View } from '@/rn/core/components/view'
-import {
-  mdiCogOutline,
-  mdiDotsHorizontal,
-  mdiUnfoldMoreHorizontal,
-} from '#/assets/icons'
+import { mdiDotsHorizontal, mdiUnfoldMoreHorizontal } from '#/assets/icons'
 import { AccountSignInItem } from '#/components/account-sign-in-item'
 import { BrekekeGradient } from '#/components/brekeke-gradient'
 import { Layout } from '#/components/layout'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { currentVersion } from '#/config'
+import { IconSettings } from '#/icons/settings'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { permForCall } from '#/utils/permissions'
@@ -56,11 +53,7 @@ export const PageAccountSignIn = observer(() => {
         onPress={ctx.nav.goToPageSettingsDebug}
       >
         <View className='flex-row justify-end pl-4.75'>
-          <RnIcon
-            className='absolute top-0.5 left-0 text-white'
-            path={mdiCogOutline}
-            size={16}
-          />
+          <IconSettings className='absolute top-0.5 left-0 text-[16px] leading-4 text-white' />
           <RnText bold white>
             {currentVersion}
           </RnText>

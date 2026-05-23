@@ -6,14 +6,14 @@ import { isWeb } from '@/rn/core/utils/platform'
 import {
   mdiAccountCircleOutline,
   mdiApplicationOutline,
-  mdiClose,
-  mdiDotsHorizontal,
   mdiServerNetwork,
   mdiWeb,
 } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { FooterActions } from '#/components/footer-actions'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
+import { IconPencil } from '#/icons/pencil'
+import { IconTrash } from '#/icons/trash'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -139,9 +139,9 @@ export const AccountSignInItem: FC<{
               onConfirm: () => ctx.account.removeAccount(a.id),
             })
           }}
-          onBackIcon={mdiClose}
+          BackIcon={IconTrash}
           onMore={() => ctx.nav.goToPageAccountUpdate({ id: a.id })}
-          onMoreIcon={mdiDotsHorizontal}
+          MoreIcon={IconPencil}
           onNext={onPressSignIn}
           onNextText={intl`SIGN IN`}
         />

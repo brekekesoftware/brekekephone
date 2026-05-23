@@ -13,15 +13,15 @@ export const useSvgIconProps = async ({
   const styleComposed = await useRuntimeStyle([
     ctx,
     className,
-    style,
-  ] as ClassName)
-  size = size || styleComposed?.fontSize || 24
-  const lineHeight = styleComposed?.lineHeight || size
+    style as ClassName,
+  ])
+  const width = size || styleComposed?.fontSize || 24
+  const height = size || styleComposed?.lineHeight || width
 
   return {
     ...props,
-    width: size,
-    height: lineHeight,
     style: styleComposed,
+    width,
+    height,
   }
 }

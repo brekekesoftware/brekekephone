@@ -4,7 +4,9 @@ import type { GestureResponderEvent, TouchableOpacityProps } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { clsx } from '@/rn/core/tw/clsx'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
+import { isWeb } from '@/rn/core/utils/platform'
 import { defaultTimeout } from '#/config'
 
 type PropsWocn = TouchableOpacityProps & {
@@ -37,6 +39,11 @@ const RnTouchableOpacityWocn: FC<PropsWocn> = forwardRef(
       },
       [loading],
     )
+
+    if (isWeb) {
+      // @ts-ignore
+      props.className = clsx('cursor-pointer', props.className)
+    }
 
     const d = disabled || isLoading
     return (
