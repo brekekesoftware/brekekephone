@@ -19,21 +19,7 @@ import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
 export const AppWebContainer = ({ children }: PropsWithChildren) => {
-  const darkMode = useDarkModeUser()
-  useEffect(() => {
-    const { classList } = document.documentElement
-    if (darkMode === undefined) {
-      classList.remove(darkClassName, lightClassName)
-      return
-    }
-    if (darkMode) {
-      classList.add(darkClassName)
-      classList.remove(lightClassName)
-      return
-    }
-    classList.add(lightClassName)
-    classList.remove(darkClassName)
-  }, [darkMode])
+  useSetDarkModeHtml()
 
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   const isBrowserOrEmbed = isBrowser || isEmbed
@@ -83,4 +69,22 @@ export const AppWebContainer = ({ children }: PropsWithChildren) => {
       {child}
     </Container>
   )
+}
+
+const useSetDarkModeHtml = () => {
+  const darkMode = useDarkModeUser()
+  useEffect(() => {
+    const { classList } = document.documentElement
+    if (darkMode === undefined) {
+      classList.remove(darkClassName, lightClassName)
+      return
+    }
+    if (darkMode) {
+      classList.add(darkClassName)
+      classList.remove(lightClassName)
+      return
+    }
+    classList.add(lightClassName)
+    classList.remove(darkClassName)
+  }, [darkMode])
 }

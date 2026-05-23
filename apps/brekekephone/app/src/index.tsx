@@ -7,12 +7,14 @@ import '../tailwind.css'
 import '#/index.scss'
 import '#/theme/brekeke.scss'
 
+import { webClassName } from '@/rn/core/tailwind'
 import { composeProviders } from '@/rn/core/utils/compose-providers'
 import { App } from '#/app'
 import { AppWebContainer } from '#/app-web-container'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'
 
 const AppWeb = composeProviders(AppWebContainer, App)
+document.documentElement.classList.add(webClassName)
 
 const runApp = (rootTag: HTMLElement) => {
   const r = createRoot(rootTag)
@@ -23,5 +25,4 @@ exposeEmbedApi(runApp)
 
 if (window._BrekekePhoneWebRoot) {
   runApp(window._BrekekePhoneWebRoot)
-  document.documentElement.classList.add('web-', 'mac-scrollbar')
 }
