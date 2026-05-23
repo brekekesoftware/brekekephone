@@ -16,4 +16,5 @@ exposeEmbedApi(runApp)
 
 if (window._BrekekePhoneWebRoot) {
   runApp(window._BrekekePhoneWebRoot)
+  document.documentElement.classList.add('web-', 'mac-scrollbar')
 }
