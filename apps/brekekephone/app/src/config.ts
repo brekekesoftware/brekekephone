@@ -1,4 +1,3 @@
-import { Platform } from 'react-native'
 import type { WebViewSource } from 'react-native-webview/lib/WebViewTypes'
 
 import json from '../package.json'
@@ -16,10 +15,6 @@ export const buildWebViewSource = (uri: string): WebViewSource => ({
     'X-Requested-With': bundleIdentifier,
   },
 })
-
-export const isAndroid = Platform.OS === 'android'
-export const isIos = Platform.OS === 'ios'
-export const isWeb = Platform.OS === 'web'
 
 // timeout
 export const defaultTimeout = 500

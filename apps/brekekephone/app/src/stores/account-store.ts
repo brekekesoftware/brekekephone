@@ -1,6 +1,7 @@
 import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import { jsonStable } from '@/shared/json-stable'
 import { debounce, uniqBy } from '@/shared/lodash'
@@ -19,7 +20,7 @@ import type {
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/rn'
-import { currentVersion, isWeb } from '#/config'
+import { currentVersion } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl, intlDebug } from '#/stores/intl'

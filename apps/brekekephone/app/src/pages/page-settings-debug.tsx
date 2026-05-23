@@ -8,11 +8,12 @@ import {
   useDarkModeUser,
   useSetDarkMode,
 } from '@/rn/core/dark-mode/index.native'
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiKeyboardBackspace, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn'
-import { currentVersion, isWeb } from '#/config'
+import { currentVersion } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl } from '#/stores/intl'

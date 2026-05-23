@@ -3,6 +3,7 @@ import { observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
+import { isAndroid } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import { debounce, random } from '@/shared/lodash'
 import {
@@ -27,12 +28,7 @@ import type {
   PbxResourceLine,
   Request,
 } from '#/brekekejs'
-import {
-  bundleIdentifier,
-  fcmApplicationId,
-  isAndroid,
-  retryInterval,
-} from '#/config'
+import { bundleIdentifier, fcmApplicationId, retryInterval } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/account-store'
 import type { PbxUser, Phonebook } from '#/stores/contact-store'

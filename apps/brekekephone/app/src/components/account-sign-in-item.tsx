@@ -2,6 +2,7 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import {
   mdiAccountCircleOutline,
   mdiApplicationOutline,
@@ -13,7 +14,6 @@ import {
 import { Field } from '#/components/field'
 import { FooterActions } from '#/components/footer-actions'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'

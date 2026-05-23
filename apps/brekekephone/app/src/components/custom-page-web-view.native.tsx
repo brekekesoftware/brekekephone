@@ -6,8 +6,9 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
-import { buildWebViewSource, isAndroid } from '#/config'
+import { buildWebViewSource } from '#/config'
 import { ctx } from '#/stores/ctx'
 
 const WebView = createClassNameComponent({ WebViewWocn }) as FC<

@@ -1,4 +1,4 @@
-import { isIos } from '#/config'
+import { isIos } from '@/rn/core/utils/platform'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'

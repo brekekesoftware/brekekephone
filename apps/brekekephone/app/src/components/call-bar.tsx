@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -14,7 +15,7 @@ import {
 } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { defaultTimeout, isWeb } from '#/config'
+import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'

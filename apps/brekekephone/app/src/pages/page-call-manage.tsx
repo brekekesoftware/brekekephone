@@ -5,6 +5,7 @@ import type { NativeEventSubscription } from 'react-native'
 import { AppState, Dimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { isAndroid, isWeb } from '@/rn/core/utils/platform'
 import {
   mdiAlphaPCircle,
   mdiCallSplit,
@@ -34,7 +35,7 @@ import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnText } from '#/components/rn-text'
 import { SmartImage } from '#/components/smart-image'
 import { VideoPlayer } from '#/components/video-player'
-import { defaultTimeout, isAndroid, isWeb } from '#/config'
+import { defaultTimeout } from '#/config'
 import { PageCallTransferAttend } from '#/pages/page-call-transfer-attend'
 import type { Call, CallConfigKey } from '#/stores/call'
 import { ctx } from '#/stores/ctx'

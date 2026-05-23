@@ -2,10 +2,10 @@ import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Keyboard } from 'react-native'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { isWeb } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
 export const ToggleKeyboard: FC<{

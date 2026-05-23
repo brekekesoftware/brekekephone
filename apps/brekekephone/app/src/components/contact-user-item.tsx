@@ -6,6 +6,7 @@ import { Pressable } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { isWeb } from '@/rn/core/utils/platform'
 import { isEmpty } from '@/shared/lodash'
 import {
   mdiAccountGroup,
@@ -19,7 +20,6 @@ import { Constants } from '#/brekekejs/ucclient'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnCheckBox } from '#/components/rn-checkbox'
-import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contact-store'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'

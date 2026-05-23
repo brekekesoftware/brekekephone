@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Dimensions } from 'react-native'
 
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 
 /* This hook will use later. Current not handle orientation */
 

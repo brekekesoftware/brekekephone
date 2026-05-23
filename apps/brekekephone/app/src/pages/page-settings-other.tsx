@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { mdiCheck } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
-import { isIos, isWeb } from '#/config'
 import { DarkModePicker, LanguagePicker } from '#/pages/page-settings-debug'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'

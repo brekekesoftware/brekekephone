@@ -1,5 +1,5 @@
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonStable } from '@/shared/json-stable'
-import { isWeb } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 

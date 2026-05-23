@@ -1,8 +1,8 @@
 import type { NativeModule } from 'react-native'
 import { NativeModules } from 'react-native'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { get, set } from '@/shared/lodash'
-import { isWeb } from '#/config'
 import type { TCallKeepAction } from '#/stores/call-store'
 
 type TBrekekeUtils = {

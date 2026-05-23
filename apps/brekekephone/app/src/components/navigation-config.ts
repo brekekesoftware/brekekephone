@@ -1,6 +1,7 @@
 import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
+import { isIos } from '@/rn/core/utils/platform'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import {
   mdiAccountCircleOutline,
@@ -8,7 +9,6 @@ import {
   mdiPhoneOutline,
 } from '#/assets/icons'
 import type { PbxCustomPage } from '#/brekekejs'
-import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import type { Nav } from '#/stores/nav'

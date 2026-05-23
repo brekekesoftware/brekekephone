@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { debounce } from '@/shared/lodash'
 import type {
   PbxCustomPage,
@@ -10,7 +11,7 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '#/brekekejs'
-import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
+import { bundleIdentifier, currentVersion } from '#/config'
 import type { Account, AccountUnique, RecentCall } from '#/stores/account-store'
 import {
   getAccountUniqueId,

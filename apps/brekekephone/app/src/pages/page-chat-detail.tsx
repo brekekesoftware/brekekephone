@@ -8,12 +8,13 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
 import { ChatInput } from '#/components/footer-chat-input'
 import { Layout } from '#/components/layout'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { defaultTimeout, isWeb } from '#/config'
+import { defaultTimeout } from '#/config'
 import type { ChatFile, ChatMessage } from '#/stores/chat-store'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'

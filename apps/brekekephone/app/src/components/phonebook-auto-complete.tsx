@@ -5,9 +5,9 @@ import { ScrollView } from 'react-native'
 import { Text } from '@/rn/components/text'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { isWeb } from '@/rn/core/utils/platform'
 import type { PbxBook } from '#/brekekejs'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 
 export const PhonebookAutoComplete: FC<

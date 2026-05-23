@@ -7,6 +7,7 @@ import { Keyboard } from 'react-native'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { tw } from '@/rn/core/tw/tw'
+import { isWeb } from '@/rn/core/utils/platform'
 import { flow, omit } from '@/shared/lodash'
 import {
   mdiCardsDiamond,
@@ -22,7 +23,6 @@ import {
   RnTouchableOpacity,
 } from '#/components/rn'
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
-import { isWeb } from '#/config'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'

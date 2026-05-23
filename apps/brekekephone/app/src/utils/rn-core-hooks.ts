@@ -15,8 +15,8 @@ import {
   useMarkerPeerState,
 } from '@/rn/core/tw/lib/marker.native'
 import { runtimeStyle } from '@/rn/core/tw/runtime-style'
+import { isWeb } from '@/rn/core/utils/platform'
 import { useIsMounted } from '@/rn/core/utils/use-is-mounted'
-import { isWeb } from '#/config'
 
 // re impelement hooks using .native variant
 // web craco is currently not configured yet to support .client variant

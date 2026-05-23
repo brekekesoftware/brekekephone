@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { SafeAreaView } from '@/rn/core/components/safe-area-view'
 import { View } from '@/rn/core/components/view'
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 
 interface RootViewProps {
   children: ReactNode

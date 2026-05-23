@@ -2,8 +2,8 @@ import type { FC } from 'react'
 import { StatusBar } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isIos, isWeb } from '#/config'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export type TRnStatusBarProps = {

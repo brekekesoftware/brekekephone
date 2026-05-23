@@ -3,7 +3,7 @@ import { stat } from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
-import { isIos } from '#/config'
+import { isIos } from '@/rn/core/utils/platform'
 import { RnPicker } from '#/stores/rn-picker'
 import {
   onPickFileNativeError,

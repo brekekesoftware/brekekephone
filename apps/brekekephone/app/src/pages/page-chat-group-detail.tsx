@@ -8,6 +8,7 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
@@ -15,7 +16,7 @@ import { ChatInput } from '#/components/footer-chat-input'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { defaultTimeout, isWeb } from '#/config'
+import { defaultTimeout } from '#/config'
 import type { ChatFile, ChatGroup, ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'

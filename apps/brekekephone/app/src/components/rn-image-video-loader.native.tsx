@@ -9,6 +9,7 @@ import VideoWocn from 'react-native-video'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
+import { isAndroid } from '@/rn/core/utils/platform'
 import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
@@ -17,7 +18,6 @@ import {
 import { RnActivityIndicator } from '#/components/rn-activity-indicator'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isAndroid } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
 
 const FastImage = createClassNameComponent({ FastImageWocn }) as FC<

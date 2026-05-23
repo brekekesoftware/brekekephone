@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import {
   mdiMenuDown,
   mdiMenuRight,
@@ -25,7 +26,6 @@ import type { DropdownItemProps } from '#/components/dropdown-item'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isWeb } from '#/config'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import type { DropdownPosition } from '#/stores/rn-dropdown'

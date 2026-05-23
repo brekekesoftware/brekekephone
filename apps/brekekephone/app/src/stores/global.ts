@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 

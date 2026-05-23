@@ -1,9 +1,9 @@
 import { AppState } from 'react-native'
 
+import { isAndroid, isIos, isWeb } from '@/rn/core/utils/platform'
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pn-config'
 import { updatePhoneIndex } from '#/api/update-phone-index'
-import { isAndroid, isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'

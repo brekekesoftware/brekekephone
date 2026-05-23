@@ -4,11 +4,11 @@ import { Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { tw } from '@/rn/core/tw/tw'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { lowerFirst } from '@/shared/lodash'
 import { FooterActions } from '#/components/footer-actions'
 import { Navigation } from '#/components/footer-navigation'
 import { ToggleKeyboard } from '#/components/footer-toggle-keyboard'
-import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 import { arrToMap } from '#/utils/arr-to-map'
 

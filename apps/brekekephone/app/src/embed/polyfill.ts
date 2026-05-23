@@ -5,7 +5,7 @@ import * as React from 'react'
 import * as ReactDOMClient from 'react-dom/client'
 import { Platform } from 'react-native'
 
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 
 declare global {
   interface Window {

@@ -11,8 +11,8 @@ import { Dimensions, PanResponder } from 'react-native'
 
 import type { ViewRn } from '@/rn/core/components/view'
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import { VideoPlayer } from '#/components/video-player'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { RnStacker } from '#/stores/rn-stacker'
 

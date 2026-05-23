@@ -1,4 +1,4 @@
-import { isIos, isWeb } from '#/config'
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 
 export const formatFileType = (name: string) => {
   const typeImage = ['PNG', 'JPG', 'JPEG', 'GIF']

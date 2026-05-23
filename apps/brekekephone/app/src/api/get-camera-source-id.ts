@@ -1,4 +1,4 @@
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 

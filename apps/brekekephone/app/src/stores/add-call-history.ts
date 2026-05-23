@@ -4,8 +4,8 @@ import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 import { v4 as newUuid } from 'uuid'
 
+import { isAndroid, isIos } from '@/rn/core/utils/platform'
 import { jsonStable } from '@/shared/json-stable'
-import { isAndroid, isIos } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { Call } from '#/stores/call'
 import {

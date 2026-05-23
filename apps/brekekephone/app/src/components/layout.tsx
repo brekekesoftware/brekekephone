@@ -8,12 +8,12 @@ import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { tw } from '@/rn/core/tw/tw'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { lowerFirst } from '@/shared/lodash'
 import { Footer } from '#/components/footer'
 import { Header } from '#/components/header'
 import type { HeaderDropdownItem } from '#/components/header-dropdown'
 import { Toast } from '#/components/toast'
-import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
 // BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME - ScrollView

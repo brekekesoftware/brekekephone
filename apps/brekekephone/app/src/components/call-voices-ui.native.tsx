@@ -2,7 +2,7 @@ import { observer } from 'mobx-react'
 import { Component, useEffect, useRef } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
-import { isAndroid } from '#/config'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 import { waitTimeout } from '#/utils/wait-timeout'

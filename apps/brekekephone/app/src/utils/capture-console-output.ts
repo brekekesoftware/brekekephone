@@ -2,8 +2,8 @@ import moment from 'moment'
 // eslint-disable-next-line
 import { format } from 'util'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
-import { isWeb } from '#/config'
 import { sipErrorEmitter } from '#/stores/sip-error-emitter'
 
 const formatErrors = (...errs: Error[]) => {

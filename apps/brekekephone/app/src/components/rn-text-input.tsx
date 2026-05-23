@@ -3,7 +3,7 @@ import type { TextInputProps } from 'react-native'
 
 import type { InputProps } from '@/rn/core/components/input'
 import { Input } from '@/rn/core/components/input'
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 
 // Loose `ref` for legacy callers using `useRef<HTMLInputElement>` (web bias).
 export type RnTextInputProps = Omit<InputProps, 'ref'> & {
