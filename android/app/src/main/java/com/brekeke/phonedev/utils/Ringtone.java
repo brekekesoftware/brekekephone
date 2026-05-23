@@ -90,6 +90,10 @@ public class Ringtone {
         new OnCommunicationDeviceChangedListener() {
           @Override
           public void onCommunicationDeviceChanged(AudioDeviceInfo device) {
+            if (device == null) {
+              Emitter.debug("onCommunicationDeviceChanged:AudioDeviceInfo::null");
+              return;
+            }
             Emitter.debug(
                 "onCommunicationDeviceChanged:AudioDeviceInfo::"
                     + device.getType()
