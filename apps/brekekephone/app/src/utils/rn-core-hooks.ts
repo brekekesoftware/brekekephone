@@ -15,12 +15,9 @@ import {
   useMarkerPeerState,
 } from '@/rn/core/tw/lib/marker.native'
 import { runtimeStyle } from '@/rn/core/tw/runtime-style'
-import { isWeb } from '@/rn/core/utils/platform'
-import { useIsMounted } from '@/rn/core/utils/use-is-mounted'
 
 // re impelement hooks using .native variant
-// web craco is currently not configured yet to support .client variant
-// we can config craco and remove this file later on
+// we dont have ssr so the logic is a bit different
 
 export const useRuntimeStyle = (className: ClassName) => {
   const state = useClassNameState()
@@ -36,9 +33,6 @@ export const useRuntimeStyle = (className: ClassName) => {
 const useThemeVariables = () => {
   const theme = useTheme()
   const darkModeState = useDarkModeState()
-  if (!darkModeState) {
-    return
-  }
   return getThemeVariables(theme, darkModeState.dark)
 }
 
@@ -56,11 +50,7 @@ const useClassNameState = () => {
 }
 
 const useDarkModeState = () => {
-  const mounted = useIsMounted()
   const user = useDarkModeUser()
   const os = useColorScheme()
-  if (isWeb && !mounted) {
-    return
-  }
   return toClassNameDarkModeState(darkModeCompose(user, os))
 }

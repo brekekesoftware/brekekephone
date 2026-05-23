@@ -34,8 +34,7 @@ export const PageAccountSignIn = observer(() => {
         title={intl`Accounts`}
         transparent
       >
-        <View className='w-full flex-col justify-around' />
-        <View className='max-h-[20%] flex-1' />
+        <View className='flex-1' />
         {!l ? (
           <AccountSignInItem empty />
         ) : (
@@ -47,9 +46,10 @@ export const PageAccountSignIn = observer(() => {
               <AccountSignInItem id={item} last={index === l - 1} />
             )}
             showsHorizontalScrollIndicator={false}
-            className='h-[70%] min-h-80'
+            className='h-[60%] min-h-100'
           />
         )}
+        <View className='h-6' />
       </Layout>
       <RnTouchableOpacity
         className='absolute bottom-0 z-999 px-3.75 pt-6.25 pb-2.5'

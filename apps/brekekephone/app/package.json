@@ -96,6 +96,5 @@
     "circular-dependency-plugin": "5.2.2",
     "tailwindcss": "4.2.4",
     "twrnc": "4.16.0"
-  },
-  "appVersion": "3.0.0"
+  }
 }

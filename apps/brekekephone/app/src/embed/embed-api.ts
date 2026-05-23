@@ -107,8 +107,8 @@ export class EmbedApi extends EventEmitter {
   cleanup = () => {
     ctx.auth.signOutWithoutSaving()
     embedDevicesManager.destroy()
-    if (this._rootTag) {
-      this._rootTag()
+    if (this._unmountApp) {
+      this._unmountApp()
     }
   }
 
@@ -116,7 +116,7 @@ export class EmbedApi extends EventEmitter {
    * private properties/methods
    */
 
-  _rootTag?: Function
+  _unmountApp?: Function
   _notificationOptions?: EmbedNotificationOptions
 
   _palEvents?: string[]
@@ -196,7 +196,7 @@ export class EmbedApi extends EventEmitter {
 
   static _renderApp: Function
   static render = (rootTag, options) => {
-    ctx.embed._rootTag = this._renderApp(rootTag)
+    ctx.embed._unmountApp = this._renderApp(rootTag)
     ctx.embed._signIn(options)
     return ctx.embed
   }

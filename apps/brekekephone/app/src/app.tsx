@@ -338,7 +338,7 @@ const AppWithoutProviders = observer(() => {
       </RootView>
 
       {(ctx.global.darkModeLoading || !ctx.account.appInitDone) && (
-        <View className='bg-primary-500 absolute inset-0 items-center justify-center'>
+        <View className='bg-primary absolute inset-0 items-center justify-center'>
           <RnActivityIndicator className='h-8 w-8' size='large' color='white' />
         </View>
       )}

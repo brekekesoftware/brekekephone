@@ -1,5 +1,6 @@
 import '#/utils/capture-console-output'
 import '#/polyfill'
+import '#/embed/polyfill'
 import '#/brekekejs/pal'
 import '#/brekekejs/webrtcclient'
 import '#/brekekejs/phonebook'

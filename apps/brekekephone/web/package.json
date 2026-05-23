@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "craco start",
-    "build": "craco build"
+    "build": "craco build && node ./embed-build"
   },
   "engines": {
     "node": ">=24.11",

@@ -1,5 +1,4 @@
 import '#/init-global'
-import '#/embed/polyfill'
 
 import { createRoot } from 'react-dom/client'
 
@@ -12,9 +11,9 @@ import { composeProviders } from '@/rn/core/utils/compose-providers'
 import { App } from '#/app'
 import { AppWebContainer } from '#/app-web-container'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'
+import { isEmbed } from '#/embed/polyfill'
 
-const AppWeb = composeProviders(AppWebContainer, App)
-document.documentElement.classList.add(webClassName)
+const AppWeb = isEmbed ? App : composeProviders(AppWebContainer, App)
 
 const runApp = (rootTag: HTMLElement) => {
   const r = createRoot(rootTag)
@@ -23,6 +22,7 @@ const runApp = (rootTag: HTMLElement) => {
 }
 exposeEmbedApi(runApp)
 
-if (window._BrekekePhoneWebRoot) {
-  runApp(window._BrekekePhoneWebRoot)
+if (!isEmbed) {
+  runApp(window._BrekekePhoneWebRoot as HTMLElement)
+  document.documentElement.classList.add(...webClassName.split(' '))
 }

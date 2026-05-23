@@ -15,12 +15,13 @@ declare global {
 }
 
 export const webRootId = '__brekeke_phone_web_root'
-window._BrekekePhoneWebRoot = document.getElementById(webRootId)
-export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
-
-if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
-  window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
+if (isWeb) {
+  window._BrekekePhoneWebRoot = document.getElementById(webRootId)
+  if (typeof window._BrekekePhoneCaptureConsole !== 'boolean') {
+    window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
+  }
 }
+export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
 
 if (isEmbed) {
   window._BrekekePhoneEmbedImports = {

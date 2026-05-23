@@ -1,77 +1,5 @@
-clean:
-	pnpm i \
-	&& pnpm dedupe \
-	&& rm -rf ./ios/build ~/Library/Developer/Xcode/DerivedData \
-	&& cd ./ios \
-	&& pod install --repo-update \
-	&& cd ../android && ./gradlew clean;
-
-clean_deep:
-	make -Bs clean_deep_rm \
-	&& pnpm i --frozen-lockfile \
-	&& pnpm dedupe \
-	&& cd ./ios \
-	&& pod cache clean --all \
-	&& pod deintegrate \
-	&& pod install --repo-update \
-	&& cd ../android \
-	&& ./gradlew clean;
-
-clean_deep_rm:
-	rm -rf ../../../node_modules ./node_modules ./ios/build ./ios/Pods ~/Library/Developer/Xcode/DerivedData ./android/.gradle ./android/app/.cxx ./android/build ~/.gradle/caches ~/.gradle/daemon $$TMPDIR/react-native* $$TMPDIR/metro* $$TMPDIR/haste-map*;
-
-intl:
-	make -Bs rm_babel_cache \
-	&& export EXTRACT_INTL=1 \
-	&& npx babel src -x .js,.ts,.tsx -d ./build \
-	&& rm -rf ./build \
-	&& node ./intl-build;
-
-rm_babel_cache:
-	rm -rf ./node_modules/.cache/babel* ./intl-new-en.local.json;
-
-###
-# rn utils
-
-pods:
-	cd ./ios \
-	&& rm -rf ./Pods ~/Library/Caches/CocoaPods \
-	&& pod deintegrate && pod setup \
-	&& pod install --repo-update;
-
-ashake:
-	adb shell input keyevent 82;
-
-bitcode:
-	[ -d ./node_modules/react-native-webrtc/ios/WebRTC.dSYM ] \
-	|| bash ./node_modules/react-native-webrtc/tools/downloadBitcode.sh;
-
 ###
 # dev server
-
-phonedev:
-	pnpm ci \
-	&& export V=$$(jq -r ".appVersion" package.json) \
-	&& echo $$V \
-	&& make -Bs chmod \
-	&& scp ../../../../0/build/BrekekePhone/Brekeke\ Phone\ Dev.ipa dev01:/var/www/upload/brekeke_phonedev$$V.ipa \
-	&& rm -rf ../../../../0/build/BrekekePhone \
-	&& make -Bs chmod \
-	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
-	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$$V.apk \
-	&& cd ../ && make -Bs chmod;
-
-phone:
-	pnpm ci \
-	&& export V=$$(jq -r ".appVersion" package.json) \
-	&& echo $$V \
-	&& make -Bs chmod \
-	&& scp ../../../../0/build/BrekekePhone/Brekeke\ Phone.ipa dev01:/var/www/upload/brekeke_phone$$V.ipa \
-	&& rm -rf ../../../../0/build/BrekekePhone \
-	&& make -Bs chmod \
-	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
-	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$$V.apk \
-	&& cd ../ && make -Bs chmod;
 
 web:
 	export V=$$(jq -r ".appVersion" package.json) \
@@ -114,15 +42,3 @@ dev:
 	&& scp ./nginx.conf dev01:/etc/nginx/conf.d/dev01.conf \
 	&& ssh dev01 "sudo nginx -t && sudo service nginx restart" \
 	&& cd ../.. && make -Bs chmod;
-
-chmod:
-	ssh dev01 "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d && sudo service nginx restart";
-
-ssl:
-	bash ./dev01/renewssl.sh;
-
-keyhash1:
-	ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64";
-
-keyhash2:
-	openssl pkcs12 -in ../../../../0/brekeke/tomcat7.p12 -clcerts -nokeys | openssl x509 -pubkey -in /dev/stdin -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64;

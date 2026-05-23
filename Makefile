@@ -1,10 +1,108 @@
+intl:
+	cd ./apps/brekekephone/app \
+	&& rm -rf ./intl-new-en.local.json \
+	&& export EXTRACT_INTL=1 \
+	&& npx babel src -x .js,.ts,.tsx -d ./build \
+	&& rm -rf ./build \
+	&& node ./intl-build;
+
+###############################################################################
+# clean
+
+clean:
+	make clean_rm \
+	&& pnpm ci && pnpm dedupe \
+	&& cd ./apps/brekekephone/app \
+	&& cd ./ios \
+	&& pod install --repo-update \
+	&& cd ../android && ./gradlew clean;
+
+clean_rm:
+	cd ./apps/brekekephone/app \
+	&& rm -rf \
+		./ios/build \
+		./ios/Pods \
+		./ios/Podfile.lock \
+		~/Library/Developer/Xcode/DerivedData \
+		./android/.gradle \
+		./android/app/.cxx \
+		./android/build;
+
+clean_deep:
+	make clean_deep_rm \
+	&& pnpm ci && pnpm dedupe \
+	&& cd ./apps/brekekephone/app \
+	&& cd ./ios \
+	&& pod cache clean --all \
+	&& pod deintegrate \
+	&& pod install --repo-update \
+	&& cd ../android \
+	&& ./gradlew clean;
+
+clean_deep_rm:
+	make clean_rm \
+	&& rm -rf \
+		~/Library/Caches/CocoaPods \
+		~/.gradle/caches \
+		~/.gradle/daemon \
+		$$TMPDIR/react-native* \
+		$$TMPDIR/metro* \
+		$$TMPDIR/haste-map*;
+
+###############################################################################
+# dev01
+
+phonedev:
+	pnpm dedupe \
+	&& export V=$$(jq -r ".appVersion" package.json) \
+	&& echo $$V \
+	&& scp "../0/build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$$V.ipa \
+	&& rm -rf ../0/build/BrekekePhone \
+	&& cd ./apps/brekekephone/app \
+	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
+	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$$V.apk \
+	&& cd ../../../../ && make chmod;
+
+phone:
+	pnpm dedupe \
+	&& export V=$$(jq -r ".appVersion" package.json) \
+	&& echo $$V \
+	&& scp "../0/build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$$V.ipa \
+	&& rm -rf ../0/build/BrekekePhone \
+	&& cd ./apps/brekekephone/app \
+	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
+	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$$V.apk \
+	&& cd ../../../../ && make chmod;
+
+chmod:
+	ssh dev01 "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
+
+ssl:
+	bash ./apps/dev01/ssl.sh;
+
+keyhash1:
+	ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout" \
+	| openssl pkey -pubin -outform der \
+	| openssl dgst -sha256 -binary \
+	| openssl enc -base64;
+
+keyhash2:
+	openssl pkcs12 -in ../0/brekeke/tomcat7.p12 -clcerts -nokeys -passin pass:tomcat7 \
+	| openssl x509 -pubkey -in /dev/stdin -noout \
+	| openssl pkey -pubin -outform der \
+	| openssl dgst -sha256 -binary \
+	| openssl enc -base64;
+
+###############################################################################
+# fmt
+
 fmt:
 	pnpm fmt \
-	&& make -Bs fmt_objc \
-	&& make -Bs fmt_swift \
-	&& make -Bs fmt_java \
-	&& make -Bs fmt_kotlin \
-	&& make -Bs fmt_xml;
+	&& make fmt_objc \
+	&& make fmt_swift \
+	&& make fmt_java \
+	&& make fmt_kotlin \
+	&& make fmt_xml;
 
 fmt_objc:
 	export EXT="h|m" \
