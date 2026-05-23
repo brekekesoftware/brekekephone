@@ -346,4 +346,4 @@ const AppWithoutProviders = observer(() => {
   )
 })
 
-export const AppShared = composeProviders(TwPeerProvider, AppWithoutProviders)
+export const App = composeProviders(TwPeerProvider, AppWithoutProviders)

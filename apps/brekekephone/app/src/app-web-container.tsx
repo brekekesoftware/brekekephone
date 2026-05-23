@@ -1,11 +1,8 @@
-// main entry for the create-react-app web bundle
-import type { ReactElement } from 'react'
+import type { PropsWithChildren, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import type Url from 'url-parse'
 
-import '../../tailwind.css'
-import '#/app.css'
 import brand from '#/assets/brand.png'
 import logo from '#/assets/logo.png'
 
@@ -14,7 +11,6 @@ import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
 import { darkClassName, lightClassName } from '@/rn/core/tailwind'
 import { qsStableStringify } from '@/shared/qs'
 import { mdiAndroid, mdiApple, mdiWeb } from '#/assets/icons'
-import { AppShared } from '#/components/app-shared'
 import { BrekekeGradient } from '#/components/brekeke-gradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/rn'
 import { bundleIdentifier } from '#/config'
@@ -22,7 +18,7 @@ import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
-export const App = () => {
+export const AppWebContainer = ({ children }: PropsWithChildren) => {
   const darkMode = useDarkModeUser()
   useEffect(() => {
     const { classList } = document.documentElement
@@ -42,9 +38,9 @@ export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   const isBrowserOrEmbed = isBrowser || isEmbed
 
-  let child: ReactElement | null = null
+  let child: ReactNode | null = null
   if (isBrowserOrEmbed) {
-    child = <AppShared />
+    child = children
   } else {
     const params = parse(window.location as any as Url<any>)
     const q = qsStableStringify(params || {})
