@@ -6,6 +6,7 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     "lib": ["DOM", "ESNext", "Webworker"],
+    "types": ["node"],
     "allowJs": true,
     "checkJs": true,
     "resolveJsonModule": true,

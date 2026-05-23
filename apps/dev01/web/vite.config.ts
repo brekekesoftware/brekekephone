@@ -12,5 +12,4 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: Infinity,
   },
-  base: process.env.NODE_ENV === 'production' ? '/embed' : undefined,
 })

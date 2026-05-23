@@ -79,15 +79,15 @@ web:
 	&& pnpm i --frozen-lockfile \
 	&& cd ./apps/brekekephone/web \
 	&& pnpm build \
-	&& mv ./build ./brekeke_phone$(V) && zip -vr ./brekeke_phone$(V).zip ./brekeke_phone$(V) \
+	&& mv ./build ./brekeke_phone$(V) \
+	&& zip -vr ./brekeke_phone$(V).zip ./brekeke_phone$(V) \
 	&& scp ./brekeke_phone$(V).zip dev01:/var/www/upload \
 	&& rm -rf ./brekeke_phone* \
 	&& ssh dev01 "cd /var/www && sudo rm -rf ./phone && unzip ./upload/brekeke_phone$(V).zip && sudo mv ./brekeke_phone$(V) ./phone" \
 	&& cd ../../../ && make chmod;
 
 embed_b:
-	@echo "appVersion=$(V)" \
-	&& pnpm i --frozen-lockfile \
+	@pnpm i --frozen-lockfile \
 	&& cd ./apps/brekekephone/web \
 	&& pnpm build \
 	&& cd ../../embed-example/react \
@@ -98,17 +98,34 @@ embed_u:
 	@pnpm i --frozen-lockfile \
 	&& cd ./apps/embed-example/react \
 	&& pnpm build \
-	&& mv ./dist ./embed && zip -vr ./embed.zip ./embed \
+	&& mv ./dist ./embed \
+	&& zip -vr ./embed.zip ./embed \
 	&& scp ./embed.zip dev01:/var/www \
 	&& rm -rf ./embed ./embed.zip \
 	&& ssh dev01 "cd /var/www && sudo rm -rf ./embed && unzip ./embed.zip && rm ./embed.zip" \
-	&& cd ../../../ && make -Bs chmod;
+	&& cd ../../../ && make chmod;
+
+dev:
+	@pnpm i --frozen-lockfile \
+	&& cd ./apps/dev01/web \
+	&& pnpm build \
+	&& mv ./dist ./dev-web \
+	&& zip -vr ./dev-web.zip ./dev-web \
+	&& scp ./dev-web.zip dev01:/var/www \
+	&& rm -rf ./dev-web* \
+	&& ssh dev01 "cd /var/www && sudo rm -rf ./dev-web && unzip ./dev-web.zip && sudo rm -rf ./dev-web.zip" \
+	&& cd ../api \
+	&& scp ./index.js ./package.json dev01:/var/www/dev-api \
+	&& ssh dev01 "cd /var/www/dev-api && source ~/.nvm/nvm.sh && npm i && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" \
+	&& scp ./nginx.conf dev01:/etc/nginx/conf.d/dev01.conf \
+	&& ssh dev01 "sudo nginx -t && sudo service nginx restart" \
+	&& cd ../../../ && make chmod;
 
 ###############################################################################
 # dev01 utils
 
 chmod:
-	@ssh dev01 "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
+	@ssh dev01 "sudo chmod -R a+rwX /var/www";
 
 ssl:
 	@bash ./apps/dev01/ssl.sh;
