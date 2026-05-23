@@ -74,7 +74,7 @@ const map: StrMap<Function> = {
     d.pressable && tw`cursor-pointer`,
   ],
   View: (d: View) => [
-    tw`m-h-0 m-w-0 relative z-0 m-0 flex shrink-0 basis-auto list-none flex-col content-start items-stretch border-0 border-solid border-black bg-transparent p-0 no-underline`,
+    tw`relative z-0 m-0 flex min-h-0 min-w-0 shrink-0 basis-auto list-none flex-col content-start items-stretch border-0 border-solid border-black bg-transparent p-0 no-underline`,
     d.hasTextAncestor && tw`inline-flex`,
   ],
   Pressable: (d: Pressable) => [

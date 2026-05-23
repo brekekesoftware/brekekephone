@@ -3,8 +3,8 @@ require('@/nodejs/entrypoint')({
   dir: __dirname,
 })
 
-const path = require('node:path')
 const CircularDependencyPlugin = require('circular-dependency-plugin')
+const { path } = require('@/nodejs/path')
 const { getAlias } = require('@/devtools/babel-config/get-alias')
 
 const babel = require('../app/babel.config')

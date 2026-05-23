@@ -1,5 +1,5 @@
 // @ts-ignore
-import '#/main.css'
+import './main.css'
 
 declare global {
   interface Window {

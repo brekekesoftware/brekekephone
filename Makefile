@@ -1,5 +1,7 @@
+V := $(shell jq -r ".appVersion" package.json)
+
 intl:
-	cd ./apps/brekekephone/app \
+	@cd ./apps/brekekephone/app \
 	&& rm -rf ./intl-new-en.local.json \
 	&& export EXTRACT_INTL=1 \
 	&& npx babel src -x .js,.ts,.tsx -d ./build \
@@ -10,7 +12,7 @@ intl:
 # clean
 
 clean:
-	make clean_rm \
+	@make clean_rm \
 	&& pnpm ci && pnpm dedupe \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./ios \
@@ -18,7 +20,7 @@ clean:
 	&& cd ../android && ./gradlew clean;
 
 clean_rm:
-	cd ./apps/brekekephone/app \
+	@cd ./apps/brekekephone/app \
 	&& rm -rf \
 		./ios/build \
 		./ios/Pods \
@@ -29,7 +31,7 @@ clean_rm:
 		./android/build;
 
 clean_deep:
-	make clean_deep_rm \
+	@make clean_deep_rm \
 	&& pnpm ci && pnpm dedupe \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./ios \
@@ -40,7 +42,7 @@ clean_deep:
 	&& ./gradlew clean;
 
 clean_deep_rm:
-	make clean_rm \
+	@make clean_rm \
 	&& rm -rf \
 		~/Library/Caches/CocoaPods \
 		~/.gradle/caches \
@@ -50,44 +52,75 @@ clean_deep_rm:
 		$$TMPDIR/haste-map*;
 
 ###############################################################################
-# dev01
+# build and upload to dev01
 
 phonedev:
-	pnpm dedupe \
-	&& export V=$$(jq -r ".appVersion" package.json) \
-	&& echo $$V \
-	&& scp "../0/build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$$V.ipa \
+	@echo "appVersion=$(V)" \
+	&& pnpm i --frozen-lockfile \
+	&& scp "../0/build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$(V).ipa \
 	&& rm -rf ../0/build/BrekekePhone \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
-	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$$V.apk \
+	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$(V).apk \
 	&& cd ../../../../ && make chmod;
 
 phone:
-	pnpm dedupe \
-	&& export V=$$(jq -r ".appVersion" package.json) \
-	&& echo $$V \
-	&& scp "../0/build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$$V.ipa \
+	@echo "appVersion=$(V)" \
+	&& pnpm i --frozen-lockfile \
+	&& scp "../0/build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$(V).ipa \
 	&& rm -rf ../0/build/BrekekePhone \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
-	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$$V.apk \
+	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$(V).apk \
 	&& cd ../../../../ && make chmod;
 
+web:
+	@echo "appVersion=$(V)" \
+	&& pnpm i --frozen-lockfile \
+	&& cd ./apps/brekekephone/web \
+	&& pnpm build \
+	&& mv ./build ./brekeke_phone$(V) && zip -vr ./brekeke_phone$(V).zip ./brekeke_phone$(V) \
+	&& scp ./brekeke_phone$(V).zip dev01:/var/www/upload \
+	&& rm -rf ./brekeke_phone* \
+	&& ssh dev01 "cd /var/www && sudo rm -rf ./phone && unzip ./upload/brekeke_phone$(V).zip && sudo mv ./brekeke_phone$(V) ./phone" \
+	&& cd ../../../ && make chmod;
+
+embed_b:
+	@echo "appVersion=$(V)" \
+	&& pnpm i --frozen-lockfile \
+	&& cd ./apps/brekekephone/web \
+	&& pnpm build \
+	&& cd ../../embed-example/react \
+	&& rm -rf ./public/brekeke_phone* \
+	&& mv ../../brekekephone/web/build ./public/brekeke_phone$(V);
+
+embed_u:
+	@pnpm i --frozen-lockfile \
+	&& cd ./apps/embed-example/react \
+	&& pnpm build \
+	&& mv ./dist ./embed && zip -vr ./embed.zip ./embed \
+	&& scp ./embed.zip dev01:/var/www \
+	&& rm -rf ./embed ./embed.zip \
+	&& ssh dev01 "cd /var/www && sudo rm -rf ./embed && unzip ./embed.zip && rm ./embed.zip" \
+	&& cd ../../../ && make -Bs chmod;
+
+###############################################################################
+# dev01 utils
+
 chmod:
-	ssh dev01 "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
+	@ssh dev01 "sudo chmod -R a+rwX /var/www /etc/nginx/conf.d";
 
 ssl:
-	bash ./apps/dev01/ssl.sh;
+	@bash ./apps/dev01/ssl.sh;
 
 keyhash1:
-	ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout" \
+	@ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout" \
 	| openssl pkey -pubin -outform der \
 	| openssl dgst -sha256 -binary \
 	| openssl enc -base64;
 
 keyhash2:
-	openssl pkcs12 -in ../0/brekeke/tomcat7.p12 -clcerts -nokeys -passin pass:tomcat7 \
+	@openssl pkcs12 -in ../0/brekeke/tomcat7.p12 -clcerts -nokeys -passin pass:tomcat7 \
 	| openssl x509 -pubkey -in /dev/stdin -noout \
 	| openssl pkey -pubin -outform der \
 	| openssl dgst -sha256 -binary \
@@ -97,7 +130,7 @@ keyhash2:
 # fmt
 
 fmt:
-	pnpm fmt \
+	@pnpm fmt \
 	&& make fmt_objc \
 	&& make fmt_swift \
 	&& make fmt_java \
@@ -105,30 +138,30 @@ fmt:
 	&& make fmt_xml;
 
 fmt_objc:
-	export EXT="h|m" \
-	&& make -Bs git-ls \
+	@export EXT="h|m" \
+	&& make git-ls \
 	| xargs clang-format-11 -i -style=file;
 fmt_swift:
-	export EXT="swift" \
-	&& make -Bs git-ls \
+	@export EXT="swift" \
+	&& make git-ls \
 	| xargs swiftformat --quiet;
 fmt_java:
-	export EXT="java" \
-	&& make -Bs git-ls \
+	@export EXT="java" \
+	&& make git-ls \
 	| xargs google-java-format -i;
 fmt_kotlin:
-	export EXT="kt" \
-	&& make -Bs git-ls \
+	@export EXT="kt" \
+	&& make git-ls \
 	| xargs ktfmt --quiet -i;
 fmt_xml:
-	export EXT="storyboard|xcscheme|xcworkspacedata" \
-	&& make -Bs git-ls \
+	@export EXT="storyboard|xcscheme|xcworkspacedata" \
+	&& make git-ls \
 	| xargs pnpm dlx prettier --parser=xml --log-level=error --write;
 
 imagemin:
-	export EXT="png|jpg|gif|ico" \
-	&& make -Bs git-ls \
+	@export EXT="png|jpg|gif|ico" \
+	&& make git-ls \
 	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)';
 git-ls:
-	bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' \
+	@bash -c 'comm -3 <(git ls-files) <(git ls-files -d)' \
 	| egrep -h '\.($(EXT))$$';

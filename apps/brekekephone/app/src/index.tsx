@@ -11,9 +11,9 @@ import { composeProviders } from '@/rn/core/utils/compose-providers'
 import { App } from '#/app'
 import { AppWebContainer } from '#/app-web-container'
 import { exposeEmbedApi } from '#/embed/expose-embed-api'
-import { isEmbed } from '#/embed/polyfill'
 
-const AppWeb = isEmbed ? App : composeProviders(AppWebContainer, App)
+const AppWeb = composeProviders(AppWebContainer, App)
+document.documentElement.classList.add(...webClassName.split(' '))
 
 const runApp = (rootTag: HTMLElement) => {
   const r = createRoot(rootTag)
@@ -22,7 +22,6 @@ const runApp = (rootTag: HTMLElement) => {
 }
 exposeEmbedApi(runApp)
 
-if (!isEmbed) {
-  runApp(window._BrekekePhoneWebRoot as HTMLElement)
-  document.documentElement.classList.add(...webClassName.split(' '))
+if (window._BrekekePhoneWebRoot) {
+  runApp(window._BrekekePhoneWebRoot)
 }

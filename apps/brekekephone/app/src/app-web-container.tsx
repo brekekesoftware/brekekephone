@@ -13,6 +13,7 @@ import { mdiAndroid, mdiApple, mdiWeb } from '#/assets/icons'
 import { BrekekeGradient } from '#/components/brekeke-gradient'
 import { RnIcon, RnImage, RnText, RnTouchableOpacity } from '#/components/rn'
 import { bundleIdentifier } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
 import { parse } from '#/utils/deeplink-parse'
 
@@ -20,8 +21,9 @@ export const AppWebContainer = ({ children }: PropsWithChildren) => {
   useSetHtmlClassNameDarkMode()
 
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
+  const isBrowserOrEmbed = isBrowser || isEmbed
 
-  if (!isBrowser) {
+  if (!isBrowserOrEmbed) {
     const params = parse(window.location as any as Url<any>)
     const q = qsStableStringify(params || {})
     const href = isIOS
