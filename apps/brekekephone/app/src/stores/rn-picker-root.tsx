@@ -42,7 +42,7 @@ const RnPickerR = (p: RnPickerOption) => {
         className='ios:bottom-5 absolute bottom-3.75 mb-15 max-h-[80%] w-[90%] max-w-95'
         style={{ transform: [y] }}
       >
-        <View className='bg-background overflow-hidden rounded-[3px]'>
+        <View className='bg-background rounded-overlay overflow-hidden'>
           {p.options.map((o, i) => {
             const isSelected = `${selectedKey}` === `${o.key}`
             return (
@@ -86,9 +86,9 @@ const RnPickerR = (p: RnPickerOption) => {
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
             className={[
-              'bg-background mt-3.75 rounded-[3px] px-3.75 py-3',
+              'bg-background rounded-overlay mt-3.75 px-3.75 py-3',
               p.onConfirm &&
-                'bg-error-100 items-center rounded-l-[3px] rounded-r-none',
+                'bg-error-100 rounded-l-overlay items-center rounded-r-none',
             ]}
           >
             <RnText bold danger>
@@ -97,7 +97,7 @@ const RnPickerR = (p: RnPickerOption) => {
             {!p.onConfirm && (
               <RnIcon
                 path={mdiClose}
-                className='text-foreground text-error absolute top-2.5 right-2.5'
+                className='text-error absolute top-2.5 right-2.5'
               />
             )}
           </RnTouchableOpacity>
@@ -106,7 +106,7 @@ const RnPickerR = (p: RnPickerOption) => {
           <AnimatedView className='max-w-95 flex-1' style={{ transform: [y] }}>
             <RnTouchableOpacity
               onPress={onConfirm}
-              className='bg-primary mt-3.75 items-center rounded-[3px] rounded-l-none rounded-r-[3px] px-3.75 py-3'
+              className='bg-primary rounded-overlay rounded-r-button mt-3.75 items-center rounded-l-none px-3.75 py-3'
             >
               <RnText bold white>
                 {p.confirmLabel || intl`SAVE`}

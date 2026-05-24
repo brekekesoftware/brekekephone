@@ -247,7 +247,7 @@ export const Page2StepVerification = () => {
             <RnTouchableOpacity
               disabled={isLoading}
               className={[
-                'bg-primary mb-2.5 h-12 w-full items-center justify-center rounded-[5px]',
+                'bg-primary rounded-button mb-2.5 h-12 w-full items-center justify-center',
                 isLoading && 'opacity-50',
               ]}
               onPress={onVerify}
@@ -268,7 +268,7 @@ export const Page2StepVerification = () => {
               <View className='w-full justify-center'>
                 <AnimatedView
                   className={[
-                    'w-full flex-row items-center justify-around rounded-[5px] py-2.5',
+                    'rounded-overlay w-full flex-row items-center justify-around py-2.5',
                     toast.type === 'err' ? 'bg-error' : 'bg-info',
                   ]}
                   style={{ opacity: fadeAnim }}

@@ -7,9 +7,9 @@ const config: TwConfig = {
   theme: {
     extend: {
       borderRadius: {
-        button: '3px',
-        modal: '3px',
-        card: '3px',
+        card: '8px',
+        button: '9999px',
+        overlay: '8px',
       },
     },
   },

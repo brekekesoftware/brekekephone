@@ -28,7 +28,7 @@ export const FooterActions: FC<
           ]}
         >
           {BackIcon ? (
-            <BackIcon className='text-error dark:text-white' size={18} />
+            <BackIcon className='text-error text-[18px] leading-[24px] dark:text-white' />
           ) : (
             <RnIcon
               path={mdiKeyboardBackspace}
@@ -46,7 +46,7 @@ export const FooterActions: FC<
           ]}
         >
           {MoreIcon ? (
-            <MoreIcon className='text-foreground' size={18} />
+            <MoreIcon className='text-foreground text-[18px] leading-[24px]' />
           ) : (
             <RnIcon path={mdiCached} className='text-foreground' />
           )}

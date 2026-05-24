@@ -27,7 +27,7 @@ export class PageChatGroupInvite extends Component<{
           </RnText>
           <RnTouchableOpacity
             onPress={this.invite}
-            className='bg-primary mt-3.75 rounded-[3px] p-2.5'
+            className='bg-primary rounded-button mt-3.75 p-2.5'
           >
             <RnText
               white

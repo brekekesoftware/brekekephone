@@ -22,10 +22,10 @@ export const Dropdown: FC<{
       <RnTouchableOpacity
         activeOpacity={1}
         onPress={close}
-        className='android:elevation-999 absolute inset-0 z-999 bg-black/20'
+        className='android:elevation-999 bg-modal-overlay absolute inset-0 z-999'
       />
       <AnimatedSize
-        innerClassName='rounded-[3px] bg-background'
+        innerClassName='rounded-overlay bg-background'
         className={[
           'android:elevation-999 absolute right-3.75 z-999 w-62.5 shadow-sm',
           compact ? 'top-8.75' : 'top-15',

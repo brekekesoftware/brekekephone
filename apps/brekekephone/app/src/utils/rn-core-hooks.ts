@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react'
 import { createElement } from 'react'
 import { useColorScheme } from 'react-native'
+// eslint-disable-next-line no-restricted-imports
+import { useWindowDimensions as useWindowDimensionsOriginal } from 'react-native'
 
 import type { SvgIconProps } from '@/rn/components/svg-icon'
 import { useTextStyle } from '@/rn/components/text/text-style-context'
@@ -10,7 +12,6 @@ import {
 } from '@/rn/core/dark-mode/config'
 import { useDarkModeUser } from '@/rn/core/dark-mode/index.native'
 import { useResponsiveState } from '@/rn/core/responsive/use-responsive-state'
-import { useWindowDimensions } from '@/rn/core/responsive/use-window-dimensions'
 import { getThemeVariables } from '@/rn/core/theme/config'
 import { useTheme } from '@/rn/core/theme/index.native'
 import type { ClassName } from '@/rn/core/tw/class-name'
@@ -21,6 +22,8 @@ import {
 } from '@/rn/core/tw/lib/marker.native'
 import { runtimeStyle } from '@/rn/core/tw/runtime-style'
 import { isWeb } from '@/rn/core/utils/platform'
+
+export const useWindowDimensions = useWindowDimensionsOriginal
 
 // re impelement hooks using .native variant
 // we dont have ssr so the logic is a bit different

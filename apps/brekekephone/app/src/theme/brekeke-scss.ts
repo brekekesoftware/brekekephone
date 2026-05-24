@@ -123,7 +123,7 @@ export const darkVariables: Partial<ThemeVariables> = {
   '--card-border': '#2d3a4f',
 
   '--modal': '#1a2436',
-  '--modal-overlay': 'rgba(0, 0, 0, 0.75)',
+  '--modal-overlay': 'rgba(0, 0, 0, 0.6)',
 
   '--surface': '#1a2436',
   '--surface-raised': '#28364c',

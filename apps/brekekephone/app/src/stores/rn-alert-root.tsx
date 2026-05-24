@@ -84,7 +84,7 @@ const RnAlertR = ({
         />
       </AnimatedView>
       <AnimatedView
-        className='bg-background w-[90%] max-w-95 rounded-[3px] p-3.75 shadow-sm'
+        className='bg-background rounded-overlay w-[90%] max-w-95 p-3.75 shadow-sm'
         style={{ transform: [{ translateY: a.translateY }] }}
       >
         {!!props.title && <RnText subTitle>{props.title}</RnText>}
@@ -93,7 +93,7 @@ const RnAlertR = ({
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='bg-foreground mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5'
+              className='bg-foreground rounded-button mr-2.5 w-25 px-3.75 py-2.5'
             >
               <RnText small className='text-background text-center'>
                 {props.dismissText}
@@ -102,7 +102,7 @@ const RnAlertR = ({
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            className='bg-primary w-25 rounded-[3px] px-3.75 py-2.5'
+            className='bg-primary rounded-button w-25 px-3.75 py-2.5'
           >
             <RnText small white className='text-center'>
               {props.confirmText}

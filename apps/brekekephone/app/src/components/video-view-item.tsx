@@ -52,7 +52,7 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
         </RnTouchableOpacity>
       </View>
       {showSwitchCamera && c && (
-        <View className='absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly bg-black/30'>
+        <View className='bg-modal-overlay absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly'>
           <RnTouchableOpacity
             onPress={toggleVideo}
             className='h-7 w-7 items-center justify-center'
