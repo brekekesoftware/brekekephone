@@ -131,7 +131,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
       key: 'settings',
       icon: mdiCogOutline,
       subMenus: settingSubMenus,
-      defaultSubMenuKey: 'account',
+      defaultSubMenuKey: 'other',
     },
   ] as Menu[]
 
