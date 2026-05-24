@@ -52,13 +52,16 @@ const genMenus = (customPages: PbxCustomPage[]) => {
   const settingSubMenusLeft = getSettingSubMenus(customPages, true)
   const settingSubMenusRight = getSettingSubMenus(customPages, false)
 
+  // remove this page for now, keep code for reference and intl build
+  const x = {
+    key: 'account',
+    label: intl`CURRENT ACCOUNT`,
+    navFnKey: 'goToPageSettingsCurrentAccount',
+  }
+  void x
+
   const settingSubMenus = [
     ...settingSubMenusLeft,
-    {
-      key: 'account',
-      label: intl`CURRENT ACCOUNT`,
-      navFnKey: 'goToPageSettingsCurrentAccount',
-    },
     {
       key: 'other',
       label: intl`SETTINGS`,

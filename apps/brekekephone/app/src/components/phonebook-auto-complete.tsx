@@ -56,7 +56,7 @@ export const PhonebookAutoComplete: FC<
   return (
     <View
       className={[
-        'bg-background shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px] absolute top-47 right-3.75 left-3.75 z-100000 max-h-75 rounded-[5px] px-2.5 py-1.25',
+        'bg-background shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px] rounded-card absolute top-47 right-3.75 left-3.75 z-100000 max-h-75 px-2.5 py-1.25',
         isWeb &&
           'shadow-opacity-100 shadow-radius-[10px] shadow-offset-[0px]/[0px]',
         className,

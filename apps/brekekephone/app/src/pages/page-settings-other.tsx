@@ -182,14 +182,17 @@ export class PageSettingsOther extends Component {
 
   render() {
     const ca = ctx.auth.getCurrentAccount()
+    const description = !ca
+      ? intl`App settings and configs`
+      : `${ca.pbxUsername} - ${ca.pbxHostname}`
 
     return (
       <Layout
-        description={intl`App settings and configs`}
+        title={intl`Settings`}
+        description={description}
         dropdown={this.getDropDown()}
         menu='settings'
         subMenu='other'
-        title={intl`Settings`}
       >
         <Field isGroup label={intl`DISPLAY`} />
         <LanguagePicker onSelect={this.initData} />

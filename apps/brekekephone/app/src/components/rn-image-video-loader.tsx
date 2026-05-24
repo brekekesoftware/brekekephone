@@ -59,13 +59,13 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
         <RnTouchableOpacity onPress={onShowImage}>
           <FastImage
             source={{ uri: objectUrl }}
-            className='h-50 w-50 overflow-hidden rounded-[5px]'
+            className='rounded-card h-50 w-50 overflow-hidden'
           />
         </RnTouchableOpacity>
       )
     } else {
       return (
-        <View className='bg-modal-overlay h-50 w-50 overflow-hidden rounded-[5px]'>
+        <View className='bg-modal-overlay rounded-card h-50 w-50 overflow-hidden'>
           <video
             controls
             src={objectUrl}
@@ -85,9 +85,9 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return null
   }
   return (
-    <View className='h-50 w-50 items-center justify-center overflow-hidden rounded-[5px]'>
+    <View className='rounded-card h-50 w-50 items-center justify-center overflow-hidden'>
       {isLoading && (
-        <View className='bg-modal-overlay absolute top-0 left-0 h-50 w-50 items-center justify-center overflow-hidden rounded-[5px]'>
+        <View className='bg-modal-overlay absolute inset-0'>
           <RnActivityIndicator size='small' className='h-9 w-9 text-white' />
         </View>
       )}

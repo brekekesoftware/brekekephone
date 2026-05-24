@@ -84,7 +84,7 @@ const RnAlertR = ({
         />
       </AnimatedView>
       <AnimatedView
-        className='bg-background rounded-overlay w-[90%] max-w-95 p-3.75 shadow-sm'
+        className='bg-background rounded-card w-[90%] max-w-95 p-3.75 shadow-sm'
         style={{ transform: [{ translateY: a.translateY }] }}
       >
         {!!props.title && <RnText subTitle>{props.title}</RnText>}

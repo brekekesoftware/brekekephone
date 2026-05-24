@@ -6,6 +6,7 @@ import {
   mdiPhoneForward,
 } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const keys = [
   ['1', '2', '3'],
@@ -19,60 +20,93 @@ export const KeyPad = (p: {
   showKeyboard(): void
   callVoice?(): void
   callVoiceForward?(): void
-}) => (
-  <>
-    {keys.map((row, i) => (
-      <View key={i} className='flex-row'>
-        {row.map(key => (
-          <RnTouchableOpacity
-            key={key}
-            onPress={() => p.onPressNumber(key)}
-            className='w-1/3'
-          >
-            <RnText center className='py-5 text-[25.2px] font-semibold'>
-              {key}
-            </RnText>
-          </RnTouchableOpacity>
+}) => {
+  const small = useWindowDimensions().height < 700
+  return (
+    <>
+      <View className='flex-1' />
+      <View>
+        {keys.map((row, i) => (
+          <View key={i} className='flex-row'>
+            {row.map(key => (
+              <RnTouchableOpacity
+                key={key}
+                onPress={() => p.onPressNumber(key)}
+                className={['h-20 w-1/3 items-center py-2', small && 'h-16']}
+              >
+                <RnText
+                  center
+                  className={[
+                    'bg-foreground/5 border-primary/10 h-16 w-16 rounded-full border py-4 text-2xl font-bold',
+                    key === '*' && 'pt-5 pb-3',
+                    small && 'h-12 py-2',
+                    key === '*' && small && 'pt-3 pb-1',
+                  ]}
+                >
+                  {key}
+                </RnText>
+              </RnTouchableOpacity>
+            ))}
+          </View>
         ))}
-      </View>
-    ))}
-    <View className='mt-6.25 flex-row justify-between'>
-      <RnTouchableOpacity onPress={p.showKeyboard} className='w-1/3'>
-        <RnIcon className='text-foreground' path={mdiKeyboard} />
-      </RnTouchableOpacity>
-      <View
-        className={
-          p.callVoiceForward
-            ? 'bg-primary-100 h-12.5 flex-1 flex-row items-center justify-between rounded-[25px]'
-            : undefined
-        }
-      >
-        {p.callVoiceForward && (
+        <View className='flex-row justify-between'>
           <RnTouchableOpacity
-            onPress={p.callVoiceForward}
-            className='bg-primary h-12.5 w-12.5 justify-center rounded-full'
+            onPress={p.showKeyboard}
+            className={['h-20 w-1/3 items-center py-2', small && 'h-16']}
           >
-            <RnIcon className='text-foreground' path={mdiPhoneForward} />
+            <RnIcon
+              className={[
+                'text-foreground bg-foreground/5 border-primary/10 h-16 w-16 rounded-full',
+                small && 'h-12 py-2',
+              ]}
+              path={mdiKeyboard}
+            />
           </RnTouchableOpacity>
-        )}
-        {p.callVoice && (
+          <View
+            className={
+              p.callVoiceForward
+                ? 'bg-foreground/10 border-primary/10 mt-8 h-12 flex-1 flex-row items-center justify-between rounded-full'
+                : undefined
+            }
+          >
+            {p.callVoiceForward && (
+              <RnTouchableOpacity
+                onPress={p.callVoiceForward}
+                className='bg-primary h-12 w-12 justify-center rounded-full'
+              >
+                <RnIcon className='text-white' path={mdiPhoneForward} />
+              </RnTouchableOpacity>
+            )}
+            {p.callVoice && (
+              <RnTouchableOpacity
+                onPress={p.callVoice}
+                className={[
+                  'bg-primary',
+                  !p.callVoiceForward
+                    ? ['mt-4 h-16 w-16 rounded-full py-5', small && 'h-12 py-3']
+                    : 'h-12 w-12 justify-center rounded-full',
+                ]}
+                loading
+              >
+                <RnIcon className='text-white' path={mdiPhone} />
+              </RnTouchableOpacity>
+            )}
+          </View>
           <RnTouchableOpacity
-            onPress={p.callVoice}
-            className={[
-              'bg-primary',
-              !p.callVoiceForward
-                ? 'w-16 rounded-[40px] py-5'
-                : 'h-12.5 w-12.5 justify-center rounded-full',
-            ]}
-            loading
+            onPress={() => p.onPressNumber('')}
+            className={['h-20 w-1/3 items-center py-2', small && 'h-16']}
           >
-            <RnIcon className='text-foreground' path={mdiPhone} />
+            <RnIcon
+              className={[
+                'text-foreground bg-foreground/5 border-primary/10 h-16 w-16 rounded-full',
+                small && 'h-12 py-2',
+              ]}
+              path={mdiBackspace}
+            />
           </RnTouchableOpacity>
-        )}
+        </View>
       </View>
-      <RnTouchableOpacity onPress={() => p.onPressNumber('')} className='w-1/3'>
-        <RnIcon className='text-foreground' path={mdiBackspace} />
-      </RnTouchableOpacity>
-    </View>
-  </>
-)
+      <View className='flex-1' />
+    </>
+  )
+}

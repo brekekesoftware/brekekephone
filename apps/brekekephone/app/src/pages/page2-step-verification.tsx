@@ -242,7 +242,7 @@ export const Page2StepVerification = () => {
               }}
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
-              className='border-border placeholder-border mb-4 h-12 w-full rounded-[5px] border px-3 text-center'
+              className='border-border placeholder-border rounded-input mb-4 h-12 w-full border px-3 text-center'
             />
             <RnTouchableOpacity
               disabled={isLoading}
@@ -268,7 +268,7 @@ export const Page2StepVerification = () => {
               <View className='w-full justify-center'>
                 <AnimatedView
                   className={[
-                    'rounded-overlay w-full flex-row items-center justify-around py-2.5',
+                    'rounded-card w-full flex-row items-center justify-around py-2.5',
                     toast.type === 'err' ? 'bg-error' : 'bg-info',
                   ]}
                   style={{ opacity: fadeAnim }}

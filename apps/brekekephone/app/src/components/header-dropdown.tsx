@@ -25,7 +25,7 @@ export const Dropdown: FC<{
         className='android:elevation-999 bg-modal-overlay absolute inset-0 z-999'
       />
       <AnimatedSize
-        innerClassName='rounded-overlay bg-background'
+        innerClassName='rounded-card bg-background'
         className={[
           'android:elevation-999 absolute right-3.75 z-999 w-62.5 shadow-sm',
           compact ? 'top-8.75' : 'top-15',

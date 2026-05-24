@@ -9,12 +9,12 @@ import { ctx } from '#/stores/ctx'
 
 // Shared by header-navigation.tsx
 export const unreadOuterClassName = tw`absolute top-2.5 right-0 left-0 flex-1 items-center`
-export const unreadClassName = tw`bg-error left-3.75 h-3.75 w-5 overflow-hidden rounded-[3px] pt-0.75`
+export const unreadClassName = tw`bg-error rounded-card left-3.75 h-3.75 w-5 overflow-hidden pt-0.75`
 
 export const Navigation: FC<{
   menu: string
 }> = observer(({ menu }) => (
-  <View className='flex-row self-stretch'>
+  <View className='flex-row self-stretch shadow-sm'>
     {menus().map(m => {
       const active = m.key === menu
       const totalUnreadChat = ctx.chat.unreadCount
@@ -34,7 +34,7 @@ export const Navigation: FC<{
           <View
             className={[
               'h-10 w-full items-center justify-center',
-              active && 'bg-primary-100 dark:bg-primary-900 rounded-[22px]',
+              active && 'bg-primary-100 dark:bg-primary-900 rounded-full',
             ]}
           >
             <RnIcon path={m.icon} className='text-foreground' />

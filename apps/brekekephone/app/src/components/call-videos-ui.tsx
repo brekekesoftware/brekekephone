@@ -104,7 +104,7 @@ class Mini extends Component<Props> {
         ref={view => {
           this.view = view
         }}
-        className='bg-foreground android:elevation-999 native:absolute web:cursor-move web:select-none z-999 h-37.5 w-37.5 overflow-hidden rounded-[75px] shadow-sm'
+        className='bg-foreground android:elevation-999 native:absolute web:cursor-move web:select-none z-999 h-37.5 w-37.5 overflow-hidden rounded-full shadow-sm'
         style={{
           top: ctx.call.videoPositionT,
           left: ctx.call.videoPositionL,

@@ -114,7 +114,7 @@ export class PageSettingsDebug extends Component {
               normal
               primary={!isUpdateAvailable}
               small
-              className='px-5'
+              className='mt-2 px-5'
               warning={isUpdateAvailable}
             >
               {intl`Current version: ${currentVersion}`}

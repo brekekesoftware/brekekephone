@@ -30,7 +30,7 @@ export const Avatar = observer(
       (typeof avatarPlaceholder === 'string' ? avatarPlaceholder : '')
     return (
       <View className={['h-12.5 w-12.5', className]}>
-        <View className='flex-1 overflow-hidden rounded-[50px]'>
+        <View className='flex-1 overflow-hidden rounded-full'>
           <Image src={uri} className='flex-1' />
         </View>
         {ctx.auth.getCurrentAccount()?.ucEnabled &&

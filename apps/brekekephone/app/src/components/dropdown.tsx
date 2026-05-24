@@ -16,7 +16,7 @@ export const Dropdown: FC<ViewProps & DropdownProps> = ({
   position = {},
 }: DropdownProps) => (
   <View
-    className='shadow-border shadow-opacity-45 shadow-radius-[5px] shadow-offset-[5px]/[10px] android:elevation-10 bg-background rounded-overlay absolute px-2.5 py-1.25'
+    className='shadow-border shadow-opacity-45 shadow-radius-[5px] shadow-offset-[5px]/[10px] android:elevation-10 bg-background rounded-card absolute px-2.5 py-1.25'
     style={position}
   >
     {items.map((item, index) => (

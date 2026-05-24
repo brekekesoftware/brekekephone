@@ -25,7 +25,7 @@ export const FieldButton: FC<
     <RnTouchableOpacity
       onPress={p.onCreateBtnPress}
       className={[
-        'mt-3.75 max-w-90 min-w-76.25 self-center overflow-hidden rounded-[3px] px-2.5',
+        'rounded-card mt-3.75 max-w-90 min-w-76.25 self-center overflow-hidden px-2.5',
         p.disabled ? 'bg-muted' : 'bg-background',
         className,
       ]}

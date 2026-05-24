@@ -134,7 +134,7 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
           className={[
-            'bg-primary-100 absolute top-2.75 right-1.25 h-7.5 w-10 rounded-[3px]',
+            'bg-primary-100 rounded-card absolute top-2.75 right-1.25 h-7.5 w-10',
             props.createBtnClassName,
           ]}
           disabled={props.disabled}
@@ -154,7 +154,7 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
           className={[
-            'bg-error-100 absolute top-2.75 right-1.25 h-7.5 w-10 rounded-[3px]',
+            'bg-error-100 rounded-card absolute top-2.75 right-1.25 h-7.5 w-10',
             props.removeBtnClassName,
           ]}
         >
@@ -399,7 +399,7 @@ export const Field: FC<
           onPress={() => inputRef.current?.focus()}
           className='items-center justify-center'
         >
-          <View className='bg-error mx-3.75 my-0.5 self-start rounded-[3px] px-2.5 py-0.5'>
+          <View className='bg-error rounded-card mx-3.75 my-0.5 self-start px-2.5 py-0.5'>
             <RnIcon
               path={mdiCardsDiamond}
               className='text-error absolute -top-2 left-0.5'

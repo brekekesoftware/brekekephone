@@ -72,17 +72,17 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const renderVideo = () => {
     if (isAndroid) {
       return (
-        <View className='bg-border h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
+        <View className='bg-border rounded-card h-37.5 w-37.5 items-center overflow-hidden'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             muted
             paused={true}
-            className='h-37.5 w-37.5 items-center self-center overflow-hidden rounded-[5px]'
+            className='rounded-card h-37.5 w-37.5 items-center self-center overflow-hidden'
             enterPictureInPictureOnLeave
             preventsDisplaySleepDuringVideoPlayback={false}
           />
-          <View className='bg-modal-overlay absolute top-0 left-0 z-100 h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
+          <View className='bg-modal-overlay rounded-card absolute top-0 left-0 z-100 h-37.5 w-37.5 items-center overflow-hidden'>
             <RnTouchableOpacity onPress={onShowImage}>
               <RnIcon path={mdiPlayCircleOutline} color='white' size={40} />
             </RnTouchableOpacity>
@@ -91,12 +91,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       )
     } else {
       return (
-        <View className='bg-border h-37.5 w-37.5 items-center overflow-hidden rounded-[5px]'>
+        <View className='bg-border rounded-card h-37.5 w-37.5 items-center overflow-hidden'>
           <Video
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             paused={true}
-            className='h-37.5 w-37.5 items-center self-center overflow-hidden rounded-[5px]'
+            className='rounded-card h-37.5 w-37.5 items-center self-center overflow-hidden'
             controls={true}
             preventsDisplaySleepDuringVideoPlayback={false}
           />
@@ -109,7 +109,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
       <RnTouchableOpacity onPress={onShowImage}>
         <FastImage
           source={{ uri: convertUri(url) }}
-          className='h-37.5 w-37.5 overflow-hidden rounded-[5px]'
+          className='rounded-card h-37.5 w-37.5 overflow-hidden'
         />
       </RnTouchableOpacity>
     ) : (
@@ -119,12 +119,12 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     setIsVisible(false)
   }
   return (
-    <View className='h-37.5 w-37.5 items-center justify-center overflow-hidden rounded-[5px]'>
+    <View className='rounded-card h-37.5 w-37.5 items-center justify-center overflow-hidden'>
       {isLoading && (
         <RnActivityIndicator
           size='small'
           color='white'
-          className='bg-modal-overlay absolute top-0 left-0 h-37.5 w-37.5 overflow-hidden rounded-[5px]'
+          className='bg-modal-overlay rounded-card absolute top-0 left-0 h-37.5 w-37.5 overflow-hidden'
         />
       )}
       {isLoadSuccess && renderView()}
@@ -141,7 +141,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
         onRequestClose={onRequestClose}
       >
         <RnTouchableOpacity
-          className='bg-background android:elevation-2 absolute top-11 right-3.75 z-10 rounded-[15px]'
+          className='bg-background android:elevation-2 absolute top-11 right-3.75 z-10 rounded-full'
           style={isAndroid ? { top: StatusBar.currentHeight } : undefined}
           onPress={onSwipeDown}
         >

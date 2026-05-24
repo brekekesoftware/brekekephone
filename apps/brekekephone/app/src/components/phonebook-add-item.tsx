@@ -75,7 +75,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
               : 0),
         }}
       >
-        <View className='bg-background h-[33.333vh] w-full items-center justify-start overflow-hidden rounded-[3px] px-2.5 py-2.5'>
+        <View className='bg-background rounded-card h-[33.333vh] w-full items-center justify-start overflow-hidden px-2.5 py-2.5'>
           <RnTextInput
             // blurOnSubmit
             keyboardType='default'
@@ -85,7 +85,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             //  onSelectionChange={p.selectionChange}
             placeholder={intl`Enter field`}
             ref={refInput}
-            className='bg-background border-border web:py-1.25 h-10 w-full overflow-hidden rounded-[3px] border-[0.8px] px-2.5'
+            className='bg-background border-border web:py-1.25 rounded-input h-10 w-full overflow-hidden border-[0.8px] px-2.5'
             value={value}
           />
           <ScrollView
@@ -99,7 +99,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         <View className='flex-row items-center justify-between'>
           <RnTouchableOpacity
             onPress={() => onSelect(value)}
-            className='bg-primary mt-3.75 mr-2.5 flex-1 items-center justify-center rounded-[3px] py-2.5'
+            className='bg-primary rounded-button mt-3.75 mr-2.5 flex-1 items-center justify-center py-2.5'
           >
             <RnText bold white>
               OK
@@ -107,7 +107,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={ctx.contact.dismissPicker}
-            className='bg-background mt-3.75 ml-2.5 flex-1 items-center justify-center rounded-[3px] py-2.5'
+            className='bg-background rounded-button mt-3.75 ml-2.5 flex-1 items-center justify-center py-2.5'
           >
             <RnText bold className='text-foreground/80'>{intl`Cancel`}</RnText>
           </RnTouchableOpacity>

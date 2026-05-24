@@ -8,8 +8,8 @@ const config: TwConfig = {
     extend: {
       borderRadius: {
         card: '8px',
+        input: '8px',
         button: '9999px',
-        overlay: '8px',
       },
     },
   },

@@ -20,7 +20,7 @@ export const ToggleKeyboard: FC<{
         onPress={
           RnKeyboard.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard
         }
-        className='bg-muted mr-2 mb-1 w-12 flex-row rounded-[3px] py-2 shadow-sm'
+        className='bg-muted rounded-button mr-2 mb-1 w-12 flex-row py-2 shadow-sm'
       >
         {/* Fix button size does not equal with the Actions */}
         <RnText className='w-0 overflow-hidden leading-6'>{'\u200a'}</RnText>
