@@ -1,3 +1,6 @@
+// this file will be imported from babel config
+// already register tsconfig-paths and devtools
+
 const { path } = require('@/nodejs/path')
 const { fs } = require('@/nodejs/fs')
 const { jsonSafe } = require('@/shared/json-safe')

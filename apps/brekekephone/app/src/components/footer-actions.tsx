@@ -18,7 +18,7 @@ export const FooterActions: FC<
   const { onBack, BackIcon, onMore, MoreIcon, onNext, onNextText } = p
 
   return (
-    <View className='flex-1 flex-row overflow-hidden rounded-[3px]'>
+    <View className='rounded-button flex-1 flex-row overflow-hidden'>
       {onBack && (
         <RnTouchableOpacity
           onPress={onBack}

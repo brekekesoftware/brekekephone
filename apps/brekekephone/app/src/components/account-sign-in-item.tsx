@@ -32,7 +32,7 @@ export const AccountSignInItem: FC<{
       ctx.nav.goToPageAccountCreate()
     }
     return (
-      <View className='bg-background my-11.25 mb-3.75 ml-3.75 h-[70%] min-h-80 w-70 rounded-[3px] p-3.75'>
+      <View className='bg-background rounded-card my-11.25 mb-3.75 ml-3.75 h-[70%] min-h-80 w-70 p-3.75'>
         <RnText subTitle>{intl`No account`}</RnText>
         <RnText>{intl`There is no account created`}</RnText>
         <RnText>{intl`Tap the below button to create one`}</RnText>
@@ -86,7 +86,7 @@ export const AccountSignInItem: FC<{
   return (
     <View
       className={[
-        'bg-background my-11.25 mb-3.75 ml-3.75 h-[90%] min-h-80 w-70 rounded-[3px]',
+        'bg-background rounded-card my-11.25 mb-3.75 ml-3.75 h-[90%] min-h-80 w-70',
         props.last && 'mr-3.75',
       ]}
     >

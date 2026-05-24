@@ -40,7 +40,7 @@ export const AppWebContainer = ({ children }: PropsWithChildren) => {
         />
 
         <a href={href}>
-          <RnTouchableOpacity className='relative mt-7.5 w-67.5 rounded-[3px] bg-black p-3.75'>
+          <RnTouchableOpacity className='rounded-button relative mt-7.5 w-67.5 bg-black p-3.75'>
             <RnText small white>
               {intl`OPEN IN APP`}
             </RnText>
@@ -53,7 +53,7 @@ export const AppWebContainer = ({ children }: PropsWithChildren) => {
         </a>
         <RnTouchableOpacity
           onPress={() => setIsBrowser(true)}
-          className='relative mt-2.5 mb-12.5 w-67.5 rounded-[3px] bg-white p-3.75'
+          className='rounded-button relative mt-2.5 mb-12.5 w-67.5 bg-white p-3.75'
         >
           <RnText small black>{intl`OPEN IN BROWSER`}</RnText>
           <RnIcon
