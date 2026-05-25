@@ -10,7 +10,7 @@ PODS:
   - hermes-engine (0.80.1):
     - hermes-engine/Pre-built (= 0.80.1)
   - hermes-engine/Pre-built (0.80.1)
-  - JitsiWebRTC (111.0.2)
+  - JitsiWebRTC (124.0.2)
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -1797,8 +1797,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-webrtc (111.0.3):
-    - JitsiWebRTC (~> 111.0.0)
+  - react-native-webrtc (124.0.7):
+    - JitsiWebRTC (~> 124.0.0)
     - React-Core
   - react-native-webview (13.16.1):
     - boost
@@ -2685,7 +2685,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f07404533b808de66cf48ac4200463068d0e95a
-  JitsiWebRTC: 80f62908fcf2a1160e0d14b584323fb6e6be630b
+  JitsiWebRTC: b47805ab5668be38e7ee60e2258f49badfe8e1d0
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: efa5010912100e944a7ac9a93a157e1def1988fe
@@ -2730,7 +2730,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: e89848fc12d32ccca63d0d7d16dd96918d07c730
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-video: 09301efa8c794bec9b830679bac5ced614216024
-  react-native-webrtc: 2423dee5d8c5921000b0d70c7bd6d59e8490b81a
+  react-native-webrtc: e8f0ce746353adc2744a2b933645e1aeb41eaa74
   react-native-webview: b229964e3333464ba9aabf090cd5a9889cd4a8de
   React-NativeModulesApple: 983f3483ef0a3446b56d490f09d579fba2442e17
   React-oscompat: 114036cd8f064558c9c1a0c04fc9ae5e1453706a
@@ -2783,4 +2783,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b9b9e167f40a7fab53b092561220c328b5f18dd3
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
