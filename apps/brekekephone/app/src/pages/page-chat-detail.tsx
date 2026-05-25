@@ -136,28 +136,6 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
     }
   }
 
-  const emojiSelectFunc = (emoji: string) => {
-    const newText = edittingTextEmojiRef.current.concat(emoji)
-    if (editingText === '') {
-      setEditingText(emoji)
-      edittingTextEmojiRef.current = emoji
-    } else {
-      if (!editingTextReplaceRef.current) {
-        setEditingText(
-          editingText.replace(edittingTextEmojiRef.current, newText),
-        )
-        edittingTextEmojiRef.current =
-          edittingTextEmojiRef.current.concat(emoji)
-      } else {
-        setEditingText(
-          editingText.replace(edittingTextEmojiRef.current, emoji),
-        )
-        editingTextReplaceRef.current = false
-        edittingTextEmojiRef.current = emoji
-      }
-    }
-  }
-
   const onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
     const layoutSize = ev.nativeEvent.layoutMeasurement
     const layoutHeight = layoutSize.height
@@ -269,7 +247,10 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
       .catch(onAcceptFileFailure)
   }
 
-  const onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
+  const onAcceptFileSuccess = (
+    blob: Blob,
+    file: { id: string; name: string },
+  ) => {
     const fileType = formatFileType(file.name)
     const reader = new FileReader()
     reader.onload = async event => {
@@ -385,7 +366,9 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
       compact
       containerOnContentSizeChange={onContentSizeChange}
       containerOnScroll={onScroll}
-      containerRef={(ref: ScrollView) => { viewRef.current = ref }}
+      containerRef={(ref: ScrollView) => {
+        viewRef.current = ref
+      }}
       fabRender={renderChatInput}
       onBack={ctx.nav.backToPageChatRecents}
       title={getPbxName({ partyNumber: buddy, preferPbxName: true }) || buddy} // for user not set username
@@ -434,20 +417,6 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
         rejectFile={rejectFile}
         resolveChat={resolveChat}
       />
-      {/* TODO: {emojiTurnOn && (
-      <View>
-        <EmojiSelector
-          category={Categories.emotion}
-          columns={10}
-          onEmojiSelected={emoji => emojiSelectFunc(emoji)}
-          showHistory={true}
-          showSearchBar={true}
-          showSectionTitles={true}
-          showTabs={true}
-        />
-      </View>
-    )} */}
-      {/* <video src={blobVideo}id='video' controls width='320' height='240'/> */}
     </Layout>
   )
 })

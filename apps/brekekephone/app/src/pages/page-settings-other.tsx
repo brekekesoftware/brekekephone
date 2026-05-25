@@ -1,6 +1,5 @@
-import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useState } from 'react'
 
 import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { mdiCheck } from '#/assets/icons'
@@ -27,228 +26,201 @@ import {
 } from '#/utils/ringtone-picker'
 import { SyncRingtoneOnForeground } from '#/utils/sync-ringtone-on-foreground'
 
-export const PageSettingsOther = observer(
-  class PageSettingsOther extends Component {
-    state = {
-      status: '',
-      statusText: '',
-      ringtoneOptions: [] as RingtoneOption[],
-      ringtone: defaultRingtone,
-      preview: '',
-    }
+export const PageSettingsOther = observer(() => {
+  const [status, setStatus] = useState('')
+  const [statusText, setStatusText] = useState('')
+  const [ringtoneOptions, setRingtoneOptions] = useState<RingtoneOption[]>([])
+  const [ringtone, setRingtone] = useState(defaultRingtone)
+  const [preview, setPreview] = useState('')
 
-    componentDidMount = async () => {
-      try {
-        this.initData()
-      } catch (err) {
-        console.error('PageSettingsOther componentDidMount:', err)
+  const initData = async () => {
+    const me = ctx.uc.me()
+    let ro: RingtoneOption[] = []
+    let r = getCurrentRingtone()
+    if (isIos) {
+      const d = await handleRingtoneOptionsInSetting()
+      if (d) {
+        ro = d.ro
+        r = d.r
       }
+    } else {
+      ro = await getRingtoneOptions()
     }
 
-    componentWillUnmount(): void {
+    setStatus(me.status)
+    setStatusText(me.statusText)
+    setRingtoneOptions(ro)
+    setRingtone(r)
+  }
+
+  useEffect(() => {
+    try {
+      initData()
+    } catch (err) {
+      console.error('PageSettingsOther componentDidMount:', err)
+    }
+    return () => {
       RnPicker.dismiss()
     }
+  }, [])
 
-    initData = async () => {
-      const me = ctx.uc.me()
-      let ro: RingtoneOption[] = []
-      let r = getCurrentRingtone()
-      if (isIos) {
-        const d = await handleRingtoneOptionsInSetting()
-        if (d) {
-          ro = d.ro
-          r = d.r
-        }
-      } else {
-        ro = await getRingtoneOptions()
-      }
-
-      this.setState({
-        status: me.status,
-        statusText: me.statusText,
-        ringtoneOptions: ro,
-        ringtone: r,
+  const submitStatusText = () => {
+    setStatusFn(status, statusText)
+  }
+  const submitStatus = (s: string) => {
+    setStatusFn(s, statusText)
+  }
+  const setStatusFn = (s: string, text: string) => {
+    ctx.uc
+      .setStatus(s, text)
+      .then(() => {
+        const me = ctx.uc.me()
+        setStatus(me.status)
+        setStatusText(me.statusText)
       })
-    }
-
-    setStatusText = (statusText: string) => {
-      this.setState({ statusText })
-    }
-    submitStatusText = () => {
-      this.setStatus(this.state.status, this.state.statusText)
-    }
-    submitStatus = (status: string) => {
-      this.setStatus(status, this.state.statusText)
-    }
-    setStatus = (status: string, statusText: string) => {
-      ctx.uc
-        .setStatus(status, statusText)
-        .then(() => {
-          const me = ctx.uc.me()
-          this.setState({
-            status: me.status,
-            statusText: me.statusText,
-          })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to change UC status`,
+          err,
         })
-        .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to change UC status`,
-            err,
-          })
-        })
-    }
-
-    onChangeRingtone = async (value: string, ca?: Account) => {
-      this.stopPreview()
-      const hasCall =
-        Object.keys(ctx.call.callkeepMap).length ||
-        ctx.sip.phone?.getSessionCount() ||
-        ctx.call.calls.length
-
-      if (hasCall) {
-        const msg = intl`Cannot preview ringtone during a call`
-        if (!ctx.toast.items.some(v => v.msg === msg)) {
-          ctx.toast.warning(msg, 2000)
-        }
-        return
-      }
-      const r = await validateRingtone(value, ca)
-      this.setState({ preview: r })
-    }
-
-    onSaveRingtone = async (value: string, ca?: Account) => {
-      await saveRingtoneSelection(
-        value,
-        () => this.setState({ ringtone: value }),
-        ca,
-      )
-    }
-
-    onUploadRingtone = async () => {
-      try {
-        await handleUploadRingtone(this.state.ringtoneOptions, options => {
-          this.setState({
-            ringtoneOptions: options,
-          })
-        })
-      } catch (err) {
-        console.error('PageSettingOther onUploadRingtone:', err)
-      }
-    }
-
-    onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
-      this.setState({
-        ringtoneOptions: ro,
-        ringtone: r || defaultRingtone,
       })
-    }
+  }
 
-    getDropDown = () => {
-      let d = [
-        ...(ctx.auth.isConnFailure()
-          ? [
-              {
-                label: intl`Reconnect to server`,
-                onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
-              },
-            ]
-          : []),
-        ...(!isWeb
-          ? [
-              {
-                label: intl`Open debug log`,
-                onPress: ctx.nav.goToPageSettingsDebugFiles,
-              },
-            ]
-          : []),
+  const onChangeRingtone = async (value: string, ca?: Account) => {
+    stopPreview()
+    const hasCall =
+      Object.keys(ctx.call.callkeepMap).length ||
+      ctx.sip.phone?.getSessionCount() ||
+      ctx.call.calls.length
+
+    if (hasCall) {
+      const msg = intl`Cannot preview ringtone during a call`
+      if (!ctx.toast.items.some(v => v.msg === msg)) {
+        ctx.toast.warning(msg, 2000)
+      }
+      return
+    }
+    const r = await validateRingtone(value, ca)
+    setPreview(r)
+  }
+
+  const onSaveRingtone = async (value: string, ca?: Account) => {
+    await saveRingtoneSelection(value, () => setRingtone(value), ca)
+  }
+
+  const onUploadRingtone = async () => {
+    try {
+      await handleUploadRingtone(ringtoneOptions, options => {
+        setRingtoneOptions(options)
+      })
+    } catch (err) {
+      console.error('PageSettingOther onUploadRingtone:', err)
+    }
+  }
+
+  const onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
+    setRingtoneOptions(ro)
+    setRingtone(r || defaultRingtone)
+  }
+
+  const getDropDown = () => {
+    let d = [
+      ...(ctx.auth.isConnFailure()
+        ? [
+            {
+              label: intl`Reconnect to server`,
+              onPress: ctx.auth.resetFailureStateIncludePbxOrUc,
+            },
+          ]
+        : []),
+      ...(!isWeb
+        ? [
+            {
+              label: intl`Open debug log`,
+              onPress: ctx.nav.goToPageSettingsDebugFiles,
+            },
+          ]
+        : []),
+      {
+        label: intl`Logout`,
+        onPress: ctx.auth.signOut,
+        danger: true,
+      },
+    ]
+    if (!isWeb) {
+      d = [
         {
-          label: intl`Logout`,
-          onPress: ctx.auth.signOut,
-          danger: true,
+          label: intl`Select local mp3 as ringtone`,
+          onPress: onUploadRingtone,
         },
+        ...d,
       ]
-      if (!isWeb) {
-        d = [
-          {
-            label: intl`Select local mp3 as ringtone`,
-            onPress: this.onUploadRingtone,
-          },
-          ...d,
-        ]
-      }
-      return d
     }
+    return d
+  }
 
-    stopPreview = () => this.setState({ preview: '' })
+  const stopPreview = () => setPreview('')
 
-    render() {
-      const ca = ctx.auth.getCurrentAccount()
-      const description = !ca
-        ? intl`App settings and configs`
-        : `${ca.pbxUsername} - ${ca.pbxHostname}`
+  const ca = ctx.auth.getCurrentAccount()
+  const description = !ca
+    ? intl`App settings and configs`
+    : `${ca.pbxUsername} - ${ca.pbxHostname}`
 
-      return (
-        <Layout
-          title={intl`Settings`}
-          description={description}
-          dropdown={this.getDropDown()}
-          menu='settings'
-          subMenu='other'
-        >
-          <Field isGroup label={intl`DISPLAY`} />
-          <LanguagePicker onSelect={this.initData} />
-          <DarkModePicker />
-          {ca?.ucEnabled && (
-            <>
-              <Field isGroup label='UC' />
-              <Field
-                disabled={!ca.ucEnabled}
-                label={intl`STATUS`}
-                onValueChange={this.submitStatus}
-                options={[
-                  { key: 'online', label: intl`Online` },
-                  { key: 'offline', label: intl`Invisible` },
-                  { key: 'busy', label: intl`Busy` },
-                ]}
-                type='RnPicker'
-                value={this.state.status}
-              />
-              <Field
-                createBtnIcon={mdiCheck}
-                disabled={!ca.ucEnabled}
-                label={intl`STATUS NOTE`}
-                onCreateBtnPress={this.submitStatusText}
-                onSubmitEditing={this.submitStatusText}
-                onValueChange={this.setStatusText}
-                value={this.state.statusText}
-              />
-            </>
-          )}
-          {!isWeb && (
-            <>
-              <Field isGroup label={intl`Ringtone`} />
-              <Field
-                label={intl`INCOMING CALL RINGTONE`}
-                options={this.state.ringtoneOptions}
-                type='RnPicker'
-                value={this.state.ringtone}
-                onValueChange={v => this.onChangeRingtone(v, ca)}
-                onRnPickerConfirm={v => this.onSaveRingtone(v, ca)}
-                onRnPickerDismiss={this.stopPreview}
-              />
-            </>
-          )}
-          {isIos && (
-            <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
-          )}
-          {!isWeb && this.state.preview && (
-            <PreviewRingtone
-              source={this.state.preview}
-              onFinished={this.stopPreview}
-            />
-          )}
-        </Layout>
-      )
-    }
-  },
-)
+  return (
+    <Layout
+      title={intl`Settings`}
+      description={description}
+      dropdown={getDropDown()}
+      menu='settings'
+      subMenu='other'
+    >
+      <Field isGroup label={intl`DISPLAY`} />
+      <LanguagePicker onSelect={initData} />
+      <DarkModePicker />
+      {ca?.ucEnabled && (
+        <>
+          <Field isGroup label='UC' />
+          <Field
+            disabled={!ca.ucEnabled}
+            label={intl`STATUS`}
+            onValueChange={submitStatus}
+            options={[
+              { key: 'online', label: intl`Online` },
+              { key: 'offline', label: intl`Invisible` },
+              { key: 'busy', label: intl`Busy` },
+            ]}
+            type='RnPicker'
+            value={status}
+          />
+          <Field
+            createBtnIcon={mdiCheck}
+            disabled={!ca.ucEnabled}
+            label={intl`STATUS NOTE`}
+            onCreateBtnPress={submitStatusText}
+            onSubmitEditing={submitStatusText}
+            onValueChange={setStatusText}
+            value={statusText}
+          />
+        </>
+      )}
+      {!isWeb && (
+        <>
+          <Field isGroup label={intl`Ringtone`} />
+          <Field
+            label={intl`INCOMING CALL RINGTONE`}
+            options={ringtoneOptions}
+            type='RnPicker'
+            value={ringtone}
+            onValueChange={v => onChangeRingtone(v, ca)}
+            onRnPickerConfirm={v => onSaveRingtone(v, ca)}
+            onRnPickerDismiss={stopPreview}
+          />
+        </>
+      )}
+      {isIos && <SyncRingtoneOnForeground onForeGround={onSyncRingtone} />}
+      {!isWeb && preview && (
+        <PreviewRingtone source={preview} onFinished={stopPreview} />
+      )}
+    </Layout>
+  )
+})

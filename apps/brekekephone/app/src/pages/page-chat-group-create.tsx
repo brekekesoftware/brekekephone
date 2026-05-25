@@ -56,19 +56,11 @@ export const PageChatGroupCreate = observer(() => {
       onBack={ctx.nav.backToPageChatRecents}
       title={intl`New Group`}
     >
-      <Field
-        label={intl`GROUP NAME`}
-        onValueChange={setName}
-        value={name}
-      />
+      <Field label={intl`GROUP NAME`} onValueChange={setName} value={name} />
       <Field isGroup label={intl`Members`} />
       {ctx.contact.ucUsers.map((u, i) => (
         <RnTouchableOpacity key={i} onPress={() => toggleBuddy(u.id)}>
-          <UserItem
-            key={u.id}
-            {...u}
-            selected={members.includes(u.id)}
-          />
+          <UserItem key={u.id} {...u} selected={members.includes(u.id)} />
         </RnTouchableOpacity>
       ))}
     </Layout>

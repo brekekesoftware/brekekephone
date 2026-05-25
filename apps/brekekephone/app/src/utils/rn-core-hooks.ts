@@ -1,8 +1,10 @@
 import type { ComponentType } from 'react'
 import { createElement } from 'react'
-import { useColorScheme } from 'react-native'
-// eslint-disable-next-line no-restricted-imports
-import { useWindowDimensions as useWindowDimensionsOriginal } from 'react-native'
+import {
+  useColorScheme,
+  // eslint-disable-next-line no-restricted-imports
+  useWindowDimensions as useWindowDimensionsOriginal,
+} from 'react-native'
 
 import type { SvgIconProps } from '@/rn/components/svg-icon'
 import { useTextStyle } from '@/rn/components/text/text-style-context'

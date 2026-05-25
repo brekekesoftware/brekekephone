@@ -1,6 +1,5 @@
-import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList, View } from 'react-native'
 
 import type { UcBuddy } from '#/brekekejs'
@@ -16,108 +15,78 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-export const PageContactGroupCreate = observer(
-  class PageContactGroupCreate extends Component<
-    {},
-    {
-      name: string
-      didMount: boolean
-      selectedUserItems: { [k: string]: UcBuddy }
-    }
-  > {
-    state = {
-      name: '',
-      didMount: false,
-      selectedUserItems: {} as { [k: string]: UcBuddy },
-    }
-    componentDidMount = () => {
-      BackgroundTimer.setTimeout(
-        () => this.setState({ didMount: true }),
-        defaultTimeout,
-      )
-    }
+export const PageContactGroupCreate = observer(() => {
+  const [name, setName] = useState('')
+  const [didMount, setDidMount] = useState(false)
+  const [selectedUserItems, setSelectedUserItems] = useState<{
+    [k: string]: UcBuddy
+  }>({})
 
-    render() {
-      return (
-        <Layout
-          fabOnBack={ctx.nav.goToPageContactEdit}
-          fabOnNext={this.create}
-          fabOnNextText={intl`CREATE`}
-          onBack={ctx.nav.backToPageContactEdit}
-          title={intl`New Group`}
-        >
-          <Field
-            label={intl`GROUP NAME`}
-            onValueChange={this.setName}
-            value={this.state.name}
-          />
-          <Field isGroup label={intl`Members`} />
-          {!this.state.didMount ? (
-            <RnActivityIndicator
-              className='mt-5 h-9 w-9 self-center'
-              size='small'
-            />
-          ) : (
-            <FlatList
-              data={ctx.user.dataListAllUser}
-              renderItem={({
-                item,
-                index,
-              }: {
-                item: UcBuddy
-                index: number
-              }) => (
-                <RenderItem
-                  item={item}
-                  index={index}
-                  selectedUsers={this.state.selectedUserItems}
-                  onToggle={this.toggleUser}
-                />
-              )}
-              keyExtractor={item => item.user_id}
+  useEffect(() => {
+    BackgroundTimer.setTimeout(() => setDidMount(true), defaultTimeout)
+  }, [])
+
+  const toggleUser = (user: UcBuddy) => {
+    setSelectedUserItems(prev => {
+      const next = { ...prev }
+      if (next[user.user_id]) {
+        delete next[user.user_id]
+      } else {
+        next[user.user_id] = user
+      }
+      return next
+    })
+  }
+
+  const create = () => {
+    if (!name.trim()) {
+      RnAlert.error({
+        message: intlDebug`Group name is required`,
+      })
+      return
+    } else if (ctx.user.groups.some(group => group.name === name.trim())) {
+      RnAlert.error({
+        message: intlDebug`Group name is existed`,
+      })
+      return
+    }
+    ctx.user.addGroup(name, selectedUserItems)
+    RnDropdown.setShouldUpdatePosition(true)
+    ctx.nav.backToPageContactEdit()
+  }
+
+  return (
+    <Layout
+      fabOnBack={ctx.nav.goToPageContactEdit}
+      fabOnNext={create}
+      fabOnNextText={intl`CREATE`}
+      onBack={ctx.nav.backToPageContactEdit}
+      title={intl`New Group`}
+    >
+      <Field label={intl`GROUP NAME`} onValueChange={setName} value={name} />
+      <Field isGroup label={intl`Members`} />
+      {!didMount ? (
+        <RnActivityIndicator
+          className='mt-5 h-9 w-9 self-center'
+          size='small'
+        />
+      ) : (
+        <FlatList
+          data={ctx.user.dataListAllUser}
+          renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+            <RenderItem
+              item={item}
+              index={index}
+              selectedUsers={selectedUserItems}
+              onToggle={toggleUser}
             />
           )}
-        </Layout>
-      )
-    }
-
-    setName = (name: string) => this.setState({ name })
-
-    toggleUser = (user: UcBuddy) => {
-      this.setState(prev => {
-        const next = { ...prev.selectedUserItems }
-        if (next[user.user_id]) {
-          delete next[user.user_id]
-        } else {
-          next[user.user_id] = user
-        }
-        return { selectedUserItems: next }
-      })
-    }
-
-    create = () => {
-      const { name, selectedUserItems } = this.state
-
-      if (!name.trim()) {
-        RnAlert.error({
-          message: intlDebug`Group name is required`,
-        })
-        return
-      } else if (ctx.user.groups.some(group => group.name === name.trim())) {
-        RnAlert.error({
-          message: intlDebug`Group name is existed`,
-        })
-        return
-      }
-      // const selectedUsers = userStore.dataListAllUser.filter(
-      //   u => this.selectedUsers[u.user_id],
-      // )
-      ctx.user.addGroup(name, selectedUserItems)
-      RnDropdown.setShouldUpdatePosition(true)
-      ctx.nav.backToPageContactEdit()
-    }
-  },
-)
+          keyExtractor={item => item.user_id}
+        />
+      )}
+    </Layout>
+  )
+})
 
 const RenderItem = observer(
   ({

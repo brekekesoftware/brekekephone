@@ -1,6 +1,5 @@
-import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList, View } from 'react-native'
 
 import type { UcBuddy } from '#/brekekejs'
@@ -16,97 +15,72 @@ import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageContactGroupEdit = observer(
-  class PageContactGroupEdit extends Component<
-    { groupName: string; listItem: UcBuddy[] },
-    { didMount: boolean; selectedUserItems: { [k: string]: UcBuddy } }
-  > {
-    state = {
-      didMount: false,
-      selectedUserItems: {} as { [k: string]: UcBuddy },
-    }
-    componentDidMount = () => {
-      const selectedUserItems: { [k: string]: UcBuddy } = {}
-      this.props.listItem.forEach(u => {
+  ({ groupName, listItem }: { groupName: string; listItem: UcBuddy[] }) => {
+    const [didMount, setDidMount] = useState(false)
+    const [selectedUserItems, setSelectedUserItems] = useState<{
+      [k: string]: UcBuddy
+    }>({})
+
+    useEffect(() => {
+      const items: { [k: string]: UcBuddy } = {}
+      listItem.forEach(u => {
         if (ctx.user.selectedUserIds[u.user_id]) {
-          selectedUserItems[u.user_id] = u
+          items[u.user_id] = u
         }
       })
-      this.setState({ selectedUserItems })
-      BackgroundTimer.setTimeout(
-        () => this.setState({ didMount: true }),
-        defaultTimeout,
-      )
-    }
+      setSelectedUserItems(items)
+      BackgroundTimer.setTimeout(() => setDidMount(true), defaultTimeout)
+    }, [])
 
-    render() {
-      return (
-        <Layout
-          fabOnBack={ctx.nav.goToPageContactEdit}
-          fabOnNext={this.create}
-          fabOnNextText={intl`SAVE`}
-          onBack={ctx.nav.backToPageContactEdit}
-          title={intl`Add/Remove Contact`}
-        >
-          <Field
-            label={intl`GROUP NAME`}
-            value={this.props.groupName}
-            disabled={true}
-          />
-          <Field isGroup label={intl`Members`} disabled={true} />
-          {!this.state.didMount ? (
-            <RnActivityIndicator
-              className='h-10 w-10 self-center'
-              size='large'
-            />
-          ) : (
-            <FlatList
-              data={ctx.user.dataListAllUser}
-              renderItem={({
-                item,
-                index,
-              }: {
-                item: UcBuddy
-                index: number
-              }) => (
-                <RenderItem
-                  item={item}
-                  index={index}
-                  selectedUsers={this.state.selectedUserItems}
-                  onToggle={this.toggleUser}
-                />
-              )}
-              keyExtractor={item => item.user_id}
-            />
-          )}
-        </Layout>
-      )
-    }
-
-    toggleUser = (item: UcBuddy) => {
-      this.setState(prev => {
-        const next = { ...prev.selectedUserItems }
+    const toggleUser = (item: UcBuddy) => {
+      setSelectedUserItems(prev => {
+        const next = { ...prev }
         if (next[item.user_id]) {
           delete next[item.user_id]
         } else {
           next[item.user_id] = item
         }
-        return { selectedUserItems: next }
+        return next
       })
     }
 
-    create = () => {
-      const { selectedUserItems } = this.state
-      const listItemRemoved = this.props.listItem.filter(
+    const create = () => {
+      const listItemRemoved = listItem.filter(
         itm => !selectedUserItems[itm.user_id],
       )
-      ctx.user.editGroup(
-        this.props.groupName,
-        listItemRemoved,
-        selectedUserItems,
-      )
+      ctx.user.editGroup(groupName, listItemRemoved, selectedUserItems)
       RnDropdown.setShouldUpdatePosition(true)
       ctx.nav.backToPageContactEdit()
     }
+
+    return (
+      <Layout
+        fabOnBack={ctx.nav.goToPageContactEdit}
+        fabOnNext={create}
+        fabOnNextText={intl`SAVE`}
+        onBack={ctx.nav.backToPageContactEdit}
+        title={intl`Add/Remove Contact`}
+      >
+        <Field label={intl`GROUP NAME`} value={groupName} disabled={true} />
+        <Field isGroup label={intl`Members`} disabled={true} />
+        {!didMount ? (
+          <RnActivityIndicator className='h-10 w-10 self-center' size='large' />
+        ) : (
+          <FlatList
+            data={ctx.user.dataListAllUser}
+            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
+              <RenderItem
+                item={item}
+                index={index}
+                selectedUsers={selectedUserItems}
+                onToggle={toggleUser}
+              />
+            )}
+            keyExtractor={item => item.user_id}
+          />
+        )}
+      </Layout>
+    )
   },
 )
 

@@ -57,9 +57,7 @@ export const PageCallDtmfKeypad = observer(() => {
         selectionChange={
           RnKeyboard.isKeyboardShowing
             ? undefined
-            : (
-                e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-              ) => {
+            : (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
                 Object.assign(txtSelectionRef.current, {
                   start: e.nativeEvent.selection.start,
                   end: e.nativeEvent.selection.end,

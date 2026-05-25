@@ -75,7 +75,12 @@ const Mini = observer(({ onDoubleTap, sourceObject }: Props) => {
     Object.assign(ctx.call, { videoPositionL: left, videoPositionT: top })
 
     const n = Date.now()
-    if (g.dx <= 10 && g.dy <= 10 && lastTapRef.current && n - lastTapRef.current <= 500) {
+    if (
+      g.dx <= 10 &&
+      g.dy <= 10 &&
+      lastTapRef.current &&
+      n - lastTapRef.current <= 500
+    ) {
       onDoubleTap()
     }
     lastTapRef.current = n
@@ -97,7 +102,9 @@ const Mini = observer(({ onDoubleTap, sourceObject }: Props) => {
   ).current
 
   useEffect(() => {
-    if (!isWeb || !viewRef.current) return
+    if (!isWeb || !viewRef.current) {
+      return
+    }
     const el = viewRef.current as any
     // web-only CSS not expressible via tailwind className:
     // position fixed (anchor to viewport - RNW defaults every View to

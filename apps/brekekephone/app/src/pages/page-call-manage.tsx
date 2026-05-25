@@ -93,11 +93,15 @@ export const RenderAllCalls = observer(() => {
 
 const PageCallManage = observer(({ call: c }: { call: Call }) => {
   const [showButtonsInVideoCall, setShowButtonsInVideoCall] = useState(true)
-  const [alreadySetShowButtonsInVideoCall, setAlreadySetShowButtonsInVideoCall] =
-    useState(false)
+  const [
+    alreadySetShowButtonsInVideoCall,
+    setAlreadySetShowButtonsInVideoCall,
+  ] = useState(false)
   const [hasJavaPn, setHasJavaPn] = useState(true)
 
-  const appStateSubscriptionRef = useRef<NativeEventSubscription | undefined>(undefined)
+  const appStateSubscriptionRef = useRef<NativeEventSubscription | undefined>(
+    undefined,
+  )
   // keep hasJavaPn accessible in the stable onAppStateChange callback
   const hasJavaPnRef = useRef(hasJavaPn)
   hasJavaPnRef.current = hasJavaPn
@@ -113,8 +117,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
     return ctx.auth.pbxConfig?.[`webphone.call.${k}`] === 'false'
   }
 
-  const toggleButtons = () =>
-    setShowButtonsInVideoCall(prev => !prev)
+  const toggleButtons = () => setShowButtonsInVideoCall(prev => !prev)
 
   const checkJavaPn = async () => {
     if (
@@ -263,8 +266,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
       <View
         className={[
           'flex-1',
-          !c.localVideoEnabled &&
-            'mx-3.75 flex-col items-center justify-start',
+          !c.localVideoEnabled && 'mx-3.75 flex-col items-center justify-start',
         ]}
         style={{
           minWidth: minSizeImageWrapper,
@@ -411,9 +413,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
               noborder
               onPress={ctx.call.toggleLoudSpeaker}
               path={
-                ctx.call.isLoudSpeakerEnabled
-                  ? mdiVolumeHigh
-                  : mdiVolumeMedium
+                ctx.call.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
               }
               size={40}
             />
@@ -582,9 +582,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
   return (
     <BrekekeGradient
       white={c.localVideoEnabled}
-      className={
-        !isVisible() && 'absolute -top-full -left-full h-full w-full'
-      }
+      className={!isVisible() && 'absolute -top-full -left-full h-full w-full'}
     >
       <Layout
         compact
