@@ -1959,17 +1959,25 @@ if (!Brekeke.WebrtcClient) {
         }
       } else if (int(this.dtmfSendMode) === 2) {
         try {
-          session.rtcSession.connection
-            .getSenders()[0]
-            .dtmf.insertDTMF(
-              tones,
-              typeof options.duration !== 'undefined'
-                ? int(options.duration)
-                : undefined,
-              typeof options.duration !== 'undefined'
-                ? int(options.interToneGap)
-                : undefined,
+          var dtmfSender = session.rtcSession.connection
+            .getSenders()
+            .find(function (s) {
+              return s.dtmf && s.dtmf.canInsertDTMF
+            })
+          if (!dtmfSender) {
+            throw new Error(
+              'No RTCDTMFSender available (canInsertDTMF is false on all senders)',
             )
+          }
+          dtmfSender.dtmf.insertDTMF(
+            tones,
+            typeof options.duration !== 'undefined'
+              ? int(options.duration)
+              : undefined,
+            typeof options.duration !== 'undefined'
+              ? int(options.interToneGap)
+              : undefined,
+          )
           this._logger.log('debug', 'insertDTMF() OK: tones=' + tones)
         } catch (e) {
           this._logger.log('warn', 'insertDTMF() failed: ' + stringifyError(e))
