@@ -15,10 +15,7 @@ export class MFAStore {
   @observable error = ''
   _resolvers: Array<(ok: boolean) => void> = []
 
-  @action show = (
-    id: string,
-    opts?: { skipReconnect?: boolean; error?: string },
-  ) => {
+  show = (id: string, opts?: { skipReconnect?: boolean; error?: string }) => {
     if (this.accountId === id) {
       // If any caller needs reconnect, honor it
       this.skipReconnect = this.skipReconnect && (opts?.skipReconnect ?? false)
@@ -34,13 +31,13 @@ export class MFAStore {
     this.error = opts?.error || ''
   }
 
-  @action hide = () => {
+  hide = () => {
     this.accountId = null
     this.skipReconnect = false
     this.error = ''
   }
 
-  @action complete = (): boolean => {
+  complete = (): boolean => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -53,7 +50,7 @@ export class MFAStore {
     return hadAwaiters
   }
 
-  @action cancel = () => {
+  cancel = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.cancelledAccountId = this.accountId
@@ -67,7 +64,7 @@ export class MFAStore {
   // Clean reset - for signIn/signOut where no user cancellation occurred.
   // Unlike cancel(), this does NOT set wasCancelled=true, so subsequent
   // PN navigation / deeplink flows won't be blocked by stale cancel state.
-  @action reset = () => {
+  reset = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -80,7 +77,7 @@ export class MFAStore {
 
   // Called by signOut - preserves wasCancelled/cancelledAccountId so
   // syncPnToken does not trigger a new mfa/start immediately after cancel.
-  @action signOutReset = () => {
+  signOutReset = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -91,7 +88,7 @@ export class MFAStore {
 
   // Clear cancel state when a new sign-in begins for the same account,
   // so waitMfaIfNeeded and PN navigation are not blocked by stale cancel state.
-  @action clearCancelled = () => {
+  clearCancelled = () => {
     this.wasCancelled = false
     this.cancelledAccountId = null
   }

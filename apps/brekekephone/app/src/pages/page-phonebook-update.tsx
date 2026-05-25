@@ -27,7 +27,7 @@ export const PagePhonebookUpdate = observer(
       )
     }
 
-    @action save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
+    save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
       if (!hasUnsavedChanges) {
         ctx.nav.goToPageContactPhonebook()
         return

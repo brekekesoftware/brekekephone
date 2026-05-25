@@ -28,7 +28,7 @@ export class AuthSIP {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     console.log('SIP PN debug: set sipState stopped dispose')
     this.clearShouldAuthReaction?.()
 
@@ -86,7 +86,7 @@ export class AuthSIP {
     await ctx.sip.connect(o, ca)
   }
 
-  @action authWithoutCatch = async () => {
+  authWithoutCatch = async () => {
     console.log('SIP PN debug: set sipState connecting')
 
     ctx.auth.sipState = 'connecting'
@@ -133,7 +133,7 @@ export class AuthSIP {
     await this.authPnWithoutCatch(pn)
   }
 
-  @action authWithCheck = async () => {
+  authWithCheck = async () => {
     // BUG-1207: while signInByNotification is mid-transition, dispose() sets
     // sipState='stopped' and onCallKeepDidDisplayIncomingCall sees that and
     // schedules a redundant sip.connect. The 2nd connect calls resetProcessedPn

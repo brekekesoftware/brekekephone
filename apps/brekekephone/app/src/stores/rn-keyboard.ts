@@ -32,7 +32,7 @@ class RnKeyboardStore {
     }
 
   keyboardAnimatingTimeoutId = 0
-  @action setKeyboardAnimatingTimeout = () => {
+  setKeyboardAnimatingTimeout = () => {
     if (this.keyboardAnimatingTimeoutId) {
       BackgroundTimer.clearTimeout(this.keyboardAnimatingTimeoutId)
     }

@@ -69,10 +69,7 @@ export class CallStore {
   bgAt = 0
   fgAt = 0
 
-  @action onCallKeepDidDisplayIncomingCall = async (
-    uuid: string,
-    n?: ParsedPn,
-  ) => {
+  onCallKeepDidDisplayIncomingCall = async (uuid: string, n?: ParsedPn) => {
     ctx.pbx.ping()
     this.setAutoEndCallKeepTimer(uuid, n)
     if (!uuid || !n) {
@@ -185,7 +182,7 @@ export class CallStore {
       }
     }
   }
-  @action onCallKeepAnswerCall = (uuid: string) => {
+  onCallKeepAnswerCall = (uuid: string) => {
     this.setCallKeepAction({ callkeepUuid: uuid }, 'answerCall')
     const c = this.getCallKeep(uuid)
     console.log(`SIP PN debug: onCallKeepAnswerCall found: ${!!c}`)
@@ -202,7 +199,7 @@ export class CallStore {
       RNCallKeep.setCurrentCallActive(autoAnswered.callkeepUuid)
     }
   }
-  @action onCallKeepEndCall = (uuid: string) => {
+  onCallKeepEndCall = (uuid: string) => {
     this.setCallKeepAction({ callkeepUuid: uuid }, 'rejectCall')
     const c = this.getCallKeep(uuid, {
       includingAnswered: true,
@@ -256,7 +253,7 @@ export class CallStore {
     return oc
   }
 
-  @action updateCallAvatar = (n: ParsedPn) => {
+  updateCallAvatar = (n: ParsedPn) => {
     let c: Call | undefined = undefined
     if (n.callkeepUuid) {
       c = this.calls.find(_ => _.callkeepUuid === n.callkeepUuid)
@@ -337,7 +334,7 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
-  @action upsertCall = async (
+  upsertCall = async (
     // partial
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
@@ -638,7 +635,7 @@ export class CallStore {
   }
 
   callTerminated: { [sessionId: string]: true } = {}
-  @action onCallRemove = async (rawSession: Session) => {
+  onCallRemove = async (rawSession: Session) => {
     if (isEmbed && ctx.embed._notificationOptions?.closeNotificationOnCallEnd) {
       webCloseNotification({ type: 'call', id: rawSession.sessionId })
     }
@@ -731,11 +728,10 @@ export class CallStore {
     }
   }
 
-  // @ts-ignore
-  @computed get isAnyHoldLoading() {
+  get isAnyHoldLoading() {
     return this.calls.some(call => call.rqLoadings['hold'])
   }
-  @action onSelectBackgroundCall = async (c: Immutable<Call>) => {
+  onSelectBackgroundCall = async (c: Immutable<Call>) => {
     this.setCurrentCallId(c.id)
     ctx.nav.backToPageCallManage()
     await waitTimeout()
@@ -946,7 +942,7 @@ export class CallStore {
     defaultTimeout,
     { maxWait: 1000 },
   )
-  @action updateCurrentCall = () => {
+  updateCurrentCall = () => {
     const oc =
       this.calls.find(c => c.id === this.ongoingCallId) ||
       this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
@@ -1000,10 +996,7 @@ export class CallStore {
     BackgroundTimer.clearInterval(this.autoEndCallKeepTimerId)
     this.autoEndCallKeepTimerId = 0
   }
-  @action setAutoEndCallKeepTimer = (
-    uuid: string,
-    incomingPnData?: ParsedPn,
-  ) => {
+  setAutoEndCallKeepTimer = (uuid: string, incomingPnData?: ParsedPn) => {
     if (isWeb) {
       return
     }
@@ -1031,7 +1024,7 @@ export class CallStore {
       }
     }, 500)
   }
-  @action endCallKeep = (
+  endCallKeep = (
     uuid: string,
     {
       setAction = true,
@@ -1081,7 +1074,7 @@ export class CallStore {
     BrekekeUtils.closeAllIncomingCalls()
     this.onCallKeepAction()
   }
-  @action onCallKeepAction = () => {
+  onCallKeepAction = () => {
     this.calls
       .map(c => this.callkeepMap[c.callkeepUuid])
       .filter(c => c)
@@ -1277,22 +1270,22 @@ export class CallStore {
   }
 
   @observable parkNumbers: { [k: string]: boolean } = {}
-  @action addParkNumber = (parkNumber: string) => {
+  addParkNumber = (parkNumber: string) => {
     this.parkNumbers[parkNumber] = true
   }
-  @action removeParkNumber = (parkNumber: string) => {
+  removeParkNumber = (parkNumber: string) => {
     delete this.parkNumbers[parkNumber]
   }
 
   // some other fields
   @observable isLoudSpeakerEnabled = false
 
-  @action updateLoudSpeakerStatus = async () => {
+  updateLoudSpeakerStatus = async () => {
     if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
       this.isLoudSpeakerEnabled = await BrekekeUtils.isSpeakerOn()
     }
   }
-  @action toggleLoudSpeaker = () => {
+  toggleLoudSpeaker = () => {
     if (isWeb) {
       return
     }
@@ -1309,7 +1302,7 @@ export class CallStore {
     BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
   @observable newVoicemailCount = 0
-  @action setNewVoicemailCount = (n: number) => {
+  setNewVoicemailCount = (n: number) => {
     this.newVoicemailCount = n
   }
   // style in CallVideosUI to save the previous video position
@@ -1318,7 +1311,7 @@ export class CallStore {
   // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
   @observable ringtone = ''
-  @action setIncomingRingtone = (ringtone: string) => {
+  setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
   }
 

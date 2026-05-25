@@ -20,7 +20,7 @@ export class RnDropdownStore {
   itemHeight: number = 0
   headerHeight: number = 0
 
-  @action toggleSection = (sectionIndex: number, itemSize: number) => {
+  toggleSection = (sectionIndex: number, itemSize: number) => {
     //
     const hiddenIndexes2 = [...this.hiddenIndexes]
     const ii = hiddenIndexes2.indexOf(sectionIndex)
@@ -47,7 +47,7 @@ export class RnDropdownStore {
     this.hiddenIndexes = uniq(hiddenIndexes2)
     this.positions = positions2
   }
-  @action removeSection = (sectionIndex: number, itemSize: number) => {
+  removeSection = (sectionIndex: number, itemSize: number) => {
     const positions2 = [...this.positions]
     this.positions.forEach((_, index) => {
       if (index > sectionIndex) {
@@ -68,36 +68,36 @@ export class RnDropdownStore {
     this.openedIndex = -1
   }
 
-  @action setPositions = (positions: DropdownPosition[]) => {
+  setPositions = (positions: DropdownPosition[]) => {
     this.positions = positions
   }
-  @action setShouldUpdatePosition = (v: boolean) => {
+  setShouldUpdatePosition = (v: boolean) => {
     this.shouldUpdatePosition = v
   }
 
-  @action open = (index: number) => {
+  open = (index: number) => {
     this.openedIndex = index
   }
-  @action toggle = (index: number) => {
+  toggle = (index: number) => {
     this.openedIndex = index === this.openedIndex ? -1 : index
     this.hiddenIndexes = this.hiddenIndexes.filter(i => i !== index)
   }
-  @action close = () => {
+  close = () => {
     this.openedIndex = -1
   }
 
-  @action setHiddenIndexes = (indexes: number[]) => {
+  setHiddenIndexes = (indexes: number[]) => {
     this.hiddenIndexes = indexes
   }
-  @action addSection = () => {
+  addSection = () => {
     this.hiddenIndexes = this.hiddenIndexes.map(i => i + 1)
     this.shouldUpdatePosition = true
   }
 
-  @action setHeaderHeight = (height: number) => {
+  setHeaderHeight = (height: number) => {
     this.headerHeight = height
   }
-  @action setItemHeight = (height: number) => {
+  setItemHeight = (height: number) => {
     this.itemHeight = height
   }
 }

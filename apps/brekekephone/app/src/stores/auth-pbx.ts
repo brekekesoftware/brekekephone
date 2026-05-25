@@ -18,7 +18,7 @@ export class AuthPBX {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearShouldAuthReaction?.()
     this.clearShouldAuthReaction = undefined
@@ -27,7 +27,7 @@ export class AuthPBX {
     ctx.auth.pbxState = 'stopped'
   }
 
-  @action authWithCheck = async () => {
+  authWithCheck = async () => {
     if (!ctx.auth.pbxShouldAuth()) {
       return
     }

@@ -94,7 +94,7 @@ export class ContactStore {
   }
 
   alreadyLoadContactsFirstTime = false
-  @action loadContactsFirstTime = () => {
+  loadContactsFirstTime = () => {
     if (this.alreadyLoadContactsFirstTime) {
       return
     }
@@ -102,11 +102,11 @@ export class ContactStore {
       this.alreadyLoadContactsFirstTime = true
     })
   }
-  @action loadMoreContacts = () => {
+  loadMoreContacts = () => {
     this.offset += this.numberOfContactsPerPage
     this.loadContacts()
   }
-  @action refreshContacts = () => {
+  refreshContacts = () => {
     this.offset = 0
     this.loadContacts()
   }
@@ -114,14 +114,14 @@ export class ContactStore {
   selectedContactIds: { [id: string]: boolean } = {}
   isDeleteState: boolean = false
 
-  @action selectContactId = (userId: string) => {
+  selectContactId = (userId: string) => {
     if (this.selectedContactIds[userId]) {
       delete this.selectedContactIds[userId]
     } else {
       this.selectedContactIds[userId] = true
     }
   }
-  @action removeContacts = (ids: string[] | number[]) => {
+  removeContacts = (ids: string[] | number[]) => {
     ids.forEach(id => {
       delete this.phoneBooksMap[id.toString()]
     })
@@ -131,11 +131,11 @@ export class ContactStore {
   // create/update contact
   showPickerItem: PickerItemOption | null = null
 
-  @action openPicker = (picker: PickerItemOption) => {
+  openPicker = (picker: PickerItemOption) => {
     this.showPickerItem = picker
   }
 
-  @action dismissPicker = () => {
+  dismissPicker = () => {
     this.showPickerItem = null
   }
   getManagerContact = (lang?: string) =>
@@ -204,8 +204,7 @@ export class ContactStore {
     }
     this.pbxUsers = [...this.pbxUsers]
   }
-  // @ts-ignore
-  @computed get pbxUsersMap() {
+  get pbxUsersMap() {
     return arrToMap(this.pbxUsers, 'id', (u: PbxUser) => u) as {
       [k: string]: PbxUser
     }
@@ -259,8 +258,7 @@ export class ContactStore {
     Object.assign(u0, u)
     this.ucUsers = [...this.ucUsers]
   }
-  // @ts-ignore
-  @computed get ucUsersMap() {
+  get ucUsersMap() {
     return arrToMap(this.ucUsers, 'id', (u: UcUser) => u) as {
       [k: string]: UcUser
     }
@@ -270,7 +268,7 @@ export class ContactStore {
   phoneBooks: Phonebook[] = []
   pbxBooks: PbxBook[] = []
 
-  @action loadPbxBoook = () => {
+  loadPbxBoook = () => {
     this.pbxBooks = []
     ctx.pbx.getPhonebooks().then(res => {
       if (res) {
@@ -278,7 +276,7 @@ export class ContactStore {
       }
     })
   }
-  @action upsertPhonebook = (p: Phonebook) => {
+  upsertPhonebook = (p: Phonebook) => {
     const p0 = this.getPhonebookById(p.id)
     if (!p0) {
       this.phoneBooks.push(p)
@@ -298,7 +296,7 @@ export class ContactStore {
 
     this.phoneBooks = [...this.phoneBooks]
   }
-  @action setPhonebook = (p: Phonebook | Phonebook[]) => {
+  setPhonebook = (p: Phonebook | Phonebook[]) => {
     if (!p) {
       return
     }
@@ -311,8 +309,7 @@ export class ContactStore {
       this.phoneBooks = uniqBy([...p], 'id')
     }
   }
-  // @ts-ignore
-  @computed get phoneBooksMap() {
+  get phoneBooksMap() {
     return arrToMap(this.phoneBooks, 'id', (u: Phonebook) => u) as {
       [k: string]: Phonebook
     }

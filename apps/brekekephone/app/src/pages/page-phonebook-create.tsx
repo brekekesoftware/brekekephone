@@ -27,7 +27,7 @@ export const PagePhonebookCreate = observer(
       )
     }
 
-    @action save = (p: ContactInfo) => {
+    save = (p: ContactInfo) => {
       if (isEmpty(p)) {
         return
       }

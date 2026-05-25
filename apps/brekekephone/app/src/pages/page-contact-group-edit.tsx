@@ -79,7 +79,7 @@ export const PageContactGroupEdit = observer(
       )
     }
 
-    @action selectUser = (item: UcBuddy) => {
+    selectUser = (item: UcBuddy) => {
       if (this.selectedUserItems[item.user_id]) {
         delete this.selectedUserItems[item.user_id]
       } else {

@@ -226,7 +226,7 @@ export class Call {
       this.mutedVideo,
     )
   }
-  @action toggleSwitchCamera = () => {
+  toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
       return
     }
@@ -250,17 +250,17 @@ export class Call {
   } = {}
   voiceStreamObject: MediaStream | null = null
 
-  @action updateVideoStreamActive = stream => {
+  updateVideoStreamActive = stream => {
     this.videoStreamActive = stream
   }
 
-  @action updateVideoStreamFromNative = vId => {
+  updateVideoStreamFromNative = vId => {
     const item = this.videoClientSessionTable.find(v => v.vId === vId)
     item && this.updateVideoStreamActive(item)
   }
 
   @observable muted = false
-  @action toggleMuted = () => {
+  toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
@@ -270,11 +270,11 @@ export class Call {
   }
 
   @observable recording = false
-  @action updateRecordingStatus = (status: boolean) => {
+  updateRecordingStatus = (status: boolean) => {
     this.recording = status
     BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
   }
-  @action toggleRecording = () => {
+  toggleRecording = () => {
     this.rqLoadings['record'] = true
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
@@ -285,7 +285,7 @@ export class Call {
       .then(this.onToggleRecordingFailure)
       .catch(this.onToggleRecordingFailure)
   }
-  @action onToggleRecordingFailure = (err: Error | boolean) => {
+  onToggleRecordingFailure = (err: Error | boolean) => {
     this.rqLoadings['record'] = false
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
@@ -315,7 +315,7 @@ export class Call {
     this.toggleHold()
   }
 
-  @action cancelPendingRequest = () => {
+  cancelPendingRequest = () => {
     this.pendingRequestIds.forEach(id => {
       ctx.pbx.cancelRequest(id)
     })
@@ -339,7 +339,7 @@ export class Call {
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
   }
 
-  @action toggleHold = async () => {
+  toggleHold = async () => {
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHoldWithCallkeep(fn === 'hold')
@@ -363,7 +363,7 @@ export class Call {
       ctx.sip.enableLocalVideo(this.id)
     }
   }
-  @action onToggleHoldFailure = (err: Error | boolean) => {
+  onToggleHoldFailure = (err: Error | boolean) => {
     const isRetryableError =
       err && typeof err === 'object' ? ctx.pbx.isPalTimeoutError(err) : false
 
@@ -401,7 +401,7 @@ export class Call {
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)
   }
-  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+  setHoldWithoutCallKeep = async (hold: boolean) => {
     const act = hold ? 'hold' : 'unhold'
     try {
       const res = await ctx.pbx[`${act}Talker`](
@@ -432,7 +432,7 @@ export class Call {
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action transferAttended = (number: string) => {
+  transferAttended = (number: string) => {
     this.transferring = number
     // avoid issue no-voice if user set hold before
     this.setHoldWithCallkeep(false)
@@ -441,11 +441,11 @@ export class Call {
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action onTransferFailure = (err: Error) => {
+  onTransferFailure = (err: Error) => {
     this.transferring = ''
   }
 
-  @action stopTransferring = () => {
+  stopTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
@@ -454,12 +454,12 @@ export class Call {
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
-  @action onStopTransferringFailure = (err: Error) => {
+  onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
 
-  @action conferenceTransferring = () => {
+  conferenceTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     this.prevHolding = this.holding
@@ -468,12 +468,12 @@ export class Call {
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
-  @action onConferenceTransferringFailure = (err: Error) => {
+  onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
 
-  @action park = (number: string) =>
+  park = (number: string) =>
     ctx.pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, encodeParkNumber(number))
       .catch(this.onParkFailure)

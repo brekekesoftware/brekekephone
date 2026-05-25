@@ -127,10 +127,7 @@ const Mini = observer(
       this.view?.setNativeProps({ style: { left, top } })
     }
 
-    @action onDrop = (
-      _: GestureResponderEvent,
-      g: PanResponderGestureState,
-    ) => {
+    onDrop = (_: GestureResponderEvent, g: PanResponderGestureState) => {
       const { left, top } = calculateBoundedPosition(
         ctx.call.videoPositionL,
         ctx.call.videoPositionT,
@@ -211,7 +208,7 @@ const Mini = observer(
       }
     }
 
-    @action endDrag = (x: number, y: number) => {
+    endDrag = (x: number, y: number) => {
       const dx = x - this.startX
       const dy = y - this.startY
       const { left, top } = calculateBoundedPosition(

@@ -80,8 +80,7 @@ export class ChatStore {
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
   threadConfig: { [k: string]: ChatMessageConfig } = {}
-  // @ts-ignore
-  @computed get unreadCount() {
+  get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(
       Object.values(this.threadConfig).filter(v => {
@@ -108,8 +107,7 @@ export class ChatStore {
 
   // threadId can be uc user id or group id
   // TODO: threadId can be duplicated between them
-  // @ts-ignore
-  @computed get threadIdsOrderedByRecent() {
+  get threadIdsOrderedByRecent() {
     return sortBy(
       Object.keys(this.messagesByThreadId),
       k => this.getMessagesByThreadId(k)[0]?.created || -1,
@@ -455,7 +453,7 @@ export class ChatStore {
       }
     }
   }
-  @action removeFile = (id: string) => {
+  removeFile = (id: string) => {
     delete this.filesMap[id]
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
@@ -471,13 +469,12 @@ export class ChatStore {
     }
     this.groups = [...this.groups]
   }
-  @action removeGroup = (id: string) => {
+  removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]
     delete this.threadConfig[id]
     this.groups = this.groups.filter(gr => gr.id !== id)
   }
-  // @ts-ignore
-  @computed get groupsMap() {
+  get groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup
     }

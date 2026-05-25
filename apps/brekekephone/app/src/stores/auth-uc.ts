@@ -23,7 +23,7 @@ export class AuthUC {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
     ctx.uc.disconnect()
@@ -31,7 +31,7 @@ export class AuthUC {
     ctx.auth.ucState = 'stopped'
   }
 
-  @action authWithoutCatch = async () => {
+  authWithoutCatch = async () => {
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'connecting'
@@ -56,7 +56,7 @@ export class AuthUC {
       }),
     )
   }
-  @action authWithCheck = async () => {
+  authWithCheck = async () => {
     if (!ctx.auth.ucShouldAuth()) {
       return
     }
@@ -80,13 +80,13 @@ export class AuthUC {
   }
   authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 
-  @action onConnectionStopped = (e: { code: number }) => {
+  onConnectionStopped = (e: { code: number }) => {
     ctx.auth.ucState = 'failure'
     ctx.auth.ucTotalFailure += 1
     ctx.auth.ucLoginFromAnotherPlace = e.code === Errors.PLEONASTIC_LOGIN
     this.authWithCheck()
   }
-  @action loadUsers = () => {
+  loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
@@ -103,7 +103,7 @@ export class AuthUC {
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure)
-  @action onLoadUnreadChatsSuccess = (
+  onLoadUnreadChatsSuccess = (
     chats: {
       id: string
       text: string

@@ -120,8 +120,7 @@ export class AccountStore {
   waitStorageLoaded = () => storagePromise
 
   @observable accounts: Account[] = []
-  // @ts-ignore
-  @computed get accountsMap() {
+  get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
@@ -134,7 +133,7 @@ export class AccountStore {
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted - if app restarts without calls, onPBXConnectionStarted handles MFA normally.
   @observable mfaPendingAfterCallsId = ''
-  @action setMFAPendingAfterCallsId = (id: string) => {
+  setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
   }
 
@@ -237,7 +236,7 @@ export class AccountStore {
   saveAccountsToLocalStorageWithoutDebounced = async () =>
     await this.saveAccountsToLocalStorage()
 
-  @action upsertAccount = async (p: Partial<Account>) => {
+  upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
 
     if (!a) {
@@ -297,7 +296,7 @@ export class AccountStore {
       })
     }
   }
-  @action removeAccount = async (id: string) => {
+  removeAccount = async (id: string) => {
     const a = this.accounts.find(_ => _.id === id)
     this.accounts = this.accounts.filter(_ => _.id !== id)
 

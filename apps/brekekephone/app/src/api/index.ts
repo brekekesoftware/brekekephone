@@ -65,7 +65,7 @@ class Api {
     }
   }
 
-  @action onPBXConnectionStarted = async () => {
+  onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
     clearAlreadyHistoryMap()
     ctx.auth.pbxState = 'success'
@@ -175,7 +175,7 @@ class Api {
       .find(item => item.pbxTalkerId === ev.talker_id)
       ?.updateRecordingStatus(toBoolean(ev.status))
   }
-  @action onSIPConnectionStarted = () => {
+  onSIPConnectionStarted = () => {
     console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     ctx.auth.sipState = 'success'

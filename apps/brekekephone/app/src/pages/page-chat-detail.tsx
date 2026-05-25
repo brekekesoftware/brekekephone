@@ -30,8 +30,7 @@ export const PageChatDetail = observer(
   class PageChatDetail extends Component<{
     buddy: string
   }> {
-    // @ts-ignore
-    @computed get chatById() {
+    get chatById() {
       return arrToMap(
         ctx.chat.getMessagesByThreadId(this.props.buddy),
         'id',

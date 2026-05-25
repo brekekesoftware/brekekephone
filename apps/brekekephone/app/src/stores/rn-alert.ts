@@ -38,11 +38,11 @@ export class RnAlertStore {
   @observable alertsCount = 0
   alerts: TRnAlert[] = []
 
-  @action prompt = (prompt: PromptRnAlert) => {
+  prompt = (prompt: PromptRnAlert) => {
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
-  @action error = (a: ErrorRnAlert) => {
+  error = (a: ErrorRnAlert) => {
     // log error to save it to the debug log
     // convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err
@@ -60,7 +60,7 @@ export class RnAlertStore {
       this.alertsCount = this.alerts.length
     }
   }
-  @action dismiss = () => {
+  dismiss = () => {
     this.alerts.shift()
     this.alertsCount = this.alerts.length
   }

@@ -31,8 +31,7 @@ export const PageChatGroupDetail = observer(
   class PageChatGroupDetail extends Component<{
     groupId: string
   }> {
-    // @ts-ignore
-    @computed get chatById() {
+    get chatById() {
       return arrToMap(
         ctx.chat.getMessagesByThreadId(this.props.groupId),
         'id',
