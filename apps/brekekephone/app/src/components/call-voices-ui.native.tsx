@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { Component, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import IncallManager from 'react-native-incall-manager'
 
 import { isAndroid } from '@/rn/core/utils/platform'
@@ -49,48 +49,48 @@ const IncomingItemIos = () =>
 // IncomingItem will mount when PN is disabled
 export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIos
 
-export class OutgoingItem extends Component {
-  componentDidMount = () => {
+export const OutgoingItem = () => {
+  useEffect(() => {
     if (ctx.call.ongoingCallId) {
       ctx.sip.disableMedia(ctx.call.ongoingCallId)
     }
     if (isAndroid) {
       IncallManager.startRingback('_BUNDLE_')
     }
-  }
-  componentWillUnmount = () => {
-    if (isAndroid) {
-      IncallManager.stopRingback()
+    return () => {
+      if (isAndroid) {
+        IncallManager.stopRingback()
+      }
     }
-  }
-  render() {
-    return null
-  }
+  }, [])
+  return null
 }
-export class OutgoingItemWithSDP extends Component<{
+
+export const OutgoingItemWithSDP = ({
+  earlyMedia,
+}: {
   earlyMedia: MediaStream | null
-}> {
-  componentDidMount = () => {
+}) => {
+  useEffect(() => {
     if (ctx.call.ongoingCallId) {
       ctx.sip.enableMedia(ctx.call.ongoingCallId)
     }
-  }
-  render() {
-    return null
-  }
+  }, [])
+  return null
 }
-export class AnsweredItem extends Component<{
+
+export const AnsweredItem = ({
+  voiceStreamObject,
+}: {
   voiceStreamObject: MediaStream | null
-}> {
-  componentDidMount = () => {
+}) => {
+  useEffect(() => {
     const oc = ctx.call.getOngoingCall()
     if (oc) {
       ctx.sip.enableMedia(oc.id)
     }
-  }
-  render() {
-    return null
-  }
+  }, [])
+  return null
 }
 
 export const IosRBT = (p: { isLoudSpeaker: boolean }) => {

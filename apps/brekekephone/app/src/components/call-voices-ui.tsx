@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { Component, createRef, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import ringback from '#/assets/incallmanager_ringback.mp3'
 import ringtone from '#/assets/incallmanager_ringtone.mp3'
@@ -110,6 +110,7 @@ export const IncomingItem = observer(() => {
     />
   )
 })
+
 export const OutgoingItem = () => {
   const audioRef = useRef<HTMLAudioElement>(null)
   useEffect(() => {
@@ -145,81 +146,85 @@ export const OutgoingItem = () => {
   )
 }
 
-export class OutgoingItemWithSDP extends Component<{
+export const OutgoingItemWithSDP = ({
+  earlyMedia,
+}: {
   earlyMedia: MediaStream | null
-}> {
-  audioRef = createRef<HTMLAudioElement>()
-  _unmounted = false
-  componentDidMount = () => {
-    this._setup()
-  }
-  componentDidUpdate = () => {
-    this._setup()
-  }
-  _setup = async () => {
-    if (!this.audioRef.current) {
-      return
+}) => {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const unmountedRef = useRef(false)
+
+  useEffect(
+    () => () => {
+      unmountedRef.current = true
+      if (isEmbed && audioRef.current) {
+        ctx.embed.unregisterAudioElement(audioRef.current)
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    const setup = async () => {
+      if (!audioRef.current) {
+        return
+      }
+      if (isEmbed) {
+        await ctx.embed.registerAudioElement(audioRef.current)
+      }
+      if (unmountedRef.current) {
+        return
+      }
+      if (earlyMedia && earlyMedia !== audioRef.current.srcObject) {
+        audioRef.current.srcObject = earlyMedia
+        audioRef.current.play()
+      }
     }
-    if (isEmbed) {
-      await ctx.embed.registerAudioElement(this.audioRef.current)
-    }
-    if (this._unmounted) {
-      return
-    }
-    if (
-      this.props.earlyMedia &&
-      this.props.earlyMedia !== this.audioRef.current.srcObject
-    ) {
-      this.audioRef.current.srcObject = this.props.earlyMedia
-      this.audioRef.current.play()
-    }
-  }
-  componentWillUnmount = () => {
-    this._unmounted = true
-    if (isEmbed && this.audioRef.current) {
-      ctx.embed.unregisterAudioElement(this.audioRef.current)
-    }
-  }
-  render() {
-    return <audio ref={this.audioRef} muted={false} />
-  }
+    setup()
+  }, [earlyMedia])
+
+  return <audio ref={audioRef} muted={false} />
 }
-export class AnsweredItem extends Component<{
+
+export const AnsweredItem = ({
+  voiceStreamObject,
+}: {
   voiceStreamObject: MediaStream | null
-}> {
-  audioRef = createRef<HTMLAudioElement>()
-  _unmounted = false
-  componentDidMount = () => {
-    this._setup()
-  }
-  componentDidUpdate = () => {
-    this._setup()
-  }
-  _setup = async () => {
-    if (!this.audioRef.current) {
-      return
+}) => {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const unmountedRef = useRef(false)
+
+  useEffect(
+    () => () => {
+      unmountedRef.current = true
+      if (isEmbed && audioRef.current) {
+        ctx.embed.unregisterAudioElement(audioRef.current)
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    const setup = async () => {
+      if (!audioRef.current) {
+        return
+      }
+      if (isEmbed) {
+        await ctx.embed.registerAudioElement(audioRef.current)
+      }
+      if (unmountedRef.current) {
+        return
+      }
+      if (
+        voiceStreamObject &&
+        voiceStreamObject !== audioRef.current.srcObject
+      ) {
+        audioRef.current.srcObject = voiceStreamObject
+        audioRef.current.play()
+      }
     }
-    if (isEmbed) {
-      await ctx.embed.registerAudioElement(this.audioRef.current)
-    }
-    if (this._unmounted) {
-      return
-    }
-    if (
-      this.props.voiceStreamObject &&
-      this.props.voiceStreamObject !== this.audioRef.current.srcObject
-    ) {
-      this.audioRef.current.srcObject = this.props.voiceStreamObject
-      this.audioRef.current.play()
-    }
-  }
-  componentWillUnmount = () => {
-    this._unmounted = true
-    if (isEmbed && this.audioRef.current) {
-      ctx.embed.unregisterAudioElement(this.audioRef.current)
-    }
-  }
-  render() {
-    return <audio ref={this.audioRef} muted={false} />
-  }
+    setup()
+  }, [voiceStreamObject])
+
+  return <audio ref={audioRef} muted={false} />
 }
