@@ -52,7 +52,7 @@ const css = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: v.colors.primary,
-    width: 100,
+    minWidth: 100,
   },
   RootRnAlert_Btn__cancel: {
     backgroundColor: v.revBg,

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
@@ -6,7 +7,7 @@ import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -147,6 +148,12 @@ export const AccountCreateForm: FC<{
       })
     }
   }, [$, props.footerLogout])
+
+  useEffect(() => {
+    if ($.account.pushNotificationEnabled) {
+      promptForegroundService()
+    }
+  }, [$.account.pushNotificationEnabled])
 
   const getDropDown = () => {
     let d = [
@@ -353,3 +360,19 @@ export const AccountCreateForm: FC<{
     </Layout>
   )
 })
+
+export const promptForegroundService = async () => {
+  if (!isAndroid) {
+    return
+  }
+  if ((await AsyncStorage.getItem('okForegroundService')) === '1') {
+    return
+  }
+  RnAlert.prompt({
+    title: intl`Fallback local connection`,
+    message: intl`This option enables a fallback Local Push Connectivity (LPC) connection for real-time call and message delivery from your Brekeke PBX when Firebase Cloud Messaging is unavailable or blocked by your network. Android will show a foreground service notification while this connection is active. You can stop it anytime by turning this option off in Account Settings.`,
+    confirmText: intl`OK and remember`,
+    dismissText: intl`OK`,
+    onConfirm: () => AsyncStorage.setItem('okForegroundService', '1'),
+  })
+}

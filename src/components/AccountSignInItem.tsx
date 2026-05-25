@@ -10,6 +10,7 @@ import {
   mdiServerNetwork,
   mdiWeb,
 } from '#/assets/icons'
+import { promptForegroundService } from '#/components/AccountCreateForm'
 import { Field } from '#/components/Field'
 import { FooterActions } from '#/components/FooterActions'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
@@ -92,6 +93,9 @@ export const AccountSignInItem: FC<{
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
+    if (e) {
+      promptForegroundService()
+    }
     if (e && !(await checkPermForCall(true, true))) {
       return
     }

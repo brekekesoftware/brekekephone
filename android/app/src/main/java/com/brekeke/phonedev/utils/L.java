@@ -117,13 +117,14 @@ public class L {
 
   public static String serviceIsRunning() {
     return "ja".equals(l)
-        ? "Brekeke Phone は着信とメッセージを待機しています"
-        : "Brekeke Phone is listening for calls and messages";
+        ? "Brekeke Phoneは通話とメッセージの受信準備が整いました。"
+        : "Brekeke Phone is ready to receive calls and messages";
   }
 
   public static String serviceIsRunningInBackground() {
     return "ja".equals(l)
-        ? "タップして開きます。停止するには、アカウント設定でプッシュ通知をオフにしてください。"
-        : "Tap to open. To stop: turn off Push Notification in account settings.";
+        ? "ローカル接続によるフォールバックが有効になっています。タップして開いてください。停止するには、アカウント設定でプッシュ通知をオフにしてください。"
+        : "Fallback local connection is active. Tap to open. To stop: turn off Push Notification in"
+            + " Account Settings.";
   }
 }
