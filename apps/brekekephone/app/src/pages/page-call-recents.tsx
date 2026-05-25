@@ -1,3 +1,4 @@
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { Component } from 'react'

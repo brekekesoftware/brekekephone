@@ -1,5 +1,5 @@
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
-import { action, observable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { NativeModules } from 'react-native'
 
 import { isIos } from '@/rn/core/utils/platform'
@@ -43,9 +43,13 @@ const TypedNativeModules = NativeModules as {
 }
 
 export class IntlStore {
-  @observable locale = 'en'
-  @observable localeReady = false
-  @observable localeLoading = true
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  locale = 'en'
+  localeReady = false
+  localeLoading = true
   getLocaleName = () => localeOptions.find(o => o.key === this.locale)?.label
 
   getLocale = async () => {
@@ -63,28 +67,22 @@ export class IntlStore {
       locale = 'en'
     }
     await RnAsyncStorage.setItem('locale', locale)
-    runInAction(() => {
-      this.locale = locale
-      BrekekeUtils.setLocale(this.locale)
-    })
+    this.locale = locale
+    BrekekeUtils.setLocale(this.locale)
   }
   setLocale = async (locale: string) => {
     if (this.localeLoading || locale === this.locale) {
       return
     }
-    runInAction(() => {
-      this.localeLoading = true
-    })
+    this.localeLoading = true
     if (!labels[locale as 'en']) {
       locale = 'en'
     }
     await RnAsyncStorage.setItem('locale', locale)
     await waitTimeout()
-    runInAction(() => {
-      this.localeLoading = false
-      this.locale = locale
-      BrekekeUtils.setLocale(this.locale)
-    })
+    this.localeLoading = false
+    this.locale = locale
+    BrekekeUtils.setLocale(this.locale)
   }
   selectLocale = () => {
     RnPicker.open({
@@ -108,12 +106,10 @@ export class IntlStore {
   loadingPromise?: Promise<unknown>
   wait = () => {
     if (!this.loadingPromise) {
-      this.loadingPromise = this.getLocale().then(
-        action(() => {
-          this.localeReady = true
-          this.localeLoading = false
-        }),
-      )
+      this.loadingPromise = this.getLocale().then(() => {
+        this.localeReady = true
+        this.localeLoading = false
+      })
     }
     return this.loadingPromise
   }

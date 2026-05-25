@@ -1,6 +1,5 @@
-import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, createRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeSyntheticEvent,
   TextInput,
@@ -14,93 +13,83 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
-export const PageCallDtmfKeypad = observer(
-  class PageCallDtmfKeypad extends Component {
-    prevId?: string
-    componentDidMount = () => {
-      this.componentDidUpdate()
-    }
-    componentDidUpdate = () => {
-      const oc = ctx.call.getOngoingCall()
-      if (this.prevId && this.prevId !== oc?.id) {
-        ctx.nav.backToPageCallManage()
-      }
-      this.prevId = oc?.id
-    }
+export const PageCallDtmfKeypad = observer(() => {
+  const ocId = ctx.call.getOngoingCall()?.id
+  const prevIdRef = useRef<string>(ocId)
+  const [txt, setTxt] = useState('')
+  const txtRef = useRef<TextInput>(null)
+  const txtSelectionRef = useRef({ start: 0, end: 0 })
 
-    @observable txt = ''
-    txtRef = createRef<TextInput>()
-    txtSelection = { start: 0, end: 0 }
-
-    showKeyboard = () => {
-      this.txtRef.current?.focus()
+  useEffect(() => {
+    if (prevIdRef.current && prevIdRef.current !== ocId) {
+      ctx.nav.backToPageCallManage()
     }
+    prevIdRef.current = ocId
+  }, [ocId])
 
-    sendKey = (key: string) => {
-      const oc = ctx.call.getOngoingCall()
-      const ca = ctx.auth.getCurrentAccount()
-      if (!oc || !ca) {
-        return
-      }
-      ctx.sip.sendDTMF({
-        signal: key,
-        sessionId: oc.id,
-        tenant: oc.pbxTenant || ca.pbxTenant,
-        talkerId: oc.pbxTalkerId || oc.partyNumber,
-      })
+  const showKeyboard = () => {
+    txtRef.current?.focus()
+  }
+
+  const sendKey = (key: string) => {
+    const oc = ctx.call.getOngoingCall()
+    const ca = ctx.auth.getCurrentAccount()
+    if (!oc || !ca) {
+      return
     }
+    ctx.sip.sendDTMF({
+      signal: key,
+      sessionId: oc.id,
+      tenant: oc.pbxTenant || ca.pbxTenant,
+      talkerId: oc.pbxTalkerId || oc.partyNumber,
+    })
+  }
 
-    render() {
-      const oc = ctx.call.getOngoingCall()
-      return (
-        <Layout
-          title={oc?.getDisplayName()}
-          description={intl`Keypad dial manually`}
-          onBack={ctx.nav.backToPageCallManage}
-        >
-          <ShowNumber
-            refInput={this.txtRef}
-            selectionChange={
-              RnKeyboard.isKeyboardShowing
-                ? undefined
-                : (
-                    e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-                  ) => {
-                    Object.assign(this.txtSelection, {
-                      start: e.nativeEvent.selection.start,
-                      end: e.nativeEvent.selection.end,
-                    })
-                  }
+  const oc = ctx.call.getOngoingCall()
+  return (
+    <Layout
+      title={oc?.getDisplayName()}
+      description={intl`Keypad dial manually`}
+      onBack={ctx.nav.backToPageCallManage}
+    >
+      <ShowNumber
+        refInput={txtRef}
+        selectionChange={
+          RnKeyboard.isKeyboardShowing
+            ? undefined
+            : (
+                e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+              ) => {
+                Object.assign(txtSelectionRef.current, {
+                  start: e.nativeEvent.selection.start,
+                  end: e.nativeEvent.selection.end,
+                })
+              }
+        }
+        setTarget={(v: string) => setTxt(v)}
+        value={txt}
+      />
+      {!RnKeyboard.isKeyboardShowing && (
+        <KeyPad
+          onPressNumber={v => {
+            sendKey(v)
+            const { end, start } = txtSelectionRef.current
+            let min = Math.min(start, end)
+            const max = Math.max(start, end)
+            const isDelete = v === ''
+            if (isDelete) {
+              if (start === end && start) {
+                min = min - 1
+              }
             }
-            setTarget={(v: string) => {
-              this.txt = v
-            }}
-            value={this.txt}
-          />
-          {!RnKeyboard.isKeyboardShowing && (
-            <KeyPad
-              onPressNumber={v => {
-                this.sendKey(v)
-                const { end, start } = this.txtSelection
-                let min = Math.min(start, end)
-                const max = Math.max(start, end)
-                const isDelete = v === ''
-                if (isDelete) {
-                  if (start === end && start) {
-                    min = min - 1
-                  }
-                }
-                const t = this.txt
-                this.txt = t.substring(0, min) + v + t.substring(max)
-                const position = min + (isDelete ? 0 : 1)
-                this.txtSelection.start = position
-                this.txtSelection.end = position
-              }}
-              showKeyboard={this.showKeyboard}
-            />
-          )}
-        </Layout>
-      )
-    }
-  },
-)
+            setTxt(txt.substring(0, min) + v + txt.substring(max))
+            const position = min + (isDelete ? 0 : 1)
+            txtSelectionRef.current.start = position
+            txtSelectionRef.current.end = position
+          }}
+          showKeyboard={showKeyboard}
+        />
+      )}
+    </Layout>
+  )
+})

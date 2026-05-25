@@ -14,7 +14,7 @@ import { Duration } from '#/stores/timer-store'
 export const PageCallBackgrounds = observer(() => {
   const bg = ctx.call.calls.filter(c => c.id !== ctx.call.ongoingCallId)
   const oc = ctx.call.getOngoingCall()
-  const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
+  const renderItemCall = (c: Call, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
       ...(!c.answered && c.incoming ? [mdiPhone] : []),

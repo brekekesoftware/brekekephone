@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3'
-import { makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -139,9 +139,14 @@ const rebuildCustomPageUrlPbxToken = async (url: string) => {
 // ----------------------------------------------------------------------------
 // actual pbx class
 export class PBX extends EventEmitter {
+  state: {
+    retryingRequests: string[]
+  } = {
+    retryingRequests: [],
+  }
   constructor() {
     super()
-    makeAutoObservable(this)
+    makeAutoObservable(this.state)
   }
 
   client?: Pbx
@@ -150,7 +155,6 @@ export class PBX extends EventEmitter {
   pendingRequests: Request<keyof PbxPal>[] = []
   requests: Request<keyof PbxPal>[] = []
   MAX_RETRY = 3
-  retryingRequests: string[] = []
 
   readonly methodsWithRetry: readonly (keyof Pbx)[] = [
     'hold',

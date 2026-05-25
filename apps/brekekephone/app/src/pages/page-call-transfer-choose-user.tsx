@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { SectionList } from 'react-native'
@@ -16,7 +16,7 @@ import { intl } from '#/stores/intl'
 export const PageCallTransferChooseUser = observer(
   class PageCallTransferChooseUser extends Component {
     prevId?: string
-    @observable txtSearch: string = ''
+    state = { txtSearch: '' }
     componentDidMount = () => {
       if (!ctx.contact.pbxUsers.length) {
         ctx.contact.getPbxUsers()
@@ -46,7 +46,7 @@ export const PageCallTransferChooseUser = observer(
       }
     }
     renderUserSelectionMode = () => {
-      const { displayUsers } = ctx.user.filterUser(this.txtSearch, true)
+      const { displayUsers } = ctx.user.filterUser(this.state.txtSearch, true)
       return (
         <ContactSectionList sectionListData={displayUsers} isTransferCall />
       )
@@ -59,7 +59,7 @@ export const PageCallTransferChooseUser = observer(
       const datas = ctx.contact.pbxUsers.map(u => u.id).map(this.resolveMatch)
       const users = datas.filter(i => {
         const name = i.name.toLowerCase()
-        const txtSearch = this.txtSearch.toLowerCase()
+        const txtSearch = this.state.txtSearch.toLowerCase()
         const number = i.number.toLowerCase()
         return name.includes(txtSearch) || number.includes(txtSearch)
       })
@@ -124,9 +124,9 @@ export const PageCallTransferChooseUser = observer(
             label={intl`SEARCH FOR USERS`}
             onValueChange={(v: string) => {
               // TODO: use debounced value to perform data filter
-              this.txtSearch = v
+              this.setState({ txtSearch: v })
             }}
-            value={this.txtSearch}
+            value={this.state.txtSearch}
           />
           {isUserSelectionMode
             ? this.renderUserSelectionMode()

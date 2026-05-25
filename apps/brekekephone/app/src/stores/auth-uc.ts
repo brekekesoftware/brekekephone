@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { debounce } from '@/shared/lodash'
 import { Errors } from '#/brekekejs/ucclient'
@@ -49,12 +49,10 @@ export class AuthUC {
       c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
     )
     this.loadUsers()
-    this.loadUnreadChats().then(
-      action(() => {
-        ctx.auth.ucState = 'success'
-        ctx.auth.ucTotalFailure = 0
-      }),
-    )
+    this.loadUnreadChats().then(() => {
+      ctx.auth.ucState = 'success'
+      ctx.auth.ucTotalFailure = 0
+    })
   }
   authWithCheck = async () => {
     if (!ctx.auth.ucShouldAuth()) {
@@ -69,14 +67,12 @@ export class AuthUC {
         return
       }
     }
-    this.authWithoutCatch().catch(
-      action((err: Error) => {
-        ctx.auth.ucState = 'failure'
-        ctx.auth.ucTotalFailure += 1
-        console.error('Failed to connect to uc:', err)
-        this.authWithCheck()
-      }),
-    )
+    this.authWithoutCatch().catch((err: Error) => {
+      ctx.auth.ucState = 'failure'
+      ctx.auth.ucTotalFailure += 1
+      console.error('Failed to connect to uc:', err)
+      this.authWithCheck()
+    })
   }
   authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 

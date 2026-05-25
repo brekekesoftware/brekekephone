@@ -1,5 +1,5 @@
 import NetInfo from '@react-native-community/netinfo'
-import { reaction, runInAction } from 'mobx'
+import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { AppState, DeviceEventEmitter, Platform } from 'react-native'
@@ -267,9 +267,7 @@ PushNotification.register(async () => {
   alreadyInitApp = true
   await initApp().catch(console.error)
   await waitTimeout(100)
-  runInAction(() => {
-    ctx.account.appInitDone = true
-  })
+  ctx.account.appInitDone = true
 })
 
 const AppWithoutProviders = observer(() => {

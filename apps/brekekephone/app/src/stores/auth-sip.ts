@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { jsonSafe } from '@/shared/json-safe'
 import { debounce } from '@/shared/lodash'
@@ -168,13 +168,11 @@ export class AuthSIP {
         return
       }
     }
-    this.authWithoutCatch().catch(
-      action((err: Error) => {
-        console.log('SIP PN debug: set sipState failure catch')
-        this.onSipFailure()
-        console.error('Failed to connect to sip:', err)
-      }),
-    )
+    this.authWithoutCatch().catch((err: Error) => {
+      console.log('SIP PN debug: set sipState failure catch')
+      this.onSipFailure()
+      console.error('Failed to connect to sip:', err)
+    })
   }
   authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }

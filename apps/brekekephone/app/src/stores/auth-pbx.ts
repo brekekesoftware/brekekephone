@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { debounce } from '@/shared/lodash'
 import { defaultTimeout } from '#/config'
@@ -54,14 +54,12 @@ export class AuthPBX {
           throw new Error('PBX login connection timed out')
         }
       })
-      .catch(
-        action((err: Error) => {
-          ctx.auth.pbxState = 'failure'
-          ctx.auth.pbxTotalFailure += 1
-          console.error('Failed to connect to pbx:', err)
-          this.authWithCheck()
-        }),
-      )
+      .catch((err: Error) => {
+        ctx.auth.pbxState = 'failure'
+        ctx.auth.pbxTotalFailure += 1
+        console.error('Failed to connect to pbx:', err)
+        this.authWithCheck()
+      })
   }
   authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }

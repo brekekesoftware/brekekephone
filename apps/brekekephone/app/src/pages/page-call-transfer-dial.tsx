@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 import type {
@@ -29,7 +29,7 @@ export const PageCallTransferDial = observer(
       this.prevId = ctx.call.ongoingCallId
     }
 
-    @observable txt = ''
+    state = { txt: '' }
     txtRef = createRef<TextInput>()
     txtSelection = { start: 0, end: 0 }
 
@@ -38,27 +38,30 @@ export const PageCallTransferDial = observer(
     }
 
     transferBlind = () => {
-      this.txt = this.txt.trim()
-      if (!this.txt) {
+      const trimmed = this.state.txt.trim()
+      this.setState({ txt: trimmed })
+      if (!trimmed) {
         RnAlert.error({
           message: intlDebug`No target`,
         })
         return
       }
-      ctx.call.getOngoingCall()?.transferBlind(this.txt)
+      ctx.call.getOngoingCall()?.transferBlind(trimmed)
     }
     transferAttended = () => {
-      this.txt = this.txt.trim()
-      if (!this.txt) {
+      const trimmed = this.state.txt.trim()
+      this.setState({ txt: trimmed })
+      if (!trimmed) {
         RnAlert.error({
           message: intlDebug`No target`,
         })
         return
       }
-      ctx.call.getOngoingCall()?.transferAttended(this.txt)
+      ctx.call.getOngoingCall()?.transferAttended(trimmed)
     }
 
     render() {
+      const { txt } = this.state
       return (
         <Layout
           description={intl`Select target to start transfer`}
@@ -79,9 +82,9 @@ export const PageCallTransferDial = observer(
               })
             }}
             setTarget={(v: string) => {
-              this.txt = v
+              this.setState({ txt: v })
             }}
-            value={this.txt}
+            value={txt}
           />
           {!RnKeyboard.isKeyboardShowing && (
             <KeyPad
@@ -99,8 +102,9 @@ export const PageCallTransferDial = observer(
                     min = min - 1
                   }
                 }
-                const t = this.txt
-                this.txt = t.substring(0, min) + v + t.substring(max)
+                this.setState({
+                  txt: txt.substring(0, min) + v + txt.substring(max),
+                })
                 const position = min + (isDelete ? 0 : 1)
                 this.txtSelection.start = position
                 this.txtSelection.end = position

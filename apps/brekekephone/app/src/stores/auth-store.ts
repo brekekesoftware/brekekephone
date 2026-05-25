@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 
 import { isIos, isWeb } from '@/rn/core/utils/platform'
@@ -47,6 +47,7 @@ export class AuthStore {
   constructor() {
     makeAutoObservable(this)
   }
+
   hasInternetConnected: boolean | null = null
 
   sipPn: Partial<SipPn> = {}

@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
-import { observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
 import type { ReadDirItem } from 'react-native-fs'
@@ -44,11 +44,15 @@ export const getTotalFilesSize = (files: ReadDirItem[]) => {
   return totalSize
 }
 export class DebugStore {
+  constructor() {
+    makeAutoObservable(this)
+  }
+
   loading = true
   timer = 0
-  @observable logFiles: ReadDirItem[] = []
-  @observable totalLogFiles = 0
-  @observable currentFile: ReadDirItem | undefined
+  logFiles: ReadDirItem[] = []
+  totalLogFiles = 0
+  currentFile: ReadDirItem | undefined
 
   checkAndCreateFile = async (rootPath: string, fileName: string) => {
     if (!fileName) {
@@ -128,7 +132,7 @@ export class DebugStore {
   // if this flag is turned on, all logs will be captured
   // this flag will be saved to storage and we will read it again
   //    as soon as possible when app starts up
-  @observable captureDebugLog = false
+  captureDebugLog = false
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
     RnAsyncStorage.setItem('captureDebugLog', jsonSafe(this.captureDebugLog))
@@ -242,9 +246,9 @@ export class DebugStore {
       this.currentFile = undefined
     })
 
-  @observable isCheckingForUpdate = false
-  @observable remoteVersion = ''
-  @observable remoteVersionLastCheck = 0
+  isCheckingForUpdate = false
+  remoteVersion = ''
+  remoteVersionLastCheck = 0
 
   checkForUpdate = () => {
     if (this.isCheckingForUpdate) {

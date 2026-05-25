@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import { Component } from 'react'
 
 import { View } from '@/rn/core/components/view'
 import { darkModeDisabled, darkModeEnabled } from '@/rn/core/dark-mode/config'
@@ -54,95 +53,91 @@ export const DarkModePicker = () => {
   )
 }
 
-export const PageSettingsDebug = observer(
-  class PageSettingsDebug extends Component {
-    render() {
-      const isUpdateAvailable =
-        !isWeb && compareSemVer(ctx.debug.remoteVersion, currentVersion) > 0
-      return (
-        <Layout
-          description={intl`App settings and information`}
-          dropdown={
-            !isWeb
-              ? [
-                  {
-                    label: intl`Clear all log files`,
-                    onPress: ctx.debug.clearLogFiles,
-                    danger: true,
-                  },
-                  {
-                    label: intl`Manually check for update`,
-                    onPress: ctx.debug.checkForUpdate,
-                  },
-                ]
-              : undefined
-          }
-          onBack={ctx.nav.backToPageAccountSignIn}
-          title={intl`Settings`}
-        >
-          <Field isGroup label={intl`DISPLAY`} />
-          <LanguagePicker />
-          <DarkModePicker />
-          {!isWeb && (
-            <>
-              <Field isGroup label={intl`DEBUG LOG`} />
-              <Field
-                label={intl`CAPTURE ALL DEBUG LOG`}
-                onValueChange={ctx.debug.toggleCaptureDebugLog}
-                type='Switch'
-                value={ctx.debug.captureDebugLog}
-              />
-              <Field
-                createBtnIcon={mdiKeyboardBackspace}
-                createBtnIconClassName='rotate-180'
-                label={intl`OPEN DEBUG LOG`}
-                onCreateBtnPress={ctx.nav.goToPageSettingsDebugFiles}
-                onTouchPress={ctx.nav.goToPageSettingsDebugFiles}
-                value={ctx.debug.getLogSizeStr()}
-              />
+export const PageSettingsDebug = observer(() => {
+  const isUpdateAvailable =
+    !isWeb && compareSemVer(ctx.debug.remoteVersion, currentVersion) > 0
+  return (
+    <Layout
+      description={intl`App settings and information`}
+      dropdown={
+        !isWeb
+          ? [
+              {
+                label: intl`Clear all log files`,
+                onPress: ctx.debug.clearLogFiles,
+                danger: true,
+              },
+              {
+                label: intl`Manually check for update`,
+                onPress: ctx.debug.checkForUpdate,
+              },
+            ]
+          : undefined
+      }
+      onBack={ctx.nav.backToPageAccountSignIn}
+      title={intl`Settings`}
+    >
+      <Field isGroup label={intl`DISPLAY`} />
+      <LanguagePicker />
+      <DarkModePicker />
+      {!isWeb && (
+        <>
+          <Field isGroup label={intl`DEBUG LOG`} />
+          <Field
+            label={intl`CAPTURE ALL DEBUG LOG`}
+            onValueChange={ctx.debug.toggleCaptureDebugLog}
+            type='Switch'
+            value={ctx.debug.captureDebugLog}
+          />
+          <Field
+            createBtnIcon={mdiKeyboardBackspace}
+            createBtnIconClassName='rotate-180'
+            label={intl`OPEN DEBUG LOG`}
+            onCreateBtnPress={ctx.nav.goToPageSettingsDebugFiles}
+            onTouchPress={ctx.nav.goToPageSettingsDebugFiles}
+            value={ctx.debug.getLogSizeStr()}
+          />
 
-              <Field hasMargin isGroup label={intl`UPDATE`} />
-              <Field
-                createBtnIcon={mdiKeyboardBackspace}
-                createBtnIconClassName='rotate-180'
-                label={intl`UPDATE`}
-                onCreateBtnPress={ctx.debug.openInStore}
-                onTouchPress={ctx.debug.openInStore}
-                value={intl`Open ${ctx.global.productName} on store`}
-              />
-              <RnText
-                normal
-                primary={!isUpdateAvailable}
-                small
-                className='mt-2 px-5'
-                warning={isUpdateAvailable}
-              >
-                {intl`Current version: ${currentVersion}`}
-                {'\n'}
-                {ctx.debug.isCheckingForUpdate
-                  ? intl`Checking for update...`
-                  : isUpdateAvailable
-                    ? intl`A new version is available: ${ctx.debug.remoteVersion}`
-                    : intl`${ctx.global.productName} is up-to-date, checked ${moment(
-                        ctx.debug.remoteVersionLastCheck,
-                      ).fromNow()}`}
-              </RnText>
-            </>
-          )}
-          {isWeb && (
-            <>
-              <Field hasMargin isGroup label={intl`VERSION`} />
-              <View className='h-3 w-full' />
-              <RnText normal primary small className='px-5'>
-                {intl`Current version: ${currentVersion}`}
-              </RnText>
-              <RnText normal warning small className='px-5'>
-                {intl`You are running an in-browser version of ${ctx.global.productName}`}
-              </RnText>
-            </>
-          )}
-        </Layout>
-      )
-    }
-  },
-)
+          <Field hasMargin isGroup label={intl`UPDATE`} />
+          <Field
+            createBtnIcon={mdiKeyboardBackspace}
+            createBtnIconClassName='rotate-180'
+            label={intl`UPDATE`}
+            onCreateBtnPress={ctx.debug.openInStore}
+            onTouchPress={ctx.debug.openInStore}
+            value={intl`Open ${ctx.global.productName} on store`}
+          />
+          <RnText
+            normal
+            primary={!isUpdateAvailable}
+            small
+            className='mt-2 px-5'
+            warning={isUpdateAvailable}
+          >
+            {intl`Current version: ${currentVersion}`}
+            {'\n'}
+            {ctx.debug.isCheckingForUpdate
+              ? intl`Checking for update...`
+              : isUpdateAvailable
+                ? intl`A new version is available: ${ctx.debug.remoteVersion}`
+                : intl`${ctx.global.productName} is up-to-date, checked ${moment(
+                    ctx.debug.remoteVersionLastCheck,
+                  ).fromNow()}`}
+          </RnText>
+        </>
+      )}
+      {isWeb && (
+        <>
+          <Field hasMargin isGroup label={intl`VERSION`} />
+          <View className='h-3 w-full' />
+          <RnText normal primary small className='px-5'>
+            {intl`Current version: ${currentVersion}`}
+          </RnText>
+          <RnText normal warning small className='px-5'>
+            {intl`You are running an in-browser version of ${ctx.global.productName}`}
+          </RnText>
+        </>
+      )}
+    </Layout>
+  )
+})

@@ -1,3 +1,4 @@
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { Animated } from 'react-native'

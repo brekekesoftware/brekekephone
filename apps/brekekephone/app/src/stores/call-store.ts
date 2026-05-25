@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -39,7 +39,30 @@ import {
 } from '#/utils/web-show-notification'
 
 export class CallStore {
-  @observable inPageCallManage?: {
+  constructor() {
+    makeAutoObservable(this)
+
+    if (!isAndroid) {
+      return
+    }
+    BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
+    // if it is locked right after blur 300ms
+    //    we assume it was put in background because of lock
+    // no need to remove listener since this is singleton without cleanup for now
+    AppState.addEventListener('change', currentState => {
+      BrekekeUtils.setIsAppActive(currentState === 'active', false)
+      if (currentState === 'active') {
+        return
+      }
+      BackgroundTimer.setTimeout(async () => {
+        if (await BrekekeUtils.isLocked()) {
+          BrekekeUtils.setIsAppActive(false, true)
+        }
+      }, defaultTimeout)
+    })
+  }
+
+  inPageCallManage?: {
     isFromCallBar?: boolean
   } = undefined
 
@@ -214,15 +237,15 @@ export class CallStore {
     this.endCallKeep(uuid)
   }
 
-  @observable calls: Call[] = []
+  calls: Call[] = []
 
   setCurrentCallId = (id: string) => {
     this.displayingCallId = id
     this.ongoingCallId = id
     this.updateBackgroundCalls()
   }
-  @observable ongoingCallId: string = ''
-  @observable displayingCallId = ''
+  ongoingCallId: string = ''
+  displayingCallId = ''
   prevDisplayingCallId = ''
   // Set when didActivateAudioSession fires before any SIP call exists (kill app +
   // quick answer). Consumed by upsertCall to correctly set isAudioActive on the call.
@@ -731,7 +754,7 @@ export class CallStore {
   get isAnyHoldLoading() {
     return this.calls.some(call => call.rqLoadings['hold'])
   }
-  onSelectBackgroundCall = async (c: Immutable<Call>) => {
+  onSelectBackgroundCall = async (c: Call) => {
     this.setCurrentCallId(c.id)
     ctx.nav.backToPageCallManage()
     await waitTimeout()
@@ -749,16 +772,14 @@ export class CallStore {
     }
   }
   callkeepUuidPending = ''
-  @observable isStartingCall = false
+  isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (this.isStartingCall) {
       console.log('[startCall] blocked double tap')
       return false
     }
 
-    runInAction(() => {
-      this.isStartingCall = true
-    })
+    this.isStartingCall = true
 
     try {
       return await this._startCallCore(number, ...args)
@@ -767,9 +788,7 @@ export class CallStore {
       return false
     } finally {
       setTimeout(() => {
-        runInAction(() => {
-          this.isStartingCall = false
-        })
+        this.isStartingCall = false
       }, 500)
     }
   }
@@ -869,43 +888,38 @@ export class CallStore {
     // check for each 0.5s internval auto update currentCallId
     // the call will be emitted from sip, we need to use interval here to set it
     // also if after 3s there's no call in store, reconnect
-    runInAction(() => {
-      this.setCurrentCallId('')
-    })
+    this.setCurrentCallId('')
     const prevIds = arrToMap(this.calls, 'id')
     this.clearStartCallIntervalTimer()
     this.startCallIntervalAt = Date.now()
-    this.startCallIntervalId = BackgroundTimer.setInterval(
-      action(() => {
-        const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
-        if (curr) {
-          if (uuid) {
-            curr.callkeepUuid = uuid
-          }
-          this.setCurrentCallId(curr.id)
-          this.clearStartCallIntervalTimer()
-          return
+    this.startCallIntervalId = BackgroundTimer.setInterval(() => {
+      const curr = this.calls.find(c => !c.incoming && !prevIds[c.id])
+      if (curr) {
+        if (uuid) {
+          curr.callkeepUuid = uuid
         }
-        const diff = Date.now() - this.startCallIntervalAt
-        // add a guard of 10s to clear the interval
-        if (diff > 10000) {
-          if (uuid) {
-            this.callkeepUuidPending = ''
-            this.endCallKeep(uuid)
-          }
-          this.clearStartCallIntervalTimer()
-          return
+        this.setCurrentCallId(curr.id)
+        this.clearStartCallIntervalTimer()
+        return
+      }
+      const diff = Date.now() - this.startCallIntervalAt
+      // add a guard of 10s to clear the interval
+      if (diff > 10000) {
+        if (uuid) {
+          this.callkeepUuidPending = ''
+          this.endCallKeep(uuid)
         }
-        // also if after 3s there's no call in store, reconnect
-        // it's likely a connection issue occurred
-        if (!reconnectCalled && diff > 3000) {
-          reconnectCalled = true
-          ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
-          this.clearStartCallIntervalTimer()
-        }
-      }),
-      500,
-    )
+        this.clearStartCallIntervalTimer()
+        return
+      }
+      // also if after 3s there's no call in store, reconnect
+      // it's likely a connection issue occurred
+      if (!reconnectCalled && diff > 3000) {
+        reconnectCalled = true
+        ctx.auth.reconnectAndWaitSip().then(sipCreateSession)
+        this.clearStartCallIntervalTimer()
+      }
+    }, 500)
     return true
   }
   startVideoCall = (number: string) => this.startCall(number, undefined, true)
@@ -961,7 +975,7 @@ export class CallStore {
   })
 
   // callkeep + pn data
-  @observable callkeepMap: {
+  callkeepMap: {
     [uuid: string]: {
       uuid: string
       at: number
@@ -1105,7 +1119,7 @@ export class CallStore {
 
   // actions map in case of call is not available at the time receive the action
   // this map wont be deleted if the callkeep end
-  @observable callkeepActionMap: {
+  callkeepActionMap: {
     [uuidOrPnId: string]: TCallKeepAction
   } = {}
   setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
@@ -1248,28 +1262,7 @@ export class CallStore {
     })
   }
 
-  constructor() {
-    if (!isAndroid) {
-      return
-    }
-    BrekekeUtils.setIsAppActive(AppState.currentState === 'active', false)
-    // if it is locked right after blur 300ms
-    //    we assume it was put in background because of lock
-    // no need to remove listener since this is singleton without cleanup for now
-    AppState.addEventListener('change', currentState => {
-      BrekekeUtils.setIsAppActive(currentState === 'active', false)
-      if (currentState === 'active') {
-        return
-      }
-      BackgroundTimer.setTimeout(async () => {
-        if (await BrekekeUtils.isLocked()) {
-          BrekekeUtils.setIsAppActive(false, true)
-        }
-      }, defaultTimeout)
-    })
-  }
-
-  @observable parkNumbers: { [k: string]: boolean } = {}
+  parkNumbers: { [k: string]: boolean } = {}
   addParkNumber = (parkNumber: string) => {
     this.parkNumbers[parkNumber] = true
   }
@@ -1278,7 +1271,7 @@ export class CallStore {
   }
 
   // some other fields
-  @observable isLoudSpeakerEnabled = false
+  isLoudSpeakerEnabled = false
 
   updateLoudSpeakerStatus = async () => {
     if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
@@ -1301,16 +1294,16 @@ export class CallStore {
     RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
     BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
-  @observable newVoicemailCount = 0
+  newVoicemailCount = 0
   setNewVoicemailCount = (n: number) => {
     this.newVoicemailCount = n
   }
   // style in CallVideosUI to save the previous video position
-  @observable videoPositionT = 25
-  @observable videoPositionL = 5
+  videoPositionT = 25
+  videoPositionL = 5
   // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
-  @observable ringtone = ''
+  ringtone = ''
   setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
   }

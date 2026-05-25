@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import { isWeb } from '@/rn/core/utils/platform'
@@ -115,24 +115,28 @@ type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 type MfaStartResult = true | 'none' | { error: string } | false
 
 export class AccountStore {
-  @observable appInitDone = false
-  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  appInitDone = false
+  pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise
 
-  @observable accounts: Account[] = []
+  accounts: Account[] = []
   get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
   }
-  @observable accountData: AccountData[] = []
+  accountData: AccountData[] = []
 
   keySessionMFA: string = ''
   pendingPnEnabled?: boolean
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted - if app restarts without calls, onPBXConnectionStarted handles MFA normally.
-  @observable mfaPendingAfterCallsId = ''
+  mfaPendingAfterCallsId = ''
   setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
   }
@@ -156,7 +160,7 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
-  @observable ringtonePicker: RingtonePickerType = {}
+  ringtonePicker: RingtonePickerType = {}
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
@@ -182,16 +186,14 @@ export class AccountStore {
         a.pbxTenant = a.pbxTenant || '-'
         trimAccount(a)
       })
-      runInAction(() => {
-        this.accounts = accounts.filter(a => a.id && a.pbxUsername)
-        if (accounts.length !== this.accounts.length) {
-          console.error(
-            'loadAccountsFromLocalStorage error missing id or pbxUsername',
-          )
-        }
-        this.accountData = uniqBy(accountData, 'id')
-        this.ringtonePicker = ringtonePicker ?? {}
-      })
+      this.accounts = accounts.filter(a => a.id && a.pbxUsername)
+      if (accounts.length !== this.accounts.length) {
+        console.error(
+          'loadAccountsFromLocalStorage error missing id or pbxUsername',
+        )
+      }
+      this.accountData = uniqBy(accountData, 'id')
+      this.ringtonePicker = ringtonePicker ?? {}
     }
     resolveFn?.()
     resolveFn = undefined
@@ -407,9 +409,7 @@ export class AccountStore {
     if (arr.length > 20) {
       arr.pop()
     }
-    runInAction(() => {
-      this.accountData = arr
-    })
+    this.accountData = arr
     this.saveAccountsToLocalStorageDebounced()
   }
 

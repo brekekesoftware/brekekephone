@@ -1,4 +1,4 @@
-import { action, computed, makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 
 import { debounce, isEqual, uniqBy } from '@/shared/lodash'
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
@@ -62,6 +62,7 @@ export class ContactStore {
   constructor() {
     makeAutoObservable(this)
   }
+
   usersSearchTerm = ''
   phonebookSearchTerm = ''
   chatSearchTerm = ''
@@ -227,22 +228,18 @@ export class ContactStore {
     this.extraPbxUsersBatch = []
     ctx.pbx
       .getExtraUsers(ids)
-      .then(
-        action(arr => {
-          arr?.forEach(u => {
-            this.extraPbxUsersMap[u.id] = u
-          })
-        }),
-      )
+      .then(arr => {
+        arr?.forEach(u => {
+          this.extraPbxUsersMap[u.id] = u
+        })
+      })
       .catch(() => {
         // mimic finally
       })
-      .then(
-        action(() =>
-          ids.forEach(id => {
-            delete this.extraPbxUsersLoadingMap[id]
-          }),
-        ),
+      .then(() =>
+        ids.forEach(id => {
+          delete this.extraPbxUsersLoadingMap[id]
+        }),
       )
   }, 17)
 

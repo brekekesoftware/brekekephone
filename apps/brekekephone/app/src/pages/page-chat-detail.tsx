@@ -1,6 +1,5 @@
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -26,449 +25,429 @@ import { formatFileType } from '#/utils/format-file-type'
 import { pickFile } from '#/utils/pick-file'
 import { saveBlob, saveBlobFile } from '#/utils/save-blob'
 
-export const PageChatDetail = observer(
-  class PageChatDetail extends Component<{
-    buddy: string
-  }> {
-    get chatById() {
-      return arrToMap(
-        ctx.chat.getMessagesByThreadId(this.props.buddy),
-        'id',
-        (m: ChatMessage) => m,
-      ) as { [k: string]: ChatMessage }
-    }
+export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
+  const [loadingRecent, setLoadingRecent] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [editingText, setEditingText] = useState('')
+  const [blobFile, setBlobFile] = useState({ url: '', fileType: '' })
+  const [topic_id, setTopicId] = useState('')
+  const [emojiTurnOn, setEmojiTurnOn] = useState(false)
+  const numberOfChatsPerLoadMoreRef = useRef(numberOfChatsPerLoad)
+  const edittingTextEmojiRef = useRef('')
+  const editingTextReplaceRef = useRef(false)
+  const viewRef = useRef<ScrollView | undefined>(undefined)
+  const justMountedRef = useRef(true)
+  const closeToBottomRef = useRef(true)
+  const currentScrollPositionRef = useRef(0)
+  const isLoadingMoreRef = useRef(false)
+  const submittingRef = useRef(false)
 
-    state = {
-      loadingRecent: false,
-      loadingMore: false,
-      editingText: '',
-      blobFile: {
-        url: '',
-        fileType: '',
-      },
-      topic_id: '',
-      emojiTurnOn: false,
-      blobVideo: undefined,
-    }
+  // Keep a ref to topic_id so the cleanup closure always sees the latest value
+  const topicIdRef = useRef('')
+  topicIdRef.current = topic_id
 
-    numberOfChatsPerLoadMore = numberOfChatsPerLoad
-    edittingTextEmoji = ''
-    editingTextReplace = false
+  // me is called each render and tracked by observer
+  const me = ctx.uc.me()
 
-    componentDidMount = () => {
-      this.componentDidMountAsync()
+  // chatById computed as a regular const - observer re-renders when underlying
+  // observables change, so this is always fresh
+  const chatById = arrToMap(
+    ctx.chat.getMessagesByThreadId(buddy),
+    'id',
+    (m: ChatMessage) => m,
+  ) as { [k: string]: ChatMessage }
+
+  const { allMessagesLoaded, isUnread } = ctx.chat.getThreadConfig(buddy)
+
+  const onContentSizeChange = (newWidth?: number, newHeight?: number) => {
+    if (!viewRef.current || emojiTurnOn) {
+      return
     }
-    componentDidMountAsync = async () => {
-      const { buddy: id } = this.props
-      this.setState({ loadingRecent: true })
-      await ctx.auth.waitPbx()
-      await ctx.auth.waitUc()
-      await ctx.uc
-        .getBuddyChats(id, { max: numberOfChatsPerLoad })
-        .then(chats => {
-          ctx.chat.pushMessages(id, chats)
-          BackgroundTimer.setTimeout(this.onContentSizeChange, defaultTimeout)
-        })
-        .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to get recent chats`,
-            err,
-          })
-        })
-      this.setState({ loadingRecent: false })
-      ctx.uc.readUnreadChats(id)
-      ctx.chat.updateThreadConfig(id, false, {
-        isUnread: false,
+    if (closeToBottomRef.current) {
+      viewRef.current?.scrollToEnd({
+        animated: !justMountedRef.current,
+      })
+      if (justMountedRef.current) {
+        justMountedRef.current = false
+      }
+    }
+    // scroll to last position after load more
+    if (newHeight && isLoadingMoreRef.current) {
+      isLoadingMoreRef.current = false
+      viewRef.current?.scrollTo({
+        y: newHeight - currentScrollPositionRef.current,
+        animated: false,
       })
     }
-    componentDidUpdate = () => {
-      const { buddy: id } = this.props
-      if (ctx.chat.getThreadConfig(id).isUnread) {
-        ctx.chat.updateThreadConfig(id, false, {
-          isUnread: false,
+  }
+
+  const componentDidMountAsync = async () => {
+    const id = buddy
+    setLoadingRecent(true)
+    await ctx.auth.waitPbx()
+    await ctx.auth.waitUc()
+    await ctx.uc
+      .getBuddyChats(id, { max: numberOfChatsPerLoad })
+      .then(chats => {
+        ctx.chat.pushMessages(id, chats)
+        BackgroundTimer.setTimeout(onContentSizeChange, defaultTimeout)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to get recent chats`,
+          err,
         })
+      })
+    setLoadingRecent(false)
+    ctx.uc.readUnreadChats(id)
+    ctx.chat.updateThreadConfig(id, false, {
+      isUnread: false,
+    })
+  }
+
+  useEffect(() => {
+    componentDidMountAsync()
+    return () => {
+      if (isWeb && topicIdRef.current) {
+        caches.delete(topicIdRef.current)
       }
     }
-    componentWillUnmount = () => {
-      if (isWeb) {
-        const { topic_id } = this.state
-        if (topic_id) {
-          caches.delete(topic_id)
-        }
-      }
+  }, [])
+
+  useEffect(() => {
+    if (isUnread) {
+      ctx.chat.updateThreadConfig(buddy, false, { isUnread: false })
     }
-    renderChatInput = () => (
-      <ChatInput
-        onEmojiTurnOn={() =>
-          this.setState({ emojiTurnOn: !this.state.emojiTurnOn }, () => {
-            this.view?.scrollToEnd()
-          })
-        }
-        onSelectionChange={this.onSelectionChange}
-        onTextChange={this.setEditingText}
-        onTextSubmit={this.submitEditingText}
-        openFileRnPicker={() => pickFile(this.sendFile)}
-        text={this.state.editingText}
-      />
-    )
+  }, [isUnread])
 
-    render() {
-      const { buddy: id } = this.props
-      const { allMessagesLoaded, isUnread } = ctx.chat.getThreadConfig(id)
-      const { loadingMore, loadingRecent, emojiTurnOn } = this.state
-      const listMessage = ctx.chat.getMessagesByThreadId(this.props.buddy)
-      const incomingMessage = listMessage
-        ? listMessage[listMessage.length - 1]?.text
-        : undefined
-      const isShowToastMessage = emojiTurnOn && isUnread
-
-      return (
-        <Layout
-          compact
-          containerOnContentSizeChange={this.onContentSizeChange}
-          containerOnScroll={this.onScroll}
-          containerRef={this.setViewRef}
-          fabRender={this.renderChatInput}
-          onBack={ctx.nav.backToPageChatRecents}
-          title={getPbxName({ partyNumber: id, preferPbxName: true }) || id} // for user not set username
-          isShowToastMessage={isShowToastMessage}
-          incomingMessage={incomingMessage}
-          dropdown={[
-            {
-              label: intl`Start voice call`,
-              onPress: () => ctx.call.startCall(id),
-            },
-            {
-              label: intl`Start video call`,
-              onPress: () => ctx.call.startVideoCall(id),
-            },
-          ]}
-        >
-          {loadingRecent ? (
-            <RnText className='self-center px-2.5 pb-3.75 text-[11.2px]'>{intl`Loading...`}</RnText>
-          ) : allMessagesLoaded ? (
-            <RnText
-              center
-              warning
-              className='self-center px-2.5 pb-3.75 text-[11.2px]'
-            >
-              {!ctx.chat.getMessagesByThreadId(this.props.buddy).length
-                ? intl`There's currently no message in this thread`
-                : intl`All messages in this thread have been loaded`}
-            </RnText>
-          ) : (
-            <RnTouchableOpacity
-              onPress={loadingMore ? undefined : () => this.loadMore()}
-            >
-              <RnText
-                bold={!loadingMore}
-                primary={!loadingMore}
-                className='self-center px-2.5 pb-3.75 text-[11.2px]'
-              >
-                {loadingMore ? intl`Loading...` : intl`Load more messages`}
-              </RnText>
-            </RnTouchableOpacity>
-          )}
-          <MessageList
-            acceptFile={this.acceptFile}
-            list={listMessage}
-            loadMore={this.loadMore}
-            rejectFile={this.rejectFile}
-            resolveChat={this.resolveChat}
-          />
-          {/* TODO: {emojiTurnOn && (
-          <View>
-            <EmojiSelector
-              category={Categories.emotion}
-              columns={10}
-              onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
-              showHistory={true}
-              showSearchBar={true}
-              showSectionTitles={true}
-              showTabs={true}
-            />
-          </View>
-        )} */}
-          {/* <video src={this.state.blobVideo}id='video' controls width='320' height='240'/> */}
-        </Layout>
+  const onSelectionChange = (
+    event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ) => {
+    const selection = event.nativeEvent.selection
+    editingTextReplaceRef.current = false
+    if (selection.start !== selection.end) {
+      edittingTextEmojiRef.current = editingText.substring(
+        selection.start,
+        selection.end,
       )
+      editingTextReplaceRef.current = true
+    } else {
+      edittingTextEmojiRef.current = editingText.substring(0, selection.start)
     }
+  }
 
-    onSelectionChange = (
-      event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-    ) => {
-      const selection = event.nativeEvent.selection
-      this.editingTextReplace = false
-      if (selection.start !== selection.end) {
-        this.edittingTextEmoji = this.state.editingText.substring(
-          selection.start,
-          selection.end,
+  const emojiSelectFunc = (emoji: string) => {
+    const newText = edittingTextEmojiRef.current.concat(emoji)
+    if (editingText === '') {
+      setEditingText(emoji)
+      edittingTextEmojiRef.current = emoji
+    } else {
+      if (!editingTextReplaceRef.current) {
+        setEditingText(
+          editingText.replace(edittingTextEmojiRef.current, newText),
         )
-        this.editingTextReplace = true
+        edittingTextEmojiRef.current =
+          edittingTextEmojiRef.current.concat(emoji)
       } else {
-        this.edittingTextEmoji = this.state.editingText.substring(
-          0,
-          selection.start,
+        setEditingText(
+          editingText.replace(edittingTextEmojiRef.current, emoji),
         )
+        editingTextReplaceRef.current = false
+        edittingTextEmojiRef.current = emoji
       }
     }
-    emojiSelectFunc = (emoji: string) => {
-      const newText = this.edittingTextEmoji.concat(emoji)
-      if (this.state.editingText === '') {
-        this.setState({ editingText: emoji })
-        this.edittingTextEmoji = emoji
-      } else {
-        if (!this.editingTextReplace) {
-          this.setState({
-            editingText: this.state.editingText.replace(
-              this.edittingTextEmoji,
-              newText,
-            ),
+  }
+
+  const onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const layoutSize = ev.nativeEvent.layoutMeasurement
+    const layoutHeight = layoutSize.height
+    const contentOffset = ev.nativeEvent.contentOffset
+    const contentSize = ev.nativeEvent.contentSize
+    const contentHeight = contentSize.height
+    const paddingToBottom = 20
+    closeToBottomRef.current =
+      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+    currentScrollPositionRef.current = contentHeight
+  }
+
+  const resolveCreator = (creator: string) => {
+    if (creator === me.id) {
+      return me
+    }
+    return ctx.contact.getUcUserById(creator) || {}
+  }
+
+  const resolveChat = (id: string) => {
+    const chat = chatById[id] as ChatMessage
+    const file = ctx.chat.getFileById(chat.file)
+    const text = chat.text
+    const creator = resolveCreator(chat.creator)
+    return {
+      id,
+      creatorId: creator.id,
+      creatorName: creator.name || creator.id,
+      creatorAvatar: creator.avatar,
+      text,
+      type: chat.type,
+      file,
+      created: chat.created,
+      createdByMe: creator.id === me.id,
+    }
+  }
+
+  const loadMore = () => {
+    isLoadingMoreRef.current = true
+    setLoadingMore(true)
+    numberOfChatsPerLoadMoreRef.current =
+      numberOfChatsPerLoadMoreRef.current + numberOfChatsPerLoad
+    const oldestChat =
+      ctx.chat.getMessagesByThreadId(buddy)[0] || ({} as ChatMessage)
+    const oldestCreated = oldestChat.created || 0
+    const max = numberOfChatsPerLoadMoreRef.current
+    const end = oldestCreated
+    const query = { max, end }
+    const id = buddy
+    ctx.uc
+      .getBuddyChats(id, query)
+      .then(chats => {
+        ctx.chat.pushMessages(id, chats)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to get more chats`,
+          err,
+        })
+      })
+      .then(() => {
+        setLoadingMore(false)
+      })
+      .then(() => {
+        const totalChatLoaded = ctx.chat.getMessagesByThreadId(buddy).length
+        if (totalChatLoaded < numberOfChatsPerLoadMoreRef.current) {
+          ctx.chat.updateThreadConfig(buddy, false, {
+            allMessagesLoaded: true,
           })
-          this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji)
+        }
+      })
+  }
+
+  const submitEditingText = () => {
+    const txt = editingText.trim()
+    if (!txt || submittingRef.current) {
+      return
+    }
+    if (emojiTurnOn) {
+      setEmojiTurnOn(!emojiTurnOn)
+    }
+    submittingRef.current = true
+    //
+    ctx.uc
+      .sendBuddyChatText(buddy, txt)
+      .then(onSubmitEditingTextSuccess)
+      .catch(onSubmitEditingTextFailure)
+      .then(() => {
+        submittingRef.current = false
+      })
+  }
+
+  const onSubmitEditingTextSuccess = (chat: unknown) => {
+    ctx.chat.pushMessages(buddy, chat as ChatMessage)
+    setEditingText('')
+  }
+
+  const onSubmitEditingTextFailure = (err: Error) => {
+    RnAlert.error({
+      message: intlDebug`Failed to send the message`,
+      err,
+    })
+  }
+
+  const acceptFile = (file: { id: string; name: string; fileType: string }) => {
+    ctx.uc
+      .acceptFile(file.id)
+      .then(blob => onAcceptFileSuccess(blob as Blob, file))
+      .catch(onAcceptFileFailure)
+  }
+
+  const onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
+    const fileType = formatFileType(file.name)
+    const reader = new FileReader()
+    reader.onload = async event => {
+      const url = event.target?.result
+      const f = ctx.chat.getFileById(file.id)
+      if (!f) {
+        return
+      }
+      Object.assign(f, {
+        url,
+        fileType,
+      })
+    }
+    reader.readAsDataURL(blob)
+    saveBlob(blob, file.name)
+  }
+
+  const onAcceptFileFailure = (err: Error) => {
+    RnAlert.error({
+      message: intlDebug`Failed to accept file`,
+      err,
+    })
+  }
+
+  const rejectFile = (file: object) => {
+    ctx.uc.rejectFile(file).catch(onRejectFileFailure)
+  }
+
+  const onRejectFileFailure = (err: Error) => {
+    RnAlert.error({
+      message: intlDebug`Failed to reject file`,
+      err,
+    })
+  }
+
+  const readFile = (file: { type: string; name: string; uri: string }) => {
+    const fileType = formatFileType(file.name)
+    setBlobFile({ url: file.uri, fileType })
+  }
+
+  const handleSaveBlobFileWeb = async (
+    data: Blob,
+    file: ChatFile,
+    chat: ChatMessage,
+  ) => {
+    const buddyId = buddy
+    try {
+      const url = await saveBlobFile(
+        file.id,
+        file.topic_id,
+        file.fileType,
+        data,
+      )
+      Object.assign(file, { url })
+      ctx.chat.upsertFile(file)
+      ctx.chat.pushMessages(buddyId, chat)
+    } catch (err) {
+      console.error('PageChatDetail.handleSaveBlobFileWeb err', err)
+    }
+  }
+
+  const sendFile = (file: { type: string; name: string; uri: string }) => {
+    readFile(file)
+    const u = ctx.contact.getUcUserById(buddy)
+    ctx.uc
+      .sendFile(u?.id, file as any as Blob)
+      .then(res => {
+        setTopicId(res.file.topic_id)
+        const buddyId = buddy
+        Object.assign(res.file, blobFile, { save: 'success' })
+        Object.assign(res.file, { target: { user_id: buddyId } })
+        if (isWeb) {
+          handleSaveBlobFileWeb(
+            file as any as Blob,
+            res.file as ChatFile,
+            res.chat,
+          )
         } else {
-          this.setState({
-            editingText: this.state.editingText.replace(
-              this.edittingTextEmoji,
-              emoji,
-            ),
-          })
-          this.editingTextReplace = false
-          this.edittingTextEmoji = emoji
+          ctx.chat.upsertFile(res.file)
+          ctx.chat.pushMessages(buddyId, res.chat)
         }
-      }
-    }
-
-    view?: ScrollView
-    setViewRef = (ref: ScrollView) => {
-      this.view = ref
-    }
-
-    justMounted = true
-    closeToBottom = true
-    currentScrollPosition = 0
-    isLoadingMore = false
-
-    onContentSizeChange = (newWidth?: number, newHeight?: number) => {
-      if (!this.view || this.state.emojiTurnOn) {
-        return
-      }
-      if (this.closeToBottom) {
-        this.view?.scrollToEnd({
-          animated: !this.justMounted,
-        })
-        if (this.justMounted) {
-          this.justMounted = false
-        }
-      }
-      // scroll to last position after load more
-      if (newHeight && this.isLoadingMore) {
-        this.isLoadingMore = false
-        this.view?.scrollTo({
-          y: newHeight - this.currentScrollPosition,
-          animated: false,
-        })
-      }
-    }
-
-    onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const layoutSize = ev.nativeEvent.layoutMeasurement
-      const layoutHeight = layoutSize.height
-      const contentOffset = ev.nativeEvent.contentOffset
-      const contentSize = ev.nativeEvent.contentSize
-      const contentHeight = contentSize.height
-      const paddingToBottom = 20
-      this.closeToBottom =
-        layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
-      this.currentScrollPosition = contentHeight
-    }
-
-    resolveChat = (id: string) => {
-      const chat = this.chatById[id] as ChatMessage
-      const file = ctx.chat.getFileById(chat.file)
-      const text = chat.text
-      const creator = this.resolveCreator(chat.creator)
-      return {
-        id,
-        creatorId: creator.id,
-        creatorName: creator.name || creator.id,
-        creatorAvatar: creator.avatar,
-        text,
-        type: chat.type,
-        file,
-        created: chat.created,
-        createdByMe: creator.id === this.me.id,
-      }
-    }
-    me = ctx.uc.me()
-    resolveCreator = (creator: string) => {
-      if (creator === this.me.id) {
-        return this.me
-      }
-      return ctx.contact.getUcUserById(creator) || {}
-    }
-
-    loadMore = () => {
-      this.isLoadingMore = true
-      this.setState({ loadingMore: true })
-      this.numberOfChatsPerLoadMore =
-        this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
-      const oldestChat =
-        ctx.chat.getMessagesByThreadId(this.props.buddy)[0] ||
-        ({} as ChatMessage)
-      const oldestCreated = oldestChat.created || 0
-      const max = this.numberOfChatsPerLoadMore
-      const end = oldestCreated
-      const query = { max, end }
-      const { buddy: id } = this.props
-      ctx.uc
-        .getBuddyChats(id, query)
-        .then(chats => {
-          ctx.chat.pushMessages(id, chats)
-        })
-        .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to get more chats`,
-            err,
-          })
-        })
-        .then(() => {
-          this.setState({ loadingMore: false })
-        })
-        .then(() => {
-          const { buddy } = this.props
-          const totalChatLoaded = ctx.chat.getMessagesByThreadId(buddy).length
-          if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-            ctx.chat.updateThreadConfig(buddy, false, {
-              allMessagesLoaded: true,
-            })
-          }
-        })
-    }
-
-    setEditingText = (editingText: string) => {
-      this.setState({ editingText })
-    }
-    submitting = false
-    submitEditingText = () => {
-      const txt = this.state.editingText.trim()
-      if (!txt || this.submitting) {
-        return
-      }
-      if (this.state.emojiTurnOn) {
-        this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
-      }
-      this.submitting = true
-      //
-      ctx.uc
-        .sendBuddyChatText(this.props.buddy, txt)
-        .then(this.onSubmitEditingTextSuccess)
-        .catch(this.onSubmitEditingTextFailure)
-        .then(() => {
-          this.submitting = false
-        })
-    }
-    onSubmitEditingTextSuccess = (chat: unknown) => {
-      ctx.chat.pushMessages(this.props.buddy, chat as ChatMessage)
-      this.setState({ editingText: '' })
-    }
-    onSubmitEditingTextFailure = (err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to send the message`,
-        err,
       })
-    }
-    acceptFile = (file: { id: string; name: string; fileType: string }) => {
-      ctx.uc
-        .acceptFile(file.id)
-        .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
-        .catch(this.onAcceptFileFailure)
-    }
-
-    onAcceptFileSuccess = (blob: Blob, file: { id: string; name: string }) => {
-      const fileType = formatFileType(file.name)
-      const reader = new FileReader()
-      reader.onload = async event => {
-        const url = event.target?.result
-        const f = ctx.chat.getFileById(file.id)
-        if (!f) {
-          return
-        }
-        Object.assign(f, {
-          url,
-          fileType,
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to send file`,
+          err,
         })
-      }
-      reader.readAsDataURL(blob)
-      saveBlob(blob, file.name)
-    }
-    onAcceptFileFailure = (err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to accept file`,
-        err,
       })
-    }
-    rejectFile = (file: object) => {
-      ctx.uc.rejectFile(file).catch(this.onRejectFileFailure)
-    }
-    onRejectFileFailure = (err: Error) => {
-      RnAlert.error({
-        message: intlDebug`Failed to reject file`,
-        err,
-      })
-    }
+  }
 
-    readFile = (file: { type: string; name: string; uri: string }) => {
-      const fileType = formatFileType(file.name)
-      this.setState({ blobFile: { url: file.uri, fileType } })
-    }
-    handleSaveBlobFileWeb = async (
-      data: Blob,
-      file: ChatFile,
-      chat: ChatMessage,
-    ) => {
-      const buddyId = this.props.buddy
-      try {
-        const url = await saveBlobFile(
-          file.id,
-          file.topic_id,
-          file.fileType,
-          data,
-        )
-        Object.assign(file, { url })
-        ctx.chat.upsertFile(file)
-        ctx.chat.pushMessages(buddyId, chat)
-      } catch (err) {
-        console.error('PageChatDetail.handleSaveBlobFileWeb err', err)
-      }
-    }
-    sendFile = (file: { type: string; name: string; uri: string }) => {
-      this.readFile(file)
-      const u = ctx.contact.getUcUserById(this.props.buddy)
-      ctx.uc
-        .sendFile(u?.id, file as any as Blob)
-        .then(res => {
-          this.setState({ topic_id: res.file.topic_id })
-          const buddyId = this.props.buddy
-          Object.assign(res.file, this.state.blobFile, { save: 'success' })
-          Object.assign(res.file, { target: { user_id: buddyId } })
-          if (isWeb) {
-            this.handleSaveBlobFileWeb(
-              file as any as Blob,
-              res.file as ChatFile,
-              res.chat,
-            )
-          } else {
-            ctx.chat.upsertFile(res.file)
-            ctx.chat.pushMessages(buddyId, res.chat)
-          }
-        })
-        .catch((err: Error) => {
-          RnAlert.error({
-            message: intlDebug`Failed to send file`,
-            err,
-          })
-        })
-    }
-  },
-)
+  const renderChatInput = () => (
+    <ChatInput
+      onEmojiTurnOn={() => {
+        setEmojiTurnOn(!emojiTurnOn)
+        viewRef.current?.scrollToEnd()
+      }}
+      onSelectionChange={onSelectionChange}
+      onTextChange={setEditingText}
+      onTextSubmit={submitEditingText}
+      openFileRnPicker={() => pickFile(sendFile)}
+      text={editingText}
+    />
+  )
+
+  const listMessage = ctx.chat.getMessagesByThreadId(buddy)
+  const incomingMessage = listMessage
+    ? listMessage[listMessage.length - 1]?.text
+    : undefined
+  const isShowToastMessage = emojiTurnOn && isUnread
+
+  return (
+    <Layout
+      compact
+      containerOnContentSizeChange={onContentSizeChange}
+      containerOnScroll={onScroll}
+      containerRef={(ref: ScrollView) => { viewRef.current = ref }}
+      fabRender={renderChatInput}
+      onBack={ctx.nav.backToPageChatRecents}
+      title={getPbxName({ partyNumber: buddy, preferPbxName: true }) || buddy} // for user not set username
+      isShowToastMessage={isShowToastMessage}
+      incomingMessage={incomingMessage}
+      dropdown={[
+        {
+          label: intl`Start voice call`,
+          onPress: () => ctx.call.startCall(buddy),
+        },
+        {
+          label: intl`Start video call`,
+          onPress: () => ctx.call.startVideoCall(buddy),
+        },
+      ]}
+    >
+      {loadingRecent ? (
+        <RnText className='self-center px-2.5 pb-3.75 text-[11.2px]'>{intl`Loading...`}</RnText>
+      ) : allMessagesLoaded ? (
+        <RnText
+          center
+          warning
+          className='self-center px-2.5 pb-3.75 text-[11.2px]'
+        >
+          {!ctx.chat.getMessagesByThreadId(buddy).length
+            ? intl`There's currently no message in this thread`
+            : intl`All messages in this thread have been loaded`}
+        </RnText>
+      ) : (
+        <RnTouchableOpacity
+          onPress={loadingMore ? undefined : () => loadMore()}
+        >
+          <RnText
+            bold={!loadingMore}
+            primary={!loadingMore}
+            className='self-center px-2.5 pb-3.75 text-[11.2px]'
+          >
+            {loadingMore ? intl`Loading...` : intl`Load more messages`}
+          </RnText>
+        </RnTouchableOpacity>
+      )}
+      <MessageList
+        acceptFile={acceptFile}
+        list={listMessage}
+        loadMore={loadMore}
+        rejectFile={rejectFile}
+        resolveChat={resolveChat}
+      />
+      {/* TODO: {emojiTurnOn && (
+      <View>
+        <EmojiSelector
+          category={Categories.emotion}
+          columns={10}
+          onEmojiSelected={emoji => emojiSelectFunc(emoji)}
+          showHistory={true}
+          showSearchBar={true}
+          showSectionTitles={true}
+          showTabs={true}
+        />
+      </View>
+    )} */}
+      {/* <video src={blobVideo}id='video' controls width='320' height='240'/> */}
+    </Layout>
+  )
+})

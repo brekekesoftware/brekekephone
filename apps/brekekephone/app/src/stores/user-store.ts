@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import type { SectionListData } from 'react-native'
 
 import { cloneDeep } from '@/shared/lodash'
@@ -19,6 +19,7 @@ export class UserStore {
   constructor() {
     makeAutoObservable(this)
   }
+
   dataGroupAllUser: GroupUserSectionListData[] = []
   dataListAllUser: UcBuddy[] = []
   buddyMax = defaultBuddyMax

@@ -1,8 +1,6 @@
 import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Component } from 'react'
-import { Linking } from 'react-native'
 import Share from 'react-native-share'
 
 import { View } from '@/rn/core/components/view'
@@ -12,8 +10,7 @@ import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import type { ChatFile } from '#/stores/chat-store'
-import { intl, intlDebug } from '#/stores/intl'
-import { RnAlert } from '#/stores/rn-alert'
+import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
@@ -94,7 +91,7 @@ const File: FC<
 ))
 
 export const Message = observer(
-  class Message extends Component<{
+  (p: {
     text: string
     type?: number
     creatorId: string
@@ -102,67 +99,9 @@ export const Message = observer(
     acceptFile: Function
     rejectFile: Function
     createdByMe: boolean
-  }> {
-    onLinkPress = (url: string) => {
-      if (isWeb) {
-        window.open(url, '_blank', 'noopener')
-        return
-      }
-      if (!Linking.canOpenURL(url)) {
-        RnAlert.error({
-          message: intlDebug`Can not open the url`,
-        })
-      } else {
-        Linking.openURL(url)
-      }
-    }
-    onLinkLongPress = (url: string) => {
-      RnPicker.open({
-        options: [
-          {
-            key: 2,
-            label: intl`Copy link`,
-            icon: mdiDotsHorizontal,
-          },
-          {
-            key: 3,
-            label: intl`Share link to external app`,
-            icon: mdiDotsHorizontal,
-          },
-          {
-            key: 0,
-            label: intl`Copy message`,
-            icon: mdiContentCopy,
-          },
-          {
-            key: 1,
-            label: intl`Share message to external app`,
-            icon: mdiDotsHorizontal,
-          },
-        ],
-        onSelect: (k: number) => this.onRnPickerSelect(k, url),
-      })
-    }
-    onMessagePress = () => {
-      RnPicker.open({
-        options: [
-          {
-            key: 0,
-            label: intl`Copy message`,
-            icon: mdiContentCopy,
-          },
-          {
-            key: 1,
-            label: intl`Share message to external app`,
-            icon: mdiDotsHorizontal,
-          },
-        ],
-        onSelect: this.onRnPickerSelect,
-      })
-    }
-
-    onRnPickerSelect = (k: number, url: string) => {
-      const message = !k || k === 1 ? this.props.text : url
+  }) => {
+    const onRnPickerSelect = (k: number, url: string) => {
+      const message = !k || k === 1 ? p.text : url
       if (!k || k === 2) {
         Clipboard.setString(message)
       } else {
@@ -170,44 +109,57 @@ export const Message = observer(
       }
     }
 
-    render() {
-      const p = this.props
-      const file = p.file as any as ChatFile
-      const isImage =
-        file && (file.fileType === 'image' || file.fileType === 'video')
-      const TextContainer = isWeb ? View : RnTouchableOpacity
-      const { text, isTextOnly } = formatChatContent(p)
-
-      return (
-        <>
-          {!!text && !file && (
-            <TextContainer
-              className={[
-                'relative overflow-hidden px-2.5 pb-1.25',
-                messageMaxWidthClassName,
-              ]}
-              onLongPress={this.onMessagePress}
-            >
-              <RnText
-                className={
-                  !isTextOnly ? 'text-warning text-[11.2px]' : undefined
-                }
-              >
-                {text.trim()}
-              </RnText>
-            </TextContainer>
-          )}
-          {!!file && isImage && <ItemImageVideoChat {...file} />}
-          {!!file && !isImage && (
-            <File
-              {...(p.file as any)}
-              accept={() => p.acceptFile(p.file)}
-              createdByMe={p.createdByMe}
-              reject={() => p.rejectFile(p.file)}
-            />
-          )}
-        </>
-      )
+    const onMessagePress = () => {
+      RnPicker.open({
+        options: [
+          {
+            key: 0,
+            label: intl`Copy message`,
+            icon: mdiContentCopy,
+          },
+          {
+            key: 1,
+            label: intl`Share message to external app`,
+            icon: mdiDotsHorizontal,
+          },
+        ],
+        onSelect: onRnPickerSelect,
+      })
     }
+
+    const file = p.file as any as ChatFile
+    const isImage =
+      file && (file.fileType === 'image' || file.fileType === 'video')
+    const TextContainer = isWeb ? View : RnTouchableOpacity
+    const { text, isTextOnly } = formatChatContent(p)
+
+    return (
+      <>
+        {!!text && !file && (
+          <TextContainer
+            className={[
+              'relative overflow-hidden px-2.5 pb-1.25',
+              messageMaxWidthClassName,
+            ]}
+            onLongPress={onMessagePress}
+          >
+            <RnText
+              className={!isTextOnly ? 'text-warning text-[11.2px]' : undefined}
+            >
+              {text.trim()}
+            </RnText>
+          </TextContainer>
+        )}
+        {!!file && isImage && <ItemImageVideoChat {...file} />}
+        {!!file && !isImage && (
+          <File
+            {...(p.file as any)}
+            accept={() => p.acceptFile(p.file)}
+            createdByMe={p.createdByMe}
+            reject={() => p.rejectFile(p.file)}
+          />
+        )}
+      </>
+    )
   },
 )

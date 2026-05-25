@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { FlatList, View } from 'react-native'
@@ -17,12 +17,18 @@ import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageContactGroupCreate = observer(
-  class PageContactGroupCreate extends Component {
-    @observable selectedUserItems: { [k: string]: UcBuddy } = {}
-
+  class PageContactGroupCreate extends Component<
+    {},
+    {
+      name: string
+      didMount: boolean
+      selectedUserItems: { [k: string]: UcBuddy }
+    }
+  > {
     state = {
       name: '',
       didMount: false,
+      selectedUserItems: {} as { [k: string]: UcBuddy },
     }
     componentDidMount = () => {
       BackgroundTimer.setTimeout(
@@ -64,7 +70,8 @@ export const PageContactGroupCreate = observer(
                 <RenderItem
                   item={item}
                   index={index}
-                  selectedUsers={this.selectedUserItems}
+                  selectedUsers={this.state.selectedUserItems}
+                  onToggle={this.toggleUser}
                 />
               )}
               keyExtractor={item => item.user_id}
@@ -74,13 +81,22 @@ export const PageContactGroupCreate = observer(
       )
     }
 
-    setName = (name: string) =>
-      this.setState({
-        name,
+    setName = (name: string) => this.setState({ name })
+
+    toggleUser = (user: UcBuddy) => {
+      this.setState(prev => {
+        const next = { ...prev.selectedUserItems }
+        if (next[user.user_id]) {
+          delete next[user.user_id]
+        } else {
+          next[user.user_id] = user
+        }
+        return { selectedUserItems: next }
       })
+    }
 
     create = () => {
-      const { name } = this.state
+      const { name, selectedUserItems } = this.state
 
       if (!name.trim()) {
         RnAlert.error({
@@ -96,7 +112,7 @@ export const PageContactGroupCreate = observer(
       // const selectedUsers = userStore.dataListAllUser.filter(
       //   u => this.selectedUsers[u.user_id],
       // )
-      ctx.user.addGroup(name, this.selectedUserItems)
+      ctx.user.addGroup(name, selectedUserItems)
       RnDropdown.setShouldUpdatePosition(true)
       ctx.nav.backToPageContactEdit()
     }
@@ -108,31 +124,24 @@ const RenderItem = observer(
     item,
     index,
     selectedUsers,
+    onToggle,
   }: {
     item: UcBuddy
     index: number
     selectedUsers: { [k: string]: UcBuddy }
-  }) => {
-    const selectUser = action((i: UcBuddy) => {
-      if (selectedUsers[i.user_id]) {
-        delete selectedUsers[item.user_id]
-      } else {
-        selectedUsers[i.user_id] = i
-      }
-    })
-    return (
-      <View key={`PageContactGroupCreate-${item.user_id}-${index}`}>
-        <RnTouchableOpacity onPress={() => selectUser(item)}>
-          <UserItem
-            id={item.user_id}
-            name={item.name || item.user_id}
-            avatar={item.profile_image_url}
-            isSelected={!!selectedUsers[item.user_id]}
-            onSelect={() => selectUser(item)}
-            isSelection
-          />
-        </RnTouchableOpacity>
-      </View>
-    )
-  },
+    onToggle: (user: UcBuddy) => void
+  }) => (
+    <View key={`PageContactGroupCreate-${item.user_id}-${index}`}>
+      <RnTouchableOpacity onPress={() => onToggle(item)}>
+        <UserItem
+          id={item.user_id}
+          name={item.name || item.user_id}
+          avatar={item.profile_image_url}
+          isSelected={!!selectedUsers[item.user_id]}
+          onSelect={() => onToggle(item)}
+          isSelection
+        />
+      </RnTouchableOpacity>
+    </View>
+  ),
 )

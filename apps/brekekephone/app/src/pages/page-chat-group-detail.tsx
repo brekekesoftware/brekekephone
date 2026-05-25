@@ -1,4 +1,4 @@
-import { computed } from 'mobx'
+import { computed, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type {
@@ -31,6 +31,13 @@ export const PageChatGroupDetail = observer(
   class PageChatGroupDetail extends Component<{
     groupId: string
   }> {
+    constructor(props) {
+      super(props)
+      makeObservable({
+        chatById: computed,
+      })
+    }
+
     get chatById() {
       return arrToMap(
         ctx.chat.getMessagesByThreadId(this.props.groupId),

@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 import type { SyntheticEvent } from 'react'
 
@@ -23,6 +23,7 @@ export class RnStackerStore {
   constructor() {
     makeAutoObservable(this)
   }
+
   stacks: RnStack[] = []
   stackAnimating = false
 
@@ -34,11 +35,9 @@ export class RnStackerStore {
       this.stacks.push(stack)
     }
   }
-  dismiss = RnKeyboard.waitKeyboard(
-    action(() => {
-      this.stacks.pop()
-    }),
-  )
+  dismiss = RnKeyboard.waitKeyboard(() => {
+    this.stacks.pop()
+  })
 
   createGoTo = <T>(
     o: { [k: string]: ReactComponentLike },
@@ -50,38 +49,36 @@ export class RnStackerStore {
     }
     const name = keys[0]
     const Component = o[name]
-    const f = RnKeyboard.waitKeyboard(
-      action((stack: SyntheticEvent) => {
-        ctx.call.inPageCallManage = undefined
-        // prevent multiple stacks from opening at the same time
-        if (this.stackAnimating) {
-          return
+    const f = RnKeyboard.waitKeyboard((stack: SyntheticEvent) => {
+      ctx.call.inPageCallManage = undefined
+      // prevent multiple stacks from opening at the same time
+      if (this.stackAnimating) {
+        return
+      }
+      if (!isRoot) {
+        this.stackAnimating = true
+        BackgroundTimer.setTimeout(() => {
+          this.stackAnimating = false
+        }, defaultTimeout)
+      }
+      //
+      const stack0 = {} as RnStack
+      // it fails if the param is an event
+      //    or something not enumerable
+      if (stack && !stack.nativeEvent) {
+        try {
+          Object.assign(stack0, stack)
+        } catch (err) {
+          void err
         }
-        if (!isRoot) {
-          this.stackAnimating = true
-          BackgroundTimer.setTimeout(() => {
-            this.stackAnimating = false
-          }, defaultTimeout)
-        }
-        //
-        const stack0 = {} as RnStack
-        // it fails if the param is an event
-        //    or something not enumerable
-        if (stack && !stack.nativeEvent) {
-          try {
-            Object.assign(stack0, stack)
-          } catch (err) {
-            void err
-          }
-        }
-        Object.assign(stack0, {
-          name,
-          Component,
-          isRoot,
-        })
-        this.openStack(stack0)
-      }),
-    )
+      }
+      Object.assign(stack0, {
+        name,
+        Component,
+        isRoot,
+      })
+      this.openStack(stack0)
+    })
     return f as any as StackerFn<T>
   }
   createBackTo =

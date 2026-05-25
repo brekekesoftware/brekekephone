@@ -10,7 +10,7 @@ export const getConnectionStatus = () => {
       : ctx.auth.ucConnectingOrFailure()
         ? 'UC'
         : ''
-  const isRequestRetrying = ctx.pbx.retryingRequests.length > 0
+  const isRequestRetrying = ctx.pbx.state.retryingRequests.length > 0
 
   const isFailure = ctx.auth.isConnFailure()
   let message = ''

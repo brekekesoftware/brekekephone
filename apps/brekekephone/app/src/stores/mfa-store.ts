@@ -1,9 +1,13 @@
-import { action, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 
 import { ctx } from '#/stores/ctx'
 
 export class MFAStore {
-  @observable accountId: string | null = null
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  accountId: string | null = null
   // When true, skip PBX reconnect after MFA verification.
   // Used by syncPnToken flow which only needs to save the token
   // without triggering a full PBX reconnect with device_token.
@@ -12,7 +16,7 @@ export class MFAStore {
   cancelledAccountId: string | null = null
   // Server error from mfa/start FAILED response (e.g. "No email address.").
   // When non-empty, modal renders in error mode instead of normal OTP entry.
-  @observable error = ''
+  error = ''
   _resolvers: Array<(ok: boolean) => void> = []
 
   show = (id: string, opts?: { skipReconnect?: boolean; error?: string }) => {

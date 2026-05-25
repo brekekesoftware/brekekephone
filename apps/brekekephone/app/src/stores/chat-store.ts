@@ -1,6 +1,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
-import { action, computed, makeAutoObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
@@ -74,6 +74,7 @@ export class ChatStore {
   constructor() {
     makeAutoObservable(this)
   }
+
   timeoutTransferImage: { [k: string]: number } = {}
 
   messagesByThreadId: { [k: string]: ChatMessage[] } = {}

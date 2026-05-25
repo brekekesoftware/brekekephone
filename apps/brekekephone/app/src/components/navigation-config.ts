@@ -1,4 +1,3 @@
-import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
 import { isIos } from '@/rn/core/utils/platform'
@@ -316,7 +315,7 @@ export const getTabs = (tab: string) => {
     ) as Menu['subMenusMap']
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
-      s.navFn = action(() => {
+      s.navFn = () => {
         const name = Object.keys(s.navFnKey)[0]
         // handle link to phoneappli app
         if (!name || s.key === 'phonebook') {
@@ -333,7 +332,7 @@ export const getTabs = (tab: string) => {
           name,
           Component,
         })
-      })
+      }
     })
   })
   const m = arr.find(_ => _.key === tab)
