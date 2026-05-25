@@ -91,7 +91,7 @@ class MainActivity : ReactActivity() {
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return object : ReactActivityDelegate(this, mainComponentName) {
-      override fun isFabricEnabled(): Boolean = false
+      override fun isFabricEnabled(): Boolean = true
     }
   }
 

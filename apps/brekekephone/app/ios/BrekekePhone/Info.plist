@@ -81,7 +81,7 @@
       <string>INStartVideoCallIntent</string>
     </array>
     <key>RCTNewArchEnabled</key>
-    <false />
+    <true />
     <key>UIAppFonts</key>
     <array />
     <key>UIBackgroundModes</key>
