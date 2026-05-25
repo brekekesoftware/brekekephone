@@ -34,17 +34,16 @@ export const KeyPad = (p: {
                 onPress={() => p.onPressNumber(key)}
                 className={['h-20 w-1/3 items-center py-2', small && 'h-16']}
               >
-                <RnText
-                  center
+                <View
                   className={[
-                    'bg-foreground/5 border-primary/10 h-16 w-16 rounded-full border py-4 text-2xl font-bold',
-                    key === '*' && 'pt-5 pb-3',
-                    small && 'h-12 py-2',
-                    key === '*' && small && 'pt-3 pb-1',
+                    'bg-foreground/5 border-primary/10 h-16 w-16 items-center justify-center rounded-full border',
+                    small && 'h-12 w-12',
                   ]}
                 >
-                  {key}
-                </RnText>
+                  <RnText center className='text-2xl font-bold'>
+                    {key}
+                  </RnText>
+                </View>
               </RnTouchableOpacity>
             ))}
           </View>
