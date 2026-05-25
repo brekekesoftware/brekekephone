@@ -29,6 +29,6 @@
       <string>$(PRODUCT_MODULE_NAME).BrekekeLPCExtension</string>
     </dict>
     <key>RCTNewArchEnabled</key>
-    <false />
+    <true />
   </dict>
 </plist>

@@ -5,26 +5,28 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  react: 19.1.0
-  react-dom: 19.1.0
-  react-native: 0.80.1
   '@typescript-eslint/parser': 8.59.3
   '@typescript-eslint/typescript-estree': 8.59.3
+  event-target-shim: 6.0.2
+  react-dom: 19.1.0
+  react-native: 0.80.1
+  react: 19.1.0
 
 patchedDependencies:
   '@react-native-documents/picker': 16f974cd0eadaf29aae11e18edff3b7c0f53ce793e7358fba88aa7e64ea684b0
   '@react-native/gradle-plugin': 07ebd10d76d949aedbcbec9cc6d0a6f41d4f69065e60ddc8708f8bd7bdc3c4f1
   eslint-plugin-import: 7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b
   eslint-plugin-react: 24ed0c82b63c09560e6a640404cb8b5769455a704db5068d2ac54d9c68e9b43e
+  event-target-shim: 55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab
   jssip: 8217b76a5fea6baa6498d5a96392c62eecb12ddc0de980e381fd8f377b6f8202
   mobx-react: d395ac57fab7f67055e41489420a53857251e11099b79b078c7ba6a5fa3d9c2a
   react-native: 6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc
-  react-native-callkeep: d5ce26f88a46fef81a7267f54678e3ca692cdd7df7a20454200452704256476d
+  react-native-callkeep: 03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66
   react-native-notifications: 5a944146a7415e7f6d363324e4f025ab8ddc0fabb8df257f7d05e8b0f3e448aa
   react-native-splash-screen: 823794f1fa4cfe445d047771fc37150f03a44f57686f5e478f11556ea2b116b1
   react-native-voip-push-notification: ce88f445c6564a43e241fa8e90d4a9e76403aacb4091bfb5c6a1aff04c5537f5
   react-native-web: a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150
-  react-native-webrtc: c9e984a3c467ba0090551854f30e1f507f99585dabcc7e5426514544c6b86be6
+  react-native-webrtc: 50f0150db7ee0ab5a45bc0f9daef1b412a95658c78afc14ad4e7aff153f09ceb
 
 importers:
 
@@ -70,12 +72,9 @@ importers:
       buffer:
         specifier: 6.0.3
         version: 6.0.3
-      es6-shim:
-        specifier: 0.35.8
-        version: 0.35.8
-      es7-shim:
-        specifier: 6.0.0
-        version: 6.0.0
+      event-target-shim:
+        specifier: 6.0.2
+        version: 6.0.2(patch_hash=55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab)
       eventemitter3:
         specifier: 5.0.4
         version: 5.0.4
@@ -129,7 +128,7 @@ importers:
         version: 2.4.1(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-callkeep:
         specifier: 4.3.16
-        version: 4.3.16(patch_hash=d5ce26f88a46fef81a7267f54678e3ca692cdd7df7a20454200452704256476d)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
+        version: 4.3.16(patch_hash=03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-device-info:
         specifier: 15.0.2
         version: 15.0.2(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
@@ -182,8 +181,8 @@ importers:
         specifier: 3.3.3
         version: 3.3.3(patch_hash=ce88f445c6564a43e241fa8e90d4a9e76403aacb4091bfb5c6a1aff04c5537f5)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-webrtc:
-        specifier: 111.0.3
-        version: 111.0.3(patch_hash=c9e984a3c467ba0090551854f30e1f507f99585dabcc7e5426514544c6b86be6)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
+        specifier: 124.0.7
+        version: 124.0.7(patch_hash=50f0150db7ee0ab5a45bc0f9daef1b412a95658c78afc14ad4e7aff153f09ceb)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-webview:
         specifier: 13.16.1
         version: 13.16.1(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -269,9 +268,6 @@ importers:
       '@types/react-native-video':
         specifier: 5.0.21
         version: 5.0.21(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
-      '@types/react-native-webrtc':
-        specifier: 1.100.0
-        version: 1.100.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       '@types/url-parse':
         specifier: 1.4.11
         version: 1.4.11
@@ -3350,10 +3346,6 @@ packages:
     peerDependencies:
       react-native: 0.80.1
 
-  '@types/react-native-webrtc@1.100.0':
-    resolution: {integrity: sha512-IVwgkNTSgu22egMdr3Phs1tUs94wqmfOI2ogcRY+JTkXcffZzm5fy5e7qRwVJigr8BmfqI4zWtNmzPHWwxWNEw==}
-    deprecated: This is a stub types definition. react-native-webrtc provides its own type definitions, so you do not need this installed.
-
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
 
@@ -5017,13 +5009,6 @@ packages:
     resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
     engines: {node: '>= 0.4'}
 
-  es6-shim@0.35.8:
-    resolution: {integrity: sha512-Twf7I2v4/1tLoIXMT8HlqaBSS5H2wQTs2wx3MNYCI8K1R1/clXyCazrcVCPm/FuO9cyV8+leEaZOWD5C253NDg==}
-
-  es7-shim@6.0.0:
-    resolution: {integrity: sha512-aiQ/QyJBVJbabtsSediM1S4qI+P3p8F5J5YR5o/bH003BCnnclzxK9pi5Qd2Hg01ktAtZCaQBdejHrkOBGwf5Q==}
-    engines: {node: '>=0.4.0'}
-
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
     engines: {node: '>=6'}
@@ -5244,10 +5229,6 @@ packages:
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
-
-  event-target-shim@5.0.1:
-    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
-    engines: {node: '>=6'}
 
   event-target-shim@6.0.2:
     resolution: {integrity: sha512-8q3LsZjRezbFZ2PN+uP+Q7pnHUMmAOziU2vA2OwoFaKIXxlxl38IylhSSgUorWu/rf4er67w0ikBqjBFk/pomA==}
@@ -8284,8 +8265,8 @@ packages:
       react: 19.1.0
       react-dom: 19.1.0
 
-  react-native-webrtc@111.0.3:
-    resolution: {integrity: sha512-flharkWM5QTSlik+ppK5tf5W86IeabHnrMI7bKkhUJJyibDDMz6X3ReH3dtHWFbiRjDGLktZ4FGwqOCGhL68DA==}
+  react-native-webrtc@124.0.7:
+    resolution: {integrity: sha512-gnXPdbUS8IkKHq9WNaWptW/yy5s6nMyI6cNn90LXdobPVCgYSk6NA2uUGdT4c4J14BRgaFA95F+cR28tUPkMVA==}
     peerDependencies:
       react-native: 0.80.1
 
@@ -8870,11 +8851,6 @@ packages:
     resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
     engines: {node: '>=4'}
 
-  string-at@1.1.0:
-    resolution: {integrity: sha512-jCpPowWKBn0NFdvtmK2qxK40Ol4jPcgCt8qYnKpPx6B5eDwHMDhRvq9MCsDEgsOTNtbXY6beAMHMRT2qPJXllA==}
-    engines: {node: '>= 0.4'}
-    deprecated: The original `String.prototype.at` proposal has been replaced by a new one; please use v1 or later of `string.prototype.at` instead
-
   string-length@4.0.2:
     resolution: {integrity: sha512-+l6rNN5fYHNhZZy41RXsYptCjA2Igmq4EG7kZAYFQI1E1VTXarr6ZPXBg6eq7Y6eK4FEhY6AJlyuFIb/v/S0VQ==}
     engines: {node: '>=10'}
@@ -8902,14 +8878,6 @@ packages:
     resolution: {integrity: sha512-6CC9uyBL+/48dYizRf7H7VAYCMCNTBeM78x/VTUe9bFEaxBepPJDa1Ow99LqI/1yF7kuy7Q3cQsYMrcjGUcskA==}
     engines: {node: '>= 0.4'}
 
-  string.prototype.padend@3.1.6:
-    resolution: {integrity: sha512-XZpspuSB7vJWhvJc9DLSlrXl1mcA2BdoY5jjnS135ydXqLoqhs96JjDtCkjJEQHvfqZIp9hBuBMgI589peyx9Q==}
-    engines: {node: '>= 0.4'}
-
-  string.prototype.padstart@3.1.7:
-    resolution: {integrity: sha512-hc5ZFzw8H2Bl4AeHxE5s+CniFg+bPcr7lRRS189GCM6KhJQBACNRhtMsdcnpBNbjc1XisnUOqbP0c94RZU4GCw==}
-    engines: {node: '>= 0.4'}
-
   string.prototype.repeat@1.0.0:
     resolution: {integrity: sha512-0u/TldDbKD8bFCQ/4f5+mNRrXwZ8hg2w7ZR8wa16e8z9XpePWl3eGEcUD0OXpEH/VJH/2G3gjUtR3ZOiBe2S/w==}
 
@@ -8919,14 +8887,6 @@ packages:
 
   string.prototype.trimend@1.0.9:
     resolution: {integrity: sha512-G7Ok5C6E/j4SGfyLCloXTrngQIQU3PWtXGst3yM7Bea9FRURf1S42ZHlZZtsNque2FN2PoUhfZXYLNWwEr4dLQ==}
-    engines: {node: '>= 0.4'}
-
-  string.prototype.trimleft@2.1.3:
-    resolution: {integrity: sha512-699Ibssmj/awVzvdNk4g83/Iu8U9vDohzmA/ly2BrQWGhamuY4Tlvs5XKmKliDt3ky6SKbE1bzPhASKCFlx9Sg==}
-    engines: {node: '>= 0.4'}
-
-  string.prototype.trimright@2.1.3:
-    resolution: {integrity: sha512-hoOq56oRFnnfDuXNy2lGHiwT77MehHv9d0zGfRZ8QdC+4zjrkFB9vd5i/zYTd/ymFBd4YxtbdgHt3U6ksGeuBw==}
     engines: {node: '>= 0.4'}
 
   string.prototype.trimstart@1.0.8:
@@ -12770,13 +12730,6 @@ snapshots:
       '@types/react': 19.2.14
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
-  '@types/react-native-webrtc@1.100.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))':
-    dependencies:
-      react-native-webrtc: 111.0.3(patch_hash=c9e984a3c467ba0090551854f30e1f507f99585dabcc7e5426514544c6b86be6)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
-    transitivePeerDependencies:
-      - react-native
-      - supports-color
-
   '@types/react@19.2.14':
     dependencies:
       csstype: 3.2.3
@@ -13149,7 +13102,7 @@ snapshots:
 
   abort-controller@3.0.0:
     dependencies:
-      event-target-shim: 5.0.1
+      event-target-shim: 6.0.2(patch_hash=55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab)
 
   accepts@1.3.8:
     dependencies:
@@ -14690,20 +14643,6 @@ snapshots:
       is-date-object: 1.1.0
       is-symbol: 1.1.1
 
-  es6-shim@0.35.8: {}
-
-  es7-shim@6.0.0:
-    dependencies:
-      array-includes: 3.1.9
-      object.entries: 1.1.9
-      object.getownpropertydescriptors: 2.1.9
-      object.values: 1.2.1
-      string-at: 1.1.0
-      string.prototype.padend: 3.1.6
-      string.prototype.padstart: 3.1.7
-      string.prototype.trimleft: 2.1.3
-      string.prototype.trimright: 2.1.3
-
   escalade@3.2.0: {}
 
   escape-html@1.0.3: {}
@@ -15008,9 +14947,7 @@ snapshots:
 
   etag@1.8.1: {}
 
-  event-target-shim@5.0.1: {}
-
-  event-target-shim@6.0.2: {}
+  event-target-shim@6.0.2(patch_hash=55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab): {}
 
   eventemitter3@4.0.7: {}
 
@@ -18337,7 +18274,7 @@ snapshots:
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
-  react-native-callkeep@4.3.16(patch_hash=d5ce26f88a46fef81a7267f54678e3ca692cdd7df7a20454200452704256476d)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
+  react-native-callkeep@4.3.16(patch_hash=03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
@@ -18499,11 +18436,11 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  react-native-webrtc@111.0.3(patch_hash=c9e984a3c467ba0090551854f30e1f507f99585dabcc7e5426514544c6b86be6)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
+  react-native-webrtc@124.0.7(patch_hash=50f0150db7ee0ab5a45bc0f9daef1b412a95658c78afc14ad4e7aff153f09ceb)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
     dependencies:
       base64-js: 1.5.1
       debug: 4.3.4
-      event-target-shim: 6.0.2
+      event-target-shim: 6.0.2(patch_hash=55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab)
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
     transitivePeerDependencies:
       - supports-color
@@ -19329,11 +19266,6 @@ snapshots:
 
   strict-uri-encode@2.0.0: {}
 
-  string-at@1.1.0:
-    dependencies:
-      define-properties: 1.2.1
-      es-abstract: 1.24.2
-
   string-length@4.0.2:
     dependencies:
       char-regex: 1.0.2
@@ -19379,21 +19311,6 @@ snapshots:
       set-function-name: 2.0.2
       side-channel: 1.1.0
 
-  string.prototype.padend@3.1.6:
-    dependencies:
-      call-bind: 1.0.9
-      define-properties: 1.2.1
-      es-abstract: 1.24.2
-      es-object-atoms: 1.1.1
-
-  string.prototype.padstart@3.1.7:
-    dependencies:
-      call-bind: 1.0.9
-      call-bound: 1.0.4
-      define-properties: 1.2.1
-      es-abstract: 1.24.2
-      es-object-atoms: 1.1.1
-
   string.prototype.repeat@1.0.0:
     dependencies:
       define-properties: 1.2.1
@@ -19415,18 +19332,6 @@ snapshots:
       call-bound: 1.0.4
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
-
-  string.prototype.trimleft@2.1.3:
-    dependencies:
-      call-bind: 1.0.9
-      define-properties: 1.2.1
-      string.prototype.trimstart: 1.0.8
-
-  string.prototype.trimright@2.1.3:
-    dependencies:
-      call-bind: 1.0.9
-      define-properties: 1.2.1
-      string.prototype.trimend: 1.0.9
 
   string.prototype.trimstart@1.0.8:
     dependencies:
