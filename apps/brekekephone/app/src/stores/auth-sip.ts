@@ -17,7 +17,7 @@ const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
   ctx.pbx.getConfig().then(c => c && c[k])
 
 export class AuthSIP {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -36,7 +36,7 @@ export class AuthSIP {
     ctx.sip.stopWebRTC()
   }
 
-  private onSipFailure = () => {
+  onSipFailure = () => {
     console.log('SIP PN debug: set sipState failure')
     ctx.sip.stopWebRTC()
 
@@ -49,7 +49,7 @@ export class AuthSIP {
     this.authWithCheck()
   }
 
-  private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
+  authPnWithoutCatch = async (pn: Partial<SipPn>) => {
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       console.log('SIP PN debug: Already signed out after long await')
@@ -86,7 +86,7 @@ export class AuthSIP {
     await ctx.sip.connect(o, ca)
   }
 
-  @action private authWithoutCatch = async () => {
+  @action authWithoutCatch = async () => {
     console.log('SIP PN debug: set sipState connecting')
 
     ctx.auth.sipState = 'connecting'
@@ -133,7 +133,7 @@ export class AuthSIP {
     await this.authPnWithoutCatch(pn)
   }
 
-  @action private authWithCheck = async () => {
+  @action authWithCheck = async () => {
     // BUG-1207: while signInByNotification is mid-transition, dispose() sets
     // sipState='stopped' and onCallKeepDidDisplayIncomingCall sees that and
     // schedules a redundant sip.connect. The 2nd connect calls resetProcessedPn
@@ -176,7 +176,7 @@ export class AuthSIP {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authSIP = new AuthSIP()

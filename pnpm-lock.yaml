@@ -19,7 +19,6 @@ patchedDependencies:
   eslint-plugin-react: 24ed0c82b63c09560e6a640404cb8b5769455a704db5068d2ac54d9c68e9b43e
   event-target-shim: 55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab
   jssip: 8217b76a5fea6baa6498d5a96392c62eecb12ddc0de980e381fd8f377b6f8202
-  mobx-react: d395ac57fab7f67055e41489420a53857251e11099b79b078c7ba6a5fa3d9c2a
   react-native: 6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc
   react-native-callkeep: 03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66
   react-native-notifications: 5a944146a7415e7f6d363324e4f025ab8ddc0fabb8df257f7d05e8b0f3e448aa
@@ -97,11 +96,11 @@ importers:
         specifier: 2.3.0
         version: 2.3.0
       mobx:
-        specifier: 5.15.7
-        version: 5.15.7
+        specifier: 6.15.4
+        version: 6.15.4
       mobx-react:
-        specifier: 6.3.1
-        version: 6.3.1(patch_hash=d395ac57fab7f67055e41489420a53857251e11099b79b078c7ba6a5fa3d9c2a)(mobx@5.15.7)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+        specifier: 9.2.2
+        version: 9.2.2(mobx@6.15.4)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       moment:
         specifier: 2.30.1
         version: 2.30.1
@@ -208,9 +207,6 @@ importers:
       '@babel/core':
         specifier: 7.29.0
         version: 7.29.0
-      '@babel/plugin-proposal-decorators':
-        specifier: 7.29.0
-        version: 7.29.0(@babel/core@7.29.0)
       '@babel/plugin-proposal-optional-chaining':
         specifier: 7.21.0
         version: 7.21.0(@babel/core@7.29.0)
@@ -6979,10 +6975,10 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  mobx-react-lite@2.2.2:
-    resolution: {integrity: sha512-2SlXALHIkyUPDsV4VTKVR9DW7K3Ksh1aaIv3NrNJygTbhXe2A9GrcKHZ2ovIiOp/BXilOcTYemfHHZubP431dg==}
+  mobx-react-lite@4.1.1:
+    resolution: {integrity: sha512-iUxiMpsvNraCKXU+yPotsOncNNmyeS2B5DKL+TL6Tar/xm+wwNJAubJmtRSeAoYawdZqwv8Z/+5nPRHeQxTiXg==}
     peerDependencies:
-      mobx: ^4.0.0 || ^5.0.0
+      mobx: ^6.9.0
       react: 19.1.0
       react-dom: '*'
       react-native: '*'
@@ -6992,14 +6988,21 @@ packages:
       react-native:
         optional: true
 
-  mobx-react@6.3.1:
-    resolution: {integrity: sha512-IOxdJGnRSNSJrL2uGpWO5w9JH5q5HoxEqwOF4gye1gmZYdjoYkkMzSGMDnRCUpN/BNzZcFoMdHXrjvkwO7KgaQ==}
+  mobx-react@9.2.2:
+    resolution: {integrity: sha512-ShszmQzR/VrhU3M0cQ7DA/s8qNcLcF2emSuudJ/TnDILS3C1Im48mdaG6CpyjZHy8+WqgXUCC9mPqSRIwPPMuQ==}
     peerDependencies:
-      mobx: ^5.15.4 || ^4.15.4
+      mobx: ^6.9.0
       react: 19.1.0
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
 
-  mobx@5.15.7:
-    resolution: {integrity: sha512-wyM3FghTkhmC+hQjyPGGFdpehrcX1KOXsDuERhfK2YbJemkUhEB+6wzEN639T21onxlfYBmriA1PFnvxTUhcKw==}
+  mobx@6.15.4:
+    resolution: {integrity: sha512-do+2UsEKRVT70W/QqP2F2sju2x4p2xZo+5/azXqKjXgTk2jfmzsLjzwW0YI8CBEjy4ZUdU8EunXocXXwJdCrtw==}
 
   moment@2.30.1:
     resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
@@ -17196,24 +17199,25 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
-  mobx-react-lite@2.2.2(mobx@5.15.7)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
+  mobx-react-lite@4.1.1(mobx@6.15.4)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
     dependencies:
-      mobx: 5.15.7
+      mobx: 6.15.4
+      react: 19.1.0
+      use-sync-external-store: 1.6.0(react@19.1.0)
+    optionalDependencies:
+      react-dom: 19.1.0(react@19.1.0)
+      react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
+
+  mobx-react@9.2.2(mobx@6.15.4)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      mobx: 6.15.4
+      mobx-react-lite: 4.1.1(mobx@6.15.4)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
     optionalDependencies:
       react-dom: 19.1.0(react@19.1.0)
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
-  mobx-react@6.3.1(patch_hash=d395ac57fab7f67055e41489420a53857251e11099b79b078c7ba6a5fa3d9c2a)(mobx@5.15.7)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
-    dependencies:
-      mobx: 5.15.7
-      mobx-react-lite: 2.2.2(mobx@5.15.7)(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
-      react: 19.1.0
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
-  mobx@5.15.7: {}
+  mobx@6.15.4: {}
 
   moment@2.30.1: {}
 

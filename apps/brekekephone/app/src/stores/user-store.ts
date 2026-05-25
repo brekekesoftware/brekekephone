@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 import type { SectionListData } from 'react-native'
 
 import { cloneDeep } from '@/shared/lodash'
@@ -16,17 +16,20 @@ export type GroupUserSectionListData = SectionListData<
 export type BuddyType = 'PbxBuddy' | 'UcBuddy'
 
 export class UserStore {
-  @observable dataGroupAllUser: GroupUserSectionListData[] = []
-  @observable dataListAllUser: UcBuddy[] = []
-  @observable buddyMax = defaultBuddyMax
-  @observable isDisableAddAllUserToTheList = false
-  @observable isSelectedAddAllUser: boolean = true
-  @observable selectedUserIds: { [userId: string]: boolean } = {}
-  @observable saveSelectedUserIds: { [userId: string]: boolean } = {}
-  @observable userOnline: { [userId: string]: string } = {}
-  @observable isCapacityInvalid = false
-  @observable buddyMode = 0
-  @observable dataDisplayGroupAllUser: GroupUserSectionListData[] = []
+  constructor() {
+    makeAutoObservable(this)
+  }
+  dataGroupAllUser: GroupUserSectionListData[] = []
+  dataListAllUser: UcBuddy[] = []
+  buddyMax = defaultBuddyMax
+  isDisableAddAllUserToTheList = false
+  isSelectedAddAllUser: boolean = true
+  selectedUserIds: { [userId: string]: boolean } = {}
+  saveSelectedUserIds: { [userId: string]: boolean } = {}
+  userOnline: { [userId: string]: string } = {}
+  isCapacityInvalid = false
+  buddyMode = 0
+  dataDisplayGroupAllUser: GroupUserSectionListData[] = []
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
 
@@ -237,7 +240,7 @@ export class UserStore {
     })
   }
 
-  @observable isSelectEditGroupingAndUserOrder: boolean = false
+  isSelectEditGroupingAndUserOrder: boolean = false
   @action toggleIsSelectEditGroupingAndUserOrder = () => {
     this.isSelectEditGroupingAndUserOrder =
       !this.isSelectEditGroupingAndUserOrder

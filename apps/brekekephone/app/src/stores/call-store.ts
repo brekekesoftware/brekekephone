@@ -43,9 +43,9 @@ export class CallStore {
     isFromCallBar?: boolean
   } = undefined
 
-  private recentCallActivityAt = 0
+  recentCallActivityAt = 0
 
-  private getCallKeep = (
+  getCallKeep = (
     uuid: string,
     o?: {
       includingOutgoing?: boolean
@@ -274,7 +274,7 @@ export class CallStore {
     c.partyImageSize = n.image_size || 'small'
   }
 
-  private getOriginalUserImageUrl = (tenant: string, name: string): string => {
+  getOriginalUserImageUrl = (tenant: string, name: string): string => {
     if (!tenant || !name) {
       return ''
     }
@@ -292,7 +292,7 @@ export class CallStore {
     return `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
   }
 
-  private incallManagerStarted = false
+  incallManagerStarted = false
   onCallUpsert: CallStore['upsertCall'] = async c => {
     this.upsertCall(c)
     if (
@@ -337,7 +337,7 @@ export class CallStore {
       c.partyImageSize === 'large',
     )
   }
-  @action private upsertCall = async (
+  @action upsertCall = async (
     // partial
     p: Pick<Call, 'id'> &
       Partial<Omit<Call, 'id'>> & {
@@ -744,15 +744,15 @@ export class CallStore {
     }
   }
 
-  private startCallIntervalAt = 0
-  private startCallIntervalId = 0
-  private clearStartCallIntervalTimer = () => {
+  startCallIntervalAt = 0
+  startCallIntervalId = 0
+  clearStartCallIntervalTimer = () => {
     if (this.startCallIntervalId) {
       BackgroundTimer.clearInterval(this.startCallIntervalId)
       this.startCallIntervalId = 0
     }
   }
-  private callkeepUuidPending = ''
+  callkeepUuidPending = ''
   @observable isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (this.isStartingCall) {
@@ -778,7 +778,7 @@ export class CallStore {
     }
   }
 
-  private _startCallCore: MakeCallFn = async (number, ...args) => {
+  _startCallCore: MakeCallFn = async (number, ...args) => {
     // make sure sip is ready before make call
     if (ctx.auth.sipState !== 'success') {
       return false
@@ -941,12 +941,12 @@ export class CallStore {
       )
       .forEach(c => c.toggleHoldWithCheck())
   }
-  private updateBackgroundCallsDebounce = debounce(
+  updateBackgroundCallsDebounce = debounce(
     this.updateBackgroundCalls,
     defaultTimeout,
     { maxWait: 1000 },
   )
-  @action private updateCurrentCall = () => {
+  @action updateCurrentCall = () => {
     const oc =
       this.calls.find(c => c.id === this.ongoingCallId) ||
       this.calls.find(c => c.answered && !c.holding && !c.isAboutToHangup) ||
@@ -960,13 +960,9 @@ export class CallStore {
     }
     this.updateBackgroundCallsDebounce()
   }
-  private updateCurrentCallDebounce = debounce(
-    this.updateCurrentCall,
-    defaultTimeout,
-    {
-      maxWait: 1000,
-    },
-  )
+  updateCurrentCallDebounce = debounce(this.updateCurrentCall, defaultTimeout, {
+    maxWait: 1000,
+  })
 
   // callkeep + pn data
   @observable callkeepMap: {
@@ -977,13 +973,12 @@ export class CallStore {
       hasAction?: boolean
     }
   } = {}
-  private getUuidFromPnId = (pnId: string) =>
+  getUuidFromPnId = (pnId: string) =>
     Object.values(this.callkeepMap)
       .map(c => c.incomingPnData)
       .find(d => d?.id === pnId)?.callkeepUuid
-  private getPnIdFromUuid = (uuid: string) =>
-    this.callkeepMap[uuid]?.incomingPnData?.id
-  private getSetUuidPnId = (c: TCallKeepIds) => {
+  getPnIdFromUuid = (uuid: string) => this.callkeepMap[uuid]?.incomingPnData?.id
+  getSetUuidPnId = (c: TCallKeepIds) => {
     if (c.callkeepUuid && !c.pnId) {
       c.pnId = this.getPnIdFromUuid(c.callkeepUuid)
     }
@@ -991,21 +986,21 @@ export class CallStore {
       c.callkeepUuid = this.getUuidFromPnId(c.pnId)
     }
   }
-  private getAutoAnswerFromPnId = (pnId: string) =>
+  getAutoAnswerFromPnId = (pnId: string) =>
     Object.values(this.callkeepMap)
       .map(c => c.incomingPnData)
       .find(d => d?.id === pnId)?.sipPn?.autoAnswer
 
   // logic to end call if timeout of 20s
-  private autoEndCallKeepTimerId = 0
-  private clearAutoEndCallKeepTimer = () => {
+  autoEndCallKeepTimerId = 0
+  clearAutoEndCallKeepTimer = () => {
     if (isWeb || !this.autoEndCallKeepTimerId) {
       return
     }
     BackgroundTimer.clearInterval(this.autoEndCallKeepTimerId)
     this.autoEndCallKeepTimerId = 0
   }
-  @action private setAutoEndCallKeepTimer = (
+  @action setAutoEndCallKeepTimer = (
     uuid: string,
     incomingPnData?: ParsedPn,
   ) => {
@@ -1036,7 +1031,7 @@ export class CallStore {
       }
     }, 500)
   }
-  @action private endCallKeep = (
+  @action endCallKeep = (
     uuid: string,
     {
       setAction = true,
@@ -1097,7 +1092,7 @@ export class CallStore {
 
   // move from callkeep.ts to avoid circular dependencies
   // logic to show incoming call ui in case of already have a running call in RNCallKeep android
-  private alreadyShowIncomingCallUi: { [k: string]: boolean } = {}
+  alreadyShowIncomingCallUi: { [k: string]: boolean } = {}
   showIncomingCallUi = (e: TEvent & { pnData: ParsedPn }) => {
     const uuid = e.callUUID.toUpperCase()
     if (this.alreadyShowIncomingCallUi[uuid]) {
@@ -1120,7 +1115,7 @@ export class CallStore {
   @observable callkeepActionMap: {
     [uuidOrPnId: string]: TCallKeepAction
   } = {}
-  private setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
+  setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
     this.getSetUuidPnId(c)
     if (c.callkeepUuid) {
       this.callkeepActionMap[c.callkeepUuid] = a
@@ -1131,7 +1126,7 @@ export class CallStore {
     this.onCallKeepAction()
   }
 
-  private getCallKeepAction = (c: TCallKeepIds) =>
+  getCallKeepAction = (c: TCallKeepIds) =>
     (c.callkeepUuid && this.callkeepActionMap[c.callkeepUuid]) ||
     (c.pnId && this.callkeepActionMap[c.pnId])
   isCallRejected = (c?: TCallKeepIds) =>

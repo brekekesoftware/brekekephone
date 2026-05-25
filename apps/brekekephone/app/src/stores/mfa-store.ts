@@ -13,7 +13,7 @@ export class MFAStore {
   // Server error from mfa/start FAILED response (e.g. "No email address.").
   // When non-empty, modal renders in error mode instead of normal OTP entry.
   @observable error = ''
-  private _resolvers: Array<(ok: boolean) => void> = []
+  _resolvers: Array<(ok: boolean) => void> = []
 
   @action show = (
     id: string,

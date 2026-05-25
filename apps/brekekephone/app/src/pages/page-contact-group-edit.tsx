@@ -15,82 +15,92 @@ import { intl } from '#/stores/intl'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-@observer
-export class PageContactGroupEdit extends Component<{
-  groupName: string
-  listItem: UcBuddy[]
-}> {
-  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
-  state = {
-    didMount: false,
-  }
-  componentDidMount = () => {
-    this.props.listItem.forEach(u => {
-      if (ctx.user.selectedUserIds[u.user_id]) {
-        this.selectedUserItems[u.user_id] = u
-      }
-    })
-    BackgroundTimer.setTimeout(
-      () => this.setState({ didMount: true }),
-      defaultTimeout,
-    )
-  }
-
-  render() {
-    return (
-      <Layout
-        fabOnBack={ctx.nav.goToPageContactEdit}
-        fabOnNext={this.create}
-        fabOnNextText={intl`SAVE`}
-        onBack={ctx.nav.backToPageContactEdit}
-        title={intl`Add/Remove Contact`}
-      >
-        <Field
-          label={intl`GROUP NAME`}
-          value={this.props.groupName}
-          disabled={true}
-        />
-        <Field isGroup label={intl`Members`} disabled={true} />
-        {!this.state.didMount ? (
-          <RnActivityIndicator className='h-10 w-10 self-center' size='large' />
-        ) : (
-          <FlatList
-            data={ctx.user.dataListAllUser}
-            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-              <RenderItem
-                item={item}
-                index={index}
-                selectedUsers={this.selectedUserItems}
-              />
-            )}
-            keyExtractor={item => item.user_id}
-          />
-        )}
-      </Layout>
-    )
-  }
-
-  @action selectUser = (item: UcBuddy) => {
-    if (this.selectedUserItems[item.user_id]) {
-      delete this.selectedUserItems[item.user_id]
-    } else {
-      this.selectedUserItems[item.user_id] = item
+export const PageContactGroupEdit = observer(
+  class PageContactGroupEdit extends Component<{
+    groupName: string
+    listItem: UcBuddy[]
+  }> {
+    @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+    state = {
+      didMount: false,
     }
-  }
+    componentDidMount = () => {
+      this.props.listItem.forEach(u => {
+        if (ctx.user.selectedUserIds[u.user_id]) {
+          this.selectedUserItems[u.user_id] = u
+        }
+      })
+      BackgroundTimer.setTimeout(
+        () => this.setState({ didMount: true }),
+        defaultTimeout,
+      )
+    }
 
-  create = () => {
-    const listItemRemoved = this.props.listItem.filter(
-      itm => !this.selectedUserItems[itm.user_id],
-    )
-    ctx.user.editGroup(
-      this.props.groupName,
-      listItemRemoved,
-      this.selectedUserItems,
-    )
-    RnDropdown.setShouldUpdatePosition(true)
-    ctx.nav.backToPageContactEdit()
-  }
-}
+    render() {
+      return (
+        <Layout
+          fabOnBack={ctx.nav.goToPageContactEdit}
+          fabOnNext={this.create}
+          fabOnNextText={intl`SAVE`}
+          onBack={ctx.nav.backToPageContactEdit}
+          title={intl`Add/Remove Contact`}
+        >
+          <Field
+            label={intl`GROUP NAME`}
+            value={this.props.groupName}
+            disabled={true}
+          />
+          <Field isGroup label={intl`Members`} disabled={true} />
+          {!this.state.didMount ? (
+            <RnActivityIndicator
+              className='h-10 w-10 self-center'
+              size='large'
+            />
+          ) : (
+            <FlatList
+              data={ctx.user.dataListAllUser}
+              renderItem={({
+                item,
+                index,
+              }: {
+                item: UcBuddy
+                index: number
+              }) => (
+                <RenderItem
+                  item={item}
+                  index={index}
+                  selectedUsers={this.selectedUserItems}
+                />
+              )}
+              keyExtractor={item => item.user_id}
+            />
+          )}
+        </Layout>
+      )
+    }
+
+    @action selectUser = (item: UcBuddy) => {
+      if (this.selectedUserItems[item.user_id]) {
+        delete this.selectedUserItems[item.user_id]
+      } else {
+        this.selectedUserItems[item.user_id] = item
+      }
+    }
+
+    create = () => {
+      const listItemRemoved = this.props.listItem.filter(
+        itm => !this.selectedUserItems[itm.user_id],
+      )
+      ctx.user.editGroup(
+        this.props.groupName,
+        listItemRemoved,
+        this.selectedUserItems,
+      )
+      RnDropdown.setShouldUpdatePosition(true)
+      ctx.nav.backToPageContactEdit()
+    }
+  },
+)
 
 const RenderItem = observer(
   ({

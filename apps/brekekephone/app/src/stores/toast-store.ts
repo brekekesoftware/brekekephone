@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import { ctx } from '#/stores/ctx'
@@ -17,8 +17,11 @@ interface Toast {
 }
 
 export class ToastStore {
-  @observable items: Toast[] = []
-  private lastInternetToastTime = 0
+  constructor() {
+    makeAutoObservable(this)
+  }
+  items: Toast[] = []
+  lastInternetToastTime = 0
   @action
   show = (
     msg: string | undefined,

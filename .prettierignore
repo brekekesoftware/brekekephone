@@ -85,6 +85,7 @@ next-env.d.ts
 **/out/
 **/.velite/
 **/.tamagui/
+**/.claude/
 
 # local/debug output
 *.local

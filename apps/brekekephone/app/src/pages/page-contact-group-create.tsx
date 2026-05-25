@@ -16,85 +16,92 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-@observer
-export class PageContactGroupCreate extends Component {
-  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+export const PageContactGroupCreate = observer(
+  class PageContactGroupCreate extends Component {
+    @observable selectedUserItems: { [k: string]: UcBuddy } = {}
 
-  state = {
-    name: '',
-    didMount: false,
-  }
-  componentDidMount = () => {
-    BackgroundTimer.setTimeout(
-      () => this.setState({ didMount: true }),
-      defaultTimeout,
-    )
-  }
-
-  render() {
-    return (
-      <Layout
-        fabOnBack={ctx.nav.goToPageContactEdit}
-        fabOnNext={this.create}
-        fabOnNextText={intl`CREATE`}
-        onBack={ctx.nav.backToPageContactEdit}
-        title={intl`New Group`}
-      >
-        <Field
-          label={intl`GROUP NAME`}
-          onValueChange={this.setName}
-          value={this.state.name}
-        />
-        <Field isGroup label={intl`Members`} />
-        {!this.state.didMount ? (
-          <RnActivityIndicator
-            className='mt-5 h-9 w-9 self-center'
-            size='small'
-          />
-        ) : (
-          <FlatList
-            data={ctx.user.dataListAllUser}
-            renderItem={({ item, index }: { item: UcBuddy; index: number }) => (
-              <RenderItem
-                item={item}
-                index={index}
-                selectedUsers={this.selectedUserItems}
-              />
-            )}
-            keyExtractor={item => item.user_id}
-          />
-        )}
-      </Layout>
-    )
-  }
-
-  setName = (name: string) =>
-    this.setState({
-      name,
-    })
-
-  create = () => {
-    const { name } = this.state
-
-    if (!name.trim()) {
-      RnAlert.error({
-        message: intlDebug`Group name is required`,
-      })
-      return
-    } else if (ctx.user.groups.some(group => group.name === name.trim())) {
-      RnAlert.error({
-        message: intlDebug`Group name is existed`,
-      })
-      return
+    state = {
+      name: '',
+      didMount: false,
     }
-    // const selectedUsers = userStore.dataListAllUser.filter(
-    //   u => this.selectedUsers[u.user_id],
-    // )
-    ctx.user.addGroup(name, this.selectedUserItems)
-    RnDropdown.setShouldUpdatePosition(true)
-    ctx.nav.backToPageContactEdit()
-  }
-}
+    componentDidMount = () => {
+      BackgroundTimer.setTimeout(
+        () => this.setState({ didMount: true }),
+        defaultTimeout,
+      )
+    }
+
+    render() {
+      return (
+        <Layout
+          fabOnBack={ctx.nav.goToPageContactEdit}
+          fabOnNext={this.create}
+          fabOnNextText={intl`CREATE`}
+          onBack={ctx.nav.backToPageContactEdit}
+          title={intl`New Group`}
+        >
+          <Field
+            label={intl`GROUP NAME`}
+            onValueChange={this.setName}
+            value={this.state.name}
+          />
+          <Field isGroup label={intl`Members`} />
+          {!this.state.didMount ? (
+            <RnActivityIndicator
+              className='mt-5 h-9 w-9 self-center'
+              size='small'
+            />
+          ) : (
+            <FlatList
+              data={ctx.user.dataListAllUser}
+              renderItem={({
+                item,
+                index,
+              }: {
+                item: UcBuddy
+                index: number
+              }) => (
+                <RenderItem
+                  item={item}
+                  index={index}
+                  selectedUsers={this.selectedUserItems}
+                />
+              )}
+              keyExtractor={item => item.user_id}
+            />
+          )}
+        </Layout>
+      )
+    }
+
+    setName = (name: string) =>
+      this.setState({
+        name,
+      })
+
+    create = () => {
+      const { name } = this.state
+
+      if (!name.trim()) {
+        RnAlert.error({
+          message: intlDebug`Group name is required`,
+        })
+        return
+      } else if (ctx.user.groups.some(group => group.name === name.trim())) {
+        RnAlert.error({
+          message: intlDebug`Group name is existed`,
+        })
+        return
+      }
+      // const selectedUsers = userStore.dataListAllUser.filter(
+      //   u => this.selectedUsers[u.user_id],
+      // )
+      ctx.user.addGroup(name, this.selectedUserItems)
+      RnDropdown.setShouldUpdatePosition(true)
+      ctx.nav.backToPageContactEdit()
+    }
+  },
+)
 
 const RenderItem = observer(
   ({

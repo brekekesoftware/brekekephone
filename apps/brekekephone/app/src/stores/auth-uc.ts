@@ -11,7 +11,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export class AuthUC {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -31,7 +31,7 @@ export class AuthUC {
     ctx.auth.ucState = 'stopped'
   }
 
-  @action private authWithoutCatch = async () => {
+  @action authWithoutCatch = async () => {
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'connecting'
@@ -56,7 +56,7 @@ export class AuthUC {
       }),
     )
   }
-  @action private authWithCheck = async () => {
+  @action authWithCheck = async () => {
     if (!ctx.auth.ucShouldAuth()) {
       return
     }
@@ -78,15 +78,15 @@ export class AuthUC {
       }),
     )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 
-  @action private onConnectionStopped = (e: { code: number }) => {
+  @action onConnectionStopped = (e: { code: number }) => {
     ctx.auth.ucState = 'failure'
     ctx.auth.ucTotalFailure += 1
     ctx.auth.ucLoginFromAnotherPlace = e.code === Errors.PLEONASTIC_LOGIN
     this.authWithCheck()
   }
-  @action private loadUsers = () => {
+  @action loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
@@ -98,12 +98,12 @@ export class AuthUC {
     const users = ctx.uc.getUsers()
     ctx.contact.ucUsers = users
   }
-  private loadUnreadChats = () =>
+  loadUnreadChats = () =>
     ctx.uc
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure)
-  @action private onLoadUnreadChatsSuccess = (
+  @action onLoadUnreadChatsSuccess = (
     chats: {
       id: string
       text: string
@@ -116,7 +116,7 @@ export class AuthUC {
       ctx.chat.pushMessages(chat.creator, [chat], true)
     })
   }
-  private onLoadUnreadChatsFailure = (err: Error) => {
+  onLoadUnreadChatsFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to load unread chat messages`,
       err,

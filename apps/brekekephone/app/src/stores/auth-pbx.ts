@@ -7,7 +7,7 @@ import { ctx } from '#/stores/ctx'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export class AuthPBX {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -27,7 +27,7 @@ export class AuthPBX {
     ctx.auth.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = async () => {
+  @action authWithCheck = async () => {
     if (!ctx.auth.pbxShouldAuth()) {
       return
     }
@@ -63,7 +63,7 @@ export class AuthPBX {
         }),
       )
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authPBX = new AuthPBX()

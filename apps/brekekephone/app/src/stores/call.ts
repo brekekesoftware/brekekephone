@@ -285,7 +285,7 @@ export class Call {
       .then(this.onToggleRecordingFailure)
       .catch(this.onToggleRecordingFailure)
   }
-  @action private onToggleRecordingFailure = (err: Error | boolean) => {
+  @action onToggleRecordingFailure = (err: Error | boolean) => {
     this.rqLoadings['record'] = false
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
@@ -295,7 +295,7 @@ export class Call {
   }
 
   @observable holding = false
-  private prevHolding = false
+  prevHolding = false
   // TODO: make this more generic to support all pal functions
   pendingRequestIds: string[] = []
   lastHoldToggle = 0
@@ -334,12 +334,12 @@ export class Call {
     })
   }
 
-  private toggleHoldLoading = (isLoading: boolean) => {
+  toggleHoldLoading = (isLoading: boolean) => {
     this.rqLoadings['hold'] = isLoading
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
   }
 
-  @action private toggleHold = async () => {
+  @action toggleHold = async () => {
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHoldWithCallkeep(fn === 'hold')
@@ -356,14 +356,14 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
-  private onToggleHoldSuccess = () => {
+  onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     if (!this.holding && !this.mutedVideo) {
       ctx.sip.enableLocalVideo(this.id)
     }
   }
-  @action private onToggleHoldFailure = (err: Error | boolean) => {
+  @action onToggleHoldFailure = (err: Error | boolean) => {
     const isRetryableError =
       err && typeof err === 'object' ? ctx.pbx.isPalTimeoutError(err) : false
 
@@ -391,7 +391,7 @@ export class Call {
 
     return true
   }
-  private setHoldWithCallkeep = (holding: boolean) => {
+  setHoldWithCallkeep = (holding: boolean) => {
     this.holding = holding
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
@@ -425,7 +425,7 @@ export class Call {
   }
 
   @observable transferring = ''
-  private prevTransferring = ''
+  prevTransferring = ''
   transferBlind = (number: string) => {
     ctx.nav.goToPageCallRecents()
     return ctx.pbx
@@ -441,7 +441,7 @@ export class Call {
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action private onTransferFailure = (err: Error) => {
+  @action onTransferFailure = (err: Error) => {
     this.transferring = ''
   }
 
@@ -454,7 +454,7 @@ export class Call {
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
-  @action private onStopTransferringFailure = (err: Error) => {
+  @action onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
@@ -468,7 +468,7 @@ export class Call {
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
-  @action private onConferenceTransferringFailure = (err: Error) => {
+  @action onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
@@ -477,15 +477,15 @@ export class Call {
     ctx.pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, encodeParkNumber(number))
       .catch(this.onParkFailure)
-  private onParkFailure = (err: Error) => {
+  onParkFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to park the call`,
       err,
     })
   }
 
-  private _autorunEmitEmbed = false // check if autorun is already started
-  private _disposeEmitEmbed?: IReactionDisposer // dispose autorun
+  _autorunEmitEmbed = false // check if autorun is already started
+  _disposeEmitEmbed?: IReactionDisposer // dispose autorun
   startEmitEmbed = () => {
     if (!isEmbed) {
       return

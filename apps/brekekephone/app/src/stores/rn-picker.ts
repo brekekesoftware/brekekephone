@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 
 export type RnPickerOption = {
   options: {
@@ -15,12 +15,15 @@ export type RnPickerOption = {
 }
 
 export class RnPickerStore {
-  @observable currentRnPicker: RnPickerOption | null = null
+  constructor() {
+    makeAutoObservable(this)
+  }
+  currentRnPicker: RnPickerOption | null = null
 
-  @action open = (picker: RnPickerOption) => {
+  open = (picker: RnPickerOption) => {
     this.currentRnPicker = picker
   }
-  @action dismiss = () => {
+  dismiss = () => {
     this.currentRnPicker?.onDismiss?.()
     this.currentRnPicker = null
   }

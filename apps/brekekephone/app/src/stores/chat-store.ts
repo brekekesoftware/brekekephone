@@ -1,6 +1,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeAutoObservable, observable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
@@ -71,12 +71,15 @@ export const TIMEOUT_TRANSFER_IMAGE = 60000
 export const TIMEOUT_TRANSFER_VIDEO = 180000
 
 export class ChatStore {
+  constructor() {
+    makeAutoObservable(this)
+  }
   timeoutTransferImage: { [k: string]: number } = {}
 
-  @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
-  @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
+  threadConfig: { [k: string]: ChatMessageConfig } = {}
   // @ts-ignore
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
@@ -326,8 +329,8 @@ export class ChatStore {
       ctx.nav.goToPageChatGroupDetail({ groupId })
     }
   }
-  @observable chatNotificationSoundRunning: boolean = false
-  private playChatNotificationSoundVibration = async () => {
+  chatNotificationSoundRunning: boolean = false
+  playChatNotificationSoundVibration = async () => {
     if (isWeb) {
       webPlayDing()
       return
@@ -383,7 +386,7 @@ export class ChatStore {
     }
   }
 
-  @observable private filesMap: { [k: string]: ChatFile } = {}
+  filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
     Object.assign(f, { save: 'started' })
@@ -457,7 +460,7 @@ export class ChatStore {
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
 
-  @observable groups: ChatGroup[] = []
+  groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
     const g0 = this.getGroupById(g.id)
@@ -474,7 +477,7 @@ export class ChatStore {
     this.groups = this.groups.filter(gr => gr.id !== id)
   }
   // @ts-ignore
-  @computed private get groupsMap() {
+  @computed get groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup
     }

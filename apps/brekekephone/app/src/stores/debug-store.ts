@@ -45,7 +45,7 @@ export const getTotalFilesSize = (files: ReadDirItem[]) => {
 }
 export class DebugStore {
   loading = true
-  private timer = 0
+  timer = 0
   @observable logFiles: ReadDirItem[] = []
   @observable totalLogFiles = 0
   @observable currentFile: ReadDirItem | undefined

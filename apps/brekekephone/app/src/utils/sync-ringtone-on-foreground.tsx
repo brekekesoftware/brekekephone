@@ -13,7 +13,7 @@ type State = {
 }
 
 export class SyncRingtoneOnForeground extends Component<Props, State> {
-  private appStateListener: NativeEventSubscription | null = null
+  appStateListener: NativeEventSubscription | null = null
 
   constructor(props: Props) {
     super(props)

@@ -29,7 +29,7 @@ export class SIP extends EventEmitter {
   currentCamera?: string
 
   cameraIds?: DeviceInputWeb[] = []
-  private init = async (o: SipLoginOption) => {
+  init = async (o: SipLoginOption) => {
     this.cameraIds = await getCameraSourceIds()
 
     this.currentCamera =
@@ -310,7 +310,7 @@ export class SIP extends EventEmitter {
     })
   }
 
-  private hackJssipFork = () => {
+  hackJssipFork = () => {
     const socket = ctx.sip.phone?._ua?._transport?.socket
     if (socket) {
       Object.assign(socket, { __brekekephone_stopped: true })

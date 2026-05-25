@@ -48,7 +48,7 @@ export class IntlStore {
   @observable localeLoading = true
   getLocaleName = () => localeOptions.find(o => o.key === this.locale)?.label
 
-  private getLocale = async () => {
+  getLocale = async () => {
     let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')
     if (!locale || !labels[locale]) {
       locale =
@@ -105,7 +105,7 @@ export class IntlStore {
     })
   }
 
-  private loadingPromise?: Promise<unknown>
+  loadingPromise?: Promise<unknown>
   wait = () => {
     if (!this.loadingPromise) {
       this.loadingPromise = this.getLocale().then(

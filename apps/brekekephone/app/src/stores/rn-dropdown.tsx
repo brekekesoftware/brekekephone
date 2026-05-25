@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 
 import { cloneDeep, uniq } from '@/shared/lodash'
 
@@ -10,10 +10,13 @@ export type DropdownPosition = {
 }
 
 export class RnDropdownStore {
-  @observable positions: DropdownPosition[] = []
-  @observable shouldUpdatePosition: boolean = false
-  @observable hiddenIndexes: number[] = []
-  @observable openedIndex: number = -1
+  constructor() {
+    makeAutoObservable(this)
+  }
+  positions: DropdownPosition[] = []
+  shouldUpdatePosition: boolean = false
+  hiddenIndexes: number[] = []
+  openedIndex: number = -1
   itemHeight: number = 0
   headerHeight: number = 0
 

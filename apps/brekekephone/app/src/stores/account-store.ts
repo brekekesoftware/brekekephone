@@ -197,7 +197,7 @@ export class AccountStore {
     resolveFn?.()
     resolveFn = undefined
   }
-  private saveAccountsToLocalStorage = async () => {
+  saveAccountsToLocalStorage = async () => {
     try {
       const profiles = this.accounts.filter(a => a.id && a.pbxUsername)
       if (profiles.length !== this.accounts.length) {
@@ -220,7 +220,7 @@ export class AccountStore {
       })
     }
   }
-  private _saveAccountsToLocalStorageDebounced = debounce(
+  _saveAccountsToLocalStorageDebounced = debounce(
     this.saveAccountsToLocalStorage,
     100,
     { maxWait: 1000 },
@@ -517,7 +517,7 @@ export class AccountStore {
     return false
   }
 
-  private saveDeviceToken = async (ca: Account, token: string) => {
+  saveDeviceToken = async (ca: Account, token: string) => {
     const d = await this.findData(ca)
     if (!d) {
       return
@@ -526,7 +526,7 @@ export class AccountStore {
     await this.saveAccountsToLocalStorageWithoutDebounced()
   }
 
-  private reconnectWithDeviceToken = async (ca: Account, token: string) => {
+  reconnectWithDeviceToken = async (ca: Account, token: string) => {
     await this.saveDeviceToken(ca, token)
     ctx.authPBX.dispose()
     ctx.auth.pbxTotalFailure = 0

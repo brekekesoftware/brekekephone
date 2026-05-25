@@ -31,7 +31,6 @@ module.exports = {
     ['babel-plugin-module-resolver', moduleResolverOptions],
 
     '@babel/plugin-proposal-optional-chaining',
-    ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
     ['@babel/plugin-transform-class-properties', { loose: true }],
     // fix some packages in node_modules still have jsx
     ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],

@@ -1,10 +1,9 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 class RnAppStateStore {
-  @observable foregroundOnce = AppState.currentState === 'active'
-  @observable currentState = AppState.currentState
   constructor() {
+    makeAutoObservable(this)
     AppState.addEventListener(
       'change',
       action(nextAppState => {
@@ -13,6 +12,8 @@ class RnAppStateStore {
       }),
     )
   }
+  foregroundOnce = AppState.currentState === 'active'
+  currentState = AppState.currentState
 }
 
 export const RnAppState = new RnAppStateStore()

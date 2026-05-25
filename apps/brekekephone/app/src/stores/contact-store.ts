@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeAutoObservable, observable } from 'mobx'
 
 import { debounce, isEqual, uniqBy } from '@/shared/lodash'
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
@@ -59,13 +59,16 @@ export type PickerItemOption = {
 }
 
 export class ContactStore {
-  @observable usersSearchTerm = ''
-  @observable phonebookSearchTerm = ''
-  @observable chatSearchTerm = ''
-  @observable callSearchRecents = ''
-  @observable loading = false
-  @observable hasLoadmore = false
-  @observable offset = 0
+  constructor() {
+    makeAutoObservable(this)
+  }
+  usersSearchTerm = ''
+  phonebookSearchTerm = ''
+  chatSearchTerm = ''
+  callSearchRecents = ''
+  loading = false
+  hasLoadmore = false
+  offset = 0
   numberOfContactsPerPage = 20
 
   loadContacts = async () => {
@@ -90,7 +93,7 @@ export class ContactStore {
     this.loading = false
   }
 
-  @observable alreadyLoadContactsFirstTime = false
+  alreadyLoadContactsFirstTime = false
   @action loadContactsFirstTime = () => {
     if (this.alreadyLoadContactsFirstTime) {
       return
@@ -108,8 +111,8 @@ export class ContactStore {
     this.loadContacts()
   }
   // delete function
-  @observable selectedContactIds: { [id: string]: boolean } = {}
-  @observable isDeleteState: boolean = false
+  selectedContactIds: { [id: string]: boolean } = {}
+  isDeleteState: boolean = false
 
   @action selectContactId = (userId: string) => {
     if (this.selectedContactIds[userId]) {
@@ -126,7 +129,7 @@ export class ContactStore {
   }
 
   // create/update contact
-  @observable showPickerItem: PickerItemOption | null = null
+  showPickerItem: PickerItemOption | null = null
 
   @action openPicker = (picker: PickerItemOption) => {
     this.showPickerItem = picker
@@ -159,7 +162,7 @@ export class ContactStore {
   }
 
   // pbxUsers
-  @observable pbxUsers: PbxUser[] = []
+  pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
     try {
@@ -202,12 +205,12 @@ export class ContactStore {
     this.pbxUsers = [...this.pbxUsers]
   }
   // @ts-ignore
-  @computed private get pbxUsersMap() {
+  @computed get pbxUsersMap() {
     return arrToMap(this.pbxUsers, 'id', (u: PbxUser) => u) as {
       [k: string]: PbxUser
     }
   }
-  @observable private extraPbxUsersMap: { [k: string]: PbxUser } = {}
+  extraPbxUsersMap: { [k: string]: PbxUser } = {}
   getPbxUserById = (id: string) => {
     const u = this.pbxUsersMap[id] || this.extraPbxUsersMap[id]
     if (!u && !this.extraPbxUsersLoadingMap[id]) {
@@ -218,9 +221,9 @@ export class ContactStore {
     return u
   }
 
-  private extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
-  private extraPbxUsersBatch: string[] = []
-  private getExtraPbxUsersBatch = debounce(() => {
+  extraPbxUsersLoadingMap: { [k: string]: boolean } = {}
+  extraPbxUsersBatch: string[] = []
+  getExtraPbxUsersBatch = debounce(() => {
     const ids = this.extraPbxUsersBatch
     this.extraPbxUsersBatch = []
     ctx.pbx
@@ -244,7 +247,7 @@ export class ContactStore {
       )
   }, 17)
 
-  @observable ucUsers: UcUser[] = []
+  ucUsers: UcUser[] = []
   updateUcUser = (u: UcUser) => {
     const u0 = this.getUcUserById(u.id)
     if (!u0) {
@@ -257,15 +260,15 @@ export class ContactStore {
     this.ucUsers = [...this.ucUsers]
   }
   // @ts-ignore
-  @computed private get ucUsersMap() {
+  @computed get ucUsersMap() {
     return arrToMap(this.ucUsers, 'id', (u: UcUser) => u) as {
       [k: string]: UcUser
     }
   }
   getUcUserById = (id: string) => this.ucUsersMap[id]
 
-  @observable phoneBooks: Phonebook[] = []
-  @observable pbxBooks: PbxBook[] = []
+  phoneBooks: Phonebook[] = []
+  pbxBooks: PbxBook[] = []
 
   @action loadPbxBoook = () => {
     this.pbxBooks = []
@@ -309,7 +312,7 @@ export class ContactStore {
     }
   }
   // @ts-ignore
-  @computed private get phoneBooksMap() {
+  @computed get phoneBooksMap() {
     return arrToMap(this.phoneBooks, 'id', (u: Phonebook) => u) as {
       [k: string]: Phonebook
     }
@@ -333,8 +336,8 @@ export class ContactStore {
       delete this.updateContactCache[partyNumber]
     })
   }
-  private updateContactCache: { [k: string]: Promise<void> | undefined } = {}
-  private updateContactWithoutCache = async (partyNumber: string) => {
+  updateContactCache: { [k: string]: Promise<void> | undefined } = {}
+  updateContactWithoutCache = async (partyNumber: string) => {
     const contacts = await ctx.pbx.getContacts({
       search_text: partyNumber,
       offset: 0,

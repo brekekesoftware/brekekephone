@@ -113,7 +113,7 @@ export class EmbedApi extends EventEmitter {
   }
 
   /** ==========================================================================
-   * private properties/methods
+   *properties/methods
    */
 
   _unmountApp?: Function

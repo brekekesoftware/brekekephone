@@ -17,168 +17,169 @@ import { intl } from '#/stores/intl'
 
 const innerCls = tw`web:max-w-100 web:min-w-62.5 web:justify-between justify-center`
 
-@observer
-export class PageCallTransferAttend extends Component {
-  prevId?: string
+export const PageCallTransferAttend = observer(
+  class PageCallTransferAttend extends Component {
+    prevId?: string
 
-  state = {
-    phoneappliSource: {
-      avatar: '',
-      username: '',
-    },
-    phoneappliTarget: {
-      avatar: '',
-      username: '',
-    },
-  }
+    state = {
+      phoneappliSource: {
+        avatar: '',
+        username: '',
+      },
+      phoneappliTarget: {
+        avatar: '',
+        username: '',
+      },
+    }
 
-  getPhoneappliInfo = async () => {
-    if (!ctx.auth.phoneappliEnabled()) {
-      return
-    }
-    const oc = ctx.call.getOngoingCall()
-    if (!oc) {
-      return
-    }
-    try {
-      const ca = ctx.auth.getCurrentAccount()
-      if (!ca) {
+    getPhoneappliInfo = async () => {
+      if (!ctx.auth.phoneappliEnabled()) {
         return
       }
-      const { pbxTenant, pbxUsername } = ca
-      const rs = await ctx.pbx.getPhoneappliContact(
-        pbxTenant,
-        pbxUsername,
-        oc.partyNumber,
-      )
-      const phoneappliSource = {
-        avatar: rs?.image_url,
-        username: rs?.display_name,
+      const oc = ctx.call.getOngoingCall()
+      if (!oc) {
+        return
       }
-      const rt = await ctx.pbx.getPhoneappliContact(
-        pbxTenant,
-        pbxUsername,
-        oc.transferring,
-      )
-      const phoneappliTarget = {
-        avatar: rt?.image_url,
-        username: rt?.display_name,
+      try {
+        const ca = ctx.auth.getCurrentAccount()
+        if (!ca) {
+          return
+        }
+        const { pbxTenant, pbxUsername } = ca
+        const rs = await ctx.pbx.getPhoneappliContact(
+          pbxTenant,
+          pbxUsername,
+          oc.partyNumber,
+        )
+        const phoneappliSource = {
+          avatar: rs?.image_url,
+          username: rs?.display_name,
+        }
+        const rt = await ctx.pbx.getPhoneappliContact(
+          pbxTenant,
+          pbxUsername,
+          oc.transferring,
+        )
+        const phoneappliTarget = {
+          avatar: rt?.image_url,
+          username: rt?.display_name,
+        }
+        this.setState({ phoneappliSource, phoneappliTarget })
+      } catch (err) {
+        console.error(err)
+        return
       }
-      this.setState({ phoneappliSource, phoneappliTarget })
-    } catch (err) {
-      console.error(err)
-      return
     }
-  }
 
-  componentDidMount = () => {
-    this.getPhoneappliInfo()
-    this.componentDidUpdate()
-  }
-  componentDidUpdate = () => {
-    const oc = ctx.call.getOngoingCall()
-    if (this.prevId && this.prevId !== oc?.id) {
-      ctx.nav.backToPageCallManage()
+    componentDidMount = () => {
+      this.getPhoneappliInfo()
+      this.componentDidUpdate()
     }
-    this.prevId = oc?.id
-  }
+    componentDidUpdate = () => {
+      const oc = ctx.call.getOngoingCall()
+      if (this.prevId && this.prevId !== oc?.id) {
+        ctx.nav.backToPageCallManage()
+      }
+      this.prevId = oc?.id
+    }
 
-  resolveMatch = (id: string) => {
-    const ucUser = ctx.contact.getUcUserById(id) || {}
-    return {
-      avatar: ucUser.avatar,
-      number: id,
+    resolveMatch = (id: string) => {
+      const ucUser = ctx.contact.getUcUserById(id) || {}
+      return {
+        avatar: ucUser.avatar,
+        number: id,
+      }
     }
-  }
 
-  render() {
-    const oc = ctx.call.getOngoingCall()
-    if (!oc) {
-      return null
-    }
-    const usersource = this.resolveMatch(oc.partyNumber)
-    const usertarget = this.resolveMatch(oc.transferring)
-    const { phoneappliSource, phoneappliTarget } = this.state
-    return (
-      <View className='bg-background web:w-full web:h-full flex-1 items-center justify-center'>
-        <RnText center subTitle>{intl`Transferring`}</RnText>
-        <View className='h-2.5' />
-        <View
-          className={[
-            'mb-7.5 w-[70%] flex-row content-center items-center self-center',
-            innerCls,
-          ]}
-        >
-          <View className='flex-5 flex-col items-center justify-center'>
-            <Avatar
-              source={{ uri: phoneappliSource.avatar || usersource?.avatar }}
-            />
-            <RnText center singleLine small>
-              {phoneappliSource.username || oc.getDisplayName()}
-            </RnText>
+    render() {
+      const oc = ctx.call.getOngoingCall()
+      if (!oc) {
+        return null
+      }
+      const usersource = this.resolveMatch(oc.partyNumber)
+      const usertarget = this.resolveMatch(oc.transferring)
+      const { phoneappliSource, phoneappliTarget } = this.state
+      return (
+        <View className='bg-background web:w-full web:h-full flex-1 items-center justify-center'>
+          <RnText center subTitle>{intl`Transferring`}</RnText>
+          <View className='h-2.5' />
+          <View
+            className={[
+              'mb-7.5 w-[70%] flex-row content-center items-center self-center',
+              innerCls,
+            ]}
+          >
+            <View className='flex-5 flex-col items-center justify-center'>
+              <Avatar
+                source={{ uri: phoneappliSource.avatar || usersource?.avatar }}
+              />
+              <RnText center singleLine small>
+                {phoneappliSource.username || oc.getDisplayName()}
+              </RnText>
+            </View>
+            <View className='flex-1'>
+              <RnIcon path={mdiArrowRight} className='text-foreground' />
+            </View>
+            <View className='flex-5 flex-col items-center justify-center'>
+              <Avatar
+                source={{ uri: phoneappliTarget.avatar || usertarget?.avatar }}
+              />
+              <RnText center singleLine small>
+                {phoneappliTarget.username ||
+                  getPbxName({ partyNumber: oc.transferring }) ||
+                  oc.transferring}
+              </RnText>
+            </View>
           </View>
-          <View className='flex-1'>
-            <RnIcon path={mdiArrowRight} className='text-foreground' />
-          </View>
-          <View className='flex-5 flex-col items-center justify-center'>
-            <Avatar
-              source={{ uri: phoneappliTarget.avatar || usertarget?.avatar }}
-            />
-            <RnText center singleLine small>
-              {phoneappliTarget.username ||
-                getPbxName({ partyNumber: oc.transferring }) ||
-                oc.transferring}
-            </RnText>
+          <View className='h-2.5' />
+          <View
+            className={[
+              'mb-7.5 w-[70%] flex-row content-center items-center self-center',
+              innerCls,
+            ]}
+          >
+            <View className='w-[33.333%] items-center'>
+              <RnTouchableOpacity
+                onPress={() => {
+                  oc.stopTransferring()
+                  ctx.nav.backToPageCallManage()
+                }}
+                className='bg-warning h-12.5 w-12.5 rounded-full'
+              >
+                <RnIcon path={mdiPhoneOff} />
+              </RnTouchableOpacity>
+              <RnText center singleLine small>
+                {intl`CANCEL`}
+              </RnText>
+            </View>
+            <View className='w-[33.333%] items-center'>
+              <RnTouchableOpacity
+                onPress={() => ctx.sip.hangupSession(oc.id)}
+                className='bg-error h-12.5 w-12.5 rounded-full'
+              >
+                <RnIcon path={mdiPhoneHangup} />
+              </RnTouchableOpacity>
+              <RnText center singleLine small>
+                {intl`TRANSFER`}
+              </RnText>
+            </View>
+            <View className='w-[33.333%] items-center'>
+              <RnTouchableOpacity
+                onPress={() => {
+                  oc.conferenceTransferring()
+                  ctx.nav.backToPageCallManage()
+                }}
+                className='bg-primary h-12.5 w-12.5 rounded-full'
+              >
+                <RnIcon path={mdiPhoneForward} />
+              </RnTouchableOpacity>
+              <RnText center singleLine small>
+                {intl`CONFERENCE`}
+              </RnText>
+            </View>
           </View>
         </View>
-        <View className='h-2.5' />
-        <View
-          className={[
-            'mb-7.5 w-[70%] flex-row content-center items-center self-center',
-            innerCls,
-          ]}
-        >
-          <View className='w-[33.333%] items-center'>
-            <RnTouchableOpacity
-              onPress={() => {
-                oc.stopTransferring()
-                ctx.nav.backToPageCallManage()
-              }}
-              className='bg-warning h-12.5 w-12.5 rounded-full'
-            >
-              <RnIcon path={mdiPhoneOff} />
-            </RnTouchableOpacity>
-            <RnText center singleLine small>
-              {intl`CANCEL`}
-            </RnText>
-          </View>
-          <View className='w-[33.333%] items-center'>
-            <RnTouchableOpacity
-              onPress={() => ctx.sip.hangupSession(oc.id)}
-              className='bg-error h-12.5 w-12.5 rounded-full'
-            >
-              <RnIcon path={mdiPhoneHangup} />
-            </RnTouchableOpacity>
-            <RnText center singleLine small>
-              {intl`TRANSFER`}
-            </RnText>
-          </View>
-          <View className='w-[33.333%] items-center'>
-            <RnTouchableOpacity
-              onPress={() => {
-                oc.conferenceTransferring()
-                ctx.nav.backToPageCallManage()
-              }}
-              className='bg-primary h-12.5 w-12.5 rounded-full'
-            >
-              <RnIcon path={mdiPhoneForward} />
-            </RnTouchableOpacity>
-            <RnText center singleLine small>
-              {intl`CONFERENCE`}
-            </RnText>
-          </View>
-        </View>
-      </View>
-    )
-  }
-}
+      )
+    }
+  },
+)

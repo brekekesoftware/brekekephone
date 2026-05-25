@@ -1,14 +1,17 @@
-import { action, observable } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
 import { defaultTimeout } from '#/config'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 class RnKeyboardStore {
-  @observable isKeyboardShowing = false
-  @observable isKeyboardAnimating = false
+  constructor() {
+    makeAutoObservable(this)
+  }
+  isKeyboardShowing = false
+  isKeyboardAnimating = false
   // tracked on all android, consumed by Layout only on android 15+ (BUG-1220)
-  @observable keyboardHeight = 0
+  keyboardHeight = 0
   waitKeyboardTimeoutId = 0
 
   waitKeyboard =

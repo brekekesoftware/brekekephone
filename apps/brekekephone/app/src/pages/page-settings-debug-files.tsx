@@ -9,41 +9,42 @@ import { Layout } from '#/components/layout'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-@observer
-export class PageSettingsDebugFiles extends Component {
-  render() {
-    const logFiles = ctx.debug.logFiles
-    return (
-      <Layout
-        title={intl`Debug Log`}
-        description={intl`Debug Log`}
-        dropdown={
-          !isWeb
-            ? [
-                {
-                  label: intl`Clear all Debug Log`,
-                  onPress: ctx.debug.clearLogFiles,
-                  danger: true,
-                },
-              ]
-            : undefined
-        }
-        onBack={ctx.nav.backToPageAccountSignIn}
-      >
-        <Field isGroup label={intl`DEBUG LOG (${logFiles.length})`} />
-        {logFiles.length > 0 &&
-          logFiles.map(file => (
-            <Field
-              key={file.path}
-              createBtnIcon={mdiKeyboardBackspace}
-              createBtnIconClassName='rotate-180'
-              label={file.name}
-              onCreateBtnPress={() => ctx.debug.openLogFile(file)}
-              onTouchPress={() => ctx.debug.openLogFile(file)}
-              value={`${filesize(file.size)}`}
-            />
-          ))}
-      </Layout>
-    )
-  }
-}
+export const PageSettingsDebugFiles = observer(
+  class PageSettingsDebugFiles extends Component {
+    render() {
+      const logFiles = ctx.debug.logFiles
+      return (
+        <Layout
+          title={intl`Debug Log`}
+          description={intl`Debug Log`}
+          dropdown={
+            !isWeb
+              ? [
+                  {
+                    label: intl`Clear all Debug Log`,
+                    onPress: ctx.debug.clearLogFiles,
+                    danger: true,
+                  },
+                ]
+              : undefined
+          }
+          onBack={ctx.nav.backToPageAccountSignIn}
+        >
+          <Field isGroup label={intl`DEBUG LOG (${logFiles.length})`} />
+          {logFiles.length > 0 &&
+            logFiles.map(file => (
+              <Field
+                key={file.path}
+                createBtnIcon={mdiKeyboardBackspace}
+                createBtnIconClassName='rotate-180'
+                label={file.name}
+                onCreateBtnPress={() => ctx.debug.openLogFile(file)}
+                onTouchPress={() => ctx.debug.openLogFile(file)}
+                value={`${filesize(file.size)}`}
+              />
+            ))}
+        </Layout>
+      )
+    }
+  },
+)
