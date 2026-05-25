@@ -48,15 +48,12 @@ public class BrekekeLpcService extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
     reconnectLPC();
-    if (isServiceNotiExist) {
-      return START_STICKY;
-    }
-    isServiceNotiExist = true;
-    // register action shutdown
-    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-    lpcReceiver = new BrekekeLpcReceiver();
-    registerReceiver(lpcReceiver, filter);
 
+    // Android 14+ (target SDK 35) requires every startForegroundService() to be followed by
+    // startForeground() within 5s, otherwise the system removes the notification and may
+    // demote the service. MonitorConnection's watchdog re-invokes startForegroundService on
+    // silent socket death, so we must re-post the notification on every onStartCommand —
+    // not just the first one. Notification ID is fixed so the system updates in place.
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -68,8 +65,16 @@ public class BrekekeLpcService extends Service {
             .setContentText(L.serviceIsRunningInBackground())
             .setContentIntent(pendingIntent)
             .build();
-
     startForeground(1, notification);
+
+    if (isServiceNotiExist) {
+      return START_STICKY;
+    }
+    isServiceNotiExist = true;
+    // register action shutdown (only once for the lifetime of this service instance)
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
+    lpcReceiver = new BrekekeLpcReceiver();
+    registerReceiver(lpcReceiver, filter);
     return START_STICKY;
   }
 
@@ -129,6 +134,15 @@ public class BrekekeLpcService extends Service {
     Log.d(LpcUtils.TAG, "service destroy");
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
+    // null static iService + cancel pending watchdog timer so MonitorConnection cannot
+    // revive the service via startForegroundService(iService) after user-initiated stop.
+    // Without this, a lingering socket task's onPostExecute -> con.onDisconnected -> timer
+    // -> updateState sees iService != null and resurrects the FGS, violating Play Console
+    // "terminable by user" requirement.
+    iService = null;
+    if (con != null) {
+      con.cancelTimer();
+    }
     // unregister BrekekeLpcReceiver to avoid IntentReceiverLeaked across destroy/recreate cycles,
     // which previously left dangling references and prevented clean LPC TLS reconnect on account
     // switch

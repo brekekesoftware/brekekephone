@@ -116,10 +116,14 @@ public class L {
   }
 
   public static String serviceIsRunning() {
-    return "ja".equals(l) ? "サービスは実行中です" : "Service is running";
+    return "ja".equals(l)
+        ? "Brekeke Phone は着信とメッセージを待機しています"
+        : "Brekeke Phone is listening for calls and messages";
   }
 
   public static String serviceIsRunningInBackground() {
-    return "ja".equals(l) ? "サービスはバックグラウンドで実行されています" : "Service is running in background";
+    return "ja".equals(l)
+        ? "タップして開きます。停止するには、アカウント設定でプッシュ通知をオフにしてください。"
+        : "Tap to open. To stop: turn off Push Notification in account settings.";
   }
 }

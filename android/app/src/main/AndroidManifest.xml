@@ -221,7 +221,12 @@
       android:enabled="true"
       android:exported="true"
       android:foregroundServiceType="specialUse"
-    />
+    >
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="LPC maintains a persistent TLS socket connection to the on-premise Brekeke PBX server for receiving real-time VoIP call notifications and chat messages when Firebase Cloud Messaging is unavailable or unreliable due to enterprise firewall restrictions. This cannot be replaced by WorkManager because it requires a continuous bidirectional socket for real-time delivery, not periodic polling."
+      />
+    </service>
     <service
       android:name=".lpc.BrekekeLpcServiceIntent"
       android:enabled="true"
