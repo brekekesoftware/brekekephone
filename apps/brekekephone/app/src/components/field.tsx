@@ -363,7 +363,11 @@ export const Field: FC<
               disabled
               maxLength={props?.maxLength || 100000}
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              className={[fieldTextInputClassName, props.textInputClassName]}
+              className={[
+                fieldTextInputClassName,
+                props.onTouchPress && 'web:pointer-events-none',
+                props.textInputClassName,
+              ]}
               value={
                 props.valueRender?.(props.value) || props.value || '\u200a'
               }

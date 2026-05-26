@@ -28,7 +28,7 @@ const RnPickerR = (p: RnPickerOption) => {
   }
 
   return (
-    <View className='absolute inset-0 flex-row items-center justify-center'>
+    <View className='android:elevation-999 web:fixed absolute inset-0 z-999 flex-row items-center justify-center'>
       <AnimatedView
         className='bg-modal-overlay absolute inset-0'
         style={{ opacity: backdropCss.opacity }}
