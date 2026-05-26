@@ -5,9 +5,36 @@ import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 import { Image } from '@/rn/core/components/image'
 import { View } from '@/rn/core/components/view'
 import { tw } from '@/rn/core/tw/tw'
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiRecord } from '#/assets/icons'
+import { RnImage } from '#/components/rn'
 import { RnIcon } from '#/components/rn-icon'
 import { ctx } from '#/stores/ctx'
+
+type AvatarSource = string | number | { uri?: string }
+type NativeAvatarSource = number | { uri: string }
+
+const fallbackSource = avatarPlaceholder as AvatarSource
+
+const getSourceUri = (source?: AvatarSource) =>
+  typeof source === 'string'
+    ? source
+    : typeof source === 'number'
+      ? ''
+      : source?.uri || ''
+
+const getNativeImageSource = (
+  source?: AvatarSource,
+): NativeAvatarSource | undefined => {
+  const uri = getSourceUri(source)
+  if (uri) {
+    return { uri }
+  }
+  if (typeof source === 'number') {
+    return source
+  }
+  return undefined
+}
 
 const statusMapClassName = {
   online: tw`text-primary`,
@@ -18,20 +45,22 @@ const statusMapClassName = {
 
 export const Avatar = observer(
   (p: {
-    source?: string | { uri: string }
+    source?: AvatarSource
     status?: string
     className?: string | (string | false | undefined)[]
   }) => {
     const { source, status, className } = p
-    const uri =
-      (typeof source !== 'string' &&
-        typeof source?.uri === 'string' &&
-        source?.uri) ||
-      (typeof avatarPlaceholder === 'string' ? avatarPlaceholder : '')
+    const webSrc = getSourceUri(source) || getSourceUri(fallbackSource)
+    const imageSource =
+      getNativeImageSource(source) || getNativeImageSource(fallbackSource)
     return (
       <View className={['h-12.5 w-12.5', className]}>
         <View className='flex-1 overflow-hidden rounded-full'>
-          <Image src={uri} className='flex-1' />
+          {isWeb ? (
+            <Image src={webSrc} className='flex-1' />
+          ) : (
+            <RnImage source={imageSource} className='flex-1' />
+          )}
         </View>
         {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
