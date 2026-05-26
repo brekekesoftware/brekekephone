@@ -33,11 +33,11 @@ export type Park = {
 }
 // fieldLabelClassName per platform:
 // - ios: paddingTop 13px (pt-3.25), paddingBottom 0, paddingLeft 7px (pl-1.75)
-// - android: paddingTop 3px (pt-0.75) + top 6px (top-1.5)
+// - android: paddingTop 9px (pt-2.25) - replaces legacy pt-3 + top-6 trick that caused visual overlap with TextInput
 // - web: absolute, top/left/right: 0 (fix form auto fill style on web)
-const fieldLabelClassName = tw`android:pt-0.75 android:top-1.5 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25 pb-0 pl-1.75`
+const fieldLabelClassName = tw`android:pt-2.25 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25 pb-0 pl-1.75`
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
-const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 placeholder-foreground-muted flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
+const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
 // fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
 const fieldTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25 w-full overflow-hidden pr-10 pb-0.75 pl-1.75 font-bold`
 
@@ -356,16 +356,10 @@ export const Field: FC<
       >
         {/* Fix form auto fill style on web */}
         {!isWeb && label}
-        <View
-          className={
-            !$.isFocusing && !$.isParkNameFocusing
-              ? 'pointer-events-none'
-              : undefined
-          }
-        >
+        <View>
           {props.inputElement || (
             <RnTextInput
-              editable={!disablePark}
+              editable={false}
               disabled
               maxLength={props?.maxLength || 100000}
               secureTextEntry={!!(props.secureTextEntry && props.value)}
