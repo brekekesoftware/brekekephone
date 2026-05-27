@@ -25,6 +25,9 @@ export const isMFASupported = (pc?: PbxGetProductInfoRes) => {
   if (flag !== undefined) {
     return toBoolean(flag)
   }
+  if (compareSemVer(c.version, '3.19') < 0) {
+    return false
+  }
   // Tier 2: flag absent → fallback to per-user model (trust mfa/start)
   return true
 }

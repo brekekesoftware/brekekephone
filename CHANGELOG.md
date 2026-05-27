@@ -1,3 +1,8 @@
+#### 2.17.7
+
+- Hot fix ios disable mfa by default if pbx version lower than 2.19
+- Hot fix android crash on bluetooth device remove
+
 #### 2.17.6
 
 - Hot fix android and ios it should receive LPC PN call from phone-aplli caller (issue 1222)
