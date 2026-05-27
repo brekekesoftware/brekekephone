@@ -35,7 +35,10 @@ import org.json.JSONObject;
 public class LpcUtils {
   public static String TAG = "[BrekekeLpcService]";
 
-  public static String NOTI_CHANNEL_ID = "NOTIFICATION_CHANNEL";
+  // new channel ID for the silent (IMPORTANCE_LOW) FGS notification — channel properties are
+  // immutable after first creation, so we use a fresh ID to ensure existing users on the old
+  // IMPORTANCE_DEFAULT channel get the silent settings on upgrade
+  public static String NOTI_CHANNEL_ID = "BREKEKE_LPC_SERVICE";
   public static int NOTI_ID = 0;
 
   public static Intent putConfigToIntent(

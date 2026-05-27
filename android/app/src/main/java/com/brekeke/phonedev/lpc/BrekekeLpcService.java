@@ -64,6 +64,11 @@ public class BrekekeLpcService extends Service {
             .setContentTitle(L.serviceIsRunning())
             .setContentText(L.serviceIsRunningInBackground())
             .setContentIntent(pendingIntent)
+            // hide timestamp — Notification is rebuilt on every onStartCommand (watchdog
+            // reconnect, process restart), and a fresh `when` would refresh the time shown
+            // in the tray ("now") on every re-post, making the FGS look like a new alert
+            .setShowWhen(false)
+            .setOnlyAlertOnce(true)
             .build();
     startForeground(1, notification);
 
@@ -83,10 +88,14 @@ public class BrekekeLpcService extends Service {
       String appName = getString(R.string.app_name);
       NotificationChannel serviceChannel =
           new NotificationChannel(
-              LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_DEFAULT);
+              LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_LOW);
       serviceChannel.setShowBadge(false);
+      serviceChannel.setSound(null, null);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
+      // cleanup the old IMPORTANCE_DEFAULT channel for users upgrading from <2.17.9, so it
+      // doesn't linger unused in Settings -> Apps -> Brekeke Phone -> Notifications
+      manager.deleteNotificationChannel("NOTIFICATION_CHANNEL");
     }
   }
 
