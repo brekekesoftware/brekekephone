@@ -12,7 +12,6 @@ import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
-import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageContactGroupCreate = observer(() => {
@@ -51,7 +50,6 @@ export const PageContactGroupCreate = observer(() => {
       return
     }
     ctx.user.addGroup(name, selectedUserItems)
-    RnDropdown.setShouldUpdatePosition(true)
     ctx.nav.backToPageContactEdit()
   }
 

@@ -97,9 +97,6 @@ export const PageContactEdit = observer(() => {
 
   const onSelectEditGroupingAndUserOrderOption = () => {
     RnDropdown.close()
-    if (!ctx.user.isSelectEditGroupingAndUserOrder) {
-      RnDropdown.setShouldUpdatePosition(true)
-    }
     ctx.user.toggleIsSelectEditGroupingAndUserOrder()
   }
 
@@ -222,7 +219,7 @@ export const PageContactEdit = observer(() => {
             <View className='flex-row items-center'>
               <RnText>{`${intl`Capacity`}`}</RnText>
               <RnText
-                className={!isCapacityInvalid ? 'text-error' : undefined}
+                className={isCapacityInvalid ? 'text-error' : undefined}
               >{`    ${
                 isSelectedAddAllUser
                   ? dataListAllUser.length

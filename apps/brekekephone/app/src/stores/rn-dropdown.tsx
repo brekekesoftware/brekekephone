@@ -15,7 +15,6 @@ export class RnDropdownStore {
   }
 
   positions: DropdownPosition[] = []
-  shouldUpdatePosition: boolean = false
   hiddenIndexes: number[] = []
   openedIndex: number = -1
   itemHeight: number = 0
@@ -34,7 +33,7 @@ export class RnDropdownStore {
     const positions2 = cloneDeep(this.positions)
     const collapse = !this.hiddenIndexes.some(i => i === sectionIndex)
     this.positions.forEach((i, index) => {
-      if (index > sectionIndex) {
+      if (index > sectionIndex && positions2[index]) {
         positions2[index] = {
           top:
             (positions2[index].top || 0) +
@@ -51,7 +50,7 @@ export class RnDropdownStore {
   removeSection = (sectionIndex: number, itemSize: number) => {
     const positions2 = [...this.positions]
     this.positions.forEach((_, index) => {
-      if (index > sectionIndex) {
+      if (index > sectionIndex && positions2[index]) {
         positions2[index] = {
           top:
             (positions2[index].top || 0) -
@@ -69,11 +68,10 @@ export class RnDropdownStore {
     this.openedIndex = -1
   }
 
-  setPositions = (positions: DropdownPosition[]) => {
+  setPosition = (index: number, position: DropdownPosition) => {
+    const positions = [...this.positions]
+    positions[index] = position
     this.positions = positions
-  }
-  setShouldUpdatePosition = (v: boolean) => {
-    this.shouldUpdatePosition = v
   }
 
   open = (index: number) => {
@@ -92,7 +90,6 @@ export class RnDropdownStore {
   }
   addSection = () => {
     this.hiddenIndexes = this.hiddenIndexes.map(i => i + 1)
-    this.shouldUpdatePosition = true
   }
 
   setHeaderHeight = (height: number) => {
