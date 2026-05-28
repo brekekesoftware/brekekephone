@@ -11,7 +11,6 @@ import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
-import { RnDropdown } from '#/stores/rn-dropdown'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageContactGroupEdit = observer(
@@ -49,7 +48,6 @@ export const PageContactGroupEdit = observer(
         itm => !selectedUserItems[itm.user_id],
       )
       ctx.user.editGroup(groupName, listItemRemoved, selectedUserItems)
-      RnDropdown.setShouldUpdatePosition(true)
       ctx.nav.backToPageContactEdit()
     }
 
