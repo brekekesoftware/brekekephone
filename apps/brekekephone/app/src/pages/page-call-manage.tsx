@@ -230,7 +230,10 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
 
   const renderVideo = () => (
     <>
-      <View className='flex-1 self-stretch' />
+      {/* Fixed top gap = Layout headerSpace (compact, no menu = 55) so the
+          name/duration that follows sits right under the header instead of
+          being vertically centered by a flex-1 spacer. */}
+      <View className='h-[55px] self-stretch' />
       <View className='absolute top-10 right-0 bottom-0 left-0 bg-black'>
         <VideoPlayer
           sourceObject={
@@ -265,13 +268,17 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
     return (
       <View
         className={[
-          'flex-1',
-          !c.localVideoEnabled && 'mx-3.75 flex-col items-center justify-start',
+          // In a video call the avatar is hidden, so the flex-1 + min size only
+          // create a tall empty gap that pushes the buttons down onto the PIP.
+          // Keep them voice-only; in video the name/duration stays compact.
+          !c.localVideoEnabled &&
+            'mx-3.75 flex-1 flex-col items-center justify-start',
         ]}
-        style={{
-          minWidth: minSizeImageWrapper,
-          minHeight: minSizeImageWrapper,
-        }}
+        style={
+          c.localVideoEnabled
+            ? undefined
+            : { minWidth: minSizeImageWrapper, minHeight: minSizeImageWrapper }
+        }
       >
         <View
           className={[
@@ -496,8 +503,16 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
     return (
       <View
         className={[
-          'z-12 mb-2 items-center justify-center self-stretch',
-          isLarge ? 'mt-2.5' : 'mt-10',
+          'items-center justify-center',
+          // Video: absolute bottom so it does not consume flow space (lets the
+          // buttons sit close to the PIP) and z-102 keeps it above the PIP
+          // (z-101) so the full-width PIP carousel does not block the hangup.
+          // The container is a plain View (only the centred button captures),
+          // so the PIP switch-camera/toggle controls on the left stay tappable.
+          c.localVideoEnabled
+            ? 'absolute right-0 bottom-2 left-0 z-102'
+            : 'z-12 mb-2 self-stretch',
+          !c.localVideoEnabled && (isLarge ? 'mt-2.5' : 'mt-10'),
         ]}
       >
         {c.holding && !c.rqLoadings['hold'] ? (
@@ -561,8 +576,14 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
       <>
         {c.localVideoEnabled && renderVideo()}
         {renderAvatar()}
-        {renderBtns()}
+        {/* Push the buttons down to the lower-middle while the name stays
+            pinned under the header (renderVideo's fixed top gap). */}
         {c.localVideoEnabled && <View className='flex-1' />}
+        {renderBtns()}
+        {/* Reserve roughly the local-video PIP height (CallVideosCarousel,
+            ~214px = 182 item + p-4) so the buttons sit just above the PIP with
+            only a small gap. */}
+        {c.localVideoEnabled && <View className='h-[220px]' />}
         {renderHangupBtn()}
         {c.transferring ? renderTransferring() : null}
       </>

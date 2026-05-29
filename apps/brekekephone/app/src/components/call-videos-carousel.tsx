@@ -51,7 +51,7 @@ export const CallVideosCarousel = observer(
 
     return (
       !!localStreamObject && (
-        <View className='pointer-events-box-none absolute bottom-0 z-11 h-auto w-full'>
+        <View className='pointer-events-box-none absolute bottom-0 z-101 h-auto w-full'>
           <ScrollView
             horizontal
             className='h-auto'
