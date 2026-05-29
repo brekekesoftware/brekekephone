@@ -50,7 +50,7 @@ export const PageChatGroupCreate = observer(() => {
 
   return (
     <Layout
-      fabOnBack={ctx.nav.goToPageChatRecents}
+      fabOnBack={ctx.nav.backToPageChatRecents}
       fabOnNext={create}
       fabOnNextText={intl`CREATE`}
       onBack={ctx.nav.backToPageChatRecents}

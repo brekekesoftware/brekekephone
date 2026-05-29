@@ -53,7 +53,7 @@ export const PageContactGroupEdit = observer(
 
     return (
       <Layout
-        fabOnBack={ctx.nav.goToPageContactEdit}
+        fabOnBack={ctx.nav.backToPageContactEdit}
         fabOnNext={create}
         fabOnNextText={intl`SAVE`}
         onBack={ctx.nav.backToPageContactEdit}
