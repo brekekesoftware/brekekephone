@@ -540,7 +540,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
     // render PageCallTransferAttend as a layer instead
     // so switching will not cause the avatar to reload
     const renderTransferring = () => (
-      <View className='absolute inset-0 z-101 items-center justify-center bg-white'>
+      <View className='bg-background absolute inset-0 z-101 items-center justify-center'>
         <PageCallTransferAttend />
       </View>
     )
@@ -607,7 +607,7 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
       >
         <View
           className={
-            c.localVideoEnabled
+            c.localVideoEnabled && !c.transferring
               ? 'absolute h-full w-full flex-col items-center justify-start'
               : 'flex-1 flex-col items-center justify-start'
           }
