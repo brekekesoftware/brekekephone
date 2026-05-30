@@ -17,12 +17,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.MonitorConnection;
 import com.facebook.react.ReactApplication;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 // main lpc service
 
@@ -36,12 +39,18 @@ public class BrekekeLpcService extends Service {
   private Boolean isServiceNotiExist = false;
   // keep ref so onDestroy can unregister; otherwise each service restart leaks a receiver
   private BrekekeLpcReceiver lpcReceiver;
+  // BUG-1230: single owner of the LPC socket task — guarantees exactly one active socket and
+  // lets us cancel/replace it on reconnect without restarting the foreground service
+  private BrekekeLpcSocket.SSLSocketAsyncTask currentSocketTask;
+  private final Executor lpcExecutor = Executors.newSingleThreadExecutor();
 
   @Override
   public void onCreate() {
     isServiceStarted = true;
     createNotificationChannel();
     con = new MonitorConnection();
+    // BUG-1230: watchdog reconnects the socket in-process instead of restarting the FGS
+    con.setReconnectListener(this::reconnectSocket);
   }
 
   @Override
@@ -100,9 +109,28 @@ public class BrekekeLpcService extends Service {
   }
 
   public void createConnection(LpcModel.Settings settings) {
-    BrekekeLpcSocket.SSLSocketAsyncTask sslSocketAsyncTask =
-        new BrekekeLpcSocket().new SSLSocketAsyncTask(this);
-    sslSocketAsyncTask.execute(settings);
+    // BUG-1230: confine socket task swaps to the main thread so there is always exactly one
+    // active socket; cancel/close the previous task (even if parked in select()) before
+    // starting a new one, and run on a dedicated executor so a stuck task can't block reconnect
+    Ctx.h()
+        .post(
+            () -> {
+              con.resetCadence();
+              if (currentSocketTask != null) {
+                currentSocketTask.shutdown();
+              }
+              BrekekeLpcSocket.SSLSocketAsyncTask task =
+                  new BrekekeLpcSocket().new SSLSocketAsyncTask(this);
+              currentSocketTask = task;
+              task.executeOnExecutor(lpcExecutor, settings);
+            });
+  }
+
+  // BUG-1230: watchdog asks for a socket-only reconnect (no startForegroundService, so the
+  // notification is not re-posted). Reuses the existing reconnectLPC path.
+  private void reconnectSocket() {
+    isServiceStarted = false;
+    reconnectLPC();
   }
 
   @Nullable
@@ -140,17 +168,23 @@ public class BrekekeLpcService extends Service {
   @Override
   public void onDestroy() {
     isServiceStarted = false;
+    // BUG-1230: explicitly cancel the socket (it may be parked in select() and would not
+    // notice isServiceStarted=false on its own)
+    if (currentSocketTask != null) {
+      currentSocketTask.shutdown();
+      currentSocketTask = null;
+    }
     Log.d(LpcUtils.TAG, "service destroy");
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
-    // null static iService + cancel pending watchdog timer so MonitorConnection cannot
-    // revive the service via startForegroundService(iService) after user-initiated stop.
-    // Without this, a lingering socket task's onPostExecute -> con.onDisconnected -> timer
-    // -> updateState sees iService != null and resurrects the FGS, violating Play Console
-    // "terminable by user" requirement.
+    // null static iService + stop watchdog so MonitorConnection cannot revive the service or
+    // re-arm its timer after user-initiated stop. Without this, a lingering socket task's
+    // onPostExecute -> con.onDisconnected -> resetTimer would keep the static watchdog ticking
+    // forever (BUG-1230 review finding #1), and previously could resurrect the FGS, violating
+    // Play Console "terminable by user" requirement.
     iService = null;
     if (con != null) {
-      con.cancelTimer();
+      con.stop();
     }
     // unregister BrekekeLpcReceiver to avoid IntentReceiverLeaked across destroy/recreate cycles,
     // which previously left dangling references and prevented clean LPC TLS reconnect on account
