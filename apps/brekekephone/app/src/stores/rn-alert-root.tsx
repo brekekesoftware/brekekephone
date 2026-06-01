@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
-import { useWindowDimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { flow } from '@/shared/lodash'
@@ -10,6 +9,7 @@ import { intl } from '#/stores/intl'
 import type { ErrorRnAlert2, PromptRnAlert } from '#/stores/rn-alert'
 import { RnAlert } from '#/stores/rn-alert'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const RnAlertR = ({
   error,

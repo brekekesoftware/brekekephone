@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import { useState } from 'react'
-import { useWindowDimensions } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
@@ -10,6 +9,7 @@ import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(

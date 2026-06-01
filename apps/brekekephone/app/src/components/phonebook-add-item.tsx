@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { useRef, useState } from 'react'
-import { Platform, useWindowDimensions } from 'react-native'
+import { Platform } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
@@ -12,6 +12,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
