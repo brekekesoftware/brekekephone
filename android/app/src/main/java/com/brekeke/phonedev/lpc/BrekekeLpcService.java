@@ -59,10 +59,12 @@ public class BrekekeLpcService extends Service {
     reconnectLPC();
 
     // Android 14+ (target SDK 35) requires every startForegroundService() to be followed by
-    // startForeground() within 5s, otherwise the system removes the notification and may
-    // demote the service. MonitorConnection's watchdog re-invokes startForegroundService on
-    // silent socket death, so we must re-post the notification on every onStartCommand —
-    // not just the first one. Notification ID is fixed so the system updates in place.
+    // startForeground() within 5s, otherwise the system removes the notification and may demote
+    // the service — so onStartCommand always (re)posts. BUG-1230: onStartCommand now only runs on
+    // genuine (re)starts (first enableLPC, boot); the watchdog reconnects the socket in-process
+    // and enableLPC skips startForegroundService while already running, so a user-swiped
+    // notification is no longer re-posted on reconnect/relaunch. Notification ID is fixed so the
+    // system updates in place.
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -126,11 +128,18 @@ public class BrekekeLpcService extends Service {
             });
   }
 
-  // BUG-1230: watchdog asks for a socket-only reconnect (no startForegroundService, so the
-  // notification is not re-posted). Reuses the existing reconnectLPC path.
+  // BUG-1230: watchdog asks for a socket-only reconnect. Restart the socket directly (no
+  // startForegroundService -> no notification re-post) and DON'T touch isServiceStarted — the
+  // service never stopped, only the socket is replaced. This also avoids a race where enableLPC
+  // (on the RN thread) could observe a transient isServiceStarted=false and spuriously
+  // startForegroundService. createConnection cancels the old (possibly parked) socket and
+  // enforces a single active one.
   private void reconnectSocket() {
-    isServiceStarted = false;
-    reconnectLPC();
+    if (iService == null) {
+      Emitter.debug("[BrekekeLpcService] Service intent is null");
+      return;
+    }
+    startInService(iService);
   }
 
   @Nullable

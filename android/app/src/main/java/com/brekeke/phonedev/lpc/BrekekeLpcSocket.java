@@ -211,7 +211,8 @@ public class BrekekeLpcSocket {
                     // BUG-1230 diag: this socket noticed the service was stopped and is closing.
                     // Lets us see WHEN the old account's socket actually tears down vs when the
                     // new account registers (suspected unregister-before-register race).
-                    Emitter.debug("[BrekekeLpcSocket] service stopped -> closing socket (teardown)");
+                    Emitter.debug(
+                        "[BrekekeLpcSocket] service stopped -> closing socket (teardown)");
                     rawChannel.shutdownInput();
                     rawChannel.shutdownOutput();
                     rawChannel.close();
