@@ -18,7 +18,7 @@ import {
   getRingtoneOptions,
   handleRingtoneOptionsInSetting,
 } from '#/utils/get-ringtone-options'
-import PreviewRingtone from '#/utils/preview-ringtone'
+import { PreviewRingtone } from '#/utils/preview-ringtone'
 import {
   handleUploadRingtone,
   saveRingtoneSelection,
@@ -174,35 +174,49 @@ export const PageSettingsOther = observer(() => {
       menu='settings'
       subMenu='other'
     >
-      <Field isGroup label={intl`DISPLAY`} />
-      <LanguagePicker onSelect={initData} />
-      <DarkModePicker />
-      {ca?.ucEnabled && (
-        <>
-          <Field isGroup label='UC' />
-          <Field
-            disabled={!ca.ucEnabled}
-            label={intl`STATUS`}
-            onValueChange={submitStatus}
-            options={[
-              { key: 'online', label: intl`Online` },
-              { key: 'offline', label: intl`Invisible` },
-              { key: 'busy', label: intl`Busy` },
-            ]}
-            type='RnPicker'
-            value={status}
-          />
-          <Field
-            createBtnIcon={mdiCheck}
-            disabled={!ca.ucEnabled}
-            label={intl`STATUS NOTE`}
-            onCreateBtnPress={submitStatusText}
-            onSubmitEditing={submitStatusText}
-            onValueChange={setStatusText}
-            value={statusText}
-          />
-        </>
-      )}
+      <Field isGroup label='ACCOUNT' />
+      <PushNotificationSwitch />
+
+      <Field isGroup label='UC' />
+      <Field
+        label={intl`UC`}
+        onValueChange={() => {
+          if (!ca) {
+            return
+          }
+          ca.ucEnabled = !ca.ucEnabled
+          if (!ca.ucEnabled) {
+            ctx.authUC.dispose()
+          } else {
+            ctx.authUC.authWithCheckDebounced()
+          }
+          ctx.account.saveAccountsToLocalStorageDebounced()
+        }}
+        type='Switch'
+        value={ca?.ucEnabled}
+      />
+      <Field
+        label={intl`STATUS`}
+        onValueChange={submitStatus}
+        options={[
+          { key: 'online', label: intl`Online` },
+          { key: 'offline', label: intl`Invisible` },
+          { key: 'busy', label: intl`Busy` },
+        ]}
+        type='RnPicker'
+        value={status}
+        disabled={ctx.auth.ucState !== 'success'}
+      />
+      <Field
+        createBtnIcon={mdiCheck}
+        label={intl`STATUS NOTE`}
+        onCreateBtnPress={submitStatusText}
+        onSubmitEditing={submitStatusText}
+        onValueChange={setStatusText}
+        value={statusText}
+        disabled={ctx.auth.ucState !== 'success'}
+      />
+
       {!isWeb && (
         <>
           <Field isGroup label={intl`Ringtone`} />
@@ -221,6 +235,46 @@ export const PageSettingsOther = observer(() => {
       {!isWeb && preview && (
         <PreviewRingtone source={preview} onFinished={stopPreview} />
       )}
+
+      <Field isGroup label={intl`DISPLAY`} />
+      <LanguagePicker onSelect={initData} />
+      <DarkModePicker />
     </Layout>
+  )
+})
+
+const PushNotificationSwitch = observer(() => {
+  const [loading, setLoading] = useState(false)
+  const ca = ctx.auth.getCurrentAccount()
+  return (
+    <Field
+      label={intl`PUSH NOTIFICATION`}
+      onValueChange={async () => {
+        if (!ca) {
+          return
+        }
+        const initial = ca.pushNotificationEnabled
+        ca.pushNotificationEnabled = !initial
+        ca.pushNotificationEnabledSynced = false
+        ctx.account.saveAccountsToLocalStorageDebounced()
+        setLoading(true)
+        await ctx.pnToken.sync(ca, {
+          noUpsert: true,
+          onError: err => {
+            ca.pushNotificationEnabled = initial
+            ca.pushNotificationEnabledSynced = false
+            ctx.account.saveAccountsToLocalStorageDebounced()
+            RnAlert.error({
+              message: intlDebug`Failed to sync push notification status`,
+              err,
+            })
+          },
+        })
+        setLoading(false)
+      }}
+      type='Switch'
+      value={ca?.pushNotificationEnabled}
+      loading={loading}
+    />
   )
 })

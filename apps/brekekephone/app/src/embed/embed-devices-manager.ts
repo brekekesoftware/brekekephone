@@ -16,7 +16,8 @@ class EmbedDevicesManager {
 
   _originalGetUserMedia: typeof navigator.mediaDevices.getUserMedia | null =
     null
-  async init() {
+
+  init = async () => {
     const [audioInputs, videoInputs, audioOutputs] = await Promise.all([
       this.getAudioInputDevices(),
       this.getVideoInputDevices(),
@@ -30,7 +31,7 @@ class EmbedDevicesManager {
     embedDevicesManager.initDeviceChangeListener()
   }
 
-  setAudioInputDevice(deviceId: string): boolean {
+  setAudioInputDevice = (deviceId: string): boolean => {
     this._audioInputDeviceId = deviceId
     this._syncPatch()
     const ca = ctx.call.getOngoingCall()
@@ -57,7 +58,7 @@ class EmbedDevicesManager {
     return true
   }
 
-  async setVideoInputDevice(deviceId: string): Promise<boolean> {
+  setVideoInputDevice = async (deviceId: string): Promise<boolean> => {
     const ca = ctx.call.getOngoingCall()
     if (ca) {
       if (!deviceId) {
@@ -120,7 +121,7 @@ class EmbedDevicesManager {
     return true
   }
 
-  async setAudioOutputDevice(deviceId: string): Promise<boolean> {
+  setAudioOutputDevice = async (deviceId: string): Promise<boolean> => {
     const devices = await this.getAudioOutputDevices()
 
     const device = devices.find(d => d.deviceId === deviceId)
@@ -161,19 +162,16 @@ class EmbedDevicesManager {
     return !hasError
   }
 
-  getAudioInputDevices(): Promise<DeviceInfo[]> {
-    return this._getDevicesByKind('audioinput')
-  }
+  getAudioInputDevices = (): Promise<DeviceInfo[]> =>
+    this._getDevicesByKind('audioinput')
 
-  getVideoInputDevices(): Promise<DeviceInfo[]> {
-    return this._getDevicesByKind('videoinput')
-  }
+  getVideoInputDevices = (): Promise<DeviceInfo[]> =>
+    this._getDevicesByKind('videoinput')
 
-  getAudioOutputDevices(): Promise<DeviceInfo[]> {
-    return this._getDevicesByKind('audiooutput')
-  }
+  getAudioOutputDevices = (): Promise<DeviceInfo[]> =>
+    this._getDevicesByKind('audiooutput')
 
-  destroy(): void {
+  destroy = (): void => {
     this._restorePatch()
     this._audioInputDeviceId = ''
     this._videoInputDeviceId = ''
@@ -182,7 +180,7 @@ class EmbedDevicesManager {
     this.removeDeviceChangeListener()
   }
 
-  _applyPatch(): void {
+  _applyPatch = (): void => {
     if (!this._isGetUserMediaAvailable()) {
       return
     }
@@ -196,9 +194,9 @@ class EmbedDevicesManager {
 
     const self = this
 
-    navigator.mediaDevices.getUserMedia = function (
+    navigator.mediaDevices.getUserMedia = (
       constraints?: MediaStreamConstraints,
-    ): Promise<MediaStream> {
+    ): Promise<MediaStream> => {
       const patched = self._injectDeviceIds(constraints ?? {})
       return self._originalGetUserMedia!(patched)
     }
@@ -209,7 +207,7 @@ class EmbedDevicesManager {
     )
   }
 
-  _syncPatch() {
+  _syncPatch = () => {
     const hasAnyDevice =
       !!this._audioInputDeviceId || !!this._videoInputDeviceId
     if (hasAnyDevice) {
@@ -219,7 +217,7 @@ class EmbedDevicesManager {
     }
   }
 
-  _restorePatch(): void {
+  _restorePatch = (): void => {
     if (!this._patched || !this._originalGetUserMedia) {
       return
     }
@@ -229,9 +227,9 @@ class EmbedDevicesManager {
     this._patched = false
   }
 
-  _injectDeviceIds(
+  _injectDeviceIds = (
     constraints: MediaStreamConstraints,
-  ): MediaStreamConstraints {
+  ): MediaStreamConstraints => {
     const result: MediaStreamConstraints = { ...constraints }
 
     if (this._audioInputDeviceId && constraints.audio !== false) {
@@ -251,15 +249,12 @@ class EmbedDevicesManager {
     return result
   }
 
-  _isGetUserMediaAvailable(): boolean {
-    return (
-      typeof navigator !== 'undefined' &&
-      !!navigator.mediaDevices &&
-      typeof navigator.mediaDevices.getUserMedia === 'function'
-    )
-  }
+  _isGetUserMediaAvailable = (): boolean =>
+    typeof navigator !== 'undefined' &&
+    !!navigator.mediaDevices &&
+    typeof navigator.mediaDevices.getUserMedia === 'function'
 
-  async _getDevicesByKind(kind: MediaDeviceKind): Promise<DeviceInfo[]> {
+  _getDevicesByKind = async (kind: MediaDeviceKind): Promise<DeviceInfo[]> => {
     if (!this._isGetUserMediaAvailable()) {
       return []
     }
@@ -306,7 +301,7 @@ class EmbedDevicesManager {
     return senders
   }
 
-  _getPreferredDeviceId(devices: DeviceInfo[]): string {
+  _getPreferredDeviceId = (devices: DeviceInfo[]): string => {
     if (devices.length === 0) {
       return ''
     }
@@ -318,14 +313,14 @@ class EmbedDevicesManager {
 
   // Output method
 
-  _getPreferredOutputDeviceId(devices: DeviceInfo[]) {
+  _getPreferredOutputDeviceId = (devices: DeviceInfo[]) => {
     if (devices.length === 0) {
       return null
     }
     return devices.find(d => d.deviceId === 'default') ?? devices[0]
   }
 
-  async registerAudioElement(el: HTMLAudioElement) {
+  registerAudioElement = async (el: HTMLAudioElement) => {
     console.log(
       '[WebRTCDeviceManager] registerAudioElement, _audioOutputDevice:',
       this._audioOutputDevice,
@@ -360,11 +355,11 @@ class EmbedDevicesManager {
     }
   }
 
-  unregisterAudioElement(el: HTMLAudioElement) {
+  unregisterAudioElement = (el: HTMLAudioElement) => {
     this._audioElements.delete(el)
   }
 
-  initDeviceChangeListener() {
+  initDeviceChangeListener = () => {
     if (!navigator.mediaDevices?.addEventListener) {
       return
     }
@@ -417,7 +412,7 @@ class EmbedDevicesManager {
     )
   }
 
-  removeDeviceChangeListener() {
+  removeDeviceChangeListener = () => {
     if (this._deviceChangeHandler) {
       navigator.mediaDevices.removeEventListener(
         'devicechange',

@@ -13,7 +13,7 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import type { RingtoneOption } from '#/utils/get-ringtone-options'
 import { getRingtoneOptions } from '#/utils/get-ringtone-options'
-import PreviewRingtone from '#/utils/preview-ringtone'
+import { PreviewRingtone } from '#/utils/preview-ringtone'
 import {
   handleUploadRingtone,
   saveRingtoneSelection,

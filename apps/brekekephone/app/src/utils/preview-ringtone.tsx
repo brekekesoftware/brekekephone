@@ -13,12 +13,12 @@ interface PreviewRingtoneProps {
   onFinished?: () => void
 }
 
-export default function PreviewRingtone({
+export const PreviewRingtone = ({
   source,
   onReady,
   onError,
   onFinished,
-}: PreviewRingtoneProps) {
+}: PreviewRingtoneProps) => {
   const playerRef = useRef<VideoRef | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [currentSource, setCurrentSource] = useState<ReactVideoSource>()

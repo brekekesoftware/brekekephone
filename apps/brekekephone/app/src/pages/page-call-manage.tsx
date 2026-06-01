@@ -267,13 +267,10 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
     return (
       <View
-        className={[
-          // In a video call the avatar is hidden, so the flex-1 + min size only
-          // create a tall empty gap that pushes the buttons down onto the PIP.
-          // Keep them voice-only; in video the name/duration stays compact.
+        className={
           !c.localVideoEnabled &&
-            'mx-3.75 flex-1 flex-col items-center justify-start',
-        ]}
+          'mx-3.75 flex-1 flex-col items-center justify-start'
+        }
         style={
           c.localVideoEnabled
             ? undefined
