@@ -13,11 +13,13 @@ intl:
 
 clean:
 	@make clean_rm \
-	&& pnpm ci && pnpm dedupe \
+	&& pnpm ci \
+	&& pnpm dedupe \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./ios \
 	&& pod install --repo-update \
-	&& cd ../android && ./gradlew clean;
+	&& cd ../android \
+	&& ./gradlew clean;
 
 clean_rm:
 	@cd ./apps/brekekephone/app \
@@ -32,7 +34,8 @@ clean_rm:
 
 clean_deep:
 	@make clean_deep_rm \
-	&& pnpm ci && pnpm dedupe \
+	&& pnpm ci \
+	&& pnpm dedupe \
 	&& cd ./apps/brekekephone/app \
 	&& cd ./ios \
 	&& pod cache clean --all \
@@ -57,22 +60,30 @@ clean_deep_rm:
 phonedev:
 	@echo "appVersion=$(V)" \
 	&& pnpm i --frozen-lockfile \
-	&& scp "../0/build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$(V).ipa \
-	&& rm -rf ../0/build/BrekekePhone \
+	&& scp "./build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$(V).ipa \
+	&& rm -rf ./build/BrekekePhone \
 	&& cd ./apps/brekekephone/app \
-	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
+	&& cd ./android \
+	&& ./gradlew clean \
+	&& ./gradlew generateCodegenArtifactsFromSchema \
+	&& ./gradlew assembleRelease \
 	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phonedev$(V).apk \
-	&& cd ../../../../ && make chmod;
+	&& cd ../../../../ \
+	&& make chmod;
 
 phone:
 	@echo "appVersion=$(V)" \
 	&& pnpm i --frozen-lockfile \
-	&& scp "../0/build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$(V).ipa \
-	&& rm -rf ../0/build/BrekekePhone \
+	&& scp "./build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$(V).ipa \
+	&& rm -rf ./build/BrekekePhone \
 	&& cd ./apps/brekekephone/app \
-	&& cd ./android && ./gradlew clean && ./gradlew assembleRelease \
+	&& cd ./android \
+	&& ./gradlew clean \
+	&& ./gradlew generateCodegenArtifactsFromSchema \
+	&& ./gradlew assembleRelease \
 	&& scp ./app/build/outputs/apk/release/app-release.apk dev01:/var/www/upload/brekeke_phone$(V).apk \
-	&& cd ../../../../ && make chmod;
+	&& cd ../../../../ \
+	&& make chmod;
 
 web:
 	@echo "appVersion=$(V)" \
@@ -84,7 +95,8 @@ web:
 	&& scp ./brekeke_phone$(V).zip dev01:/var/www/upload \
 	&& rm -rf ./brekeke_phone* \
 	&& ssh dev01 "cd /var/www && sudo rm -rf ./phone && unzip ./upload/brekeke_phone$(V).zip && sudo mv ./brekeke_phone$(V) ./phone" \
-	&& cd ../../../ && make chmod;
+	&& cd ../../../ \
+	&& make chmod;
 
 embed_b:
 	@pnpm i --frozen-lockfile \
@@ -103,7 +115,8 @@ embed_u:
 	&& scp ./embed.zip dev01:/var/www \
 	&& rm -rf ./embed ./embed.zip \
 	&& ssh dev01 "cd /var/www && sudo rm -rf ./embed && unzip ./embed.zip && rm ./embed.zip" \
-	&& cd ../../../ && make chmod;
+	&& cd ../../../ \
+	&& make chmod;
 
 dev:
 	@pnpm i --frozen-lockfile \
@@ -119,7 +132,8 @@ dev:
 	&& ssh dev01 "cd /var/www/dev-api && source ~/.nvm/nvm.sh && npm i && pm2 -s delete all && pm2 flush && pm2 -s start --name=dev-api . && pm2 save" \
 	&& scp ./nginx.conf dev01:/etc/nginx/conf.d/dev01.conf \
 	&& ssh dev01 "sudo nginx -t && sudo service nginx restart" \
-	&& cd ../../../ && make chmod;
+	&& cd ../../../ \
+	&& make chmod;
 
 ###############################################################################
 # dev01 utils
