@@ -9,10 +9,10 @@
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata
+**/xcuserdata/
 *.xccheckout
 *.moved-aside
-DerivedData
+**/DerivedData/
 *.hmap
 *.ipa
 *.xcuserstate
@@ -24,7 +24,7 @@ DerivedData
 **/.cxx/
 **/.idea/
 **/.kotlin/
-.gradle
+**/.gradle/
 local.properties
 *.iml
 *.hprof
@@ -38,7 +38,7 @@ local.properties
 **/.pnpm-store/
 **/.pnp/
 .pnp.js
-logs
+**/logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -72,6 +72,7 @@ yarn-error.log*
 # misc
 .DS_Store
 .env
+.env.test
 .env.local
 .env.development.local
 .env.test.local
@@ -85,7 +86,10 @@ next-env.d.ts
 **/out/
 **/.velite/
 **/.tamagui/
-**/.claude/
+**/.terraform/
+**/.terraform.lock.hcl
+**/.*-cache/
+**/target/
 
 # local/debug output
 *.local
@@ -98,10 +102,6 @@ next-env.d.ts
 package-lock.json
 yarn.lock
 # pnpm-lock.yaml
-
-# go, rust
-**/.*-cache/
-**/target/
 
 # others
 **/GoogleService-Info.plist
