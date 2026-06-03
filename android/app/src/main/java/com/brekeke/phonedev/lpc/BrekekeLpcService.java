@@ -104,7 +104,7 @@ public class BrekekeLpcService extends Service {
       serviceChannel.setSound(null, null);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
-      // cleanup the old IMPORTANCE_DEFAULT channel for users upgrading from <2.17.9, so it
+      // cleanup the old IMPORTANCE_DEFAULT channel for users upgrading from < 2.17.8, so it
       // doesn't linger unused in Settings -> Apps -> Brekeke Phone -> Notifications
       manager.deleteNotificationChannel("NOTIFICATION_CHANNEL");
     }
