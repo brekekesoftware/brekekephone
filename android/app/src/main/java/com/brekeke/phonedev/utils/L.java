@@ -116,10 +116,15 @@ public class L {
   }
 
   public static String serviceIsRunning() {
-    return "ja".equals(l) ? "サービスは実行中です" : "Service is running";
+    return "ja".equals(l)
+        ? "Brekeke Phoneは通話とメッセージの受信準備が整いました。"
+        : "Brekeke Phone is ready to receive calls and messages";
   }
 
   public static String serviceIsRunningInBackground() {
-    return "ja".equals(l) ? "サービスはバックグラウンドで実行されています" : "Service is running in background";
+    return "ja".equals(l)
+        ? "ローカル接続によるフォールバックが有効になっています。タップして開いてください。停止するには、アカウント設定でプッシュ通知をオフにしてください。"
+        : "Fallback local connection is active. Tap to open. To stop: turn off Push Notification in"
+            + " Account Settings.";
   }
 }

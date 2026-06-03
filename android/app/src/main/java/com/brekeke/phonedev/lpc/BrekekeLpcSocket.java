@@ -45,6 +45,9 @@ public class BrekekeLpcSocket {
     private LpcModel.Settings settings;
     private Charset utf8 = StandardCharsets.UTF_8;
     private Gson gson;
+    // BUG-1230: let the service cancel a parked socket from another thread
+    private volatile boolean isShutdown = false;
+    private volatile Selector selector;
 
     public SSLSocketAsyncTask(Context context) {
       mContext = context;
@@ -110,10 +113,27 @@ public class BrekekeLpcSocket {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onCancelled");
     }
 
+    // BUG-1230: cancel this socket from another thread. Wakes the selector so a parked
+    // select() returns immediately and the mainloop exits via the isShutdown check.
+    public void shutdown() {
+      isShutdown = true;
+      Selector s = selector;
+      if (s != null) {
+        try {
+          s.wakeup();
+        } catch (Exception ignored) {
+        }
+      }
+    }
+
     @Override
     protected void onPostExecute(String result) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute");
-      BrekekeLpcService.con.onDisconnected();
+      // BUG-1230: only notify the watchdog when the socket died on its own. A deliberate
+      // shutdown (reconnect/teardown) must not start another disconnect/reconnect loop.
+      if (!isShutdown) {
+        BrekekeLpcService.con.onDisconnected();
+      }
     }
 
     private void handleCallToServer() {
@@ -159,7 +179,7 @@ public class BrekekeLpcSocket {
     public void createChannel(SSLContext sslContext) throws IOException, GeneralSecurityException {
       ByteBuffer requestBuffer = null;
       ByteBuffer responseBuffer = ByteBuffer.allocateDirect(8096);
-      Selector selector = Selector.open();
+      selector = Selector.open();
       var isConnected = false;
       try (SocketChannel rawChannel = SocketChannel.open()) {
         rawChannel.configureBlocking(false);
@@ -171,7 +191,12 @@ public class BrekekeLpcSocket {
         try (TlsChannel tlsChannel = builder.build()) {
           mainloop:
           while (true) {
-            selector.select();
+            // BUG-1230: bounded select + shutdown check so a parked socket (server never
+            // sends anything) can still be cancelled instead of blocking select() forever
+            if (isShutdown) {
+              break mainloop;
+            }
+            selector.select(1000);
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
             while (iterator.hasNext()) {
               SelectionKey key = iterator.next();
@@ -182,7 +207,12 @@ public class BrekekeLpcSocket {
                 }
               } else if (key.isReadable() || key.isWritable()) {
                 try {
-                  if (!BrekekeLpcService.isServiceStarted) {
+                  if (isShutdown || !BrekekeLpcService.isServiceStarted) {
+                    // BUG-1230 diag: this socket noticed the service was stopped and is closing.
+                    // Lets us see WHEN the old account's socket actually tears down vs when the
+                    // new account registers (suspected unregister-before-register race).
+                    Emitter.debug(
+                        "[BrekekeLpcSocket] service stopped -> closing socket (teardown)");
                     rawChannel.shutdownInput();
                     rawChannel.shutdownOutput();
                     rawChannel.close();
@@ -192,12 +222,18 @@ public class BrekekeLpcSocket {
                     if (requestBuffer != null && requestBuffer.hasRemaining()) {
                       requestBuffer.clear();
                     }
-                    byte[] data = (isConnected) ? getAcknowledeParams() : getDataParams();
+                    boolean isAck = isConnected;
+                    byte[] data = isAck ? getAcknowledeParams() : getDataParams();
                     requestBuffer = ByteBuffer.wrap(data, 0, data.length);
                     tlsChannel.write(requestBuffer);
                     if (requestBuffer.remaining() == 0) {
                       requestSent = true;
                       isConnected = true;
+                      // BUG-1230 diag: log every outgoing frame so we can tell whether the
+                      // server ever replies to this account's register/heartbeat
+                      Emitter.debug(
+                          "[BrekekeLpcSocket] sent "
+                              + (isAck ? "acknowledge(heartbeat)" : "register(getDataParams)"));
                     }
                   } else {
                     responseBuffer.clear();
@@ -207,6 +243,9 @@ public class BrekekeLpcSocket {
                       handleResponse(responseBuffer);
                       Thread.sleep(1000);
                     } else {
+                      // BUG-1230 diag: non-positive read = server closed / EOF. (The silent-idle
+                      // case never reaches here — it stays parked in selector.select().)
+                      Emitter.debug("[BrekekeLpcSocket] read returned " + c + " -> closing socket");
                       tlsChannel.close();
                       break mainloop;
                     }
@@ -224,12 +263,28 @@ public class BrekekeLpcSocket {
             }
           }
         }
+      } finally {
+        // BUG-1230: selector was leaked on every (re)connect; close it so reconnects don't
+        // accumulate epoll file descriptors
+        try {
+          if (selector != null) {
+            selector.close();
+          }
+        } catch (IOException ignored) {
+        }
       }
     }
 
     private void handleResponse(ByteBuffer responseBuffer) {
       String json = utf8.decode(responseBuffer).toString().substring(4);
       Wrapper wr = new CodableHelper().decode(json, Wrapper.class);
+      // BUG-1230 diag: log every inbound server frame (command + codingKey) BEFORE filtering,
+      // to confirm whether the server services this account's connection at all
+      Emitter.debug(
+          "[BrekekeLpcSocket] server msg command="
+              + wr.command
+              + " codingKey="
+              + (wr.payload != null ? wr.payload.codingKey : "null"));
       try {
         if (Objects.equals(wr.command, "request")) {
           requestSent = false;

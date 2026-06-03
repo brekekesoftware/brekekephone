@@ -13,7 +13,6 @@ import java.io.FileNotFoundException;
 // intent service to bind the main lpc service
 
 public class BrekekeLpcServiceIntent extends Service {
-  private String CHANNEL_ID = "LPC_CHANNEL";
 
   @Nullable
   @Override
