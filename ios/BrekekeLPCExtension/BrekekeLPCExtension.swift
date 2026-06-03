@@ -4,6 +4,14 @@ import NetworkExtension
 import UserNotifications
 
 class BrekekeLPCExtension: NEAppPushProvider {
+  /// iOS can spin up a new provider in the SAME process (e.g. after nesessionmanager is killed
+  /// under memory pressure and relaunched) WITHOUT calling stop() on the old one. The old object's
+  /// BaseChannel keeps its LPC connection alive, so the new provider opens a SECOND connection with
+  /// the same DeviceID → the server kicks one → the no-backoff reconnect loop becomes a connection
+  /// storm. Keep a process-wide reference to the active channel and disconnect it when a new
+  /// provider is created, so there is never more than one live LPC connection per process.
+  private weak static var activeChannel: BaseChannel?
+
   private let channel = BaseChannel(
     heartbeatTimeout: .seconds(30),
     logger: Logger(
@@ -21,6 +29,13 @@ class BrekekeLPCExtension: NEAppPushProvider {
     super.init()
 
     logger.log("Initialized")
+
+    // tear down a channel left running by a previous provider instance in this
+    // process before
+    // wiring up this one, so two connections with the same DeviceID never
+    // overlap
+    BrekekeLPCExtension.activeChannel?.disconnect()
+    BrekekeLPCExtension.activeChannel = channel
 
     // observe notification channel connection state for logging purposes
     channel.statePublisher
