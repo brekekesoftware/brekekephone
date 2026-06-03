@@ -21,7 +21,6 @@
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.CALL_PHONE" />
   <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <uses-permission
@@ -57,6 +56,7 @@
   />
 
   <!-- android >= 14 background permissions -->
+  <!-- TODO: use FOREGROUND_SERVICE_PHONE_CALL instead
   <uses-permission
     android:minSdkVersion="34"
     android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"
@@ -65,6 +65,7 @@
     android:minSdkVersion="34"
     android:name="android.permission.FOREGROUND_SERVICE_CAMERA"
   />
+  -->
 
   <!-- call history -->
   <!-- TODO: temporary disabled
@@ -72,7 +73,14 @@
   <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
   -->
 
+  <!-- callkeep -->
+  <uses-permission
+    android:minSdkVersion="34"
+    android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL"
+  />
+
   <!-- android lpc -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission
     android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
   />
@@ -133,7 +141,7 @@
       android:name="io.wazo.callkeep.VoiceConnectionService"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-      android:foregroundServiceType="camera|microphone"
+      android:foregroundServiceType="phoneCall"
       android:exported="false"
       tools:ignore="ForegroundServicePermission"
     >
@@ -143,7 +151,7 @@
     </service>
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
-      android:foregroundServiceType="camera|microphone"
+      android:foregroundServiceType="phoneCall"
     />
 
     <!-- react dev -->
@@ -221,7 +229,12 @@
       android:enabled="true"
       android:exported="true"
       android:foregroundServiceType="specialUse"
-    />
+    >
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="Brekeke Phone is an enterprise VoIP/PBX client. When the user enables the fallback Local Push Connectivity (LPC) option, the app maintains a persistent TLS socket to the user’s configured on-premise Brekeke PBX server so the user can receive real-time incoming VoIP call alerts and chat messages when Firebase Cloud Messaging is unavailable, blocked, or unreliable due to enterprise firewall/network restrictions. This task cannot be deferred or interrupted without material user impact: incoming VoIP calls may not ring in real time, calls may be missed, and PBX chat messages may be delayed. WorkManager or periodic polling cannot replace this because the feature requires a continuous bidirectional socket for immediate server-initiated delivery, not deferred background work. The service is user-initiated by enabling the LPC/push fallback option, is user-perceptible through a persistent foreground service notification, and can be stopped anytime by turning off the option in Account Settings. The service stops immediately when the option is disabled."
+      />
+    </service>
     <service
       android:name=".lpc.BrekekeLpcServiceIntent"
       android:enabled="true"

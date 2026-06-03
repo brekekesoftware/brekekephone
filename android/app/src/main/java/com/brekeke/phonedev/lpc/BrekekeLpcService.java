@@ -17,12 +17,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.brekeke.phonedev.MainActivity;
 import com.brekeke.phonedev.R;
+import com.brekeke.phonedev.utils.Ctx;
 import com.brekeke.phonedev.utils.Emitter;
 import com.brekeke.phonedev.utils.L;
 import com.brekeke.phonedev.utils.MonitorConnection;
 import com.facebook.react.ReactApplication;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 // main lpc service
 
@@ -36,27 +39,32 @@ public class BrekekeLpcService extends Service {
   private Boolean isServiceNotiExist = false;
   // keep ref so onDestroy can unregister; otherwise each service restart leaks a receiver
   private BrekekeLpcReceiver lpcReceiver;
+  // BUG-1230: single owner of the LPC socket task — guarantees exactly one active socket and
+  // lets us cancel/replace it on reconnect without restarting the foreground service
+  private BrekekeLpcSocket.SSLSocketAsyncTask currentSocketTask;
+  private final Executor lpcExecutor = Executors.newSingleThreadExecutor();
 
   @Override
   public void onCreate() {
     isServiceStarted = true;
     createNotificationChannel();
     con = new MonitorConnection();
+    // BUG-1230: watchdog reconnects the socket in-process instead of restarting the FGS
+    con.setReconnectListener(this::reconnectSocket);
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(LpcUtils.TAG, "onStartCommand called " + isServiceStarted);
     reconnectLPC();
-    if (isServiceNotiExist) {
-      return START_STICKY;
-    }
-    isServiceNotiExist = true;
-    // register action shutdown
-    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-    lpcReceiver = new BrekekeLpcReceiver();
-    registerReceiver(lpcReceiver, filter);
 
+    // Android 14+ (target SDK 35) requires every startForegroundService() to be followed by
+    // startForeground() within 5s, otherwise the system removes the notification and may demote
+    // the service — so onStartCommand always (re)posts. BUG-1230: onStartCommand now only runs on
+    // genuine (re)starts (first enableLPC, boot); the watchdog reconnects the socket in-process
+    // and enableLPC skips startForegroundService while already running, so a user-swiped
+    // notification is no longer re-posted on reconnect/relaunch. Notification ID is fixed so the
+    // system updates in place.
     Intent notificationIntent = new Intent(this, MainActivity.class);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -67,9 +75,22 @@ public class BrekekeLpcService extends Service {
             .setContentTitle(L.serviceIsRunning())
             .setContentText(L.serviceIsRunningInBackground())
             .setContentIntent(pendingIntent)
+            // hide timestamp — Notification is rebuilt on every onStartCommand (watchdog
+            // reconnect, process restart), and a fresh `when` would refresh the time shown
+            // in the tray ("now") on every re-post, making the FGS look like a new alert
+            .setShowWhen(false)
+            .setOnlyAlertOnce(true)
             .build();
-
     startForeground(1, notification);
+
+    if (isServiceNotiExist) {
+      return START_STICKY;
+    }
+    isServiceNotiExist = true;
+    // register action shutdown (only once for the lifetime of this service instance)
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
+    lpcReceiver = new BrekekeLpcReceiver();
+    registerReceiver(lpcReceiver, filter);
     return START_STICKY;
   }
 
@@ -78,17 +99,47 @@ public class BrekekeLpcService extends Service {
       String appName = getString(R.string.app_name);
       NotificationChannel serviceChannel =
           new NotificationChannel(
-              LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_DEFAULT);
+              LpcUtils.NOTI_CHANNEL_ID, appName, NotificationManager.IMPORTANCE_LOW);
       serviceChannel.setShowBadge(false);
+      serviceChannel.setSound(null, null);
       NotificationManager manager = getSystemService(NotificationManager.class);
       manager.createNotificationChannel(serviceChannel);
+      // cleanup the old IMPORTANCE_DEFAULT channel for users upgrading from < 2.17.8, so it
+      // doesn't linger unused in Settings -> Apps -> Brekeke Phone -> Notifications
+      manager.deleteNotificationChannel("NOTIFICATION_CHANNEL");
     }
   }
 
   public void createConnection(LpcModel.Settings settings) {
-    BrekekeLpcSocket.SSLSocketAsyncTask sslSocketAsyncTask =
-        new BrekekeLpcSocket().new SSLSocketAsyncTask(this);
-    sslSocketAsyncTask.execute(settings);
+    // BUG-1230: confine socket task swaps to the main thread so there is always exactly one
+    // active socket; cancel/close the previous task (even if parked in select()) before
+    // starting a new one, and run on a dedicated executor so a stuck task can't block reconnect
+    Ctx.h()
+        .post(
+            () -> {
+              con.resetCadence();
+              if (currentSocketTask != null) {
+                currentSocketTask.shutdown();
+              }
+              BrekekeLpcSocket.SSLSocketAsyncTask task =
+                  new BrekekeLpcSocket().new SSLSocketAsyncTask(this);
+              currentSocketTask = task;
+              task.executeOnExecutor(lpcExecutor, settings);
+            });
+  }
+
+  // BUG-1230: watchdog asks for a socket-only reconnect. Restart the socket directly (no
+  // startForegroundService -> no notification re-post) and DON'T touch isServiceStarted — the
+  // service never stopped, only the socket is replaced. This also avoids a race where enableLPC
+  // (on the RN thread) could observe a transient isServiceStarted=false and spuriously
+  // startForegroundService. createConnection cancels the old (possibly parked) socket and
+  // enforces a single active one.
+  private void reconnectSocket() {
+    if (iService == null) {
+      Emitter.debug("[BrekekeLpcService] Service intent is null");
+      return;
+    }
+    startInService(iService);
   }
 
   @Nullable
@@ -126,9 +177,24 @@ public class BrekekeLpcService extends Service {
   @Override
   public void onDestroy() {
     isServiceStarted = false;
+    // BUG-1230: explicitly cancel the socket (it may be parked in select() and would not
+    // notice isServiceStarted=false on its own)
+    if (currentSocketTask != null) {
+      currentSocketTask.shutdown();
+      currentSocketTask = null;
+    }
     Log.d(LpcUtils.TAG, "service destroy");
     Emitter.debug("[BrekekeLpcService] Service destroy");
     stopForeground(true);
+    // null static iService + stop watchdog so MonitorConnection cannot revive the service or
+    // re-arm its timer after user-initiated stop. Without this, a lingering socket task's
+    // onPostExecute -> con.onDisconnected -> resetTimer would keep the static watchdog ticking
+    // forever (BUG-1230 review finding #1), and previously could resurrect the FGS, violating
+    // Play Console "terminable by user" requirement.
+    iService = null;
+    if (con != null) {
+      con.stop();
+    }
     // unregister BrekekeLpcReceiver to avoid IntentReceiverLeaked across destroy/recreate cycles,
     // which previously left dangling references and prevented clean LPC TLS reconnect on account
     // switch

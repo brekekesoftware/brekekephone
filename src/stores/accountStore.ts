@@ -145,7 +145,7 @@ export class AccountStore {
     pbxPassword: '',
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
-    pushNotificationEnabled: isWeb ? false : true,
+    pushNotificationEnabled: false,
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,

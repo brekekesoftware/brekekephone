@@ -54,7 +54,7 @@ const setupCallKeep = async () => {
       foregroundService: {
         channelId: bundleIdentifier,
         channelName: intl`Background service for ${ctx.global.productName}`,
-        notificationTitle: intl`${ctx.global.productName} is running on background`,
+        notificationTitle: intl`${ctx.global.productName} call is ongoing`,
         notificationIcon: 'ic_launcher',
       },
       selfManaged: true,

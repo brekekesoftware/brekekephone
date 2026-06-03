@@ -1,3 +1,14 @@
+diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/Constants.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/Constants.java
+index 5a8f7c6..766cc0d 100644
+--- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/Constants.java
++++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/Constants.java
+@@ -26,6 +26,4 @@ public class Constants {
+     public static final String EXTRA_PAYLOAD = "EXTRA_PAYLOAD";
+     // Can't use telecom.EXTRA_DISABLE_ADD_CALL ...
+     public static final String EXTRA_DISABLE_ADD_CALL = "android.telecom.extra.DISABLE_ADD_CALL";
+-
+-    public static final int FOREGROUND_SERVICE_TYPE_MICROPHONE = 128;
+ }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 index 025480a..7a041fa 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
@@ -376,18 +387,19 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index 5d58692..e84073b 100644
+index 5d58692..a3e6c71 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-@@ -25,6 +25,7 @@ import android.app.NotificationChannel;
+@@ -25,6 +25,8 @@ import android.app.NotificationChannel;
  import android.app.NotificationManager;
  import android.app.PendingIntent;
  import android.app.Activity;
 +import android.content.pm.PackageManager;
++import android.content.pm.ServiceInfo;
  import android.content.res.Resources;
  import android.content.Intent;
  import android.content.Context;
-@@ -51,6 +52,8 @@ import android.util.Log;
+@@ -51,6 +53,8 @@ import android.util.Log;
  import com.facebook.react.HeadlessJsTaskService;
  import com.facebook.react.bridge.ReadableMap;
  import com.facebook.react.bridge.WritableMap;
@@ -396,6 +408,14 @@ index 5d58692..e84073b 100644
  
  import java.util.ArrayList;
  import java.util.HashMap;
+@@ -70,7 +74,6 @@ import static io.wazo.callkeep.Constants.EXTRA_CALL_NUMBER;
+ import static io.wazo.callkeep.Constants.EXTRA_CALL_NUMBER_SCHEMA;
+ import static io.wazo.callkeep.Constants.EXTRA_CALL_UUID;
+ import static io.wazo.callkeep.Constants.EXTRA_DISABLE_ADD_CALL;
+-import static io.wazo.callkeep.Constants.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+ import static io.wazo.callkeep.Constants.ACTION_ON_CREATE_CONNECTION_FAILED;
+ 
+ // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionService.java
 @@ -122,6 +125,22 @@ public class VoiceConnectionService extends ConnectionService {
  
      public static WritableMap getSettings(@Nullable Context context) {
@@ -445,7 +465,16 @@ index 5d58692..e84073b 100644
              notificationBuilder.setContentIntent(pendingIntent);
          }
  
-@@ -358,6 +378,13 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -343,7 +363,7 @@ public class VoiceConnectionService extends ConnectionService {
+         Notification notification = notificationBuilder.build();
+ 
+         try {
+-            startForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
++            startForeground(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL, notification);
+         } catch (Exception e) {
+             Log.w(TAG, "[VoiceConnectionService] Can't start foreground service : " + e.toString());
+         }
+@@ -358,8 +378,15 @@ public class VoiceConnectionService extends ConnectionService {
              return;
          }
  
@@ -457,8 +486,11 @@ index 5d58692..e84073b 100644
 +        }
 +
          try {
-             stopForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE);
+-            stopForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE);
++            stopForeground(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL);
          } catch (Exception e) {
+             Log.w(TAG, "[VoiceConnectionService] can't stop foreground service :" + e.toString());
+         }
 diff --git a/node_modules/react-native-callkeep/index.d.ts b/node_modules/react-native-callkeep/index.d.ts
 index 25b43da..0a9528a 100644
 --- a/node_modules/react-native-callkeep/index.d.ts
