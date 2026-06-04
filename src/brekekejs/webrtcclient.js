@@ -1809,6 +1809,7 @@ if (!Brekeke.WebrtcClient) {
         mediaObject,
         self = this,
         sendInbandDTMF,
+        sendSipInfoDTMF,
         session
 
       options = options || {}
@@ -1819,6 +1820,85 @@ if (!Brekeke.WebrtcClient) {
       if (!session) {
         this._logger.log('warn', 'Not found session of sessionId: ' + sessionId)
         return
+      }
+
+      // Wraps rtcSession.sendDTMF() to support early media (183 Session Progress).
+      // JsSIP rejects sendDTMF when status is STATUS_1XX_RECEIVED (2), so we send
+      // SIP INFO directly via the early dialog instead.
+      sendSipInfoDTMF = function (t, o) {
+        var dialog, duration, earlyDialogs, id, rtcSession, status
+        rtcSession = session.rtcSession
+        status = rtcSession.status
+        self._logger.log(
+          'debug',
+          'sendSipInfoDTMF: tones=' + t + ' rtcSession.status=' + status,
+        )
+        // STATUS_CONFIRMED = 9, STATUS_WAITING_FOR_ACK = 6 — normal path
+        if (status === 9 || status === 6) {
+          self._logger.log(
+            'debug',
+            'sendSipInfoDTMF: using rtcSession.sendDTMF()',
+          )
+          rtcSession.sendDTMF(t, o)
+          return
+        }
+        // STATUS_1XX_RECEIVED = 2 (early media) — send via early dialog
+        if (status === 2) {
+          earlyDialogs = rtcSession._earlyDialogs
+          self._logger.log(
+            'debug',
+            'sendSipInfoDTMF: early media, earlyDialogs=' +
+              JSON.stringify(Object.keys(earlyDialogs)),
+          )
+          dialog = null
+          for (id in earlyDialogs) {
+            if (Object.prototype.hasOwnProperty.call(earlyDialogs, id)) {
+              dialog = earlyDialogs[id]
+              break
+            }
+          }
+          if (dialog) {
+            duration = int(o && o.duration) || 100
+            self._logger.log(
+              'debug',
+              'sendSipInfoDTMF: sending SIP INFO via early dialog id=' +
+                id +
+                ' tones=' +
+                t +
+                ' duration=' +
+                duration,
+            )
+            string(t)
+              .split('')
+              .forEach(function (tone) {
+                tone = tone.toUpperCase()
+                if (!/^[0-9A-DR#*]$/.test(tone)) {
+                  self._logger.log(
+                    'warn',
+                    'sendSipInfoDTMF: skipping invalid tone=' + tone,
+                  )
+                  return
+                }
+                dialog.sendRequest('INFO', {
+                  extraHeaders: ['Content-Type: application/dtmf-relay'],
+                  body: 'Signal=' + tone + '\r\nDuration=' + duration,
+                })
+              })
+            return
+          }
+          self._logger.log(
+            'warn',
+            'sendSipInfoDTMF: early media but no early dialog found, falling back to rtcSession.sendDTMF()',
+          )
+        } else {
+          self._logger.log(
+            'warn',
+            'sendSipInfoDTMF: unexpected status=' +
+              status +
+              ', falling back to rtcSession.sendDTMF()',
+          )
+        }
+        rtcSession.sendDTMF(t, o)
       }
 
       environment = this.getEnvironment()
@@ -1927,7 +2007,7 @@ if (!Brekeke.WebrtcClient) {
                       )
                       mediaObject.dtmfOscillatorTable = {} // never retry
                       // send SIP INFO DTMF
-                      session.rtcSession.sendDTMF(tones, options)
+                      sendSipInfoDTMF(tones, options)
                     },
                   )
                 },
@@ -1938,7 +2018,7 @@ if (!Brekeke.WebrtcClient) {
                   )
                   mediaObject.dtmfOscillatorTable = {} // never retry
                   // send SIP INFO DTMF
-                  session.rtcSession.sendDTMF(tones, options)
+                  sendSipInfoDTMF(tones, options)
                 },
               )
             }
@@ -1950,12 +2030,12 @@ if (!Brekeke.WebrtcClient) {
             )
             mediaObject.dtmfOscillatorTable = {} // never retry
             // send SIP INFO DTMF
-            session.rtcSession.sendDTMF(tones, options)
+            sendSipInfoDTMF(tones, options)
           }
         } else {
           this._logger.log('info', 'Cannot to play inband DTMF')
           // send SIP INFO DTMF
-          session.rtcSession.sendDTMF(tones, options)
+          sendSipInfoDTMF(tones, options)
         }
       } else if (int(this.dtmfSendMode) === 2) {
         try {
@@ -1977,7 +2057,7 @@ if (!Brekeke.WebrtcClient) {
         }
       } else {
         // send SIP INFO DTMF
-        session.rtcSession.sendDTMF(tones, options)
+        sendSipInfoDTMF(tones, options)
       }
     },
 
