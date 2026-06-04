@@ -3,7 +3,7 @@ import { cloneDeep, isEqual } from 'lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useEffect } from 'react'
-import { View } from 'react-native'
+import { Button, Modal, View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
@@ -22,6 +22,11 @@ import {
 } from '#/utils/ringtonePicker'
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
+import {
+  Camera,
+  useCameraDevice,
+  useCodeScanner,
+} from 'react-native-vision-camera'
 
 export const AccountCreateForm: FC<{
   updating?: Account
@@ -39,6 +44,7 @@ export const AccountCreateForm: FC<{
       addingPark: { name: '', number: '' },
       ringtoneOptions: [] as RingtoneOption[],
       preview: '',
+      modalVisible: false,
     },
     resetAllFields: () => {
       RnAlert.prompt({
@@ -161,6 +167,10 @@ export const AccountCreateForm: FC<{
         label: intl`Reset form`,
         onPress: $.resetAllFields,
       },
+      {
+        label: intl`Settings for QR code`,
+        onPress: () => ($.modalVisible = true),
+      },
     ]
     if (!isWeb) {
       d = [
@@ -173,6 +183,30 @@ export const AccountCreateForm: FC<{
     }
     return d
   }
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: codes => {
+      const code = codes[0].value ?? ''
+
+      if (code.length == 0) {
+        return
+      }
+
+      $.set('account', (p: Account) => {
+        p = {
+          ...p,
+          ...JSON.parse(code),
+        }
+
+        return p
+      })
+
+      $.modalVisible = false
+    },
+  })
+
+  const device = useCameraDevice('back')
 
   return (
     <Layout
@@ -215,6 +249,24 @@ export const AccountCreateForm: FC<{
       subMenu={props.footerLogout ? 'account' : undefined}
       title={props.title}
     >
+      <Modal visible={$.modalVisible} animationType={'slide'}>
+        {device != null ? (
+          <>
+            <Camera
+              style={{ flex: 1 }}
+              codeScanner={codeScanner}
+              device={device}
+              isActive={true}
+            />
+            <Button
+              onPress={() => ($.modalVisible = false)}
+              title={intl`Close`}
+            ></Button>
+          </>
+        ) : (
+          intl`No camera device found`
+        )}
+      </Modal>
       <Form
         $={$}
         fields={[
