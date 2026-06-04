@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import type { NativeEventSubscription } from 'react-native'
-import { AppState, Dimensions } from 'react-native'
+import { AppState } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { isAndroid, isWeb } from '@/rn/core/utils/platform'
@@ -43,11 +43,6 @@ import { Duration } from '#/stores/timer-store'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 import { checkMutedRemoteUser } from '#/utils/check-muted-remote-user'
 import { waitTimeout } from '#/utils/wait-timeout'
-
-const { width, height } = Dimensions.get('window')
-const minSizeH = height * 0.3
-const minSizeW = width * 0.8
-const minSizeImageWrapper = minSizeH > minSizeW ? minSizeW : minSizeH
 
 export const backAction = () =>
   ctx.auth.phoneappliEnabled()
@@ -230,10 +225,9 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
 
   const renderVideo = () => (
     <>
-      {/* Fixed top gap = Layout headerSpace (compact, no menu = 55) so the
-          name/duration that follows sits right under the header instead of
-          being vertically centered by a flex-1 spacer. */}
-      <View className='h-[55px] self-stretch' />
+      {/* Keep the name/duration under the compact header, but let this spacer
+          shrink on short screens so the video call controls do not get cut. */}
+      <View className='max-h-13.75 min-h-11 shrink basis-[7.5vh] self-stretch' />
       <View className='absolute top-10 right-0 bottom-0 left-0 bg-black'>
         <VideoPlayer
           sourceObject={
@@ -265,50 +259,73 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
     const isLarge = !!(c.partyImageSize && c.partyImageSize === 'large')
     const isShowAvatar =
       (c.partyImageUrl || c.talkingImageUrl) && !c.localVideoEnabled
+    // keep both images mounted so they don't reload when answered toggles
+    const avatarImages = (
+      <>
+        {c.answered && (
+          <SmartImage
+            key={c.talkingImageUrl}
+            uri={`${c.talkingImageUrl}`}
+            className='h-full w-full'
+            incoming={c.incoming}
+          />
+        )}
+        {!c.answered && (
+          <SmartImage
+            key={c.partyImageUrl}
+            uri={`${c.partyImageUrl}`}
+            className='h-full w-full'
+            incoming={c.incoming}
+          />
+        )}
+      </>
+    )
+    // Square avatar capped at 80vw (keeps margins, never overflows the header).
+    // While ringing the cap is on the wrapper (name stays under the avatar); once
+    // answered it moves to the inner box so the wrapper grows and lowers the name.
+    const renderAvatarBox = () => {
+      if (!isShowAvatar) {
+        return <View className='h-0 opacity-0'>{avatarImages}</View>
+      }
+      if (!isLarge) {
+        return (
+          <View className='h-50 w-50 overflow-hidden rounded-full'>
+            {avatarImages}
+          </View>
+        )
+      }
+      return (
+        <View
+          className={[
+            'w-full flex-1 items-center justify-start',
+            !c.answered && 'max-h-[80vw]',
+          ]}
+        >
+          <View
+            className={[
+              'aspect-square h-full overflow-hidden',
+              c.answered && 'max-h-[80vw]',
+            ]}
+          >
+            {avatarImages}
+          </View>
+        </View>
+      )
+    }
     return (
       <View
         className={
           !c.localVideoEnabled &&
-          'mx-3.75 flex-1 flex-col items-center justify-start'
-        }
-        style={
-          c.localVideoEnabled
-            ? undefined
-            : { minWidth: minSizeImageWrapper, minHeight: minSizeImageWrapper }
+          'mx-3.75 mt-2 flex-1 flex-col items-center justify-start self-stretch pb-1.25'
         }
       >
+        {renderAvatarBox()}
         <View
           className={[
-            isShowAvatar &&
-              (isLarge ? 'flex-1' : 'h-50 w-50 overflow-hidden rounded-full'),
-            !isShowAvatar && 'h-0 opacity-0',
+            'mb-1.25 min-h-16 max-w-full shrink-0 self-stretch px-3.75',
+            isShowAvatar ? 'mt-2.5' : 'mt-5',
           ]}
-          style={
-            isShowAvatar && isLarge && c.localVideoEnabled
-              ? {
-                  maxHeight: height / 2 - 20,
-                }
-              : undefined
-          }
         >
-          {c.answered && (
-            <SmartImage
-              key={c.talkingImageUrl}
-              uri={`${c.talkingImageUrl}`}
-              className='aspect-square flex-1'
-              incoming={c.incoming}
-            />
-          )}
-          {!c.answered && (
-            <SmartImage
-              key={c.partyImageUrl}
-              uri={`${c.partyImageUrl}`}
-              className='aspect-square flex-1'
-              incoming={c.incoming}
-            />
-          )}
-        </View>
-        <View className={!isShowAvatar ? 'mt-5' : undefined}>
           <RnText title white center className='line-clamp-2'>
             {`${c.getDisplayName()}`}
           </RnText>
@@ -359,7 +376,8 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
         <View
           className={[
             'w-full flex-row flex-wrap items-center justify-center self-center',
-            isHideButtons && 'opacity-0',
+            // hidden (not opacity-0) frees the grid's height so the avatar can grow
+            isHideButtons && 'hidden',
           ]}
         >
           {!isBtnHidden('transfer') && (
@@ -501,13 +519,11 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
       <View
         className={[
           'items-center justify-center',
-          // Video: absolute bottom so it does not consume flow space (lets the
-          // buttons sit close to the PIP) and z-102 keeps it above the PIP
-          // (z-101) so the full-width PIP carousel does not block the hangup.
-          // The container is a plain View (only the centred button captures),
-          // so the PIP switch-camera/toggle controls on the left stay tappable.
+          // Video: centred (self-center, NOT full-width) so it does not cover the
+          // bottom-left PIP. A full-width bar at z-102 would swallow the PIP
+          // controls' taps (box-none pass-through is unreliable on Android).
           c.localVideoEnabled
-            ? 'absolute right-0 bottom-2 left-0 z-102'
+            ? 'absolute bottom-2 z-102 self-center'
             : 'z-12 mb-2 self-stretch',
           !c.localVideoEnabled && (isLarge ? 'mt-2.5' : 'mt-10'),
         ]}
@@ -577,10 +593,19 @@ const PageCallManage = observer(({ call: c }: { call: Call }) => {
             pinned under the header (renderVideo's fixed top gap). */}
         {c.localVideoEnabled && <View className='flex-1' />}
         {renderBtns()}
-        {/* Reserve roughly the local-video PIP height (CallVideosCarousel,
-            ~214px = 182 item + p-4) so the buttons sit just above the PIP with
-            only a small gap. */}
-        {c.localVideoEnabled && <View className='h-[220px]' />}
+        {/* Clear the bottom-left PIP (fixed 214px) so the buttons never overlap it;
+            the min-h floor stays >= the PIP height even when shrunk on short
+            screens. With no PIP yet (dialing) reserve only enough to clear the
+            hangup, so the buttons sit low like a voice call. */}
+        {c.localVideoEnabled && (
+          <View
+            className={
+              c.localStreamObject
+                ? 'min-h-54 shrink basis-56'
+                : 'shrink basis-24'
+            }
+          />
+        )}
         {renderHangupBtn()}
         {c.transferring ? renderTransferring() : null}
       </>
