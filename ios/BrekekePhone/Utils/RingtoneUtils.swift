@@ -86,7 +86,20 @@ public class RingtoneUtils {
   }
 
   static func _audio(r: String) -> Bool {
-    return r.lowercased().hasSuffix(".mp3")
+    if r.lowercased().hasSuffix(".mp3") { return true }
+    guard let url = URL(string: r),
+          let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+          )
+    else { return false }
+    if components.path.lowercased().hasSuffix(".mp3") { return true }
+    if let items = components.queryItems {
+      for item in items {
+        if item.value?.lowercased() == "mp3" { return true }
+      }
+    }
+    return false
   }
 
   /// handle save file to local
@@ -106,6 +119,11 @@ public class RingtoneUtils {
           completion(false)
           return
         }
+        guard isMp3File(at: location) else {
+          print("[RNCallKeep][DOWNLOAD] Invalid audio content, discarding")
+          completion(false)
+          return
+        }
         let destinationURL = getDestinationURL(for: fileName)
 
         try? FileManager.default.removeItem(at: destinationURL)
@@ -119,6 +137,20 @@ public class RingtoneUtils {
       }.resume()
   }
 
+  private static func isMp3File(at url: URL) -> Bool {
+    guard let handle = try? FileHandle(forReadingFrom: url)
+    else { return false }
+    let header = handle.readData(ofLength: 4)
+    try? handle.close()
+    guard header.count >= 3 else { return false }
+    // ID3 tag header
+    if header[0] == 0x49 && header[1] == 0x44 && header[2] ==
+      0x33 { return true }
+    // Raw MP3 sync word (FF Ex or FF Fx)
+    if header[0] == 0xFF && (header[1] & 0xE0) == 0xE0 { return true }
+    return false
+  }
+
   static func getSavedRingtonePath(from u: String) -> URL? {
     var fileName = u + defaultFormat
     if https(r: u) {
@@ -130,7 +162,10 @@ public class RingtoneUtils {
     }
     let fileURL = getDestinationURL(for: fileName)
     if FileManager.default.fileExists(atPath: fileURL.path) {
-      return fileURL
+      if isMp3File(at: fileURL) {
+        return fileURL
+      }
+      try? FileManager.default.removeItem(at: fileURL)
     }
     if downloadingFiles.contains(fileName) {
       return nil
