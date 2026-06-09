@@ -2,7 +2,7 @@ import type { FC } from 'react'
 
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
-import { AnimatedView } from '#/components/rn-animated'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { useAnimation } from '#/utils/animation'
 
 export const BackBtn: FC<{

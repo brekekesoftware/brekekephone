@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 
 import { View } from '@/rn/core/components/view'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 
 export const VideoPlayer = observer(
   ({

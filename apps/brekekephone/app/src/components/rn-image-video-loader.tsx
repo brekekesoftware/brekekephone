@@ -1,20 +1,16 @@
-import type { ComponentProps, FC } from 'react'
+import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import FastImageWocn from 'react-native-fast-image'
 
 import { View } from '@/rn/core/components/view'
-import type { ClassName } from '@/rn/core/tw/class-name'
-import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { mdiImageBrokenVariant } from '#/assets/icons'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import {
+  RnActivityIndicator,
+  RnFastImage,
+} from '#/components/rn-class-name-components'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import type { ChatFile } from '#/stores/chat-store'
-
-const FastImage = createClassNameComponent({ FastImageWocn }) as FC<
-  ComponentProps<typeof FastImageWocn> & { className?: ClassName }
->
 
 const size = 200
 
@@ -57,7 +53,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     if (fileType === 'image') {
       return (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage
+          <RnFastImage
             source={{ uri: objectUrl }}
             className='rounded-card h-50 w-50 overflow-hidden'
           />

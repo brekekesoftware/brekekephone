@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 

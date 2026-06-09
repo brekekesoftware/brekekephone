@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
-import { AnimatedView } from '#/components/rn-animated'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { useAnimationOnDidMount } from '#/utils/animation'
 
 // className: positioning + outer styling on the animated wrapper.

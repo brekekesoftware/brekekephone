@@ -22,7 +22,7 @@ import {
   RnTextInput,
   RnTouchableOpacity,
 } from '#/components/rn'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'

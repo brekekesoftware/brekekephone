@@ -3,7 +3,7 @@ import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
 
 import { View } from '@/rn/core/components/view'
-import { AnimatedView } from '#/components/rn-animated'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { RnStacker } from '#/stores/rn-stacker'
 import { useAnimationOnDidMount } from '#/utils/animation'
 import { useWindowDimensions } from '#/utils/rn-core-hooks'

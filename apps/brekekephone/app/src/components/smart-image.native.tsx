@@ -2,7 +2,6 @@ import type { ComponentProps, FC } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Image as ImageWocn } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
-import WebViewWocn from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
 import noPhoto from '#/assets/no_photo.png'
@@ -11,16 +10,14 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { isAndroid } from '@/rn/core/utils/platform'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
+import { RnWebView } from '#/components/rn-class-name-components.native'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
 
 const Image = createClassNameComponent({ ImageWocn }) as FC<
   ComponentProps<typeof ImageWocn> & { className?: ClassName }
->
-const WebView = createClassNameComponent({ WebViewWocn }) as FC<
-  ComponentProps<typeof WebViewWocn> & { className?: ClassName }
 >
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
@@ -126,7 +123,7 @@ export const SmartImage = ({
         />
       )}
       {!uri ? null : !isImageUrl ? (
-        <WebView
+        <RnWebView
           source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
