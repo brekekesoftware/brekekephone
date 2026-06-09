@@ -5,7 +5,7 @@ import { Animated } from 'react-native'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText } from '#/components/rn'
-import { AnimatedView } from '#/components/rn-animated'
+import { AnimatedView } from '#/components/rn-class-name-components'
 
 type ToastProps = {
   title: string

@@ -1,31 +1,24 @@
-import type { ComponentProps, FC } from 'react'
+import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import { Modal, StatusBar } from 'react-native'
-import FastImageWocn from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
-import VideoWocn from 'react-native-video'
 
 import { View } from '@/rn/core/components/view'
-import type { ClassName } from '@/rn/core/tw/class-name'
-import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
 import { isAndroid } from '@/rn/core/utils/platform'
 import {
   mdiCloseCircleOutline,
   mdiImageBrokenVariant,
   mdiPlayCircleOutline,
 } from '#/assets/icons'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
+import {
+  RnFastImage,
+  RnVideo,
+} from '#/components/rn-class-name-components.native'
 import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import type { ChatFile } from '#/stores/chat-store'
-
-const FastImage = createClassNameComponent({ FastImageWocn }) as FC<
-  ComponentProps<typeof FastImageWocn> & { className?: ClassName }
->
-const Video = createClassNameComponent({ VideoWocn }) as FC<
-  ComponentProps<typeof VideoWocn> & { className?: ClassName }
->
 
 const size = 150
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
@@ -73,7 +66,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     if (isAndroid) {
       return (
         <View className='bg-border rounded-card h-37.5 w-37.5 items-center overflow-hidden'>
-          <Video
+          <RnVideo
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             muted
@@ -92,7 +85,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     } else {
       return (
         <View className='bg-border rounded-card h-37.5 w-37.5 items-center overflow-hidden'>
-          <Video
+          <RnVideo
             source={{ uri: convertUri(url) }}
             resizeMode='contain'
             paused={true}
@@ -107,7 +100,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   const renderView = () =>
     fileType === 'image' ? (
       <RnTouchableOpacity onPress={onShowImage}>
-        <FastImage
+        <RnFastImage
           source={{ uri: convertUri(url) }}
           className='rounded-card h-37.5 w-37.5 overflow-hidden'
         />
@@ -155,7 +148,7 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
           (fileType === 'image' ? (
             <ImageViewer imageUrls={images} renderIndicator={() => <View />} />
           ) : (
-            <Video
+            <RnVideo
               source={{ uri: convertUri(url) }}
               controls={true}
               paused={false}

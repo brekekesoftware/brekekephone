@@ -5,7 +5,7 @@ import { Animated } from 'react-native'
 import { View } from '@/rn/core/components/view'
 import { tw } from '@/rn/core/tw/tw'
 import { RnText } from '#/components/rn'
-import { AnimatedView } from '#/components/rn-animated'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { ctx } from '#/stores/ctx'
 import type { ToastType } from '#/stores/toast-store'
 

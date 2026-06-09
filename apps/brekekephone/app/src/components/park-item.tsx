@@ -5,7 +5,10 @@ import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { tw } from '@/rn/core/tw/tw'
 import { RnTouchableOpacity } from '#/components/rn'
-import { AnimatedText, AnimatedView } from '#/components/rn-animated'
+import {
+  AnimatedText,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 

@@ -2,7 +2,10 @@ import type { FC } from 'react'
 
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
-import { AnimatedText, AnimatedView } from '#/components/rn-animated'
+import {
+  AnimatedText,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { useAnimation } from '#/utils/animation'
 
 export const Title: FC<{

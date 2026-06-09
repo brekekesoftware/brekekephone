@@ -7,9 +7,11 @@ import { View } from '@/rn/core/components/view'
 import { useSafeAreaInsets } from '@/rn/core/responsive/use-safe-area'
 import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { mdiClose } from '#/assets/icons'
-import { AnimatedView } from '#/components/rn-animated'
+import {
+  AnimatedView,
+  RnKeyboardAvoidingView,
+} from '#/components/rn-class-name-components'
 import { RnIcon } from '#/components/rn-icon'
-import { RnKeyboardAvoidingView } from '#/components/rn-keyboard-avoiding-view'
 import { RnText } from '#/components/rn-text'
 import { RnTextInput } from '#/components/rn-text-input'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'

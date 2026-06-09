@@ -4,7 +4,7 @@ import noPhoto from '#/assets/no_photo.png'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
-import { RnActivityIndicator } from '#/components/rn-activity-indicator'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
 

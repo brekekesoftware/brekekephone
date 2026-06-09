@@ -4,7 +4,10 @@ import { useState } from 'react'
 import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { AnimatedScrollView, AnimatedView } from '#/components/rn-animated'
+import {
+  AnimatedScrollView,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
