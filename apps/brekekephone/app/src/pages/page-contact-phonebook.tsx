@@ -275,7 +275,7 @@ export const PageContactPhonebook = observer(() => {
                   iconFuncs={[() => onIcon0(u), () => update(u.id)]}
                   icons={[mdiPhone, mdiInformation]}
                   key={i}
-                  phonebook={`${u.phonebook}${u.shared ? 'S' : ''}`}
+                  phonebook={`${u.phonebook}${u.shared ? ' ⓢ' : ''}`}
                   name={`${u?.display_name || intl`<Unnamed>`}`}
                   phonebookInfo={u}
                   canTouch

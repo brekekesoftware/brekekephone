@@ -1,12 +1,12 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { ScrollView } from 'react-native'
 
-import { Text } from '@/rn/components/text'
+import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { isWeb } from '@/rn/core/utils/platform'
 import type { PbxBook } from '#/brekekejs'
+import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { ctx } from '#/stores/ctx'
 
@@ -56,23 +56,30 @@ export const PhonebookAutoComplete: FC<
   return (
     <View
       className={[
-        'bg-background shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px] rounded-card absolute top-47 right-3.75 left-3.75 z-100000 max-h-75 px-2.5 py-1.25',
+        'bg-muted border-border shadow-border android:elevation-10 ios:shadow-opacity-45 ios:shadow-radius-[5px] ios:shadow-offset-[5px]/[10px] rounded-b-card absolute top-47 right-3.75 left-3.75 z-100000 overflow-hidden border',
         isWeb &&
           'shadow-opacity-100 shadow-radius-[10px] shadow-offset-[0px]/[0px]',
         className,
       ]}
     >
-      <ScrollView>
+      <ScrollView
+        className='max-h-75'
+        keyboardShouldPersistTaps='always'
+        nestedScrollEnabled
+      >
         {result.map((item, index) => (
           <RnTouchableOpacity
             key={index}
-            className='w-full border-b-[0.5px] border-[grey] py-1.25'
+            className={[
+              'border-border w-full border-b px-3.75 py-2.5',
+              index + 1 === result.length && 'border-b-0',
+            ]}
             onPress={() => {
               setChoose(true)
               onPressItem?.(item)
             }}
           >
-            <Text className='mx-2.5 w-full text-left'>{item.phonebook}</Text>
+            <RnText singleLine>{item.phonebook}</RnText>
           </RnTouchableOpacity>
         ))}
       </ScrollView>
