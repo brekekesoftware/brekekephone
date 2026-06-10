@@ -44,6 +44,8 @@ export const PageChatGroupDetail = observer(
     const currentScrollPositionRef = useRef(0)
     const isLoadingMoreRef = useRef(false)
     const submittingRef = useRef(false)
+    const mountedRef = useRef(true)
+    const sizeTimerRef = useRef<number | undefined>(undefined)
 
     // Keep a ref to topic_id so the cleanup closure always sees the latest value
     const topicIdRef = useRef('')
@@ -92,7 +94,12 @@ export const PageChatGroupDetail = observer(
         })
         .then(chats => {
           ctx.chat.pushMessages(groupId, chats)
-          BackgroundTimer.setTimeout(onContentSizeChange, defaultTimeout)
+          if (mountedRef.current) {
+            sizeTimerRef.current = BackgroundTimer.setTimeout(
+              onContentSizeChange,
+              defaultTimeout,
+            )
+          }
         })
         .catch((err: Error) => {
           RnAlert.error({
@@ -100,15 +107,22 @@ export const PageChatGroupDetail = observer(
             err,
           })
         })
-      setLoadingRecent(false)
+      if (mountedRef.current) {
+        setLoadingRecent(false)
+      }
       ctx.chat.updateThreadConfig(groupId, true, {
         isUnread: false,
       })
     }
 
     useEffect(() => {
+      mountedRef.current = true
       componentDidMountAsync()
       return () => {
+        mountedRef.current = false
+        if (sizeTimerRef.current) {
+          BackgroundTimer.clearTimeout(sizeTimerRef.current)
+        }
         if (isWeb && topicIdRef.current) {
           caches.delete(topicIdRef.current)
         }

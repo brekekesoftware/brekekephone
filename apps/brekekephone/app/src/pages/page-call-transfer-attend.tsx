@@ -19,6 +19,7 @@ const innerCls = tw`web:max-w-100 web:min-w-62.5 web:justify-between justify-cen
 
 export const PageCallTransferAttend = observer(() => {
   const prevIdRef = useRef<string | undefined>(undefined)
+  const mountedRef = useRef(true)
 
   const [phoneappliSource, setPhoneappliSource] = useState({
     avatar: '',
@@ -48,6 +49,9 @@ export const PageCallTransferAttend = observer(() => {
         pbxUsername,
         oc.partyNumber,
       )
+      if (!mountedRef.current) {
+        return
+      }
       const src = {
         avatar: rs?.image_url || '',
         username: rs?.display_name || '',
@@ -57,6 +61,9 @@ export const PageCallTransferAttend = observer(() => {
         pbxUsername,
         oc.transferring,
       )
+      if (!mountedRef.current) {
+        return
+      }
       const tgt = {
         avatar: rt?.image_url || '',
         username: rt?.display_name || '',
@@ -78,7 +85,11 @@ export const PageCallTransferAttend = observer(() => {
   }, [ocId])
 
   useEffect(() => {
+    mountedRef.current = true
     getPhoneappliInfo()
+    return () => {
+      mountedRef.current = false
+    }
   }, [])
 
   const resolveMatch = (id: string) => {

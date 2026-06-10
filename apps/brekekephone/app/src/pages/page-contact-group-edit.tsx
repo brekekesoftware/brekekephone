@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FlatList, View } from 'react-native'
 
 import type { UcBuddy } from '#/brekekejs'
@@ -16,6 +16,7 @@ import { BackgroundTimer } from '#/utils/background-timer'
 export const PageContactGroupEdit = observer(
   ({ groupName, listItem }: { groupName: string; listItem: UcBuddy[] }) => {
     const [didMount, setDidMount] = useState(false)
+    const mountTimerRef = useRef<number | undefined>(undefined)
     const [selectedUserItems, setSelectedUserItems] = useState<{
       [k: string]: UcBuddy
     }>({})
@@ -28,7 +29,15 @@ export const PageContactGroupEdit = observer(
         }
       })
       setSelectedUserItems(items)
-      BackgroundTimer.setTimeout(() => setDidMount(true), defaultTimeout)
+      mountTimerRef.current = BackgroundTimer.setTimeout(
+        () => setDidMount(true),
+        defaultTimeout,
+      )
+      return () => {
+        if (mountTimerRef.current) {
+          BackgroundTimer.clearTimeout(mountTimerRef.current)
+        }
+      }
     }, [])
 
     const toggleUser = (item: UcBuddy) => {

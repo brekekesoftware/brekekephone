@@ -41,6 +41,8 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
   const currentScrollPositionRef = useRef(0)
   const isLoadingMoreRef = useRef(false)
   const submittingRef = useRef(false)
+  const mountedRef = useRef(true)
+  const sizeTimerRef = useRef<number | undefined>(undefined)
 
   // Keep a ref to topic_id so the cleanup closure always sees the latest value
   const topicIdRef = useRef('')
@@ -90,7 +92,12 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
       .getBuddyChats(id, { max: numberOfChatsPerLoad })
       .then(chats => {
         ctx.chat.pushMessages(id, chats)
-        BackgroundTimer.setTimeout(onContentSizeChange, defaultTimeout)
+        if (mountedRef.current) {
+          sizeTimerRef.current = BackgroundTimer.setTimeout(
+            onContentSizeChange,
+            defaultTimeout,
+          )
+        }
       })
       .catch((err: Error) => {
         RnAlert.error({
@@ -98,7 +105,9 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
           err,
         })
       })
-    setLoadingRecent(false)
+    if (mountedRef.current) {
+      setLoadingRecent(false)
+    }
     ctx.uc.readUnreadChats(id)
     ctx.chat.updateThreadConfig(id, false, {
       isUnread: false,
@@ -106,8 +115,13 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
   }
 
   useEffect(() => {
+    mountedRef.current = true
     componentDidMountAsync()
     return () => {
+      mountedRef.current = false
+      if (sizeTimerRef.current) {
+        BackgroundTimer.clearTimeout(sizeTimerRef.current)
+      }
       if (isWeb && topicIdRef.current) {
         caches.delete(topicIdRef.current)
       }

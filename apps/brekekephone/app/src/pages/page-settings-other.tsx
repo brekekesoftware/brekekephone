@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { mdiCheck } from '#/assets/icons'
@@ -27,6 +27,7 @@ import {
 import { SyncRingtoneOnForeground } from '#/utils/sync-ringtone-on-foreground'
 
 export const PageSettingsOther = observer(() => {
+  const mountedRef = useRef(true)
   const [status, setStatus] = useState('')
   const [statusText, setStatusText] = useState('')
   const [ringtoneOptions, setRingtoneOptions] = useState<RingtoneOption[]>([])
@@ -46,6 +47,9 @@ export const PageSettingsOther = observer(() => {
     } else {
       ro = await getRingtoneOptions()
     }
+    if (!mountedRef.current) {
+      return
+    }
 
     setStatus(me.status)
     setStatusText(me.statusText)
@@ -54,12 +58,14 @@ export const PageSettingsOther = observer(() => {
   }
 
   useEffect(() => {
+    mountedRef.current = true
     try {
       initData()
     } catch (err) {
       console.error('PageSettingsOther componentDidMount:', err)
     }
     return () => {
+      mountedRef.current = false
       RnPicker.dismiss()
     }
   }, [])
@@ -74,6 +80,9 @@ export const PageSettingsOther = observer(() => {
     ctx.uc
       .setStatus(s, text)
       .then(() => {
+        if (!mountedRef.current) {
+          return
+        }
         const me = ctx.uc.me()
         setStatus(me.status)
         setStatusText(me.statusText)
@@ -101,17 +110,30 @@ export const PageSettingsOther = observer(() => {
       return
     }
     const r = await validateRingtone(value, ca)
+    if (!mountedRef.current) {
+      return
+    }
     setPreview(r)
   }
 
   const onSaveRingtone = async (value: string, ca?: Account) => {
-    await saveRingtoneSelection(value, () => setRingtone(value), ca)
+    await saveRingtoneSelection(
+      value,
+      () => {
+        if (mountedRef.current) {
+          setRingtone(value)
+        }
+      },
+      ca,
+    )
   }
 
   const onUploadRingtone = async () => {
     try {
       await handleUploadRingtone(ringtoneOptions, options => {
-        setRingtoneOptions(options)
+        if (mountedRef.current) {
+          setRingtoneOptions(options)
+        }
       })
     } catch (err) {
       console.error('PageSettingOther onUploadRingtone:', err)
@@ -119,6 +141,9 @@ export const PageSettingsOther = observer(() => {
   }
 
   const onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
+    if (!mountedRef.current) {
+      return
+    }
     setRingtoneOptions(ro)
     setRingtone(r || defaultRingtone)
   }
@@ -244,8 +269,17 @@ export const PageSettingsOther = observer(() => {
 })
 
 const PushNotificationSwitch = observer(() => {
+  const mountedRef = useRef(true)
   const [loading, setLoading] = useState(false)
   const ca = ctx.auth.getCurrentAccount()
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   return (
     <Field
       label={intl`PUSH NOTIFICATION`}
@@ -270,7 +304,9 @@ const PushNotificationSwitch = observer(() => {
             })
           },
         })
-        setLoading(false)
+        if (mountedRef.current) {
+          setLoading(false)
+        }
       }}
       type='Switch'
       value={ca?.pushNotificationEnabled}

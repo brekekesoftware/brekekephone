@@ -23,6 +23,7 @@ import { RnPicker } from '#/stores/rn-picker'
 import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageContactPhonebook = observer(() => {
+  const loadTimerRef = useRef<number | undefined>(undefined)
   const loadContactsDebounced = useRef(
     debounce(() => {
       ctx.contact.offset = 0
@@ -32,14 +33,21 @@ export const PageContactPhonebook = observer(() => {
 
   useEffect(() => {
     ctx.contact.getManageItems()
-    const id = BackgroundTimer.setInterval(() => {
+    loadTimerRef.current = BackgroundTimer.setInterval(() => {
       if (!ctx.pbx.client) {
         return
       }
       ctx.contact.loadContactsFirstTime()
-      BackgroundTimer.clearInterval(id)
+      if (loadTimerRef.current) {
+        BackgroundTimer.clearInterval(loadTimerRef.current)
+        loadTimerRef.current = undefined
+      }
     }, 1000)
     return () => {
+      if (loadTimerRef.current) {
+        BackgroundTimer.clearInterval(loadTimerRef.current)
+      }
+      loadContactsDebounced.cancel()
       if (ctx.contact.isDeleteState) {
         ctx.contact.isDeleteState = false
         ctx.contact.selectedContactIds = {}

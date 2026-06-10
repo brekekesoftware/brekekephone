@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeSyntheticEvent,
   TextInput,
@@ -13,17 +13,34 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnKeyboard } from '#/stores/rn-keyboard'
+import { BackgroundTimer } from '#/utils/background-timer'
 
 export const PageCallKeypad = observer(() => {
   const [txt, setTxt] = useState('')
   const txtRef = useRef<TextInput>(null)
   const txtSelection = useRef({ start: 0, end: 0 })
+  const focusTimerRef = useRef<number | undefined>(undefined)
+
+  useEffect(
+    () => () => {
+      if (focusTimerRef.current) {
+        BackgroundTimer.clearTimeout(focusTimerRef.current)
+      }
+    },
+    [],
+  )
 
   const showKeyboard = () => {
     // android: focus() on an already-focused input is a no-op and the IME
     // stays hidden after a back-press; blur first to force a real re-focus
     txtRef.current?.blur()
-    setTimeout(() => txtRef.current?.focus(), 50)
+    if (focusTimerRef.current) {
+      BackgroundTimer.clearTimeout(focusTimerRef.current)
+    }
+    focusTimerRef.current = BackgroundTimer.setTimeout(
+      () => txtRef.current?.focus(),
+      50,
+    )
   }
 
   const callVoice = async () => {

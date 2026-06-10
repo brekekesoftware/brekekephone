@@ -54,7 +54,15 @@ const Notify: FC<{
 ))
 
 export const ChatGroupInvite = observer(() => {
+  const mountedRef = useRef(true)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const formatGroup = (group: string) => {
     const { id, inviter, name } = ctx.chat.getGroupById(group) || {}
@@ -82,7 +90,11 @@ export const ChatGroupInvite = observer(() => {
     setLoading(true)
     ctx.uc
       .joinChatGroup(group)
-      .then(() => setLoading(false))
+      .then(() => {
+        if (mountedRef.current) {
+          setLoading(false)
+        }
+      })
       .catch((err: Error) =>
         RnAlert.error({
           message: intlDebug`Failed to accept the group chat`,
@@ -120,11 +132,19 @@ export const UnreadChatNoti = observer(() => {
   const alreadyShowNoti = useRef<{ [k: string]: boolean }>({})
   const prevLastMessageId = useRef('')
   const prevUnreadChatTimeoutId = useRef(0)
+  const mountedRef = useRef(true)
 
-  const clear = () => {
+  const clearUnreadTimer = () => {
     if (prevUnreadChatTimeoutId.current) {
       BackgroundTimer.clearTimeout(prevUnreadChatTimeoutId.current)
       prevUnreadChatTimeoutId.current = 0
+    }
+  }
+
+  const clear = () => {
+    clearUnreadTimer()
+    if (!mountedRef.current) {
+      return
     }
     setUnreadChat(null)
   }
@@ -216,7 +236,13 @@ export const UnreadChatNoti = observer(() => {
     prevUnreadChatTimeoutId.current = BackgroundTimer.setTimeout(clear, 5000)
   })
 
-  useEffect(() => () => clear(), [])
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      clearUnreadTimer()
+    }
+  }, [])
 
   if (!unreadChat) {
     return null

@@ -24,6 +24,8 @@ import { BackgroundTimer } from '#/utils/background-timer'
 export const PageContactEdit = observer(() => {
   const [didMount, setDidMount] = useState(false)
   const viewRef = useRef<ScrollView | undefined>(undefined)
+  const mountTimerRef = useRef<number | undefined>(undefined)
+  const scrollTimerRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (ctx.auth.getCurrentAccount()?.ucEnabled) {
@@ -31,7 +33,18 @@ export const PageContactEdit = observer(() => {
     } else {
       ctx.user.loadPbxBuddyList(true)
     }
-    BackgroundTimer.setTimeout(() => setDidMount(true), defaultTimeout)
+    mountTimerRef.current = BackgroundTimer.setTimeout(
+      () => setDidMount(true),
+      defaultTimeout,
+    )
+    return () => {
+      if (mountTimerRef.current) {
+        BackgroundTimer.clearTimeout(mountTimerRef.current)
+      }
+      if (scrollTimerRef.current) {
+        BackgroundTimer.clearTimeout(scrollTimerRef.current)
+      }
+    }
   }, [])
 
   const getDDOptions = (ddIndex: number): DropdownItemProps[] => [
@@ -113,10 +126,14 @@ export const PageContactEdit = observer(() => {
     ctx.nav.backToPageContactUsers()
   }
 
-  const scrollToTopListContact = () =>
-    BackgroundTimer.setTimeout(() => {
+  const scrollToTopListContact = () => {
+    if (scrollTimerRef.current) {
+      BackgroundTimer.clearTimeout(scrollTimerRef.current)
+    }
+    scrollTimerRef.current = BackgroundTimer.setTimeout(() => {
       viewRef.current?.scrollTo({ y: 0, animated: true })
     }, 1000)
+  }
 
   const saveUC = () => {
     const { isSelectedAddAllUser, groups, dataListAllUser, selectedUserIds } =

@@ -12,14 +12,16 @@ type Props = {
 export const SyncRingtoneOnForeground = ({ onForeGround }: Props) => {
   const appStateRef = useRef<AppStateStatus>(AppState.currentState)
   const onForeGroundRef = useRef(onForeGround)
+  const mountedRef = useRef(true)
   onForeGroundRef.current = onForeGround
 
   useEffect(() => {
+    mountedRef.current = true
     const handleAppStateChange = async (nextAppState: AppStateStatus) => {
       const appState = appStateRef.current
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
         const r = await handleRingtoneOptionsInSetting()
-        if (r) {
+        if (r && mountedRef.current) {
           onForeGroundRef.current(r)
         }
       }
@@ -28,6 +30,7 @@ export const SyncRingtoneOnForeground = ({ onForeGround }: Props) => {
 
     const listener = AppState.addEventListener('change', handleAppStateChange)
     return () => {
+      mountedRef.current = false
       listener.remove()
     }
   }, [])
