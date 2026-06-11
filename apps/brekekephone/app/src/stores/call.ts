@@ -82,7 +82,9 @@ export class Call {
 
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
-  callkeepUuid = ''
+  // observable: assigned late (after upsert) and the IncomingCall surface
+  // looks the call up by this value - a plain field would not re-render it
+  @observable callkeepUuid = ''
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
   // fix bug ios turn off pn on the server side side

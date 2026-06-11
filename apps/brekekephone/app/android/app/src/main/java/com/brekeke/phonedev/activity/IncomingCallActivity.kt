@@ -551,6 +551,9 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     val props = Bundle()
     props.putString("uuid", uuid)
     props.putString("callerName", callerName)
+    // fallback lookup key for js: callkeepUuid may fail to associate on the
+    // js side (pn parse edge cases) while pnId is set on the call at upsert
+    props.putString("pnId", PN.id(data!!))
     val s = reactHost.createSurface(this, "IncomingCall", props)
     reactSurface = s
     s.start()
