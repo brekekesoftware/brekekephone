@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
+    "paths": {
+      "#/*": ["../app/src/*"]
+    }
+  },
+  "include": ["./*", "../app/src/**/*"]
+}

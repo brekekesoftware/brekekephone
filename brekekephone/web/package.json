@@ -1,0 +1,34 @@
+{
+  "name": "@brekekephone/brekekephone-web",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build && node ./embed-build"
+  },
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  },
+  "dependencies": {
+    "react-native-svg-web": "1.0.9",
+    "react-native-web": "0.21.2",
+    "react-native-web-linear-gradient": "1.1.2",
+    "sass": "1.99.0"
+  },
+  "devDependencies": {
+    "@craco/craco": "7.1.0",
+    "@tailwindcss/postcss": "4.2.4",
+    "autoprefixer": "10.5.0",
+    "babel-loader": "10.1.1",
+    "cheerio": "1.2.0",
+    "circular-dependency-plugin": "5.2.2",
+    "postcss": "8.5.14",
+    "postcss-loader": "8.2.1",
+    "react-scripts": "5.0.1"
+  },
+  "homepage": "./",
+  "browserslist": "ie 10-11",
+  "ignoreTsc": true
+}

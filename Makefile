@@ -1,58 +1,12 @@
 V := $(shell jq -r ".appVersion" package.json)
 
 intl:
-	@cd ./apps/brekekephone/app \
+	@cd ./brekekephone/app \
 	&& rm -rf ./intl-new-en.local.json \
 	&& export EXTRACT_INTL=1 \
 	&& npx babel src -x .js,.ts,.tsx -d ./build \
 	&& rm -rf ./build \
 	&& node ./intl-build;
-
-###############################################################################
-# clean
-
-clean:
-	@make clean_rm \
-	&& pnpm ci \
-	&& pnpm dedupe \
-	&& cd ./apps/brekekephone/app \
-	&& cd ./ios \
-	&& pod install --repo-update \
-	&& cd ../android \
-	&& ./gradlew clean;
-
-clean_rm:
-	@cd ./apps/brekekephone/app \
-	&& rm -rf \
-		./ios/build \
-		./ios/Pods \
-		./ios/Podfile.lock \
-		~/Library/Developer/Xcode/DerivedData \
-		./android/.gradle \
-		./android/app/.cxx \
-		./android/build;
-
-clean_deep:
-	@make clean_deep_rm \
-	&& pnpm ci \
-	&& pnpm dedupe \
-	&& cd ./apps/brekekephone/app \
-	&& cd ./ios \
-	&& pod cache clean --all \
-	&& pod deintegrate \
-	&& pod install --repo-update \
-	&& cd ../android \
-	&& ./gradlew clean;
-
-clean_deep_rm:
-	@make clean_rm \
-	&& rm -rf \
-		~/Library/Caches/CocoaPods \
-		~/.gradle/caches \
-		~/.gradle/daemon \
-		$$TMPDIR/react-native* \
-		$$TMPDIR/metro* \
-		$$TMPDIR/haste-map*;
 
 ###############################################################################
 # build and upload to dev01
@@ -62,7 +16,7 @@ phonedev:
 	&& pnpm i --frozen-lockfile \
 	&& scp "./build/BrekekePhone/Brekeke Phone Dev.ipa" dev01:/var/www/upload/brekeke_phonedev$(V).ipa \
 	&& rm -rf ./build/BrekekePhone \
-	&& cd ./apps/brekekephone/app \
+	&& cd ./brekekephone/app \
 	&& cd ./android \
 	&& ./gradlew clean \
 	&& ./gradlew generateCodegenArtifactsFromSchema \
@@ -76,7 +30,7 @@ phone:
 	&& pnpm i --frozen-lockfile \
 	&& scp "./build/BrekekePhone/Brekeke Phone.ipa" dev01:/var/www/upload/brekeke_phone$(V).ipa \
 	&& rm -rf ./build/BrekekePhone \
-	&& cd ./apps/brekekephone/app \
+	&& cd ./brekekephone/app \
 	&& cd ./android \
 	&& ./gradlew clean \
 	&& ./gradlew generateCodegenArtifactsFromSchema \
@@ -88,7 +42,7 @@ phone:
 web:
 	@echo "appVersion=$(V)" \
 	&& pnpm i --frozen-lockfile \
-	&& cd ./apps/brekekephone/web \
+	&& cd ./brekekephone/web \
 	&& pnpm build \
 	&& mv ./build ./brekeke_phone$(V) \
 	&& zip -vr ./brekeke_phone$(V).zip ./brekeke_phone$(V) \
@@ -100,7 +54,7 @@ web:
 
 embed_b:
 	@pnpm i --frozen-lockfile \
-	&& cd ./apps/brekekephone/web \
+	&& cd ./brekekephone/web \
 	&& pnpm build \
 	&& cd ../../embed-example/react \
 	&& rm -rf ./public/brekeke_phone* \
@@ -108,7 +62,7 @@ embed_b:
 
 embed_u:
 	@pnpm i --frozen-lockfile \
-	&& cd ./apps/embed-example/react \
+	&& cd ./embed-example/react \
 	&& pnpm build \
 	&& mv ./dist ./embed \
 	&& zip -vr ./embed.zip ./embed \
@@ -120,7 +74,7 @@ embed_u:
 
 dev:
 	@pnpm i --frozen-lockfile \
-	&& cd ./apps/dev01/web \
+	&& cd ./dev01/web \
 	&& pnpm build \
 	&& mv ./dist ./dev-web \
 	&& zip -vr ./dev-web.zip ./dev-web \
@@ -142,7 +96,7 @@ chmod:
 	@ssh dev01 "sudo chmod -R a+rwX /var/www";
 
 ssl:
-	@bash ./apps/dev01/ssl.sh;
+	@bash ./dev01/ssl.sh;
 
 keyhash1:
 	@ssh dev01 "openssl x509 -in /etc/letsencrypt/live/dev01.brekeke.com/cert.pem -pubkey -noout" \
@@ -156,6 +110,52 @@ keyhash2:
 	| openssl pkey -pubin -outform der \
 	| openssl dgst -sha256 -binary \
 	| openssl enc -base64;
+
+###############################################################################
+# clean
+
+clean:
+	@make clean_rm \
+	&& pnpm clean \
+	&& pnpm dedupe \
+	&& cd ./brekekephone/app \
+	&& cd ./ios \
+	&& pod install --repo-update \
+	&& cd ../android \
+	&& ./gradlew clean;
+
+clean_rm:
+	@cd ./brekekephone/app \
+	&& rm -rf \
+		./ios/build \
+		./ios/Pods \
+		./ios/Podfile.lock \
+		~/Library/Developer/Xcode/DerivedData \
+		./android/.gradle \
+		./android/app/.cxx \
+		./android/build;
+
+clean_deep:
+	@make clean_deep_rm \
+	&& pnpm clean \
+	&& pnpm dedupe \
+	&& cd ./brekekephone/app \
+	&& cd ./ios \
+	&& pod cache clean --all \
+	&& pod deintegrate \
+	&& pod install --repo-update \
+	&& cd ../android \
+	&& ./gradlew clean;
+
+clean_deep_rm:
+	@make clean_rm \
+	&& rm -rf \
+		~/Library/Caches/CocoaPods \
+		~/.gradle/caches \
+		~/.gradle/daemon \
+		$$TMPDIR/react-native* \
+		$$TMPDIR/metro* \
+		$$TMPDIR/haste-map*;
 
 ###############################################################################
 # fmt

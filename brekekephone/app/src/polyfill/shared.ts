@@ -1,0 +1,20 @@
+import '@rntwsc/rn/storage/polyfill-async-storage'
+import '#/polyfill/mobx'
+
+import JsSIP from 'jssip'
+import MD5 from 'md5'
+
+declare global {
+  type Window = {
+    JsSIP: typeof JsSIP
+    CryptoJS: {
+      MD5: Function
+    }
+  }
+}
+
+// dependency for brekekejs
+window.JsSIP = window.JsSIP || JsSIP
+window.CryptoJS = window.CryptoJS || {
+  MD5,
+}

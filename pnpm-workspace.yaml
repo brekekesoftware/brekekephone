@@ -1,11 +1,12 @@
 packages:
-  - './*/*/*'
+  - './*/*'
 
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': true
   core-js: true
   core-js-pure: true
+  esbuild: false
   sharp: false
 
 overrides:
@@ -15,6 +16,7 @@ overrides:
   react-dom: 19.1.0
   react-native: 0.80.1
   react: 19.1.0
+  ts-lib: 2.8.1
 
 patchedDependencies:
   '@react-native-documents/picker': patches/@react-native-documents__picker.patch

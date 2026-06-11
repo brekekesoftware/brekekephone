@@ -1,0 +1,45 @@
+import { isWeb } from '@rntwsc/rn/core/utils/platform'
+import { filesize } from 'filesize'
+import { observer } from 'mobx-react'
+
+import { mdiKeyboardBackspace } from '#/assets/icons'
+import { Field } from '#/components/field'
+import { Layout } from '#/components/layout'
+import { ctx } from '#/stores/ctx'
+import { intl } from '#/stores/intl'
+
+export const PageSettingsDebugFiles = observer(() => {
+  const logFiles = ctx.debug.logFiles
+  return (
+    <Layout
+      title={intl`Debug Log`}
+      description={intl`Debug Log`}
+      dropdown={
+        !isWeb
+          ? [
+              {
+                label: intl`Clear all Debug Log`,
+                onPress: ctx.debug.clearLogFiles,
+                danger: true,
+              },
+            ]
+          : undefined
+      }
+      onBack={ctx.nav.backToPageAccountSignIn}
+    >
+      <Field isGroup label={intl`DEBUG LOG (${logFiles.length})`} />
+      {logFiles.length > 0 &&
+        logFiles.map(file => (
+          <Field
+            key={file.path}
+            createBtnIcon={mdiKeyboardBackspace}
+            createBtnIconClassName='rotate-180'
+            label={file.name}
+            onCreateBtnPress={() => ctx.debug.openLogFile(file)}
+            onTouchPress={() => ctx.debug.openLogFile(file)}
+            value={`${filesize(file.size)}`}
+          />
+        ))}
+    </Layout>
+  )
+})

@@ -2,7 +2,7 @@
 
 [App Store](https://apps.apple.com/us/app/brekeke-phone/id1233825750) | [Google Play](https://play.google.com/store/apps/details?id=com.brekeke.phone)
 
-This project was merged with the boilerplate [react-native-tailwind-nextjs](https://github.com/namnm/react-native-tailwind-nextjs) to support tailwind class names and modern code structure setup. At the time of writing, this project was a legacy setup using react native old architecture, with many custom package patches, all attempts were failed to use NativeWind or UniWind.
+This project is using [rntwsc](https://github.com/namnm/rntwsc) to support tailwind class names and modern code structure setup. At the time of writing, this project was a legacy setup using react native old architecture, with many custom package patches, all attempts were failed to use NativeWind or UniWind.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
