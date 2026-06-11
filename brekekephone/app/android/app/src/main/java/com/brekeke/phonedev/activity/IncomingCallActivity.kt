@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.KeyguardManager
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -147,6 +148,9 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
     )
+    // ringing stays portrait; setCallAnswered unlocks rotation for the
+    // in-call react surface (manifest has no fixed screenOrientation anymore)
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
     setContentView(R.layout.incoming_call_activity)
     BrekekeUtils.activities.add(this)
@@ -572,6 +576,9 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     // the surface was pre-warmed hidden in onCreate, reveal it now; the
     // ProgressBar behind it covers the gap if js is not ready yet
     vReactContainer.visibility = View.VISIBLE
+    // unlock rotation for the in-call ui; SCREEN_ORIENTATION_USER follows the
+    // sensor but still respects the system rotation lock setting
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
   }
 
   fun onCallConnected() {

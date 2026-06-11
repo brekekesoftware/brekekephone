@@ -45,6 +45,9 @@ type TBrekekeUtils = {
   // open MainActivity from the embedded incoming call surface,
   // dismissing the keyguard first if the device is locked
   openMainActivity(): void
+  // 'user' unlocks rotation while the call manage page is visible,
+  // 'portrait' restores the default lock for the rest of the app
+  setMainOrientation(mode: 'user' | 'portrait'): void
   getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
   setUserAgentConfig(userAgentConfig: string): void
@@ -154,6 +157,7 @@ const Polyfill: TBrekekeUtils = {
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
   openMainActivity: () => undefined,
+  setMainOrientation: () => undefined,
   getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
   setUserAgentConfig: () => undefined,

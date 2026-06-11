@@ -42,6 +42,7 @@ import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 import { checkMutedRemoteUser } from '#/utils/check-muted-remote-user'
+import { EOrientation, useOrientation } from '#/utils/use-orientation'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export const backAction = () =>
@@ -66,6 +67,14 @@ export const RenderAllCalls = observer(() => {
       backAction()
     }
   }, [callsLength])
+
+  // only the call manage page may rotate: unlock while it is visible and
+  // restore the portrait lock when leaving (manifest defaults MainActivity
+  // to portrait). the incoming call activity manages its own orientation
+  const inCallManage = !!ctx.call.inPageCallManage
+  useEffect(() => {
+    BrekekeUtils.setMainOrientation(inCallManage ? 'user' : 'portrait')
+  }, [inCallManage])
 
   if (ctx.call.inPageCallManage && !ctx.call.calls.length) {
     return (
@@ -94,6 +103,7 @@ export const PageCallManage = observer(
     setAlreadySetShowButtonsInVideoCall,
   ] = useState(false)
   const [hasJavaPn, setHasJavaPn] = useState(!embedded)
+  const landscape = useOrientation() === EOrientation.Landscape
 
   const appStateSubscriptionRef = useRef<NativeEventSubscription | undefined>(
     undefined,
@@ -307,13 +317,14 @@ export const PageCallManage = observer(
         <View
           className={[
             'w-full flex-1 items-center justify-start',
-            !c.answered && 'max-h-[80vw]',
+            // in landscape 80vw overflows the height, cap by height instead
+            !c.answered && (landscape ? 'max-h-[60vh]' : 'max-h-[80vw]'),
           ]}
         >
           <View
             className={[
               'aspect-square h-full overflow-hidden',
-              c.answered && 'max-h-[80vw]',
+              c.answered && (landscape ? 'max-h-[60vh]' : 'max-h-[80vw]'),
             ]}
           >
             {avatarImages}
@@ -598,6 +609,25 @@ export const PageCallManage = observer(
         </View>
       )
     }
+    // voice call landscape: avatar/name on the left, controls column on the
+    // right. video keeps the portrait structure (absolute full-bleed video
+    // reflows by itself, the carousel/grid gets reworked in the next phase)
+    if (landscape && !c.localVideoEnabled) {
+      return (
+        <>
+          <View className='flex-1 flex-row items-stretch self-stretch'>
+            <View className='flex-1 flex-col items-center justify-center'>
+              {renderAvatar()}
+            </View>
+            <View className='flex-1 flex-col items-center justify-center'>
+              {renderBtns()}
+              {renderHangupBtn()}
+            </View>
+          </View>
+          {c.transferring ? renderTransferring() : null}
+        </>
+      )
+    }
     return (
       <>
         {c.localVideoEnabled && renderVideo()}
@@ -614,7 +644,11 @@ export const PageCallManage = observer(
           <View
             className={
               c.localStreamObject
-                ? 'min-h-54 shrink basis-56'
+                ? // landscape has no room for the full PIP clearance, accept
+                  // some crowding until the conference grid rework
+                  landscape
+                  ? 'min-h-12 shrink basis-24'
+                  : 'min-h-54 shrink basis-56'
                 : 'shrink basis-24'
             }
           />

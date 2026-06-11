@@ -7,6 +7,7 @@ import android.app.role.RoleManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Build.VERSION
@@ -816,6 +817,18 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
             }
           },
       )
+    }
+  }
+
+  // unlock/lock MainActivity rotation: only the call manage page allows
+  // landscape (manifest defaults MainActivity to portrait). the incoming
+  // call activity manages its own orientation separately
+  @ReactMethod
+  fun setMainOrientation(mode: String) {
+    UiThreadUtil.runOnUiThread {
+      main?.requestedOrientation =
+          if ("user" == mode) ActivityInfo.SCREEN_ORIENTATION_USER
+          else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
   }
 
