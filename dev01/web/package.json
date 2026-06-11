@@ -1,0 +1,30 @@
+{
+  "name": "@brekekephone/dev-01-web",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "https": "export HTTPS=true && vite",
+    "build": "vite build"
+  },
+  "engines": {
+    "node": ">=24.11",
+    "pnpm": ">=11"
+  },
+  "dependencies": {
+    "humanize-duration": "3.33.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "semver-compare": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/humanize-duration": "3.27.4",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/semver-compare": "1.0.3",
+    "@vitejs/plugin-basic-ssl": "2.3.0",
+    "@vitejs/plugin-react": "6.0.2",
+    "vite": "8.0.11"
+  }
+}

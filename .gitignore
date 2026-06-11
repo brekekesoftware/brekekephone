@@ -1,21 +1,21 @@
 # Xcode
 #
 **/build/
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
+**/*.pbxuser
+!**/default.pbxuser
+**/*.mode1v3
+!**/default.mode1v3
+**/*.mode2v3
+!**/default.mode2v3
+**/*.perspectivev3
+!**/default.perspectivev3
 **/xcuserdata/
-*.xccheckout
-*.moved-aside
+**/*.xccheckout
+**/*.moved-aside
 **/DerivedData/
-*.hmap
-*.ipa
-*.xcuserstate
+**/*.hmap
+**/*.ipa
+**/*.xcuserstate
 **/ios/.xcode.env.local
 
 # Android/IntelliJ
@@ -25,11 +25,11 @@
 **/.idea/
 **/.kotlin/
 **/.gradle/
-local.properties
-*.iml
-*.hprof
-*.keystore
-!debug.keystore
+**/local.properties
+**/*.iml
+**/*.hprof
+**/*.keystore
+!**/debug.keystore
 
 # node.js
 #
@@ -37,12 +37,12 @@ local.properties
 **/.pnpm/
 **/.pnpm-store/
 **/.pnp/
-.pnp.js
+**/.pnp.js
 **/logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
 
 # fastlane
 #
@@ -53,34 +53,34 @@ yarn-error.log*
 
 **/fastlane/report.xml
 **/fastlane/Preview.html
-**/fastlane/screenshots
-**/fastlane/test_output
+**/fastlane/screenshots/
+**/fastlane/test_output/
 
 # Bundle artifact
-*.jsbundle
+**/*.jsbundle
 
 # Ruby / CocoaPods
 **/ios/Pods/
 **/vendor/bundle/
 
 # Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
+**/.metro-health-check*
 
 # testing
 **/coverage/
 
 # misc
-.DS_Store
-.env
-.env.test
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+**/.DS_Store
+**/.env
+**/.env.test
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
 **/.vscode/
 **/dist/
 **/dist-*/
-next-env.d.ts
+**/next-env.d.ts
 **/.next/
 **/.vercel/
 **/out/
@@ -92,16 +92,16 @@ next-env.d.ts
 **/target/
 
 # local/debug output
-*.local
-*.local.*
-*.debug.*
-*.sqlite
-*.sqlite3
+**/*.local
+**/*.local.*
+**/*.debug.*
+**/*.sqlite
+**/*.sqlite3
 
 # pick one between npm/yarn/pnpm
-package-lock.json
-yarn.lock
-# pnpm-lock.yaml
+**/package-lock.json
+**/yarn.lock
+# **/pnpm-lock.yaml
 
 # others
 **/GoogleService-Info.plist

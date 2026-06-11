@@ -5,13 +5,13 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "fmt": "node ./devtools fmt",
+    "fmt": "node ./devtools normalize,eslint,stylelint,prettier",
     "doctoc": "node ./devtools doctoc",
     "normalize": "node ./devtools normalize",
     "eslint": "node ./devtools eslint",
     "stylelint": "node ./devtools stylelint",
     "prettier": "node ./devtools prettier",
-    "ts": "node ./devtools ts",
+    "ts": "node ./devtools tsc,type-coverage",
     "tsc": "node ./devtools tsc",
     "type-coverage": "node ./devtools type-coverage"
   },
@@ -21,6 +21,10 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.2",
+    "@rntwsc/devtools": "github:namnm/rntwsc#80c3567b0599574a496800e8d19da46351f0259f&path:dist/devtools",
+    "@rntwsc/nodejs": "github:namnm/rntwsc#80c3567b0599574a496800e8d19da46351f0259f&path:dist/nodejs",
+    "@rntwsc/rn": "github:namnm/rntwsc#80c3567b0599574a496800e8d19da46351f0259f&path:dist/rn",
+    "@rntwsc/shared": "github:namnm/rntwsc#80c3567b0599574a496800e8d19da46351f0259f&path:dist/shared",
     "json5": "2.2.3",
     "tsconfig-paths": "4.2.0"
   },
