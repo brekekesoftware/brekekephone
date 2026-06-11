@@ -53,10 +53,9 @@ object LpcUtils {
   }
 
   fun createReactContextInBackground(r: ReactApplication) {
-    val rim = r.reactNativeHost.reactInstanceManager
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground()
-    }
+    // bridgeless: the legacy ReactInstanceManager path would spin up a second
+    // js runtime besides the one ReactHost owns; start() is idempotent
+    r.reactHost?.start()
   }
 
   fun checkAppInBackground(): Boolean {

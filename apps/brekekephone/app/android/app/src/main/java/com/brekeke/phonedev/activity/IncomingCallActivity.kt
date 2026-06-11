@@ -40,9 +40,9 @@ import com.brekeke.phonedev.utils.Ringtone
 import com.brekeke.phonedev.utils.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.interfaces.fabric.ReactSurface
 import io.wazo.callkeep.RNCallKeepModule
 import java.util.Timer
 import java.util.TimerTask
@@ -50,8 +50,11 @@ import org.json.JSONObject
 
 // incoming call screen
 open class IncomingCallActivity : Activity(), View.OnClickListener {
-  private var reactRootView: ReactRootView? = null
+  private var reactSurface: ReactSurface? = null
   lateinit var vReactContainer: FrameLayout
+
+  private val reactHost
+    get() = (application as MainApplication).reactHost
   private lateinit var vToast: LinearLayout
 
   fun toast(m: String, d: String?, t: String) = Toast.show(vToast, m, d, t)
@@ -190,6 +193,11 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     txtCallerName.text = callerName
     txtConnectionStatus.setOnClickListener(this)
 
+    // must init the container and pre-warm the surface before the autoAnswer
+    // path below - setCallAnswered touches both
+    vReactContainer = findViewById(R.id.react_root_container)
+    mountReactView()
+
     updateLabels()
     if (autoAnswer) {
       handleClickAnswerCall()
@@ -197,8 +205,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
       updateHeader()
     }
     updateCallConfig()
-
-    vReactContainer = findViewById(R.id.react_root_container)
   }
 
   override fun onNewIntent(intent: Intent) {
@@ -209,12 +215,16 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
   override fun onPause() {
     debug("onPause")
     paused = true
+    reactHost.onHostPause(this)
     super.onPause()
   }
 
   override fun onResume() {
     super.onResume()
     debug("onResume answered=$answered")
+    // required for touch/timers of the embedded surface when MainActivity
+    // does not exist (app killed) - ReactActivity does this for its own window
+    reactHost.onHostResume(this)
     Emitter.emit("onResume", "")
     if (!answered) {
       Ringtone.play(ringtone, username, tenant, host, port)
@@ -234,10 +244,9 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     } catch (_: Exception) {}
     timerTask = null
     timer = null
-    reactRootView?.let {
-      it.unmountReactApplication()
-      reactRootView = null
-    }
+    reactSurface?.stop()
+    reactSurface = null
+    reactHost.onHostDestroy(this)
     BrekekeUtils.onActivityDestroy(uuid!!)
     onBtnRejectClick(null)
     super.onDestroy()
@@ -533,15 +542,19 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     }
   }
 
+  // bridgeless: ReactSurface replaces the legacy ReactRootView/ReactInstanceManager
+  // pair which would spin up a second JS runtime when the new arch is enabled.
+  // called early in onCreate to pre-warm: the surface starts rendering (hidden)
+  // while the phone is still ringing, so the UI shows instantly on answer
   private fun mountReactView() {
-    if (reactRootView != null) return
-    val instanceManager = (application as MainApplication).reactNativeHost.reactInstanceManager
-    reactRootView = ReactRootView(this)
+    if (reactSurface != null) return
     val props = Bundle()
     props.putString("uuid", uuid)
-    reactRootView!!.startReactApplication(instanceManager, "IncomingCall", props)
-    vReactContainer.addView(reactRootView)
-    vReactContainer.visibility = View.VISIBLE
+    props.putString("callerName", callerName)
+    val s = reactHost.createSurface(this, "IncomingCall", props)
+    reactSurface = s
+    s.start()
+    s.view?.let { vReactContainer.addView(it) }
   }
 
   private fun setCallAnswered() {
@@ -553,6 +566,9 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     vHeaderIncomingCall.visibility = View.GONE
     destroyAvatarWebView()
     mountReactView()
+    // the surface was pre-warmed hidden in onCreate, reveal it now; the
+    // ProgressBar behind it covers the gap if js is not ready yet
+    vReactContainer.visibility = View.VISIBLE
   }
 
   fun onCallConnected() {

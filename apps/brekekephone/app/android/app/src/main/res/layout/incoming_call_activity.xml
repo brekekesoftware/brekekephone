@@ -190,5 +190,13 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:visibility="gone"
-  />
+  >
+    <!-- connecting placeholder: visible until the react surface view on top
+         of it produces its first frame (fast answer before js is ready) -->
+    <ProgressBar
+      android:layout_gravity="center"
+      android:layout_height="48dp"
+      android:layout_width="48dp"
+    />
+  </FrameLayout>
 </RelativeLayout>
