@@ -788,6 +788,29 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
     }
   }
 
+  // open MainActivity from the embedded js call ui, dismissing the keyguard
+  // first if needed - mirrors the old native call manage buttons
+  // (transfer/park/dtmf) which emitted their event then openMainActivity()
+  @ReactMethod
+  fun openMainActivity() {
+    UiThreadUtil.runOnUiThread {
+      val a = activities.lastOrNull { !it.destroyed } ?: return@runOnUiThread
+      if (!isLocked()) {
+        a.openMainActivity()
+        return@runOnUiThread
+      }
+      km!!.requestDismissKeyguard(
+          a,
+          object : KeyguardManager.KeyguardDismissCallback() {
+            override fun onDismissSucceeded() {
+              super.onDismissSucceeded()
+              a.openMainActivity()
+            }
+          },
+      )
+    }
+  }
+
   @ReactMethod
   fun insertCallLog(number: String, type: Int) {
     val ctx = Ctx.app()!!

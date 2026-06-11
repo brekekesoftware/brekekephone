@@ -43,6 +43,9 @@ type TBrekekeUtils = {
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
+  // open MainActivity from the embedded incoming call surface,
+  // dismissing the keyguard first if the device is locked
+  openMainActivity(): void
   getRingerMode(): Promise<number>
   insertCallLog(number: string, type: CallLogType): void
   setUserAgentConfig(userAgentConfig: string): void
@@ -151,6 +154,7 @@ const Polyfill: TBrekekeUtils = {
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
+  openMainActivity: () => undefined,
   getRingerMode: () => Promise.resolve(-1),
   insertCallLog: () => undefined,
   setUserAgentConfig: () => undefined,

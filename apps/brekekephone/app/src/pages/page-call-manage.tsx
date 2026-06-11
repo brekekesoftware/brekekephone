@@ -106,8 +106,12 @@ export class RenderAllCalls extends Component {
 }
 
 @observer
-class PageCallManage extends Component<{
+export class PageCallManage extends Component<{
   call: Call
+  // rendered inside the IncomingCall surface mounted in IncomingCallActivity
+  // (no nav stack there): always visible, no java pn delegation, nav actions
+  // must open MainActivity first
+  embedded?: boolean
 }> {
   componentDidMount = () => {
     // handle the case when app is killed and opened during a call with incoming call
@@ -155,9 +159,10 @@ class PageCallManage extends Component<{
     }
   }
 
-  @observable private hasJavaPn = true
+  @observable private hasJavaPn = !this.props.embedded
   private checkJavaPn = async () => {
     if (
+      this.props.embedded ||
       !isAndroid ||
       !this.props.call.incoming ||
       !ctx.auth.getCurrentAccount()?.pushNotificationEnabled
@@ -236,7 +241,21 @@ class PageCallManage extends Component<{
 
   private isVisible = () => {
     const { call: c } = this.props
+    if (this.props.embedded) {
+      // the surface only exists for this call, the activity controls visibility
+      return true
+    }
     return ctx.call.inPageCallManage && ctx.call.displayingCallId === c.id
+  }
+
+  // embedded: the target page lives in the main root (MainActivity), so bring
+  // it to front (unlocking the keyguard if needed) before navigating - same
+  // behavior as the old native buttons which emitted then openMainActivity()
+  private navOnMain = (fn: () => void) => {
+    if (this.props.embedded) {
+      BrekekeUtils.openMainActivity()
+    }
+    fn()
   }
 
   private isBtnHidden = (k: CallConfigKey) => {
@@ -276,9 +295,9 @@ class PageCallManage extends Component<{
             : undefined
         }
         iconRights={!c.transferring ? [mdiChat] : []}
-        iconRightFuncs={[() => navChatDetail()]}
+        iconRightFuncs={[() => this.navOnMain(navChatDetail)]}
         noScroll
-        onBack={backAction}
+        onBack={() => this.navOnMain(backAction)}
         title={c.getDisplayName() || intl`Connecting...`}
         transparent={!c.transferring}
       >
@@ -438,7 +457,9 @@ class PageCallManage extends Component<{
         {n > 0 && (
           <FieldButton
             label={intl`BACKGROUND CALLS`}
-            onCreateBtnPress={ctx.nav.goToPageCallBackgrounds}
+            onCreateBtnPress={() =>
+              this.navOnMain(ctx.nav.goToPageCallBackgrounds)
+            }
             textInputClassName='pr-12.5'
             disabled={ctx.call.isAnyHoldLoading}
             value={
@@ -463,7 +484,9 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`TRANSFER`}
               noborder
-              onPress={ctx.nav.goToPageCallTransferChooseUser}
+              onPress={() =>
+                this.navOnMain(ctx.nav.goToPageCallTransferChooseUser)
+              }
               path={mdiCallSplit}
               size={40}
               textcolor='white'
@@ -477,7 +500,7 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`PARK`}
               noborder
-              onPress={ctx.nav.goToPageCallParksOngoing}
+              onPress={() => this.navOnMain(ctx.nav.goToPageCallParksOngoing)}
               path={mdiAlphaPCircle}
               size={40}
               textcolor='white'
@@ -554,7 +577,7 @@ class PageCallManage extends Component<{
               color='black'
               name={intl`KEYPAD`}
               noborder
-              onPress={ctx.nav.goToPageCallDtmfKeypad}
+              onPress={() => this.navOnMain(ctx.nav.goToPageCallDtmfKeypad)}
               path={mdiDialpad}
               size={40}
               textcolor='white'
