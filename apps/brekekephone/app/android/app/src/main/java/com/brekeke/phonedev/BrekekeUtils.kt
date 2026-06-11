@@ -190,7 +190,15 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
         return
       }
       val now = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())
-      val mutableM = m.toMutableMap()
+      // must mutate the caller map IN PLACE: the same instance is forwarded to
+      // js afterwards (BrekekeMessagingService initialNotifications + the
+      // RemoteMessage for react-native-notifications, BrekekeLpcSocket
+      // lpcPnMessage emit) and js builds its pnId->callkeepUuid map from it.
+      // a copy here loses callkeepUuid on the js side: the call then never
+      // associates with the uuid, so answer/end events resolve no call (the
+      // old java code mutated RemoteMessage.data directly - it is a mutable
+      // ArrayMap at runtime)
+      val mutableM = (m as? MutableMap<String, String>) ?: m.toMutableMap()
       mutableM["callkeepAt"] = now
       val uuid = UUID.randomUUID().toString().uppercase()
       mutableM["callkeepUuid"] = uuid
