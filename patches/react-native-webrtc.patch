@@ -1,19 +1,8 @@
-diff --git a/android/build.gradle b/android/build.gradle
-index 803c19d87732d3685546619156784a653cce31c4..e69cfd605a622d6c67c6122551b56e1e1bdbec1c 100644
---- a/android/build.gradle
-+++ b/android/build.gradle
-@@ -25,5 +25,5 @@ android {
- 
- dependencies {
-     implementation 'com.facebook.react:react-native:+'
--    api 'org.jitsi:webrtc:111.+'
-+    api 'org.jitsi:webrtc:124.0.0'
- }
 diff --git a/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java b/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
-index 95ede811e3f03298a271aa98ad9cf4dbb67647d4..b82fd2a6a8c61f1f90ba0c5615eaa2861068b100 100644
+index 5d14d0f76460ee9a73086fca706e3cf70e8ab631..d2c08ab3cae57380aee9b377895da1f01f36fc0f 100644
 --- a/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
 +++ b/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
-@@ -423,7 +423,7 @@ public class WebRTCView extends ViewGroup {
+@@ -451,7 +451,7 @@ public class WebRTCView extends ViewGroup {
       * @param streamURL The URL of the {@code MediaStream} to be rendered by
       * this {@code WebRTCView} or {@code null}.
       */

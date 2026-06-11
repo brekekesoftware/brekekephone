@@ -63,3 +63,36 @@ index f9c858b068b3f3dd29c5e0ab9c1aa3efcf7f88e0..94ea1884c8d84d6d81efeb8ebe91dacf
  
  public abstract class NotificationManagerCompatFacade {
      public static NotificationManagerCompat from(@NonNull Context context) {
+diff --git a/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java b/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
+index 7db6e8d88f8cc46b264224d2adfe16b10ad67122..69e3c2bc4f111e950dd34cd3c64560c708923d6f 100644
+--- a/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
++++ b/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
+@@ -88,11 +88,25 @@ public class FcmToken implements IFcmToken {
+     }
+ 
+     protected void sendTokenToJS() {
+-        final ReactInstanceManager instanceManager = ((ReactApplication) mAppContext).getReactNativeHost().getReactInstanceManager();
+-        final ReactContext reactContext = instanceManager.getCurrentReactContext();
++        final ReactApplication reactApp = (ReactApplication) mAppContext;
++        ReactContext reactContext = null;
++        // New Architecture (Bridgeless): the running context lives on ReactHost,
++        // not on the legacy ReactInstanceManager. getReactInstanceManager() /
++        // hasActiveCatalystInstance() do not work under Bridgeless, so without
++        // this the token event is silently dropped and JS getToken() hangs.
++        final com.facebook.react.ReactHost reactHost = reactApp.getReactHost();
++        if (reactHost != null) {
++            reactContext = reactHost.getCurrentReactContext();
++        }
++        // Fallback for the old bridge architecture.
++        if (reactContext == null) {
++            try {
++                reactContext = reactApp.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
++            } catch (Throwable ignored) {}
++        }
+ 
+         // Note: Cannot assume react-context exists cause this is an async dispatched service.
+-        if (reactContext != null && reactContext.hasActiveCatalystInstance()) {
++        if (reactContext != null) {
+             Bundle tokenMap = new Bundle();
+             tokenMap.putString("deviceToken", sToken);
+             mJsIOHelper.sendEventToJS(TOKEN_RECEIVED_EVENT_NAME, tokenMap, reactContext);
