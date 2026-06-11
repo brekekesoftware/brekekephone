@@ -2,9 +2,9 @@ import { transform as defaultTransform } from '@react-native/metro-babel-transfo
 import { transform as svgTransform } from 'react-native-svg-transformer/react-native'
 
 import {
-  cssVariablesFilenameRegex,
-  transformCssVariables,
-} from '@/devtools/webpack-css-variables/transform-css-variables'
+  cssExtractVariablesRegex,
+  transformCssExtractVariables,
+} from '@/devtools/webpack-css-extract-variables/transform'
 
 type Options = {
   filename: string
@@ -20,10 +20,10 @@ export const transform = ({ filename, src, ...options }: Options) => {
     })
   }
 
-  if (cssVariablesFilenameRegex.test(filename)) {
+  if (cssExtractVariablesRegex.test(filename)) {
     return defaultTransform({
       filename,
-      src: transformCssVariables(src),
+      src: transformCssExtractVariables(src, filename),
       ...options,
     })
   }

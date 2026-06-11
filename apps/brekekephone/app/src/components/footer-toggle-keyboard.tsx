@@ -1,20 +1,12 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Keyboard } from 'react-native'
+
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isWeb } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
-
-const css = {
-  ToggleKeyboard: {
-    borderRadius: v.borderRadius,
-    backgroundColor: v.hoverBg,
-    ...v.boxShadow,
-  },
-}
 
 export const ToggleKeyboard: FC<{
   onShowKeyboard(): void
@@ -28,8 +20,7 @@ export const ToggleKeyboard: FC<{
         onPress={
           RnKeyboard.isKeyboardShowing ? Keyboard.dismiss : onShowKeyboard
         }
-        className='flex-row mr-2 mb-1 py-2 w-12'
-        style={css.ToggleKeyboard}
+        className='bg-muted rounded-button mr-2 mb-1 w-12 flex-row py-2 shadow-sm'
       >
         {/* Fix button size does not equal with the Actions */}
         <RnText className='w-0 overflow-hidden leading-6'>{'\u200a'}</RnText>

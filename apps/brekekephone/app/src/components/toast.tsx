@@ -2,24 +2,27 @@ import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Animated } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText } from '#/components/rn'
+import { AnimatedView } from '#/components/rn-class-name-components'
 
 type ToastProps = {
   title: string
   isVisible?: boolean
   duration?: number
-  containerStyles?: {}
+  containerClassName?: ClassName
+  containerMarginTop?: number
 }
 
-const TOAST_ANIMATION_DURATION = 3000
 const MAX_LENGTH_TEXT = 50
+const TOAST_ANIMATION_DURATION = 3000
 
 export const Toast: FC<ToastProps> = ({
   title,
   isVisible,
-  containerStyles,
+  containerClassName,
+  containerMarginTop,
 }: ToastProps) => {
   const [fadeAnim] = useState(new Animated.Value(0))
   const validTitle =
@@ -40,8 +43,15 @@ export const Toast: FC<ToastProps> = ({
 
   return (
     <View
-      className='absolute right-0 left-0 top-2.5 justify-center'
-      style={containerStyles}
+      className={[
+        'absolute top-2.5 right-0 left-0 justify-center',
+        containerClassName,
+      ]}
+      style={
+        containerMarginTop !== undefined
+          ? { marginTop: containerMarginTop }
+          : undefined
+      }
     >
       <AnimatedView
         className='px-1.25 pt-1 pb-1.25'

@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+
 import { jsonStable } from '@/shared/json-stable'
 import { cloneDeep } from '@/shared/lodash'
 import { Layout } from '#/components/layout'
@@ -162,7 +163,7 @@ export const ContactsCreateForm: FC<{
           title
           className={[
             'mx-5',
-            !previewName ? 'text-[#9e9e9e]' : 'text-black',
+            !previewName ? 'text-foreground-muted' : 'text-foreground',
           ]}
         >
           {previewName || intl`<Unnamed>`}
@@ -175,7 +176,7 @@ export const ContactsCreateForm: FC<{
         onValidSubmit={$.onValidSubmit}
       />
       {!disabled && (
-        <RnTouchableOpacity className='my-2.5 mx-3.75' onPress={openPicker}>
+        <RnTouchableOpacity className='mx-3.75 my-2.5' onPress={openPicker}>
           <RnText small normal className='text-foreground-muted'>
             {'>>' + intl`Add item`}
           </RnText>

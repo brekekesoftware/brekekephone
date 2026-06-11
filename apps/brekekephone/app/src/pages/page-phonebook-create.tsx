@@ -1,6 +1,4 @@
-import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
 
 import { isEmpty } from '@/shared/lodash'
 import { ContactsCreateForm } from '#/components/contact-create-form'
@@ -8,26 +6,8 @@ import type { ContactInfo, Phonebook } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-@observer
-export class PagePhonebookCreate extends Component<{
-  phonebook?: string
-}> {
-  render() {
-    return (
-      <ContactsCreateForm
-        phonebook={this.props.phonebook}
-        onBack={ctx.nav.backToPageContactPhonebook}
-        onSave={(p: ContactInfo) => {
-          if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
-            this.save(p)
-          }
-        }}
-        title={intl`New Phonebook`}
-      />
-    )
-  }
-
-  @action save = (p: ContactInfo) => {
+export const PagePhonebookCreate = observer((props: { phonebook?: string }) => {
+  const save = (p: ContactInfo) => {
     if (isEmpty(p)) {
       return
     }
@@ -52,9 +32,21 @@ export class PagePhonebookCreate extends Component<{
           }),
         )
       })
-      .then(this.onSaveSuccess)
+      .then(onSaveSuccess)
   }
-  onSaveSuccess = () => {
+  const onSaveSuccess = () => {
     ctx.nav.goToPageContactPhonebook()
   }
-}
+  return (
+    <ContactsCreateForm
+      phonebook={props.phonebook}
+      onBack={ctx.nav.backToPageContactPhonebook}
+      onSave={(p: ContactInfo) => {
+        if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
+          save(p)
+        }
+      }}
+      title={intl`New Phonebook`}
+    />
+  )
+})

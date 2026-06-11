@@ -1,0 +1,13 @@
+@mixin blossom-dark {
+  // add here
+}
+
+html.theme-blossom.theme-dark {
+  @include blossom-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-blossom:not(.theme-light) {
+    @include blossom-dark;
+  }
+}

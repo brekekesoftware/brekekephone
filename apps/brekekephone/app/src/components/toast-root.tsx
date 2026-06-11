@@ -2,25 +2,19 @@ import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Animated } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { RnText } from '#/components/rn'
-import { v } from '#/components/variables'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { ctx } from '#/stores/ctx'
 import type { ToastType } from '#/stores/toast-store'
 
-const getBg = (type: ToastType) => {
-  switch (type) {
-    case 'success':
-      return v.colors.primary
-    case 'error':
-      return v.colors.danger
-    case 'warning':
-      return v.colors.warning
-    default:
-      return v.colors.primary
-  }
+const bgClassMap = {
+  success: tw`bg-primary`,
+  error: tw`bg-error`,
+  warning: tw`bg-warning`,
 }
+const getBgClass = (type: ToastType) => bgClassMap[type] || tw`bg-primary`
 
 const TOAST_DISPLAY_DURATION = 2700
 
@@ -38,7 +32,6 @@ const Item = observer(
     onEnd: () => void
   }) => {
     const fade = useRef(new Animated.Value(0)).current
-    const y = useRef(new Animated.Value(0)).current
 
     useEffect(() => {
       Animated.timing(fade, {
@@ -46,7 +39,6 @@ const Item = observer(
         duration: 500,
         useNativeDriver: true,
       }).start()
-
       const timer = setTimeout(() => {
         Animated.timing(fade, {
           toValue: 0,
@@ -54,20 +46,16 @@ const Item = observer(
           useNativeDriver: true,
         }).start(onEnd)
       }, TOAST_DISPLAY_DURATION)
-
       return () => clearTimeout(timer)
     }, [fade, onEnd])
 
     const errorDetail = data.err?.message
+    const bgCls = getBgClass(data.type)
 
     return (
       <AnimatedView
-        className='py-0.5 px-1 rounded-br-sm'
-        style={{
-          backgroundColor: getBg(data.type),
-          opacity: fade,
-          transform: [{ translateY: y }],
-        }}
+        className={['rounded-br-sm px-1 py-0.5', bgCls]}
+        style={{ opacity: fade }}
       >
         {data?.msg && (
           <RnText className='line-clamp-1' ellipsizeMode='tail' white>
@@ -76,7 +64,7 @@ const Item = observer(
         )}
         {errorDetail && (
           <RnText
-            className='line-clamp-2 ml-1 text-[12px]'
+            className='ml-1 line-clamp-2 text-[12px]'
             ellipsizeMode='tail'
             white
           >
@@ -89,7 +77,7 @@ const Item = observer(
 )
 
 export const ToastRoot = observer(() => (
-  <View className='left-0 right-0 top-0'>
+  <View className='top-0 right-0 left-0'>
     {ctx.toast.items.map(t => (
       <Item key={t.id} data={t} onEnd={() => ctx.toast.hide(t.id)} />
     ))}

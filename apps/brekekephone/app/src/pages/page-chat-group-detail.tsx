@@ -1,12 +1,13 @@
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
+
+import { isWeb } from '@/rn/core/utils/platform'
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
@@ -14,7 +15,7 @@ import { ChatInput } from '#/components/footer-chat-input'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { defaultTimeout, isWeb } from '#/config'
+import { defaultTimeout } from '#/config'
 import type { ChatFile, ChatGroup, ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -25,121 +26,453 @@ import { formatFileType } from '#/utils/format-file-type'
 import { pickFile } from '#/utils/pick-file'
 import { saveBlob, saveBlobFile } from '#/utils/save-blob'
 
-@observer
-export class PageChatGroupDetail extends Component<{
-  groupId: string
-}> {
-  // @ts-ignore
-  @computed get chatById() {
-    return arrToMap(
-      ctx.chat.getMessagesByThreadId(this.props.groupId),
+export const PageChatGroupDetail = observer(
+  ({ groupId }: { groupId: string }) => {
+    const [loadingRecent, setLoadingRecent] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [editingText, setEditingText] = useState('')
+    const [blobFile, setBlobFile] = useState({ url: '', fileType: '' })
+    const [topic_id, setTopicId] = useState('')
+    const [emojiTurnOn, setEmojiTurnOn] = useState(false)
+
+    const numberOfChatsPerLoadMoreRef = useRef(numberOfChatsPerLoad)
+    const edittingTextEmojiRef = useRef('')
+    const editingTextReplaceRef = useRef(false)
+    const viewRef = useRef<ScrollView | undefined>(undefined)
+    const justMountedRef = useRef(true)
+    const closeToBottomRef = useRef(true)
+    const currentScrollPositionRef = useRef(0)
+    const isLoadingMoreRef = useRef(false)
+    const submittingRef = useRef(false)
+    const mountedRef = useRef(true)
+    const sizeTimerRef = useRef<number | undefined>(undefined)
+
+    // Keep a ref to topic_id so the cleanup closure always sees the latest value
+    const topicIdRef = useRef('')
+    topicIdRef.current = topic_id
+
+    // me is called each render and tracked by observer
+    const me = ctx.uc.me()
+
+    // chatById computed as a regular const - observer re-renders when underlying
+    // observables change, so this is always fresh
+    const chatById = arrToMap(
+      ctx.chat.getMessagesByThreadId(groupId),
       'id',
       (m: ChatMessage) => m,
     ) as { [k: string]: ChatMessage }
-  }
 
-  state = {
-    target: '',
-    loadingRecent: false,
-    loadingMore: false,
-    editingText: '',
-    blobFile: {
-      url: '',
-      fileType: '',
-    },
-    topic_id: '',
-    emojiTurnOn: false,
-  }
+    const { allMessagesLoaded } = ctx.chat.getThreadConfig(groupId)
+    const { isUnread: groupIsUnread } = ctx.chat.getThreadConfig(groupId)
 
-  numberOfChatsPerLoadMore = numberOfChatsPerLoad
-  edittingTextEmoji = ''
-  editingTextReplace = false
-
-  componentDidMount = () => {
-    this.componentDidMountAsync()
-  }
-  componentDidMountAsync = async () => {
-    const { groupId } = this.props
-    this.setState({ loadingRecent: true })
-    await ctx.auth.waitPbx()
-    await ctx.auth.waitUc()
-    await ctx.uc
-      .getGroupChats(groupId, {
-        max: numberOfChatsPerLoad,
-      })
-      .then(chats => {
-        ctx.chat.pushMessages(groupId, chats)
-        BackgroundTimer.setTimeout(this.onContentSizeChange, defaultTimeout)
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get recent chats`,
-          err,
+    const onContentSizeChange = (_newWidth?: number, newHeight?: number) => {
+      if (closeToBottomRef.current) {
+        viewRef.current?.scrollToEnd({
+          animated: !justMountedRef.current,
         })
-      })
-    this.setState({ loadingRecent: false })
-    ctx.chat.updateThreadConfig(groupId, true, {
-      isUnread: false,
-    })
-  }
-  componentDidUpdate = () => {
-    const { groupId } = this.props
-    if (ctx.chat.getThreadConfig(groupId).isUnread) {
-      ctx.chat.updateThreadConfig(groupId, false, {
+        if (justMountedRef.current) {
+          justMountedRef.current = false
+        }
+      }
+      // scroll to last position after load more
+      if (newHeight && isLoadingMoreRef.current) {
+        isLoadingMoreRef.current = false
+        viewRef.current?.scrollTo({
+          y: newHeight - currentScrollPositionRef.current,
+          animated: false,
+        })
+      }
+    }
+
+    const componentDidMountAsync = async () => {
+      setLoadingRecent(true)
+      await ctx.auth.waitPbx()
+      await ctx.auth.waitUc()
+      await ctx.uc
+        .getGroupChats(groupId, {
+          max: numberOfChatsPerLoad,
+        })
+        .then(chats => {
+          ctx.chat.pushMessages(groupId, chats)
+          if (mountedRef.current) {
+            sizeTimerRef.current = BackgroundTimer.setTimeout(
+              onContentSizeChange,
+              defaultTimeout,
+            )
+          }
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to get recent chats`,
+            err,
+          })
+        })
+      if (mountedRef.current) {
+        setLoadingRecent(false)
+      }
+      ctx.chat.updateThreadConfig(groupId, true, {
         isUnread: false,
       })
     }
-  }
-  componentWillUnmount = () => {
-    if (isWeb) {
-      const { topic_id } = this.state
-      if (topic_id) {
-        caches.delete(topic_id)
+
+    useEffect(() => {
+      mountedRef.current = true
+      componentDidMountAsync()
+      return () => {
+        mountedRef.current = false
+        if (sizeTimerRef.current) {
+          BackgroundTimer.clearTimeout(sizeTimerRef.current)
+        }
+        if (isWeb && topicIdRef.current) {
+          caches.delete(topicIdRef.current)
+        }
+      }
+    }, [])
+
+    useEffect(() => {
+      if (groupIsUnread) {
+        ctx.chat.updateThreadConfig(groupId, false, { isUnread: false })
+      }
+    }, [groupIsUnread])
+
+    const onSelectionChange = (
+      event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+    ) => {
+      const selection = event.nativeEvent.selection
+      editingTextReplaceRef.current = false
+      if (selection.start !== selection.end) {
+        edittingTextEmojiRef.current = editingText.substring(
+          selection.start,
+          selection.end,
+        )
+        editingTextReplaceRef.current = true
+      } else {
+        edittingTextEmojiRef.current = editingText.substring(0, selection.start)
       }
     }
-  }
 
-  renderChatInput = () => (
-    <ChatInput
-      onEmojiTurnOn={() =>
-        this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
+    const onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const layoutSize = ev.nativeEvent.layoutMeasurement
+      const layoutHeight = layoutSize.height
+      const contentOffset = ev.nativeEvent.contentOffset
+      const contentSize = ev.nativeEvent.contentSize
+      const contentHeight = contentSize.height
+      const paddingToBottom = 20
+      closeToBottomRef.current =
+        layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
+      currentScrollPositionRef.current = contentHeight
+    }
+
+    const resolveBuddy = (creator: string) => {
+      if (creator === me.id) {
+        return me
       }
-      onSelectionChange={this.onSelectionChange}
-      onTextChange={this.setEditingText}
-      onTextSubmit={this.submitEditingText}
-      openFileRnPicker={() => pickFile(this.sendFile)}
-      text={this.state.editingText}
-    />
-  )
-  render() {
-    const id = this.props.groupId
-    const gr = ctx.chat.getGroupById(id)
-    const { allMessagesLoaded } = ctx.chat.getThreadConfig(id)
-    const { loadingMore, loadingRecent } = this.state
-    const chats = ctx.chat.getMessagesByThreadId(this.props.groupId)
+      if (creator.startsWith('#')) {
+        // check message come from guest
+        return { id: creator.replace('#', ''), name: 'Guest', avatar: null }
+      }
+      return ctx.contact.getUcUserById(creator) || {}
+    }
+
+    const resolveChat = (id: string) => {
+      const chat = chatById[id] as ChatMessage
+      const text = chat.text
+      const file = ctx.chat.getFileById(chat.file)
+      const creator = resolveBuddy(chat.creator)
+      return {
+        id,
+        creatorId: creator.id,
+        creatorName: creator.name || creator.id,
+        creatorAvatar: creator.avatar,
+        file,
+        text,
+        type: chat.type,
+        created: chat.created,
+        createdByMe: creator.id === me.id,
+      }
+    }
+
+    const loadMore = () => {
+      isLoadingMoreRef.current = true
+      setLoadingMore(true)
+      numberOfChatsPerLoadMoreRef.current =
+        numberOfChatsPerLoadMoreRef.current + numberOfChatsPerLoad
+      const oldestChat =
+        ctx.chat.getMessagesByThreadId(groupId)[0] || ({} as ChatMessage)
+      const oldestCreated = oldestChat.created || 0
+      const max = numberOfChatsPerLoadMoreRef.current
+      const end = oldestCreated
+      const query = {
+        max,
+        end,
+      }
+      ctx.uc
+        .getGroupChats(groupId, query)
+        .then(chats => {
+          ctx.chat.pushMessages(groupId, chats)
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to get more chats`,
+            err,
+          })
+        })
+        .then(() => {
+          setLoadingMore(false)
+        })
+        .then(() => {
+          const totalChatLoaded = ctx.chat.getMessagesByThreadId(groupId).length
+          if (totalChatLoaded < numberOfChatsPerLoadMoreRef.current) {
+            ctx.chat.updateThreadConfig(groupId, true, {
+              allMessagesLoaded: true,
+            })
+          }
+        })
+    }
+
+    const submitEditingText = () => {
+      if (submittingRef.current) {
+        return
+      }
+      const txt = editingText.trim()
+      if (!txt) {
+        return
+      }
+      if (emojiTurnOn) {
+        setEmojiTurnOn(!emojiTurnOn)
+      }
+      submittingRef.current = true
+      ctx.uc
+        .sendGroupChatText(groupId, txt)
+        .then(chat => {
+          ctx.chat.pushMessages(groupId, [chat as ChatMessage])
+          setEditingText('')
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to send the message`,
+            err,
+          })
+        })
+        .then(() => {
+          submittingRef.current = false
+        })
+    }
+
+    const updateConfStatus = (conf_id: string, isClose: boolean) => {
+      const g = ctx.chat.getGroupById(conf_id)
+      const newItem = {
+        ...g,
+        webchat: {
+          ...g.webchat,
+          conf_status: isClose
+            ? Constants.CONF_STATUS_INACTIVE
+            : Constants.CONF_STATUS_INVITED,
+        },
+      } as ChatGroup
+      ctx.chat.upsertGroup(newItem)
+    }
+
+    const leave = () => {
+      const conf_id = groupId
+      ctx.uc
+        .leaveChatConference(conf_id, true)
+        .then(res => {
+          const isWebchat = ctx.chat.isWebchat(conf_id)
+          if (isWebchat) {
+            // leave webchat then close conference
+            // update conf_status
+            updateConfStatus(conf_id, res.closes)
+          } else {
+            ctx.chat.removeGroup(conf_id)
+          }
+          ctx.nav.backToPageChatRecents()
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to leave the group`,
+            err,
+          })
+        })
+    }
+
+    const invite = () => {
+      ctx.nav.goToPageChatGroupInvite({ groupId })
+    }
+
+    const call = (callTarget: string, bVideoEnabled: boolean) => {
+      if (bVideoEnabled) {
+        ctx.call.startVideoCall(callTarget)
+      } else {
+        ctx.call.startCall(callTarget)
+      }
+    }
+
+    const callVoiceConference = () => {
+      let callTarget = groupId
+      if (!callTarget.startsWith('uc')) {
+        callTarget = 'uc' + groupId
+      }
+      call(callTarget, false)
+    }
+
+    const callVideoConference = () => {
+      let callTarget = groupId
+      if (!callTarget.startsWith('uc')) {
+        callTarget = 'uc' + groupId
+      }
+      call(callTarget, true)
+    }
+
+    const readFile = (file: { type: string; name: string; uri: string }) => {
+      const fileType = formatFileType(file.name)
+      setBlobFile({ url: file.uri, fileType })
+    }
+
+    const handleSaveBlobFileWeb = async (
+      data: Blob,
+      file: ChatFile,
+      chat: ChatMessage,
+    ) => {
+      try {
+        const url = await saveBlobFile(
+          file.id,
+          file.topic_id,
+          file.fileType,
+          data,
+        )
+        Object.assign(file, { url })
+        ctx.chat.upsertFile(file)
+        ctx.chat.pushMessages(groupId, chat)
+      } catch (err) {
+        console.error('PageChatGroupDetail.handleSaveBlobFileWeb err', err)
+      }
+    }
+
+    const onSendFileSuccess = (
+      res: { file: ChatFile; chat: ChatMessage },
+      file: Blob,
+    ) => {
+      setTopicId(res.file.topic_id)
+      Object.assign(res.file, blobFile, { save: 'success' })
+      if (isWeb) {
+        handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
+      } else {
+        ctx.chat.upsertFile(res.file)
+        ctx.chat.pushMessages(groupId, res.chat)
+      }
+    }
+
+    const onSendFileFailure = (err: Error) => {
+      RnAlert.error({
+        message: intlDebug`Failed to send file`,
+        err,
+      })
+    }
+
+    const sendFile = (file: { type: string; name: string; uri: string }) => {
+      readFile(file)
+      ctx.uc
+        .sendFiles(groupId, file as any as Blob)
+        .then(res => onSendFileSuccess(res, file as any as Blob))
+        .catch(onSendFileFailure)
+    }
+
+    const onAcceptFileSuccess = (
+      blob: Blob,
+      file: {
+        id: string
+        name: string
+      },
+    ) => {
+      const type = ['PNG', 'JPG', 'JPEG', 'GIF']
+      const fileType = type.includes(
+        file.name.split('.').pop()?.toUpperCase() || '',
+      )
+        ? 'image'
+        : 'other'
+      const reader = new FileReader()
+      reader.onload = async event => {
+        const url = event.target?.result
+        const f = ctx.chat.getFileById(file.id)
+        if (!f) {
+          return
+        }
+        Object.assign(f, {
+          url,
+          fileType,
+        })
+      }
+
+      reader.readAsDataURL(blob)
+
+      saveBlob(blob, file.name)
+    }
+
+    const onAcceptFileFailure = (err: Error) => {
+      RnAlert.error({
+        message: intlDebug`Failed to accept file`,
+        err,
+      })
+    }
+
+    const acceptFile = (file: { id: string; name: string }) => {
+      ctx.uc
+        .acceptFile(file.id)
+        .then(blob => onAcceptFileSuccess(blob as Blob, file))
+        .catch(onAcceptFileFailure)
+    }
+
+    const onRejectFileFailure = (err: Error) => {
+      RnAlert.error({
+        message: intlDebug`Failed to reject file`,
+        err,
+      })
+    }
+
+    const rejectFile = (file: { id: string }) => {
+      ctx.uc.rejectFile(file).catch(onRejectFileFailure)
+    }
+
+    const renderChatInput = () => (
+      <ChatInput
+        onEmojiTurnOn={() => setEmojiTurnOn(!emojiTurnOn)}
+        onSelectionChange={onSelectionChange}
+        onTextChange={setEditingText}
+        onTextSubmit={submitEditingText}
+        openFileRnPicker={() => pickFile(sendFile)}
+        text={editingText}
+      />
+    )
+
+    const gr = ctx.chat.getGroupById(groupId)
+    const chats = ctx.chat.getMessagesByThreadId(groupId)
+
     return (
       <Layout
         compact
-        containerOnContentSizeChange={this.onContentSizeChange}
-        containerOnScroll={this.onScroll}
-        fabRender={this.renderChatInput}
-        containerRef={this.setViewRef}
+        containerOnContentSizeChange={onContentSizeChange}
+        containerOnScroll={onScroll}
+        fabRender={renderChatInput}
+        containerRef={(ref: ScrollView) => {
+          viewRef.current = ref
+        }}
         dropdown={[
           {
             label: intl`Invite more people`,
-            onPress: this.invite,
+            onPress: invite,
           },
           {
             label: intl`Start voice call`,
-            onPress: this.callVoiceConference,
+            onPress: callVoiceConference,
           },
           {
             label: intl`Start video call`,
-            onPress: this.callVideoConference,
+            onPress: callVideoConference,
           },
           {
             label: intl`Leave group`,
-            onPress: this.leave,
+            onPress: leave,
             danger: true,
           },
         ]}
@@ -147,403 +480,52 @@ export class PageChatGroupDetail extends Component<{
         title={gr?.name}
       >
         {loadingRecent ? (
-          <RnText className='self-center pb-3.75 px-2.5 text-[11.2px]'>{intl`Loading...`}</RnText>
+          <RnText className='self-center px-2.5 pb-3.75 text-[11.2px]'>{intl`Loading...`}</RnText>
         ) : allMessagesLoaded ? (
-          <RnText center warning className='self-center pb-3.75 px-2.5 text-[11.2px]'>
-            {!ctx.chat.getMessagesByThreadId(this.props.groupId).length
+          <RnText
+            center
+            warning
+            className='self-center px-2.5 pb-3.75 text-[11.2px]'
+          >
+            {!ctx.chat.getMessagesByThreadId(groupId).length
               ? intl`There's currently no message in this thread`
               : intl`All messages in this thread have been loaded`}
           </RnText>
         ) : (
           <RnTouchableOpacity
-            onPress={loadingMore ? undefined : () => this.loadMore()}
+            onPress={loadingMore ? undefined : () => loadMore()}
           >
             <RnText
               bold={!loadingMore}
               primary={!loadingMore}
-              className='self-center pb-3.75 px-2.5 text-[11.2px]'
+              className='self-center px-2.5 pb-3.75 text-[11.2px]'
             >
               {loadingMore ? intl`Loading...` : intl`Load more messages`}
             </RnText>
           </RnTouchableOpacity>
         )}
         <MessageList
-          acceptFile={this.acceptFile}
+          acceptFile={acceptFile}
           isGroupChat
           list={chats}
-          loadMore={this.loadMore}
-          rejectFile={this.rejectFile}
-          resolveChat={this.resolveChat}
+          loadMore={loadMore}
+          rejectFile={rejectFile}
+          resolveChat={resolveChat}
         />
-        {/* TODO: {this.state.emojiTurnOn && (
-          <View>
-            <EmojiSelector
-              category={Categories.emotion}
-              columns={10}
-              onEmojiSelected={emoji => this.emojiSelectFunc(emoji)}
-              showHistory={true}
-              showSearchBar={true}
-              showSectionTitles={true}
-              showTabs={true}
-            />
-          </View>
-        )} */}
+        {/* TODO: {emojiTurnOn && (
+      <View>
+        <EmojiSelector
+          category={Categories.emotion}
+          columns={10}
+          onEmojiSelected={emoji => emojiSelectFunc(emoji)}
+          showHistory={true}
+          showSearchBar={true}
+          showSectionTitles={true}
+          showTabs={true}
+        />
+      </View>
+    )} */}
       </Layout>
     )
-  }
-  onSelectionChange = (
-    event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-  ) => {
-    const selection = event.nativeEvent.selection
-    this.editingTextReplace = false
-    if (selection.start !== selection.end) {
-      this.edittingTextEmoji = this.state.editingText.substring(
-        selection.start,
-        selection.end,
-      )
-      this.editingTextReplace = true
-    } else {
-      this.edittingTextEmoji = this.state.editingText.substring(
-        0,
-        selection.start,
-      )
-    }
-  }
-  emojiSelectFunc = (emoji: string) => {
-    const newText = this.edittingTextEmoji.concat(emoji)
-    if (this.state.editingText === '') {
-      this.setState({ editingText: emoji })
-      this.edittingTextEmoji = emoji
-    } else {
-      if (!this.editingTextReplace) {
-        this.setState({
-          editingText: this.state.editingText.replace(
-            this.edittingTextEmoji,
-            newText,
-          ),
-        })
-        this.edittingTextEmoji = this.edittingTextEmoji.concat(emoji)
-      } else {
-        this.setState({
-          editingText: this.state.editingText.replace(
-            this.edittingTextEmoji,
-            emoji,
-          ),
-        })
-        this.editingTextReplace = false
-        this.edittingTextEmoji = emoji
-      }
-    }
-  }
-  view?: ScrollView
-  setViewRef = (ref: ScrollView) => {
-    this.view = ref
-  }
-
-  private justMounted = true
-  private closeToBottom = true
-  private currentScrollPosition = 0
-  private isLoadingMore = false
-  onContentSizeChange = (newWidth?: number, newHeight?: number) => {
-    if (this.closeToBottom) {
-      this.view?.scrollToEnd({
-        animated: !this.justMounted,
-      })
-      if (this.justMounted) {
-        this.justMounted = false
-      }
-    }
-    // scroll to last position after load more
-    if (newHeight && this.isLoadingMore) {
-      this.isLoadingMore = false
-      this.view?.scrollTo({
-        y: newHeight - this.currentScrollPosition,
-        animated: false,
-      })
-    }
-  }
-  onScroll = (ev: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const layoutSize = ev.nativeEvent.layoutMeasurement
-    const layoutHeight = layoutSize.height
-    const contentOffset = ev.nativeEvent.contentOffset
-    const contentSize = ev.nativeEvent.contentSize
-    const contentHeight = contentSize.height
-    const paddingToBottom = 20
-    this.closeToBottom =
-      layoutHeight + contentOffset.y >= contentHeight - paddingToBottom
-    this.currentScrollPosition = contentHeight
-  }
-
-  me = ctx.uc.me()
-  resolveBuddy = (creator: string) => {
-    if (creator === this.me.id) {
-      return this.me
-    }
-    if (creator.startsWith('#')) {
-      // check message come from guest
-      return { id: creator.replace('#', ''), name: 'Guest', avatar: null }
-    }
-    return ctx.contact.getUcUserById(creator) || {}
-  }
-  resolveChat = (id: string) => {
-    const chat = this.chatById[id] as ChatMessage
-    const text = chat.text
-    const file = ctx.chat.getFileById(chat.file)
-    const creator = this.resolveBuddy(chat.creator)
-    return {
-      id,
-      creatorId: creator.id,
-      creatorName: creator.name || creator.id,
-      creatorAvatar: creator.avatar,
-      file,
-      text,
-      type: chat.type,
-      created: chat.created,
-      createdByMe: creator.id === this.me.id,
-    }
-  }
-
-  loadMore = () => {
-    this.isLoadingMore = true
-    this.setState({ loadingMore: true })
-    this.numberOfChatsPerLoadMore =
-      this.numberOfChatsPerLoadMore + numberOfChatsPerLoad
-    const oldestChat =
-      ctx.chat.getMessagesByThreadId(this.props.groupId)[0] ||
-      ({} as ChatMessage)
-    const oldestCreated = oldestChat.created || 0
-    const max = this.numberOfChatsPerLoadMore
-    const end = oldestCreated
-    const query = {
-      max,
-      end,
-    }
-    ctx.uc
-      .getGroupChats(this.props.groupId, query)
-      .then(chats => {
-        ctx.chat.pushMessages(this.props.groupId, chats)
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to get more chats`,
-          err,
-        })
-      })
-      .then(() => {
-        this.setState({ loadingMore: false })
-      })
-      .then(() => {
-        const id = this.props.groupId
-        const totalChatLoaded = ctx.chat.getMessagesByThreadId(id).length
-        if (totalChatLoaded < this.numberOfChatsPerLoadMore) {
-          ctx.chat.updateThreadConfig(id, true, {
-            allMessagesLoaded: true,
-          })
-        }
-      })
-  }
-
-  setEditingText = (editingText: string) => {
-    this.setState({
-      editingText,
-    })
-  }
-
-  submitting = false
-  submitEditingText = () => {
-    if (this.submitting) {
-      return
-    }
-    const txt = this.state.editingText.trim()
-    if (!txt) {
-      return
-    }
-    if (this.state.emojiTurnOn) {
-      this.setState({ emojiTurnOn: !this.state.emojiTurnOn })
-    }
-    this.submitting = true
-    ctx.uc
-      .sendGroupChatText(this.props.groupId, txt)
-      .then(chat => {
-        ctx.chat.pushMessages(this.props.groupId, [chat as ChatMessage])
-        this.setState({ editingText: '' })
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to send the message`,
-          err,
-        })
-      })
-      .then(() => {
-        this.submitting = false
-      })
-  }
-  updateConfStatus = (conf_id: string, isClose: boolean) => {
-    const g = ctx.chat.getGroupById(conf_id)
-    const newItem = {
-      ...g,
-      webchat: {
-        ...g.webchat,
-        conf_status: isClose
-          ? Constants.CONF_STATUS_INACTIVE
-          : Constants.CONF_STATUS_INVITED,
-      },
-    } as ChatGroup
-    ctx.chat.upsertGroup(newItem)
-  }
-  leave = () => {
-    const conf_id = this.props.groupId
-    ctx.uc
-      .leaveChatConference(conf_id, true)
-      .then(res => {
-        const isWebchat = ctx.chat.isWebchat(conf_id)
-        if (isWebchat) {
-          // leave webchat then close conference
-          // update conf_status
-          this.updateConfStatus(conf_id, res.closes)
-        } else {
-          ctx.chat.removeGroup(conf_id)
-        }
-        ctx.nav.backToPageChatRecents()
-      })
-      .catch((err: Error) => {
-        RnAlert.error({
-          message: intlDebug`Failed to leave the group`,
-          err,
-        })
-      })
-  }
-
-  invite = () => {
-    ctx.nav.goToPageChatGroupInvite({ groupId: this.props.groupId })
-  }
-  call = (target: string, bVideoEnabled: boolean) => {
-    if (bVideoEnabled) {
-      ctx.call.startVideoCall(target)
-    } else {
-      ctx.call.startCall(target)
-    }
-  }
-  callVoiceConference = () => {
-    let target = this.props.groupId
-    if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.groupId
-    }
-    this.call(target, false)
-  }
-  callVideoConference = () => {
-    let target = this.props.groupId
-    if (!target.startsWith('uc')) {
-      target = 'uc' + this.props.groupId
-    }
-    this.call(target, true)
-  }
-
-  readFile = (file: { type: string; name: string; uri: string }) => {
-    const fileType = formatFileType(file.name)
-    this.setState({ blobFile: { url: file.uri, fileType } })
-  }
-
-  sendFile = (file: { type: string; name: string; uri: string }) => {
-    this.readFile(file)
-    const groupId = this.props.groupId
-    ctx.uc
-      .sendFiles(groupId, file as any as Blob)
-      .then(res => this.onSendFileSuccess(res, file as any as Blob))
-      .catch(this.onSendFileFailure)
-  }
-  handleSaveBlobFileWeb = async (
-    data: Blob,
-    file: ChatFile,
-    chat: ChatMessage,
-  ) => {
-    const { groupId } = this.props
-    try {
-      const url = await saveBlobFile(
-        file.id,
-        file.topic_id,
-        file.fileType,
-        data,
-      )
-      Object.assign(file, { url })
-      ctx.chat.upsertFile(file)
-      ctx.chat.pushMessages(groupId, chat)
-    } catch (err) {
-      console.error('PageChatGroupDetail.handleSaveBlobFileWeb err', err)
-    }
-  }
-  onSendFileSuccess = (
-    res: { file: ChatFile; chat: ChatMessage },
-    file: Blob,
-  ) => {
-    const groupId = this.props.groupId
-    const { blobFile } = this.state
-    this.setState({ topic_id: res.file.topic_id })
-    Object.assign(res.file, blobFile, { save: 'success' })
-    if (isWeb) {
-      this.handleSaveBlobFileWeb(file, res.file as ChatFile, res.chat)
-    } else {
-      ctx.chat.upsertFile(res.file)
-      ctx.chat.pushMessages(groupId, res.chat)
-    }
-  }
-  onSendFileFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to send file`,
-      err,
-    })
-  }
-  acceptFile = (file: { id: string; name: string }) => {
-    ctx.uc
-      .acceptFile(file.id)
-      .then(blob => this.onAcceptFileSuccess(blob as Blob, file))
-      .catch(this.onAcceptFileFailure)
-  }
-
-  onAcceptFileSuccess = (
-    blob: Blob,
-    file: {
-      id: string
-      name: string
-    },
-  ) => {
-    const type = ['PNG', 'JPG', 'JPEG', 'GIF']
-    const fileType = type.includes(
-      file.name.split('.').pop()?.toUpperCase() || '',
-    )
-      ? 'image'
-      : 'other'
-    const reader = new FileReader()
-    reader.onload = async event => {
-      const url = event.target?.result
-      const f = ctx.chat.getFileById(file.id)
-      if (!f) {
-        return
-      }
-      Object.assign(f, {
-        url,
-        fileType,
-      })
-    }
-
-    reader.readAsDataURL(blob)
-
-    saveBlob(blob, file.name)
-  }
-
-  onAcceptFileFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to accept file`,
-      err,
-    })
-  }
-  rejectFile = (file: { id: string }) => {
-    ctx.uc.rejectFile(file).catch(this.onRejectFileFailure)
-  }
-  onRejectFileFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to reject file`,
-      err,
-    })
-  }
-}
+  },
+)

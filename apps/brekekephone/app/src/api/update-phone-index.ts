@@ -1,10 +1,10 @@
-import { isIos } from '#/config'
+import { isIos } from '@/rn/core/utils/platform'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnStacker } from '#/stores/rn-stacker'
 import { openLinkSafely, urls } from '#/utils/deeplink.native'
-import { PushNotification } from '#/utils/push-notification'
+import { resetBadgeNumber } from '#/utils/reset-badge-number'
 
 export const updatePhoneAppli = async () => {
   const p = ctx.auth.getCurrentAccount()
@@ -44,7 +44,7 @@ export const handlePhoneAppli = async extProps => {
     ctx.nav.customPageIndex = ctx.nav.goToPageCallKeypad
     ctx.nav.goToPageCallKeypad()
     if (isIos) {
-      PushNotification.resetBadgeNumber()
+      resetBadgeNumber()
     }
     openLinkSafely(urls.phoneappli.HISTORY_CALLED)
   }

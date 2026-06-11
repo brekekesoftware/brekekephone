@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react'
 
+import { tw } from '@/rn/core/tw/tw'
 import { mdiPhone, mdiPhoneHangup } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
 import { RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import type { Call } from '#/stores/call'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -14,14 +14,14 @@ import { Duration } from '#/stores/timer-store'
 export const PageCallBackgrounds = observer(() => {
   const bg = ctx.call.calls.filter(c => c.id !== ctx.call.ongoingCallId)
   const oc = ctx.call.getOngoingCall()
-  const renderItemCall = (c: Immutable<Call>, isCurrentCall?: boolean) => {
+  const renderItemCall = (c: Call, isCurrentCall?: boolean) => {
     const icons = [
       mdiPhoneHangup,
       ...(!c.answered && c.incoming ? [mdiPhone] : []),
     ]
-    const iconColors = [
-      v.colors.danger,
-      ...(!c.answered && c.incoming ? [v.colors.primary] : []),
+    const iconClassNames = [
+      tw`text-error`,
+      ...(!c.answered && c.incoming ? [tw`text-primary`] : []),
     ]
     const iconFuncs = [
       c.hangupWithUnhold,
@@ -37,7 +37,7 @@ export const PageCallBackgrounds = observer(() => {
     return (
       <UserItem
         icons={icons}
-        iconColors={iconColors}
+        iconClassNames={iconClassNames}
         iconFuncs={iconFuncs}
         key={c.id}
         lastMessage={

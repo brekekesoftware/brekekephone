@@ -7,9 +7,9 @@ import type { CommonProps } from '@/rn/core/components/lib/common-props'
 import { normalizePropsRnw } from '@/rn/core/components/lib/normalize-props-rnw'
 
 export type FlatListPropsWocn<T = any> = CommonProps<
+  FlatListProps<T>,
   FlatListRn<T, FlatListProps<T>>
-> &
-  FlatListProps<T>
+>
 
 // export native type for ref
 export type FlatListRn<T = any, Props = any> = FlatListComponent<T, Props>

@@ -2,10 +2,12 @@ import { observer } from 'mobx-react'
 import type { ReactElementLike } from 'prop-types'
 import type { FC } from 'react'
 import { useRef } from 'react'
-import { ActivityIndicator, Keyboard, Platform } from 'react-native'
+import { Keyboard } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
+import { isWeb } from '@/rn/core/utils/platform'
 import { flow, omit } from '@/shared/lodash'
 import {
   mdiCardsDiamond,
@@ -20,8 +22,7 @@ import {
   RnTextInput,
   RnTouchableOpacity,
 } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isAndroid, isIos, isWeb } from '#/config'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { useStore } from '#/utils/use-store'
@@ -30,42 +31,15 @@ export type Park = {
   number: string
   name?: string
 }
-const fieldAndroidPad = Platform.select({
-  android: { paddingBottom: 2 },
-})
-const fieldLabelStyle = {
-  paddingTop: 13,
-  paddingBottom: 0,
-  paddingLeft: 7,
-  ...Platform.select({
-    android: {
-      paddingTop: 3,
-      top: 6,
-    },
-    web: {
-      // fix form auto fill style on web
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      right: 0,
-    },
-  }),
-}
+// fieldLabelClassName per platform:
+// - ios: paddingTop 13px (pt-3.25), paddingBottom 0, paddingLeft 7px (pl-1.75)
+// - android: paddingTop 9px (pt-2.25) - replaces legacy pt-3 + top-6 trick that caused visual overlap with TextInput
+// - web: absolute, top/left/right: 0 (fix form auto fill style on web)
+const fieldLabelClassName = tw`android:pt-2.25 web:pt-3.25 web:absolute web:top-0 web:left-0 web:right-0 ios:pt-3.25 pb-0 pl-1.75`
 // fieldParkTextInputClassName: pl-1.75 (7px), pr-2.5 (10px), pb-0.75 (3px)
-// Platform.select branches: android lineHeight 20 ≡ leading-5 (= v.lineHeight)
-const fieldParkTextInputClassName = [
-  'flex-1 pb-0.75 pl-1.75 pr-2.5 overflow-hidden',
-  isAndroid && 'pt-0 pb-0 leading-5',
-  isWeb && 'pt-7 w-full',
-  isIos && 'pt-0.25',
-]
+const fieldParkTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 web:w-full ios:pt-0.25 flex-1 overflow-hidden pr-2.5 pb-0.75 pl-1.75`
 // fieldTextInputClassName: pl-1.75 (7px), pr-10 (40px), pb-0.75 (3px)
-const fieldTextInputClassName = [
-  'w-full pb-0.75 pl-1.75 pr-10 font-bold overflow-hidden',
-  isAndroid && 'pt-0 pb-0 leading-5',
-  isWeb && 'pt-7',
-  isIos && 'pt-0.25',
-]
+const fieldTextInputClassName = tw`android:pt-0 android:pb-0 android:leading-5 web:pt-7 ios:pt-0.25 w-full overflow-hidden pr-10 pb-0.75 pl-1.75 font-bold`
 
 const noop = () => {}
 
@@ -136,15 +110,11 @@ export const Field: FC<
     return (
       <View
         className={[
-          'border-b border-border items-stretch mt-3.75 bg-border p-3.75',
+          'border-border bg-border android:pb-0.5 mt-3.75 items-stretch border-b p-3.75',
           props.hasMargin && 'mt-7.5',
         ]}
-        style={fieldAndroidPad}
       >
-        <RnText
-          small
-          className={isAndroid ? '-top-1.5' : undefined}
-        >
+        <RnText small className='android:-top-1.5'>
           {props.label}
         </RnText>
       </View>
@@ -164,16 +134,15 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onCreateBtnPress}
           className={[
-            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-primary-100',
+            'bg-primary-100 rounded-card absolute top-2.75 right-1.25 h-7.5 w-10',
             props.createBtnClassName,
           ]}
           disabled={props.disabled}
         >
           <RnIcon
-            color={v.colors.primary}
             path={props.createBtnIcon || mdiPlus}
             size={18}
-            className={props.createBtnIconClassName}
+            className={['text-primary', props.createBtnIconClassName]}
           />
         </RnTouchableOpacity>
       ),
@@ -185,15 +154,14 @@ export const Field: FC<
         <RnTouchableOpacity
           onPress={props.onRemoveBtnPress}
           className={[
-            'absolute top-2.75 right-1.25 w-10 h-7.5 rounded-[3px] bg-error-100',
+            'bg-error-100 rounded-card absolute top-2.75 right-1.25 h-7.5 w-10',
             props.removeBtnClassName,
           ]}
         >
           <RnIcon
-            color={v.colors.danger}
             path={props.removeBtnIcon || mdiClose}
             size={15}
-            className={props.removeBtnIconClassName}
+            className={['text-error', props.removeBtnIconClassName]}
           />
         </RnTouchableOpacity>
       ),
@@ -213,7 +181,7 @@ export const Field: FC<
       props.onValueChange?.(newPark)
     }
     return (
-      <View className='flex-row items-center mr-10'>
+      <View className='mr-10 flex-row items-center'>
         <RnTextInput
           ref={inputRef}
           {...omit(props, [
@@ -231,7 +199,6 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`park number`}
-          placeholderTextColor='grey'
           onBlur={() => {
             if (isWeb) {
               $.set('isFocusing', false)
@@ -264,7 +231,6 @@ export const Field: FC<
             'error',
           ])}
           placeholder={intl`label`}
-          placeholderTextColor='grey'
           onBlur={() => {
             if (isWeb) {
               $.set('isParkNameFocusing', false)
@@ -369,7 +335,7 @@ export const Field: FC<
   }
   const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
-    <View pointerEvents='none' style={fieldLabelStyle}>
+    <View className={['pointer-events-none', fieldLabelClassName]}>
       <RnText small normal className='text-foreground-muted'>
         {props.label}
       </RnText>
@@ -382,27 +348,26 @@ export const Field: FC<
         accessible={!props.inputElement}
         onPress={props.onTouchPress}
         className={[
-          'border-b border-border items-stretch mx-3.75',
-          ($.isFocusing || $.isParkNameFocusing) && 'bg-primary-100',
+          'border-border android:pb-0.5 mx-3.75 items-stretch border-b',
+          ($.isFocusing || $.isParkNameFocusing) && 'bg-muted',
           props.disabled && 'bg-muted',
-          props.transparent && 'border-transparent mx-0',
+          props.transparent && 'mx-0 border-transparent',
         ]}
-        style={fieldAndroidPad}
       >
         {/* Fix form auto fill style on web */}
         {!isWeb && label}
-        <View
-          pointerEvents={
-            ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
-          }
-        >
+        <View>
           {props.inputElement || (
             <RnTextInput
-              editable={!disablePark}
+              editable={false}
               disabled
               maxLength={props?.maxLength || 100000}
               secureTextEntry={!!(props.secureTextEntry && props.value)}
-              className={[fieldTextInputClassName, props.textInputClassName]}
+              className={[
+                fieldTextInputClassName,
+                props.onTouchPress && 'web:pointer-events-none',
+                props.textInputClassName,
+              ]}
               value={
                 props.valueRender?.(props.value) || props.value || '\u200a'
               }
@@ -418,16 +383,12 @@ export const Field: FC<
           (props.icon && (
             <RnIcon
               path={props.icon}
-              pointerEvents='none'
-              className='absolute top-3.75 right-3.75'
+              className='text-foreground pointer-events-none absolute top-3.75 right-3.75'
             />
           ))}
         {props.loading && (
-          <View
-            className='absolute inset-0 flex items-center justify-center'
-            style={{ backgroundColor: 'black', opacity: 0.3 }}
-          >
-            <ActivityIndicator size='small' color='white' />
+          <View className='absolute inset-0 flex items-center justify-center bg-black opacity-30'>
+            <RnActivityIndicator size='small' className='h-9 w-9 text-white' />
           </View>
         )}
       </Container>
@@ -436,11 +397,10 @@ export const Field: FC<
           onPress={() => inputRef.current?.focus()}
           className='items-center justify-center'
         >
-          <View className='self-start my-0.5 mx-3.75 py-0.5 px-2.5 bg-error rounded-[3px]'>
+          <View className='bg-error rounded-card mx-3.75 my-0.5 self-start px-2.5 py-0.5'>
             <RnIcon
-              color={v.colors.danger}
               path={mdiCardsDiamond}
-              className='absolute -top-2 left-0.5'
+              className='text-error absolute -top-2 left-0.5'
             />
             <RnText small white>
               {props.error}

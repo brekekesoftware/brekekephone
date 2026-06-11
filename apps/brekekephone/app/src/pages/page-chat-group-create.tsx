@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useState } from 'react'
 
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'
@@ -9,63 +9,33 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 
-@observer
-export class PageChatGroupCreate extends Component {
-  state: {
-    name: string
-    members: string[]
-  } = {
-    name: '',
-    members: [],
-  }
+export const PageChatGroupCreate = observer(() => {
+  const [name, setName] = useState('')
+  const [members, setMembers] = useState<string[]>([])
 
-  render() {
-    return (
-      <Layout
-        fabOnBack={ctx.nav.goToPageChatRecents}
-        fabOnNext={this.create}
-        fabOnNextText={intl`CREATE`}
-        onBack={ctx.nav.backToPageChatRecents}
-        title={intl`New Group`}
-      >
-        <Field
-          label={intl`GROUP NAME`}
-          onValueChange={this.setName}
-          value={this.state.name}
-        />
-        <Field isGroup label={intl`Members`} />
-        {ctx.contact.ucUsers.map((u, i) => (
-          <RnTouchableOpacity key={i} onPress={() => this.toggleBuddy(u.id)}>
-            <UserItem
-              key={u.id}
-              {...u}
-              selected={this.state.members.includes(u.id)}
-            />
-          </RnTouchableOpacity>
-        ))}
-      </Layout>
-    )
-  }
-
-  setName = (name: string) => {
-    this.setState({
-      name,
-    })
-  }
-  toggleBuddy = (buddy: string) => {
-    const { members } = this.state
+  const toggleBuddy = (buddy: string) => {
     if (members.includes(buddy)) {
-      this.setState({
-        members: members.filter(id => id !== buddy),
-      })
+      setMembers(members.filter(id => id !== buddy))
     } else {
-      this.setState({
-        members: [...members, buddy],
-      })
+      setMembers([...members, buddy])
     }
   }
-  create = () => {
-    const { members, name } = this.state
+  const onCreateSuccess = (group: {
+    id: string
+    name: string
+    jointed: boolean
+  }) => {
+    ctx.chat.upsertGroup(group)
+    ctx.uc.joinChatGroup(group.id)
+    ctx.nav.goToPageChatRecents()
+  }
+  const onCreateFailure = (err: Error) => {
+    RnAlert.error({
+      message: intlDebug`Failed to create the group chat`,
+      err,
+    })
+  }
+  const create = () => {
     if (!name.trim()) {
       RnAlert.error({
         message: intlDebug`Group name is required`,
@@ -74,18 +44,25 @@ export class PageChatGroupCreate extends Component {
     }
     ctx.uc
       .createChatGroup(name, members)
-      .then(this.onCreateSuccess)
-      .catch(this.onCreateFailure)
+      .then(onCreateSuccess)
+      .catch(onCreateFailure)
   }
-  onCreateSuccess = (group: { id: string; name: string; jointed: boolean }) => {
-    ctx.chat.upsertGroup(group)
-    ctx.uc.joinChatGroup(group.id)
-    ctx.nav.goToPageChatRecents()
-  }
-  onCreateFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to create the group chat`,
-      err,
-    })
-  }
-}
+
+  return (
+    <Layout
+      fabOnBack={ctx.nav.backToPageChatRecents}
+      fabOnNext={create}
+      fabOnNextText={intl`CREATE`}
+      onBack={ctx.nav.backToPageChatRecents}
+      title={intl`New Group`}
+    >
+      <Field label={intl`GROUP NAME`} onValueChange={setName} value={name} />
+      <Field isGroup label={intl`Members`} />
+      {ctx.contact.ucUsers.map((u, i) => (
+        <RnTouchableOpacity key={i} onPress={() => toggleBuddy(u.id)}>
+          <UserItem key={u.id} {...u} selected={members.includes(u.id)} />
+        </RnTouchableOpacity>
+      ))}
+    </Layout>
+  )
+})

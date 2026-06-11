@@ -20,7 +20,7 @@ const toResponsiveBreakpoint = (width: number) => {
       return k
     }
   }
-  throw new Error('Responsive breakpoint width is less than 0')
+  return 'xs'
 }
 
 export const toClassNameResponsiveState = (width: number) => {

@@ -179,11 +179,11 @@ export const TextInput = ({
       return null
     }
 
-    const baseClass = clsx([
+    const baseClass = clsx(
       cn.slot,
       'absolute inset-y-0 z-10 shrink-0 items-center justify-center p-0',
       position === 'left' ? 'left-0' : 'right-0',
-    ])
+    )
 
     if (typeof affix === 'function') {
       return affix(baseClass)

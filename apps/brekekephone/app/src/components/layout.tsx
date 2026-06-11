@@ -1,26 +1,22 @@
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import type {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleProp,
-  ViewStyle,
-} from 'react-native'
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 import { Platform } from 'react-native'
 
 import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { lowerFirst } from '@/shared/lodash'
 import { Footer } from '#/components/footer'
 import { Header } from '#/components/header'
 import type { HeaderDropdownItem } from '#/components/header-dropdown'
 import { Toast } from '#/components/toast'
-import { v } from '#/components/variables'
-import { isAndroid } from '#/config'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
-// BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME — ScrollView
+// BUG-1220: Android 15+ (API 35+) doesn't shrink window for IME - ScrollView
 // thinks content fits screen and refuses to scroll under keyboard. Add bottom
 // padding equal to keyboard height so content becomes scrollable past the IME.
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
@@ -50,7 +46,7 @@ export const Layout: FC<
     isShowToastMessage: boolean
     incomingMessage: string
     children: ReactNode
-    style?: StyleProp<ViewStyle>
+    className?: ClassName
     isFullContent?: boolean
     iconRights?: string[]
     iconRightColors?: string[]
@@ -60,6 +56,8 @@ export const Layout: FC<
   const [headerOverflow, setHeaderOverflow] = useState(false)
 
   const props = { ...originalProps } // clone so it can be mutated
+  const outerClassName = props.className // applied to outer View only
+  delete props.className // don't leak className to Footer/Header via {...props}
 
   const Container = props.noScroll ? View : ScrollView
   const containerProps = Object.entries(props).reduce(
@@ -77,11 +75,14 @@ export const Layout: FC<
   )
 
   Object.assign(containerProps, {
-    className: ['h-full flex-1', props.transparent ? 'bg-transparent' : 'bg-white'],
+    className: [
+      tw`h-full flex-1`,
+      props.transparent ? tw`bg-transparent` : tw`bg-background`,
+    ],
   })
 
   if (!props.noScroll) {
-    containerProps.contentContainerClassName = 'grow'
+    containerProps.contentContainerClassName = tw`grow`
     if (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing) {
       containerProps.contentContainerStyle = {
         paddingBottom: RnKeyboard.keyboardHeight,
@@ -125,14 +126,12 @@ export const Layout: FC<
     }
   }
 
+  const headerSpaceH = props?.isFullContent ? headerSpace - 15 : headerSpace
+  const cl = outerClassName ? outerClassName : tw`h-full w-full`
   return (
-    <View className='h-full w-full' style={props.style}>
+    <View className={cl}>
       <Container {...containerProps}>
-        <View
-          style={{
-            height: props?.isFullContent ? headerSpace - 15 : headerSpace,
-          }}
-        />
+        <View style={{ height: headerSpaceH }} />
         {props.children}
         <View className={props?.isFullContent ? 'h-0' : 'h-3.75'} />
       </Container>
@@ -140,10 +139,8 @@ export const Layout: FC<
         <Toast
           isVisible
           title={props.incomingMessage || DEFAULT_TOAST_MESSAGE}
-          containerStyles={{
-            marginTop: headerSpace,
-            backgroundColor: v.colors.warning,
-          }}
+          containerClassName='bg-warning'
+          containerMarginTop={headerSpace}
         />
       )}
       {!props.isTab && <View style={{ height: footerSpace }} />}

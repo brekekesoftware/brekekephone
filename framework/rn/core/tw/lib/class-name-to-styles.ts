@@ -1,5 +1,7 @@
+import type { DimensionsSize } from '@/rn/core/responsive/use-window-dimensions'
 import type {
   ClassName,
+  ClassNameCalc,
   ClassNameNative,
   ClassNameWithSelector,
   StyleSingle,
@@ -13,8 +15,9 @@ import type { Nullish, StrMap } from '@/shared/ts-utils'
 
 export type ClassNameToStylesOptions = {
   className: ClassName
-  variables: StrMap | Nullish
   onSelector: (selector: ClassNameWithSelector) => ClassNameNative
+  variables: StrMap | Nullish
+  dimensions: DimensionsSize | Nullish
   warnOnString?: boolean
 }
 
@@ -38,8 +41,15 @@ type ClassNameToStylesRecursiveOptions = ClassNameToStylesOptions & {
 const classNameToStylesRecursive = ({
   ...options
 }: ClassNameToStylesRecursiveOptions) => {
-  const { className, variables, onSelector, warnOnString, level, styles } =
-    options
+  const {
+    className,
+    onSelector,
+    variables,
+    dimensions,
+    warnOnString,
+    level,
+    styles,
+  } = options
   if (!className) {
     return
   }
@@ -67,24 +77,6 @@ const classNameToStylesRecursive = ({
     return
   }
 
-  if ('variable' in className) {
-    const { variable, alpha } = className
-    let v = variables?.[variable]
-    if (!v) {
-      return
-    }
-    if (typeof alpha === 'number') {
-      v = hexToRgba(v, alpha)
-    }
-    styles.push({
-      level,
-      style: {
-        [className.key]: v,
-      },
-    })
-    return
-  }
-
   if ('selector' in className) {
     options.className = onSelector(className)
     if (!options.className) {
@@ -95,8 +87,77 @@ const classNameToStylesRecursive = ({
     return
   }
 
+  if ('variable' in className) {
+    const { variable, alpha, key } = className
+    let v = variables?.[variable]
+    if (!v) {
+      return
+    }
+    if (typeof alpha === 'number') {
+      v = hexToRgba(v, alpha)
+    }
+    styles.push({
+      level,
+      style: {
+        [key]: v,
+      },
+    })
+    return
+  }
+
+  if ('calc' in className) {
+    const { calc, keys } = className
+    const v = caclRecursive(calc, dimensions)
+    if (v === undefined) {
+      return
+    }
+    styles.push({
+      level,
+      style: keys.reduce<StrMap>((m, k) => {
+        m[k] = v
+        return m
+      }, {}),
+    })
+    return
+  }
+
   styles.push({
     level,
     style: className,
   })
+}
+
+const caclRecursive = (
+  calc: ClassNameCalc,
+  dimensions: DimensionsSize | Nullish,
+): number | undefined => {
+  if ('op' in calc) {
+    const l = caclRecursive(calc.l, dimensions)
+    const r = caclRecursive(calc.r, dimensions)
+    if (l === undefined || r === undefined) {
+      return undefined
+    }
+    if (calc.op === '+') {
+      return l + r
+    }
+    if (calc.op === '-') {
+      return l - r
+    }
+    if (calc.op === '*') {
+      return l * r
+    }
+    if (r === 0) {
+      return undefined
+    }
+    return l / r
+  }
+  const { v, unit } = calc
+  if (!unit) {
+    return v
+  }
+  if (!dimensions) {
+    return undefined
+  }
+  const d = unit === 'vw' ? dimensions.width : dimensions.height
+  return (v * d) / 100
 }

@@ -1,23 +1,26 @@
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect } from 'react'
 
 import { ctx } from '#/stores/ctx'
 
-@observer
-export class PageCustomPage extends Component<{ id: string }> {
-  componentDidMount = async () => {
-    const { id } = this.props
-    const cp = ctx.auth.getCustomPageById(id)
+export const PageCustomPage = observer((p: { id: string }) => {
+  useEffect(() => {
+    let cancelled = false
+    const cp = ctx.auth.getCustomPageById(p.id)
     if (!cp) {
       return
     }
+    ctx.pbx.buildCustomPageUrl(cp.url).then(url => {
+      if (cancelled) {
+        return
+      }
+      ctx.auth.updateCustomPage({ ...cp, url })
+      ctx.auth.customPageLoadings[cp.id] = true
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [p.id])
 
-    const url = await ctx.pbx.buildCustomPageUrl(cp.url)
-    ctx.auth.updateCustomPage({ ...cp, url })
-    ctx.auth.customPageLoadings[cp.id] = true
-  }
-
-  render() {
-    return null
-  }
-}
+  return null
+})

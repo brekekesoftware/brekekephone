@@ -56,8 +56,8 @@
     </string>
     <key>NSLocalNetworkUsageDescription</key>
     <string>
-      Brekeke Phone requires access to your local network in order to
-      activate the Local Push Connectivity extension
+      Brekeke Phone requires access to your local network in order to activate
+      the Local Push Connectivity extension
     </string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>To get network SSID for LPC</string>

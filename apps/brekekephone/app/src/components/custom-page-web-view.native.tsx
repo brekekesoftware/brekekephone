@@ -1,16 +1,12 @@
 import { useRef } from 'react'
 import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
-import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
+import { isAndroid } from '@/rn/core/utils/platform'
+import { RnWebView } from '#/components/rn-class-name-components.native'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
-import { buildWebViewSource, isAndroid } from '#/config'
+import { buildWebViewSource } from '#/config'
 import { ctx } from '#/stores/ctx'
-
-const fullStyle = {
-  width: '100%' as const,
-  height: '100%' as const,
-}
 
 type Props = Pick<WebViewProps, 'onLoadStart' | 'onLoadEnd' | 'onError'> & {
   url: string
@@ -96,11 +92,11 @@ export const CustomPageWebView = ({
   }
 
   return (
-    <WebView
+    <RnWebView
       source={buildWebViewSource(url)}
       injectedJavaScript={js}
       injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-      style={fullStyle}
+      className='h-full w-full'
       bounces={false}
       originWhitelist={['*']}
       javaScriptEnabled={true}

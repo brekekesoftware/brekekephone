@@ -1,16 +1,15 @@
-import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { sortBy } from '@/shared/lodash'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { formatDateTimeSemantic } from '#/components/chat-config'
 import { UserItem } from '#/components/contact-user-item'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -18,7 +17,7 @@ import { RnStacker } from '#/stores/rn-stacker'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-const notifyClassName = 'flex-row items-center border-b border-border bg-muted'
+const notifyClassName = tw`border-border bg-muted flex-row items-center border-b`
 
 const Notify: FC<{
   id: string
@@ -32,20 +31,18 @@ const Notify: FC<{
   <View className={notifyClassName}>
     {!!p.type && (
       <>
-        <View className='flex-1 pl-3 py-1.25'>
+        <View className='flex-1 py-1.25 pl-3'>
           <RnText bold>{p.name}</RnText>
           <RnText>{intl`Group chat invited by ${p.inviter}`}</RnText>
         </View>
         <ButtonIcon
-          bdcolor={v.colors.danger}
-          color={v.colors.danger}
+          className='border-error text-error'
           onPress={() => p.reject(p.id)}
           path={mdiClose}
           size={20}
         />
         <ButtonIcon
-          bdcolor={v.colors.primary}
-          color={v.colors.primary}
+          className='border-primary text-primary'
           onPress={() => p.accept(p.id)}
           path={mdiCheck}
           size={20}
@@ -56,11 +53,18 @@ const Notify: FC<{
   </View>
 ))
 
-@observer
-export class ChatGroupInvite extends Component {
-  @observable loading = false
+export const ChatGroupInvite = observer(() => {
+  const mountedRef = useRef(true)
+  const [loading, setLoading] = useState(false)
 
-  formatGroup = (group: string) => {
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  const formatGroup = (group: string) => {
     const { id, inviter, name } = ctx.chat.getGroupById(group) || {}
     const inviterName = ctx.contact.getUcUserById(inviter)?.name
     return {
@@ -69,80 +73,98 @@ export class ChatGroupInvite extends Component {
       inviter: inviterName || inviter,
     }
   }
-  // TODO: rejected but existed in chat home => error when click
-  reject = (group: string) => {
+
+  const reject = (group: string) => {
     ctx.uc
       .leaveChatGroup(group)
-      .then(this.onRejectSuccess)
-      .catch(this.onRejectFailure)
-  }
-  onRejectSuccess = (res: { id: string }) => {
-    ctx.chat.removeGroup(res.id)
-  }
-  onRejectFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to reject the group chat`,
-      err,
-    })
-  }
-  accept = (group: string) => {
-    this.loading = true
-    ctx.uc
-      .joinChatGroup(group)
-      .then(this.onAcceptSuccess)
-      .catch(this.onAcceptFailure)
-  }
-  onAcceptSuccess = () => {
-    this.loading = false
-  }
-  onAcceptFailure = (err: Error) => {
-    RnAlert.error({
-      message: intlDebug`Failed to accept the group chat`,
-      err,
-    })
+      .then((res: { id: string }) => ctx.chat.removeGroup(res.id))
+      .catch((err: Error) =>
+        RnAlert.error({
+          message: intlDebug`Failed to reject the group chat`,
+          err,
+        }),
+      )
   }
 
-  render() {
-    return ctx.chat.groups
-      .filter(gr => !gr.webchat && !gr.jointed)
-      .map(gr => gr.id)
-      .map(group => (
-        <Notify
-          key={group}
-          {...this.formatGroup(group)}
-          accept={this.accept}
-          reject={this.reject}
-          type='inviteChat'
-          loading={this.loading}
-        />
-      ))
+  const accept = (group: string) => {
+    setLoading(true)
+    ctx.uc
+      .joinChatGroup(group)
+      .then(() => {
+        if (mountedRef.current) {
+          setLoading(false)
+        }
+      })
+      .catch((err: Error) =>
+        RnAlert.error({
+          message: intlDebug`Failed to accept the group chat`,
+          err,
+        }),
+      )
+  }
+
+  return ctx.chat.groups
+    .filter(gr => !gr.webchat && !gr.jointed)
+    .map(gr => gr.id)
+    .map(group => (
+      <Notify
+        key={group}
+        {...formatGroup(group)}
+        accept={accept}
+        reject={reject}
+        type='inviteChat'
+        loading={loading}
+      />
+    ))
+})
+
+type UnreadChatState = {
+  id: string
+  isGroup: boolean
+  lastMessage: {
+    text?: string
+    created: number
   }
 }
 
-@observer
-export class UnreadChatNoti extends Component {
-  @observable unreadChat: null | {
-    id: string
-    isGroup: boolean
-    lastMessage: {
-      text?: string
-      created: number
+export const UnreadChatNoti = observer(() => {
+  const [unreadChat, setUnreadChat] = useState<null | UnreadChatState>(null)
+  const alreadyShowNoti = useRef<{ [k: string]: boolean }>({})
+  const prevLastMessageId = useRef('')
+  const prevUnreadChatTimeoutId = useRef(0)
+  const mountedRef = useRef(true)
+
+  const clearUnreadTimer = () => {
+    if (prevUnreadChatTimeoutId.current) {
+      BackgroundTimer.clearTimeout(prevUnreadChatTimeoutId.current)
+      prevUnreadChatTimeoutId.current = 0
     }
-  } = null
-  alreadyShowNoti: { [k: string]: boolean } = {}
-  prevLastMessageId = ''
-  prevUnreadChatTimeoutId = 0
-
-  componentDidMount = () => {
-    this.updateLatestUnreadChat()
   }
 
-  componentDidUpdate = () => {
-    this.updateLatestUnreadChat()
+  const clear = () => {
+    clearUnreadTimer()
+    if (!mountedRef.current) {
+      return
+    }
+    setUnreadChat(null)
   }
 
-  updateLatestUnreadChat = () => {
-    if (this.unreadChat) {
+  // Track MobX observables so observer re-renders when they change
+  Object.values(ctx.chat.threadConfig).forEach(c => {
+    Object.values(c).forEach(v2 => {
+      void v2
+    })
+  })
+  Object.values(ctx.chat.messagesByThreadId).forEach(c => {
+    c.forEach(v2 => {
+      void v2.id
+    })
+  })
+  void RnStacker.stacks[RnStacker.stacks.length - 1]
+
+  // Runs after every render, equivalent to componentDidMount + componentDidUpdate
+  useEffect(() => {
+    if (unreadChat) {
       return
     }
     let unreadChats = Object.entries(ctx.chat.threadConfig)
@@ -160,11 +182,11 @@ export class UnreadChatNoti extends Component {
       })
       .filter(
         c =>
-          !this.alreadyShowNoti[c.lastMessage.id] &&
-          c.lastMessage.id !== this.prevLastMessageId,
+          !alreadyShowNoti.current[c.lastMessage.id] &&
+          c.lastMessage.id !== prevLastMessageId.current,
       )
     unreadChats.forEach(c => {
-      this.alreadyShowNoti[c.lastMessage.id] = true
+      alreadyShowNoti.current[c.lastMessage.id] = true
     })
     //
     unreadChats = unreadChats.filter(c => {
@@ -209,69 +231,48 @@ export class UnreadChatNoti extends Component {
       return
     }
     //
-    this.unreadChat = latestUnreadChat
-    this.prevLastMessageId = latestUnreadChat.lastMessage.id
-    this.prevUnreadChatTimeoutId = BackgroundTimer.setTimeout(this.clear, 5000)
-  }
-  @action clear = () => {
-    if (this.prevUnreadChatTimeoutId) {
-      BackgroundTimer.clearTimeout(this.prevUnreadChatTimeoutId)
-      this.prevUnreadChatTimeoutId = 0
-    }
-    this.unreadChat = null
-  }
-  onUnreadPress = () => {
-    if (!this.unreadChat) {
-      return
-    }
-    const { id, isGroup } = this.unreadChat
-    this.clear()
-    return isGroup
-      ? ctx.nav.goToPageChatGroupDetail({ groupId: id })
-      : ctx.nav.goToPageChatDetail({ buddy: id })
-  }
+    setUnreadChat(latestUnreadChat)
+    prevLastMessageId.current = latestUnreadChat.lastMessage.id
+    prevUnreadChatTimeoutId.current = BackgroundTimer.setTimeout(clear, 5000)
+  })
 
-  componentWillUnmount = () => {
-    this.clear()
-  }
-
-  render() {
-    Object.values(ctx.chat.threadConfig).forEach(c => {
-      Object.values(c).forEach(v2 => {
-        void v2
-      })
-    })
-    Object.values(ctx.chat.messagesByThreadId).forEach(c => {
-      c.forEach(v2 => {
-        void v2.id
-      })
-    })
-    void RnStacker.stacks[RnStacker.stacks.length - 1]
-    if (!this.unreadChat) {
-      return null
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      clearUnreadTimer()
     }
-    const {
-      id,
-      lastMessage: { text, created },
-      isGroup,
-    } = this.unreadChat
-    return (
-      <View className={[notifyClassName, 'border-b-0']}>
-        <RnTouchableOpacity
-          className='flex-1 bg-primary-100'
-          onPress={this.onUnreadPress}
-        >
-          <UserItem
-            key={id}
-            {...(isGroup
-              ? ctx.chat.getGroupById(id)
-              : ctx.contact.getUcUserById(id))}
-            lastMessage={text}
-            isRecentChat
-            lastMessageDate={formatDateTimeSemantic(created)}
-          />
-        </RnTouchableOpacity>
-      </View>
-    )
+  }, [])
+
+  if (!unreadChat) {
+    return null
   }
-}
+  const {
+    id,
+    lastMessage: { text, created },
+    isGroup,
+  } = unreadChat
+  return (
+    <View className={[notifyClassName, 'border-b-0']}>
+      <RnTouchableOpacity
+        className='bg-primary-100 dark:bg-muted flex-1'
+        onPress={() => {
+          clear()
+          return isGroup
+            ? ctx.nav.goToPageChatGroupDetail({ groupId: id })
+            : ctx.nav.goToPageChatDetail({ buddy: id })
+        }}
+      >
+        <UserItem
+          key={id}
+          {...(isGroup
+            ? ctx.chat.getGroupById(id)
+            : ctx.contact.getUcUserById(id))}
+          lastMessage={text}
+          isRecentChat
+          lastMessageDate={formatDateTimeSemantic(created)}
+        />
+      </RnTouchableOpacity>
+    </View>
+  )
+})

@@ -1,5 +1,3 @@
-import 'whatwg-fetch'
-
 import humanizeDuration from 'humanize-duration'
 import { useEffect, useState } from 'react'
 

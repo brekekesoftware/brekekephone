@@ -2,10 +2,12 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
-import { Platform, Pressable, View as RNView } from 'react-native'
-import { isEmpty } from '@/shared/lodash'
+import { Pressable } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { isWeb } from '@/rn/core/utils/platform'
+import { isEmpty } from '@/shared/lodash'
 import {
   mdiAccountGroup,
   mdiContentCopy,
@@ -18,8 +20,6 @@ import { Constants } from '#/brekekejs/ucclient'
 import { Avatar } from '#/components/avatar'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnCheckBox } from '#/components/rn-checkbox'
-import { v } from '#/components/variables'
-import { isWeb } from '#/config'
 import type { Phonebook } from '#/stores/contact-store'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
@@ -28,24 +28,13 @@ import { RnAlert } from '#/stores/rn-alert'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 
-const callIconStyle = {
-  flex: null as any,
-  ...Platform.select({
-    web: {
-      flex: 0,
-      paddingLeft: 6,
-      paddingRight: 10,
-    },
-  }),
-}
-
 export const UserItem: FC<
   Partial<{
     answered: boolean
     avatar: string
     created: string
     icons: string[]
-    iconColors: string[]
+    iconClassNames: ClassName[]
     iconFuncs: Function[]
     loadings?: number[] | true
     id: string
@@ -79,7 +68,7 @@ export const UserItem: FC<
     avatar,
     created,
     icons,
-    iconColors,
+    iconClassNames,
     iconFuncs,
     loadings,
     id,
@@ -109,7 +98,7 @@ export const UserItem: FC<
   } = p0
 
   // pressable for web with onLongPress
-  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : RNView
+  const Container = canTouch ? (isWeb ? Pressable : RnTouchableOpacity) : View
 
   const isGroupAvailable = (groupId: string) => {
     const groupInfo: Conference = ctx.uc.getChatGroupInfo(groupId)
@@ -189,19 +178,20 @@ export const UserItem: FC<
 
   return (
     <Container
-      style={{ borderBottomWidth: 1, borderColor: v.borderBg, opacity: disabled ? 0.5 : 1 }}
+      className={[
+        'border-border border-b',
+        disabled ? 'opacity-50' : 'opacity-100',
+      ]}
       onPress={onPressItem}
       onLongPress={onLongPressItem}
     >
-      <View
-        className={['flex-row pl-2.5', selected && 'bg-primary-100']}
-      >
+      <View className={['flex-row pl-2.5', selected && 'bg-muted']}>
         {group ? (
-          <View className='overflow-hidden bg-border w-12.5 h-12.5 rounded-full my-1.25 items-center'>
+          <View className='bg-border my-1.25 h-12.5 w-12.5 items-center overflow-hidden rounded-full'>
             <RnIcon
               path={mdiAccountGroup}
               size={40}
-              color={v.colors.greyTextChat}
+              className='text-foreground-muted'
             />
           </View>
         ) : !parkNumber ? (
@@ -212,13 +202,15 @@ export const UserItem: FC<
             className='my-1.25'
           />
         ) : null}
-        <View className='flex-1 pt-1.75 pl-2.5 my-1.25'>
+        <View className='my-1.25 flex-1 pt-1.75 pl-2.5'>
           <View className='flex-row flex-nowrap'>
             <RnText
               bold
               singleLine
               className={
-                name === intl`<Unnamed>` ? 'text-[#9e9e9e]' : 'text-black'
+                name === intl`<Unnamed>`
+                  ? 'text-foreground-muted'
+                  : 'text-foreground'
               }
             >
               {partyName ||
@@ -232,20 +224,20 @@ export const UserItem: FC<
                 normal
                 singleLine
                 small
-                className='top-0.5 left-0.75 text-foreground-muted'
+                className='text-foreground-muted top-0.5 left-0.75'
               >
                 {statusText}
               </RnText>
             )}
           </View>
           {!!parkNumber && (
-            <RnText normal small className='left-0.75 text-foreground-muted'>
+            <RnText normal small className='text-foreground-muted left-0.75'>
               {intl`Park number: ` + `${parkNumber}`}
             </RnText>
           )}
 
           {!!phonebook && (
-            <RnText normal small className='left-0.75 text-foreground-muted'>
+            <RnText normal small className='text-foreground-muted left-0.75'>
               {phonebook}
             </RnText>
           )}
@@ -259,13 +251,6 @@ export const UserItem: FC<
           {((isRecentCall && !lastMessage) || isVoicemail) && (
             <View className='flex-row'>
               <RnIcon
-                color={
-                  incoming && !answered
-                    ? v.colors.danger
-                    : incoming && answered
-                      ? v.colors.primary
-                      : v.colors.warning
-                }
                 path={
                   incoming && !answered
                     ? mdiPhoneMissed
@@ -274,9 +259,16 @@ export const UserItem: FC<
                       : mdiPhoneOutgoing
                 }
                 size={14}
-                style={callIconStyle}
+                className={[
+                  'web:pl-1.5 web:pr-2.5 flex-none',
+                  incoming && !answered
+                    ? 'text-error'
+                    : incoming && answered
+                      ? 'text-primary'
+                      : 'text-warning',
+                ]}
               />
-              <RnText normal small className='left-0.75 text-foreground-muted'>
+              <RnText normal small className='text-foreground-muted left-0.75'>
                 {isVoicemail
                   ? intl`Voicemail`
                   : intl`${reason} at ${created}`.trim()}
@@ -298,12 +290,15 @@ export const UserItem: FC<
             key={i}
             onPress={() => onPressIcons(i)}
           >
-            <RnIcon path={_} color={iconColors?.[i]} className='p-2.5' />
+            <RnIcon
+              path={_}
+              className={['text-foreground p-2.5', iconClassNames?.[i]]}
+            />
           </RnTouchableOpacity>
         ))}
 
         {!!isSelection && (
-          <View className='items-center flex-row mr-3.75'>
+          <View className='mr-3.75 flex-row items-center'>
             <RnCheckBox
               isSelected={!!isSelected}
               onPress={() => (onSelect ? onSelect() : true)}

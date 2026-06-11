@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react'
-import { TouchableOpacity, View } from 'react-native'
+
+import { View } from '@/rn/core/components/view'
 import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'
+import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { VideoPlayer } from '#/components/video-player'
 import { ctx } from '#/stores/ctx'
 
@@ -31,36 +33,29 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
   const c = ctx.call.getOngoingCall()
   return (
     <View
-      style={[
-        styles.container,
-        active ? styles.active : undefined,
-        {
-          width: view.width,
-          height: view.height,
-          backgroundColor: enabled ? undefined : 'black',
-        },
+      className={[
+        'relative overflow-hidden rounded border-2 border-white',
+        active && 'border-info border-4',
+        !enabled && 'bg-black',
       ]}
+      style={view}
     >
-      <View style={{ flex: 1 }}>
-        <TouchableOpacity
-          style={styles.touchable}
+      <View className='flex-1'>
+        <RnTouchableOpacity
+          className='h-full w-full flex-1'
           onPress={() => onSelect?.(sourceObject)}
         >
           <VideoPlayer
             sourceObject={enabled ? sourceObject : null}
             zOrder={1}
           />
-        </TouchableOpacity>
+        </RnTouchableOpacity>
       </View>
       {showSwitchCamera && c && (
-        <View
-          style={{
-            ...styles.switchCameraView,
-          }}
-        >
-          <TouchableOpacity
+        <View className='bg-modal-overlay absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly'>
+          <RnTouchableOpacity
             onPress={toggleVideo}
-            style={styles.switchCameraBtn}
+            className='h-7 w-7 items-center justify-center'
           >
             <RnIcon
               path={
@@ -68,52 +63,16 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
               }
               color='white'
             />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
 
-          <TouchableOpacity
+          <RnTouchableOpacity
             onPress={onSwitchCamera}
-            style={styles.switchCameraBtn}
+            className='h-7 w-7 items-center justify-center'
           >
             <RnIcon path={mdiCameraRotate} color='white' />
-          </TouchableOpacity>
+          </RnTouchableOpacity>
         </View>
       )}
     </View>
   )
 })
-
-const styles = {
-  container: {
-    position: 'relative' as const,
-    borderRadius: 4,
-    overflow: 'hidden' as const,
-    borderWidth: 2,
-    borderColor: 'white',
-  },
-  active: {
-    borderColor: '#4cc5de',
-    borderWidth: 4,
-  },
-  switchCameraView: {
-    position: 'absolute' as const,
-    zIndex: 1,
-    bottom: 0,
-    left: 0,
-    width: '100%' as const,
-    flexDirection: 'row' as const,
-    justifyContent: 'space-evenly' as const,
-    alignItems: 'center' as const,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  switchCameraBtn: {
-    width: 28,
-    height: 28,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  touchable: {
-    flex: 1,
-    width: '100%' as const,
-    height: '100%' as const,
-  },
-}

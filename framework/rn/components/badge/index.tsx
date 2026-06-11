@@ -124,7 +124,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-primary-300 bg-primary-50 dark:border-primary-200 dark:bg-primary-200',
-        text: 'text-primary-500 dark:text-primary-700',
+        text: 'text-primary dark:text-primary-700',
       },
     },
     {
@@ -133,7 +133,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-secondary-300 bg-secondary-50 dark:border-secondary-200 dark:bg-secondary-200',
-        text: 'text-secondary-500 dark:text-secondary-700',
+        text: 'text-secondary dark:text-secondary-700',
       },
     },
     {
@@ -142,7 +142,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-info-300 bg-info-50 dark:border-info-200 dark:bg-info-200',
-        text: 'text-info-500 dark:text-info-700',
+        text: 'text-info dark:text-info-700',
       },
     },
     {
@@ -151,7 +151,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-success-300 bg-success-50 dark:border-success-200 dark:bg-success-200',
-        text: 'text-success-500 dark:text-success-700',
+        text: 'text-success dark:text-success-700',
       },
     },
     {
@@ -160,7 +160,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-warning-300 bg-warning-50 dark:border-warning-200 dark:bg-warning-200',
-        text: 'text-warning-500 dark:text-warning-700',
+        text: 'text-warning dark:text-warning-700',
       },
     },
     {
@@ -169,7 +169,7 @@ const badgeCva = cva({
       classNames: {
         container:
           'border-error-300 bg-error-50 dark:border-error-200 dark:bg-error-200',
-        text: 'text-error-500 dark:text-error-600',
+        text: 'text-error dark:text-error-600',
       },
     },
   ],

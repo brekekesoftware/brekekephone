@@ -1,21 +1,17 @@
 import type { FC } from 'react'
-import type { ViewProps } from 'react-native'
+
 import { RnCheckBox } from '#/components/rn-checkbox'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
-export const SelectionItem: FC<
-  ViewProps & {
-    isSelected: boolean
-    onPress(): void
-    title: string
-    disabled?: boolean
-  }
-> = ({ isSelected, title, onPress, disabled = false, style, ...p }) => (
+export const SelectionItem: FC<{
+  isSelected: boolean
+  onPress(): void
+  title: string
+  disabled?: boolean
+}> = ({ isSelected, title, onPress, disabled = false }) => (
   <RnTouchableOpacity
-    {...p}
-    className={['flex-row items-center my-1.25', disabled && 'opacity-50']}
-    style={style}
+    className={['my-1.25 flex-row items-center', disabled && 'opacity-50']}
     onPress={() => {
       if (!disabled) {
         onPress()

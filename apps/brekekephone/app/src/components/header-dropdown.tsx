@@ -3,10 +3,6 @@ import type { FC } from 'react'
 import { mdiDotsVertical } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-
-// RN-only shadow + elevation
-const shadowStyle = { ...v.boxShadow, elevation: 999 }
 
 export type HeaderDropdownItem = Partial<{
   danger: boolean
@@ -26,16 +22,14 @@ export const Dropdown: FC<{
       <RnTouchableOpacity
         activeOpacity={1}
         onPress={close}
-        className='absolute inset-0 z-999 bg-black/20'
-        style={{ elevation: 999 }}
+        className='android:elevation-999 bg-modal-overlay absolute inset-0 z-999'
       />
       <AnimatedSize
-        innerClassName='rounded-[3px] bg-background'
+        innerClassName='rounded-card bg-background'
         className={[
-          'absolute right-3.75 w-62.5 z-999',
+          'android:elevation-999 absolute right-3.75 z-999 w-55 shadow-sm',
           compact ? 'top-8.75' : 'top-15',
         ]}
-        style={shadowStyle}
       >
         {dropdown.map(({ danger, label, onPress, primary, warning }, i) => (
           <RnTouchableOpacity
@@ -45,7 +39,7 @@ export const Dropdown: FC<{
               onPress?.()
             }}
             className={[
-              'py-2.5 px-3.75 border-b border-border',
+              'border-border border-b px-3.75 py-2.5',
               i === dropdown.length - 1 && 'border-b-0',
             ]}
           >
@@ -60,8 +54,8 @@ export const Dropdown: FC<{
 export const DropdownBtn: FC<{ onPress(): void }> = ({ onPress }) => (
   <RnTouchableOpacity
     onPress={onPress}
-    className='absolute top-0 bottom-0 right-0 w-10'
+    className='absolute top-0 right-0 bottom-0 w-10'
   >
-    <RnIcon path={mdiDotsVertical} />
+    <RnIcon path={mdiDotsVertical} className='text-foreground' />
   </RnTouchableOpacity>
 )

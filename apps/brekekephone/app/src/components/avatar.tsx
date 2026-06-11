@@ -1,43 +1,75 @@
 import { observer } from 'mobx-react'
 
+import avatarPlaceholder from '#/assets/avatar-placeholder.png'
+
 import { Image } from '@/rn/core/components/image'
 import { View } from '@/rn/core/components/view'
-import avatarPlaceholder from '#/assets/avatar-placeholder.png'
+import { tw } from '@/rn/core/tw/tw'
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiRecord } from '#/assets/icons'
+import { RnImage } from '#/components/rn'
 import { RnIcon } from '#/components/rn-icon'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 
-const statusMapColor = {
-  online: v.colors.primary,
-  idle: v.colors.warning,
-  busy: v.colors.danger,
-  offline: v.subColor,
+type AvatarSource = string | number | { uri?: string }
+type NativeAvatarSource = number | { uri: string }
+
+const fallbackSource = avatarPlaceholder as AvatarSource
+
+const getSourceUri = (source?: AvatarSource) =>
+  typeof source === 'string'
+    ? source
+    : typeof source === 'number'
+      ? ''
+      : source?.uri || ''
+
+const getNativeImageSource = (
+  source?: AvatarSource,
+): NativeAvatarSource | undefined => {
+  const uri = getSourceUri(source)
+  if (uri) {
+    return { uri }
+  }
+  if (typeof source === 'number') {
+    return source
+  }
+  return undefined
+}
+
+const statusMapClassName = {
+  online: tw`text-primary`,
+  idle: tw`text-warning`,
+  busy: tw`text-error`,
+  offline: tw`text-foreground-muted`,
 }
 
 export const Avatar = observer(
   (p: {
-    source?: string | { uri: string }
+    source?: AvatarSource
     status?: string
     className?: string | (string | false | undefined)[]
   }) => {
     const { source, status, className } = p
-    const uri =
-      (typeof source !== 'string' &&
-        typeof source?.uri === 'string' &&
-        source?.uri) ||
-      (typeof avatarPlaceholder === 'string' ? avatarPlaceholder : '')
+    const webSrc = getSourceUri(source) || getSourceUri(fallbackSource)
+    const imageSource =
+      getNativeImageSource(source) || getNativeImageSource(fallbackSource)
     return (
-      <View className={['w-12.5 h-12.5', className]}>
-        <View className='flex-1 rounded-[50px] overflow-hidden'>
-          <Image src={uri} className='flex-1' />
+      <View className={['h-12.5 w-12.5', className]}>
+        <View className='flex-1 overflow-hidden rounded-full'>
+          {isWeb ? (
+            <Image src={webSrc} className='flex-1' />
+          ) : (
+            <RnImage source={imageSource} className='flex-1' />
+          )}
         </View>
         {ctx.auth.getCurrentAccount()?.ucEnabled &&
           typeof status === 'string' && (
             <RnIcon
-              color={statusMapColor[status as keyof typeof statusMapColor]}
               path={mdiRecord}
-              className='absolute top-6.75 left-7.5'
+              className={[
+                'absolute top-6.75 left-7.5',
+                statusMapClassName[status as keyof typeof statusMapClassName],
+              ]}
             />
           )}
       </View>

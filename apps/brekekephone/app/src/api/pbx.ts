@@ -1,8 +1,9 @@
 import EventEmitter from 'eventemitter3'
-import { observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
+import { isAndroid } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import { debounce, random } from '@/shared/lodash'
 import {
@@ -27,13 +28,7 @@ import type {
   PbxResourceLine,
   Request,
 } from '#/brekekejs'
-import {
-  bundleIdentifier,
-  fcmApplicationId,
-  isAndroid,
-  retryInterval,
-} from '#/config'
-import { embedApi } from '#/embed/embed-api'
+import { bundleIdentifier, fcmApplicationId, retryInterval } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/account-store'
 import type { PbxUser, Phonebook } from '#/stores/contact-store'
@@ -144,21 +139,30 @@ const rebuildCustomPageUrlPbxToken = async (url: string) => {
 // ----------------------------------------------------------------------------
 // actual pbx class
 export class PBX extends EventEmitter {
+  state: {
+    retryingRequests: string[]
+  } = {
+    retryingRequests: [],
+  }
+  constructor() {
+    super()
+    makeAutoObservable(this.state)
+  }
+
   client?: Pbx
   isMainInstance = true
 
-  private pendingRequests: Request<keyof PbxPal>[] = []
-  private requests: Request<keyof PbxPal>[] = []
-  private MAX_RETRY = 3
-  @observable retryingRequests: string[] = []
+  pendingRequests: Request<keyof PbxPal>[] = []
+  requests: Request<keyof PbxPal>[] = []
+  MAX_RETRY = 3
 
-  private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
+  readonly methodsWithRetry: readonly (keyof Pbx)[] = [
     'hold',
     'unhold',
     'getPhoneAppliContact',
   ]
 
-  private generateRequestId = (): string => newUuid()
+  generateRequestId = (): string => newUuid()
   isPalTimeoutError = (err: unknown): boolean => {
     if (!err || typeof err !== 'object') {
       return false
@@ -201,9 +205,9 @@ export class PBX extends EventEmitter {
     }
     return false
   }
-  private msgErrorCancelRequest = (request: Request<keyof PbxPal>) =>
+  msgErrorCancelRequest = (request: Request<keyof PbxPal>) =>
     new Error(`${request.method} request cancelled by user`)
-  private palRequestWithRetry = <K extends keyof PbxPal>(
+  palRequestWithRetry = <K extends keyof PbxPal>(
     method: K,
     ...params: PalMethodParams<K>
   ): {
@@ -299,9 +303,9 @@ export class PBX extends EventEmitter {
     }
   }
   // === end handle cache and retry requests
-  private pingIntervalId: number | undefined = undefined
-  private pingActivityAt = 0
-  private getPingInterval = () => {
+  pingIntervalId: number | undefined = undefined
+  pingActivityAt = 0
+  getPingInterval = () => {
     const config = ctx.auth.pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_interval']))
     if (!t || t <= 5000) {
@@ -309,7 +313,7 @@ export class PBX extends EventEmitter {
     }
     return t
   }
-  private getPingTimeout = () => {
+  getPingTimeout = () => {
     const config = ctx.auth.pbxConfig
     const t = Math.round(Number(config?.['webphone.pal.ping_timeout']))
     if (!t || t <= 5000) {
@@ -317,7 +321,7 @@ export class PBX extends EventEmitter {
     }
     return t
   }
-  private startPingInterval = () => {
+  startPingInterval = () => {
     if (!this.isMainInstance) {
       return
     }
@@ -330,7 +334,7 @@ export class PBX extends EventEmitter {
       this.ping()
     }, this.getPingInterval())
   }
-  private stopPingInterval = () => {
+  stopPingInterval = () => {
     if (!this.isMainInstance) {
       return
     }
@@ -358,10 +362,7 @@ export class PBX extends EventEmitter {
     },
   )
 
-  private checkTimeoutToReconnectPbx = async (
-    err: Error | true,
-    method: keyof Pbx,
-  ) => {
+  checkTimeoutToReconnectPbx = async (err: Error | true, method: keyof Pbx) => {
     if (err === true) {
       return
     }
@@ -388,7 +389,7 @@ export class PBX extends EventEmitter {
     this.pingActivityAt = Date.now()
   }
 
-  private wrapListenersWithLog = <T extends (...args: any[]) => void>(
+  wrapListenersWithLog = <T extends (...args: any[]) => void>(
     name: string,
     listener: T,
   ): T =>
@@ -399,7 +400,7 @@ export class PBX extends EventEmitter {
       }
       return listener(...args)
     }) as T
-  private logMainInstance = (message: string, ...args: any[]) => {
+  logMainInstance = (message: string, ...args: any[]) => {
     if (!this.isMainInstance) {
       return
     }
@@ -407,7 +408,7 @@ export class PBX extends EventEmitter {
   }
 
   // wait auth state to be success
-  private connectTimeoutId = 0
+  connectTimeoutId = 0
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
@@ -435,7 +436,7 @@ export class PBX extends EventEmitter {
       phonetype: 'webphone',
       callrecording: 'self',
       ...d.palParams,
-      ...embedApi._palParams,
+      ...ctx.embed._palParams,
       // doc: From the version 2.14.x, please add ctype=2 to the URL for PAL.
       // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
       ctype: 2,
@@ -511,11 +512,11 @@ export class PBX extends EventEmitter {
     // emit to embed api
     const embedListeners: { [k in keyof Pbx]?: Function } = {}
     if (isEmbed) {
-      embedApi.emit('pal', client)
-      embedApi._palEvents?.forEach(k => {
+      ctx.embed.emit('pal', client)
+      ctx.embed._palEvents?.forEach(k => {
         const listener = (...args: unknown[]) => {
           console.log(`Embed api emitting pal event ${k}`)
-          embedApi.emit(`pal.${k}`, ...args)
+          ctx.embed.emit(`pal.${k}`, ...args)
         }
         embedListeners[k] = listener
         client[k] = listener
@@ -679,13 +680,13 @@ export class PBX extends EventEmitter {
   }
 
   // pal client direct event handlers
-  private onClose = () => {
+  onClose = () => {
     this.emit('connection-stopped')
   }
-  private onError = (err: Error) => {
+  onError = (err: Error) => {
     console.error('pbx.client.onError:', err)
   }
-  private onServerStatus = (e: PbxEvent['serverStatus']) => {
+  onServerStatus = (e: PbxEvent['serverStatus']) => {
     if (!e?.status) {
       return
     }
@@ -697,7 +698,7 @@ export class PBX extends EventEmitter {
   }
   // {"room_id":"282000000230","talker_id":"1416","time":1587451427817,"park":"777","status":"on"}
   // {"time":1587451575120,"park":"777","status":"off"}
-  private onPark = (e: PbxEvent['park']) => {
+  onPark = (e: PbxEvent['park']) => {
     if (!e?.status) {
       return
     }
@@ -708,19 +709,19 @@ export class PBX extends EventEmitter {
       this.emit('park-stopped', e.park)
     }
   }
-  private onCallRecording = (e: PbxEvent['callRecording']) => {
+  onCallRecording = (e: PbxEvent['callRecording']) => {
     if (!e) {
       return
     }
     this.emit('call-recording', e)
   }
-  private onVoicemail = (e: PbxEvent['voicemail']) => {
+  onVoicemail = (e: PbxEvent['voicemail']) => {
     if (!e) {
       return
     }
     this.emit('voicemail-updated', e)
   }
-  private onUserStatus = (e: PbxEvent['userStatus']) => {
+  onUserStatus = (e: PbxEvent['userStatus']) => {
     if (!e) {
       return
     }
@@ -757,7 +758,7 @@ export class PBX extends EventEmitter {
     }
   }
 
-  private onUserLoginOtherDevices = async (e: PbxEvent['pal']) => {
+  onUserLoginOtherDevices = async (e: PbxEvent['pal']) => {
     if (!e) {
       return
     }
@@ -788,8 +789,8 @@ export class PBX extends EventEmitter {
   // Handle MFA after PAL login success (main instance only).
   // When MFA is enabled, the server runs in restricted mode and does NOT fire
   // notify_serverstatus until the client reconnects with a valid device_token.
-  // Returns true if MFA is in progress (OTP needed) — caller should return early.
-  private handleMFAAfterLogin = async (): Promise<boolean> => {
+  // Returns true if MFA is in progress (OTP needed) - caller should return early.
+  handleMFAAfterLogin = async (): Promise<boolean> => {
     ctx.auth.pbxConfig = undefined
     const pc = await this.getConfig(true)
     const ca = ctx.auth.getCurrentAccount()
@@ -800,7 +801,7 @@ export class PBX extends EventEmitter {
     const inMFA = ctx.account.isAccountInMFA(ca)
     if (!mfaSupported) {
       if (inMFA) {
-        // PBX version < 3.18 — reset stale pending so navigation/calls are not blocked.
+        // PBX version < 3.18 - reset stale pending so navigation/calls are not blocked.
         await ctx.account.setMFAPending(ca, false)
       }
       return false
@@ -821,17 +822,17 @@ export class PBX extends EventEmitter {
   // When MFA is required and no device_token exists, lend the socket
   // to ctx.pbx so the OTP page can use it, then return true to stop
   // syncPnToken from continuing (which would disconnect the socket).
-  private checkMFAForSyncPnToken = async (a: Account): Promise<boolean> => {
+  checkMFAForSyncPnToken = async (a: Account): Promise<boolean> => {
     const pc = await this.getConfig(true)
     if (!isMFASupported(pc)) {
       return false
     }
-    // Main MFA flow already handling this account — don't duplicate mfaStart
+    // Main MFA flow already handling this account - don't duplicate mfaStart
     // (would invalidate active session + send duplicate OTP email)
     if (ctx.mfa.isShowing(a.id)) {
       return false
     }
-    // Skip MFA if account has been removed — prevents spurious mfaStart
+    // Skip MFA if account has been removed - prevents spurious mfaStart
     // + "Account does not exist" on OTP screen during pnToken.sync(noUpsert)
     if (!ctx.account.accounts.some(acc => acc.id === a.id)) {
       return false
@@ -850,7 +851,7 @@ export class PBX extends EventEmitter {
       return false
     }
 
-    // started is true (OK) or { error } (server FAILED) — both surface modal.
+    // started is true (OK) or { error } (server FAILED) - both surface modal.
     // For the error case, propagate the message so the modal explains why.
     const errorMsg =
       typeof started === 'object' && 'error' in started
@@ -859,7 +860,7 @@ export class PBX extends EventEmitter {
     await ctx.account.setMFAPending(a, true)
     ctx.mfa.show(a.id, { skipReconnect: true, error: errorMsg })
 
-    // Revert PN to previous value — UI should only change after
+    // Revert PN to previous value - UI should only change after
     // MFA verify + sync succeed.
     const pnEnabled = ctx.account.pendingPnEnabled ?? a.pushNotificationEnabled
     a.pushNotificationEnabled = !pnEnabled
@@ -879,7 +880,7 @@ export class PBX extends EventEmitter {
     return ok
   }
 
-  private probeServer = (wsUri: string): Promise<boolean> =>
+  probeServer = (wsUri: string): Promise<boolean> =>
     new Promise<boolean>(resolve => {
       const testWs = new WebSocket(`${wsUri}?status=true`)
       let isResolved = false
@@ -913,7 +914,7 @@ export class PBX extends EventEmitter {
     this.stopPingInterval()
     this.clearConnectTimeoutId()
   }
-  private clearConnectTimeoutId = () => {
+  clearConnectTimeoutId = () => {
     if (this.connectTimeoutId) {
       BackgroundTimer.clearTimeout(this.connectTimeoutId)
       this.connectTimeoutId = 0

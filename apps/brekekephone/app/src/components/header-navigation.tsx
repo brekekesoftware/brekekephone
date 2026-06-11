@@ -20,9 +20,9 @@ export const Navigation: FC<{
   const tabs = isTab ? getTabs(menu) : getSubMenus(menu)
 
   const renderIconNotices = useCallback(
-    (totalNotice: number, extraClass?: string) => (
-      <View className='absolute -top-1.25 left-6.25'>
-        <View className={[unreadClassName, extraClass]}>
+    (totalNotice: number) => (
+      <View className='absolute -top-2 -right-1.5'>
+        <View className={unreadClassName}>
           <RnText className='text-[9.2px] leading-[9.2px]' bold white center>
             {totalNotice}
           </RnText>
@@ -72,11 +72,11 @@ export const Navigation: FC<{
 
   return (
     <Container
-      className='flex-row self-stretch bg-background'
+      className='bg-background flex-row self-stretch'
       ref={scrollRef as any}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerClassName='grow'
     >
       {tabs.map(s => {
         const active = s.key === subMenu
@@ -89,24 +89,26 @@ export const Navigation: FC<{
             onPress={active ? undefined : s.navFn}
             onLayout={event => handleTabLayout(s.key, event)}
             className={[
-              'flex-1 py-2 items-center border-b-[3px] border-border',
-              needScroll && 'px-2.5 max-w-40 min-w-25',
+              'border-border flex-1 items-center border-b-[3px] py-2',
+              needScroll && 'max-w-40 min-w-25 px-2.5',
               active && 'border-primary',
             ]}
           >
-            <RnText
-              small
-              ellipsizeMode='tail'
-              className={['line-clamp-1', active && 'text-primary']}
-            >
-              {s.label}
-            </RnText>
-            {s.key === 'chat' &&
-              !!totalUnreadChat &&
-              renderIconNotices(totalUnreadChat)}
-            {s.key === 'webchat' &&
-              !!totalNoticesWebchat &&
-              renderIconNotices(totalNoticesWebchat, 'left-8.75 w-5')}
+            <View className='relative'>
+              <RnText
+                small
+                ellipsizeMode='tail'
+                className={['line-clamp-1', active && 'text-primary']}
+              >
+                {s.label}
+              </RnText>
+              {s.key === 'chat' &&
+                !!totalUnreadChat &&
+                renderIconNotices(totalUnreadChat)}
+              {s.key === 'webchat' &&
+                !!totalNoticesWebchat &&
+                renderIconNotices(totalNoticesWebchat)}
+            </View>
           </RnTouchableOpacity>
         )
       })}

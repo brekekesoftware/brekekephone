@@ -7,5 +7,9 @@ module.exports = require('@/devtools/eslint/config').config({
   ignoreFramework: true,
   overriddenRules: {
     'custom/enforce-use-client': 0,
+    'custom/err-name': 0,
+    'custom/no-import-invalid-variant': 0,
+    'custom/no-nullish-coalescing': 0,
+    'react/destructuring-assignment': 0,
   },
 })

@@ -15,7 +15,6 @@ const e = (className: string, expectedValue: any) => {
 
 describe('classNameToNative', () => {
   // basic twrnc
-  it('text-red-500', () => e('text-red-500', { color: '#ef4444' }))
   it('flex', () => e('flex', { display: 'flex' }))
   it('flex-col', () => e('flex-col', { flexDirection: 'column' }))
   it('flex-row', () => e('flex-row', { flexDirection: 'row' }))
@@ -24,6 +23,7 @@ describe('classNameToNative', () => {
     e('justify-between', {
       justifyContent: 'space-between',
     }))
+
   it('p-4', () =>
     e('p-4', {
       paddingTop: 16,
@@ -32,13 +32,86 @@ describe('classNameToNative', () => {
       paddingRight: 16,
     }))
   it('mt-2', () => e('mt-2', { marginTop: 8 }))
+
   it('w-full', () => e('w-full', { width: '100%' }))
   it('h-10', () => e('h-10', { height: 40 }))
+
+  // simple vw vh
+  it('w-[10vw]', () =>
+    e('w-[10vw]', {
+      calc: { v: 10, unit: 'vw' },
+      keys: ['width'],
+    }))
+  it('h-[10vh]', () =>
+    e('h-[10vh]', {
+      calc: { v: 10, unit: 'vh' },
+      keys: ['height'],
+    }))
+  it('w-[33.333333333333336vw]', () =>
+    e('w-[33.333333333333336vw]', {
+      calc: { v: 33.333333333333336, unit: 'vw' },
+      keys: ['width'],
+    }))
+
+  // calc arbitrary values
+  it('w-[calc(100vw-20px)]', () =>
+    e('w-[calc(100vw-20px)]', {
+      calc: { l: { v: 100, unit: 'vw' }, r: { v: 20 }, op: '-' },
+      keys: ['width'],
+    }))
+  it('h-[calc(100vh+20px)]', () =>
+    e('h-[calc(100vh+20px)]', {
+      calc: { l: { v: 100, unit: 'vh' }, r: { v: 20 }, op: '+' },
+      keys: ['height'],
+    }))
+  it('w-[calc(100vw*2)] mul', () =>
+    e('w-[calc(100vw*2)]', {
+      calc: { l: { v: 100, unit: 'vw' }, r: { v: 2 }, op: '*' },
+      keys: ['width'],
+    }))
+  it('w-[calc(100vw/2)] div', () =>
+    e('w-[calc(100vw/2)]', {
+      calc: { l: { v: 100, unit: 'vw' }, r: { v: 2 }, op: '/' },
+      keys: ['width'],
+    }))
+  it('w-[calc(100vw-20px+10px)] left-assoc', () =>
+    e('w-[calc(100vw-20px+10px)]', {
+      calc: {
+        l: { l: { v: 100, unit: 'vw' }, r: { v: 20 }, op: '-' },
+        r: { v: 10 },
+        op: '+',
+      },
+      keys: ['width'],
+    }))
+  it('w-[calc(100vw-2*20px)] mul precedence', () =>
+    e('w-[calc(100vw-2*20px)]', {
+      calc: {
+        l: { v: 100, unit: 'vw' },
+        r: { l: { v: 2 }, r: { v: 20 }, op: '*' },
+        op: '-',
+      },
+      keys: ['width'],
+    }))
+  it('w-[calc(100vw_-_20px)] underscore', () =>
+    e('w-[calc(100vw_-_20px)]', {
+      calc: { l: { v: 100, unit: 'vw' }, r: { v: 20 }, op: '-' },
+      keys: ['width'],
+    }))
+  it('mt-[calc(100vw-20px)] non-dimension prop', () =>
+    e('mt-[calc(100vw-20px)]', {
+      calc: { l: { v: 100, unit: 'vw' }, r: { v: 20 }, op: '-' },
+      keys: ['marginTop'],
+    }))
+
   it('rounded-lg', () => e('rounded-lg', { borderRadius: 8 }))
+
   it('font-bold', () => e('font-bold', { fontWeight: 'bold' }))
   it('text-lg', () => e('text-lg', { fontSize: 18, lineHeight: 28 }))
+  it('text-red-500', () => e('text-red-500', { color: '#ef4444' }))
+
   it('opacity-50', () => e('opacity-50', { opacity: 0.5 }))
   it('overflow-hidden', () => e('overflow-hidden', { overflow: 'hidden' }))
+
   it('z-10', () => e('z-10', { zIndex: 10 }))
   it('-z-10', () => e('-z-10', { zIndex: -10 }))
   it('z-[999]', () => e('z-[999]', { zIndex: 999 }))

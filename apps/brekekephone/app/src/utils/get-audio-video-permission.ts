@@ -1,4 +1,4 @@
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 import { webPlayDing } from '#/utils/web-play-ding'
 
 export const getAudioVideoPermission = () => {

@@ -3,15 +3,12 @@ import type { TextInputProps } from 'react-native'
 
 import type { InputProps } from '@/rn/core/components/input'
 import { Input } from '@/rn/core/components/input'
-import { isWeb } from '#/config'
-
+import { isWeb } from '@/rn/core/utils/platform'
 
 // Loose `ref` for legacy callers using `useRef<HTMLInputElement>` (web bias).
 export type RnTextInputProps = Omit<InputProps, 'ref'> & {
   ref?: any
   disabled?: boolean
-  placeholderTextColor?: string
-  caretHidden?: boolean
 }
 
 export const RnTextInput = ({
@@ -26,7 +23,7 @@ export const RnTextInput = ({
       (isWeb ? null : keyboardType) as TextInputProps['keyboardType']
     }
     className={[
-      'relative text-sm font-normal font-sans text-foreground',
+      'text-foreground relative font-sans text-sm font-normal placeholder-slate-400',
       className,
     ]}
   />

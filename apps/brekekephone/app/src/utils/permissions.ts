@@ -9,7 +9,7 @@ import {
   requestNotifications,
 } from 'react-native-permissions'
 
-import { isIos } from '#/config'
+import { isIos } from '@/rn/core/utils/platform'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { BrekekeUtils } from '#/utils/brekeke-utils'

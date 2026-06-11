@@ -1,26 +1,27 @@
 import { observer } from 'mobx-react'
 import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
-import { Dimensions } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { RnStacker } from '#/stores/rn-stacker'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const Stack: FC<{
   Component: ReactComponentLike
   isRoot?: boolean
   isBackgroundStack: boolean
 }> = ({ Component, ...p }) => {
+  const { width } = useWindowDimensions()
   const x = useAnimationOnDidMount({
-    translateX: [Dimensions.get('screen').width, 0],
+    translateX: [width, 0],
   })
   if (p.isRoot) {
     return (
       <View
         className={[
-          'absolute inset-0 bg-background',
+          'bg-background absolute inset-0',
           p.isBackgroundStack && 'opacity-0',
         ]}
       >
@@ -31,7 +32,7 @@ const Stack: FC<{
   return (
     <AnimatedView
       className={[
-        'absolute inset-0 bg-background',
+        'bg-background absolute inset-0',
         p.isBackgroundStack && 'opacity-0',
       ]}
       style={{ transform: [x] }}

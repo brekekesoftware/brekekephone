@@ -30,29 +30,29 @@ export const ChatInput: FC<{
     <View className='flex-1 flex-row'>
       <RnTouchableOpacity
         onPress={openFileRnPicker}
-        className='w-12.5 py-2 bg-muted border-r border-t border-b border-border'
+        className='bg-muted border-border w-12.5 border-t border-r border-b py-2'
       >
-        <RnIcon path={mdiPaperclip} size={20} />
+        <RnIcon path={mdiPaperclip} className='text-foreground' size={20} />
       </RnTouchableOpacity>
       <RnTouchableOpacity
         onPress={onEmojiTurnOn}
-        className='w-12.5 py-2 bg-muted border-r border-t border-b border-border'
+        className='bg-muted border-border w-12.5 border-t border-r border-b py-2'
       >
-        <RnIcon color='gray' path={mdiEmoticon} />
+        <RnIcon className='text-foreground-subtle' path={mdiEmoticon} />
       </RnTouchableOpacity>
       <RnTextInput
         blurOnSubmit={false}
         onChangeText={onTextChange}
         onSelectionChange={onSelectionChange}
         onSubmitEditing={onTextSubmit}
-        className='flex-1 py-2 px-3 border-t border-b border-border'
+        className='border-border flex-1 border-t border-b px-3 py-2'
         value={text}
       />
       <RnTouchableOpacity
         onPress={onTextSubmit}
-        className='w-12.5 py-2 pl-2 bg-primary'
+        className='bg-primary w-12.5 py-2 pl-2'
       >
-        <RnIcon color='white' path={mdiSend} />
+        <RnIcon className='text-white' path={mdiSend} />
       </RnTouchableOpacity>
     </View>
   )

@@ -1,16 +1,15 @@
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
-import { Dimensions } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { flow } from '@/shared/lodash'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import type { ErrorRnAlert2, PromptRnAlert } from '#/stores/rn-alert'
 import { RnAlert } from '#/stores/rn-alert'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const RnAlertR = ({
   error,
@@ -19,9 +18,10 @@ const RnAlertR = ({
   error?: ErrorRnAlert2
   prompt?: PromptRnAlert
 }) => {
+  const { height } = useWindowDimensions()
   const a = useAnimationOnDidMount({
     opacity: [0, 1],
-    translateY: [Dimensions.get('screen').height, 0],
+    translateY: [height, 0],
   })
   let props: {
     title: string | ReactElement
@@ -75,7 +75,7 @@ const RnAlertR = ({
   return (
     <View className='absolute inset-0 flex-row items-center justify-center'>
       <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
+        className='bg-modal-overlay absolute inset-0'
         style={{ opacity: a.opacity }}
       >
         <RnTouchableOpacity
@@ -84,28 +84,25 @@ const RnAlertR = ({
         />
       </AnimatedView>
       <AnimatedView
-        className='w-[90%] max-w-95 rounded-[3px] p-3.75 bg-background'
-        style={{
-          ...v.boxShadow,
-          transform: [{ translateY: a.translateY }],
-        }}
+        className='bg-background rounded-card w-[90%] max-w-95 p-3.75 shadow-sm'
+        style={{ transform: [{ translateY: a.translateY }] }}
       >
         {!!props.title && <RnText subTitle>{props.title}</RnText>}
         {props.message}
-        <View className='mt-3.75 flex-row self-end top-1.25 left-1.25'>
+        <View className='top-1.25 left-1.25 mt-3.75 flex-row self-end'>
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='mr-2.5 w-25 rounded-[3px] px-3.75 py-2.5 bg-reverse'
+              className='bg-foreground rounded-button mr-2.5 w-25 px-3.75 py-2.5'
             >
-              <RnText small white className='text-center'>
+              <RnText small className='text-background text-center'>
                 {props.dismissText}
               </RnText>
             </RnTouchableOpacity>
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            className='w-25 rounded-[3px] px-3.75 py-2.5 bg-primary'
+            className='bg-primary rounded-button w-25 px-3.75 py-2.5'
           >
             <RnText small white className='text-center'>
               {props.confirmText}

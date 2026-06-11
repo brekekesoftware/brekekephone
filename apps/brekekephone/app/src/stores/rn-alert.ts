@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import type { ReactElement } from 'react'
 import { AppState } from 'react-native'
 
@@ -33,16 +33,20 @@ export type TRnAlert =
     }
 
 export class RnAlertStore {
+  constructor() {
+    makeAutoObservable(this)
+  }
+
   // need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
-  @observable alertsCount = 0
+  alertsCount = 0
   alerts: TRnAlert[] = []
 
-  @action prompt = (prompt: PromptRnAlert) => {
+  prompt = (prompt: PromptRnAlert) => {
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
-  @action error = (a: ErrorRnAlert) => {
+  error = (a: ErrorRnAlert) => {
     // log error to save it to the debug log
     // convert error message to string if it was constructed using intlDebug
     const err = a.unexpectedErr || a.err
@@ -60,7 +64,7 @@ export class RnAlertStore {
       this.alertsCount = this.alerts.length
     }
   }
-  @action dismiss = () => {
+  dismiss = () => {
     this.alerts.shift()
     this.alertsCount = this.alerts.length
   }

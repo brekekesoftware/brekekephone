@@ -1,6 +1,7 @@
-import { action, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { debounce } from '@/shared/lodash'
 import type {
   PbxCustomPage,
@@ -10,8 +11,7 @@ import type {
   UcBuddyGroup,
   UcConfig,
 } from '#/brekekejs'
-import { bundleIdentifier, currentVersion, isIos, isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
+import { bundleIdentifier, currentVersion } from '#/config'
 import type { Account, AccountUnique, RecentCall } from '#/stores/account-store'
 import {
   getAccountUniqueId,
@@ -44,23 +44,27 @@ export type ConnectionState =
   | 'failure'
 
 export class AuthStore {
+  constructor() {
+    makeAutoObservable(this)
+  }
+
   hasInternetConnected: boolean | null = null
 
-  @observable sipPn: Partial<SipPn> = {}
+  sipPn: Partial<SipPn> = {}
 
-  @observable pbxState: ConnectionState = 'stopped'
-  @observable pbxTotalFailure = 0
-  @observable sipState: ConnectionState = 'stopped'
-  @observable sipTotalFailure = 0
-  @observable ucState: ConnectionState = 'stopped'
-  @observable ucTotalFailure = 0
+  pbxState: ConnectionState = 'stopped'
+  pbxTotalFailure = 0
+  sipState: ConnectionState = 'stopped'
+  sipTotalFailure = 0
+  ucState: ConnectionState = 'stopped'
+  ucTotalFailure = 0
 
-  @observable pbxLoginFromAnotherPlace = false
-  @observable showMsgPbxLoginFromAnotherPlace = false
-  @observable ucLoginFromAnotherPlace = false
+  pbxLoginFromAnotherPlace = false
+  showMsgPbxLoginFromAnotherPlace = false
+  ucLoginFromAnotherPlace = false
 
-  @observable pbxConnectedAt = 0
-  @observable pbxFreshLogin = false
+  pbxConnectedAt = 0
+  pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -124,7 +128,7 @@ export class AuthStore {
     return !states.includes('connecting') && states.includes('failure')
   }
 
-  @observable signedInId = ''
+  signedInId = ''
   getCurrentAccount = () =>
     ctx.account.accounts.find(a => a.id === this.signedInId)
   getCurrentData = () => ctx.account.findDataSync(this.getCurrentAccount())
@@ -133,13 +137,13 @@ export class AuthStore {
     return ca && ctx.account.findDataWithDefault(ca)
   }
 
-  @observable ucConfig?: UcConfig
-  @observable pbxConfig?: PbxGetProductInfoRes
-  @observable listCustomPage: PbxCustomPage[] = []
-  @observable activeCustomPageId?: string
+  ucConfig?: UcConfig
+  pbxConfig?: PbxGetProductInfoRes
+  listCustomPage: PbxCustomPage[] = []
+  activeCustomPageId?: string
   saveActionOpenCustomPage = false
   customPageLoadings: { [k: string]: boolean } = {}
-  getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)
+  getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id === id)
   updateCustomPage = (cp: PbxCustomPage) => {
     const found = this.listCustomPage.find(p => p.id === cp.id)
     if (!found) {
@@ -148,12 +152,12 @@ export class AuthStore {
     Object.assign(found, cp)
   }
 
-  @observable resourceLines: PbxResourceLine[] = []
+  resourceLines: PbxResourceLine[] = []
 
   // user agent for sip pal client
   // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
   getUserAgent = async (a: ParsedPn | AccountUnique) =>
-    embedApi._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
+    ctx.embed._pbxConfig['webphone.useragent'] || this._getUserAgent(a)
   _getUserAgent = async (a: ParsedPn | AccountUnique) => {
     const au = 'to' in a ? await ctx.account.findByPn(a) : a
     const d = await ctx.account.findData(au)
@@ -170,7 +174,7 @@ export class AuthStore {
   }
 
   // user agent for http request such as iframe webview smart avatar...
-  @observable private userAgentConfig: string | undefined = undefined
+  userAgentConfig: string | undefined = undefined
   setUserAgentConfig = async (useragent: string | undefined) => {
     const isEnabled = useragent === undefined || toBoolean(useragent)
     if (!isEnabled) {
@@ -186,7 +190,7 @@ export class AuthStore {
     this.userAgentConfig = userAgent
   }
   getUserAgentConfig = () =>
-    embedApi._pbxConfig['webphone.http.useragent.product'] ||
+    ctx.embed._pbxConfig['webphone.http.useragent.product'] ||
     this.userAgentConfig
 
   isBigMode = () => this.pbxConfig?.['webphone.allusers'] === 'false'
@@ -230,13 +234,13 @@ export class AuthStore {
     // previous account had an active MFA modal.
     const prevAccountId = this.signedInId || ctx.mfa.accountId
     if (prevAccountId && prevAccountId !== a.id) {
-      // Clear MFA state from previous account — all three are account-specific
+      // Clear MFA state from previous account - all three are account-specific
       // and would cause stale-session bugs if carried over to the new account.
       ctx.account.keySessionMFA = ''
       ctx.account.setMFAPendingAfterCallsId('')
       ctx.mfa.reset()
     } else {
-      // Same account re-sign-in — clear cancel state so waitMfaIfNeeded
+      // Same account re-sign-in - clear cancel state so waitMfaIfNeeded
       // and PN navigation are not blocked by a stale wasCancelled flag.
       ctx.mfa.clearCancelled()
     }
@@ -300,7 +304,7 @@ export class AuthStore {
     ctx.nav.goToPageAccountSignIn()
     console.log('signOut debug: goToPageAccountSignIn done')
   }
-  @action private resetState = () => {
+  resetState = () => {
     this.signedInId = ''
     this.pbxState = 'stopped'
     console.log('SIP PN debug: set sipState stopped sign out')
@@ -326,17 +330,17 @@ export class AuthStore {
     ctx.mfa.signOutReset()
   }
 
-  @action resetFailureState = () => {
+  resetFailureState = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
   }
-  @action reconnectPbx = () => {
+  reconnectPbx = () => {
     this.resetFailureState()
     this.pbxState = 'stopped'
     ctx.authPBX.auth()
   }
-  @action reconnectSip = () => {
+  reconnectSip = () => {
     const count = ctx.sip.phone?.getSessionCount()
     if (count) {
       console.log(
@@ -350,7 +354,7 @@ export class AuthStore {
     ctx.authSIP.auth()
   }
 
-  @action resetFailureStateIncludePbxOrUc = () => {
+  resetFailureStateIncludePbxOrUc = () => {
     this.resetFailureState()
     if (this.pbxLoginFromAnotherPlace) {
       this.pbxLoginFromAnotherPlace = false
@@ -365,11 +369,11 @@ export class AuthStore {
   }
 
   recentCallsMax: number = 200
-  @observable cRecentCalls: RecentCall[] = []
+  cRecentCalls: RecentCall[] = []
   rcPerPage: number = 15
   rcPage: number = 0
-  @observable rcLoading: boolean = false
-  @observable rcCount: number = 0
+  rcLoading: boolean = false
+  rcCount: number = 0
   // recentCallsMax with default 200 and limit 1000
   setRecentCallsMax = async (max: number | string) => {
     const numericMax = Number(max)
@@ -513,7 +517,7 @@ export class AuthStore {
     return this.handleDeepLinkUpdateAccount(urlParams, a)
   }
 
-  private handleDeepLinkCustomPage = async (urlParams: UrlParams) => {
+  handleDeepLinkCustomPage = async (urlParams: UrlParams) => {
     const { customPageId } = urlParams
     // prevent double navigate and check list account
     if (this.alreadyHandleDeepLinkCustomPage || !ctx.account.accounts.length) {
@@ -533,7 +537,7 @@ export class AuthStore {
     }
     const internalId = `webphone.custompage${pageIndex}`
 
-    // if not signed in → auto sign-in first account
+    // if not signed in -> auto sign-in first account
     if (!this.signedInId) {
       const success = await ctx.auth.autoSignInFirstAccount()
       if (!success) {
@@ -565,7 +569,7 @@ export class AuthStore {
     return true
   }
 
-  private handleDeepLinkMakeCall = async (
+  handleDeepLinkMakeCall = async (
     urlParams: UrlParams,
     a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
   ) => {
@@ -636,7 +640,7 @@ export class AuthStore {
     return true
   }
 
-  private handleDeepLinkUpdateAccount = async (
+  handleDeepLinkUpdateAccount = async (
     urlParams: UrlParams,
     a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
   ) => {
@@ -702,7 +706,7 @@ export class AuthStore {
     return true
   }
 
-  @observable isSignInByNotification = false
+  isSignInByNotification = false
   clearSignInByNotification = debounce(
     () => {
       // clearSignInByNotification will activate UC login
@@ -728,7 +732,7 @@ export class AuthStore {
   // Public so AuthSIP.authWithCheck can gate during account transition (BUG-1207).
   isSigningInByNotification = false
 
-  @action signInByNotification = async (n: ParsedPn) => {
+  signInByNotification = async (n: ParsedPn) => {
     if (this.isSigningInByNotification) {
       console.log(
         `SIP PN debug: signInByNotification already in progress, skip pnId=${n.id}`,
@@ -790,7 +794,7 @@ export class AuthStore {
     await this.waitSip()
   }
 
-  private wait = (
+  wait = (
     fn: Function,
     name: 'pbxState' | 'sipState' | 'ucState',
     time = 10000,

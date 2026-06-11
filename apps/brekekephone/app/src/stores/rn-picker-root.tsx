@@ -1,43 +1,28 @@
 import { observer } from 'mobx-react'
 import { useState } from 'react'
-import { Dimensions } from 'react-native'
 
-import { AnimatedScrollView, AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isIos } from '#/config'
+import {
+  AnimatedScrollView,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
 import type { RnPickerOption } from '#/stores/rn-picker'
 import { RnPicker } from '#/stores/rn-picker'
 import { useAnimationOnDidMount } from '#/utils/animation'
-
-const defaultBottomPosition = isIos ? 20 : 15
-
-const css = {
-  RnPicker_Options: {
-    borderRadius: v.borderRadius,
-    backgroundColor: v.bg,
-    overflow: 'hidden',
-  },
-  RnPicker_Icon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-} as const
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 const RnPickerR = (p: RnPickerOption) => {
   const [selectedKey, setSelectedKey] = useState<string | number>(
     p.selectedKey || '',
   )
 
-  const backdropCss = useAnimationOnDidMount({
-    opacity: [0, 1],
-  })
+  const { height } = useWindowDimensions()
+  const backdropCss = useAnimationOnDidMount({ opacity: [0, 1] })
   const y = useAnimationOnDidMount({
-    translateY: [Dimensions.get('screen').height, 0],
+    translateY: [height, 0],
   })
 
   const onConfirm = () => {
@@ -46,9 +31,9 @@ const RnPickerR = (p: RnPickerOption) => {
   }
 
   return (
-    <View className='absolute inset-0 flex-row items-center justify-center'>
+    <View className='android:elevation-999 web:fixed absolute inset-0 z-999 flex-row items-center justify-center'>
       <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
+        className='bg-modal-overlay absolute inset-0'
         style={{ opacity: backdropCss.opacity }}
       >
         <RnTouchableOpacity
@@ -57,13 +42,10 @@ const RnPickerR = (p: RnPickerOption) => {
         />
       </AnimatedView>
       <AnimatedScrollView
-        className='absolute w-[90%] max-w-95 max-h-[80%] mb-15'
-        style={{
-          bottom: defaultBottomPosition,
-          transform: [y],
-        }}
+        className='ios:bottom-5 absolute bottom-3.75 mb-15 max-h-[80%] w-[90%] max-w-95'
+        style={{ transform: [y] }}
       >
-        <View style={css.RnPicker_Options}>
+        <View className='bg-background rounded-card overflow-hidden'>
           {p.options.map((o, i) => {
             const isSelected = `${selectedKey}` === `${o.key}`
             return (
@@ -75,7 +57,7 @@ const RnPickerR = (p: RnPickerOption) => {
                   !p.onConfirm && RnPicker.dismiss()
                 }}
                 className={[
-                  'py-3 px-3.75 border-b border-border',
+                  'border-border border-b px-3.75 py-3',
                   i + 1 === p.options.length && 'border-b-0',
                   isSelected && 'bg-muted',
                 ]}
@@ -88,33 +70,27 @@ const RnPickerR = (p: RnPickerOption) => {
                   {o.label}
                 </RnText>
                 <RnIcon
-                  color={isSelected ? v.colors.primary : undefined}
                   path={
                     o.icon ||
                     (isSelected ? mdiRadioboxMarked : mdiRadioboxBlank)
                   }
-                  style={css.RnPicker_Icon}
+                  className={[
+                    'text-foreground absolute top-2.5 right-2.5',
+                    isSelected && 'text-primary',
+                  ]}
                 />
               </RnTouchableOpacity>
             )
           })}
         </View>
       </AnimatedScrollView>
-      <View
-        style={{
-          flexDirection: 'row',
-          bottom: defaultBottomPosition,
-          position: 'absolute',
-          width: '90%',
-          maxWidth: v.maxModalWidth,
-        }}
-      >
-        <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
+      <View className='ios:bottom-5 absolute bottom-3.75 w-[90%] max-w-95 flex-row'>
+        <AnimatedView className='max-w-95 flex-1' style={{ transform: [y] }}>
           <RnTouchableOpacity
             onPress={RnPicker.dismiss}
             className={[
-              'py-3 px-3.75 mt-3.75 rounded-[3px] bg-background',
-              p.onConfirm && 'items-center bg-error-100 rounded-l-[3px] rounded-r-none',
+              'bg-background rounded-button mt-3.75 px-3.75 py-3',
+              p.onConfirm && 'bg-error-100 items-center rounded-r-none',
             ]}
           >
             <RnText bold danger>
@@ -122,18 +98,17 @@ const RnPickerR = (p: RnPickerOption) => {
             </RnText>
             {!p.onConfirm && (
               <RnIcon
-                color={v.colors.danger}
                 path={mdiClose}
-                style={css.RnPicker_Icon}
+                className='text-error absolute top-2.5 right-2.5'
               />
             )}
           </RnTouchableOpacity>
         </AnimatedView>
         {p.onConfirm && (
-          <AnimatedView className='flex-1 max-w-95' style={{ transform: [y] }}>
+          <AnimatedView className='max-w-95 flex-1' style={{ transform: [y] }}>
             <RnTouchableOpacity
               onPress={onConfirm}
-              className='py-3 px-3.75 mt-3.75 rounded-[3px] items-center bg-primary rounded-l-none rounded-r-[3px]'
+              className='bg-primary rounded-r-button mt-3.75 items-center rounded-l-none px-3.75 py-3'
             >
               <RnText bold white>
                 {p.confirmLabel || intl`SAVE`}

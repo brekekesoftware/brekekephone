@@ -1,6 +1,7 @@
-import { action, computed, observable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import { jsonStable } from '@/shared/json-stable'
 import { debounce, uniqBy } from '@/shared/lodash'
@@ -19,7 +20,7 @@ import type {
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/rn'
-import { currentVersion, isWeb } from '#/config'
+import { currentVersion } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl, intlDebug } from '#/stores/intl'
@@ -107,33 +108,36 @@ type MFAInfo = {
 type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 
 // Result of mfaStart():
-//   true            — server accepted, OTP session created (type=code/url)
-//   'none'          — server says no MFA required for this account
-//   { error }       — server returned status=FAILED with a message
-//   false           — network/exception, no usable response
+//   true            - server accepted, OTP session created (type=code/url)
+//   'none'          - server says no MFA required for this account
+//   { error }       - server returned status=FAILED with a message
+//   false           - network/exception, no usable response
 type MfaStartResult = true | 'none' | { error: string } | false
 
 export class AccountStore {
-  @observable appInitDone = false
-  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  appInitDone = false
+  pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise
 
-  @observable accounts: Account[] = []
-  // @ts-ignore
-  @computed get accountsMap() {
+  accounts: Account[] = []
+  get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
   }
-  @observable accountData: AccountData[] = []
+  accountData: AccountData[] = []
 
   keySessionMFA: string = ''
   pendingPnEnabled?: boolean
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
-  // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.
-  @observable mfaPendingAfterCallsId = ''
-  @action setMFAPendingAfterCallsId = (id: string) => {
+  // Not persisted - if app restarts without calls, onPBXConnectionStarted handles MFA normally.
+  mfaPendingAfterCallsId = ''
+  setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
   }
 
@@ -156,7 +160,7 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
-  @observable ringtonePicker: RingtonePickerType = {}
+  ringtonePicker: RingtonePickerType = {}
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
@@ -182,21 +186,19 @@ export class AccountStore {
         a.pbxTenant = a.pbxTenant || '-'
         trimAccount(a)
       })
-      runInAction(() => {
-        this.accounts = accounts.filter(a => a.id && a.pbxUsername)
-        if (accounts.length !== this.accounts.length) {
-          console.error(
-            'loadAccountsFromLocalStorage error missing id or pbxUsername',
-          )
-        }
-        this.accountData = uniqBy(accountData, 'id')
-        this.ringtonePicker = ringtonePicker ?? {}
-      })
+      this.accounts = accounts.filter(a => a.id && a.pbxUsername)
+      if (accounts.length !== this.accounts.length) {
+        console.error(
+          'loadAccountsFromLocalStorage error missing id or pbxUsername',
+        )
+      }
+      this.accountData = uniqBy(accountData, 'id')
+      this.ringtonePicker = ringtonePicker ?? {}
     }
     resolveFn?.()
     resolveFn = undefined
   }
-  private saveAccountsToLocalStorage = async () => {
+  saveAccountsToLocalStorage = async () => {
     try {
       const profiles = this.accounts.filter(a => a.id && a.pbxUsername)
       if (profiles.length !== this.accounts.length) {
@@ -219,7 +221,7 @@ export class AccountStore {
       })
     }
   }
-  private _saveAccountsToLocalStorageDebounced = debounce(
+  _saveAccountsToLocalStorageDebounced = debounce(
     this.saveAccountsToLocalStorage,
     100,
     { maxWait: 1000 },
@@ -236,7 +238,7 @@ export class AccountStore {
   saveAccountsToLocalStorageWithoutDebounced = async () =>
     await this.saveAccountsToLocalStorage()
 
-  @action upsertAccount = async (p: Partial<Account>) => {
+  upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
 
     if (!a) {
@@ -272,7 +274,7 @@ export class AccountStore {
       (typeof p.pushNotificationEnabled === 'boolean' &&
         p.pushNotificationEnabled !== clonedA.pushNotificationEnabled)
     ) {
-      // When MFA verification is needed, revert the PN change — the actual
+      // When MFA verification is needed, revert the PN change - the actual
       // toggle will happen after MFA verify + sync succeeds, triggered by
       // onSwitchEnableNotification in AccountSignInItem.
       if (this.needsMFAForPnSync(a)) {
@@ -296,7 +298,7 @@ export class AccountStore {
       })
     }
   }
-  @action removeAccount = async (id: string) => {
+  removeAccount = async (id: string) => {
     const a = this.accounts.find(_ => _.id === id)
     this.accounts = this.accounts.filter(_ => _.id !== id)
 
@@ -407,9 +409,7 @@ export class AccountStore {
     if (arr.length > 20) {
       arr.pop()
     }
-    runInAction(() => {
-      this.accountData = arr
-    })
+    this.accountData = arr
     this.saveAccountsToLocalStorageDebounced()
   }
 
@@ -516,7 +516,7 @@ export class AccountStore {
     return false
   }
 
-  private saveDeviceToken = async (ca: Account, token: string) => {
+  saveDeviceToken = async (ca: Account, token: string) => {
     const d = await this.findData(ca)
     if (!d) {
       return
@@ -525,7 +525,7 @@ export class AccountStore {
     await this.saveAccountsToLocalStorageWithoutDebounced()
   }
 
-  private reconnectWithDeviceToken = async (ca: Account, token: string) => {
+  reconnectWithDeviceToken = async (ca: Account, token: string) => {
     await this.saveDeviceToken(ca, token)
     ctx.authPBX.dispose()
     ctx.auth.pbxTotalFailure = 0
@@ -664,7 +664,7 @@ export class AccountStore {
       if (!res) {
         return false
       }
-      // NO_SESSION means session already gone — treat as success so resend can proceed
+      // NO_SESSION means session already gone - treat as success so resend can proceed
       this.keySessionMFA = ''
       return res.status === 'OK' || res.status === 'NO_SESSION'
     } catch (err) {
@@ -683,7 +683,7 @@ export class AccountStore {
     }
 
     // Already showing OTP for this account (e.g. syncPnToken triggered first)
-    // — user is actively verifying, skip everything else to avoid touching
+    // - user is actively verifying, skip everything else to avoid touching
     // active session (no mfaDelete, no duplicate mfaStart, no verified check).
     if (ctx.mfa.isShowing(ca.id)) {
       return
@@ -710,12 +710,12 @@ export class AccountStore {
       }
     }
 
-    // Restore persisted sessKey after kill app — delete old session before starting new
+    // Restore persisted sessKey after kill app - delete old session before starting new
     const savedSessKey = d.mfa?.sessKey
     if (savedSessKey && !this.keySessionMFA) {
       this.keySessionMFA = savedSessKey
       await this.mfaDelete(ca)
-      // Force clear — we want fresh mfaStart regardless of mfaDelete result.
+      // Force clear - we want fresh mfaStart regardless of mfaDelete result.
       // On success, mfaDelete already sets keySessionMFA=''. On failure (!res),
       // need explicit clear to avoid falling into `if (keySessionMFA)` reuse block.
       this.keySessionMFA = ''
@@ -725,7 +725,7 @@ export class AccountStore {
       await this.saveAccountsToLocalStorageWithoutDebounced()
     }
 
-    // Resuming after call ended — session from previous mfaStart still valid,
+    // Resuming after call ended - session from previous mfaStart still valid,
     // just re-show the modal without sending another OTP email.
     // Active-call guard still needed here: this branch returns before reaching
     // the pre-mfaStart guard below.
@@ -741,7 +741,7 @@ export class AccountStore {
 
     // Defer fresh mfaStart while a call is active. Sending OTP now would expire
     // before the call ends, and a transient pbx.client (e.g. mid PBX reconnect)
-    // can throw inside mfaStart — the false-result path below would then sign
+    // can throw inside mfaStart - the false-result path below would then sign
     // the user out and BYE the active call.
     if (ctx.call.calls.length > 0) {
       console.log(
@@ -755,7 +755,7 @@ export class AccountStore {
     if (result === 'none') {
       return
     }
-    // Network/exception failure — no usable response from server
+    // Network/exception failure - no usable response from server
     if (result === false) {
       ctx.toast.show(intl`Unable to log in. Please try again.`, 'error')
       ctx.auth.signOut()

@@ -1,6 +1,4 @@
-import { action } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
 
 import { isEmpty } from '@/shared/lodash'
 import { ContactsCreateForm } from '#/components/contact-create-form'
@@ -8,26 +6,8 @@ import type { ContactInfo, Phonebook } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-@observer
-export class PagePhonebookUpdate extends Component<{
-  contact: Phonebook
-}> {
-  render() {
-    return (
-      <ContactsCreateForm
-        onBack={ctx.nav.backToPageContactPhonebook}
-        onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
-          if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
-            this.save(p, hasUnsavedChanges)
-          }
-        }}
-        title={intl`Update Phonebook`}
-        updatingPhonebook={this.props.contact}
-      />
-    )
-  }
-
-  @action save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
+export const PagePhonebookUpdate = observer((props: { contact: Phonebook }) => {
+  const save = (p: ContactInfo, hasUnsavedChanges: boolean) => {
     if (!hasUnsavedChanges) {
       ctx.nav.goToPageContactPhonebook()
       return
@@ -37,20 +17,31 @@ export class PagePhonebookUpdate extends Component<{
     }
     const phonebook = p.phonebook
     delete p.phonebook
-
     const contactUpdate = {
-      id: this.props.contact.id,
+      id: props.contact.id,
       display_name: ctx.contact.getManagerContact(p.$lang)?.toDisplayName(p),
       phonebook,
-      shared: !!this.props.contact?.shared,
+      shared: !!props.contact?.shared,
       info: { ...p },
     } as Phonebook
-    ctx.pbx
-      .setContact(contactUpdate)
-      .then(() => this.onSaveSuccess(contactUpdate))
+    ctx.pbx.setContact(contactUpdate).then(() => onSaveSuccess(contactUpdate))
   }
-  onSaveSuccess = (phonebook: Phonebook) => {
+
+  const onSaveSuccess = (phonebook: Phonebook) => {
     ctx.nav.goToPageContactPhonebook()
     ctx.contact.upsertPhonebook(phonebook)
   }
-}
+
+  return (
+    <ContactsCreateForm
+      onBack={ctx.nav.backToPageContactPhonebook}
+      onSave={(p: ContactInfo, hasUnsavedChanges: boolean) => {
+        if (ctx.pbx.client && ctx.auth.pbxState === 'success') {
+          save(p, hasUnsavedChanges)
+        }
+      }}
+      title={intl`Update Phonebook`}
+      updatingPhonebook={props.contact}
+    />
+  )
+})

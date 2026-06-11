@@ -18,12 +18,17 @@ export const RnCheckBox: FC<
     {...p}
     onPress={onPress}
     className={[
-      'h-5.5 w-5.5 rounded-sm border-2',
-      isSelected && 'bg-[#333] border-0',
+      'border-foreground h-5.5 w-5.5 rounded-sm border-2',
+      isSelected && 'border-foreground',
       className,
     ]}
     disabled={disabled}
   >
-    {isSelected && <RnIcon path={mdiCheck} color='white' />}
+    {isSelected && (
+      <RnIcon
+        path={mdiCheck}
+        className='text-foreground h-5.5 w-5.5 self-center pb-1'
+      />
+    )}
   </RnTouchableOpacity>
 )

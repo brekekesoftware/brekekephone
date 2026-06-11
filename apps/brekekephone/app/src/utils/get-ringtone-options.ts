@@ -1,11 +1,17 @@
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
+import type { staticRingtones } from '#/utils/brekeke-utils'
 import {
   BrekekeUtils,
   defaultRingtone,
-  staticRingtoneMap,
   systemRingtone,
 } from '#/utils/brekeke-utils'
+
+const staticRingtoneMap: {
+  [k in (typeof staticRingtones)[number]]: () => string
+} = {
+  incallmanager_ringtone: () => intl`Brekeke ringtone`,
+}
 
 export type RingtoneOption = {
   key: string

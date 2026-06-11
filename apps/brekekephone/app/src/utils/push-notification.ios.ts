@@ -113,7 +113,4 @@ export const PushNotification = {
 
   getToken: () => apnsToken,
   getVoipToken: () => voipToken,
-  resetBadgeNumber: () => {
-    PushNotificationIOS.setApplicationIconBadgeNumber(0)
-  },
 }

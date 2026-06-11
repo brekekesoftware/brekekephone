@@ -3,70 +3,59 @@ import type { FC } from 'react'
 import { View } from '@/rn/core/components/view'
 import { mdiCached, mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { intl } from '#/stores/intl'
-
-// Map theme hex (caller pass v.colors.X) → tw class. Theme-aware via CSS var.
-const onNextBgClass: { [k: string]: string } = {
-  [v.colors.primary]: 'bg-primary',
-  [v.colors.danger]: 'bg-error',
-  [v.colors.warning]: 'bg-warning',
-  [v.colors.info]: 'bg-info',
-}
 
 export const FooterActions: FC<
   Partial<{
     onBack(): void
-    onBackIcon: string
+    BackIcon: FC<any>
     onMore(): void
-    onMoreIcon: string
+    MoreIcon: FC<any>
     onNext(): void
-    onNextColor: string
     onNextText: string
   }>
 > = p => {
-  const {
-    onBack,
-    onBackIcon,
-    onMore,
-    onMoreIcon,
-    onNext,
-    onNextColor,
-    onNextText,
-  } = p
+  const { onBack, BackIcon, onMore, MoreIcon, onNext, onNextText } = p
 
   return (
-    <View className='flex-1 flex-row rounded-[3px] overflow-hidden'>
+    <View className='rounded-button flex-1 flex-row overflow-hidden'>
       {onBack && (
         <RnTouchableOpacity
           onPress={onBack}
           className={[
-            'rounded-none w-1/4 py-2 bg-error-100',
+            'bg-error-100 dark:bg-error-800 w-1/4 items-center justify-center rounded-none py-2',
             !onMore && 'w-1/3',
           ]}
         >
-          <RnIcon
-            color={v.colors.danger}
-            path={onBackIcon || mdiKeyboardBackspace}
-          />
+          {BackIcon ? (
+            <BackIcon className='text-error text-[18px] leading-[24px] dark:text-white' />
+          ) : (
+            <RnIcon
+              path={mdiKeyboardBackspace}
+              className='text-error dark:text-white'
+            />
+          )}
         </RnTouchableOpacity>
       )}
       {onMore && (
         <RnTouchableOpacity
           onPress={onMore}
           className={[
-            'rounded-none w-1/4 py-2 bg-muted',
+            'bg-muted w-1/4 items-center justify-center rounded-none py-2',
             !onBack && 'w-1/3',
           ]}
         >
-          <RnIcon path={onMoreIcon || mdiCached} />
+          {MoreIcon ? (
+            <MoreIcon className='text-foreground text-[18px] leading-[24px]' />
+          ) : (
+            <RnIcon path={mdiCached} className='text-foreground' />
+          )}
         </RnTouchableOpacity>
       )}
       <RnTouchableOpacity
         onPress={onNext}
         className={[
-          'rounded-none w-1/2 py-2 justify-center items-center',
-          onNextColor ? onNextBgClass[onNextColor] : 'bg-primary',
+          'bg-primary w-1/2 items-center justify-center rounded-none py-2',
           !(onBack && onMore) && 'w-2/3',
           !(onBack || onMore) && 'w-full',
         ]}

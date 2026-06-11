@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+
 import { formatDateTimeSemantic } from '#/components/chat-config'
 import { UserItem } from '#/components/contact-user-item'
 import { RnTouchableOpacity } from '#/components/rn'
@@ -28,7 +29,7 @@ export const ListUsers: FC<{
         <RnTouchableOpacity
           key={id}
           onPress={() => (group ? p.onGroupSelect(id) : p.onUserSelect(id))} // TODO: group
-          className={isUnread ? 'bg-primary-100' : undefined}
+          className={isUnread ? 'bg-primary-100 dark:bg-muted' : undefined}
         >
           <UserItem
             key={id}

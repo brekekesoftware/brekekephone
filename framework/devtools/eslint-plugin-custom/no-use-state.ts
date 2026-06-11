@@ -11,6 +11,7 @@ export const noUseState: TSESLint.RuleModule<'noUseState', []> = {
     },
     schema: [],
   },
+
   create: c => {
     const check = (
       n: TSESTree.ImportSpecifier | TSESTree.CallExpression,
@@ -48,5 +49,4 @@ export const noUseState: TSESLint.RuleModule<'noUseState', []> = {
       },
     }
   },
-  defaultOptions: [],
 }

@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { debounce } from '@/shared/lodash'
 import { Errors } from '#/brekekejs/ucclient'
@@ -11,7 +11,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export class AuthUC {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -23,7 +23,7 @@ export class AuthUC {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
     ctx.uc.disconnect()
@@ -31,7 +31,7 @@ export class AuthUC {
     ctx.auth.ucState = 'stopped'
   }
 
-  @action private authWithoutCatch = async () => {
+  authWithoutCatch = async () => {
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'connecting'
@@ -49,14 +49,12 @@ export class AuthUC {
       c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
     )
     this.loadUsers()
-    this.loadUnreadChats().then(
-      action(() => {
-        ctx.auth.ucState = 'success'
-        ctx.auth.ucTotalFailure = 0
-      }),
-    )
+    this.loadUnreadChats().then(() => {
+      ctx.auth.ucState = 'success'
+      ctx.auth.ucTotalFailure = 0
+    })
   }
-  @action private authWithCheck = async () => {
+  authWithCheck = async () => {
     if (!ctx.auth.ucShouldAuth()) {
       return
     }
@@ -69,24 +67,22 @@ export class AuthUC {
         return
       }
     }
-    this.authWithoutCatch().catch(
-      action((err: Error) => {
-        ctx.auth.ucState = 'failure'
-        ctx.auth.ucTotalFailure += 1
-        console.error('Failed to connect to uc:', err)
-        this.authWithCheck()
-      }),
-    )
+    this.authWithoutCatch().catch((err: Error) => {
+      ctx.auth.ucState = 'failure'
+      ctx.auth.ucTotalFailure += 1
+      console.error('Failed to connect to uc:', err)
+      this.authWithCheck()
+    })
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 
-  @action private onConnectionStopped = (e: { code: number }) => {
+  onConnectionStopped = (e: { code: number }) => {
     ctx.auth.ucState = 'failure'
     ctx.auth.ucTotalFailure += 1
     ctx.auth.ucLoginFromAnotherPlace = e.code === Errors.PLEONASTIC_LOGIN
     this.authWithCheck()
   }
-  @action private loadUsers = () => {
+  loadUsers = () => {
     // update logic loadUcBuddyList when UC connect finish
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
@@ -98,12 +94,12 @@ export class AuthUC {
     const users = ctx.uc.getUsers()
     ctx.contact.ucUsers = users
   }
-  private loadUnreadChats = () =>
+  loadUnreadChats = () =>
     ctx.uc
       .getUnreadChats()
       .then(this.onLoadUnreadChatsSuccess)
       .catch(this.onLoadUnreadChatsFailure)
-  @action private onLoadUnreadChatsSuccess = (
+  onLoadUnreadChatsSuccess = (
     chats: {
       id: string
       text: string
@@ -116,7 +112,7 @@ export class AuthUC {
       ctx.chat.pushMessages(chat.creator, [chat], true)
     })
   }
-  private onLoadUnreadChatsFailure = (err: Error) => {
+  onLoadUnreadChatsFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to load unread chat messages`,
       err,

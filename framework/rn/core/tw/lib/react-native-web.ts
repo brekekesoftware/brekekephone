@@ -74,7 +74,7 @@ const map: StrMap<Function> = {
     d.pressable && tw`cursor-pointer`,
   ],
   View: (d: View) => [
-    tw`m-h-0 m-w-0 relative z-0 m-0 flex shrink-0 basis-auto list-none flex-col content-start items-stretch border-0 border-solid border-black bg-transparent p-0 no-underline`,
+    tw`relative z-0 m-0 flex min-h-0 min-w-0 shrink-0 basis-auto list-none flex-col content-start items-stretch border-0 border-solid border-black bg-transparent p-0 no-underline`,
     d.hasTextAncestor && tw`inline-flex`,
   ],
   Pressable: (d: Pressable) => [
@@ -84,13 +84,13 @@ const map: StrMap<Function> = {
   ],
   ScrollView: (d: ScrollView) => [
     d.stickyHeader && tw`sticky top-0 z-10`,
-    d.pagingEnabledChild && tw`snap-start`,
     d.contentContainerCenterContent && tw`grow justify-center`,
-    d.pagingEnabledHorizontal && tw`flex-row snap-x snap-mandatory`,
-    d.pagingEnabledVertical && tw`flex-col snap-y snap-mandatory`,
     d.base && tw`shrink grow transform-[translateZ(0)]`,
     d.baseVertical && tw`flex-col overflow-x-hidden overflow-y-auto`,
     d.baseHorizontal && tw`flex-row overflow-x-auto overflow-y-hidden`,
+    d.pagingEnabledChild && tw`snap-start`,
+    d.pagingEnabledVertical && tw`snap-y snap-mandatory flex-col`,
+    d.pagingEnabledHorizontal && tw`snap-x snap-mandatory flex-row`,
   ],
   TextInput: (d: TextInput) => [
     tw`rounded-0 font-sm m-0 resize-none [appearance:textfield] border-0 border-solid border-black bg-transparent p-0 font-sans outline-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`,

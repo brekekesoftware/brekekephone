@@ -1,12 +1,17 @@
-import { observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 
 export class GlobalStore {
-  @observable productName = isWeb ? 'Web Phone' : 'Brekeke Phone'
-  @observable embedStaticPath = ''
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  productName = isWeb ? 'Web Phone' : 'Brekeke Phone'
+  embedStaticPath = ''
+  darkModeLoading = true
 
   buildEmbedStaticPath = (path: string) => {
     if (!isEmbed || !this.embedStaticPath) {

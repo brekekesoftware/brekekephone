@@ -1,6 +1,5 @@
-import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, createRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeSyntheticEvent,
   TextInput,
@@ -14,84 +13,92 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnKeyboard } from '#/stores/rn-keyboard'
+import { BackgroundTimer } from '#/utils/background-timer'
 
-@observer
-export class PageCallKeypad extends Component {
-  @observable txt = ''
-  txtRef = createRef<TextInput>()
-  txtSelection = { start: 0, end: 0 }
+export const PageCallKeypad = observer(() => {
+  const [txt, setTxt] = useState('')
+  const txtRef = useRef<TextInput>(null)
+  const txtSelection = useRef({ start: 0, end: 0 })
+  const focusTimerRef = useRef<number | undefined>(undefined)
 
-  showKeyboard = () => {
+  useEffect(
+    () => () => {
+      if (focusTimerRef.current) {
+        BackgroundTimer.clearTimeout(focusTimerRef.current)
+      }
+    },
+    [],
+  )
+
+  const showKeyboard = () => {
     // android: focus() on an already-focused input is a no-op and the IME
     // stays hidden after a back-press; blur first to force a real re-focus
-    this.txtRef.current?.blur()
-    setTimeout(() => this.txtRef.current?.focus(), 50)
+    txtRef.current?.blur()
+    if (focusTimerRef.current) {
+      BackgroundTimer.clearTimeout(focusTimerRef.current)
+    }
+    focusTimerRef.current = BackgroundTimer.setTimeout(
+      () => txtRef.current?.focus(),
+      50,
+    )
   }
-  callVoice = async () => {
-    this.txt = this.txt.trim()
-    if (!this.txt) {
+
+  const callVoice = async () => {
+    const trimmed = txt.trim()
+    setTxt(trimmed)
+    if (!trimmed) {
       RnAlert.error({
         message: intlDebug`No target to call`,
       })
       return
     }
-    if (await ctx.call.startCall(this.txt)) {
-      // clear text after call
-      this.txt = ''
-      this.txtSelection = { start: 0, end: 0 }
+    if (await ctx.call.startCall(trimmed)) {
+      setTxt('')
+      txtSelection.current = { start: 0, end: 0 }
     }
   }
 
-  render() {
-    return (
-      <Layout
-        description={intl`Keypad dial manually`}
-        fabOnNext={RnKeyboard.isKeyboardShowing ? this.callVoice : undefined}
-        fabOnNextText={intl`DIAL`}
-        menu='call'
-        subMenu='keypad'
-        title={intl`Keypad`}
-      >
-        <ShowNumber
-          refInput={this.txtRef}
-          selectionChange={(
-            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-          ) => {
-            Object.assign(this.txtSelection, {
-              start: e.nativeEvent.selection.end,
-              end: e.nativeEvent.selection.end,
-            })
-          }}
-          setTarget={(v: string) => {
-            this.txt = v
-          }}
-          value={this.txt}
-        />
-        {!RnKeyboard.isKeyboardShowing && (
-          <KeyPad
-            callVoice={this.callVoice}
-            onPressNumber={v => {
-              const { end, start } = this.txtSelection
-              let min = Math.min(start, end)
-              const max = Math.max(start, end)
-              const isDelete = v === ''
-              if (isDelete) {
-                if (start === end && start) {
-                  min = min - 1
-                }
+  return (
+    <Layout
+      description={intl`Keypad dial manually`}
+      fabOnNext={RnKeyboard.isKeyboardShowing ? callVoice : undefined}
+      fabOnNextText={intl`DIAL`}
+      menu='call'
+      subMenu='keypad'
+      title={intl`Keypad`}
+    >
+      <ShowNumber
+        refInput={txtRef}
+        selectionChange={(
+          e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+        ) => {
+          txtSelection.current.start = e.nativeEvent.selection.end
+          txtSelection.current.end = e.nativeEvent.selection.end
+        }}
+        setTarget={setTxt}
+        value={txt}
+      />
+      {!RnKeyboard.isKeyboardShowing && (
+        <KeyPad
+          callVoice={callVoice}
+          onPressNumber={v => {
+            const { end, start } = txtSelection.current
+            let min = Math.min(start, end)
+            const max = Math.max(start, end)
+            const isDelete = v === ''
+            if (isDelete) {
+              if (start === end && start) {
+                min = min - 1
               }
-              // update text to trigger render
-              const t = this.txt
-              this.txt = t.substring(0, min) + v + t.substring(max)
-              //
-              const p = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = p
-              this.txtSelection.end = p
-            }}
-            showKeyboard={this.showKeyboard}
-          />
-        )}
-      </Layout>
-    )
-  }
-}
+            }
+            setTxt(txt.substring(0, min) + v + txt.substring(max))
+            const p = min + (isDelete ? 0 : 1)
+            txtSelection.current.start = p
+            txtSelection.current.end = p
+          }}
+          showKeyboard={showKeyboard}
+        />
+      )}
+    </Layout>
+  )
+})

@@ -1,39 +1,24 @@
-import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, Fragment } from 'react'
+import type { ReactNode } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'
 import { IncomingItem } from '#/components/call-voices-ui'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/background-timer'
 
-@observer
-export class DidMountTimer extends Component<any> {
-  private didMountTimer = 0
-  @observable didMount = false
-  componentDidMount = () => {
-    this.didMountTimer = BackgroundTimer.setTimeout(
-      action(() => {
-        this.didMountTimer = 0
-        this.didMount = true
-      }),
-      1000,
-    )
-  }
-  componentWillUnmount = () => {
-    if (this.didMountTimer) {
-      BackgroundTimer.clearTimeout(this.didMountTimer)
-    }
-  }
-  render() {
-    return this.didMount ? this.props.children : null
-  }
+export const DidMountTimer = ({ children }: { children?: ReactNode }) => {
+  const [didMount, setDidMount] = useState(false)
+  useEffect(() => {
+    const t = BackgroundTimer.setTimeout(() => setDidMount(true), 1000)
+    return () => BackgroundTimer.clearTimeout(t)
+  }, [])
+  return didMount ? children : null
 }
 
 export const CallNotify = observer(() => {
@@ -63,10 +48,10 @@ export const CallNotify = observer(() => {
     <Wrapper>
       {ctx.call.shouldRingInNotify() && <IncomingItem />}
       <RnTouchableOpacity
-        className='flex-row items-center border-b border-border bg-muted'
+        className='border-border bg-muted flex-row items-center border-b'
         onPress={() => ctx.nav.goToPageCallManage()}
       >
-        <View className='flex-1 pl-3 py-1.25'>
+        <View className='flex-1 py-1.25 pl-3'>
           <RnText bold>{c.getDisplayName()}</RnText>
           <RnText>
             {intl`Incoming Call`}
@@ -75,16 +60,14 @@ export const CallNotify = observer(() => {
         </View>
         {!hideHangup && (
           <ButtonIcon
-            bdcolor={v.colors.danger}
-            color={v.colors.danger}
+            className='border-error text-error'
             onPress={c.hangupWithUnhold}
             path={mdiClose}
             size={20}
           />
         )}
         <ButtonIcon
-          bdcolor={v.colors.primary}
-          color={v.colors.primary}
+          className='border-primary text-primary'
           onPress={() => {
             c.answer()
             if (ctx.call.calls.some(_ => _.answered && _.id !== c.id)) {

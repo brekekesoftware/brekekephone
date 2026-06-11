@@ -182,6 +182,10 @@ export const config = ({
         },
       ],
       'import/enforce-node-protocol-usage': [warn, 'always'],
+
+      'custom/concat-classname-strings': warn,
+      'custom/enforce-use-client': [warn, enforceUseClient],
+      'custom/no-single-item-array-prop': [warn, ['style', 'className']],
     }),
   }
 
@@ -225,7 +229,6 @@ export const config = ({
         { destructureInSignature: 'always' },
       ],
 
-      'custom/enforce-use-client': [warn, enforceUseClient],
       'custom/err-name': warn,
       'custom/no-missing-export': warn,
       'custom/no-access-property': off,

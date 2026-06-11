@@ -38,10 +38,15 @@ export type ClassNameWithVariable = {
   alpha?: number
   key: string
 }
+export type ClassNameWithCalc = {
+  calc: ClassNameCalc
+  keys: string[]
+}
 export type ClassNameNativeSingle =
   | StyleSingle
   | ClassNameWithSelector
   | ClassNameWithVariable
+  | ClassNameWithCalc
   | Falsish
 export type ClassNameNative = ClassNameNativeSingle | ClassNameNative[]
 
@@ -100,3 +105,14 @@ export type ClassNameMetadata = Partial<{
   groupProviders: string[]
   peerProviders: string[]
 }>
+
+export type ClassNameCalcValue = {
+  v: number
+  unit?: 'vw' | 'vh'
+}
+export type ClassNameCalcOperator = {
+  l: ClassNameCalc
+  r: ClassNameCalc
+  op: '+' | '-' | '*' | '/'
+}
+export type ClassNameCalc = ClassNameCalcValue | ClassNameCalcOperator

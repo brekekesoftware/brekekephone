@@ -27,10 +27,9 @@
     "html-entities": "2.6.0",
     "jssip": "3.2.15",
     "md5": "2.3.0",
-    "mobx": "5.15.7",
-    "mobx-react": "6.3.1",
+    "mobx": "6.15.4",
+    "mobx-react": "9.2.2",
     "moment": "2.30.1",
-    "polished": "4.3.1",
     "prop-types": "15.8.1",
     "react": "19.1.0",
     "react-art": "19.1.0",
@@ -43,7 +42,7 @@
     "react-native-exception-handler": "2.10.10",
     "react-native-fast-image": "8.6.3",
     "react-native-fs": "2.20.0",
-    "react-native-get-random-values": "2.0.0",
+    "react-native-get-random-values": "1.11.0",
     "react-native-image-picker": "8.2.1",
     "react-native-image-zoom-viewer-fixed": "3.2.5",
     "react-native-incall-manager": "4.2.1",
@@ -67,7 +66,6 @@
   "devDependencies": {
     "@babel/cli": "7.28.6",
     "@babel/core": "7.29.0",
-    "@babel/plugin-proposal-decorators": "7.29.0",
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
     "@babel/plugin-transform-class-properties": "7.28.6",
     "@babel/plugin-transform-react-jsx": "7.28.6",
@@ -95,6 +93,5 @@
     "circular-dependency-plugin": "5.2.2",
     "tailwindcss": "4.2.4",
     "twrnc": "4.16.0"
-  },
-  "appVersion": "3.0.0"
+  }
 }

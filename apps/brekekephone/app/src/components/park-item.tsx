@@ -1,11 +1,16 @@
 import type { FC } from 'react'
 import type { Animated } from 'react-native'
 
-import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { View } from '@/rn/core/components/view'
-import { v } from '#/components/variables'
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { tw } from '@/rn/core/tw/tw'
 import { RnTouchableOpacity } from '#/components/rn'
+import {
+  AnimatedText,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { intl } from '#/stores/intl'
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 interface ParkItemProps {
   index: number
@@ -13,7 +18,7 @@ interface ParkItemProps {
   parkNumber: string
   selected: boolean
   available: boolean
-  // pickup mode only: slot is occupied → show flash animation
+  // pickup mode only: slot is occupied -> flash bg+text via Animated.Value
   flashAnim?: Animated.Value
   onPress: () => void
 }
@@ -28,36 +33,34 @@ export const ParkItem: FC<ParkItemProps> = ({
 }) => {
   const useAnimated = !!flashAnim && !selected
 
+  const color1 = useRuntimeStyle('text-background')?.color as string
+  const color2 = useRuntimeStyle('text-primary')?.color as string
   const flashBg = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: ['white', v.colors.primary],
+    outputRange: [color1, color2],
   })
+
+  const color3 = useRuntimeStyle('text-foreground')?.color as string
+  const color4 = useRuntimeStyle('text-foreground-inverse')?.color as string
   const flashTextColor = flashAnim?.interpolate({
     inputRange: [0, 1],
-    outputRange: ['black', 'white'],
+    outputRange: [color3, color4],
   })
 
-  let wrapperStyle: Animated.WithAnimatedObject<object> | undefined
-  let wrapperClass: string | undefined
-  let textStyle:
-    | { color: string }
-    | { color: Animated.AnimatedInterpolation<string> }
-    | undefined
-  let subTextStyle: typeof textStyle | undefined
-  let subTextClass: string | undefined
-
+  let wrapperClass: ClassName
+  let textClass: ClassName
+  let subTextClass: ClassName
   if (useAnimated) {
-    wrapperStyle = { backgroundColor: flashBg }
-    textStyle = { color: flashTextColor! }
-    subTextStyle = textStyle
+    // no className for bg/text - animated style drives the colors
   } else if (selected && flashAnim) {
-    wrapperClass = 'bg-primary'
-    textStyle = { color: 'white' }
-    subTextStyle = textStyle
+    wrapperClass = tw`bg-primary`
+    textClass = tw`text-foreground`
+    subTextClass = tw`text-foreground-muted`
   } else if (selected) {
-    wrapperClass = 'bg-primary-100'
+    wrapperClass = tw`bg-primary-100`
   } else {
-    subTextClass = 'text-foreground-muted'
+    subTextClass = tw`text-foreground-muted`
+    textClass = tw`text-foreground`
   }
 
   const displayName = name || intl`<Unnamed>`
@@ -67,14 +70,14 @@ export const ParkItem: FC<ParkItemProps> = ({
       <View className='px-2.5 py-2.5'>
         <AnimatedText
           numberOfLines={1}
-          className='font-bold'
-          style={textStyle as any}
+          className={['font-bold', textClass]}
+          style={useAnimated ? ({ color: flashTextColor } as any) : undefined}
         >
           {displayName}
         </AnimatedText>
         <AnimatedText
           className={['text-[11.2px] font-normal', subTextClass]}
-          style={subTextStyle as any}
+          style={useAnimated ? ({ color: flashTextColor } as any) : undefined}
         >
           {intl`Park number: ` + parkNumber}
         </AnimatedText>
@@ -83,14 +86,11 @@ export const ParkItem: FC<ParkItemProps> = ({
   )
 
   return (
-    <View
-      className={[
-        'border-b border-border',
-        !available && 'opacity-50',
-      ]}
-    >
+    <View className={['border-border border-b', !available && 'opacity-50']}>
       {useAnimated ? (
-        <AnimatedView style={wrapperStyle}>{content}</AnimatedView>
+        <AnimatedView style={{ backgroundColor: flashBg } as any}>
+          {content}
+        </AnimatedView>
       ) : (
         <View className={wrapperClass}>{content}</View>
       )}

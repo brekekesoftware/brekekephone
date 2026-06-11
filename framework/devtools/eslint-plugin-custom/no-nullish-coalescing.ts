@@ -17,8 +17,6 @@ export const noNullishCoalescing: TSESLint.RuleModule<
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => ({
     LogicalExpression: n => {
       if (!n) {

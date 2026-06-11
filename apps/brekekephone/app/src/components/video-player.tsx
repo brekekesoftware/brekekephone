@@ -1,14 +1,7 @@
 import { observer } from 'mobx-react'
-import { ActivityIndicator } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
-
-const loadingStyle = {
-  flex: 1,
-  width: '100%' as const,
-  height: '100%' as const,
-  padding: 50,
-}
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 
 export const VideoPlayer = observer(
   ({
@@ -26,17 +19,13 @@ export const VideoPlayer = observer(
             video.srcObject = sourceObject
           }
         }}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
+        className='h-full w-full object-cover'
         playsInline
         autoPlay
       />
     ) : isShowLoading ? (
-      <ActivityIndicator style={loadingStyle} />
+      <RnActivityIndicator className='h-full w-full flex-1 p-12.5' />
     ) : (
-      <View className='flex-1 w-full h-full p-12.5' />
+      <View className='h-full w-full flex-1 p-12.5' />
     ),
 )

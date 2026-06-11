@@ -1,0 +1,13 @@
+@mixin forest-dark {
+  // add here
+}
+
+html.theme-forest.theme-dark {
+  @include forest-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-forest:not(.theme-light) {
+    @include forest-dark;
+  }
+}

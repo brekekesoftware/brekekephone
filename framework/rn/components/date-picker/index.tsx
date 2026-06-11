@@ -262,7 +262,7 @@ export const DatePicker = ({
           <Calendar value={selected} onSelect={handleSelect} />
         </Dropdown>
       ) : (
-        <Drawer value={open} onChange={setOpen}>
+        <Drawer open={open} onClose={() => setOpen(false)}>
           <Calendar value={selected} onSelect={handleSelect} />
         </Drawer>
       )}

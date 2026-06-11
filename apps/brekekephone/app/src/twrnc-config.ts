@@ -6,9 +6,10 @@ import { mergeWithArray } from '@/shared/lodash'
 const config: TwConfig = {
   theme: {
     extend: {
-      colors: {
-        reverse: 'var(--reverse)',
-        'layer-video': 'var(--layer-video)',
+      borderRadius: {
+        card: '8px',
+        input: '8px',
+        button: '9999px',
       },
     },
   },

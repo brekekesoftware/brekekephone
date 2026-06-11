@@ -1,6 +1,6 @@
-import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
+import { isIos } from '@/rn/core/utils/platform'
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import {
   mdiAccountCircleOutline,
@@ -8,7 +8,6 @@ import {
   mdiPhoneOutline,
 } from '#/assets/icons'
 import type { PbxCustomPage } from '#/brekekejs'
-import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import type { Nav } from '#/stores/nav'
@@ -16,7 +15,7 @@ import { RnAlert } from '#/stores/rn-alert'
 import { RnStacker } from '#/stores/rn-stacker'
 import { arrToMap } from '#/utils/arr-to-map'
 import { openLinkSafely, urls } from '#/utils/deeplink.native'
-import { PushNotification } from '#/utils/push-notification'
+import { resetBadgeNumber } from '#/utils/reset-badge-number'
 
 export type Menu = {
   key: string
@@ -52,16 +51,19 @@ const genMenus = (customPages: PbxCustomPage[]) => {
   const settingSubMenusLeft = getSettingSubMenus(customPages, true)
   const settingSubMenusRight = getSettingSubMenus(customPages, false)
 
+  // remove this page for now, keep code for reference and intl build
+  const x = {
+    key: 'account',
+    label: intl`CURRENT ACCOUNT`,
+    navFnKey: 'goToPageSettingsCurrentAccount',
+  }
+  void x
+
   const settingSubMenus = [
     ...settingSubMenusLeft,
     {
-      key: 'account',
-      label: intl`CURRENT ACCOUNT`,
-      navFnKey: 'goToPageSettingsCurrentAccount',
-    },
-    {
       key: 'other',
-      label: intl`OTHER SETTINGS`,
+      label: intl`SETTINGS`,
       navFnKey: 'goToPageSettingsOther',
     },
     ...settingSubMenusRight,
@@ -128,7 +130,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
       key: 'settings',
       icon: mdiCogOutline,
       subMenus: settingSubMenus,
-      defaultSubMenuKey: 'account',
+      defaultSubMenuKey: 'other',
     },
   ] as Menu[]
 
@@ -159,7 +161,7 @@ const genMenus = (customPages: PbxCustomPage[]) => {
             s.navFnKey === 'backToPageCallRecents'
           ) {
             if (isIos) {
-              PushNotification.resetBadgeNumber()
+              resetBadgeNumber()
             }
             openLinkSafely(urls.phoneappli.HISTORY_CALLED)
             return
@@ -313,7 +315,7 @@ export const getTabs = (tab: string) => {
     ) as Menu['subMenusMap']
     m.defaultSubMenu = m.subMenusMap?.[m.defaultSubMenuKey]
     m.subMenus.forEach(s => {
-      s.navFn = action(() => {
+      s.navFn = () => {
         const name = Object.keys(s.navFnKey)[0]
         // handle link to phoneappli app
         if (!name || s.key === 'phonebook') {
@@ -330,7 +332,7 @@ export const getTabs = (tab: string) => {
           name,
           Component,
         })
-      })
+      }
     })
   })
   const m = arr.find(_ => _.key === tab)

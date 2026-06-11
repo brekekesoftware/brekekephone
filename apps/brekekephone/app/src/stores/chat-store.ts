@@ -1,13 +1,13 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
-import { action, computed, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
+import { isAndroid, isIos, isWeb } from '@/rn/core/utils/platform'
 import { sortBy, uniqBy } from '@/shared/lodash'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
-import { isAndroid, isIos, isWeb } from '#/config'
 import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -71,14 +71,17 @@ export const TIMEOUT_TRANSFER_IMAGE = 60000
 export const TIMEOUT_TRANSFER_VIDEO = 180000
 
 export class ChatStore {
+  constructor() {
+    makeAutoObservable(this)
+  }
+
   timeoutTransferImage: { [k: string]: number } = {}
 
-  @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
-  @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
-  // @ts-ignore
-  @computed get unreadCount() {
+  threadConfig: { [k: string]: ChatMessageConfig } = {}
+  get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(
       Object.values(this.threadConfig).filter(v => {
@@ -105,8 +108,7 @@ export class ChatStore {
 
   // threadId can be uc user id or group id
   // TODO: threadId can be duplicated between them
-  // @ts-ignore
-  @computed get threadIdsOrderedByRecent() {
+  get threadIdsOrderedByRecent() {
     return sortBy(
       Object.keys(this.messagesByThreadId),
       k => this.getMessagesByThreadId(k)[0]?.created || -1,
@@ -326,8 +328,8 @@ export class ChatStore {
       ctx.nav.goToPageChatGroupDetail({ groupId })
     }
   }
-  @observable chatNotificationSoundRunning: boolean = false
-  private playChatNotificationSoundVibration = async () => {
+  chatNotificationSoundRunning: boolean = false
+  playChatNotificationSoundVibration = async () => {
     if (isWeb) {
       webPlayDing()
       return
@@ -383,7 +385,7 @@ export class ChatStore {
     }
   }
 
-  @observable private filesMap: { [k: string]: ChatFile } = {}
+  filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
     Object.assign(f, { save: 'started' })
@@ -452,12 +454,12 @@ export class ChatStore {
       }
     }
   }
-  @action removeFile = (id: string) => {
+  removeFile = (id: string) => {
     delete this.filesMap[id]
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
 
-  @observable groups: ChatGroup[] = []
+  groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
     const g0 = this.getGroupById(g.id)
@@ -468,13 +470,12 @@ export class ChatStore {
     }
     this.groups = [...this.groups]
   }
-  @action removeGroup = (id: string) => {
+  removeGroup = (id: string) => {
     delete this.messagesByThreadId[id]
     delete this.threadConfig[id]
     this.groups = this.groups.filter(gr => gr.id !== id)
   }
-  // @ts-ignore
-  @computed private get groupsMap() {
+  get groupsMap() {
     return arrToMap(this.groups, 'id', (g: ChatGroup) => g) as {
       [k: string]: ChatGroup
     }

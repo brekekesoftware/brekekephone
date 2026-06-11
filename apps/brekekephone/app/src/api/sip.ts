@@ -1,12 +1,11 @@
 import EventEmitter from 'eventemitter3'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import { jsonStable } from '@/shared/json-stable'
 import { getCameraSourceIds } from '#/api/get-camera-source-id'
 import { turnConfig } from '#/api/turn-config.local'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
-import { isWeb } from '#/config'
-import { embedApi } from '#/embed/embed-api'
 import { isEmbed } from '#/embed/polyfill'
 import type { AccountUnique } from '#/stores/account-store'
 import type { Call, CallConfig } from '#/stores/call'
@@ -30,7 +29,7 @@ export class SIP extends EventEmitter {
   currentCamera?: string
 
   cameraIds?: DeviceInputWeb[] = []
-  private init = async (o: SipLoginOption) => {
+  init = async (o: SipLoginOption) => {
     this.cameraIds = await getCameraSourceIds()
 
     this.currentCamera =
@@ -41,7 +40,7 @@ export class SIP extends EventEmitter {
 
     // emit to embed api
     if (isEmbed) {
-      embedApi.emit('webrtcclient', phone)
+      ctx.embed.emit('webrtcclient', phone)
     }
 
     const h = (ev: { phoneStatus: string }) => {
@@ -311,7 +310,7 @@ export class SIP extends EventEmitter {
     })
   }
 
-  private hackJssipFork = () => {
+  hackJssipFork = () => {
     const socket = ctx.sip.phone?._ua?._transport?.socket
     if (socket) {
       Object.assign(socket, { __brekekephone_stopped: true })

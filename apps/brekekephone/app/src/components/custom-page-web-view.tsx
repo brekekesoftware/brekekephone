@@ -18,7 +18,7 @@ export const CustomPageWebView = forwardRef(
     return (
       <iframe
         ref={webViewRef}
-        className='w-full h-full'
+        className='h-full w-full'
         src={url}
         height='100%'
         width='100%'

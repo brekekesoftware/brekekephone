@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Dimensions, Platform } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
 import { mdiCloseCircle } from '#/assets/icons'
@@ -12,24 +11,12 @@ import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { formatBytes } from '#/utils/format-bytes'
 
-const vMessageWidthStyle = Platform.select({
-  web: {
-    width: 'calc(100vw - 119px)' as any,
-  },
-  default: {
-    width: Dimensions.get('screen').width - 119,
-  },
-})
-
 export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   const displaySendTo =
     p.incoming || !p.target?.user_id ? '' : ` -> ${p.target?.user_id}`
   const isStopped = p.state === 'stopped'
   const isDisableCancel =
     isStopped || p.state === 'success' || p.state === 'failure'
-  const textClass = isStopped
-    ? 'text-[#9e9e9e] text-[13px] line-through'
-    : 'text-[#9e9e9e] text-[13px]'
 
   const onCancelFile = () => {
     ctx.uc.rejectFile(p).catch(onRejectFileFailure)
@@ -42,19 +29,30 @@ export const ItemImageVideoChat: FC<ChatFile> = observer(p => {
   }
   return (
     <View>
-      <View className='mb-1.25 ml-2.5' style={vMessageWidthStyle}>
-        <RnText className={['line-clamp-2', textClass]}>
+      <View className='mb-1.25 ml-2.5 w-[calc(100vw-119px)]'>
+        <RnText
+          className={[
+            'line-clamp-2 text-[13px]',
+            isStopped
+              ? 'text-foreground-subtle line-through'
+              : 'text-foreground',
+          ]}
+        >
           {p.name}
           {displaySendTo}
         </RnText>
         <View className='flex-row items-center'>
-          <RnText className={textClass}>
+          <RnText className='text-foreground-subtle text-[13px]'>
             {formatBytes(p?.size || 0, 2)}
             {` (${p.transferPercent}%) `}
           </RnText>
           {!isDisableCancel && (
             <RnTouchableOpacity onPress={onCancelFile}>
-              <RnIcon path={mdiCloseCircle} color='black' size={13} />
+              <RnIcon
+                path={mdiCloseCircle}
+                className='text-foreground'
+                size={13}
+              />
             </RnTouchableOpacity>
           )}
         </View>

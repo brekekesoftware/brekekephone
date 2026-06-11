@@ -79,7 +79,7 @@ const saveToCache = async (f: string, uri: string) => {
 
 const getFilenameWithoutExtension = (n: string) => {
   const l = n.lastIndexOf('.')
-  return l != -1 ? n.substring(0, l) : n
+  return l !== -1 ? n.substring(0, l) : n
 }
 
 const validateRingtoneFile = (f: string, ro: RingtoneOption[]) =>
@@ -161,10 +161,10 @@ export const validateRingtone = async (value: string, ca?: Account) => {
   if (value === systemRingtone) {
     return r
   } else if (value === defaultRingtone) {
-    const hasCustomRingtone =
-      pbxRingtone != null && pbxRingtone !== defaultRingtone
-
-    r = hasCustomRingtone ? pbxRingtone : staticRingtones[0]
+    r =
+      pbxRingtone && pbxRingtone !== defaultRingtone
+        ? pbxRingtone
+        : staticRingtones[0]
   } else if (value === staticRingtones[0]) {
     r = value
   } else {

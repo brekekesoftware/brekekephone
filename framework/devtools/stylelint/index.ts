@@ -13,7 +13,7 @@ export const stylelint = async (target: string) =>
       ['--fix'],
       //
     ],
-    target: path.join(target, './**/*.{css,scss,sass,less}'),
+    target: path.join(target, './**/*.{css,scss,less}'),
   })
 
 export const run = (target = repoRoot) => stylelint(target).then(exec)

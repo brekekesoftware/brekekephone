@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
-import { Component } from 'react'
-import { Platform } from 'react-native'
+import { useState } from 'react'
+
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import type { PbxCustomPage } from '#/brekekejs'
 import { CustomPageWebView } from '#/components/custom-page-web-view'
@@ -9,38 +9,12 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnStacker } from '#/stores/rn-stacker'
 
-const invisibleStyle = {
-  position: 'absolute' as const,
-  width: 0,
-  height: 0,
-  opacity: 0,
-  overflow: 'hidden' as const,
-}
-const visibleStyle = {
-  position: 'relative' as const,
-  width: '100%' as const,
-  height: '100%' as const,
-  opacity: 1,
-  overflow: 'hidden' as const,
-}
+export const PageCustomPageView = observer(({ id }: { id: string }) => {
+  const [webviewLoading, setWebviewLoading] = useState(false)
+  const [webviewError, setWebviewError] = useState(false)
+  const [jsLoading, setJsLoading] = useState(false)
 
-const getVisibleStyle = () => {
-  if (Platform.OS === 'web') {
-    return [visibleStyle, { height: '100vh' } as any]
-  }
-  return visibleStyle
-}
-
-@observer
-export class PageCustomPageView extends Component<{
-  id: string
-}> {
-  state = {
-    webviewLoading: false,
-    webviewError: false,
-    jsLoading: false,
-  }
-  reloadPage = async (cp: PbxCustomPage) => {
+  const reloadPage = async (cp: PbxCustomPage) => {
     if (!isCustomPageUrlBuilt(cp.url)) {
       return
     }
@@ -54,11 +28,7 @@ export class PageCustomPageView extends Component<{
     const url = ctx.pbx.rebuildCustomPageUrlNonce(cp.url)
     ctx.auth.updateCustomPage({ ...cp, url })
   }
-  reloadPageWithNewToken = async () => {
-    const {
-      props: { id },
-    } = this
-
+  const reloadPageWithNewToken = async () => {
     const cp = ctx.auth.getCustomPageById(id)
     if (!cp) {
       return
@@ -75,102 +45,99 @@ export class PageCustomPageView extends Component<{
     ctx.auth.updateCustomPage({ ...cp, url })
   }
 
-  render() {
-    const {
-      props: { id },
-    } = this
-
-    const cp = ctx.auth.getCustomPageById(id)
-    // trigger when receiving incoming call
-    const c = ctx.call.calls.find(i => i.incoming && !i.answeredAt)
-    const s = RnStacker.stacks[RnStacker.stacks.length - 1]
-    // update title to tab label
-    const onTitle = (t: string) => {
-      if (!cp || !isCustomPageUrlBuilt(cp.url)) {
-        return
-      }
-      ctx.auth.updateCustomPage({ ...cp, title: t })
+  const cp = ctx.auth.getCustomPageById(id)
+  // trigger when receiving incoming call
+  const c = ctx.call.calls.find(i => i.incoming && !i.answeredAt)
+  const s = RnStacker.stacks[RnStacker.stacks.length - 1]
+  // update title to tab label
+  const onTitle = (t: string) => {
+    if (!cp || !isCustomPageUrlBuilt(cp.url)) {
+      return
     }
-
-    // handle open custompage tab and reload page when received incoming
-    if (
-      (c || (!c && ctx.auth.saveActionOpenCustomPage)) &&
-      s &&
-      cp &&
-      cp.incoming === 'open'
-    ) {
-      ctx.auth.saveActionOpenCustomPage = false
-      if (s.name != 'PageCustomPage') {
-        // update stacker flow
-        ctx.nav.customPageIndex = ctx.nav.goToPageCustomPage
-        ctx.nav.goToPageCustomPage({ id: cp.id })
-        ctx.auth.activeCustomPageId = cp.id
-      }
-      this.reloadPage(cp)
-    }
-    // update check loading page
-    if (cp && cp.incoming === 'open' && !c) {
-      delete ctx.auth.customPageLoadings[cp.id]
-    }
-
-    const isVisible =
-      s &&
-      cp &&
-      s.isRoot &&
-      s.name == 'PageCustomPage' &&
-      RnStacker.stacks.length == 1 &&
-      !ctx.call.inPageCallManage &&
-      cp.id === ctx.auth.activeCustomPageId
-    // onLoadEnd not fire with website load image from url camera
-    // so, should be check loading like bellow
-    const loaded = !this.state.jsLoading || !this.state.webviewLoading
-
-    const title = cp?.title
-      ? cp.title
-      : !loaded
-        ? intl`Loading...`
-        : intl`PBX user settings`
-    const description = !loaded
-      ? intl`Loading...`
-      : this.state.webviewError
-        ? // TODO:
-          ''
-        : ''
-
-    return (
-      <Layout
-        title={title}
-        description={description}
-        menu='settings'
-        subMenu={id}
-        dropdown={[
-          {
-            label: intl`Reload`,
-            onPress: this.reloadPageWithNewToken,
-          },
-        ]}
-        isFullContent
-        style={isVisible ? getVisibleStyle() : invisibleStyle}
-      >
-        {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
-          <CustomPageWebView
-            url={cp.url}
-            onTitle={onTitle}
-            onJsLoading={jsLoading => this.setState({ jsLoading })}
-            onLoadStart={() => this.setState({ webviewLoading: true })}
-            onLoadEnd={e =>
-              this.setState({
-                webviewLoading: false,
-                webviewError:
-                  e &&
-                  'code' in e.nativeEvent &&
-                  typeof e.nativeEvent.code === 'number',
-              })
-            }
-            onError={() => this.setState({ webviewError: true })}
-          />
-        )}
-      </Layout>
-    )
+    ctx.auth.updateCustomPage({ ...cp, title: t })
   }
-}
+
+  // handle open custompage tab and reload page when received incoming
+  if (
+    (c || (!c && ctx.auth.saveActionOpenCustomPage)) &&
+    s &&
+    cp &&
+    cp.incoming === 'open'
+  ) {
+    ctx.auth.saveActionOpenCustomPage = false
+    if (s.name !== 'PageCustomPage') {
+      // update stacker flow
+      ctx.nav.customPageIndex = ctx.nav.goToPageCustomPage
+      ctx.nav.goToPageCustomPage({ id: cp.id })
+      ctx.auth.activeCustomPageId = cp.id
+    }
+    reloadPage(cp)
+  }
+  // update check loading page
+  if (cp && cp.incoming === 'open' && !c) {
+    delete ctx.auth.customPageLoadings[cp.id]
+  }
+
+  const isVisible =
+    s &&
+    cp &&
+    s.isRoot &&
+    s.name === 'PageCustomPage' &&
+    RnStacker.stacks.length === 1 &&
+    !ctx.call.inPageCallManage &&
+    cp.id === ctx.auth.activeCustomPageId
+  // onLoadEnd not fire with website load image from url camera
+  // so, should be check loading like bellow
+  const loaded = !jsLoading || !webviewLoading
+
+  const title = cp?.title
+    ? cp.title
+    : !loaded
+      ? intl`Loading...`
+      : intl`PBX user settings`
+  const description = !loaded
+    ? intl`Loading...`
+    : webviewError
+      ? // TODO:
+        ''
+      : ''
+
+  return (
+    <Layout
+      title={title}
+      description={description}
+      menu='settings'
+      subMenu={id}
+      dropdown={[
+        {
+          label: intl`Reload`,
+          onPress: reloadPageWithNewToken,
+        },
+      ]}
+      isFullContent
+      className={
+        isVisible
+          ? 'web:h-screen native:h-full relative w-full overflow-hidden opacity-100'
+          : 'absolute h-0 w-0 overflow-hidden opacity-0'
+      }
+    >
+      {!!cp?.url && isCustomPageUrlBuilt(cp.url) && (
+        <CustomPageWebView
+          url={cp.url}
+          onTitle={onTitle}
+          onJsLoading={v => setJsLoading(v)}
+          onLoadStart={() => setWebviewLoading(true)}
+          onLoadEnd={e => {
+            setWebviewLoading(false)
+            setWebviewError(
+              e &&
+                'code' in e.nativeEvent &&
+                typeof e.nativeEvent.code === 'number',
+            )
+          }}
+          onError={() => setWebviewError(true)}
+        />
+      )}
+    </Layout>
+  )
+})

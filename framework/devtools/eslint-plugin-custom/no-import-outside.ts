@@ -25,18 +25,14 @@ export const noImportOutside: TSESLint.RuleModule<
         type: 'array',
         items: {
           type: 'string',
+          required: true,
         },
+        minItems: 1,
+        uniqueItems: true,
+        required: true,
       },
     ],
   },
-
-  defaultOptions: [
-    {
-      rootDir: '',
-      alias: '',
-      dirs: [],
-    },
-  ],
 
   create: c => {
     const { rootDir, alias } = c.options[0]

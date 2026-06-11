@@ -6,10 +6,15 @@ import { useWindowDimensions as useWindowDimensionsOriginal } from 'react-native
 import { isWeb } from '@/rn/core/utils/platform'
 import { useIsMounted } from '@/rn/core/utils/use-is-mounted'
 
+export type DimensionsSize = {
+  width: number
+  height: number
+}
+
 // this is only available in client and native
 // !mounted to make sure the data is matched with ssr
 export const useWindowDimensions = () => {
-  const d = useWindowDimensionsOriginal()
+  const d: DimensionsSize = useWindowDimensionsOriginal()
   const mounted = useIsMounted()
   if (isWeb && !mounted) {
     return

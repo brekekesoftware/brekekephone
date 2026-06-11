@@ -1,10 +1,10 @@
 import * as Mobx from 'mobx'
 import * as MobxReact from 'mobx-react'
+// eslint-disable-next-line custom/no-import-default
 import * as React from 'react'
 import * as ReactDOMClient from 'react-dom/client'
-import { Platform } from 'react-native'
 
-import { isWeb } from '#/config'
+import { isWeb } from '@/rn/core/utils/platform'
 
 declare global {
   interface Window {
@@ -13,6 +13,7 @@ declare global {
     _BrekekePhoneEmbedImports: any
   }
 }
+
 export const webRootId = '__brekeke_phone_web_root'
 if (isWeb) {
   window._BrekekePhoneWebRoot = document.getElementById(webRootId)
@@ -20,9 +21,7 @@ if (isWeb) {
     window._BrekekePhoneCaptureConsole = !!window._BrekekePhoneWebRoot
   }
 }
-
-// window._BrekekePhoneWebRoot should be set before assigning isEmbed
-export const isEmbed = Platform.OS === 'web' && !window._BrekekePhoneWebRoot
+export const isEmbed = isWeb && !window._BrekekePhoneWebRoot
 
 if (isEmbed) {
   window._BrekekePhoneEmbedImports = {

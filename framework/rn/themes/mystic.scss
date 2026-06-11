@@ -1,0 +1,5 @@
+// need to import here since those files are already transpiled into js object
+@use './common.extract-variables.scss';
+@use './common-dark.extract-variables.scss';
+@use './mystic.extract-variables.scss';
+@use './mystic-dark.extract-variables.scss';

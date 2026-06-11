@@ -1,3 +1,6 @@
+import '@/rn/storage/polyfill-async-storage'
+import '#/polyfill/mobx'
+
 import JsSIP from 'jssip'
 import MD5 from 'md5'
 

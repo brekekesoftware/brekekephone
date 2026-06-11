@@ -27,8 +27,6 @@ export const noMissingExport: TSESLint.RuleModule<
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => {
     if (isVariantFile(c.filename)) {
       return {}

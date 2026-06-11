@@ -1,33 +1,18 @@
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
-import { ActivityIndicator } from 'react-native'
-import FastImage from 'react-native-fast-image'
-import Svg, { Path } from 'react-native-svg'
 
 import { View } from '@/rn/core/components/view'
 import { mdiImageBrokenVariant } from '#/assets/icons'
+import {
+  RnActivityIndicator,
+  RnFastImage,
+} from '#/components/rn-class-name-components'
+import { RnIcon } from '#/components/rn-icon'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
 import type { ChatFile } from '#/stores/chat-store'
 
 const size = 200
-const imageStyle = {
-  width: size,
-  height: size,
-  borderRadius: 5,
-  overflow: 'hidden' as const,
-}
-const loadingStyle = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  backgroundColor: v.layerBg,
-  width: size,
-  height: size,
-  borderRadius: 5,
-  overflow: 'hidden' as const,
-}
 
 export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
   url,
@@ -68,12 +53,15 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     if (fileType === 'image') {
       return (
         <RnTouchableOpacity onPress={onShowImage}>
-          <FastImage source={{ uri: objectUrl }} style={imageStyle} />
+          <RnFastImage
+            source={{ uri: objectUrl }}
+            className='rounded-card h-50 w-50 overflow-hidden'
+          />
         </RnTouchableOpacity>
       )
     } else {
       return (
-        <View className='w-50 h-50 rounded-[5px] overflow-hidden bg-layer-video'>
+        <View className='bg-modal-overlay rounded-card h-50 w-50 overflow-hidden'>
           <video
             controls
             src={objectUrl}
@@ -93,20 +81,20 @@ export const RnImageVideoLoader: FC<ViewProps & ChatFile> = ({
     return null
   }
   return (
-    <View className='w-50 h-50 rounded-[5px] overflow-hidden'>
+    <View className='rounded-card h-50 w-50 items-center justify-center overflow-hidden'>
       {isLoading && (
-        <ActivityIndicator size='small' color='white' style={loadingStyle} />
+        <View className='bg-modal-overlay absolute inset-0'>
+          <RnActivityIndicator size='small' className='h-9 w-9 text-white' />
+        </View>
       )}
       {isLoadSuccess && renderView()}
       {isLoadFailed && (
-        <Svg
-          preserveAspectRatio='xMinYMin slice'
-          height={size}
+        <RnIcon
+          path={mdiImageBrokenVariant}
+          size={size}
           viewBox='3 3  18 18'
-          width={size}
-        >
-          <Path d={mdiImageBrokenVariant} fill={v.colors.greyTextChat} />
-        </Svg>
+          className='text-foreground-subtle'
+        />
       )}
     </View>
   )

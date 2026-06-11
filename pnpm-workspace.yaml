@@ -2,6 +2,7 @@ packages:
   - './*/*/*'
 
 allowBuilds:
+  '@parcel/watcher': false
   '@swc/core': true
   core-js: true
   core-js-pure: true
@@ -22,7 +23,6 @@ patchedDependencies:
   eslint-plugin-react: patches/eslint-plugin-react.patch
   event-target-shim: patches/event-target-shim.patch
   jssip: patches/jssip.patch
-  mobx-react: patches/mobx-react.patch
   react-native-callkeep: patches/react-native-callkeep.patch
   react-native-notifications: patches/react-native-notifications.patch
   react-native-splash-screen: patches/react-native-splash-screen.patch

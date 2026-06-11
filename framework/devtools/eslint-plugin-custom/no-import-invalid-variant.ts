@@ -29,8 +29,6 @@ export const noImportInvalidVariant: TSESLint.RuleModule<
     schema: [],
   },
 
-  defaultOptions: [],
-
   create: c => {
     const fileVariant = getVariant(c.filename)
 

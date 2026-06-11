@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 
@@ -13,11 +14,9 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   onPress,
   disabled = false,
 }: DropdownItemProps) => (
-  <RnTouchableOpacity
-    onPress={onPress}
-    className='py-1.25'
-    disabled={disabled}
-  >
-    <RnText className={disabled ? 'text-[#9e9e9e]' : undefined}>{title}</RnText>
+  <RnTouchableOpacity onPress={onPress} className='py-1.25' disabled={disabled}>
+    <RnText className={disabled ? 'text-foreground-disabled' : undefined}>
+      {title}
+    </RnText>
   </RnTouchableOpacity>
 )

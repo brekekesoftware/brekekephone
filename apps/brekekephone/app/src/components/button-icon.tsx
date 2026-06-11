@@ -1,44 +1,24 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import { ActivityIndicator } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { View } from '@/rn/core/components/view'
 import type { ClassName } from '@/rn/core/tw/class-name'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
-import { isIos } from '#/config'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { BackgroundTimer } from '#/utils/background-timer'
-
-// Map theme hex values caller passes back to tw class names
-const bgClass: { [k: string]: string } = {
-  [v.colors.primary]: 'bg-primary',
-  [v.colors.danger]: 'bg-error',
-  [v.colors.warning]: 'bg-warning',
-  [v.subColor]: 'bg-foreground-muted',
-  [v.borderBg]: 'bg-border',
-  white: 'bg-background',
-  black: 'bg-foreground',
-}
-const bdClass: { [k: string]: string } = {
-  [v.colors.primary]: 'border-primary',
-  [v.colors.danger]: 'border-error',
-  [v.colors.warning]: 'border-warning',
-  [v.borderBg]: 'border-border',
-}
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export const ButtonIcon: FC<{
-  color: string
   path: string
   size?: number
   disabled?: boolean
   onPress?(): void
+  // Controls button bg + border + icon fill. Icon fill is derived from
+  // text-* class via useRuntimeStyle (same pattern as rn-icon.tsx).
   className?: ClassName
-  bgcolor?: string
   noborder?: boolean
-  bdcolor?: string
   name?: string
-  textcolor?: string
   containerClassName?: ClassName
   msLoading?: number
   loading?: boolean
@@ -55,36 +35,32 @@ export const ButtonIcon: FC<{
     p.onPress?.()
   }
   const size = p.size || 15
-  const bg = p?.disabled ? v.subColor : p.bgcolor
+  // Resolve icon fill from className text-* class - theme-aware via variables.
+  const style = useRuntimeStyle(['text-foreground', p.className])
+  const iconFill = style?.color as string
   return (
-    <View className={['items-center mx-1.25', p.containerClassName]}>
+    <View className={['mx-1.25 items-center', p.containerClassName]}>
       <RnTouchableOpacity
         disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
         className={[
-          'border p-3 rounded-full',
+          'rounded-full border p-3',
           p.noborder && 'border-0',
-          bg && bgClass[bg],
-          p.bdcolor && bdClass[p.bdcolor],
           p.className,
+          // Disabled appended LAST so it overrides caller bg.
+          p.disabled && 'bg-foreground-disabled',
         ]}
       >
         {isLoading || p.loading ? (
-          <ActivityIndicator style={{ width: size, height: size }} />
+          <RnActivityIndicator style={{ width: size, height: size }} />
         ) : (
           <Svg height={size} viewBox='0 0 24 24' width={size}>
-            <Path d={p.path} fill={p.color || 'black'} />
+            <Path d={p.path} fill={iconFill} />
           </Svg>
         )}
       </RnTouchableOpacity>
       {p.name && (
-        <RnText
-          small
-          center
-          white={p.textcolor === 'white'}
-          black={p.textcolor === 'black'}
-          className={['pt-1.25', isIos ? 'min-w-17.5' : 'min-w-20']}
-        >
+        <RnText small center white className='ios:min-w-17.5 min-w-20 pt-1.25'>
           {p.name}
         </RnText>
       )}

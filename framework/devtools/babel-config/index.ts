@@ -1,11 +1,11 @@
 import type { ConfigAPI } from '@babel/core'
 
+import { getAlias } from '@/devtools/babel-config/get-alias'
 import { getCallerClientOnly } from '@/devtools/babel-config/is-server'
 import { asyncHookPlugin } from '@/devtools/babel-plugin-async-hook'
 import { clientExtensionPlugin } from '@/devtools/babel-plugin-client-extension'
 import { rscValidationPlugin } from '@/devtools/babel-plugin-rsc-validation'
 import { twPlugin } from '@/devtools/babel-plugin-tw'
-import { getAlias } from '@/devtools/ts/get-alias'
 import { path } from '@/nodejs/path'
 
 type Options = {

@@ -1,4 +1,4 @@
-import { getInAlias } from '@/devtools/ts/get-alias'
+import { getInAlias } from '@/devtools/babel-config/get-alias'
 import { path } from '@/nodejs/path'
 import type { StrMap } from '@/shared/ts-utils'
 

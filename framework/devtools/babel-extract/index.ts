@@ -1,5 +1,5 @@
 import { codeFrameColumns } from '@babel/code-frame'
-import * as parser from '@babel/parser'
+import { parse } from '@babel/parser'
 import type { NodePath, Visitor } from '@babel/traverse'
 import traverse from '@babel/traverse'
 
@@ -47,7 +47,7 @@ export const extract = ({ twExtractOutputPath }: Options) => {
       filename: p,
       opts: {},
     }
-    const ast = parser.parse(currentCode, parserOption)
+    const ast = parse(currentCode, parserOption)
     for (const { visitor } of extractors) {
       traverse(ast, visitor as any, undefined, pluginPass)
     }

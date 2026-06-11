@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3'
 import { encode } from 'html-entities'
 
+import { isWeb } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import type {
   UcBuddy,
@@ -16,7 +17,6 @@ import type {
   UcWebchatConferenceText,
 } from '#/brekekejs'
 import { ChatClient, Constants, Logger } from '#/brekekejs/ucclient'
-import { isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import type { ChatFile } from '#/stores/chat-store'
 import type { UcUser } from '#/stores/contact-store'

@@ -1,6 +1,5 @@
-import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component, createRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type {
   NativeSyntheticEvent,
   TextInput,
@@ -16,101 +15,97 @@ import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 
-@observer
-export class PageCallTransferDial extends Component {
-  prevId?: string
-  componentDidMount = () => {
-    this.componentDidUpdate()
-  }
-  componentDidUpdate = () => {
-    if (this.prevId && this.prevId !== ctx.call.ongoingCallId) {
+export const PageCallTransferDial = observer(() => {
+  const prevIdRef = useRef<string | undefined>(undefined)
+  const [txt, setTxt] = useState('')
+  const txtRef = useRef<TextInput>(null)
+  const txtSelectionRef = useRef({ start: 0, end: 0 })
+
+  const ongoingCallId = ctx.call.ongoingCallId
+  useEffect(() => {
+    if (prevIdRef.current && prevIdRef.current !== ongoingCallId) {
       ctx.nav.backToPageCallManage()
     }
-    this.prevId = ctx.call.ongoingCallId
+    prevIdRef.current = ongoingCallId
+  }, [ongoingCallId])
+
+  const showKeyboard = () => {
+    txtRef.current?.focus()
   }
 
-  @observable txt = ''
-  txtRef = createRef<TextInput>()
-  txtSelection = { start: 0, end: 0 }
-
-  showKeyboard = () => {
-    this.txtRef.current?.focus()
-  }
-
-  transferBlind = () => {
-    this.txt = this.txt.trim()
-    if (!this.txt) {
+  const transferBlind = () => {
+    const trimmed = txt.trim()
+    setTxt(trimmed)
+    if (!trimmed) {
       RnAlert.error({
         message: intlDebug`No target`,
       })
       return
     }
-    ctx.call.getOngoingCall()?.transferBlind(this.txt)
+    ctx.call.getOngoingCall()?.transferBlind(trimmed)
   }
-  transferAttended = () => {
-    this.txt = this.txt.trim()
-    if (!this.txt) {
+  const transferAttended = () => {
+    const trimmed = txt.trim()
+    setTxt(trimmed)
+    if (!trimmed) {
       RnAlert.error({
         message: intlDebug`No target`,
       })
       return
     }
-    ctx.call.getOngoingCall()?.transferAttended(this.txt)
+    ctx.call.getOngoingCall()?.transferAttended(trimmed)
   }
 
-  render() {
-    return (
-      <Layout
-        description={intl`Select target to start transfer`}
-        onBack={ctx.nav.backToPageCallManage}
-        menu='call_transfer'
-        subMenu='external_number'
-        isTab
-        title={intl`Transfer`}
-      >
-        <ShowNumber
-          refInput={this.txtRef}
-          selectionChange={(
-            e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-          ) => {
-            Object.assign(this.txtSelection, {
-              start: e.nativeEvent.selection.end,
-              end: e.nativeEvent.selection.end,
-            })
-          }}
-          setTarget={(v: string) => {
-            this.txt = v
-          }}
-          value={this.txt}
-        />
-        {!RnKeyboard.isKeyboardShowing && (
-          <KeyPad
-            callVoice={this.transferBlind}
-            callVoiceForward={this.transferAttended}
-            onPressNumber={v => {
-              // TODO: create new component with PageCallDtmfKeypad
-              // to avoid duplicated code
-              const { end, start } = this.txtSelection
-              let min = Math.min(start, end)
-              const max = Math.max(start, end)
-              const isDelete = v === ''
-              if (isDelete) {
-                if (start === end && start) {
-                  min = min - 1
-                }
+  return (
+    <Layout
+      description={intl`Select target to start transfer`}
+      onBack={ctx.nav.backToPageCallManage}
+      menu='call_transfer'
+      subMenu='external_number'
+      isTab
+      title={intl`Transfer`}
+    >
+      <ShowNumber
+        refInput={txtRef}
+        selectionChange={(
+          e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+        ) => {
+          Object.assign(txtSelectionRef.current, {
+            start: e.nativeEvent.selection.end,
+            end: e.nativeEvent.selection.end,
+          })
+        }}
+        setTarget={(v: string) => {
+          setTxt(v)
+        }}
+        value={txt}
+      />
+      {!RnKeyboard.isKeyboardShowing && (
+        <KeyPad
+          callVoice={transferBlind}
+          callVoiceForward={transferAttended}
+          onPressNumber={v => {
+            // TODO: create new component with PageCallDtmfKeypad
+            // to avoid duplicated code
+            const { end, start } = txtSelectionRef.current
+            let min = Math.min(start, end)
+            const max = Math.max(start, end)
+            const isDelete = v === ''
+            if (isDelete) {
+              if (start === end && start) {
+                min = min - 1
               }
-              const t = this.txt
-              this.txt = t.substring(0, min) + v + t.substring(max)
-              const position = min + (isDelete ? 0 : 1)
-              this.txtSelection.start = position
-              this.txtSelection.end = position
-            }}
-            showKeyboard={this.showKeyboard}
-          />
-        )}
-      </Layout>
-    )
-  }
-}
+            }
+            setTxt(txt.substring(0, min) + v + txt.substring(max))
+            const position = min + (isDelete ? 0 : 1)
+            txtSelectionRef.current.start = position
+            txtSelectionRef.current.end = position
+          }}
+          showKeyboard={showKeyboard}
+        />
+      )}
+    </Layout>
+  )
+})
 
 setPageCallTransferDial(PageCallTransferDial)

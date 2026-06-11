@@ -1,6 +1,5 @@
-import { observable } from 'mobx'
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SectionList } from 'react-native'
 
 import { orderBy } from '@/shared/lodash'
@@ -13,25 +12,24 @@ import { setPageCallTransferChooseUser } from '#/components/navigation-config'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 
-@observer
-export class PageCallTransferChooseUser extends Component {
-  prevId?: string
-  @observable txtSearch: string = ''
-  componentDidMount = () => {
+export const PageCallTransferChooseUser = observer(() => {
+  const prevIdRef = useRef<string | undefined>(undefined)
+  const [txtSearch, setTxtSearch] = useState('')
+
+  const ocId = ctx.call.getOngoingCall()?.id
+  useEffect(() => {
     if (!ctx.contact.pbxUsers.length) {
       ctx.contact.getPbxUsers()
     }
-    this.componentDidUpdate()
-  }
-  componentDidUpdate = () => {
-    const oc = ctx.call.getOngoingCall()
-    if (this.prevId && this.prevId !== oc?.id) {
+  }, [])
+  useEffect(() => {
+    if (prevIdRef.current && prevIdRef.current !== ocId) {
       ctx.nav.backToPageCallManage()
     }
-    this.prevId = oc?.id
-  }
+    prevIdRef.current = ocId
+  }, [ocId])
 
-  resolveMatch = (id: string) => {
+  const resolveMatch = (id: string) => {
     const match = ctx.contact.getPbxUserById(id)
     const ucUser = ctx.contact.getUcUserById(id) || {}
     return {
@@ -45,21 +43,21 @@ export class PageCallTransferChooseUser extends Component {
       holding: !!match.talkers?.filter(t => t.status === 'holding').length,
     }
   }
-  renderUserSelectionMode = () => {
-    const { displayUsers } = ctx.user.filterUser(this.txtSearch, true)
+  const renderUserSelectionMode = () => {
+    const { displayUsers } = ctx.user.filterUser(txtSearch, true)
     return <ContactSectionList sectionListData={displayUsers} isTransferCall />
   }
-  renderAllUserMode = () => {
+  const renderAllUserMode = () => {
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
-    const datas = ctx.contact.pbxUsers.map(u => u.id).map(this.resolveMatch)
+    const datas = ctx.contact.pbxUsers.map(u => u.id).map(resolveMatch)
     const users = datas.filter(i => {
       const name = i.name.toLowerCase()
-      const txtSearch = this.txtSearch.toLowerCase()
+      const txt = txtSearch.toLowerCase()
       const number = i.number.toLowerCase()
-      return name.includes(txtSearch) || number.includes(txtSearch)
+      return name.includes(txt) || number.includes(txt)
     })
     type User = (typeof users)[0]
 
@@ -101,38 +99,35 @@ export class PageCallTransferChooseUser extends Component {
       />
     )
   }
-  render() {
-    const ca = ctx.auth.getCurrentAccount()
-    if (!ca) {
-      return null
-    }
-    const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
 
-    return (
-      <Layout
-        description={intl`Select target to start transfer`}
-        onBack={ctx.nav.backToPageCallManage}
-        menu='call_transfer'
-        subMenu='list_user'
-        isTab
-        title={intl`Transfer`}
-      >
-        <Field
-          icon={mdiMagnify}
-          label={intl`SEARCH FOR USERS`}
-          onValueChange={(v: string) => {
-            // TODO: use debounced value to perform data filter
-            this.txtSearch = v
-          }}
-          value={this.txtSearch}
-        />
-        {isUserSelectionMode
-          ? this.renderUserSelectionMode()
-          : this.renderAllUserMode()}
-      </Layout>
-    )
+  const ca = ctx.auth.getCurrentAccount()
+  if (!ca) {
+    return null
   }
-}
+  const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
+
+  return (
+    <Layout
+      description={intl`Select target to start transfer`}
+      onBack={ctx.nav.backToPageCallManage}
+      menu='call_transfer'
+      subMenu='list_user'
+      isTab
+      title={intl`Transfer`}
+    >
+      <Field
+        icon={mdiMagnify}
+        label={intl`SEARCH FOR USERS`}
+        onValueChange={(v: string) => {
+          // TODO: use debounced value to perform data filter
+          setTxtSearch(v)
+        }}
+        value={txtSearch}
+      />
+      {isUserSelectionMode ? renderUserSelectionMode() : renderAllUserMode()}
+    </Layout>
+  )
+})
 
 setPageCallTransferChooseUser(PageCallTransferChooseUser)
 type ItemUser = {

@@ -25,7 +25,7 @@ export type NonUndefined<T> = Exclude<T, undefined | void>
 export type NonNullish<T> = Exclude<T, null | undefined | void>
 export type NonFalsish<T> = Exclude<T, null | undefined | void | false | 0 | ''>
 
-export type VPromise<T = never> = Undefined<Promise<Undefined<T>>>
+export type UPromise<T = never> = Undefined<Promise<Undefined<T>>>
 export type NPromise<T = never> = Nullish<Promise<Nullish<T>>>
 export type FPromise<T = never> = Falsish<Promise<Falsish<T>>>
 

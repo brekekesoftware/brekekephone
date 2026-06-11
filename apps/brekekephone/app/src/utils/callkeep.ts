@@ -8,7 +8,8 @@ import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 import inCallManager from 'react-native-incall-manager'
 
-import { bundleIdentifier, isAndroid, isIos, isWeb } from '#/config'
+import { isAndroid, isIos, isWeb } from '@/rn/core/utils/platform'
+import { bundleIdentifier } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -192,7 +193,7 @@ export const setupCallKeepEvents = async () => {
       c.isAudioActive = true
       c.partyAnswered && c.setHoldWithoutCallKeep(false)
     } else if (!c) {
-      // No call yet — audio activated before SIP arrived (kill app + quick answer).
+      // No call yet - audio activated before SIP arrived (kill app + quick answer).
       // Store the fact so upsertCall can set isAudioActive when the call is created.
       ctx.call.pendingAudioActivated = true
     }
@@ -273,7 +274,7 @@ export const setupCallKeepEvents = async () => {
           hasActiveCall &&
           ctx.call.isLoudSpeakerEnabled
         ) {
-          console.log('✅ AudioSessionManager: force enable speaker')
+          console.log('AudioSessionManager: force enable speaker')
           inCallManager.setForceSpeakerphoneOn(true)
         }
       },

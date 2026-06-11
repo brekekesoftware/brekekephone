@@ -2,10 +2,11 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
-import type { ViewProps } from 'react-native'
-import { SectionList, TouchableWithoutFeedback, View as RNView } from 'react-native'
+import type { View as RNView, ViewProps } from 'react-native'
+import { SectionList, TouchableWithoutFeedback } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import {
   mdiMenuDown,
   mdiMenuRight,
@@ -21,13 +22,10 @@ import type { DropdownItemProps } from '#/components/dropdown-item'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { isIos } from '#/config'
 import type { ChatMessage } from '#/stores/chat-store'
 import { ctx } from '#/stores/ctx'
-import type { DropdownPosition } from '#/stores/rn-dropdown'
 import { RnDropdown } from '#/stores/rn-dropdown'
 import type { GroupUserSectionListData } from '#/stores/user-store'
-import { BackgroundTimer } from '#/utils/background-timer'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
 type ContactSectionListProps = {
@@ -39,71 +37,61 @@ type ContactSectionListProps = {
 export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
   observer(p => {
     const sectionHeaderRefs = useRef<RNView[]>([])
-    const reCalculatedLayoutDropdownTimeoutId = useRef<number>(0)
-
-    useEffect(() => {
-      RnDropdown.setShouldUpdatePosition(true)
-      return () => {
+    const rootRef = useRef<RNView | null>(null)
+    useEffect(
+      () => () => {
         sectionHeaderRefs.current = []
-        if (reCalculatedLayoutDropdownTimeoutId.current) {
-          BackgroundTimer.clearTimeout(
-            reCalculatedLayoutDropdownTimeoutId.current,
-          )
-        }
-      }
-    }, [])
+      },
+      [],
+    )
 
-    useEffect(() => {
-      if (p.isEditMode && RnDropdown.shouldUpdatePosition) {
-        // recalculate position header dropdown
-        RnDropdown.setShouldUpdatePosition(false)
-        calculateSectionHeaderPosition()
+    // Measure the section header bottom relative to the wrapper (rootRef) by
+    // calling measure() on both nodes and subtracting, instead of measureLayout()
+    // whose callbacks are unreliable/out-of-order on Android. On web there is no
+    // wrapper so the window-absolute value is used directly.
+    const measureHeaderPosition = (
+      index: number,
+      collect: (top: number, height: number) => void,
+    ) => {
+      const ref = sectionHeaderRefs.current[index]
+      if (!ref) {
+        return
       }
-    }, [p.isEditMode, RnDropdown.shouldUpdatePosition])
 
-    const clearConnectTimeoutId = () => {
-      if (reCalculatedLayoutDropdownTimeoutId.current) {
-        BackgroundTimer.clearTimeout(
-          reCalculatedLayoutDropdownTimeoutId.current,
-        )
-        reCalculatedLayoutDropdownTimeoutId.current = 0
+      const measureHeader = (rootTop = 0) => {
+        ref.measure((fx, fy, w, h, px, py) => collect(py - rootTop + h, h))
       }
+
+      if (isWeb || !rootRef.current) {
+        measureHeader()
+        return
+      }
+
+      rootRef.current.measure((fx, fy, w, h, px, py) => measureHeader(py))
     }
 
-    const calculateSectionHeaderPosition = () => {
-      if (reCalculatedLayoutDropdownTimeoutId.current) {
-        clearConnectTimeoutId()
+    // Measure on demand when the menu is tapped so the position is always fresh
+    // (no stale batch, no async ordering). Open only after the position is set so
+    // the dropdown never renders at top:0.
+    const measureAndToggleDropdown = (index: number) => {
+      if (RnDropdown.openedIndex === index) {
+        RnDropdown.close()
+        return
       }
-      // must wrap in setTimeout to make sure the header view has completed render
-      reCalculatedLayoutDropdownTimeoutId.current = BackgroundTimer.setTimeout(
-        () => {
-          reCalculatedLayoutDropdownTimeoutId.current = 0
-          const listDropdownPosition: DropdownPosition[] = []
-          sectionHeaderRefs.current.forEach((ref: RNView, index) => {
-            if (ref) {
-              ref.measure((fx, fy, w, h, px, py) => {
-                listDropdownPosition.push({
-                  top: isIos ? py : py + h,
-                  right: 20,
-                })
-                // after get all section list dropdown position
-                if (index === sectionHeaderRefs.current.length - 1) {
-                  RnDropdown.setPositions(listDropdownPosition)
-                  RnDropdown.setHeaderHeight(h)
-                }
-              })
-            }
-          })
-        },
-        500,
-      )
+      measureHeaderPosition(index, (top, h) => {
+        RnDropdown.setPosition(index, { top, right: 20 })
+        RnDropdown.setHeaderHeight(h)
+        RnDropdown.open(index)
+      })
     }
 
     const { openedIndex, positions } = RnDropdown
+    const dropdownPosition =
+      openedIndex >= 0 ? positions[openedIndex] : undefined
 
     const sectionListData: GroupUserSectionListData[] = toJS(p.sectionListData) // p.sectionListData
 
-    return (
+    const body = (
       <Fragment>
         <SectionList
           sections={sectionListData}
@@ -132,17 +120,32 @@ export const ContactSectionList: FC<ViewProps & ContactSectionListProps> =
               isEditMode={p.isEditMode}
               title={title}
               data={data}
+              onDropdownPress={measureAndToggleDropdown}
             />
           )}
         />
-        {openedIndex >= 0 && (
+        {openedIndex >= 0 && dropdownPosition && (
           <TouchableWithoutFeedback onPress={() => RnDropdown.close()}>
-            <View className='absolute w-full h-full bg-transparent'>
-              <Dropdown position={positions[openedIndex]} items={p.ddItems} />
+            <View className='absolute h-full w-full bg-transparent'>
+              <Dropdown position={dropdownPosition} items={p.ddItems} />
             </View>
           </TouchableWithoutFeedback>
         )}
       </Fragment>
+    )
+    // web keeps the original window-absolute measure with no wrapper (a relative
+    // View wrapper would become the overlay's offsetParent and shift it). native
+    // wraps in a View so measureLayout has a stable reference matching the overlay.
+    return isWeb ? (
+      body
+    ) : (
+      <View
+        ref={c => {
+          rootRef.current = c
+        }}
+      >
+        {body}
+      </View>
     )
   })
 const getLastMessageChat = (id: string) => {
@@ -230,6 +233,7 @@ type SectionHeader = {
   isEditMode?: boolean
   title: string
   data: readonly UcBuddy[]
+  onDropdownPress: (index: number) => void
 }
 
 const RenderHeaderSection = observer(
@@ -239,6 +243,7 @@ const RenderHeaderSection = observer(
     isEditMode,
     title,
     data,
+    onDropdownPress,
   }: SectionHeader) => {
     const index = sectionListData.findIndex(i => i.title === title)
     const hidden = RnDropdown.hiddenIndexes.some(i => i === index)
@@ -254,7 +259,7 @@ const RenderHeaderSection = observer(
       >
         <View
           className={[
-            'flex-row justify-between bg-border px-1.25 items-center py-3 mt-3.75',
+            'bg-border mt-3.75 flex-row items-center justify-between px-1.25 py-3',
             isDisableMarginTop && 'mt-0',
           ]}
           ref={c => {
@@ -266,9 +271,14 @@ const RenderHeaderSection = observer(
           <Fragment>
             <View className='flex-row items-center'>
               <View>
-                <RnIcon path={hidden ? mdiMenuRight : mdiMenuDown} />
+                <RnIcon
+                  className='text-foreground'
+                  path={hidden ? mdiMenuRight : mdiMenuDown}
+                />
               </View>
-              <RnText small>{titleHeaderRender}</RnText>
+              <RnText small className='text-foreground'>
+                {titleHeaderRender}
+              </RnText>
             </View>
             {isEditMode && (
               <RnTouchableOpacity
@@ -277,10 +287,10 @@ const RenderHeaderSection = observer(
                   if (RnDropdown.hiddenIndexes.some(i => i === index)) {
                     RnDropdown.toggleSection(index, data.length)
                   }
-                  RnDropdown.toggle(index)
+                  onDropdownPress(index)
                 }}
               >
-                <RnIcon path={mdiMoreHoriz} />
+                <RnIcon path={mdiMoreHoriz} className='text-foreground' />
               </RnTouchableOpacity>
             )}
           </Fragment>

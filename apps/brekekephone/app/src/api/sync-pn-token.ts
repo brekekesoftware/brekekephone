@@ -1,9 +1,9 @@
 import { AppState } from 'react-native'
 
+import { isAndroid, isIos, isWeb } from '@/rn/core/utils/platform'
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pn-config'
 import { updatePhoneIndex } from '#/api/update-phone-index'
-import { isAndroid, isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
@@ -227,7 +227,7 @@ const syncPnTokenForAllAccounts = async () => {
     if (ctx.account.isAccountInMFA(a)) {
       return
     }
-    // Skip if user just cancelled MFA for this account — prevents
+    // Skip if user just cancelled MFA for this account - prevents
     // checkMFAForSyncPnToken from triggering a new mfa/start immediately.
     if (ctx.mfa.wasCancelled && ctx.mfa.cancelledAccountId === a.id) {
       return

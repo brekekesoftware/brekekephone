@@ -1,0 +1,13 @@
+@mixin ocean-dark {
+  // add here
+}
+
+html.theme-ocean.theme-dark {
+  @include ocean-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-ocean:not(.theme-light) {
+    @include ocean-dark;
+  }
+}

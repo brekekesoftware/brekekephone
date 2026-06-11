@@ -1,6 +1,6 @@
 import DeviceInfo from 'react-native-device-info'
 
-import { isIos } from '#/config'
+import { isIos } from '@/rn/core/utils/platform'
 
 export const devicePlatform = () => (isIos ? 'iOS' : 'Android')
 export const deviceDetail = () => {

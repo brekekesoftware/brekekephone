@@ -3,19 +3,18 @@ import type { FC } from 'react'
 import { useCallback } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { v } from '#/components/variables'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { Duration } from '#/stores/timer-store'
 
 // Reused class strings
-const textColClassName = 'pl-2.5 pr-1.25 py-2.5 min-w-20'
-const btnBaseClassName =
-  'py-1.25 px-2.5 min-w-20 rounded justify-center items-center my-1.25'
+const textColClassName = tw`text-foreground min-w-20 py-2.5 pr-1.25 pl-2.5`
+const btnBaseClassName = tw`my-1.25 min-w-20 items-center justify-center rounded px-2.5 py-1.25`
 
 export const WebchatItem: FC<{
   data: Conference
@@ -47,12 +46,7 @@ export const WebchatItem: FC<{
   }, [data.conf_id])
 
   return (
-    <View
-      className={[
-        'flex-row px-1.25 items-center border-b-[0.5px] border-border',
-        isEnabledAnswer && 'bg-primary-100',
-      ]}
-    >
+    <View className='border-border opacity-0.4 flex-row items-center border-b-[0.5px] px-1.25'>
       <View className='p-1.25'>
         {isEnabledAnswer ? (
           <RnTouchableOpacity
@@ -66,7 +60,11 @@ export const WebchatItem: FC<{
         ) : (
           <RnTouchableOpacity
             onPress={showPress}
-            className={[btnBaseClassName, isDisplayShow ? 'bg-black/80' : 'bg-border']}
+            disabled={!isDisplayShow}
+            className={[
+              btnBaseClassName,
+              isDisplayShow ? 'bg-primary' : 'bg-gray-400',
+            ]}
           >
             <RnText normal white bold>
               {intl`Show`}
@@ -76,7 +74,10 @@ export const WebchatItem: FC<{
         <RnTouchableOpacity
           disabled={!isEnabledJoin}
           onPress={joinPress}
-          className={[btnBaseClassName, isEnabledJoin ? 'bg-black/80' : 'bg-border']}
+          className={[
+            btnBaseClassName,
+            isEnabledJoin ? 'bg-primary' : 'bg-gray-400',
+          ]}
         >
           <RnText normal white bold>
             {intl`Join`}
@@ -92,7 +93,7 @@ export const WebchatItem: FC<{
           normal
           singleLine
           small
-          className='pl-2.5 px-1.25 py-2.5 min-w-20'
+          className='text-foreground min-w-20 px-1.25 py-2.5 pl-2.5'
         >
           {data.created_tstamp}
         </Duration>

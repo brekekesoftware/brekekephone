@@ -1,0 +1,13 @@
+@mixin sunny-dark {
+  // add here
+}
+
+html.theme-sunny.theme-dark {
+  @include sunny-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-sunny:not(.theme-light) {
+    @include sunny-dark;
+  }
+}

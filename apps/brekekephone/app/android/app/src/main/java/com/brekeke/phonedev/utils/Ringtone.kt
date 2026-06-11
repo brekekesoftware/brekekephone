@@ -58,8 +58,12 @@ object Ringtone {
       }
     }
     val l2 = AudioManager.OnCommunicationDeviceChangedListener { device: AudioDeviceInfo? ->
+      if (device == null) {
+        Emitter.debug("onCommunicationDeviceChanged:AudioDeviceInfo::null")
+        return@OnCommunicationDeviceChangedListener
+      }
       Emitter.debug(
-          "onCommunicationDeviceChanged:AudioDeviceInfo::${device?.type}::${device?.productName}"
+          "onCommunicationDeviceChanged:AudioDeviceInfo::${device.type}::${device.productName}"
       )
     }
     val ctx = Ctx.app()!!

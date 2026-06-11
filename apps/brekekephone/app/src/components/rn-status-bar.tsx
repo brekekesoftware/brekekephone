@@ -2,39 +2,46 @@ import type { FC } from 'react'
 import { StatusBar } from 'react-native'
 
 import { View } from '@/rn/core/components/view'
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
-import { isIos, isWeb } from '#/config'
-
-// elevation (Android-only RN prop) — no Tailwind equivalent, keep inline
-const elevationStyle = { elevation: 999 }
+import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 
 export type TRnStatusBarProps = {
   danger?: boolean
   warning?: boolean
   onPress?(): void
 }
-export const RnStatusBar: FC<TRnStatusBarProps> = p =>
-  isWeb ? null : (
+
+const RnStatusBarNative: FC<TRnStatusBarProps> = p => {
+  const color = useRuntimeStyle(
+    p.danger ? 'text-error-500' : p.warning ? 'text-warning-500' : 'text-muted',
+  )?.color as string
+  const barStyle = isDark(color) ? 'light-content' : 'dark-content'
+
+  return (
     <RnTouchableOpacity
       className={[
-        'z-999 bg-muted',
+        'android:elevation-999 bg-muted z-999',
         isIos && 'h-0',
         p.warning && 'bg-warning border-warning',
         p.danger && 'bg-error border-error',
       ]}
-      style={elevationStyle}
       onPress={p.onPress}
     >
-      <StatusBar
-        backgroundColor={
-          p.danger ? v.colors.danger : p.warning ? v.colors.warning : v.hoverBg
-        }
-        barStyle='dark-content'
-      />
-      <View
-        className='absolute bottom-0 left-0 right-0 border-b border-border z-999'
-        style={elevationStyle}
-      />
+      <StatusBar backgroundColor={color} barStyle={barStyle} />
+      <View className='border-border android:elevation-999 absolute right-0 bottom-0 left-0 z-999 border-b' />
     </RnTouchableOpacity>
   )
+}
+
+export const RnStatusBar: FC<TRnStatusBarProps> = p =>
+  isWeb ? null : <RnStatusBarNative {...p} />
+
+const isDark = (hex: string) => {
+  const c = hex.replace('#', '')
+  const r = parseInt(c.substring(0, 2), 16)
+  const g = parseInt(c.substring(2, 4), 16)
+  const b = parseInt(c.substring(4, 6), 16)
+  // Perceived luminance (ITU-R BT.709)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128
+}

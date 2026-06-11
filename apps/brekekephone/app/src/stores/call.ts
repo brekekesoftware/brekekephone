@@ -1,12 +1,12 @@
 import type { IReactionDisposer } from 'mobx'
-import { action, autorun, observable } from 'mobx'
+import { autorun, makeAutoObservable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
+import { isIos } from '@/rn/core/utils/platform'
 import { jsonSafe } from '@/shared/json-safe'
 import type { Session, SessionStatus } from '#/brekekejs'
-import { defaultTimeout, isIos } from '#/config'
-import { embedApi } from '#/embed/embed-api'
+import { defaultTimeout } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import type { CallStore } from '#/stores/call-store'
 import { getPbxName, getPbxNameWithUpdateContact } from '#/stores/contact-store'
@@ -19,9 +19,9 @@ import { encodeParkNumber } from '#/utils/park-number'
 import { checkPermForCall } from '#/utils/permissions'
 import { waitTimeout } from '#/utils/wait-timeout'
 
-// BUG-1224: iOS 26.0–26.4.1 removed the multi-call "End & Answer" popup;
+// BUG-1224: iOS 26.0-26.4.1 removed the multi-call "End & Answer" popup;
 // Apple restored it in 26.4.2 (confirmed empirically). Behavior may toggle
-// in future minor releases, so we gate to all iOS 26+ — it's no-op when
+// in future minor releases, so we gate to all iOS 26+ - it's no-op when
 // the popup exists (iOS already cancels outgoing via End-and-Answer;
 // o.hangup self-guards via isAboutToHangup) and only effective when popup
 // is gone.
@@ -29,32 +29,35 @@ const isIosBug1224Affected =
   isIos && compareSemVer(String(Platform.Version), '26') >= 0
 
 export class Call {
-  constructor(private store: CallStore) {}
+  constructor(public store: CallStore) {
+    makeAutoObservable(this)
+  }
+
   line?: string
   rawSession?: Session
 
-  @observable earlyMedia: MediaStream | null = null
-  @observable withSDP: boolean = false
-  @observable withSDPControls: boolean = false
-  @observable sessionStatus: SessionStatus = 'dialing'
-  @observable id = ''
-  @observable pnId = ''
-  @observable partyNumber = ''
-  @observable partyImageUrl = ''
-  @observable partyImageSize = ''
-  @observable talkingImageUrl = ''
-  @observable partyName = ''
-  @observable pbxTenant = ''
-  @observable pbxRoomId = ''
-  @observable pbxTalkerId = ''
-  @observable pbxUsername = ''
-  @observable isFrontCamera = true
-  @observable callConfig: CallConfig = {}
-  @observable rqLoadings: { [k: string]: boolean } = {
+  earlyMedia: MediaStream | null = null
+  withSDP: boolean = false
+  withSDPControls: boolean = false
+  sessionStatus: SessionStatus = 'dialing'
+  id = ''
+  pnId = ''
+  partyNumber = ''
+  partyImageUrl = ''
+  partyImageSize = ''
+  talkingImageUrl = ''
+  partyName = ''
+  pbxTenant = ''
+  pbxRoomId = ''
+  pbxTalkerId = ''
+  pbxUsername = ''
+  isFrontCamera = true
+  callConfig: CallConfig = {}
+  rqLoadings: { [k: string]: boolean } = {
     hold: false,
     record: false,
   }
-  @observable ringtoneFromSip = ''
+  ringtoneFromSip = ''
 
   phoneappliUsername = ''
   phoneappliAvatar = ''
@@ -76,15 +79,15 @@ export class Call {
   isAudioActive = false
   partyAnswered = false
 
-  @observable incoming = false
-  @observable answered = false
-  @observable answeredAt = 0
+  incoming = false
+  answered = false
+  answeredAt = 0
 
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
-  // observable: assigned late (after upsert) and the IncomingCall surface
-  // looks the call up by this value - a plain field would not re-render it
-  @observable callkeepUuid = ''
+  // makeAutoObservable keeps this observable even though it is assigned late;
+  // the IncomingCall surface looks the call up by this value and must re-render.
+  callkeepUuid = ''
   callkeepAlreadyAnswered = false
   callkeepAlreadyRejected = false
   // fix bug ios turn off pn on the server side side
@@ -92,7 +95,6 @@ export class Call {
 
   answerVideoEnabled?: boolean
 
-  @action
   answer = async (
     options?: { ignoreNav?: boolean },
     videoEnabled?: boolean,
@@ -141,7 +143,7 @@ export class Call {
     }
   }
   answerCallKeep = async () => {
-    // BUG-1219: don't steal focus if another call is already ongoing — would
+    // BUG-1219: don't steal focus if another call is already ongoing - would
     // trigger updateBackgroundCalls to spuriously hold user's chosen call.
     const otherCallIsOngoing =
       !!this.store.ongoingCallId && this.store.ongoingCallId !== this.id
@@ -195,9 +197,9 @@ export class Call {
     ctx.sip.hangupSession(this.id)
   }
 
-  @observable videoSessionId = ''
-  @observable localVideoEnabled = false
-  @observable mutedVideo = false
+  videoSessionId = ''
+  localVideoEnabled = false
+  mutedVideo = false
   getLocalVideoEnabled = () => this.localVideoEnabled && !this.mutedVideo
   getRemoteVideoEnabled = (user?: string) => {
     if (user) {
@@ -228,7 +230,7 @@ export class Call {
       this.mutedVideo,
     )
   }
-  @action toggleSwitchCamera = () => {
+  toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
       return
     }
@@ -236,11 +238,11 @@ export class Call {
     ctx.sip.switchCamera(this.id, this.isFrontCamera)
   }
 
-  @observable localStreamObject: MediaStream | null = null
-  @observable videoClientSessionTable: Array<Session & { vId: string }> = []
-  @observable remoteVideoEnabled = false
-  @observable videoStreamActive: (Session & { vId: string }) | null = null
-  @observable remoteUserOptionsTable: {
+  localStreamObject: MediaStream | null = null
+  videoClientSessionTable: Array<Session & { vId: string }> = []
+  remoteVideoEnabled = false
+  videoStreamActive: (Session & { vId: string }) | null = null
+  remoteUserOptionsTable: {
     [key: string]: {
       withVideo: boolean
       exInfo: string
@@ -252,17 +254,17 @@ export class Call {
   } = {}
   voiceStreamObject: MediaStream | null = null
 
-  @action updateVideoStreamActive = stream => {
+  updateVideoStreamActive = stream => {
     this.videoStreamActive = stream
   }
 
-  @action updateVideoStreamFromNative = vId => {
+  updateVideoStreamFromNative = vId => {
     const item = this.videoClientSessionTable.find(v => v.vId === vId)
     item && this.updateVideoStreamActive(item)
   }
 
-  @observable muted = false
-  @action toggleMuted = () => {
+  muted = false
+  toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
@@ -271,12 +273,12 @@ export class Call {
     return ctx.sip.setMuted(this.muted, this.id)
   }
 
-  @observable recording = false
-  @action updateRecordingStatus = (status: boolean) => {
+  recording = false
+  updateRecordingStatus = (status: boolean) => {
     this.recording = status
     BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
   }
-  @action toggleRecording = () => {
+  toggleRecording = () => {
     this.rqLoadings['record'] = true
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
@@ -287,7 +289,7 @@ export class Call {
       .then(this.onToggleRecordingFailure)
       .catch(this.onToggleRecordingFailure)
   }
-  @action private onToggleRecordingFailure = (err: Error | boolean) => {
+  onToggleRecordingFailure = (err: Error | boolean) => {
     this.rqLoadings['record'] = false
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
@@ -296,8 +298,8 @@ export class Call {
     this.recording = !this.recording
   }
 
-  @observable holding = false
-  private prevHolding = false
+  holding = false
+  prevHolding = false
   // TODO: make this more generic to support all pal functions
   pendingRequestIds: string[] = []
   lastHoldToggle = 0
@@ -317,12 +319,12 @@ export class Call {
     this.toggleHold()
   }
 
-  @action cancelPendingRequest = () => {
+  cancelPendingRequest = () => {
     this.pendingRequestIds.forEach(id => {
       ctx.pbx.cancelRequest(id)
     })
     this.pendingRequestIds = []
-    // BUG-1219: defensive clear loading — toggleHold pushes requestId AFTER
+    // BUG-1219: defensive clear loading - toggleHold pushes requestId AFTER
     // await, so a remote BYE racing with that push leaves the PAL promise
     // hanging and native loading indicator stuck.
     Object.keys(this.rqLoadings).forEach(k => {
@@ -336,12 +338,12 @@ export class Call {
     })
   }
 
-  private toggleHoldLoading = (isLoading: boolean) => {
+  toggleHoldLoading = (isLoading: boolean) => {
     this.rqLoadings['hold'] = isLoading
     BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
   }
 
-  @action private toggleHold = async () => {
+  toggleHold = async () => {
     this.toggleHoldLoading(true)
     const fn = this.holding ? 'unhold' : 'hold'
     this.setHoldWithCallkeep(fn === 'hold')
@@ -358,14 +360,14 @@ export class Call {
       .catch(this.onToggleHoldFailure)
   }
 
-  private onToggleHoldSuccess = () => {
+  onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
     BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     if (!this.holding && !this.mutedVideo) {
       ctx.sip.enableLocalVideo(this.id)
     }
   }
-  @action private onToggleHoldFailure = (err: Error | boolean) => {
+  onToggleHoldFailure = (err: Error | boolean) => {
     const isRetryableError =
       err && typeof err === 'object' ? ctx.pbx.isPalTimeoutError(err) : false
 
@@ -393,7 +395,7 @@ export class Call {
 
     return true
   }
-  private setHoldWithCallkeep = (holding: boolean) => {
+  setHoldWithCallkeep = (holding: boolean) => {
     this.holding = holding
     if (!this.callkeepUuid || this.isAboutToHangup) {
       return
@@ -403,7 +405,7 @@ export class Call {
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
     BrekekeUtils.setOnHold(this.callkeepUuid, holding)
   }
-  @action setHoldWithoutCallKeep = async (hold: boolean) => {
+  setHoldWithoutCallKeep = async (hold: boolean) => {
     const act = hold ? 'hold' : 'unhold'
     try {
       const res = await ctx.pbx[`${act}Talker`](
@@ -421,20 +423,20 @@ export class Call {
       }
       return false
     } catch (err) {
-      console.error(`setHoldWithoutCallKeep Failed to ${action} call:`, err)
+      console.error(`setHoldWithoutCallKeep Failed to ${act} call:`, err)
       return false
     }
   }
 
-  @observable transferring = ''
-  private prevTransferring = ''
+  transferring = ''
+  prevTransferring = ''
   transferBlind = (number: string) => {
     ctx.nav.goToPageCallRecents()
     return ctx.pbx
       .transferTalkerBlind(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action transferAttended = (number: string) => {
+  transferAttended = (number: string) => {
     this.transferring = number
     // avoid issue no-voice if user set hold before
     this.setHoldWithCallkeep(false)
@@ -443,11 +445,11 @@ export class Call {
       .transferTalkerAttended(this.pbxTenant, this.pbxTalkerId, number)
       .catch(this.onTransferFailure)
   }
-  @action private onTransferFailure = (err: Error) => {
+  onTransferFailure = (err: Error) => {
     this.transferring = ''
   }
 
-  @action stopTransferring = () => {
+  stopTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     // user cancel transfer and resume call -> unhold automatically from server side
@@ -456,12 +458,12 @@ export class Call {
       .stopTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onStopTransferringFailure)
   }
-  @action private onStopTransferringFailure = (err: Error) => {
+  onStopTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
 
-  @action conferenceTransferring = () => {
+  conferenceTransferring = () => {
     this.prevTransferring = this.transferring
     this.transferring = ''
     this.prevHolding = this.holding
@@ -470,29 +472,29 @@ export class Call {
       .joinTalkerTransfer(this.pbxTenant, this.pbxTalkerId)
       .catch(this.onConferenceTransferringFailure)
   }
-  @action private onConferenceTransferringFailure = (err: Error) => {
+  onConferenceTransferringFailure = (err: Error) => {
     this.transferring = this.prevTransferring
     this.setHoldWithCallkeep(this.prevHolding)
   }
 
-  @action park = (number: string) =>
+  park = (number: string) =>
     ctx.pbx
       .parkTalker(this.pbxTenant, this.pbxTalkerId, encodeParkNumber(number))
       .catch(this.onParkFailure)
-  private onParkFailure = (err: Error) => {
+  onParkFailure = (err: Error) => {
     RnAlert.error({
       message: intlDebug`Failed to park the call`,
       err,
     })
   }
 
-  private _autorunEmitEmbed = false // check if autorun is already started
-  private _disposeEmitEmbed?: IReactionDisposer // dispose autorun
+  _autorunEmitEmbed = false // check if autorun is already started
+  _disposeEmitEmbed?: IReactionDisposer // dispose autorun
   startEmitEmbed = () => {
     if (!isEmbed) {
       return
     }
-    embedApi.emit('call', this)
+    ctx.embed.emit('call', this)
     this._disposeEmitEmbed = autorun(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { store, ...c } = this // do not autorun on store
@@ -504,7 +506,7 @@ export class Call {
       if (this.isAboutToHangup) {
         return
       }
-      embedApi.emit('call_update', this)
+      ctx.embed.emit('call_update', this)
     })
   }
   disposeEmitEmbed = () => {
@@ -516,7 +518,7 @@ export class Call {
       return
     }
     this.disposeEmitEmbed()
-    embedApi.emit('call_end', this)
+    ctx.embed.emit('call_end', this)
   }
 }
 

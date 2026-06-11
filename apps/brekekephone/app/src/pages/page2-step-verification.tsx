@@ -1,22 +1,20 @@
 import { autorun } from 'mobx'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Animated,
-  KeyboardAvoidingView,
-  ScrollView,
-  useWindowDimensions,
-} from 'react-native'
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context'
+import { useEffect, useRef, useState } from 'react'
+import { Animated } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
+import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
+import { useSafeAreaInsets } from '@/rn/core/responsive/use-safe-area'
+import { isIos, isWeb } from '@/rn/core/utils/platform'
 import { mdiClose } from '#/assets/icons'
+import {
+  AnimatedView,
+  RnKeyboardAvoidingView,
+} from '#/components/rn-class-name-components'
 import { RnIcon } from '#/components/rn-icon'
 import { RnText } from '#/components/rn-text'
 import { RnTextInput } from '#/components/rn-text-input'
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
-import { v } from '#/components/variables'
-import { isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -32,25 +30,14 @@ type ToastState = {
 } | null
 
 export const Page2StepVerification = () => {
-  const { width: windowWidth } = useWindowDimensions()
-  const safeInsets = useContext(SafeAreaInsetsContext)
-
-  const innerStyle = useMemo(
-    () => ({
-      width: '100%' as const,
-      maxWidth: isWeb ? WEB_CONTAINER_MAX_WIDTH : undefined,
-      alignSelf: 'center' as const,
-      paddingHorizontal: isWeb ? 16 : windowWidth * 0.025,
-    }),
-    [windowWidth],
-  )
+  const safeInsets = useSafeAreaInsets()
 
   const [otp, setOtp] = useState('')
   const [isLoading, setLoading] = useState(false)
   const [account, setAccount] = useState<Account | null>(null)
   const [toast, setToast] = useState<ToastState>(null)
-  const [fadeAnim] = useState(() => new Animated.Value(0))
   const accountRef = useRef<Account | null>(null)
+  const [fadeAnim] = useState(() => new Animated.Value(0))
 
   const anim = useAnimationOnDidMount({
     opacity: [0, 1],
@@ -75,7 +62,7 @@ export const Page2StepVerification = () => {
       accountRef.current = ca
       setAccount(ca)
       // Surface server error from mfa/start FAILED (e.g. "No email address.").
-      // When present, no OTP session exists so verify will not work — user
+      // When present, no OTP session exists so verify will not work - user
       // should read the error and dismiss via the back button.
       if (ctx.mfa.error) {
         showToast(ctx.mfa.error, 'err')
@@ -86,7 +73,7 @@ export const Page2StepVerification = () => {
       showToast(intl`Account does not exist`, 'err')
     }
 
-    // TC-14: detect incoming call while modal is open → defer MFA, hide modal
+    // TC-14: detect incoming call while modal is open -> defer MFA, hide modal
     const disposeAutorun = autorun(() => {
       if (ctx.call.calls.length > 0) {
         const a = accountRef.current
@@ -214,19 +201,22 @@ export const Page2StepVerification = () => {
 
   return (
     <AnimatedView
-      className='absolute right-0 left-0 bg-background'
+      className='bg-background absolute right-0 left-0'
       style={{
         opacity: anim.opacity,
         top: safeInsets?.top ?? 0,
         bottom: -(safeInsets?.bottom ?? 0),
       }}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: v.bg }}
+      <RnKeyboardAvoidingView
+        className='bg-background flex-1'
         behavior={isIos ? 'padding' : 'height'}
         keyboardVerticalOffset={isIos ? 100 : 0}
       >
-        <View style={[innerStyle, { flex: 1 }]}>
+        <View
+          className='web:px-4 native:px-[2.5vw] w-full flex-1 self-center'
+          style={isWeb ? { maxWidth: WEB_CONTAINER_MAX_WIDTH } : undefined}
+        >
           <View className='pt-5 pb-3'>
             <RnTouchableOpacity onPress={onBack} className='flex-row gap-3.75'>
               <View>
@@ -238,7 +228,7 @@ export const Page2StepVerification = () => {
             </RnTouchableOpacity>
           </View>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingTop: 8 }}
+            contentContainerClassName='grow pt-2'
             keyboardShouldPersistTaps='handled'
           >
             <View className='mb-4'>
@@ -254,13 +244,12 @@ export const Page2StepVerification = () => {
               }}
               keyboardType='numeric'
               placeholder={intl`Authentication Code`}
-              placeholderTextColor={v.borderBg}
-              className='w-full h-12 border rounded-[5px] border-border px-3 text-center mb-4'
+              className='border-border placeholder-border rounded-input mb-4 h-12 w-full border px-3 text-center'
             />
             <RnTouchableOpacity
               disabled={isLoading}
               className={[
-                'w-full h-12 bg-primary justify-center items-center rounded-[5px] mb-2.5',
+                'bg-primary rounded-button mb-2.5 h-12 w-full items-center justify-center',
                 isLoading && 'opacity-50',
               ]}
               onPress={onVerify}
@@ -281,7 +270,7 @@ export const Page2StepVerification = () => {
               <View className='w-full justify-center'>
                 <AnimatedView
                   className={[
-                    'flex-row w-full justify-around items-center rounded-[5px] py-2.5',
+                    'rounded-card w-full flex-row items-center justify-around py-2.5',
                     toast.type === 'err' ? 'bg-error' : 'bg-info',
                   ]}
                   style={{ opacity: fadeAnim }}
@@ -299,7 +288,7 @@ export const Page2StepVerification = () => {
             )}
           </ScrollView>
         </View>
-      </KeyboardAvoidingView>
+      </RnKeyboardAvoidingView>
     </AnimatedView>
   )
 }

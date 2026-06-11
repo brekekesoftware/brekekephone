@@ -9,6 +9,14 @@ type Options = {
   dir: string
 }
 
+const extraExts = [
+  // those extensions will be loaded as javascript/auto
+  // using our custom transformer in ./transfomer-ts.ts
+  'svg',
+  'css',
+  'scss',
+]
+
 export const config = ({ dir }: Options) => {
   const defaultConfig = getDefaultConfig(dir)
   const { assetExts, sourceExts } = defaultConfig.resolver
@@ -24,9 +32,10 @@ export const config = ({ dir }: Options) => {
       resolveRequest: MetroSymlinksResolver({
         resolver: 'enhanced-resolve',
       }),
+      assetExts: assetExts.filter(e => !extraExts.includes(e)),
+      sourceExts: [...sourceExts, ...extraExts],
+      // prioritize exports
       unstable_conditionNames: ['react-native', 'import', 'require', 'default'],
-      assetExts: assetExts.filter(e => e !== 'svg' && e !== 'css'),
-      sourceExts: [...sourceExts, 'svg', 'css'],
     },
     transformer: {
       babelTransformerPath: require.resolve('./transformer'),

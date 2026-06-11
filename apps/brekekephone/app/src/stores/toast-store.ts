@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import { ctx } from '#/stores/ctx'
@@ -17,9 +17,13 @@ interface Toast {
 }
 
 export class ToastStore {
-  @observable items: Toast[] = []
-  private lastInternetToastTime = 0
-  @action
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  items: Toast[] = []
+  lastInternetToastTime = 0
+
   show = (
     msg: string | undefined,
     type: ToastType = 'info',
@@ -38,22 +42,18 @@ export class ToastStore {
     }
   }
 
-  @action
   hide = (id: string) => {
     this.items = this.items.filter(t => t.id !== id)
   }
 
-  @action
   clearAll = () => {
     this.items = []
   }
 
-  @action
   success = (msg: string, time?: number) => {
     this.show(msg, 'success', time)
   }
 
-  @action
   error = (a: ErrorRnAlert, time?: number) => {
     // log error to save it to the debug log
     // convert error message to string if it was constructed using intlDebug
@@ -67,12 +67,10 @@ export class ToastStore {
     }
   }
 
-  @action
   warning = (msg: string, time?: number) => {
     this.show(msg, 'warning', time)
   }
 
-  @action
   info = (msg: string, time?: number) => {
     this.show(msg, 'info', time)
   }

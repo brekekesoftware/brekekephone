@@ -1,38 +1,22 @@
 import Clipboard from '@react-native-clipboard/clipboard'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { Component } from 'react'
-import { Dimensions, Linking, Platform } from 'react-native'
 import Share from 'react-native-share'
 
 import { View } from '@/rn/core/components/view'
+import { tw } from '@/rn/core/tw/tw'
+import { isWeb } from '@/rn/core/utils/platform'
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'
-import { isWeb } from '#/config'
 import type { ChatFile } from '#/stores/chat-store'
-import { intl, intlDebug } from '#/stores/intl'
-import { RnAlert } from '#/stores/rn-alert'
+import { intl } from '#/stores/intl'
 import { RnPicker } from '#/stores/rn-picker'
 import { formatChatContent } from '#/utils/format-chat-content'
 
-const messageMaxWidthStyle = Platform.select({
-  web: {
-    maxWidth: 'calc(100vw - 60px)' as any,
-  },
-  default: {
-    // 50px of avatar and 10px of padding
-    maxWidth: Dimensions.get('screen').width - 60,
-  },
-})
-const previewInfoWidthStyle = Platform.select({
-  web: {
-    width: 'calc(100vw - 119px)' as any,
-  },
-  default: {
-    width: Dimensions.get('screen').width - 119,
-  },
-})
+// 50px of avatar and 10px of padding. calc(100vw-..) resolves on native too via
+// the framework's runtime vw support, so no Dimensions inline style needed.
+const messageMaxWidthClassName = tw`max-w-[calc(100vw-60px)]`
 
 const File: FC<
   Partial<{
@@ -48,30 +32,40 @@ const File: FC<
   }>
 > = observer(p => (
   <View
-    className='relative pb-1.25 px-2.5 overflow-hidden mt-0'
-    style={messageMaxWidthStyle}
+    className={[
+      'relative mt-0 overflow-hidden px-2.5 pb-1.25',
+      messageMaxWidthClassName,
+    ]}
   >
     <View>
       <View className='flex-row items-start'>
         <View>
-          <RnIcon path={mdiFile} size={20} />
+          <RnIcon path={mdiFile} className='text-foreground' size={20} />
         </View>
-        <View className='ml-1.25' style={previewInfoWidthStyle}>
+        <View className='ml-1.25 w-[calc(100vw-119px)]'>
           <RnText className='line-clamp-1'>{p.name}</RnText>
         </View>
       </View>
-      <RnText className='text-[#9e9e9e] text-[13px]'>{p.size} KB</RnText>
+      <RnText className='text-foreground-subtle text-[13px]'>
+        {p.size} KB
+      </RnText>
       <View className='flex-row'>
         {p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.reject}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] text-error border border-error'>
+          <RnTouchableOpacity
+            onPress={p.reject}
+            className='border-error mt-1 rounded border px-2 py-px'
+          >
+            <RnText className='text-error text-center text-[12px]'>
               Cancel
             </RnText>
           </RnTouchableOpacity>
         )}
         {p.incoming && p.state === 'waiting' && p.fileType !== 'image' && (
-          <RnTouchableOpacity onPress={p.accept}>
-            <RnText className='flex-1 py-px px-2 mt-1 rounded text-[12px] bg-primary border border-primary'>
+          <RnTouchableOpacity
+            onPress={p.accept}
+            className='bg-primary border-primary mt-1 ml-1 rounded border px-2 py-px'
+          >
+            <RnText className='text-center text-[12px] text-white'>
               Accept
             </RnText>
           </RnTouchableOpacity>
@@ -96,85 +90,43 @@ const File: FC<
   </View>
 ))
 
-@observer
-export class Message extends Component<{
-  text: string
-  type?: number
-  creatorId: string
-  file: string
-  acceptFile: Function
-  rejectFile: Function
-  createdByMe: boolean
-}> {
-  onLinkPress = (url: string) => {
-    if (isWeb) {
-      window.open(url, '_blank', 'noopener')
-      return
+export const Message = observer(
+  (p: {
+    text: string
+    type?: number
+    creatorId: string
+    file: string
+    acceptFile: Function
+    rejectFile: Function
+    createdByMe: boolean
+  }) => {
+    const onRnPickerSelect = (k: number, url: string) => {
+      const message = !k || k === 1 ? p.text : url
+      if (!k || k === 2) {
+        Clipboard.setString(message)
+      } else {
+        Share.open({ message })
+      }
     }
-    if (!Linking.canOpenURL(url)) {
-      RnAlert.error({
-        message: intlDebug`Can not open the url`,
+
+    const onMessagePress = () => {
+      RnPicker.open({
+        options: [
+          {
+            key: 0,
+            label: intl`Copy message`,
+            icon: mdiContentCopy,
+          },
+          {
+            key: 1,
+            label: intl`Share message to external app`,
+            icon: mdiDotsHorizontal,
+          },
+        ],
+        onSelect: onRnPickerSelect,
       })
-    } else {
-      Linking.openURL(url)
     }
-  }
-  onLinkLongPress = (url: string) => {
-    RnPicker.open({
-      options: [
-        {
-          key: 2,
-          label: intl`Copy link`,
-          icon: mdiDotsHorizontal,
-        },
-        {
-          key: 3,
-          label: intl`Share link to external app`,
-          icon: mdiDotsHorizontal,
-        },
-        {
-          key: 0,
-          label: intl`Copy message`,
-          icon: mdiContentCopy,
-        },
-        {
-          key: 1,
-          label: intl`Share message to external app`,
-          icon: mdiDotsHorizontal,
-        },
-      ],
-      onSelect: (k: number) => this.onRnPickerSelect(k, url),
-    })
-  }
-  onMessagePress = () => {
-    RnPicker.open({
-      options: [
-        {
-          key: 0,
-          label: intl`Copy message`,
-          icon: mdiContentCopy,
-        },
-        {
-          key: 1,
-          label: intl`Share message to external app`,
-          icon: mdiDotsHorizontal,
-        },
-      ],
-      onSelect: this.onRnPickerSelect,
-    })
-  }
 
-  onRnPickerSelect = (k: number, url: string) => {
-    const message = !k || k === 1 ? this.props.text : url
-    if (!k || k === 2) {
-      Clipboard.setString(message)
-    } else {
-      Share.open({ message })
-    }
-  }
-
-  render() {
-    const p = this.props
     const file = p.file as any as ChatFile
     const isImage =
       file && (file.fileType === 'image' || file.fileType === 'video')
@@ -185,9 +137,11 @@ export class Message extends Component<{
       <>
         {!!text && !file && (
           <TextContainer
-            className='relative pb-1.25 px-2.5 overflow-hidden'
-            style={messageMaxWidthStyle}
-            onLongPress={this.onMessagePress}
+            className={[
+              'relative overflow-hidden px-2.5 pb-1.25',
+              messageMaxWidthClassName,
+            ]}
+            onLongPress={onMessagePress}
           >
             <RnText
               className={!isTextOnly ? 'text-warning text-[11.2px]' : undefined}
@@ -207,5 +161,5 @@ export class Message extends Component<{
         )}
       </>
     )
-  }
-}
+  },
+)

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useRef } from 'react'
 import { SectionList } from 'react-native'
 
 import { orderBy, uniq } from '@/shared/lodash'
@@ -14,22 +14,25 @@ import { intl } from '#/stores/intl'
 import { DelayFlag } from '#/utils/delay-flag'
 import { filterTextOnly } from '#/utils/format-chat-content'
 
-@observer
-export class PageContactUsers extends Component {
-  displayOfflineUsers = new DelayFlag()
+export const PageContactUsers = observer(() => {
+  const displayOfflineUsers = useRef(new DelayFlag()).current
 
-  componentDidMount = () => {
-    this.componentDidUpdate()
-  }
+  const caDisplayOfflineUsers =
+    ctx.auth.getCurrentAccount()?.displayOfflineUsers
+  useEffect(() => {
+    if (displayOfflineUsers.enabled !== caDisplayOfflineUsers) {
+      displayOfflineUsers.setEnabled(caDisplayOfflineUsers)
+    }
+  }, [caDisplayOfflineUsers])
 
-  getMatchUserIds = () => {
+  const getMatchUserIds = () => {
     const userIds = uniq([
       ...ctx.contact.pbxUsers.map(u => u.id),
       ...ctx.contact.ucUsers.map(u => u.id),
     ])
-    return userIds.filter(this.isMatchUser)
+    return userIds.filter(isMatchUser)
   }
-  resolveUser = (id: string) => {
+  const resolveUser = (id: string) => {
     const pbxUser = ctx.contact.getPbxUserById(id) || {}
     const ucUser = ctx.contact.getUcUserById(id) || {}
     const u = {
@@ -38,7 +41,7 @@ export class PageContactUsers extends Component {
     }
     return u
   }
-  isMatchUser = (id: string) => {
+  const isMatchUser = (id: string) => {
     if (!id) {
       return false
     }
@@ -69,19 +72,13 @@ export class PageContactUsers extends Component {
     )
   }
 
-  componentDidUpdate = () => {
-    const ca = ctx.auth.getCurrentAccount()
-    if (this.displayOfflineUsers.enabled !== ca?.displayOfflineUsers) {
-      this.displayOfflineUsers.setEnabled(ca?.displayOfflineUsers)
-    }
-  }
-  getDescription = (isUserSelectionMode: boolean) => {
+  const getDescription = (isUserSelectionMode: boolean) => {
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return ''
     }
     if (!isUserSelectionMode) {
-      const allUsers = this.getMatchUserIds().map(this.resolveUser)
+      const allUsers = getMatchUserIds().map(resolveUser)
       const onlineUsers = allUsers.filter(
         i => i.status && i.status !== 'offline',
       )
@@ -95,8 +92,7 @@ export class PageContactUsers extends Component {
       return desc
     } else {
       const searchTxt = ctx.contact.usersSearchTerm.toLowerCase()
-      const isShowOfflineUser =
-        !ca.ucEnabled || this.displayOfflineUsers.enabled
+      const isShowOfflineUser = !ca.ucEnabled || displayOfflineUsers.enabled
       const { totalContact = 0, totalOnlineContact = 0 } = ctx.user.filterUser(
         searchTxt,
         isShowOfflineUser,
@@ -111,24 +107,23 @@ export class PageContactUsers extends Component {
       return desc
     }
   }
-  renderUserSelectionMode = () => {
+  const renderUserSelectionMode = () => {
     const searchTxt = ctx.contact.usersSearchTerm.toLowerCase()
     const isShowOfflineUser =
-      !ctx.auth.getCurrentAccount()?.ucEnabled ||
-      this.displayOfflineUsers.enabled
+      !ctx.auth.getCurrentAccount()?.ucEnabled || displayOfflineUsers.enabled
     const { displayUsers } = ctx.user.filterUser(searchTxt, isShowOfflineUser)
     return <ContactSectionList sectionListData={displayUsers} />
   }
-  renderAllUserMode = () => {
+  const renderAllUserMode = () => {
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       return null
     }
-    const allUsers = this.getMatchUserIds().map(this.resolveUser)
+    const allUsers = getMatchUserIds().map(resolveUser)
     const onlineUsers = allUsers.filter(i => i.status && i.status !== 'offline')
     type User = (typeof allUsers)[0]
     const displayUsers =
-      !this.displayOfflineUsers.enabled && ca.ucEnabled ? onlineUsers : allUsers
+      !displayOfflineUsers.enabled && ca.ucEnabled ? onlineUsers : allUsers
     const map = {} as { [k: string]: User[] }
     displayUsers.forEach(u => {
       u.name = u.name || u.id || ''
@@ -168,55 +163,51 @@ export class PageContactUsers extends Component {
     )
   }
 
-  render() {
-    const ca = ctx.auth.getCurrentAccount()
-    if (!ca) {
-      return null
-    }
-    const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
-    const description = this.getDescription(isUserSelectionMode)
-    return (
-      <Layout
-        description={description}
-        dropdown={[
-          {
-            label: intl`Edit buddy list`,
-            onPress: ctx.nav.goToPageContactEdit,
-          },
-        ]}
-        menu='contact'
-        subMenu='users'
-        title={intl`Users`}
-      >
-        <Field
-          icon={mdiMagnify}
-          label={intl`SEARCH FOR USERS`}
-          onValueChange={(v: string) => {
-            // TODO: use debounced value to perform data filter
-            ctx.contact.usersSearchTerm = v
-          }}
-          value={ctx.contact.usersSearchTerm}
-        />
-        {ctx.auth.getCurrentAccount()?.ucEnabled && (
-          <Field
-            label={intl`SHOW OFFLINE USERS`}
-            onValueChange={(v: boolean) => {
-              ctx.account.upsertAccount({
-                id: ctx.auth.signedInId,
-                displayOfflineUsers: v,
-              })
-            }}
-            type='Switch'
-            value={ca.displayOfflineUsers}
-          />
-        )}
-        {isUserSelectionMode
-          ? this.renderUserSelectionMode()
-          : this.renderAllUserMode()}
-      </Layout>
-    )
+  const ca = ctx.auth.getCurrentAccount()
+  if (!ca) {
+    return null
   }
-}
+  const isUserSelectionMode = ctx.auth.isBigMode() || !ca.pbxLocalAllUsers
+  const description = getDescription(isUserSelectionMode)
+  return (
+    <Layout
+      description={description}
+      dropdown={[
+        {
+          label: intl`Edit buddy list`,
+          onPress: ctx.nav.goToPageContactEdit,
+        },
+      ]}
+      menu='contact'
+      subMenu='users'
+      title={intl`Users`}
+    >
+      <Field
+        icon={mdiMagnify}
+        label={intl`SEARCH FOR USERS`}
+        onValueChange={(v: string) => {
+          // TODO: use debounced value to perform data filter
+          ctx.contact.usersSearchTerm = v
+        }}
+        value={ctx.contact.usersSearchTerm}
+      />
+      {ctx.auth.getCurrentAccount()?.ucEnabled && (
+        <Field
+          label={intl`SHOW OFFLINE USERS`}
+          onValueChange={(v: boolean) => {
+            ctx.account.upsertAccount({
+              id: ctx.auth.signedInId,
+              displayOfflineUsers: v,
+            })
+          }}
+          type='Switch'
+          value={ca.displayOfflineUsers}
+        />
+      )}
+      {isUserSelectionMode ? renderUserSelectionMode() : renderAllUserMode()}
+    </Layout>
+  )
+})
 
 const getLastMessageChat = (id: string) => {
   const chats = filterTextOnly(ctx.chat.getMessagesByThreadId(id))

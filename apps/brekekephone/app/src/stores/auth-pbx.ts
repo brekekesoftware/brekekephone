@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { debounce } from '@/shared/lodash'
 import { defaultTimeout } from '#/config'
@@ -7,7 +7,7 @@ import { ctx } from '#/stores/ctx'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export class AuthPBX {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -18,7 +18,7 @@ export class AuthPBX {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     console.log('PBX PN debug: disconnect by AuthPBX.dispose')
     this.clearShouldAuthReaction?.()
     this.clearShouldAuthReaction = undefined
@@ -27,7 +27,7 @@ export class AuthPBX {
     ctx.auth.pbxState = 'stopped'
   }
 
-  @action private authWithCheck = async () => {
+  authWithCheck = async () => {
     if (!ctx.auth.pbxShouldAuth()) {
       return
     }
@@ -54,16 +54,14 @@ export class AuthPBX {
           throw new Error('PBX login connection timed out')
         }
       })
-      .catch(
-        action((err: Error) => {
-          ctx.auth.pbxState = 'failure'
-          ctx.auth.pbxTotalFailure += 1
-          console.error('Failed to connect to pbx:', err)
-          this.authWithCheck()
-        }),
-      )
+      .catch((err: Error) => {
+        ctx.auth.pbxState = 'failure'
+        ctx.auth.pbxTotalFailure += 1
+        console.error('Failed to connect to pbx:', err)
+        this.authWithCheck()
+      })
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authPBX = new AuthPBX()

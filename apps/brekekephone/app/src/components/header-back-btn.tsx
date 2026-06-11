@@ -1,8 +1,8 @@
 import type { FC } from 'react'
 
-import { AnimatedView } from '@/rn/core/components/animated'
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnTouchableOpacity } from '#/components/rn'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import { useAnimation } from '#/utils/animation'
 
 export const BackBtn: FC<{
@@ -16,8 +16,8 @@ export const BackBtn: FC<{
   })
   return (
     <RnTouchableOpacity onPress={onPress} className='absolute top-0 left-0'>
-      <AnimatedView className='w-12.5 px-0 rounded-none' style={cssInnerA}>
-        <RnIcon path={mdiKeyboardBackspace} />
+      <AnimatedView className='w-12.5 rounded-none px-0' style={cssInnerA}>
+        <RnIcon className='text-foreground' path={mdiKeyboardBackspace} />
       </AnimatedView>
     </RnTouchableOpacity>
   )

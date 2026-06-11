@@ -37,7 +37,7 @@ export const getUrlParams = async () => {
     if (!urlParams) {
       return
     }
-    // custom page URL has no account params → bypass account match check
+    // custom page URL has no account params -> bypass account match check
     if (urlParams.customPageId) {
       ctx.auth.handleUrlParams()
       return

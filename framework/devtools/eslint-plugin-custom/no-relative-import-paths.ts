@@ -48,14 +48,15 @@ export const noRelativeImportPaths: TSESLint.RuleModule<
     return {
       ImportDeclaration: (node: TSESTree.ImportDeclaration) => {
         const importPath = node.source.value
+        const [start, end] = node.source.range
 
         if (isParentFolder(importPath, c, absPath)) {
           c.report({
             node,
             messageId: 'relativeImportPath',
-            fix: fixer =>
-              fixer.replaceTextRange(
-                [node.source.range[0] + 1, node.source.range[1] - 1],
+            fix: f =>
+              f.replaceTextRange(
+                [start + 1, end - 1],
                 getAbsolutePath(importPath, c, absPath, alias),
               ),
           })
@@ -65,9 +66,9 @@ export const noRelativeImportPaths: TSESLint.RuleModule<
           c.report({
             node,
             messageId: 'relativeImportPath',
-            fix: fixer =>
-              fixer.replaceTextRange(
-                [node.source.range[0] + 1, node.source.range[1] - 1],
+            fix: f =>
+              f.replaceTextRange(
+                [start + 1, end - 1],
                 getAbsolutePath(importPath, c, absPath, alias),
               ),
           })

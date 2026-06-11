@@ -1,11 +1,11 @@
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
-import { action, observable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { NativeModules } from 'react-native'
 
+import { isIos } from '@/rn/core/utils/platform'
 // import vi from '#/assets/intl-vi.json'
 import en from '#/assets/intl-en.json'
 import ja from '#/assets/intl-ja.json'
-import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { RnPicker } from '#/stores/rn-picker'
 import { arrToMap } from '#/utils/arr-to-map'
@@ -43,12 +43,16 @@ const TypedNativeModules = NativeModules as {
 }
 
 export class IntlStore {
-  @observable locale = 'en'
-  @observable localeReady = false
-  @observable localeLoading = true
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  locale = 'en'
+  localeReady = false
+  localeLoading = true
   getLocaleName = () => localeOptions.find(o => o.key === this.locale)?.label
 
-  private getLocale = async () => {
+  getLocale = async () => {
     let locale = await RnAsyncStorage.getItem('locale').then(l => l || '')
     if (!locale || !labels[locale]) {
       locale =
@@ -63,28 +67,22 @@ export class IntlStore {
       locale = 'en'
     }
     await RnAsyncStorage.setItem('locale', locale)
-    runInAction(() => {
-      this.locale = locale
-      BrekekeUtils.setLocale(this.locale)
-    })
+    this.locale = locale
+    BrekekeUtils.setLocale(this.locale)
   }
   setLocale = async (locale: string) => {
     if (this.localeLoading || locale === this.locale) {
       return
     }
-    runInAction(() => {
-      this.localeLoading = true
-    })
+    this.localeLoading = true
     if (!labels[locale as 'en']) {
       locale = 'en'
     }
     await RnAsyncStorage.setItem('locale', locale)
     await waitTimeout()
-    runInAction(() => {
-      this.localeLoading = false
-      this.locale = locale
-      BrekekeUtils.setLocale(this.locale)
-    })
+    this.localeLoading = false
+    this.locale = locale
+    BrekekeUtils.setLocale(this.locale)
   }
   selectLocale = () => {
     RnPicker.open({
@@ -105,15 +103,13 @@ export class IntlStore {
     })
   }
 
-  private loadingPromise?: Promise<unknown>
+  loadingPromise?: Promise<unknown>
   wait = () => {
     if (!this.loadingPromise) {
-      this.loadingPromise = this.getLocale().then(
-        action(() => {
-          this.localeReady = true
-          this.localeLoading = false
-        }),
-      )
+      this.loadingPromise = this.getLocale().then(() => {
+        this.localeReady = true
+        this.localeLoading = false
+      })
     }
     return this.loadingPromise
   }

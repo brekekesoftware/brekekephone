@@ -1,12 +1,12 @@
 import { AppState } from 'react-native'
 
+import { isAndroid, isIos } from '@/rn/core/utils/platform'
 import { jsonStable } from '@/shared/json-stable'
-import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
 import { openLinkSafely, urls } from '#/utils/deeplink.native'
 import { get } from '#/utils/lodash'
-import { PushNotification } from '#/utils/push-notification'
+import { resetBadgeNumber } from '#/utils/reset-badge-number'
 import { toBoolean } from '#/utils/string'
 import { waitTimeout } from '#/utils/wait-timeout'
 
@@ -263,7 +263,7 @@ export const parse = async (
     if (ctx.auth.userExtensionProperties && ctx.auth.phoneappliEnabled()) {
       navIndex(() => ctx.nav.goToPageCallKeypad())
       if (isIos) {
-        PushNotification.resetBadgeNumber()
+        resetBadgeNumber()
       }
       openLinkSafely(urls.phoneappli.HISTORY_CALLED)
     } else {

@@ -1,44 +1,26 @@
+import type { ComponentProps, FC } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, Image } from 'react-native'
+import { Image as ImageWocn } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
-import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
-import { View } from '@/rn/core/components/view'
 import noPhoto from '#/assets/no_photo.png'
+
+import { View } from '@/rn/core/components/view'
+import type { ClassName } from '@/rn/core/tw/class-name'
+import { createClassNameComponent } from '@/rn/core/tw/lib/create-class-name-component'
+import { isAndroid } from '@/rn/core/utils/platform'
+import { RnActivityIndicator } from '#/components/rn-class-name-components'
+import { RnWebView } from '#/components/rn-class-name-components.native'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'
-import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/check-image-url'
 
-const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
+const Image = createClassNameComponent({ ImageWocn }) as FC<
+  ComponentProps<typeof ImageWocn> & { className?: ClassName }
+>
 
-const imageFullStyle = {
-  overflow: 'hidden' as const,
-  backgroundColor: 'white',
-  width: '100%' as const,
-  height: '100%' as const,
-}
-const imageErrorFullStyle = {
-  overflow: 'hidden' as const,
-  backgroundColor: 'white',
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  zIndex: 100,
-  width: '100%' as const,
-  height: '100%' as const,
-}
-const loadingFullStyle = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  width: '100%' as const,
-  height: '100%' as const,
-  backgroundColor: '#00000030',
-  overflow: 'hidden' as const,
-  zIndex: 100,
-}
+const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
 const js = `
 // set meta data config viewport
@@ -66,11 +48,11 @@ const getNoCacheUri = (uri: string) => {
 
 export const SmartImage = ({
   uri,
-  style,
+  className,
   incoming,
 }: {
   uri: string
-  style: object
+  className?: ClassName
   incoming: boolean
 }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(
@@ -132,23 +114,20 @@ export const SmartImage = ({
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
   return (
-    <View
-      className='overflow-hidden bg-background'
-      style={style}
-    >
+    <View className={['bg-background overflow-hidden', className]}>
       {!statusImageLoading && (
-        <ActivityIndicator
+        <RnActivityIndicator
           size='small'
           color='white'
-          style={loadingFullStyle}
+          className='bg-modal-overlay absolute top-0 left-0 z-100 h-full w-full overflow-hidden opacity-30'
         />
       )}
       {!uri ? null : !isImageUrl ? (
-        <WebView
+        <RnWebView
           source={{ uri }}
           injectedJavaScript={js}
           injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
-          style={imageFullStyle}
+          className='bg-background h-full w-full overflow-hidden'
           bounces={false}
           onLoadStart={onLoadStart}
           onMessage={onMessage}
@@ -164,7 +143,7 @@ export const SmartImage = ({
           source={{
             uri: nocacheUri,
           }}
-          style={imageFullStyle}
+          className='bg-background h-full w-full overflow-hidden'
           onError={onImageLoadError}
           onLoad={onImageLoad}
           resizeMode='cover'
@@ -173,7 +152,7 @@ export const SmartImage = ({
       {statusImageLoading === StatusImage.error && isImageUrl && (
         <Image
           source={noPhotoImg}
-          style={imageErrorFullStyle}
+          className='bg-background absolute top-0 left-0 z-100 h-full w-full overflow-hidden'
           resizeMode='cover'
         />
       )}

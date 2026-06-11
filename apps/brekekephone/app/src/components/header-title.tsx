@@ -1,9 +1,11 @@
 import type { FC } from 'react'
 
-import { AnimatedText, AnimatedView } from '@/rn/core/components/animated'
 import { trimDisplayName } from '#/components/call-bar'
 import { RnText } from '#/components/rn'
-import { v } from '#/components/variables'
+import {
+  AnimatedText,
+  AnimatedView,
+} from '#/components/rn-class-name-components'
 import { useAnimation } from '#/utils/animation'
 
 export const Title: FC<{
@@ -16,20 +18,20 @@ export const Title: FC<{
     paddingVertical: [15, 10],
   })
   const cssTitleA = useAnimation(compact, {
-    fontSize: [v.fontSizeTitle, v.fontSizeSubTitle],
-    lineHeight: [v.lineHeightTitle, 20],
+    fontSize: [1.8 * 14, 1.2 * 14],
+    lineHeight: [1.8 * 20, 20],
   })
   return (
-    <AnimatedView className='pl-3.75 mr-6.25' style={cssContainerA}>
+    <AnimatedView className='mr-6.25 pl-3.75' style={cssContainerA}>
       <AnimatedText
         numberOfLines={1}
-        className='leading-5 font-bold text-black'
+        className='text-foreground font-bold'
         style={cssTitleA}
       >
         {trimDisplayName(title)}
       </AnimatedText>
       {!compact && (
-        <RnText className='line-clamp-1 pr-3.75 text-foreground-muted'>
+        <RnText className='text-foreground-muted line-clamp-1 pr-3.75'>
           {description || '\u200a'}
         </RnText>
       )}

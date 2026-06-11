@@ -1,0 +1,13 @@
+@mixin stone-dark {
+  // add here
+}
+
+html.theme-stone.theme-dark {
+  @include stone-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html.theme-stone:not(.theme-light) {
+    @include stone-dark;
+  }
+}

@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react'
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { mdiCheck, mdiTranslate } from '#/assets/icons'
+import { isIos, isWeb } from '@/rn/core/utils/platform'
+import { mdiCheck } from '#/assets/icons'
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'
-import { isIos, isWeb } from '#/config'
+import { DarkModePicker, LanguagePicker } from '#/pages/page-settings-debug'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -17,7 +18,7 @@ import {
   getRingtoneOptions,
   handleRingtoneOptionsInSetting,
 } from '#/utils/get-ringtone-options'
-import PreviewRingtone from '#/utils/preview-ringtone'
+import { PreviewRingtone } from '#/utils/preview-ringtone'
 import {
   handleUploadRingtone,
   saveRingtoneSelection,
@@ -25,29 +26,15 @@ import {
 } from '#/utils/ringtone-picker'
 import { SyncRingtoneOnForeground } from '#/utils/sync-ringtone-on-foreground'
 
-@observer
-export class PageSettingsOther extends Component {
-  state = {
-    status: '',
-    statusText: '',
-    ringtoneOptions: [] as RingtoneOption[],
-    ringtone: defaultRingtone,
-    preview: '',
-  }
+export const PageSettingsOther = observer(() => {
+  const mountedRef = useRef(true)
+  const [status, setStatus] = useState('')
+  const [statusText, setStatusText] = useState('')
+  const [ringtoneOptions, setRingtoneOptions] = useState<RingtoneOption[]>([])
+  const [ringtone, setRingtone] = useState(defaultRingtone)
+  const [preview, setPreview] = useState('')
 
-  componentDidMount = async () => {
-    try {
-      this.initData()
-    } catch (err) {
-      console.error('PageSettingsOther componentDidMount:', err)
-    }
-  }
-
-  componentWillUnmount(): void {
-    RnPicker.dismiss()
-  }
-
-  initData = async () => {
+  const initData = async () => {
     const me = ctx.uc.me()
     let ro: RingtoneOption[] = []
     let r = getCurrentRingtone()
@@ -60,33 +47,45 @@ export class PageSettingsOther extends Component {
     } else {
       ro = await getRingtoneOptions()
     }
+    if (!mountedRef.current) {
+      return
+    }
 
-    this.setState({
-      status: me.status,
-      statusText: me.statusText,
-      ringtoneOptions: ro,
-      ringtone: r,
-    })
+    setStatus(me.status)
+    setStatusText(me.statusText)
+    setRingtoneOptions(ro)
+    setRingtone(r)
   }
 
-  setStatusText = (statusText: string) => {
-    this.setState({ statusText })
+  useEffect(() => {
+    mountedRef.current = true
+    try {
+      initData()
+    } catch (err) {
+      console.error('PageSettingsOther componentDidMount:', err)
+    }
+    return () => {
+      mountedRef.current = false
+      RnPicker.dismiss()
+    }
+  }, [])
+
+  const submitStatusText = () => {
+    setStatusFn(status, statusText)
   }
-  submitStatusText = () => {
-    this.setStatus(this.state.status, this.state.statusText)
+  const submitStatus = (s: string) => {
+    setStatusFn(s, statusText)
   }
-  submitStatus = (status: string) => {
-    this.setStatus(status, this.state.statusText)
-  }
-  setStatus = (status: string, statusText: string) => {
+  const setStatusFn = (s: string, text: string) => {
     ctx.uc
-      .setStatus(status, statusText)
+      .setStatus(s, text)
       .then(() => {
+        if (!mountedRef.current) {
+          return
+        }
         const me = ctx.uc.me()
-        this.setState({
-          status: me.status,
-          statusText: me.statusText,
-        })
+        setStatus(me.status)
+        setStatusText(me.statusText)
       })
       .catch((err: Error) => {
         RnAlert.error({
@@ -96,8 +95,8 @@ export class PageSettingsOther extends Component {
       })
   }
 
-  onChangeRingtone = async (value: string, ca?: Account) => {
-    this.stopPreview()
+  const onChangeRingtone = async (value: string, ca?: Account) => {
+    stopPreview()
     const hasCall =
       Object.keys(ctx.call.callkeepMap).length ||
       ctx.sip.phone?.getSessionCount() ||
@@ -105,43 +104,51 @@ export class PageSettingsOther extends Component {
 
     if (hasCall) {
       const msg = intl`Cannot preview ringtone during a call`
-      if (ctx.toast.items.find(v => v.msg === msg) == null) {
+      if (!ctx.toast.items.some(v => v.msg === msg)) {
         ctx.toast.warning(msg, 2000)
       }
       return
     }
     const r = await validateRingtone(value, ca)
-    this.setState({ preview: r })
+    if (!mountedRef.current) {
+      return
+    }
+    setPreview(r)
   }
 
-  onSaveRingtone = async (value: string, ca?: Account) => {
+  const onSaveRingtone = async (value: string, ca?: Account) => {
     await saveRingtoneSelection(
       value,
-      () => this.setState({ ringtone: value }),
+      () => {
+        if (mountedRef.current) {
+          setRingtone(value)
+        }
+      },
       ca,
     )
   }
 
-  onUploadRingtone = async () => {
+  const onUploadRingtone = async () => {
     try {
-      await handleUploadRingtone(this.state.ringtoneOptions, options => {
-        this.setState({
-          ringtoneOptions: options,
-        })
+      await handleUploadRingtone(ringtoneOptions, options => {
+        if (mountedRef.current) {
+          setRingtoneOptions(options)
+        }
       })
     } catch (err) {
       console.error('PageSettingOther onUploadRingtone:', err)
     }
   }
 
-  onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
-    this.setState({
-      ringtoneOptions: ro,
-      ringtone: r || defaultRingtone,
-    })
+  const onSyncRingtone = ({ ro, r }: { ro: RingtoneOption[]; r: string }) => {
+    if (!mountedRef.current) {
+      return
+    }
+    setRingtoneOptions(ro)
+    setRingtone(r || defaultRingtone)
   }
 
-  getDropDown = () => {
+  const getDropDown = () => {
     let d = [
       ...(ctx.auth.isConnFailure()
         ? [
@@ -169,7 +176,7 @@ export class PageSettingsOther extends Component {
       d = [
         {
           label: intl`Select local mp3 as ringtone`,
-          onPress: this.onUploadRingtone,
+          onPress: onUploadRingtone,
         },
         ...d,
       ]
@@ -177,79 +184,133 @@ export class PageSettingsOther extends Component {
     return d
   }
 
-  stopPreview = () => this.setState({ preview: '' })
+  const stopPreview = () => setPreview('')
 
-  render() {
-    const ca = ctx.auth.getCurrentAccount()
+  const ca = ctx.auth.getCurrentAccount()
+  const description = !ca
+    ? intl`App settings and configs`
+    : `${ca.pbxUsername} - ${ca.pbxHostname}`
 
-    return (
-      <Layout
-        description={intl`Other settings for PBX/UC`}
-        dropdown={this.getDropDown()}
-        menu='settings'
-        subMenu='other'
-        title={intl`Other Settings`}
-      >
-        <Field isGroup label={intl`LOCALIZATION`} />
-        <Field
-          icon={mdiTranslate}
-          label={intl`LANGUAGE`}
-          onTouchPress={() =>
-            ctx.intl.selectLocaleWithCallback(() => this.initData())
+  return (
+    <Layout
+      title={intl`Settings`}
+      description={description}
+      dropdown={getDropDown()}
+      menu='settings'
+      subMenu='other'
+    >
+      <Field isGroup label='ACCOUNT' />
+      <PushNotificationSwitch />
+
+      <Field isGroup label='UC' />
+      <Field
+        label={intl`UC`}
+        onValueChange={() => {
+          if (!ca) {
+            return
           }
-          value={ctx.intl.locale}
-          valueRender={() => ctx.intl.getLocaleName()}
-        />
-        {ca?.ucEnabled && (
-          <>
-            <Field isGroup label='UC' />
-            <Field
-              disabled={!ca.ucEnabled}
-              label={intl`STATUS`}
-              onValueChange={this.submitStatus}
-              options={[
-                { key: 'online', label: intl`Online` },
-                { key: 'offline', label: intl`Invisible` },
-                { key: 'busy', label: intl`Busy` },
-              ]}
-              type='RnPicker'
-              value={this.state.status}
-            />
-            <Field
-              createBtnIcon={mdiCheck}
-              disabled={!ca.ucEnabled}
-              label={intl`STATUS NOTE`}
-              onCreateBtnPress={this.submitStatusText}
-              onSubmitEditing={this.submitStatusText}
-              onValueChange={this.setStatusText}
-              value={this.state.statusText}
-            />
-          </>
-        )}
-        {!isWeb && (
-          <>
-            <Field isGroup label={intl`Ringtone`} />
-            <Field
-              label={intl`INCOMING CALL RINGTONE`}
-              options={this.state.ringtoneOptions}
-              type='RnPicker'
-              value={this.state.ringtone}
-              onValueChange={v => this.onChangeRingtone(v, ca)}
-              onRnPickerConfirm={v => this.onSaveRingtone(v, ca)}
-              onRnPickerDismiss={this.stopPreview}
-            />
-          </>
-        )}
-        {isIos && (
-          <SyncRingtoneOnForeground onForeGround={this.onSyncRingtone} />
-        )}
-        {!isWeb && this.state.preview && (
-          <PreviewRingtone
-            source={this.state.preview}
-            onFinished={this.stopPreview}
+          ca.ucEnabled = !ca.ucEnabled
+          if (!ca.ucEnabled) {
+            ctx.authUC.dispose()
+          } else {
+            ctx.authUC.authWithCheckDebounced()
+          }
+          ctx.account.saveAccountsToLocalStorageDebounced()
+        }}
+        type='Switch'
+        value={ca?.ucEnabled}
+      />
+      <Field
+        label={intl`STATUS`}
+        onValueChange={submitStatus}
+        options={[
+          { key: 'online', label: intl`Online` },
+          { key: 'offline', label: intl`Invisible` },
+          { key: 'busy', label: intl`Busy` },
+        ]}
+        type='RnPicker'
+        value={status}
+        disabled={ctx.auth.ucState !== 'success'}
+      />
+      <Field
+        createBtnIcon={mdiCheck}
+        label={intl`STATUS NOTE`}
+        onCreateBtnPress={submitStatusText}
+        onSubmitEditing={submitStatusText}
+        onValueChange={setStatusText}
+        value={statusText}
+        disabled={ctx.auth.ucState !== 'success'}
+      />
+
+      {!isWeb && (
+        <>
+          <Field isGroup label={intl`Ringtone`} />
+          <Field
+            label={intl`INCOMING CALL RINGTONE`}
+            options={ringtoneOptions}
+            type='RnPicker'
+            value={ringtone}
+            onValueChange={v => onChangeRingtone(v, ca)}
+            onRnPickerConfirm={v => onSaveRingtone(v, ca)}
+            onRnPickerDismiss={stopPreview}
           />
-        )}
-      </Layout>
-    )
-  }
-}
+        </>
+      )}
+      {isIos && <SyncRingtoneOnForeground onForeGround={onSyncRingtone} />}
+      {!isWeb && preview && (
+        <PreviewRingtone source={preview} onFinished={stopPreview} />
+      )}
+
+      <Field isGroup label={intl`DISPLAY`} />
+      <LanguagePicker onSelect={initData} />
+      <DarkModePicker />
+    </Layout>
+  )
+})
+
+const PushNotificationSwitch = observer(() => {
+  const mountedRef = useRef(true)
+  const [loading, setLoading] = useState(false)
+  const ca = ctx.auth.getCurrentAccount()
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  return (
+    <Field
+      label={intl`PUSH NOTIFICATION`}
+      onValueChange={async () => {
+        if (!ca) {
+          return
+        }
+        const initial = ca.pushNotificationEnabled
+        ca.pushNotificationEnabled = !initial
+        ca.pushNotificationEnabledSynced = false
+        ctx.account.saveAccountsToLocalStorageDebounced()
+        setLoading(true)
+        await ctx.pnToken.sync(ca, {
+          noUpsert: true,
+          onError: err => {
+            ca.pushNotificationEnabled = initial
+            ca.pushNotificationEnabledSynced = false
+            ctx.account.saveAccountsToLocalStorageDebounced()
+            RnAlert.error({
+              message: intlDebug`Failed to sync push notification status`,
+              err,
+            })
+          },
+        })
+        if (mountedRef.current) {
+          setLoading(false)
+        }
+      }}
+      type='Switch'
+      value={ca?.pushNotificationEnabled}
+      loading={loading}
+    />
+  )
+})

@@ -1,9 +1,13 @@
-import { action, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 
 import { ctx } from '#/stores/ctx'
 
 export class MFAStore {
-  @observable accountId: string | null = null
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  accountId: string | null = null
   // When true, skip PBX reconnect after MFA verification.
   // Used by syncPnToken flow which only needs to save the token
   // without triggering a full PBX reconnect with device_token.
@@ -12,13 +16,10 @@ export class MFAStore {
   cancelledAccountId: string | null = null
   // Server error from mfa/start FAILED response (e.g. "No email address.").
   // When non-empty, modal renders in error mode instead of normal OTP entry.
-  @observable error = ''
-  private _resolvers: Array<(ok: boolean) => void> = []
+  error = ''
+  _resolvers: Array<(ok: boolean) => void> = []
 
-  @action show = (
-    id: string,
-    opts?: { skipReconnect?: boolean; error?: string },
-  ) => {
+  show = (id: string, opts?: { skipReconnect?: boolean; error?: string }) => {
     if (this.accountId === id) {
       // If any caller needs reconnect, honor it
       this.skipReconnect = this.skipReconnect && (opts?.skipReconnect ?? false)
@@ -34,13 +35,13 @@ export class MFAStore {
     this.error = opts?.error || ''
   }
 
-  @action hide = () => {
+  hide = () => {
     this.accountId = null
     this.skipReconnect = false
     this.error = ''
   }
 
-  @action complete = (): boolean => {
+  complete = (): boolean => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -53,7 +54,7 @@ export class MFAStore {
     return hadAwaiters
   }
 
-  @action cancel = () => {
+  cancel = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.cancelledAccountId = this.accountId
@@ -64,10 +65,10 @@ export class MFAStore {
     rs.forEach(r => r(false))
   }
 
-  // Clean reset — for signIn/signOut where no user cancellation occurred.
+  // Clean reset - for signIn/signOut where no user cancellation occurred.
   // Unlike cancel(), this does NOT set wasCancelled=true, so subsequent
   // PN navigation / deeplink flows won't be blocked by stale cancel state.
-  @action reset = () => {
+  reset = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -78,9 +79,9 @@ export class MFAStore {
     rs.forEach(r => r(false))
   }
 
-  // Called by signOut — preserves wasCancelled/cancelledAccountId so
+  // Called by signOut - preserves wasCancelled/cancelledAccountId so
   // syncPnToken does not trigger a new mfa/start immediately after cancel.
-  @action signOutReset = () => {
+  signOutReset = () => {
     const rs = this._resolvers
     this._resolvers = []
     this.accountId = null
@@ -91,7 +92,7 @@ export class MFAStore {
 
   // Clear cancel state when a new sign-in begins for the same account,
   // so waitMfaIfNeeded and PN navigation are not blocked by stale cancel state.
-  @action clearCancelled = () => {
+  clearCancelled = () => {
     this.wasCancelled = false
     this.cancelledAccountId = null
   }

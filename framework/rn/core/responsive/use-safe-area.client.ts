@@ -1,6 +1,7 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
+import type { EdgeInsets } from 'react-native-safe-area-context'
 
 import type { ClassName } from '@/rn/core/tw/class-name'
 
@@ -40,7 +41,8 @@ const getSnapshotServer = () => undefined
 const useSafeAreaInsetsOriginal = () =>
   useSyncExternalStore(subscribe, getSnapshot, getSnapshotServer)
 
-export const useSafeAreaInsets = (): ClassName => useSafeAreaInsetsOriginal()
+export const useSafeAreaInsets = (): EdgeInsets | undefined =>
+  useSafeAreaInsetsOriginal()
 
 export const useSafeAreaPadding = (): ClassName => {
   const d = useSafeAreaInsetsOriginal()

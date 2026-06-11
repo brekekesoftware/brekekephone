@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react'
 
+import { isIos } from '@/rn/core/utils/platform'
 import {
   AnsweredItem,
   OutgoingItem,
   OutgoingItemWithSDP,
 } from '#/components/call-voices-ui'
 import { IosRBT } from '#/components/call-voices-ui.native'
-import { isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 
 export const CallVoices = observer(() => {

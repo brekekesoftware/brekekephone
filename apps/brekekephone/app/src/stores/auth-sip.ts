@@ -1,5 +1,5 @@
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { reaction } from 'mobx'
 
 import { jsonSafe } from '@/shared/json-safe'
 import { debounce } from '@/shared/lodash'
@@ -17,7 +17,7 @@ const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
   ctx.pbx.getConfig().then(c => c && c[k])
 
 export class AuthSIP {
-  private clearShouldAuthReaction?: Lambda
+  clearShouldAuthReaction?: Lambda
 
   auth = () => {
     this.authWithCheck()
@@ -28,7 +28,7 @@ export class AuthSIP {
       this.authWithCheckDebounced,
     )
   }
-  @action dispose = () => {
+  dispose = () => {
     console.log('SIP PN debug: set sipState stopped dispose')
     this.clearShouldAuthReaction?.()
 
@@ -36,7 +36,7 @@ export class AuthSIP {
     ctx.sip.stopWebRTC()
   }
 
-  private onSipFailure = () => {
+  onSipFailure = () => {
     console.log('SIP PN debug: set sipState failure')
     ctx.sip.stopWebRTC()
 
@@ -49,7 +49,7 @@ export class AuthSIP {
     this.authWithCheck()
   }
 
-  private authPnWithoutCatch = async (pn: Partial<SipPn>) => {
+  authPnWithoutCatch = async (pn: Partial<SipPn>) => {
     const ca = ctx.auth.getCurrentAccount()
     if (!ca) {
       console.log('SIP PN debug: Already signed out after long await')
@@ -86,7 +86,7 @@ export class AuthSIP {
     await ctx.sip.connect(o, ca)
   }
 
-  @action private authWithoutCatch = async () => {
+  authWithoutCatch = async () => {
     console.log('SIP PN debug: set sipState connecting')
 
     ctx.auth.sipState = 'connecting'
@@ -133,7 +133,7 @@ export class AuthSIP {
     await this.authPnWithoutCatch(pn)
   }
 
-  @action private authWithCheck = async () => {
+  authWithCheck = async () => {
     // BUG-1207: while signInByNotification is mid-transition, dispose() sets
     // sipState='stopped' and onCallKeepDidDisplayIncomingCall sees that and
     // schedules a redundant sip.connect. The 2nd connect calls resetProcessedPn
@@ -168,15 +168,13 @@ export class AuthSIP {
         return
       }
     }
-    this.authWithoutCatch().catch(
-      action((err: Error) => {
-        console.log('SIP PN debug: set sipState failure catch')
-        this.onSipFailure()
-        console.error('Failed to connect to sip:', err)
-      }),
-    )
+    this.authWithoutCatch().catch((err: Error) => {
+      console.log('SIP PN debug: set sipState failure catch')
+      this.onSipFailure()
+      console.error('Failed to connect to sip:', err)
+    })
   }
-  private authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
+  authWithCheckDebounced = debounce(this.authWithCheck, defaultTimeout)
 }
 
 ctx.authSIP = new AuthSIP()

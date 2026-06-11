@@ -15,11 +15,17 @@ import type {
   ClassNameWithVariable,
 } from '@/rn/core/tw/class-name'
 import {
+  classNameCalc,
+  classNameCalcKeys,
+  classNameCalcScreens,
+} from '@/rn/core/tw/lib/class-name-calc'
+import {
   animationMap,
   transitionDurationDefault,
   transitionTimingFunctionDefault,
   transitionTimingFunctionMap,
 } from '@/rn/core/tw/lib/normalize-style-config'
+import { jsonSafe } from '@/shared/json-safe'
 import { camelCase } from '@/shared/lodash'
 import type { Falsish, StrMap } from '@/shared/ts-utils'
 
@@ -31,9 +37,8 @@ type Options = {
 }
 
 const throwOnUnknown = (className: string) => {
-  throw new Error(`Unknown or invalid class name ${className}`)
+  throw new Error(`Unknown or invalid class name ${jsonSafe(className)}`)
 }
-const space = /\s+/g
 
 export const classNameToNative = (options: Options): ClassNameNative => {
   const required: Required<Options> = {
@@ -46,9 +51,9 @@ export const classNameToNative = (options: Options): ClassNameNative => {
     return
   }
 
-  if (space.test(className)) {
+  if (/\s/.test(className)) {
     const style = className
-      .split(space)
+      .split(/\s+/g)
       .filter(s => s)
       .map(s => classNameToNative({ ...required, className: s }))
     return omitEmptyClassName(style)
@@ -185,8 +190,8 @@ const omitEmptyClassName = (className: ClassNameNative): ClassNameNative => {
   return omitEmptyObject(className)
 }
 
-type ExtraTwrncOptions = Required<Options>
-type ExtraTwrnc = (options: ExtraTwrncOptions) => any
+export type ExtraTwrncOptions = Required<Options>
+export type ExtraTwrnc = (options: ExtraTwrncOptions) => any
 const extraTwrnc: ExtraTwrnc[] = []
 
 const stripNative = [
@@ -386,8 +391,8 @@ extraTwrnc.push(options => {
       .split('_')
       .filter(v => v)
       .map(v => {
-        const ty = v.slice(-2)
-        if (ty !== 'px' && ty !== 'fr') {
+        const unit = v.slice(-2)
+        if (unit !== 'px' && unit !== 'fr') {
           return onUnknown(className)
         }
         const n = Number(v.slice(0, -2))
@@ -395,7 +400,7 @@ extraTwrnc.push(options => {
           return onUnknown(className)
         }
         return {
-          [ty]: n,
+          [unit]: n,
         }
       })
     if (!tracks.length) {
@@ -662,7 +667,7 @@ extraTwrnc.push(options => {
   }
 })
 
-// alpha color
+// alpha with variable
 extraTwrnc.push(options => {
   const { className, onUnknown } = options
   const matches = /(.+)\/(\d+)$/.exec(className)
@@ -705,5 +710,65 @@ extraTwrnc.push(options => {
   }
   return {
     zIndex,
+  }
+})
+
+// simple vw vh
+// and screen utils such as: w-screen = 100vw
+extraTwrnc.push(options => {
+  const { className, onUnknown } = options
+  const screen = classNameCalcScreens[className]
+  if (screen) {
+    const { unit, key } = screen
+    return {
+      calc: {
+        v: 100,
+        unit,
+      },
+      keys: [key],
+    }
+  }
+  const re = /-\[(\d+(?:\.\d+)?)(vw|vh)\]$/
+  const matches = re.exec(className)
+  if (!matches) {
+    return
+  }
+  const [, n, unit] = matches
+  const v = Number(n)
+  if (n !== v.toString()) {
+    return onUnknown(className)
+  }
+  return {
+    calc: {
+      v,
+      unit,
+    },
+    keys: classNameCalcKeys({
+      ...options,
+      classNameToNative,
+      re,
+    }),
+  }
+})
+
+// calc arbitrary value, support: px, vw, vh
+extraTwrnc.push(options => {
+  const { className, onUnknown } = options
+  const re = /-\[calc\((.+)\)\]$/
+  const matches = re.exec(className)
+  if (!matches) {
+    return
+  }
+  const calc = classNameCalc(matches[1])
+  if (!calc) {
+    return onUnknown(className)
+  }
+  return {
+    calc,
+    keys: classNameCalcKeys({
+      ...options,
+      classNameToNative,
+      re,
+    }),
   }
 })

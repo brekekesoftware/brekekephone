@@ -3,17 +3,17 @@ import type { FC } from 'react'
 import { useEffect } from 'react'
 
 import { View } from '@/rn/core/components/view'
+import { isWeb } from '@/rn/core/utils/platform'
 import { cloneDeep, isEqual } from '@/shared/lodash'
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn'
-import { isWeb } from '#/config'
 import type { Account } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
 import type { RingtoneOption } from '#/utils/get-ringtone-options'
 import { getRingtoneOptions } from '#/utils/get-ringtone-options'
-import PreviewRingtone from '#/utils/preview-ringtone'
+import { PreviewRingtone } from '#/utils/preview-ringtone'
 import {
   handleUploadRingtone,
   saveRingtoneSelection,

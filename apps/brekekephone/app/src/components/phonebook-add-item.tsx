@@ -1,42 +1,31 @@
 import { observer } from 'mobx-react'
 import { useRef, useState } from 'react'
-import { Dimensions, Platform, ScrollView } from 'react-native'
+import { Platform } from 'react-native'
 
-import { AnimatedView } from '@/rn/core/components/animated'
+import { ScrollView } from '@/rn/core/components/scroll-view'
 import { View } from '@/rn/core/components/view'
+import { isAndroid } from '@/rn/core/utils/platform'
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
-import { isAndroid, isWeb } from '#/config'
+import { AnimatedView } from '#/components/rn-class-name-components'
 import type { ItemPBForm, PickerItemOption } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnKeyboard } from '#/stores/rn-keyboard'
 import { useAnimationOnDidMount } from '#/utils/animation'
+import { useWindowDimensions } from '#/utils/rn-core-hooks'
 
 // BUG-1220: lift modal above IME on android 15+ where window doesn't shrink
 const shouldApplyKbPadding = isAndroid && Number(Platform.Version) >= 35
-
-const rnPickerOptionsStyle = {
-  height: Dimensions.get('screen').height / 3,
-} as const
-const inputFieldNameClassName = [
-  'bg-background h-10 w-full rounded-[3px] border-[0.8px] border-border px-2.5 overflow-hidden',
-  isWeb && 'py-1.25',
-]
 
 const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const refInput = useRef(null)
   const [items, updateItems] = useState(listOption)
   const [value, updateValue] = useState('')
-  const backdropCss = useAnimationOnDidMount({
-    opacity: [0, 1],
-  })
+  const { height } = useWindowDimensions()
+  const backdropCss = useAnimationOnDidMount({ opacity: [0, 1] })
   const y = useAnimationOnDidMount({
-    translateY: [Dimensions.get('screen').height, 0],
+    translateY: [height, 0],
   })
-  const innerBottom =
-    shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
-      ? 15 + RnKeyboard.keyboardHeight
-      : 15
   const onChangeText = (txt: string) => {
     if (!txt) {
       updateItems(listOption)
@@ -56,7 +45,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   const renderItem = (item: ItemPBForm, index: number) => (
     <RnTouchableOpacity
       key={index}
-      className='w-full py-1.25 border-b-[0.5px] border-[grey]'
+      className='w-full border-b-[0.5px] border-[grey] py-1.25'
       onPress={() => onPressItem(item)}
     >
       <RnText className='mx-2.5 w-full text-left'>{item.label}</RnText>
@@ -65,7 +54,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
   return (
     <View className='absolute inset-0 flex-col items-center justify-center'>
       <AnimatedView
-        className='absolute inset-0 bg-modal-overlay'
+        className='bg-modal-overlay absolute inset-0'
         style={{ opacity: backdropCss.opacity }}
       >
         <RnTouchableOpacity
@@ -74,16 +63,20 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         />
       </AnimatedView>
       <AnimatedView
-        className='absolute w-[90%] max-w-95 max-h-full'
+        className='absolute max-h-full w-[90%] max-w-95'
         style={{
-          bottom: innerBottom,
           transform: [y],
+
+          // keyboard lift (android 15+ only) uses the live IME height -> runtime
+          // arbitrary class; everywhere else it stays the static 15px bottom.
+          bottom:
+            15 +
+            (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
+              ? RnKeyboard.keyboardHeight
+              : 0),
         }}
       >
-        <View
-          className='rounded-[3px] bg-background overflow-hidden w-full px-2.5 py-2.5 items-center justify-start'
-          style={rnPickerOptionsStyle}
-        >
+        <View className='bg-background rounded-card h-[33.333vh] w-full items-center justify-start overflow-hidden px-2.5 py-2.5'>
           <RnTextInput
             // blurOnSubmit
             keyboardType='default'
@@ -93,11 +86,11 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             //  onSelectionChange={p.selectionChange}
             placeholder={intl`Enter field`}
             ref={refInput}
-            className={inputFieldNameClassName}
+            className='bg-background border-border web:py-1.25 rounded-input h-10 w-full overflow-hidden border-[0.8px] px-2.5'
             value={value}
           />
           <ScrollView
-            style={{ width: '100%' }}
+            className='w-full'
             keyboardShouldPersistTaps='always'
             keyboardDismissMode='on-drag'
           >
@@ -107,13 +100,15 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
         <View className='flex-row items-center justify-between'>
           <RnTouchableOpacity
             onPress={() => onSelect(value)}
-            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] mr-2.5 bg-primary'
+            className='bg-primary rounded-button mt-3.75 mr-2.5 flex-1 items-center justify-center py-2.5'
           >
-            <RnText bold white>OK</RnText>
+            <RnText bold white>
+              OK
+            </RnText>
           </RnTouchableOpacity>
           <RnTouchableOpacity
             onPress={ctx.contact.dismissPicker}
-            className='py-2.5 flex-1 items-center justify-center mt-3.75 rounded-[3px] bg-background ml-2.5'
+            className='bg-background rounded-button mt-3.75 ml-2.5 flex-1 items-center justify-center py-2.5'
           >
             <RnText bold className='text-foreground/80'>{intl`Cancel`}</RnText>
           </RnTouchableOpacity>

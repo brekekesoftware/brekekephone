@@ -1,5 +1,3 @@
-import { action } from 'mobx'
-
 import { updatePhoneAppli } from '#/api/update-phone-index'
 import type {
   Conference,
@@ -55,17 +53,19 @@ class Api {
   }
 
   onPalRetrying = ({ id }: Request<keyof PbxPal>) => {
-    if (id && !ctx.pbx.retryingRequests.includes(id)) {
-      ctx.pbx.retryingRequests.push(id)
+    if (id && !ctx.pbx.state.retryingRequests.includes(id)) {
+      ctx.pbx.state.retryingRequests.push(id)
     }
   }
   onPalRetryEnd = ({ id }: Request<keyof PbxPal>) => {
     if (id) {
-      ctx.pbx.retryingRequests = ctx.pbx.retryingRequests.filter(i => i !== id)
+      ctx.pbx.state.retryingRequests = ctx.pbx.state.retryingRequests.filter(
+        i => i !== id,
+      )
     }
   }
 
-  @action onPBXConnectionStarted = async () => {
+  onPBXConnectionStarted = async () => {
     console.log('PBX PN debug: set pbxState success')
     clearAlreadyHistoryMap()
     ctx.auth.pbxState = 'success'
@@ -175,7 +175,7 @@ class Api {
       .find(item => item.pbxTalkerId === ev.talker_id)
       ?.updateRecordingStatus(toBoolean(ev.status))
   }
-  @action onSIPConnectionStarted = () => {
+  onSIPConnectionStarted = () => {
     console.log('SIP PN debug: set sipState success')
     sipErrorEmitter.removeAllListeners()
     ctx.auth.sipState = 'success'
