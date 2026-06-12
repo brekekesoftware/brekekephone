@@ -74,6 +74,9 @@ public class BrekekeLpcService extends Service {
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(L.serviceIsRunning())
             .setContentText(L.serviceIsRunningInBackground())
+            // show the full body text when the user expands the notification, instead of
+            // truncating it to a single line ("…")
+            .setStyle(new Notification.BigTextStyle().bigText(L.serviceIsRunningInBackground()))
             .setContentIntent(pendingIntent)
             // hide timestamp — Notification is rebuilt on every onStartCommand (watchdog
             // reconnect, process restart), and a fresh `when` would refresh the time shown

@@ -17,7 +17,8 @@ export const isMFASupported = (pc?: PbxGetProductInfoRes) => {
   if (!c) {
     return false
   }
-  if (compareSemVer(c.version, '3.19') < 0) {
+
+  if (compareSemVer(c.version, '3.18') < 0) {
     return false
   }
   // Tier 1: explicit flag → trust admin's intent

@@ -40,7 +40,7 @@ public class L {
   public static String nCallsInBackground(int n) {
     return n
         + ("ja".equals(l)
-            ? " 他の通話はバックグランドにあります"
+            ? " 他の通話はバックグラウンドにあります"
             : (" OTHER CALL" + (n > 1 ? "S ARE" : " IS") + " IN BACKGROUND"));
   }
 
@@ -123,7 +123,7 @@ public class L {
 
   public static String serviceIsRunningInBackground() {
     return "ja".equals(l)
-        ? "ローカル接続によるフォールバックが有効になっています。タップして開いてください。停止するには、アカウント設定でプッシュ通知をオフにしてください。"
+        ? "ローカルプッシュ接続（LPC）で通話とメッセージを受信できる状態です。"
         : "Fallback local connection is active. Tap to open. To stop: turn off Push Notification in"
             + " Account Settings.";
   }
