@@ -28,6 +28,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.brekeke.phonedev.BrekekeUtils
 import com.brekeke.phonedev.BuildConfig
@@ -148,6 +149,15 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
     )
+    // AppTheme defaults to a light status bar (#E5E5E5 + dark icons) which
+    // clashes with the green-to-dark gradient of this screen in both light
+    // and dark mode - match the bars to the gradient with light icons
+    window.statusBarColor = getColor(R.color.gradient_start)
+    window.navigationBarColor = getColor(R.color.gradient_end)
+    WindowInsetsControllerCompat(window, window.decorView).run {
+      isAppearanceLightStatusBars = false
+      isAppearanceLightNavigationBars = false
+    }
     // ringing stays portrait; setCallAnswered unlocks rotation for the
     // in-call react surface (manifest has no fixed screenOrientation anymore)
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
