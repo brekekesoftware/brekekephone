@@ -17,7 +17,7 @@ import type {
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
-import { currentVersion, isWeb } from '#/config'
+import { currentVersion, isAndroid, isWeb } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { intl, intlDebug } from '#/stores/intl'
@@ -113,6 +113,28 @@ type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 //   false           — network/exception, no usable response
 type MfaStartResult = true | 'none' | { error: string } | false
 
+let foregroundPromptShown = false
+
+export const promptForegroundService = async () => {
+  if (!isAndroid) {
+    return
+  }
+  if (foregroundPromptShown) {
+    return
+  }
+  foregroundPromptShown = true
+  if ((await RnAsyncStorage.getItem('okForegroundService')) === '1') {
+    return
+  }
+  RnAlert.prompt({
+    title: intl`Fallback local connection`,
+    message: intl`This option enables a fallback Local Push Connectivity (LPC) connection for real-time call and message delivery from your Brekeke PBX when Firebase Cloud Messaging is unavailable or blocked by your network. Android will show a foreground service notification while this connection is active. You can stop it anytime by turning this option off in Account Settings.`,
+    confirmText: intl`OK and remember`,
+    dismissText: intl`OK`,
+    onConfirm: () => RnAsyncStorage.setItem('okForegroundService', '1'),
+  })
+}
+
 export class AccountStore {
   @observable appInitDone = false
   @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
@@ -145,7 +167,7 @@ export class AccountStore {
     pbxPassword: '',
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
-    pushNotificationEnabled: false,
+    pushNotificationEnabled: isWeb ? false : true,
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -235,21 +257,36 @@ export class AccountStore {
   saveAccountsToLocalStorageWithoutDebounced = async () =>
     await this.saveAccountsToLocalStorage()
 
+  private hasSignInCredential = (a?: Partial<Account>) =>
+    !!a?.pbxPassword || !!this.findDataSync(a as AccountUnique)?.accessToken
+
+  // account will start the LPC foreground service: push on + can sign in
+  private isFgsEligible = (a?: Partial<Account>) =>
+    !!a?.pushNotificationEnabled && this.hasSignInCredential(a)
+
   @action upsertAccount = async (p: Partial<Account>) => {
     const a = this.accounts.find(_ => _.id === p.id)
 
     if (!a) {
+      if (this.isFgsEligible(p)) {
+        promptForegroundService()
+      }
       this.accounts.push(p as Account)
       this.saveAccountsToLocalStorageDebounced()
       return
     }
 
     const clonedA = { ...a } // clone before assign
+    const wasFgsEligible = this.isFgsEligible(clonedA)
     // TODO: nav should be in AccountData then we dont need to update here
     const navUpdate = compareAccountPartial(a, p)
       ? null
       : { navIndex: -1, navSubMenus: [] }
     Object.assign(a, p, navUpdate)
+    // prompt only on the transition into eligible (avoids re-prompting on every sync/update)
+    if (this.isFgsEligible(a) && !wasFgsEligible) {
+      promptForegroundService()
+    }
     this.saveAccountsToLocalStorageDebounced()
     // check and sync pn token
     const phoneIndexChanged =
