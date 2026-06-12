@@ -7,6 +7,6 @@ module.exports = mergeWithArray(
   {},
   // doesnt work with # in this case
   // need to use relative imports
-  require('./src/tw-config').twConfig,
-  require('./src/twrnc-config').twrncConfig,
+  require('#/tw-config').twConfig,
+  require('#/twrnc-config').twrncConfig,
 )

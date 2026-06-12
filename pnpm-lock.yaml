@@ -25,8 +25,9 @@ patchedDependencies:
   react-native-notifications: 3b100bf1fa6963b7bad68769c8a53fc14438becf3458649ccc3ba137c1d0c4ab
   react-native-splash-screen: 823794f1fa4cfe445d047771fc37150f03a44f57686f5e478f11556ea2b116b1
   react-native-voip-push-notification: ce88f445c6564a43e241fa8e90d4a9e76403aacb4091bfb5c6a1aff04c5537f5
-  react-native-web: a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150
+  react-native-web: d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50
   react-native-webrtc: 50f0150db7ee0ab5a45bc0f9daef1b412a95658c78afc14ad4e7aff153f09ceb
+  unicorn-magic: 6dd1a034a4a071ccd0d1d6aca3e858be23c581aee4c542155710cf44984409af
 
 importers:
 
@@ -36,17 +37,17 @@ importers:
         specifier: 7.29.2
         version: 7.29.2
       '@rntwsc/devtools':
-        specifier: github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/devtools
-        version: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/devtools(17124f4a1687c88893dd18aaecb4356a)
+        specifier: github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:devtools
+        version: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:devtools(60982a01bac4abe5c2aa997e9a6f2b71)
       '@rntwsc/nodejs':
-        specifier: github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/nodejs
-        version: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared)
+        specifier: github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:nodejs
+        version: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared)
       '@rntwsc/rn':
-        specifier: github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/rn
-        version: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/rn(521ea1491d51f551626c52db7cd638ce)
+        specifier: github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:rn
+        version: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:rn(70105a1477c4b580d263a0946fa9bcc5)
       '@rntwsc/shared':
-        specifier: github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/shared
-        version: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared
+        specifier: github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:shared
+        version: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared
       json5:
         specifier: 2.2.3
         version: 2.2.3
@@ -309,13 +310,13 @@ importers:
     dependencies:
       react-native-svg-web:
         specifier: 1.0.9
-        version: 1.0.9(prop-types@15.8.1)(react-native-web@0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+        version: 1.0.9(prop-types@15.8.1)(react-native-web@0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       react-native-web:
         specifier: 0.21.2
-        version: 0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-native-web-linear-gradient:
         specifier: 1.1.2
-        version: 1.1.2(react-native-web@0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+        version: 1.1.2(react-native-web@0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       sass:
         specifier: 1.99.0
         version: 1.99.0
@@ -1166,6 +1167,10 @@ packages:
 
   '@babel/runtime@7.29.2':
     resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.28.6':
@@ -2296,8 +2301,8 @@ packages:
   '@react-navigation/routers@7.5.4':
     resolution: {integrity: sha512-5ONLNA3hKwAo3n95ENaZvWHkLeC8+7dgy8U/D+mO0Tvrih21nfxGNRqizI+qN2gxryWvYRk/pq5NsnTw6TtZbg==}
 
-  '@rntwsc/devtools@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/devtools':
-    resolution: {gitHosted: true, path: dist/devtools, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842}
+  '@rntwsc/devtools@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:devtools':
+    resolution: {gitHosted: true, path: devtools, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea}
     version: 0.0.0
     peerDependencies:
       '@react-native/babel-preset': '*'
@@ -2312,14 +2317,14 @@ packages:
       react-native-worklets: '*'
       webpack: '*'
 
-  '@rntwsc/nodejs@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/nodejs':
-    resolution: {gitHosted: true, path: dist/nodejs, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842}
+  '@rntwsc/nodejs@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:nodejs':
+    resolution: {gitHosted: true, path: nodejs, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea}
     version: 0.0.0
     peerDependencies:
       '@rntwsc/shared': '*'
 
-  '@rntwsc/rn@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/rn':
-    resolution: {gitHosted: true, path: dist/rn, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842}
+  '@rntwsc/rn@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:rn':
+    resolution: {gitHosted: true, path: rn, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea}
     version: 0.0.0
     peerDependencies:
       '@floating-ui/react': '*'
@@ -2340,8 +2345,8 @@ packages:
       tailwindcss: '*'
       twrnc: '*'
 
-  '@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared':
-    resolution: {gitHosted: true, path: dist/shared, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842}
+  '@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared':
+    resolution: {gitHosted: true, path: shared, tarball: https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea}
     version: 0.0.0
 
   '@rnx-kit/console@3.0.0':
@@ -3698,10 +3703,6 @@ packages:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
     engines: {node: '>=6'}
 
-  builtin-modules@5.1.0:
-    resolution: {integrity: sha512-c5JxaDrzwRjq3WyJkI1AGR5xy6Gr6udlt7sQPbl09+3ckB+Zo2qqQ2KhCTBr7Q8dHB43bENGYEk4xddrFH/b7A==}
-    engines: {node: '>=18.20'}
-
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -3773,9 +3774,6 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  change-case@5.4.4:
-    resolution: {integrity: sha512-HRQyTk2/YPEkt9TnUPbOpr64Uw3KOicFWPVBb+xiHvd6eBx/qPr9xqfBFDT8P2vWsvvz4jbEkfDe71W3VyNu2w==}
-
   char-regex@1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
     engines: {node: '>=10'}
@@ -3836,10 +3834,6 @@ packages:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
     engines: {node: '>=8'}
 
-  ci-info@4.4.0:
-    resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
-    engines: {node: '>=8'}
-
   circular-dependency-plugin@5.2.2:
     resolution: {integrity: sha512-g38K9Cm5WRwlaH6g03B9OEz/0qRizI+2I7n+Gz+L5DxXJAPAiWQvwlYNm1V1jkdpUv95bOe/ASm2vfi/G560jQ==}
     engines: {node: '>=6.0.0'}
@@ -3852,10 +3846,6 @@ packages:
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
-
-  clean-regexp@1.0.0:
-    resolution: {integrity: sha512-GfisEZEJvzKrmGWkvfhgzcz/BllN1USeqD2V6tg14OAOgaCD2Z/PUEuxnAZ/nPvmaHRG7a8y77p1T/IRQ4D1Hw==}
-    engines: {node: '>=4'}
 
   cli-cursor@3.1.0:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==}
@@ -4739,12 +4729,6 @@ packages:
     peerDependencies:
       eslint: ^7.5.0 || ^8.0.0
 
-  eslint-plugin-unicorn@64.0.0:
-    resolution: {integrity: sha512-rNZwalHh8i0UfPlhNwg5BTUO1CMdKNmjqe+TgzOTZnpKoi8VBgsW7u9qCHIdpxEzZ1uwrJrPF0uRb7l//K38gA==}
-    engines: {node: ^20.10.0 || >=21.0.0}
-    peerDependencies:
-      eslint: '>=9.38.0'
-
   eslint-scope@5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
     engines: {node: '>=8.0.0'}
@@ -4976,10 +4960,6 @@ packages:
   find-cache-dir@3.3.2:
     resolution: {integrity: sha512-wXZV5emFEjrridIgED11OoUKLxiYjAcqot/NJdAkOhlJ+vGzwhOAfcG5OX1jP+S0PcjEn8bdMJv+g2jwQ3Onig==}
     engines: {node: '>=8'}
-
-  find-up-simple@1.0.1:
-    resolution: {integrity: sha512-afd4O7zpqHeRyg4PfDQsXmlDe2PfdHtJt6Akt8jOWaApLOZk5JXs6VMR29lz03pRe9mpykrRCYIYxaJYcfpncQ==}
-    engines: {node: '>=18'}
 
   find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
@@ -5472,10 +5452,6 @@ packages:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
 
-  indent-string@5.0.0:
-    resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
-    engines: {node: '>=12'}
-
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
@@ -5543,10 +5519,6 @@ packages:
   is-buffer@2.0.5:
     resolution: {integrity: sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==}
     engines: {node: '>=4'}
-
-  is-builtin-module@5.0.0:
-    resolution: {integrity: sha512-f4RqJKBUe5rQkJ2eJEJBXSticB3hGbN9j0yxxMQFqIW89Jp9WYFtzfTcRlstDKVUTRzSOTLKRfO9vIztenwtxA==}
-    engines: {node: '>=18.20'}
 
   is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
@@ -6963,10 +6935,6 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  pluralize@8.0.0:
-    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
-    engines: {node: '>=4'}
-
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
@@ -7958,10 +7926,6 @@ packages:
   regexp-to-ast@0.5.0:
     resolution: {integrity: sha512-tlbJqcMHnPKI9zSrystikWKwHkBqu2a/Sgw01h3zFjvYrMxEDYHzzoMZnUrbIfpTFEsoRnnviOXNCzFiSc54Qw==}
 
-  regexp-tree@0.1.27:
-    resolution: {integrity: sha512-iETxpjK6YoRWJG5o6hXLwvjYAoW+FEZn9os0PD/b6AP6xQwsa/Y7lCVgIixBbUPMfhu+i2LtdeAqVTgGlQarfA==}
-    hasBin: true
-
   regexp.prototype.flags@1.5.4:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
@@ -8517,10 +8481,6 @@ packages:
   strip-final-newline@2.0.0:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
     engines: {node: '>=6'}
-
-  strip-indent@4.1.1:
-    resolution: {integrity: sha512-SlyRoSkdh1dYP0PzclLE7r0M9sgbFKKMFXpFRUMNuKhQSbC6VQIGzq3E0qsfvGJaUFJPGv6Ws1NZ/haTAjfbMA==}
-    engines: {node: '>=12'}
 
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
@@ -10380,6 +10340,8 @@ snapshots:
 
   '@babel/runtime@7.29.2': {}
 
+  '@babel/runtime@7.29.7': {}
+
   '@babel/template@7.28.6':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -11689,7 +11651,7 @@ snapshots:
     dependencies:
       nanoid: 3.3.12
 
-  '@rntwsc/devtools@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/devtools(17124f4a1687c88893dd18aaecb4356a)':
+  '@rntwsc/devtools@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:devtools(60982a01bac4abe5c2aa997e9a6f2b71)':
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/core': 7.29.0
@@ -11704,9 +11666,9 @@ snapshots:
       '@react-native/babel-preset': 0.85.3(@babel/core@7.29.0)
       '@react-native/metro-babel-transformer': 0.85.3(@babel/core@7.29.0)
       '@react-native/metro-config': 0.80.1(@babel/core@7.29.0)
-      '@rntwsc/nodejs': https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared)
-      '@rntwsc/rn': https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/rn(521ea1491d51f551626c52db7cd638ce)
-      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared
+      '@rntwsc/nodejs': https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared)
+      '@rntwsc/rn': https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:rn(70105a1477c4b580d263a0946fa9bcc5)
+      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared
       '@rnx-kit/metro-config': 2.2.4(@react-native/metro-config@0.80.1(@babel/core@7.29.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       '@rnx-kit/metro-resolver-symlinks': 0.3.0
       '@typescript-eslint/eslint-plugin': 8.59.3(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3)
@@ -11723,7 +11685,6 @@ snapshots:
       eslint-plugin-react-hooks: 7.1.1(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-react-refresh: 0.5.2(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-simple-import-sort: 13.0.0(eslint@10.3.0(jiti@2.7.0))
-      eslint-plugin-unicorn: 64.0.0(eslint@10.3.0(jiti@2.7.0))
       globals: 17.6.0
       next: 16.2.5(@babel/core@7.29.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.99.0)
       postcss: 8.5.14
@@ -11772,13 +11733,13 @@ snapshots:
       - tsx
       - typescript
 
-  '@rntwsc/nodejs@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared)':
+  '@rntwsc/nodejs@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:nodejs(@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-modules-commonjs': 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-typescript': 7.28.6(@babel/core@7.29.0)
       '@babel/register': 7.29.3(@babel/core@7.29.0)
-      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared
+      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared
       colors: 1.4.0
       dotenv: 17.4.2
       fast-glob: 3.3.3
@@ -11791,13 +11752,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@rntwsc/rn@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/rn(521ea1491d51f551626c52db7cd638ce)':
+  '@rntwsc/rn@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:rn(70105a1477c4b580d263a0946fa9bcc5)':
     dependencies:
       '@floating-ui/react': 0.27.19(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@floating-ui/react-native': 0.10.9(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       '@react-native-async-storage/async-storage': 2.2.0(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       '@react-navigation/native': 7.2.3(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
-      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared
+      '@rntwsc/shared': https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared
       bezier-easing: 3.0.0
       color-rgba: 3.0.0
       i18next: 26.2.0(typescript@6.0.3)
@@ -11822,7 +11783,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/c180acb54a4e00b88c5bf5728e24908ddd2bf842#path:dist/shared':
+  '@rntwsc/shared@https://codeload.github.com/namnm/rntwsc/tar.gz/36cb218a0b23dd1fec72335524fcf2c113ed51ea#path:shared':
     dependencies:
       json-stable-stringify: 1.3.0
       json-stringify-safe: 5.0.1
@@ -13099,7 +13060,7 @@ snapshots:
 
   babel-plugin-macros@3.1.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       cosmiconfig: 7.1.0
       resolve: 1.22.12
 
@@ -13214,7 +13175,7 @@ snapshots:
       '@babel/preset-env': 7.29.5(@babel/core@7.29.0)
       '@babel/preset-react': 7.28.5(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       babel-plugin-macros: 3.1.0
       babel-plugin-transform-react-remove-prop-types: 0.4.24
     transitivePeerDependencies:
@@ -13360,8 +13321,6 @@ snapshots:
 
   builtin-modules@3.3.0: {}
 
-  builtin-modules@5.1.0: {}
-
   bytes@3.1.2: {}
 
   cacheable@2.3.4:
@@ -13435,8 +13394,6 @@ snapshots:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
-
-  change-case@5.4.4: {}
 
   char-regex@1.0.2: {}
 
@@ -13521,8 +13478,6 @@ snapshots:
 
   ci-info@3.9.0: {}
 
-  ci-info@4.4.0: {}
-
   circular-dependency-plugin@5.2.2(webpack@5.106.2):
     dependencies:
       webpack: 5.106.2
@@ -13532,10 +13487,6 @@ snapshots:
   clean-css@5.3.3:
     dependencies:
       source-map: 0.6.1
-
-  clean-regexp@1.0.0:
-    dependencies:
-      escape-string-regexp: 1.0.5
 
   cli-cursor@3.1.0:
     dependencies:
@@ -14529,26 +14480,6 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-unicorn@64.0.0(eslint@10.3.0(jiti@2.7.0)):
-    dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
-      '@eslint-community/eslint-utils': 4.9.1(eslint@10.3.0(jiti@2.7.0))
-      change-case: 5.4.4
-      ci-info: 4.4.0
-      clean-regexp: 1.0.0
-      core-js-compat: 3.49.0
-      eslint: 10.3.0(jiti@2.7.0)
-      find-up-simple: 1.0.1
-      globals: 17.6.0
-      indent-string: 5.0.0
-      is-builtin-module: 5.0.0
-      jsesc: 3.1.0
-      pluralize: 8.0.0
-      regexp-tree: 0.1.27
-      regjsparser: 0.13.1
-      semver: 7.8.0
-      strip-indent: 4.1.1
-
   eslint-scope@5.1.1:
     dependencies:
       esrecurse: 4.3.0
@@ -14885,8 +14816,6 @@ snapshots:
       make-dir: 3.1.0
       pkg-dir: 4.2.0
 
-  find-up-simple@1.0.1: {}
-
   find-up@3.0.0:
     dependencies:
       locate-path: 3.0.0
@@ -15110,7 +15039,7 @@ snapshots:
       ignore: 7.0.5
       is-path-inside: 4.0.0
       slash: 5.1.0
-      unicorn-magic: 0.4.0
+      unicorn-magic: 0.4.0(patch_hash=6dd1a034a4a071ccd0d1d6aca3e858be23c581aee4c542155710cf44984409af)
 
   globjoin@0.1.4: {}
 
@@ -15404,8 +15333,6 @@ snapshots:
 
   imurmurhash@0.1.4: {}
 
-  indent-string@5.0.0: {}
-
   inflight@1.0.6:
     dependencies:
       once: 1.4.0
@@ -15477,10 +15404,6 @@ snapshots:
   is-buffer@1.1.6: {}
 
   is-buffer@2.0.5: {}
-
-  is-builtin-module@5.0.0:
-    dependencies:
-      builtin-modules: 5.1.0
 
   is-callable@1.2.7: {}
 
@@ -16673,7 +16596,7 @@ snapshots:
 
   metro-runtime@0.82.5:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       flow-enums-runtime: 0.0.6
 
   metro-source-map@0.82.5:
@@ -17272,8 +17195,6 @@ snapshots:
   pkg-up@3.1.0:
     dependencies:
       find-up: 3.0.0
-
-  pluralize@8.0.0: {}
 
   possible-typed-array-names@1.1.0: {}
 
@@ -17947,7 +17868,7 @@ snapshots:
 
   react-i18next@17.0.8(i18next@26.2.0(typescript@6.0.3))(react-dom@19.1.0(react@19.1.0))(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)(typescript@6.0.3):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       html-parse-stringify: 3.0.1
       i18next: 26.2.0(typescript@6.0.3)
       react: 19.1.0
@@ -18089,11 +18010,11 @@ snapshots:
       - supports-color
       - typescript
 
-  react-native-svg-web@1.0.9(prop-types@15.8.1)(react-native-web@0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+  react-native-svg-web@1.0.9(prop-types@15.8.1)(react-native-web@0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
     dependencies:
       prop-types: 15.8.1
       react: 19.1.0
-      react-native-web: 0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-native-web: 0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   react-native-svg@15.15.4(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -18112,13 +18033,13 @@ snapshots:
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
-  react-native-web-linear-gradient@1.1.2(react-native-web@0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
+  react-native-web-linear-gradient@1.1.2(react-native-web@0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
     dependencies:
-      react-native-web: 0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-native-web: 0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
-  react-native-web@0.21.2(patch_hash=a1a9887178de14c0c74c598b821cc21f2895890db5048494583b3bacd588d150)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  react-native-web@0.21.2(patch_hash=d0c41018d8159836f439aba99b69de866a9868fb3aa5ddcee797432271138b50)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@react-native/normalize-colors': 0.74.89
       fbjs: 3.0.5
       inline-style-prefixer: 7.0.1
@@ -18366,8 +18287,6 @@ snapshots:
   regex-parser@2.3.1: {}
 
   regexp-to-ast@0.5.0: {}
-
-  regexp-tree@0.1.27: {}
 
   regexp.prototype.flags@1.5.4:
     dependencies:
@@ -19064,8 +18983,6 @@ snapshots:
 
   strip-final-newline@2.0.0: {}
 
-  strip-indent@4.1.1: {}
-
   strip-json-comments@3.1.1: {}
 
   strnum@1.1.2: {}
@@ -19540,7 +19457,7 @@ snapshots:
 
   unicode-property-aliases-ecmascript@2.2.0: {}
 
-  unicorn-magic@0.4.0: {}
+  unicorn-magic@0.4.0(patch_hash=6dd1a034a4a071ccd0d1d6aca3e858be23c581aee4c542155710cf44984409af): {}
 
   unified@9.2.2:
     dependencies:
@@ -19931,7 +19848,7 @@ snapshots:
       '@apideck/better-ajv-errors': 0.3.7(ajv@8.20.0)
       '@babel/core': 7.29.0
       '@babel/preset-env': 7.29.5(@babel/core@7.29.0)
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@rollup/plugin-babel': 5.3.1(@babel/core@7.29.0)(@types/babel__core@7.20.5)(rollup@2.80.0)
       '@rollup/plugin-node-resolve': 11.2.1(rollup@2.80.0)
       '@rollup/plugin-replace': 2.4.2(rollup@2.80.0)

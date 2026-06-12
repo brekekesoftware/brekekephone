@@ -5,6 +5,7 @@ require('@rntwsc/nodejs/entrypoint')({
 const config = require('@rntwsc/devtools/metro-config').config({
   dir: __dirname,
 })
+
 module.exports = config
 
 const { path } = require('@rntwsc/nodejs/path')

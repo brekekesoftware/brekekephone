@@ -21,10 +21,10 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.2",
-    "@rntwsc/devtools": "github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/devtools",
-    "@rntwsc/nodejs": "github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/nodejs",
-    "@rntwsc/rn": "github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/rn",
-    "@rntwsc/shared": "github:namnm/rntwsc#c180acb54a4e00b88c5bf5728e24908ddd2bf842&path:dist/shared",
+    "@rntwsc/devtools": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:devtools",
+    "@rntwsc/nodejs": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:nodejs",
+    "@rntwsc/rn": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:rn",
+    "@rntwsc/shared": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:shared",
     "json5": "2.2.3",
     "tsconfig-paths": "4.2.0"
   },

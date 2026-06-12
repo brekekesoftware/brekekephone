@@ -21,14 +21,15 @@ overrides:
 patchedDependencies:
   '@react-native-documents/picker': patches/@react-native-documents__picker.patch
   '@react-native/gradle-plugin': patches/@react-native__gradle-plugin.patch
-  eslint-plugin-import: patches/eslint-plugin-import.patch
-  eslint-plugin-react: patches/eslint-plugin-react.patch
+  eslint-plugin-import: 'node_modules/@rntwsc/devtools/patches/eslint-plugin-import.patch'
+  eslint-plugin-react: 'node_modules/@rntwsc/devtools/patches/eslint-plugin-react.patch'
   event-target-shim: patches/event-target-shim.patch
   jssip: patches/jssip.patch
   react-native-callkeep: patches/react-native-callkeep.patch
   react-native-notifications: patches/react-native-notifications.patch
   react-native-splash-screen: patches/react-native-splash-screen.patch
   react-native-voip-push-notification: patches/react-native-voip-push-notification.patch
-  react-native-web: patches/react-native-web.patch
+  react-native-web: 'node_modules/@rntwsc/rn/patches/react-native-web.patch'
   react-native-webrtc: patches/react-native-webrtc.patch
   react-native: patches/react-native.patch
+  unicorn-magic: 'node_modules/@rntwsc/nodejs/patches/unicorn-magic.patch'
