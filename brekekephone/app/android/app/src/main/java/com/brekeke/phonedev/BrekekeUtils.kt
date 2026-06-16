@@ -38,7 +38,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import io.wazo.callkeep.RNCallKeepModule
 import io.wazo.callkeep.VoiceConnectionService
@@ -366,22 +365,11 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
 
     fun onActivityDestroy(uuid: String) {
       activitiesSize--
-      updateBtnUnlockLabels()
       try {
         destroyedUuids[uuid] = "destroyed"
       } catch (_: Exception) {}
       if (activitiesSize == 0 || anyCallAnswered() || allCallsDestroyed()) Ringtone.stop()
       if (activitiesSize == 0 && jsCallsSize == 0) releaseWakeLock()
-    }
-
-    fun updateBtnUnlockLabels() {
-      try {
-        for (a in activities) {
-          try {
-            a.updateBtnUnlockLabel()
-          } catch (_: Exception) {}
-        }
-      } catch (_: Exception) {}
     }
 
     fun checkReadPhonePermission(): Boolean {
@@ -491,19 +479,6 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
   }
 
   @ReactMethod
-  fun updateAnyHoldLoading(isAnyHoldLoading: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        for (a in activities) {
-          try {
-            a.updateEnableSwitchCall(!isAnyHoldLoading)
-          } catch (_: Exception) {}
-        }
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
   fun toast(uuid: String, m: String, d: String, t: String) {
     UiThreadUtil.runOnUiThread {
       try {
@@ -521,15 +496,6 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
             a.updateConnectionStatus(msg, isConnFailure)
           } catch (_: Exception) {}
         }
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun updateRqStatus(uuid: String, name: String, isLoading: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.updateBtnRqStatus(name, isLoading)
       } catch (_: Exception) {}
     }
   }
@@ -646,103 +612,15 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
   @ReactMethod fun clearProcessedPnIds() = processedPnIds.clear()
 
   @ReactMethod
-  fun setPbxConfig(jsonStr: String) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        if (!jsonStr.startsWith("{")) return@runOnUiThread
-        val o = JSONObject(jsonStr)
-        for (a in activities) {
-          try {
-            a.pbxConfig = o
-            a.updateCallConfig()
-          } catch (_: Exception) {}
-        }
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setCallConfig(uuid: String, jsonStr: String) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        if (!jsonStr.startsWith("{")) return@runOnUiThread
-        val a = at(uuid)!!
-        a.callConfig = JSONObject(jsonStr)
-        a.updateCallConfig()
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
   fun setIsAppActive(b1: Boolean, b2: Boolean) {
     isAppActive = b1
     isAppActiveLocked = b2
   }
 
   @ReactMethod
-  fun setTalkingAvatar(uuid: String, url: String, isLarge: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setImageTalkingUrl(url, isLarge)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
   fun setJsCallsSize(n: Int) {
     if (n > 0) acquireWakeLock() else if (activitiesSize == 0) releaseWakeLock()
     jsCallsSize = n
-    UiThreadUtil.runOnUiThread { updateBtnUnlockLabels() }
-  }
-
-  @ReactMethod
-  fun setRecordingStatus(uuid: String, isRecording: Boolean) {
-    Emitter.debug("setRecordingStatus uuid=$uuid isRecording=$isRecording")
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setRecordingStatus(isRecording)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setIsVideoCall(uuid: String, isVideoCall: Boolean, isMuted: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setBtnVideoSelected(isVideoCall, isMuted)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setOnHold(uuid: String, holding: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setBtnHoldSelected(holding)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setIsMute(uuid: String, isMute: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setBtnMuteSelected(isMute)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setSpeakerStatus(isSpeakerOn: Boolean) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        for (a in activities) {
-          try {
-            a.setBtnSpeakerSelected(isSpeakerOn)
-          } catch (_: Exception) {}
-        }
-      } catch (_: Exception) {}
-    }
   }
 
   @ReactMethod
@@ -897,60 +775,6 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
       }
     } catch (e: Exception) {
       Emitter.error("disableLPC", e.message)
-    }
-  }
-
-  @ReactMethod
-  fun setRemoteStreams(uuid: String, streams: ReadableArray) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setRemoteStreams(streams)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setStreamActive(uuid: String, stream: ReadableMap) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setStreamActive(stream)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setLocalStream(uuid: String, streamUrl: String) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setLocalStream(streamUrl)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun addStreamToView(uuid: String, stream: ReadableMap) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.addStreamToView(stream)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun removeStreamFromView(uuid: String, vId: String) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.removeStreamFromView(vId)
-      } catch (_: Exception) {}
-    }
-  }
-
-  @ReactMethod
-  fun setOptionsRemoteStream(uuid: String, arr: ReadableArray) {
-    UiThreadUtil.runOnUiThread {
-      try {
-        at(uuid)!!.setOptionsRemoteStream(arr)
-      } catch (_: Exception) {}
     }
   }
 

@@ -27,16 +27,8 @@ type TBrekekeUtils = {
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
   clearProcessedPnIds(): void
-  setPbxConfig(jsonStr: string): void
-  setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
-  setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
   setJsCallsSize(n: number): void
-  setRecordingStatus(uuid: string, recording: boolean): void
-  setIsVideoCall(uuid: string, isVideoCall: boolean, isMuted: boolean): void
-  setOnHold(uuid: string, holding: boolean): void
-  setIsMute(uuid: string, isMute: boolean): void
-  setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
   setPhoneappliEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
@@ -52,13 +44,6 @@ type TBrekekeUtils = {
   insertCallLog(number: string, type: CallLogType): void
   setUserAgentConfig(userAgentConfig: string): void
   setAudioMode: (mode: number) => void
-  // android video conference
-  setRemoteStreams: (uuid: string, streams: RemoteStream[]) => void
-  setStreamActive: (uuid: string, s: RemoteStream) => void
-  setLocalStream: (uuid: string, streamUrl: string) => void
-  addStreamToView: (uuid: string, s: RemoteStream) => void
-  removeStreamFromView: (uuid: string, vId: string) => void
-  setOptionsRemoteStream: (uuid: string, d: RemoteStreamOption[]) => void
   // android ringtone
   getRingtoneOptions(): Promise<string[]>
   startRingtone(
@@ -72,9 +57,7 @@ type TBrekekeUtils = {
   setShouldSkipPlayRingtone(s: boolean): void
   shouldPlayRingtone(): Promise<boolean>
   // android pending cache and retry pal
-  updateRqStatus(uuid: string, name: string, isLoading: boolean): void
   updateConnectionStatus(msg: string, isConnFailure: boolean): void
-  updateAnyHoldLoading(isAnyHoldLoading: boolean): void
   toast(
     uuid: string,
     m: string,
@@ -141,16 +124,8 @@ const Polyfill: TBrekekeUtils = {
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
   clearProcessedPnIds: () => undefined,
-  setPbxConfig: () => undefined,
-  setCallConfig: () => undefined,
   setIsAppActive: () => undefined,
-  setTalkingAvatar: () => undefined,
   setJsCallsSize: () => undefined,
-  setRecordingStatus: () => undefined,
-  setIsVideoCall: () => undefined,
-  setOnHold: () => undefined,
-  setIsMute: () => undefined,
-  setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
   setPhoneappliEnabled: () => undefined,
   onCallConnected: () => undefined,
@@ -162,13 +137,6 @@ const Polyfill: TBrekekeUtils = {
   insertCallLog: () => undefined,
   setUserAgentConfig: () => undefined,
   setAudioMode: () => undefined,
-  // android video conference
-  setRemoteStreams: () => undefined,
-  setStreamActive: () => undefined,
-  setLocalStream: () => undefined,
-  addStreamToView: () => undefined,
-  removeStreamFromView: () => undefined,
-  setOptionsRemoteStream: () => undefined,
   // android ringtone
   getRingtoneOptions: () => Promise.resolve(staticRingtones as any),
   startRingtone: () => Promise.resolve(false),
@@ -176,9 +144,7 @@ const Polyfill: TBrekekeUtils = {
   setShouldSkipPlayRingtone: () => undefined,
   shouldPlayRingtone: () => Promise.resolve(false),
   // android pending cache and retry pal
-  updateRqStatus: () => undefined,
   updateConnectionStatus: () => undefined,
-  updateAnyHoldLoading: () => undefined,
   toast: () => undefined,
 
   // ==========================================================================
@@ -232,11 +198,3 @@ export const staticRingtones = [
   'incallmanager_ringtone',
   // strong typing to make sure not missing static ringtone mp3
 ] as const
-
-export type RemoteStream = {
-  vId: string
-  streamUrl: string
-}
-export type RemoteStreamOption = Pick<RemoteStream, 'vId'> & {
-  enableVideo: boolean
-}

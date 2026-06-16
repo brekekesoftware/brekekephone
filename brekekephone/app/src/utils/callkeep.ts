@@ -318,18 +318,8 @@ export const setupCallKeepEvents = async () => {
   })
 
   eventEmitter.addListener('answerCall', async (uuid: string) => {
-    // should update the native android UI here to fix a case with auto answer
     const c = ctx.call.calls.find(_ => _.callkeepUuid === uuid && _.answered)
     if (c) {
-      if (isAndroid) {
-        // with auto answer, talkingAvatar takes too long to update
-        BrekekeUtils.setTalkingAvatar(
-          uuid,
-          c.talkingImageUrl,
-          c.partyImageSize === 'large',
-        )
-        await waitTimeout(17)
-      }
       BrekekeUtils.onCallConnected(uuid)
     }
     ctx.call.onCallKeepAnswerCall(uuid.toUpperCase())

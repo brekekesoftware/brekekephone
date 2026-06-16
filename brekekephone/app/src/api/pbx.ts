@@ -1,5 +1,4 @@
 import { isAndroid } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
 import { debounce, random } from '@rntwsc/shared/lodash'
 import EventEmitter from 'eventemitter3'
 import { makeAutoObservable } from 'mobx'
@@ -15,7 +14,7 @@ import {
   replacePbxTokenUsingSessParam,
   replaceUrlWithoutPbxToken,
 } from '#/api/custom-page'
-import { parseCallParams, parsePalParams } from '#/api/parse-params-with-prefix'
+import { parsePalParams } from '#/api/parse-params-with-prefix'
 import type { PnParams, PnParamsNew } from '#/api/pn-config'
 import { PnCommand, PnServiceId } from '#/api/pn-config'
 import { suppressErr } from '#/api/suppress-err'
@@ -35,7 +34,6 @@ import type { PbxUser, Phonebook } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BackgroundTimer } from '#/utils/background-timer'
-import { BrekekeUtils } from '#/utils/brekeke-utils'
 import { isMFASupported } from '#/utils/mfa-utils'
 import { encodeParkNumber } from '#/utils/park-number'
 import { toBoolean } from '#/utils/string'
@@ -958,8 +956,6 @@ export class PBX extends EventEmitter {
     if (!this.isMainInstance) {
       return config
     }
-
-    BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))
 
     ctx.auth.pbxConfig = config
     ctx.auth.setUserAgentConfig(config['webphone.http.useragent.product'])

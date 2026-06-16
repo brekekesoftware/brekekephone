@@ -171,7 +171,6 @@ export class Call {
     }
     RNCallKeep.setCurrentCallActive(this.callkeepUuid)
     RNCallKeep.setOnHold(this.callkeepUuid, false)
-    BrekekeUtils.setOnHold(this.callkeepUuid, false)
   }
 
   isAboutToHangup = false
@@ -225,12 +224,6 @@ export class Call {
       ctx.sip.enableLocalVideo(this.id)
     }
     ctx.sip.setMutedVideo(this.mutedVideo, this.id)
-    // update UI for IncomingCallActivity
-    BrekekeUtils.setIsVideoCall(
-      this.callkeepUuid,
-      this.localVideoEnabled,
-      this.mutedVideo,
-    )
   }
   toggleSwitchCamera = () => {
     if (this.localVideoEnabled && this.mutedVideo) {
@@ -270,7 +263,6 @@ export class Call {
     this.muted = !this.muted
     if (this.callkeepUuid) {
       RNCallKeep.setMutedCall(this.callkeepUuid, this.muted)
-      BrekekeUtils.setIsMute(this.callkeepUuid, this.muted)
     }
     return ctx.sip.setMuted(this.muted, this.id)
   }
@@ -278,11 +270,9 @@ export class Call {
   recording = false
   updateRecordingStatus = (status: boolean) => {
     this.recording = status
-    BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
   }
   toggleRecording = () => {
     this.rqLoadings['record'] = true
-    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', true)
     const fn = this.recording
       ? ctx.pbx.stopRecordingTalker
       : ctx.pbx.startRecordingTalker
@@ -293,7 +283,6 @@ export class Call {
   }
   onToggleRecordingFailure = (err: Error | boolean) => {
     this.rqLoadings['record'] = false
-    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'record', false)
     if (err === true) {
       return
     }
@@ -334,15 +323,11 @@ export class Call {
         return
       }
       this.rqLoadings[k] = false
-      if (this.callkeepUuid) {
-        BrekekeUtils.updateRqStatus(this.callkeepUuid, k, false)
-      }
     })
   }
 
   toggleHoldLoading = (isLoading: boolean) => {
     this.rqLoadings['hold'] = isLoading
-    BrekekeUtils.updateRqStatus(this.callkeepUuid, 'hold', isLoading)
   }
 
   toggleHold = async () => {
@@ -364,7 +349,6 @@ export class Call {
 
   onToggleHoldSuccess = () => {
     this.toggleHoldLoading(false)
-    BrekekeUtils.setOnHold(this.callkeepUuid, this.holding)
     if (!this.holding && !this.mutedVideo) {
       ctx.sip.enableLocalVideo(this.id)
     }
@@ -405,7 +389,6 @@ export class Call {
     // TODO:
     // might need to check if there wont be multiple calls holding=false
     RNCallKeep.setOnHold(this.callkeepUuid, holding)
-    BrekekeUtils.setOnHold(this.callkeepUuid, holding)
   }
   setHoldWithoutCallKeep = async (hold: boolean) => {
     const act = hold ? 'hold' : 'unhold'

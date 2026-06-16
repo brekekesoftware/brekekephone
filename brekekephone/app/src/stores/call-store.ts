@@ -1,5 +1,4 @@
 import { isAndroid, isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
 import { debounce, isEmpty } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
@@ -154,7 +153,6 @@ export class CallStore {
     // assign the data and config
     if (c) {
       c.callkeepUuid = uuid
-      BrekekeUtils.setCallConfig(uuid, jsonSafe(c.callConfig))
     }
     // check if call is rejected already
     const rejected = this.isCallRejected({
@@ -367,11 +365,6 @@ export class CallStore {
       phoneappliAvatar: res?.image_url,
       phoneappliUsername: res?.display_name,
     })
-    BrekekeUtils.setTalkingAvatar(
-      c.callkeepUuid,
-      c.talkingImageUrl,
-      c.partyImageSize === 'large',
-    )
   }
   upsertCall = async (
     // partial
@@ -393,34 +386,9 @@ export class CallStore {
         Object.assign(e.callConfig, p.callConfig)
       }
       delete p.callConfig
-      if (e.callkeepUuid) {
-        BrekekeUtils.setCallConfig(e.callkeepUuid, jsonSafe(e.callConfig))
-      }
       if (p.rawSession && e.rawSession) {
         Object.assign(e.rawSession, p.rawSession)
         delete p.rawSession
-      }
-
-      if (e.incoming && e.callkeepUuid) {
-        if (
-          p.localStreamObject &&
-          p.localStreamObject !== e.localStreamObject
-        ) {
-          BrekekeUtils.setLocalStream(
-            e.callkeepUuid,
-            p.localStreamObject.toURL(),
-          )
-        }
-        if (p.videoSessionId) {
-          if (p.remoteVideoStreamObject) {
-            BrekekeUtils.addStreamToView(e.callkeepUuid, {
-              vId: p.videoSessionId,
-              streamUrl: p.remoteVideoStreamObject.toURL(),
-            })
-          } else {
-            BrekekeUtils.removeStreamFromView(e.callkeepUuid, p.videoSessionId)
-          }
-        }
       }
 
       // tied to sessionStatus transition, not to `e.answered` transition,
@@ -432,7 +400,6 @@ export class CallStore {
         e.answerCallKeep()
         p.answeredAt = now
         this.prevDisplayingCallId = e.id
-        BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
 
         // auto mute video if the call is answered and local video is not enabled or incoming call
         if (
@@ -492,46 +459,6 @@ export class CallStore {
         })
       }
 
-      if (e.talkingImageUrl && e.talkingImageUrl.length > 0) {
-        BrekekeUtils.setTalkingAvatar(
-          e.callkeepUuid,
-          e.talkingImageUrl,
-          e.partyImageSize === 'large',
-        )
-      }
-
-      if (
-        e.incoming &&
-        e.callkeepUuid &&
-        typeof e.localVideoEnabled === 'boolean'
-      ) {
-        BrekekeUtils.setIsVideoCall(
-          e.callkeepUuid,
-          e.localVideoEnabled,
-          e.mutedVideo,
-        )
-      }
-
-      if (e.incoming && e.callkeepUuid) {
-        const options = Object.entries(e.remoteUserOptionsTable).map(
-          ([key, v]) => {
-            const itemExisted = e.videoClientSessionTable.find(
-              item => item.user === key,
-            )
-            if (itemExisted) {
-              return {
-                vId: itemExisted.vId,
-                enableVideo: checkMutedRemoteUser(v.muted),
-              }
-            }
-            return {
-              vId: '',
-              enableVideo: false,
-            }
-          },
-        )
-        BrekekeUtils.setOptionsRemoteStream(e.callkeepUuid, options)
-      }
       BrekekeUtils.setShouldSkipPlayRingtone(this.hasActiveCall())
       return
     }
@@ -1338,7 +1265,6 @@ export class CallStore {
       return
     }
     RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
-    BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
   newVoicemailCount = 0
   setNewVoicemailCount = (n: number) => {

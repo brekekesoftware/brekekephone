@@ -42,13 +42,10 @@ import com.brekeke.phonedev.utils.Ringtone
 import com.brekeke.phonedev.utils.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
 import io.wazo.callkeep.RNCallKeepModule
 import java.util.Timer
 import java.util.TimerTask
-import org.json.JSONObject
 
 // incoming call screen
 open class IncomingCallActivity : Activity(), View.OnClickListener {
@@ -79,7 +76,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
   var callerName: String? = null
   var avatar: String? = null
   var avatarSize: String? = null
-  var talkingAvatar: String? = null
   var ringtone: String? = null
   var username: String? = null
   var tenant: String? = null
@@ -90,8 +86,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
   var answered = false
   var autoAnswer = false
 
-  var pbxConfig: JSONObject? = null
-  var callConfig: JSONObject? = null
   val PERMISSIONS_REQUEST_CODE = 1222
 
   fun updateConnectionStatus(msg: String, isFailure: Boolean) {
@@ -218,7 +212,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     } else {
       updateHeader()
     }
-    updateCallConfig()
   }
 
   override fun onNewIntent(intent: Intent) {
@@ -295,12 +288,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     }
   }
 
-  open fun updateEnableSwitchCall(isEnabled: Boolean) {}
-
-  open fun updateBtnRqStatus(name: String, isLoading: Boolean) {}
-
-  open fun updateCallConfig() {}
-
   fun destroyAvatarWebView() {
     try {
       webViewAvatar.settings.javaScriptEnabled = false
@@ -366,44 +353,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
   fun updateLabels() {
     txtIncomingCall.text = L.incomingCall()
   }
-
-  open fun initWebrtcVideo() {}
-
-  open fun updateDisplayVideo(isVideoCall: Boolean) {}
-
-  open fun setRemoteVideoStreamUrl(url: String) {}
-
-  open fun setRemoteStreams(streams: ReadableArray) {}
-
-  open fun addStreamToView(stream: ReadableMap) {}
-
-  open fun removeStreamFromView(vId: String) {}
-
-  open fun setStreamActive(stream: ReadableMap) {}
-
-  fun updateStreamActive(vId: String, streamUrl: String) {
-    Emitter.emit("updateStreamActive", vId)
-  }
-
-  open fun setLocalStream(streamUrl: String) {}
-
-  fun onBtnSwitchCamera(v: View) {
-    Emitter.emit("switchCamera", uuid!!)
-  }
-
-  open fun toggleCallManageControls() {}
-
-  open fun showCallManageControls() {}
-
-  open fun hideCallManageControls() {}
-
-  open fun updateLayoutManagerCall() {}
-
-  open fun updateLayoutManagerCallLoading() {}
-
-  open fun updateLayoutManagerCallLoaded() {}
-
-  open fun handleShowAvatarTalking() {}
 
   private fun showRequestPermissions() {
     val builder = AlertDialog.Builder(this)
@@ -486,8 +435,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     Emitter.emit("navChat", uuid!!)
     openMainActivity()
   }
-
-  open fun onViewCallManageClick(v: View) {}
 
   fun onBtnUnlockClick(v: View) {
     Emitter.emit("showBackgroundCall", uuid!!)
@@ -596,30 +543,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     startTimer(System.currentTimeMillis())
   }
 
-  open fun disableAvatarTalking() {}
-
-  open fun enableAvatarTalking() {}
-
-  open fun updateUILayoutManagerCall(isVideoCall: Boolean) {}
-
-  open fun setBtnVideoSelected(isVideoCall: Boolean, isMuted: Boolean) {}
-
-  open fun checkVideoLocalEnable() {}
-
-  open fun setOptionsRemoteStream(arr: ReadableArray) {}
-
-  open fun setBtnHoldSelected(holding: Boolean) {}
-
-  open fun setBtnMuteSelected(isMute: Boolean) {}
-
-  open fun setBtnSpeakerSelected(isSpeakerOn: Boolean) {}
-
-  open fun setImageTalkingUrl(url: String, isLarge: Boolean) {
-    talkingAvatar = url
-  }
-
-  open fun setRecordingStatus(isRecording: Boolean) {}
-
   fun forceFinish() {
     destroyed = true
     try {
@@ -643,12 +566,6 @@ open class IncomingCallActivity : Activity(), View.OnClickListener {
     i.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
     startActivity(i)
   }
-
-  open fun updateBtnUnlockLabel() {}
-
-  open fun updateMuteBtnLabel() {}
-
-  open fun updateBtnHoldLabel() {}
 
   override fun dispatchKeyEvent(e: KeyEvent): Boolean {
     val k = e.keyCode
