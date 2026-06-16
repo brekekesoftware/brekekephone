@@ -115,6 +115,12 @@ type MfaStartResult = true | 'none' | { error: string } | false
 
 let foregroundPromptShown = false
 
+// reset the per-session guard so the prompt can show again in a new app session — called from the
+// onDestroyMainActivity handler (same place deeplink resets its first-open flag)
+export const resetForegroundPrompt = () => {
+  foregroundPromptShown = false
+}
+
 export const promptForegroundService = async () => {
   if (!isAndroid) {
     return
