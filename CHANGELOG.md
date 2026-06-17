@@ -1,6 +1,9 @@
 #### 2.17.8
 
 - Hot fix android google play store permission policy
+- Hot fix android lpc foreground service disclosure prompt and notification (issue 1233)
+- Fix push notification should be enabled by default for mobile accounts
+- Update Japanese text for LPC foreground service disclosure and notification
 
 #### 2.17.7
 
