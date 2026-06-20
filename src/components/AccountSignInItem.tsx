@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
 import {
   mdiAccountCircleOutline,
@@ -43,6 +43,14 @@ const css = StyleSheet.create({
     bottom: 15,
     left: 15,
     right: 15,
+  },
+  AccountSignInItem_Loading: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: v.borderRadius,
+    backgroundColor: 'black',
+    opacity: 0.3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })
 
@@ -135,7 +143,6 @@ export const AccountSignInItem: FC<{
         onValueChange={(e: boolean) => onSwitchEnableNotification(e)}
         type='Switch'
         value={a.pushNotificationEnabled}
-        loading={isLoading}
       />
       <Field
         label='UC'
@@ -170,6 +177,11 @@ export const AccountSignInItem: FC<{
           onNextText={intl`SIGN IN`}
         />
       </View>
+      {isLoading && (
+        <View style={css.AccountSignInItem_Loading}>
+          <ActivityIndicator size='small' color='white' />
+        </View>
+      )}
     </View>
   )
 })
