@@ -26,6 +26,7 @@ RCT_EXTERN_METHOD(stopRBT
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(setProximityMonitoring : (BOOL)enabled)
+RCT_EXTERN_METHOD(setMainOrientation : (NSString *)mode)
 RCT_EXTERN_METHOD(systemUptimeMs
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)

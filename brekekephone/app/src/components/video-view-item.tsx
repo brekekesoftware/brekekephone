@@ -50,29 +50,29 @@ export const VideoViewItem = observer((props: VideoViewItemProps) => {
             zOrder={1}
           />
         </RnTouchableOpacity>
-      </View>
-      {showSwitchCamera && c && (
-        <View className='bg-modal-overlay absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly'>
-          <RnTouchableOpacity
-            onPress={toggleVideo}
-            className='h-7 w-7 items-center justify-center'
-          >
-            <RnIcon
-              path={
-                c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
-              }
-              color='white'
-            />
-          </RnTouchableOpacity>
+        {showSwitchCamera && c && (
+          <View className='bg-modal-overlay absolute bottom-0 left-0 z-1 w-full flex-row items-center justify-evenly'>
+            <RnTouchableOpacity
+              onPress={toggleVideo}
+              className='h-7 w-7 items-center justify-center'
+            >
+              <RnIcon
+                path={
+                  c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
+                }
+                color='white'
+              />
+            </RnTouchableOpacity>
 
-          <RnTouchableOpacity
-            onPress={onSwitchCamera}
-            className='h-7 w-7 items-center justify-center'
-          >
-            <RnIcon path={mdiCameraRotate} color='white' />
-          </RnTouchableOpacity>
-        </View>
-      )}
+            <RnTouchableOpacity
+              onPress={onSwitchCamera}
+              className='h-7 w-7 items-center justify-center'
+            >
+              <RnIcon path={mdiCameraRotate} color='white' />
+            </RnTouchableOpacity>
+          </View>
+        )}
+      </View>
     </View>
   )
 })

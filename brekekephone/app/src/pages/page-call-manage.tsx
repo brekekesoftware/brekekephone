@@ -104,6 +104,15 @@ export const PageCallManage = observer(
   ] = useState(false)
   const [hasJavaPn, setHasJavaPn] = useState(!embedded)
   const landscape = useOrientation() === EOrientation.Landscape
+  // Native landscape uses a compact floating controls layout. Web keeps the
+  // portrait flow for now; its landscape pass will be handled separately.
+  const isLandscape = landscape && !isWeb
+  const ctrlBtnSize = isLandscape ? 35 : 40
+  const hangupSize = isLandscape ? 35 : 40
+  const ctrlBtnPadding = isLandscape ? 'p-2' : undefined
+  const ctrlBtnContainerClassName = isLandscape
+    ? 'mx-0 mb-1.25'
+    : 'mb-2.5'
 
   const appStateSubscriptionRef = useRef<NativeEventSubscription | undefined>(
     undefined,
@@ -262,6 +271,7 @@ export const PageCallManage = observer(
       </View>
       <CallVideosCarousel
         call={c}
+        landscape={isLandscape}
         showButtonsInVideoCall={showButtonsInVideoCall}
         onButtonsInVideo={toggleButtons}
       />
@@ -377,7 +387,15 @@ export const PageCallManage = observer(
     return (
       <Container
         onPress={c.localVideoEnabled ? toggleButtons : undefined}
-        className={['z-100 self-stretch', isHideButtons && 'mt-7.5']}
+        className={[
+          'z-100',
+          // landscape video: a narrow, translucent bordered pill so the 8
+          // buttons wrap onto 2 rows and the video stays visible behind it.
+          isLandscape
+            ? 'w-88 max-w-full self-center px-0.5 py-0.5'
+            : 'self-stretch',
+          isHideButtons && 'mt-7.5',
+        ]}
       >
         {n > 0 && (
           <FieldButton
@@ -392,7 +410,7 @@ export const PageCallManage = observer(
             }
           />
         )}
-        <View className='pt-2.5' />
+        <View className={isLandscape ? 'pt-1' : 'pt-2.5'} />
         <View
           className={[
             'w-full flex-row flex-wrap items-center justify-center self-center',
@@ -402,36 +420,36 @@ export const PageCallManage = observer(
         >
           {!isBtnHidden('transfer') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
-              className='bg-background text-foreground'
+              className={['bg-background text-foreground', ctrlBtnPadding]}
               name={intl`TRANSFER`}
               noborder
               onPress={() => navOnMain(ctx.nav.goToPageCallTransferChooseUser)}
               path={mdiCallSplit}
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('park') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
-              className='bg-background text-foreground'
+              className={['bg-background text-foreground', ctrlBtnPadding]}
               name={intl`PARK`}
               noborder
               onPress={() => navOnMain(ctx.nav.goToPageCallParksOngoing)}
               path={mdiAlphaPCircle}
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('video') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
               className={
                 c.localVideoEnabled && !c.mutedVideo
-                  ? [activeBg, 'text-white']
-                  : 'bg-background text-foreground'
+                  ? [activeBg, 'text-white', ctrlBtnPadding]
+                  : ['bg-background text-foreground', ctrlBtnPadding]
               }
               name={intl`VIDEO`}
               noborder
@@ -439,17 +457,17 @@ export const PageCallManage = observer(
               path={
                 c.localVideoEnabled && !c.mutedVideo ? mdiVideo : mdiVideoOff
               }
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isWeb && !isBtnHidden('speaker') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={c.sessionStatus === 'dialing'}
               className={
                 ctx.call.isLoudSpeakerEnabled
-                  ? [activeBg, 'text-white']
-                  : 'bg-background text-foreground'
+                  ? [activeBg, 'text-white', ctrlBtnPadding]
+                  : ['bg-background text-foreground', ctrlBtnPadding]
               }
               name={intl`SPEAKER`}
               noborder
@@ -457,74 +475,74 @@ export const PageCallManage = observer(
               path={
                 ctx.call.isLoudSpeakerEnabled ? mdiVolumeHigh : mdiVolumeMedium
               }
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('mute') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
               className={
                 c.muted
-                  ? [activeBg, 'text-white']
-                  : 'bg-background text-foreground'
+                  ? [activeBg, 'text-white', ctrlBtnPadding]
+                  : ['bg-background text-foreground', ctrlBtnPadding]
               }
               name={c.muted ? intl`UNMUTE` : intl`MUTE`}
               noborder
               onPress={() => c.toggleMuted()}
               path={c.muted ? mdiMicrophoneOff : mdiMicrophone}
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('record') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
               className={
                 c.recording
-                  ? [activeBg, 'text-white']
-                  : 'bg-background text-foreground'
+                  ? [activeBg, 'text-white', ctrlBtnPadding]
+                  : ['bg-background text-foreground', ctrlBtnPadding]
               }
               name={intl`RECORD`}
               noborder
               onPress={c.toggleRecording}
               path={c.recording ? mdiRecordCircle : mdiRecord}
               loading={c.rqLoadings['record']}
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('dtmf') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!(c.withSDPControls || c.answered)}
-              className='bg-background text-foreground'
+              className={['bg-background text-foreground', ctrlBtnPadding]}
               name={intl`KEYPAD`}
               noborder
               onPress={() => navOnMain(ctx.nav.goToPageCallDtmfKeypad)}
               path={mdiDialpad}
-              size={40}
+              size={ctrlBtnSize}
             />
           )}
           {!isBtnHidden('hold') && (
             <ButtonIcon
-              containerClassName='mb-2.5'
+              containerClassName={ctrlBtnContainerClassName}
               disabled={!c.answered}
               className={
                 c.holding
-                  ? [activeBg, 'text-white']
-                  : 'bg-background text-foreground'
+                  ? [activeBg, 'text-white', ctrlBtnPadding]
+                  : ['bg-background text-foreground', ctrlBtnPadding]
               }
               name={c.holding ? intl`UNHOLD` : intl`HOLD`}
               noborder
               onPress={c.toggleHoldWithCheck}
               path={c.holding ? mdiPlayCircle : mdiPauseCircle}
-              size={40}
+              size={ctrlBtnSize}
               loading={c.rqLoadings['hold']}
               msLoading={defaultTimeout}
             />
           )}
         </View>
-        <View className='pb-2.5' />
+        <View className={isLandscape ? 'pb-1' : 'pb-2.5'} />
       </Container>
     )
   }
@@ -542,14 +560,23 @@ export const PageCallManage = observer(
           // Video: centred (self-center, NOT full-width) so it does not cover the
           // bottom-left PIP. A full-width bar at z-102 would swallow the PIP
           // controls' taps (box-none pass-through is unreliable on Android).
+          // Landscape sits in the right thumbnail column instead, clear of the
+          // bottom-centre controls bar.
           c.localVideoEnabled
-            ? 'absolute bottom-2 z-102 self-center'
+            ? isLandscape
+              ? 'absolute right-3 bottom-6 z-102 w-24'
+              : 'absolute bottom-2 z-102 self-center'
             : 'z-12 mb-2 self-stretch',
           !c.localVideoEnabled && (isLarge ? 'mt-2.5' : 'mt-10'),
         ]}
       >
         {c.holding && !c.rqLoadings['hold'] ? (
-          <View className='mb-2.5 h-16.25'>
+          <View
+            className={[
+              'mb-2.5 h-16.25',
+              isLandscape && 'self-stretch items-center justify-center',
+            ]}
+          >
             <RnText small white center>
               {intl`CALL IS ON HOLD`}
             </RnText>
@@ -567,7 +594,7 @@ export const PageCallManage = observer(
                   })
                 }
                 path={mdiPhone}
-                size={40}
+                size={hangupSize}
               />
             )}
             {incoming && (
@@ -579,7 +606,7 @@ export const PageCallManage = observer(
                 noborder
                 onPress={c.hangupWithUnhold}
                 path={mdiPhoneHangup}
-                size={40}
+                size={hangupSize}
               />
             )}
           </View>
@@ -607,6 +634,24 @@ export const PageCallManage = observer(
             className='text-foreground h-10 w-10'
           />
         </View>
+      )
+    }
+    // video call landscape: full-bleed video, name under the header, PIP
+    // thumbnails stacked on the right edge (CallVideosCarousel vertical mode)
+    // and the hangup in that right column. The function buttons float in a
+    // bottom bar that stops short of the right column so nothing overlaps - the
+    // short landscape height made the portrait column flow crowd/cut.
+    if (isLandscape && c.localVideoEnabled) {
+      return (
+        <>
+          {renderVideo()}
+          {renderAvatar()}
+          <View className='pointer-events-box-none absolute right-0 bottom-1 left-0 z-100 items-center'>
+            {renderBtns()}
+          </View>
+          {renderHangupBtn()}
+          {c.transferring ? renderTransferring() : null}
+        </>
       )
     }
     // voice call landscape: avatar/name on the left, controls column on the

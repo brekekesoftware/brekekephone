@@ -45,6 +45,25 @@ public class BrekekeUtils: NSObject {
     am.setAudioActive(enabled, action: action)
   }
 
+  // 'user' unlocks rotation (sensor based) while the call manage page is
+  // visible; 'portrait' restores the default lock and rotates back to portrait.
+  @objc
+  func setMainOrientation(_ mode: String) {
+    DispatchQueue.main.async {
+      let isUser = mode == "user"
+      AppDelegate.orientationLock = isUser ? .allButUpsideDown : .portrait
+      guard let scene = UIApplication.shared.connectedScenes
+        .compactMap({ $0 as? UIWindowScene })
+        .first else { return }
+      scene.windows.first?.rootViewController?
+        .setNeedsUpdateOfSupportedInterfaceOrientations()
+      // when leaving the page, actively rotate the UI back to portrait
+      if !isUser {
+        scene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+      }
+    }
+  }
+
   @objc
   func setProximityMonitoring(_ enabled: Bool) {
     DispatchQueue.main.async {

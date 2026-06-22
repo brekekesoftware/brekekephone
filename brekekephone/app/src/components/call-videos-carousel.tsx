@@ -13,6 +13,9 @@ type CallVideoCarouselProps = {
   call: Call
   showButtonsInVideoCall: boolean
   onButtonsInVideo(): void
+  // landscape stacks the thumbnails vertically along the right edge instead of
+  // the horizontal bottom strip used in portrait.
+  landscape?: boolean
 }
 
 export const CallVideosCarousel = observer(
@@ -28,6 +31,7 @@ export const CallVideosCarousel = observer(
       mutedVideo,
       toggleVideo,
     },
+    landscape,
   }: CallVideoCarouselProps) => {
     const refScroll = useRef<ScrollViewRn>(null)
 
@@ -46,17 +50,30 @@ export const CallVideosCarousel = observer(
     }, [updateVideoStreamActive, videoClientSessionTable, videoStreamActive])
 
     const width = Dimensions.get('window').width
-    const finalHeight = 182
-    const finalWidth = Math.floor(width / 3.5 - 16)
+    // landscape uses a compact fixed thumbnail so the right-edge column never
+    // eats the main video; portrait keeps the width-derived sizing.
+    const finalHeight = landscape ? 50 : 182
+    const finalWidth = landscape ? 80 : Math.floor(width / 3.5 - 16)
 
     return (
       !!localStreamObject && (
-        <View className='pointer-events-box-none absolute bottom-0 z-101 h-auto w-full'>
+        <View
+          className={[
+            'pointer-events-box-none absolute z-101',
+            landscape
+              ? 'top-12 right-3 bottom-0 w-24'
+              : 'bottom-0 h-auto w-full',
+          ]}
+        >
           <ScrollView
-            horizontal
-            className='h-auto'
-            contentContainerClassName='gap-4 p-4'
+            horizontal={!landscape}
+            className={landscape ? 'h-full w-full' : 'h-auto'}
+            contentContainerClassName={
+              landscape ? 'items-center gap-1 px-2 pt-2 pb-24' : 'gap-4 p-4'
+            }
             showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            removeClippedSubviews={false}
             ref={refScroll}
             overScrollMode='never'
           >

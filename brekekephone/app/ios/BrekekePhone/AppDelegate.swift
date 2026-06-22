@@ -15,6 +15,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   var window: UIWindow?
   var bridge: RCTBridge!
 
+  // Allowed interface orientations for the whole app. Defaults to portrait;
+  // BrekekeUtils.setMainOrientation flips this to allow landscape while the
+  // call manage page is visible, then restores portrait on leave.
+  static var orientationLock: UIInterfaceOrientationMask = .portrait
+
+  func application(
+    _: UIApplication,
+    supportedInterfaceOrientationsFor _: UIWindow?
+  ) -> UIInterfaceOrientationMask {
+    return AppDelegate.orientationLock
+  }
+
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication
