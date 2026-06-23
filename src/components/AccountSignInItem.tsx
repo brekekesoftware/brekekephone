@@ -52,6 +52,12 @@ const css = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  AccountSignInItem_BlockingLayer: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: v.borderRadius,
+    backgroundColor: 'black',
+    opacity: 0.3,
+  },
 })
 
 export const AccountSignInItem: FC<{
@@ -87,7 +93,9 @@ export const AccountSignInItem: FC<{
   if (!a) {
     return null
   }
-  const isLoading = ctx.account.pnSyncLoadingMap[props.id]
+  const isLoading = !!ctx.account.pnSyncLoadingMap[props.id]
+  const isBlockedByOtherLoading =
+    !isLoading && Object.values(ctx.account.pnSyncLoadingMap).some(Boolean)
 
   const onPressSignIn = async () => {
     if (!(await permForCall(a.pushNotificationEnabled))) {
@@ -181,6 +189,12 @@ export const AccountSignInItem: FC<{
         <View style={css.AccountSignInItem_Loading}>
           <ActivityIndicator size='small' color='white' />
         </View>
+      )}
+      {isBlockedByOtherLoading && (
+        <View
+          onStartShouldSetResponder={() => true}
+          style={css.AccountSignInItem_BlockingLayer}
+        />
       )}
     </View>
   )
