@@ -850,7 +850,7 @@ export class PBX extends EventEmitter {
       return false
     }
 
-    // started is true (OK) or { error } (server FAILED) — both surface modal.
+    // started is true/{ type, url } (OK) or { error } (server FAILED) — both surface modal.
     // For the error case, propagate the message so the modal explains why.
     const errorMsg =
       typeof started === 'object' && 'error' in started

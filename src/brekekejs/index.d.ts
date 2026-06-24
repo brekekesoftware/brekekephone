@@ -36,6 +36,99 @@ export type EmbedNotificationOptions = {
   notificationCallCompletedElseWhereInterval: number
 }
 
+// MFA lifecycle event emitted by the embedded webphone (embed mode only).
+export type MfaEventStatus =
+  | 'required'
+  | 'error'
+  | 'verified'
+  | 'cancelled'
+  | 'closed'
+export type MfaEventPayload = {
+  status: MfaEventStatus
+  accountId: string
+  tenant?: string
+  user?: string
+  type?: 'code' | 'url'
+  url?: string
+  message?: string
+}
+export type MfaState =
+  | { active: false }
+  | {
+      active: true
+      accountId: string
+      tenant?: string
+      user?: string
+      type?: 'code' | 'url'
+      url?: string
+      message?: string
+    }
+export type MfaVerifyStatus = 'OK' | 'WRONG_CODE' | 'NO_SESSION' | 'FAILED'
+export type MfaVerifyResult = {
+  ok: boolean
+  status?: MfaVerifyStatus
+  error?: string
+}
+export type MfaResendResult = {
+  ok: boolean
+  type?: 'code' | 'url'
+  url?: string
+  error?: string
+}
+export type EmbedDeviceInfo = {
+  deviceId: string
+  label: string
+  kind: MediaDeviceKind
+}
+// Instance returned by Brekeke.Phone.render() — the embed api surface.
+export type EmbedPhoneApi = {
+  [method: string]: any
+  on(event: 'mfa', listener: (e: MfaEventPayload) => void): EmbedPhoneApi
+  on(
+    event: string | symbol,
+    listener: (...args: unknown[]) => void,
+  ): EmbedPhoneApi
+  off(
+    event: string | symbol,
+    listener?: (...args: unknown[]) => void,
+  ): EmbedPhoneApi
+  removeListener(
+    event: string | symbol,
+    listener?: (...args: unknown[]) => void,
+  ): EmbedPhoneApi
+  removeAllListeners(event?: string | symbol): EmbedPhoneApi
+  getMfaState(): MfaState
+  verifyMfaCode(code: string): Promise<MfaVerifyResult>
+  resendMfaCode(): Promise<MfaResendResult>
+  cancelMfa(): Promise<void>
+  promptBrowserPermission(...args: any[]): any
+  acceptBrowserPermission(...args: any[]): any
+  setIncomingRingtone(ringtone: string): void
+  setProductName(name: string): void
+  closeNotification(...args: any[]): any
+  getCurrentAccount(): any
+  getCurrentAccountCtx(): any
+  getCurrentVersion(): {
+    webphone: string
+    jssip: string
+    bundleIdentifier: string
+  }
+  call: MakeCallFn
+  getRunningCalls(): any[]
+  getAvailableCameras(): Promise<EmbedDeviceInfo[]>
+  getAvailableMicrophones(): Promise<EmbedDeviceInfo[]>
+  setAudioInputDevice(deviceId: string): boolean
+  setVideoInputDevice(deviceId: string): Promise<boolean>
+  getAudioInputDevice(): string | null
+  getVideoInputDevice(): string | null
+  getAvailableSpeakers(): Promise<EmbedDeviceInfo[]>
+  setAudioOutputDevice(deviceId: string): Promise<boolean>
+  getAudioOutputDevice(): EmbedDeviceInfo | null
+  registerAudioElement(el: HTMLAudioElement): Promise<void>
+  unregisterAudioElement(el: HTMLAudioElement): void
+  restart(options: EmbedSignInOptions): Promise<void>
+  cleanup(): void
+}
 export type Brekeke = {
   pbx: {
     getPal(wsUri: string, options: GetPalOptions): Pbx
@@ -44,7 +137,7 @@ export type Brekeke = {
     Phone: Sip
   }
   Phone: {
-    render(rootTag: HTMLElement, options: EmbedSignInOptions): any
+    render(rootTag: HTMLElement, options: EmbedSignInOptions): EmbedPhoneApi
   }
   Phonebook: Phonebook
   WebNotification: WebNotification

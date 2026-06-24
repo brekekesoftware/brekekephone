@@ -50,13 +50,123 @@ if (useCustomizedPrompt === 1) {
 const ctx = phone.getCurrentAccountCtx()
 ctx.intl.setLocale('en')
 ctx.global.embedStaticPath =
-  location.pathname.replace(/\/+$/, '') + '/brekeke_phone2.17.8'
+  location.pathname.replace(/\/+$/, '') + '/brekeke_phone2.17.10'
 const version = phone.getCurrentVersion()
 
 const imports = window._BrekekePhoneEmbedImports
 const { observer } = imports['mobx-react']
 const { useEffect, useRef, useState } = imports['react']
 const { createRoot } = imports['react-dom/client']
+
+// --- Embed MFA demo (left panel only; right panel = webphone untouched) ---
+// Listen to the `mfa` event and surface status + a running event log.
+const mfaStatus = imports.mobx.observable.box('-')
+const mfaLog: any = imports.mobx.observable.array([])
+phone.on('mfa', (e: any) => {
+  console.log('[embed mfa]', e)
+  mfaStatus.set(e.status)
+  mfaLog.unshift(
+    new Date().toLocaleTimeString() +
+      '  ' +
+      e.status +
+      (e.message ? ' — ' + e.message : ''),
+  )
+})
+
+// Host reuses the webphone's built-in OTP UI (right panel).
+// Host only needs the `mfa` event to know when to show/hide its container.
+const MfaEvent = observer(() => {
+  const status = mfaStatus.get()
+  const shouldShow = status === 'required' || status === 'error'
+  const [otp, setOtp] = useState('')
+  const [apiResult, setApiResult] = useState('')
+  const run = async (label: string, fn: () => any) => {
+    try {
+      const r = await fn()
+      setApiResult(label + ' → ' + JSON.stringify(r ?? null))
+    } catch (e: any) {
+      setApiResult(label + ' error: ' + (e?.message || String(e)))
+    }
+  }
+  return (
+    <div style={{ border: '1px solid #999', padding: 10, marginTop: 10 }}>
+      <b>MFA event</b>
+      <div>
+        event status: <b>{status}</b>
+      </div>
+      <div>
+        host action:{' '}
+        <span
+          style={{
+            padding: '2px 8px',
+            borderRadius: 4,
+            color: 'white',
+            background: shouldShow ? '#2e7d32' : '#757575',
+          }}
+        >
+          {shouldShow ? 'SHOW OTP screen webphone' : 'HIDE OTP screen webphone'}
+        </span>
+      </div>
+      <div style={{ fontSize: 12, color: '#555', marginTop: 6 }}>
+        The built-in OTP modal appears in the right panel; host just toggles its
+        own container on these events.
+      </div>
+      <div style={{ marginTop: 8 }}>
+        <b>API controls for this OTP screen</b>
+        <div
+          style={{ display: 'flex', gap: 6, margin: '8px 0', flexWrap: 'wrap' }}
+        >
+          <input
+            placeholder='OTP code'
+            value={otp}
+            onChange={e => setOtp(e.target.value)}
+            style={{ padding: 4 }}
+          />
+          <button
+            onClick={() => run('verifyMfaCode', () => phone.verifyMfaCode(otp))}
+          >
+            Verify
+          </button>
+          <button
+            onClick={() => run('resendMfaCode', () => phone.resendMfaCode())}
+          >
+            Resend
+          </button>
+          <button onClick={() => run('cancelMfa', () => phone.cancelMfa())}>
+            Cancel
+          </button>
+          <button onClick={() => run('getMfaState', () => phone.getMfaState())}>
+            getState
+          </button>
+        </div>
+        {apiResult && (
+          <div
+            style={{ fontFamily: 'monospace', fontSize: 12, color: '#1565c0' }}
+          >
+            {apiResult}
+          </div>
+        )}
+      </div>
+      <div style={{ marginTop: 8 }}>
+        <b>events</b>
+        <ul
+          style={{
+            margin: 0,
+            paddingLeft: 18,
+            maxHeight: 140,
+            overflow: 'auto',
+          }}
+        >
+          {mfaLog.map((l: string, i: number) => (
+            <li key={i} style={{ fontFamily: 'monospace', fontSize: 12 }}>
+              {l}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+})
 
 const App = observer(() => {
   const inputRef = useRef()
@@ -225,7 +335,8 @@ const App = observer(() => {
       <span>Status: </span>
       <span>PBX - {ctx.auth.pbxState} | </span>
       <span>SIP - {ctx.auth.sipState} | </span>
-      <span>Calls - {ctx.call.calls.length} </span>
+      <span>Calls - {ctx.call.calls.length} | </span>
+      <span>MFA - {mfaStatus.get()} </span>
       <hr />
 
       <div style={{ marginBottom: '10px' }}>
@@ -331,6 +442,8 @@ const App = observer(() => {
       <button onClick={makeCallAudio}>Make call audio</button>
       <button onClick={makeCallVideo}>Make call video</button>
       <hr />
+
+      <MfaEvent />
 
       {ctx.call.calls.map(c => (
         <Call call={c} />

@@ -7,6 +7,9 @@ import type {
   EmbedPbxConfig,
   EmbedSignInOptions,
   MakeCallFn,
+  MfaResendResult,
+  MfaState,
+  MfaVerifyResult,
 } from '#/brekekejs'
 import { bundleIdentifier, currentVersion, jssipVersion } from '#/config'
 import type { DeviceInfo } from '#/embed/embedDevicesManager'
@@ -16,6 +19,7 @@ import { getAccountUniqueId } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { arrToMap } from '#/utils/arrToMap'
 import { getAudioVideoPermission } from '#/utils/getAudioVideoPermission'
+import { getPublicIp } from '#/utils/publicIpAddress'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
 import { webCloseNotification } from '#/utils/webShowNotification'
@@ -51,6 +55,105 @@ export class EmbedApi extends EventEmitter {
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
+
+  /* MFA — for hosts using their own OTP UI (listen to the `mfa` event too) */
+  getMfaState = (): MfaState => {
+    const id = ctx.mfa.accountId
+    if (!id) {
+      return { active: false as const }
+    }
+    const a = ctx.account.accountsMap[id]
+    return {
+      active: true as const,
+      accountId: id,
+      tenant: a?.pbxTenant,
+      user: a?.pbxUsername,
+      type: ctx.mfa.type,
+      url: ctx.mfa.url || undefined,
+      message: ctx.mfa.error || undefined,
+    }
+  }
+  verifyMfaCode = async (code: string): Promise<MfaVerifyResult> => {
+    const id = ctx.mfa.accountId
+    if (!id) {
+      return { ok: false, error: 'NO_ACTIVE_MFA' }
+    }
+    const ca = ctx.account.accountsMap[id]
+    if (!ca) {
+      return { ok: false, error: 'ACCOUNT_NOT_FOUND' }
+    }
+    const status = await ctx.account.mfaCheck(ca, code)
+    if (status !== 'OK') {
+      return { ok: false, status }
+    }
+    const ok = await ctx.account.createMFADeviceToken(
+      {
+        tenant: ca.pbxTenant,
+        user: ca.pbxUsername,
+        ip_address: await getPublicIp(),
+        user_agent: navigator.userAgent,
+      },
+      ca,
+      ctx.mfa.skipReconnect,
+    )
+    if (!ok) {
+      return { ok: false, status: 'OK', error: ctx.mfa.error || undefined }
+    }
+    const hadAwaiters = ctx.mfa.complete()
+    if (!hadAwaiters) {
+      ctx.nav.goToPageIndex()
+    }
+    return { ok: true, status: 'OK' }
+  }
+  resendMfaCode = async (): Promise<MfaResendResult> => {
+    const id = ctx.mfa.accountId
+    if (!id) {
+      return { ok: false, error: 'NO_ACTIVE_MFA' }
+    }
+    const ca = ctx.account.accountsMap[id]
+    if (!ca) {
+      return { ok: false, error: 'ACCOUNT_NOT_FOUND' }
+    }
+    const deleted = await ctx.account.mfaDelete(ca)
+    if (!deleted) {
+      return { ok: false, error: 'RESEND_FAILED' }
+    }
+    const result = await ctx.account.mfaStart(ca)
+    if (result === 'none') {
+      ctx.mfa.reset()
+      return { ok: false, error: 'NO_MFA_REQUIRED' }
+    }
+    if (!result || (typeof result === 'object' && 'error' in result)) {
+      const error =
+        typeof result === 'object' && 'error' in result
+          ? result.error
+          : 'RESEND_FAILED'
+      ctx.mfa.show(ca.id, { error })
+      return { ok: false, error }
+    }
+    if (result === true) {
+      ctx.mfa.show(ca.id)
+      return { ok: true }
+    }
+    // success — same account, show() merges state without re-emitting
+    ctx.mfa.show(ca.id, { type: result.type, url: result.url })
+    return { ok: true, type: result.type, url: result.url }
+  }
+  cancelMfa = async () => {
+    const id = ctx.mfa.accountId
+    if (!id) {
+      return
+    }
+    const ca = ctx.account.accountsMap[id]
+    if (ca && ctx.account.keySessionMFA) {
+      await ctx.account.mfaDelete(ca)
+    }
+    ctx.mfa.cancel()
+    ctx.auth.signOut()
+    if (ca) {
+      await ctx.account.setMFAPending(ca, false)
+    }
+  }
 
   /* Input */
   static getAvailableCameras = (): Promise<DeviceInfo[]> =>

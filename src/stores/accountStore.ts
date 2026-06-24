@@ -13,11 +13,13 @@ import type {
   MFADeviceTokenDelete,
   MFAStart,
   MFAStartRes,
+  MfaVerifyStatus,
   UcBuddy,
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/Rn'
 import { currentVersion, isAndroid, isWeb } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
 import { intl, intlDebug } from '#/stores/intl'
@@ -111,7 +113,12 @@ type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 //   'none'          — server says no MFA required for this account
 //   { error }       — server returned status=FAILED with a message
 //   false           — network/exception, no usable response
-type MfaStartResult = true | 'none' | { error: string } | false
+type MfaStartResult =
+  | true
+  | { type: 'code' | 'url'; url?: string }
+  | 'none'
+  | { error: string }
+  | false
 
 let foregroundPromptShown = false
 
@@ -536,24 +543,44 @@ export class AccountStore {
     ca: Account,
     skipReconnect?: boolean,
   ) => {
+    const failMessage = intl`Token creation failed. Please get a new code.`
     try {
       const o = { options: {}, ...p }
       const res = await ctx.pbx.client?.call_pal('device_token/create', o)
       if (!res) {
+        if (isEmbed) {
+          ctx.mfa.fail(failMessage, ca)
+          return false
+        }
         return
       }
       await this.updateTokenToAccountData(ca, res)
       const isOK = res.status === 'OK'
-      if (isOK && res.token) {
-        if (skipReconnect) {
-          await this.saveDeviceToken(ca, res.token)
-        } else {
-          await this.reconnectWithDeviceToken(ca, res.token)
+      if (!isOK) {
+        if (isEmbed) {
+          ctx.mfa.fail(failMessage, ca)
         }
+        return false
       }
-      return isOK
+      if (!res.token) {
+        if (isEmbed) {
+          // Valid code but token creation failed — surface to embed host.
+          ctx.mfa.fail(failMessage, ca)
+          return false
+        }
+        return true
+      }
+      if (skipReconnect) {
+        await this.saveDeviceToken(ca, res.token)
+      } else {
+        await this.reconnectWithDeviceToken(ca, res.token)
+      }
+      return true
     } catch (err) {
       console.error('[MFA] createMFADeviceToken error:', err)
+      if (isEmbed) {
+        ctx.mfa.fail(failMessage, ca)
+      }
     }
     return false
   }
@@ -667,14 +694,14 @@ export class AccountStore {
         const smfa = (sd.mfa ??= { verified: false })
         smfa.sessKey = res.sess_key
         await this.saveAccountsToLocalStorageWithoutDebounced()
-        return true
+        return isEmbed ? { type: res.type, url: res.url } : true
       }
     } catch (err) {
       console.error('mfaStart error:', err)
     }
     return false
   }
-  mfaCheck = async (ca: Account, code: string) => {
+  mfaCheck = async (ca: Account, code: string): Promise<MfaVerifyStatus> => {
     try {
       const param: MFACheck = {
         tenant: ca.pbxTenant,
@@ -686,7 +713,13 @@ export class AccountStore {
         'mfa/check',
         param,
       )
-      return res?.status ?? 'FAILED'
+      if (
+        res?.status === 'OK' ||
+        res?.status === 'WRONG_CODE' ||
+        res?.status === 'NO_SESSION'
+      ) {
+        return res.status
+      }
     } catch (err) {
       console.error('[MFA] mfaCheck error:', err)
     }
@@ -811,7 +844,11 @@ export class AccountStore {
       return
     }
     await this.setMFAPending(ca, true)
-    ctx.mfa.show(ca.id)
+    if (typeof result === 'object') {
+      ctx.mfa.show(ca.id, { type: result.type, url: result.url })
+    } else {
+      ctx.mfa.show(ca.id)
+    }
   }
 }
 
