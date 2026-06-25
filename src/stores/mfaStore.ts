@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx'
 
+import type { Pbx } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'
 
 export class MFAStore {
@@ -13,6 +14,10 @@ export class MFAStore {
   // Server error from mfa/start FAILED response (e.g. "No email address.").
   // When non-empty, modal renders in error mode instead of normal OTP entry.
   @observable error = ''
+  palClient?: {
+    accountKey: string
+    client: Pbx
+  }
   private _resolvers: Array<(ok: boolean) => void> = []
 
   @action show = (
@@ -38,6 +43,7 @@ export class MFAStore {
     this.accountId = null
     this.skipReconnect = false
     this.error = ''
+    this.palClient = undefined
   }
 
   @action complete = (): boolean => {
@@ -48,6 +54,7 @@ export class MFAStore {
     this.wasCancelled = false
     this.cancelledAccountId = null
     this.error = ''
+    this.palClient = undefined
     const hadAwaiters = rs.length > 0
     rs.forEach(r => r(true))
     return hadAwaiters
@@ -61,6 +68,7 @@ export class MFAStore {
     this.skipReconnect = false
     this.wasCancelled = true
     this.error = ''
+    this.palClient = undefined
     rs.forEach(r => r(false))
   }
 
@@ -75,6 +83,7 @@ export class MFAStore {
     this.wasCancelled = false
     this.cancelledAccountId = null
     this.error = ''
+    this.palClient = undefined
     rs.forEach(r => r(false))
   }
 
@@ -86,6 +95,7 @@ export class MFAStore {
     this.accountId = null
     this.skipReconnect = false
     this.error = ''
+    this.palClient = undefined
     rs.forEach(r => r(false))
   }
 

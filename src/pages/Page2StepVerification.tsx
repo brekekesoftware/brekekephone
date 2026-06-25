@@ -280,6 +280,7 @@ export const Page2StepVerification = () => {
     if (account && ctx.account.keySessionMFA) {
       await ctx.account.mfaDelete(account)
     }
+    ctx.account.disableUnsyncedPushNotification(account ?? undefined)
     // Sync: cancel + signOut in same tick so MobX batches the state transitions
     // into a single render. Avoids a brief flash where modal has unmounted but
     // signedInId/sipState still show "Internet connection failed" banner.
