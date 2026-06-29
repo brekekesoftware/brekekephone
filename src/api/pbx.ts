@@ -808,8 +808,17 @@ export class PBX extends EventEmitter {
     const data = ctx.account.findDataSync(ca)
     const connectedWithDeviceToken = data?.palParams?.['device_token']
     const isFreshLogin = ctx.auth.pbxFreshLogin
+    const skipFreshLoginMFAWithDeviceToken =
+      isEmbed &&
+      !!connectedWithDeviceToken &&
+      isFreshLogin &&
+      ctx.account.consumeSkipFreshLoginMFAWithDeviceToken(ca)
     ctx.auth.pbxFreshLogin = false
-    if (!connectedWithDeviceToken || isFreshLogin || inMFA) {
+    if (
+      !connectedWithDeviceToken ||
+      (isFreshLogin && !skipFreshLoginMFAWithDeviceToken) ||
+      inMFA
+    ) {
       await ctx.account.handleMFA(ca)
       // Re-check: handleMFA may have changed state to IN_PROGRESS (OTP required).
       return ctx.account.isAccountInMFA(ca)

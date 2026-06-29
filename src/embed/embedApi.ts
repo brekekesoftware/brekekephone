@@ -3,6 +3,7 @@ import { AppRegistry } from 'react-native'
 
 import { parsePalParams } from '#/api/parseParamsWithPrefix'
 import type {
+  EmbedAccount,
   EmbedNotificationOptions,
   EmbedPbxConfig,
   EmbedSignInOptions,
@@ -10,6 +11,8 @@ import type {
   MfaResendResult,
   MfaState,
   MfaVerifyResult,
+  SetDeviceTokenParams,
+  SetDeviceTokenResult,
 } from '#/brekekejs'
 import { bundleIdentifier, currentVersion, jssipVersion } from '#/config'
 import type { DeviceInfo } from '#/embed/embedDevicesManager'
@@ -23,6 +26,19 @@ import { getPublicIp } from '#/utils/publicIpAddress'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
 import { webCloseNotification } from '#/utils/webShowNotification'
+
+type NormalizedSetDeviceTokenParams = SetDeviceTokenParams & {
+  token: string
+  user: string
+}
+type PendingSetDeviceToken = {
+  p: NormalizedSetDeviceTokenParams
+  resolve: (result: SetDeviceTokenResult) => void
+}
+type PendingSetDeviceTokenResult = {
+  req: PendingSetDeviceToken
+  result: SetDeviceTokenResult
+}
 
 export class EmbedApi extends EventEmitter {
   /** ==========================================================================
@@ -55,6 +71,63 @@ export class EmbedApi extends EventEmitter {
 
   call: MakeCallFn = (...args) => ctx.call.startCall(...args)
   getRunningCalls = () => ctx.call.calls
+
+  setDeviceToken = async (
+    p: SetDeviceTokenParams,
+  ): Promise<SetDeviceTokenResult> => {
+    const normalized = this._normalizeSetDeviceTokenParams(p)
+    if (!normalized) {
+      return { ok: false, error: 'INVALID_ARGUMENT' }
+    }
+
+    if (this._acceptingDeviceTokensBeforeAutoLogin) {
+      return new Promise(resolve => {
+        this._pendingSetDeviceTokens.push({
+          p: normalized,
+          resolve,
+        })
+      })
+    }
+
+    await ctx.account.waitStorageLoaded()
+    return this._setDeviceToken(normalized)
+  }
+
+  _setDeviceToken = async (
+    p: NormalizedSetDeviceTokenParams,
+    reconnect?: boolean,
+  ): Promise<SetDeviceTokenResult> => {
+    const ca = this._findAccountForDeviceToken(p)
+    if (ca === 'ACCOUNT_AMBIGUOUS') {
+      return { ok: false, error: 'ACCOUNT_AMBIGUOUS' }
+    }
+    if (!ca) {
+      return { ok: false, error: 'ACCOUNT_NOT_FOUND' }
+    }
+
+    const isCurrentAccount = ctx.auth.signedInId === ca.id
+    const shouldReconnect = reconnect ?? isCurrentAccount
+    const shouldSignIn = reconnect === undefined && !isCurrentAccount
+    const ok = await ctx.account.setDeviceToken(ca, p.token, {
+      reconnect: shouldReconnect,
+      skipFreshLoginMFA: !shouldReconnect || shouldSignIn,
+    })
+    if (!ok) {
+      return { ok: false, error: 'FAILED' }
+    }
+    if (!shouldReconnect) {
+      if (shouldSignIn) {
+        const signedIn = await ctx.auth.signIn(ca)
+        if (!signedIn) {
+          await ctx.account.clearDeviceToken(ca)
+          return { ok: false, error: 'SIGN_IN_FAILED' }
+        }
+        return this._waitForSetDeviceTokenConnect(ca)
+      }
+      return { ok: true }
+    }
+    return this._waitForSetDeviceTokenConnect(ca)
+  }
 
   /* MFA — for hosts using their own OTP UI (listen to the `mfa` event too) */
   getMfaState = (): MfaState => {
@@ -226,76 +299,230 @@ export class EmbedApi extends EventEmitter {
   _palEvents?: string[]
   _palParams?: { [k: string]: string }
   _pbxConfig: EmbedPbxConfig = {}
+  _acceptingDeviceTokensBeforeAutoLogin = false
+  _pendingSetDeviceTokens: PendingSetDeviceToken[] = []
+
+  _normalizeSetDeviceTokenParams = (
+    p: SetDeviceTokenParams,
+  ): NormalizedSetDeviceTokenParams | undefined => {
+    const token = p?.token?.trim()
+    const user = p?.user?.trim()
+    if (!token || !user) {
+      return
+    }
+    return {
+      ...p,
+      token,
+      user,
+    }
+  }
+
+  _findAccountForDeviceToken = (
+    p: SetDeviceTokenParams,
+  ): Account | 'ACCOUNT_AMBIGUOUS' | undefined => {
+    const tenant = p.tenant || '-'
+    const matches = ctx.account.accounts.filter(
+      a =>
+        a.pbxUsername === p.user &&
+        (a.pbxTenant || '-') === tenant &&
+        (!p.hostname || a.pbxHostname === p.hostname) &&
+        (!p.port || a.pbxPort === p.port),
+    )
+    const currentAccount = ctx.auth.getCurrentAccount()
+    const currentMatch =
+      currentAccount && matches.find(a => a.id === currentAccount.id)
+    if (currentMatch) {
+      return currentMatch
+    }
+    if (matches.length === 1) {
+      return matches[0]
+    }
+    if (matches.length > 1) {
+      return 'ACCOUNT_AMBIGUOUS'
+    }
+    return undefined
+  }
+
+  _flushPendingSetDeviceTokens = async (): Promise<
+    PendingSetDeviceTokenResult[]
+  > => {
+    const requests = this._pendingSetDeviceTokens
+    this._pendingSetDeviceTokens = []
+    const results: PendingSetDeviceTokenResult[] = []
+    for (const req of requests) {
+      results.push({
+        req,
+        result: await this._setDeviceToken(req.p, false),
+      })
+    }
+    return results
+  }
+
+  _rejectPendingSetDeviceTokens = (error: SetDeviceTokenResult['error']) => {
+    const requests = this._pendingSetDeviceTokens
+    this._pendingSetDeviceTokens = []
+    requests.forEach(req => req.resolve({ ok: false, error }))
+  }
+
+  _rejectAppliedPendingSetDeviceTokens = async (
+    results: PendingSetDeviceTokenResult[],
+    error: SetDeviceTokenResult['error'],
+  ) => {
+    for (const { req, result } of results) {
+      if (result.ok) {
+        await this._clearDeviceTokenForParams(req.p)
+        req.resolve({ ok: false, error })
+      } else {
+        req.resolve(result)
+      }
+    }
+  }
+
+  _resolvePendingSetDeviceTokens = async (
+    results: PendingSetDeviceTokenResult[],
+    connected?: boolean,
+  ) => {
+    for (const { req, result } of results) {
+      if (!result.ok) {
+        req.resolve(result)
+        continue
+      }
+      if (connected === false) {
+        await this._clearDeviceTokenForParams(req.p)
+        req.resolve({ ok: false, error: 'CONNECT_FAILED' })
+        continue
+      }
+      req.resolve(result)
+    }
+  }
+
+  _clearDeviceTokenForParams = async (p: NormalizedSetDeviceTokenParams) => {
+    const ca = this._findAccountForDeviceToken(p)
+    if (!ca || ca === 'ACCOUNT_AMBIGUOUS') {
+      return
+    }
+    await ctx.account.clearDeviceToken(ca)
+  }
+
+  _waitForSetDeviceTokenConnect = async (
+    ca: Account,
+  ): Promise<SetDeviceTokenResult> => {
+    const connected = (await ctx.auth.waitPbx()) as boolean
+    if (connected) {
+      return { ok: true }
+    }
+    await ctx.account.clearDeviceToken(ca)
+    ctx.auth.signOutWithoutSaving()
+    return { ok: false, error: 'CONNECT_FAILED' }
+  }
+
+  _resolvePendingSetDeviceTokensAfterAutoLogin = async (
+    results: PendingSetDeviceTokenResult[],
+  ) => {
+    if (!results.length) {
+      return
+    }
+    let connected: boolean | undefined
+    if (results.some(r => r.result.ok)) {
+      connected = (await ctx.auth.waitPbx()) as boolean
+      if (!connected) {
+        ctx.auth.signOutWithoutSaving()
+      }
+    }
+    await this._resolvePendingSetDeviceTokens(results, connected)
+  }
 
   _signIn = async (_o: EmbedSignInOptions) => {
-    const {
-      palEvents,
-      dontShowNotificationIfFocusing = true,
-      closeAllNotificationOnFocus = true,
-      closeNotificationOnCallAnswer = true,
-      closeNotificationOnCallEnd = true,
-      notificationInterval = 15000,
-      notificationCallCompletedElseWhere = true,
-      notificationCallCompletedElseWhereInterval = 15000,
-      ...o
-    } = _o
-    this._notificationOptions = {
-      dontShowNotificationIfFocusing,
-      closeAllNotificationOnFocus,
-      closeNotificationOnCallAnswer,
-      closeNotificationOnCallEnd,
-      notificationInterval,
-      notificationCallCompletedElseWhere,
-      notificationCallCompletedElseWhereInterval,
-    }
-    await ctx.account.waitStorageLoaded()
-
-    // reassign options on each sign in
-    embedApi._palEvents = palEvents
-    embedApi._palParams = parsePalParams(o)
-    embedApi._pbxConfig = o // TODO: pick fields
-
-    // init devices manager to get default devices
-    await embedDevicesManager.init()
-
-    ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
-    // check if cleanup existing account
-    if (o.clearExistingAccount) {
-      ctx.account.accounts = []
-      ctx.account.accountData = []
-    }
-
-    // create map based on unique (host, port, tenant, user)
-    const accountsMap = arrToMap(
-      ctx.account.accounts,
-      getAccountUniqueId,
-      (p: Account) => p,
-    ) as { [k: string]: Account }
-
-    // convert accounts from options to storage
-    let firstAccountInOptions: Account | undefined
-    o.accounts.forEach(a => {
-      const fr = convertToStorage(a)
-      const to = accountsMap[getAccountUniqueId(fr)]
-      if (to) {
-        copyToStorage(fr, to)
-        firstAccountInOptions = firstAccountInOptions || to
-      } else {
-        ctx.account.accounts.push(fr)
-        firstAccountInOptions = firstAccountInOptions || fr
+    this._acceptingDeviceTokensBeforeAutoLogin = true
+    let pendingSetDeviceTokenResults: PendingSetDeviceTokenResult[] = []
+    try {
+      const {
+        palEvents,
+        dontShowNotificationIfFocusing = true,
+        closeAllNotificationOnFocus = true,
+        closeNotificationOnCallAnswer = true,
+        closeNotificationOnCallEnd = true,
+        notificationInterval = 15000,
+        notificationCallCompletedElseWhere = true,
+        notificationCallCompletedElseWhereInterval = 15000,
+        ...o
+      } = _o
+      this._notificationOptions = {
+        dontShowNotificationIfFocusing,
+        closeAllNotificationOnFocus,
+        closeNotificationOnCallAnswer,
+        closeNotificationOnCallEnd,
+        notificationInterval,
+        notificationCallCompletedElseWhere,
+        notificationCallCompletedElseWhereInterval,
       }
-    })
-    await ctx.account.saveAccountsToLocalStorageDebounced()
+      await ctx.account.waitStorageLoaded()
 
-    // check if auto login
-    if (!o.autoLogin) {
-      return
+      // reassign options on each sign in
+      embedApi._palEvents = palEvents
+      embedApi._palParams = parsePalParams(o)
+      embedApi._pbxConfig = o // TODO: pick fields
+
+      // init devices manager to get default devices
+      await embedDevicesManager.init()
+
+      ctx.pbx.parseResourceLines(embedApi._pbxConfig['webphone.resource-line'])
+      // check if cleanup existing account
+      if (o.clearExistingAccount) {
+        ctx.account.accounts = []
+        ctx.account.accountData = []
+      }
+
+      // create map based on unique (host, port, tenant, user)
+      const accountsMap = arrToMap(
+        ctx.account.accounts,
+        getAccountUniqueId,
+        (p: Account) => p,
+      ) as { [k: string]: Account }
+
+      // convert accounts from options to storage
+      let firstAccountInOptions: Account | undefined
+      o.accounts.forEach(a => {
+        const fr = convertToStorage(a)
+        const to = accountsMap[getAccountUniqueId(fr)]
+        if (to) {
+          copyToStorage(fr, to)
+          firstAccountInOptions = firstAccountInOptions || to
+        } else {
+          ctx.account.accounts.push(fr)
+          firstAccountInOptions = firstAccountInOptions || fr
+        }
+      })
+      pendingSetDeviceTokenResults = await this._flushPendingSetDeviceTokens()
+      this._acceptingDeviceTokensBeforeAutoLogin = false
+      await ctx.account.saveAccountsToLocalStorageDebounced()
+
+      // check if auto login
+      if (!o.autoLogin) {
+        await this._resolvePendingSetDeviceTokens(pendingSetDeviceTokenResults)
+        return
+      }
+      if (firstAccountInOptions) {
+        ctx.auth.signIn(firstAccountInOptions)
+        await this._resolvePendingSetDeviceTokensAfterAutoLogin(
+          pendingSetDeviceTokenResults,
+        )
+        return
+      }
+      await ctx.auth.autoSignInEmbed()
+      await this._resolvePendingSetDeviceTokensAfterAutoLogin(
+        pendingSetDeviceTokenResults,
+      )
+    } catch (err) {
+      this._rejectPendingSetDeviceTokens('SIGN_IN_FAILED')
+      await this._rejectAppliedPendingSetDeviceTokens(
+        pendingSetDeviceTokenResults,
+        'SIGN_IN_FAILED',
+      )
+      throw err
+    } finally {
+      this._acceptingDeviceTokensBeforeAutoLogin = false
     }
-    if (firstAccountInOptions) {
-      ctx.auth.signIn(firstAccountInOptions)
-      return
-    }
-    await ctx.auth.autoSignInEmbed()
   }
 
   static _renderApp: Function
@@ -307,20 +534,6 @@ export class EmbedApi extends EventEmitter {
 }
 
 export const embedApi = new EmbedApi()
-
-type EmbedAccount = {
-  hostname: string
-  port: string
-  tenant?: string
-  username: string
-  password?: string
-  phoneIndex?: number
-  uc?: boolean
-  ucDisplayOfflineUsers?: boolean
-  parks?: string[]
-  parkNames?: string[]
-  pushNotification?: boolean
-}
 const convertToStorage = (a: EmbedAccount): Account => {
   const ea = ctx.account.genEmptyAccount()
   ea.pbxHostname = a.hostname || ''

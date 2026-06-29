@@ -16,6 +16,19 @@ export type EmbedPalConfig = {
   // webphone.pal.param.*
   [k: string]: string
 }
+export type EmbedAccount = {
+  hostname: string
+  port: string
+  tenant?: string
+  username: string
+  password?: string
+  phoneIndex?: number
+  uc?: boolean
+  ucDisplayOfflineUsers?: boolean
+  parks?: string[]
+  parkNames?: string[]
+  pushNotification?: boolean
+}
 export type EmbedSignInOptions = {
   autoLogin?: boolean
   clearExistingAccount?: boolean
@@ -75,6 +88,23 @@ export type MfaResendResult = {
   url?: string
   error?: string
 }
+export type SetDeviceTokenParams = {
+  tenant?: string
+  user: string
+  token: string
+  hostname?: string
+  port?: string
+}
+export type SetDeviceTokenResult = {
+  ok: boolean
+  error?:
+    | 'INVALID_ARGUMENT'
+    | 'SIGN_IN_FAILED'
+    | 'ACCOUNT_NOT_FOUND'
+    | 'ACCOUNT_AMBIGUOUS'
+    | 'CONNECT_FAILED'
+    | 'FAILED'
+}
 export type EmbedDeviceInfo = {
   deviceId: string
   label: string
@@ -101,6 +131,7 @@ export type EmbedPhoneApi = {
   verifyMfaCode(code: string): Promise<MfaVerifyResult>
   resendMfaCode(): Promise<MfaResendResult>
   cancelMfa(): Promise<void>
+  setDeviceToken(p: SetDeviceTokenParams): Promise<SetDeviceTokenResult>
   promptBrowserPermission(...args: any[]): any
   acceptBrowserPermission(...args: any[]): any
   setIncomingRingtone(ringtone: string): void

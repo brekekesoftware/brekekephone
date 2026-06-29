@@ -120,6 +120,11 @@ type MfaStartResult =
   | { error: string }
   | false
 
+type SetDeviceTokenOptions = {
+  reconnect?: boolean
+  skipFreshLoginMFA?: boolean
+}
+
 let foregroundPromptShown = false
 
 // reset the per-session guard so the prompt can show again in a new app session — called from the
@@ -163,12 +168,20 @@ export class AccountStore {
 
   keySessionMFA: string = ''
   pendingPnEnabled?: boolean
+  private skipFreshLoginMFAWithDeviceTokenAccountId = ''
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.
   @observable mfaPendingAfterCallsId = ''
   @action setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
+  }
+  consumeSkipFreshLoginMFAWithDeviceToken = (a: Account) => {
+    if (!isEmbed || this.skipFreshLoginMFAWithDeviceTokenAccountId !== a.id) {
+      return false
+    }
+    this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+    return true
   }
 
   genEmptyAccount = (): Account => ({
@@ -600,6 +613,73 @@ export class AccountStore {
     ctx.auth.pbxTotalFailure = 0
     ctx.authPBX.auth()
     console.log('MFA: reconnectWithDeviceToken')
+  }
+
+  setDeviceToken = async (
+    ca: Account,
+    token: string,
+    options: SetDeviceTokenOptions = {},
+  ) => {
+    if (!isEmbed) {
+      return false
+    }
+
+    const deviceToken = token.trim()
+    if (!deviceToken) {
+      return false
+    }
+
+    ca.pbxTenant = ca.pbxTenant || '-'
+    await this.findDataWithDefault(ca)
+    await this.updateTokenToAccountData(ca, {
+      status: 'OK',
+      token: deviceToken,
+    })
+    if (this.mfaPendingAfterCallsId === ca.id) {
+      this.setMFAPendingAfterCallsId('')
+    }
+    if (ctx.mfa.isShowing(ca.id)) {
+      ctx.mfa.reset()
+    }
+    if (options.skipFreshLoginMFA) {
+      this.skipFreshLoginMFAWithDeviceTokenAccountId = ca.id
+    }
+    if (options.reconnect) {
+      await this.reconnectWithDeviceToken(ca, deviceToken)
+    } else {
+      await this.saveDeviceToken(ca, deviceToken)
+    }
+    return true
+  }
+
+  clearDeviceToken = async (ca: Account) => {
+    const d = await this.findData(ca)
+    if (!d) {
+      if (this.skipFreshLoginMFAWithDeviceTokenAccountId === ca.id) {
+        this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+      }
+      return
+    }
+
+    const tenant = ca.pbxTenant || '-'
+    const key = this.getMFAKey(tenant, ca.pbxUsername)
+    if (d.palParams?.device_token) {
+      delete d.palParams.device_token
+    }
+    if (d.mfa) {
+      if (d.mfa.token?.[key]) {
+        delete d.mfa.token[key]
+      }
+      Object.assign(d.mfa, {
+        verified: false,
+        pending: false,
+        sessKey: undefined,
+      })
+    }
+    if (this.skipFreshLoginMFAWithDeviceTokenAccountId === ca.id) {
+      this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+    }
+    await this.saveAccountsToLocalStorageWithoutDebounced()
   }
 
   checkMFADeviceToken = async (p: MFADeviceTokenCheck, ca: Account) => {
