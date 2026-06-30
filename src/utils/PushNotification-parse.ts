@@ -228,6 +228,14 @@ export const parse = async (
 
   console.log('SIP PN debug: call signInByNotification')
   await ctx.auth.signInByNotification(n)
+  const notificationAccountId = acc.id
+  const isNotificationAccountActive = () =>
+    ctx.auth.signedInId === notificationAccountId
+  const clearCustomPageIndex = (fn: Function) => {
+    if (ctx.nav.customPageIndex === fn) {
+      ctx.nav.customPageIndex = undefined
+    }
+  }
 
   const waitMfaIfNeeded = async (): Promise<boolean> => {
     await ctx.auth.waitPbx()
@@ -294,16 +302,27 @@ export const parse = async (
     if (!acc.ucEnabled) {
       return
     }
-    ctx.nav.customPageIndex = ctx.nav.goToPageChatRecents
+    if (!isNotificationAccountActive()) {
+      console.log(
+        `SIP PN debug: PushNotification-parse: skip stale chat notification accountId=${notificationAccountId} signedInId=${ctx.auth.signedInId}`,
+      )
+      return
+    }
+    const goToChatRecents = () => ctx.nav.goToPageChatRecents()
+    ctx.nav.customPageIndex = goToChatRecents
     if (!senderId && !confId) {
       return
     }
     void waitMfaIfNeeded().then(async ok => {
-      if (!ok) {
-        ctx.nav.customPageIndex = undefined
+      if (!ok || !isNotificationAccountActive()) {
+        clearCustomPageIndex(goToChatRecents)
         return
       }
       await ctx.auth.waitUc()
+      if (!isNotificationAccountActive()) {
+        clearCustomPageIndex(goToChatRecents)
+        return
+      }
       if ((isGroupChat || !senderId) && confId) {
         ctx.chat.handleMoveToChatGroupDetail(confId)
       } else if (senderId) {
