@@ -13,7 +13,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { permNotifications } from '#/utils/permissions'
-import { parse } from '#/utils/PushNotification-parse'
+import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 
 let fcmTokenFn: Function | undefined = undefined
 const fcmToken = new Promise<string>(resolve => {
@@ -44,11 +44,21 @@ const onNotification = async (
 ) => {
   try {
     await initApp()
-    // flush initial notification
-    if (!n0?.callkeepUuid) {
-      getInitialNotifications().then(ns =>
-        ns.forEach(n => onNotification(n, initApp)),
-      )
+    const shouldReplayInitialCallPn = !!parseNotificationData(n0)?.id
+    const shouldFlushInitialChatPn =
+      !isClickAction &&
+      n0?.event === 'message' &&
+      !n0?.title &&
+      !n0?.body
+    if (
+      !n0?.callkeepUuid &&
+      (shouldReplayInitialCallPn || shouldFlushInitialChatPn)
+    ) {
+      getInitialNotifications().then(ns => {
+        if (shouldReplayInitialCallPn) {
+          ns.forEach(n => onNotification(n, initApp))
+        }
+      })
     }
     await parse(n0, false, isClickAction)
   } catch (err) {
