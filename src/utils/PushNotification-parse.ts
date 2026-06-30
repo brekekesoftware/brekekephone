@@ -4,7 +4,6 @@ import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
-import { jsonStable } from '#/utils/jsonStable'
 import { get } from '#/utils/lodash'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
@@ -205,17 +204,19 @@ export const parse = async (
     return
   }
 
-  // handle duplicated pn on android
-  // sometimes getInitialNotifications not update callkeepUuid yet or Event NotificationOpened triggered get more than once
-  if (isAndroid) {
-    const k = n.id || jsonStable(raw)
-    if (androidAlreadyProccessedPn[k]) {
+  // Dedupe call PNs on Android: getInitialNotifications may re-deliver the same call PN, or
+  // NotificationOpened fires more than once for the same tap. Only dedupe when n.id exists
+  // (call PN with pn-id). Chat/local notifications must NOT be deduped here — a user tapping
+  // the same chat notification twice should always navigate, and applying jsonStable(raw) as a
+  // fallback key was causing the first tap to permanently block subsequent chat taps (BUG-1238).
+  if (isAndroid && n.id) {
+    if (androidAlreadyProccessedPn[n.id]) {
       console.log(
-        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
+        `SIP PN debug: PushNotification-parse: already processed pnId=${n.id}`,
       )
       return
     }
-    androidAlreadyProccessedPn[k] = true
+    androidAlreadyProccessedPn[n.id] = true
   }
 
   const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)

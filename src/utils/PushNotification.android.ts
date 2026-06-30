@@ -13,7 +13,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { permNotifications } from '#/utils/permissions'
-import { parse } from '#/utils/PushNotification-parse'
+import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 
 let fcmTokenFn: Function | undefined = undefined
 const fcmToken = new Promise<string>(resolve => {
@@ -44,8 +44,11 @@ const onNotification = async (
 ) => {
   try {
     await initApp()
-    // flush initial notification
-    if (!n0?.callkeepUuid) {
+    // Only flush the native initialNotifications cache for call PNs that haven't received a
+    // callkeepUuid yet (i.e. payload has pn-id but no callkeepUuid). Chat/local notifications
+    // must NOT trigger this flush — doing so replays old call PNs through signInByNotification
+    // and can block or misdirect the chat account-switch navigation (BUG-1238).
+    if (!n0?.callkeepUuid && parseNotificationData(n0)?.id) {
       getInitialNotifications().then(ns =>
         ns.forEach(n => onNotification(n, initApp)),
       )
