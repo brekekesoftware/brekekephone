@@ -31,8 +31,10 @@ import java.util.concurrent.Executors;
 // main lpc service
 
 public class BrekekeLpcService extends Service {
-  public static boolean isServiceStarted = false;
-  public static Intent iService;
+  // volatile: written from RN thread (updateConfig/enableLPC) and read from main thread
+  // (watchdog reconnectSocket) and executor thread (socket loop isServiceStarted check)
+  public static volatile boolean isServiceStarted = false;
+  public static volatile Intent iService;
   private static volatile BrekekeLpcService runningService;
   private static ConnectivityManager cm;
   private ConnectivityManager.NetworkCallback networkCallback;
