@@ -56,16 +56,13 @@
   />
 
   <!-- android >= 14 background permissions -->
-  <!-- TODO: use FOREGROUND_SERVICE_PHONE_CALL instead
+  <!-- Required so the ongoing-call foreground service keeps microphone
+       access while the app is in the background (while-in-use permission model).
+       phoneCall type alone does NOT grant background microphone access. -->
   <uses-permission
     android:minSdkVersion="34"
     android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"
   />
-  <uses-permission
-    android:minSdkVersion="34"
-    android:name="android.permission.FOREGROUND_SERVICE_CAMERA"
-  />
-  -->
 
   <!-- call history -->
   <!-- TODO: temporary disabled
@@ -141,7 +138,7 @@
       android:name="io.wazo.callkeep.VoiceConnectionService"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-      android:foregroundServiceType="phoneCall"
+      android:foregroundServiceType="phoneCall|microphone"
       android:exported="false"
       tools:ignore="ForegroundServicePermission"
     >
@@ -151,7 +148,7 @@
     </service>
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
-      android:foregroundServiceType="phoneCall"
+      android:foregroundServiceType="phoneCall|microphone"
     />
 
     <!-- react dev -->
