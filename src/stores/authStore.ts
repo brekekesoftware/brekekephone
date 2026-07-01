@@ -788,6 +788,9 @@ export class AuthStore {
       // causing "Already signed out after long await" error.
       ctx.authSIP.dispose()
       if (this.signedInId) {
+        // Switching from a connected account: let the reconnect skip the redundant
+        // same-host probe (connect() validates the host) (BUG-1238).
+        ctx.pbx.skipProbeOnce = true
         this.signedInId = ''
         await waitTimeout()
       }

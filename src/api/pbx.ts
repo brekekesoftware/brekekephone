@@ -411,6 +411,12 @@ export class PBX extends EventEmitter {
 
   // wait auth state to be success
   private connectTimeoutId = 0
+  // Skip the Android server-availability probe on the reconnect right after a same-host
+  // account switch (server was just reachable) to avoid the probe WebSocket wedging the
+  // bridge amid the teardown storm. Set by authStore.signInByNotification, consumed once;
+  // other reconnects still probe (BUG-1238).
+  skipProbeOnce = false
+  private probeVerifiedUri: string | undefined = undefined
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
@@ -446,8 +452,11 @@ export class PBX extends EventEmitter {
     })
     this.client = client
     client.debugLevel = 2
-    // Check server availability before login (Android only)
-    if (isAndroid) {
+    // Check server availability before login (Android only), unless this reconnect
+    // immediately follows a same-host account switch (server just verified) (BUG-1238).
+    const skipProbe = this.skipProbeOnce && this.probeVerifiedUri === wsUri
+    this.skipProbeOnce = false
+    if (isAndroid && !skipProbe) {
       if (!(await this.probeServer(wsUri))) {
         this.logMainInstance('PAL Server not ready - aborting login')
         this.disconnect()
@@ -669,6 +678,9 @@ export class PBX extends EventEmitter {
     if (!(await isConnected())) {
       return false
     }
+    // Server verified reachable for this host — lets a same-host account switch skip the
+    // redundant probe (see skipProbeOnce) (BUG-1238).
+    this.probeVerifiedUri = wsUri
 
     // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
