@@ -794,6 +794,9 @@ export class AuthStore {
       await this.signIn(acc)
     } finally {
       this.isSigningInByNotification = false
+      if (!this.signedInId) {
+        ctx.nav.goToPageIndex()
+      }
     }
   }
   phoneappliEnabled = () =>

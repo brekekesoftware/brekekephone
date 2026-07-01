@@ -4,7 +4,6 @@ import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
-import { jsonStable } from '#/utils/jsonStable'
 import { get } from '#/utils/lodash'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
@@ -182,12 +181,14 @@ export const parseNotificationData = (raw?: object) => {
 
 const isNoU = (v: unknown) => v === null || v === undefined
 let androidAlreadyProccessedPn: { [k: string]: boolean } = {}
+let androidProcessedLocalChatNotification: { [k: string]: boolean } = {}
 
 // after pbx server reset, call id (number) on the server side will be reset to 1, 2, 3...
 // if the cache contain those ids previously, the new calls will be rejected
 export const resetProcessedPn = () => {
   ctx.call.callkeepActionMap = {}
   androidAlreadyProccessedPn = {}
+  androidProcessedLocalChatNotification = {}
 }
 
 export const parse = async (
@@ -200,26 +201,46 @@ export const parse = async (
   if (!raw || !n) {
     return
   }
+  const rawId = raw['id'] as string | undefined
   // received PN chat but don't click item notification
   if (!n.isCall && !isClickAction) {
     return
   }
 
-  // handle duplicated pn on android
-  // sometimes getInitialNotifications not update callkeepUuid yet or Event NotificationOpened triggered get more than once
-  if (isAndroid) {
-    const k = n.id || jsonStable(raw)
-    if (androidAlreadyProccessedPn[k]) {
+  // Dedupe call PNs on Android: getInitialNotifications may re-deliver the same call PN, or
+  // NotificationOpened fires more than once for the same tap. Only dedupe when n.id exists
+  // (call PN with pn-id). Chat/local notification taps are deduped separately by
+  // androidProcessedLocalChatNotification (rawId) so a repeated jsonStable(raw) key can't
+  // permanently block subsequent chat taps (BUG-1238, cd63b85e).
+  if (isAndroid && n.id) {
+    if (androidAlreadyProccessedPn[n.id]) {
       console.log(
-        `SIP PN debug: PushNotification-parse: already processed k=${k}`,
+        `SIP PN debug: PushNotification-parse: already processed pnId=${n.id}`,
       )
       return
     }
-    androidAlreadyProccessedPn[k] = true
+    androidAlreadyProccessedPn[n.id] = true
+  }
+
+  const localChatNotificationId =
+    isAndroid && isClickAction && !n.isCall && rawId?.startsWith('message-')
+      ? rawId
+      : undefined
+  if (localChatNotificationId) {
+    if (androidProcessedLocalChatNotification[localChatNotificationId]) {
+      console.log(
+        `SIP PN debug: PushNotification-parse: skip already opened local chat notification rawId=${localChatNotificationId}`,
+      )
+      return
+    }
+    androidProcessedLocalChatNotification[localChatNotificationId] = true
   }
 
   const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)
   if (!acc) {
+    if (localChatNotificationId) {
+      delete androidProcessedLocalChatNotification[localChatNotificationId]
+    }
     console.log(
       'checkAndRemovePnTokenViaSip debug: do not show pn account not exist',
     )
@@ -261,7 +282,6 @@ export const parse = async (
     fn()
   }
 
-  const rawId = raw['id'] as string | undefined
   // handle missed call local notification
   if (rawId?.startsWith('missedcall')) {
     console.log(
@@ -280,14 +300,14 @@ export const parse = async (
     return
   }
 
-  const isChatMessage = Boolean(
+  const isLocalChatNotification = Boolean(
     isLocal ||
       raw.my_custom_data ||
       raw.is_local_notification ||
       n.my_custom_data ||
-      n.is_local_notification ||
-      !n.isCall,
+      n.is_local_notification,
   )
+  const isChatMessage = isLocalChatNotification || !n.isCall
   // handle uc chat notification on press
   // currently server is sending PN as not-data-only
   // if the app is killed, the PN will show up instantly without triggering this code
@@ -308,21 +328,29 @@ export const parse = async (
       )
       return
     }
+    // Mark the message the user just opened so the UC unread reload doesn't
+    // re-create a duplicate local notification for it (BUG-1238 #1). Fires for
+    // BOTH remote (FCM/LPC) and local chat notification taps — the duplicate from
+    // loadUnreadChats happens regardless of which one was tapped.
+    if (isAndroid && isClickAction) {
+      ctx.chat.suppressNextLocalNotification(
+        senderId || confId,
+        n.message || n.body || n.alert || n.title,
+      )
+    }
     const goToChatRecents = () => ctx.nav.goToPageChatRecents()
     ctx.nav.customPageIndex = goToChatRecents
     if (!senderId && !confId) {
       return
     }
-    void waitMfaIfNeeded().then(async ok => {
+    void waitMfaIfNeeded().then(ok => {
       if (!ok || !isNotificationAccountActive()) {
         clearCustomPageIndex(goToChatRecents)
         return
       }
-      await ctx.auth.waitUc()
-      if (!isNotificationAccountActive()) {
-        clearCustomPageIndex(goToChatRecents)
-        return
-      }
+      // Navigate to chat detail immediately without waiting for UC here.
+      // PageChatDetail shows a "Loading..." state and awaits UC itself, so the user
+      // sees the chat right away and can go back while UC connects (BUG-1238 #2).
       if ((isGroupChat || !senderId) && confId) {
         ctx.chat.handleMoveToChatGroupDetail(confId)
       } else if (senderId) {
