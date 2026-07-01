@@ -24,14 +24,18 @@ import com.brekeke.phonedev.utils.MonitorConnection;
 import com.facebook.react.ReactApplication;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 // main lpc service
 
 public class BrekekeLpcService extends Service {
-  public static boolean isServiceStarted = false;
-  public static Intent iService;
+  // volatile: written from RN thread (updateConfig/enableLPC) and read from main thread
+  // (watchdog reconnectSocket) and executor thread (socket loop isServiceStarted check)
+  public static volatile boolean isServiceStarted = false;
+  public static volatile Intent iService;
+  private static volatile BrekekeLpcService runningService;
   private static ConnectivityManager cm;
   private ConnectivityManager.NetworkCallback networkCallback;
   public static Boolean isReconnectByNetworkChange = false;
@@ -51,6 +55,7 @@ public class BrekekeLpcService extends Service {
     con = new MonitorConnection();
     // BUG-1230: watchdog reconnects the socket in-process instead of restarting the FGS
     con.setReconnectListener(this::reconnectSocket);
+    runningService = this;
   }
 
   @Override
@@ -145,11 +150,45 @@ public class BrekekeLpcService extends Service {
     startInService(iService);
   }
 
+  // Called from enableLPC when the service is already running to update config and reconnect the
+  // socket without going through startForegroundService (which would re-post the notification and
+  // regress BUG-1230). Returns false if the service is not running so the caller falls back to the
+  // normal startForegroundService + bindService first-start path.
+  //
+  // If the intent carries the same config as the live socket (same-account app relaunch, e.g.
+  // tapping a notification), skip the reconnect entirely so the working socket is not interrupted.
+  public static boolean updateRunningConfig(Intent intent) {
+    BrekekeLpcService service = runningService;
+    if (service == null) {
+      return false;
+    }
+    if (iService != null
+        && Objects.equals(iService.getStringExtra("host"), intent.getStringExtra("host"))
+        && iService.getIntExtra("port", 0) == intent.getIntExtra("port", 0)
+        && Objects.equals(iService.getStringExtra("username"), intent.getStringExtra("username"))
+        && Objects.equals(iService.getStringExtra("token"), intent.getStringExtra("token"))
+        && Objects.equals(
+            iService.getStringExtra("tlsKeyHash"), intent.getStringExtra("tlsKeyHash"))) {
+      Emitter.debug("[BrekekeLpcService] Same config, skipping reconnect");
+      return true;
+    }
+    service.updateConfig(intent);
+    return true;
+  }
+
+  private void updateConfig(Intent intent) {
+    isServiceStarted = true;
+    Emitter.debug(
+        "[BrekekeLpcService] Update service config while running username="
+            + intent.getStringExtra("username"));
+    startInService(intent);
+    con.onConnected();
+  }
+
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     Log.d(LpcUtils.TAG, "onBind: execute");
-    iService = intent;
     registerNetworkCallback();
     Emitter.debug("[BrekekeLpcService] Start service when bind");
     startInService(intent);
@@ -158,6 +197,7 @@ public class BrekekeLpcService extends Service {
   }
 
   private void startInService(Intent intent) {
+    iService = intent;
     String tlsKeyHash = intent.getStringExtra("tlsKeyHash");
     int port = intent.getIntExtra("port", 0);
     String host = intent.getStringExtra("host");
@@ -180,6 +220,9 @@ public class BrekekeLpcService extends Service {
   @Override
   public void onDestroy() {
     isServiceStarted = false;
+    if (runningService == this) {
+      runningService = null;
+    }
     // BUG-1230: explicitly cancel the socket (it may be parked in select() and would not
     // notice isServiceStarted=false on its own)
     if (currentSocketTask != null) {

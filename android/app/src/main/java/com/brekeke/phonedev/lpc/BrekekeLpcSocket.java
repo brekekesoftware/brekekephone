@@ -161,7 +161,9 @@ public class BrekekeLpcSocket {
         Log.d(LpcUtils.TAG, "IOException: " + e.getMessage());
         if (e.getMessage() != null && e.getMessage().equals("Connection refused")) {
           // stop service
-          LpcUtils.LpcCallback.cb.getStateServer(false);
+          if (LpcUtils.LpcCallback.cb != null) {
+            LpcUtils.LpcCallback.cb.getStateServer(false);
+          }
           Emitter.error("[BrekekeLpcSocket] Connection refused");
         } else {
           Emitter.error("[BrekekeLpcSocket] IOException: " + e.getMessage());
@@ -372,7 +374,9 @@ public class BrekekeLpcSocket {
     }
 
     private Boolean isChatMessage(Map<String, String> m) {
-      return m.get("x_pn-id") == null && "message".equalsIgnoreCase(m.get("event"));
+      // check both x_pn-id and pn-id: server may omit the x_ prefix on some versions
+      return m.get("x_pn-id") == null && m.get("pn-id") == null
+          && "message".equalsIgnoreCase(m.get("event"));
     }
 
     private void handleChatmessageResponse(JSONObject obj, Map<String, String> m) {
