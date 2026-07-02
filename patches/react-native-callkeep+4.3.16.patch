@@ -387,7 +387,7 @@ index 1ea76fb..675b7ae 100644
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index 5d58692..a3e6c71 100644
+index 5d58692..9abb602 100644
 --- a/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/node_modules/react-native-callkeep/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 @@ -25,6 +25,8 @@ import android.app.NotificationChannel;
@@ -465,16 +465,31 @@ index 5d58692..a3e6c71 100644
              notificationBuilder.setContentIntent(pendingIntent);
          }
  
-@@ -343,7 +363,7 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -343,7 +363,22 @@ public class VoiceConnectionService extends ConnectionService {
          Notification notification = notificationBuilder.build();
  
          try {
 -            startForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
-+            startForeground(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL | ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
++            // On Android 14+ the foreground service type is enforced against the
++            // runtime permissions actually granted. Build the type from what we have
++            // so an audio-only call (camera not granted) does not throw and drop the
++            // whole FGS, which would also kill the background microphone.
++            int fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
++            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
++                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
++            }
++            if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
++                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
++            }
++            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
++                startForeground(NOTIFICATION_ID, notification, fgsType);
++            } else {
++                startForeground(NOTIFICATION_ID, notification);
++            }
          } catch (Exception e) {
              Log.w(TAG, "[VoiceConnectionService] Can't start foreground service : " + e.toString());
          }
-@@ -358,8 +378,15 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -358,8 +393,15 @@ public class VoiceConnectionService extends ConnectionService {
              return;
          }
  
