@@ -93,11 +93,7 @@ const RNPickerInput = observer(({ onSelect, listOption }: PickerItemOption) => {
             className='bg-background border-border web:py-1.25 rounded-input h-10 w-full overflow-hidden border-[0.8px] px-2.5'
             value={value}
           />
-          <ScrollView
-            className='w-full'
-            keyboardShouldPersistTaps='always'
-            keyboardDismissMode='on-drag'
-          >
+          <ScrollView className='w-full' keyboardShouldPersistTaps='always'>
             {items?.map(renderItem)}
           </ScrollView>
         </View>
