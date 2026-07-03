@@ -1,4 +1,5 @@
 import { View } from '@rntwsc/rn/core/components/view'
+import { useSafeAreaInsets } from '@rntwsc/rn/core/responsive/use-safe-area'
 import { useEffect, useState } from 'react'
 import type { KeyboardEvent, KeyboardEventEasing } from 'react-native'
 import { Dimensions, Keyboard, LayoutAnimation } from 'react-native'
@@ -12,6 +13,11 @@ type Props = {
 // iOS-only: relies on keyboardWillShow/keyboardWillHide which Android does not emit
 export const KeyboardSpacer = ({ topSpacing = 0, onToggle }: Props) => {
   const [keyboardSpace, setKeyboardSpace] = useState(0)
+  // this spacer sits inside RootView SafeAreaView which already pads the
+  // bottom inset, while the keyboard frame is measured from the physical
+  // screen bottom -> subtract the inset to avoid double counting
+  const insets = useSafeAreaInsets()
+  const bottomInset = insets ? insets.bottom : 0
 
   useEffect(() => {
     const configureAnimation = (
@@ -35,7 +41,10 @@ export const KeyboardSpacer = ({ topSpacing = 0, onToggle }: Props) => {
       }
       configureAnimation(e.duration, e.easing)
       const screenHeight = Dimensions.get('window').height
-      const space = screenHeight - e.endCoordinates.screenY + topSpacing
+      const space = Math.max(
+        screenHeight - e.endCoordinates.screenY + topSpacing - bottomInset,
+        0,
+      )
       setKeyboardSpace(space)
       onToggle?.(true, space)
     }
@@ -51,7 +60,7 @@ export const KeyboardSpacer = ({ topSpacing = 0, onToggle }: Props) => {
       showSub.remove()
       hideSub.remove()
     }
-  }, [topSpacing, onToggle])
+  }, [topSpacing, onToggle, bottomInset])
 
   return (
     <View
