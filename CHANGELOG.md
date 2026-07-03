@@ -1,3 +1,37 @@
+#### 2.17.15
+
+- Hot fix android 14+ audio-only call should not crash and lose background microphone when camera permission is not granted (issue 1247)
+
+#### 2.17.14
+
+- Hot fix android it should not freeze when switching accounts on the same host (issue 1238)
+
+#### 2.17.13
+
+- Hot fix android it should not show duplicate chat notifications and should open chat detail without delay (issue 1238)
+- Hot fix android it should not navigate to stale UC chat of the previous account after switching (issue 1238)
+- Hot fix android it should not have one-way audio when opening another app while talking (issue 1244)
+
+#### 2.17.12
+
+- Hot fix android lpc it should still receive PN calls after switching account via URL scheme login (issue 1237)
+- Hot fix android it should not lose chat message PN due to call PN dedupe and cache flush (issue 1238)
+- Hot fix android lpc it should not misroute or drop call and chat PN, fix races and NPE in LPC service (issue 1246)
+
+#### 2.17.11
+
+- Hot fix it should not create a new MFA instance while one is in progress, OTP is only shown for the account being verified (issue 1234, 1235, 1236)
+- Fix multiple account issues: MFA for the correct account on URL scheme login, no auto OTP on background sync, PN toggle OFF on OTP cancel, no stale state reuse on account switch
+- Add setDeviceToken embed api with example
+
+#### 2.17.10
+
+- Hot fix android it should block account item interaction while push notification toggle is syncing (issue 1235)
+
+#### 2.17.9
+
+- Hot fix android it should show loading indicator for push notification on the account sign-in screen (issue 1234)
+
 #### 2.17.8
 
 - Hot fix android google play store permission policy
