@@ -578,7 +578,9 @@ export class PBX extends EventEmitter {
       )
     })
 
-    const isStaleClient = () => !!this.client && this.client !== client
+    // this.client cleared by disconnect() (e.g. account switch) also means stale —
+    // events from this connect attempt must not update global state (BUG-1250)
+    const isStaleClient = () => this.client !== client
 
     // listeners to be added after login successfully
     const listeners = {
@@ -590,7 +592,15 @@ export class PBX extends EventEmitter {
         this.onClose()
       },
       onError: this.onError,
-      notify_serverstatus: this.onServerStatus,
+      notify_serverstatus: (e: PbxEvent['serverStatus']) => {
+        // a stale client's "active" status would wrongly set pbxState=success while
+        // pbx.client is already null/replaced, deadlocking SIP auth (BUG-1250)
+        if (isStaleClient()) {
+          console.log('PBX guard debug: drop serverstatus from stale client')
+          return
+        }
+        this.onServerStatus(e)
+      },
       notify_park: this.onPark,
       notify_callrecording: this.onCallRecording,
       notify_voicemail: this.onVoicemail,
@@ -621,6 +631,12 @@ export class PBX extends EventEmitter {
       resolveFn = undefined
     }
     const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
+      if (isStaleClient()) {
+        console.log(
+          'PBX guard debug: drop pending serverstatus from stale client',
+        )
+        return
+      }
       if (!e?.status) {
         return
       }
@@ -648,6 +664,16 @@ export class PBX extends EventEmitter {
 
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
+
+    // disposed/replaced while logging in (e.g. account switch): close the socket to
+    // avoid a zombie server session causing "login from another place" (BUG-1250)
+    if (isStaleClient()) {
+      console.log('PBX guard debug: close stale client after login')
+      try {
+        client.close()
+      } catch {}
+      return false
+    }
 
     // in syncPnToken, isMainInstance = false
     if (!this.isMainInstance) {
