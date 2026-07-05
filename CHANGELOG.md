@@ -1,3 +1,7 @@
+#### 2.17.16
+
+- Hot fix it should not get stuck at connecting to SIP after switching account via chat message notification (issue 1250)
+
 #### 2.17.15
 
 - Hot fix android 14+ audio-only call should not crash and lose background microphone when camera permission is not granted (issue 1247)
