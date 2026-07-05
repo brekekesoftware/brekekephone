@@ -375,7 +375,8 @@ public class BrekekeLpcSocket {
 
     private Boolean isChatMessage(Map<String, String> m) {
       // check both x_pn-id and pn-id: server may omit the x_ prefix on some versions
-      return m.get("x_pn-id") == null && m.get("pn-id") == null
+      return m.get("x_pn-id") == null
+          && m.get("pn-id") == null
           && "message".equalsIgnoreCase(m.get("event"));
     }
 

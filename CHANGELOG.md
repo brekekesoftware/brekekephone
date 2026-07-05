@@ -21,8 +21,9 @@
 #### 2.17.11
 
 - Hot fix it should not create a new MFA instance while one is in progress, OTP is only shown for the account being verified (issue 1234, 1235, 1236)
-- Fix multiple account issues: MFA for the correct account on URL scheme login, no auto OTP on background sync, PN toggle OFF on OTP cancel, no stale state reuse on account switch
-- Add setDeviceToken embed api with example
+- Hot fix multiple accounts: MFA for the correct account on URL scheme login, no auto OTP on background sync, PN toggle OFF on OTP cancel, no stale state reuse on account switch
+- Embed:
+  - Add setDeviceToken with example
 
 #### 2.17.10
 
@@ -36,7 +37,7 @@
 
 - Hot fix android google play store permission policy
 - Hot fix android lpc foreground service disclosure prompt and notification (issue 1233)
-- Fix push notification should be enabled by default for mobile accounts
+- Hot fix push notification should be enabled by default for mobile accounts
 - Update Japanese text for LPC foreground service disclosure and notification
 
 #### 2.17.7

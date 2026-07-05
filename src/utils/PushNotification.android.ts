@@ -46,10 +46,7 @@ const onNotification = async (
     await initApp()
     const shouldReplayInitialCallPn = !!parseNotificationData(n0)?.id
     const shouldFlushInitialChatPn =
-      !isClickAction &&
-      n0?.event === 'message' &&
-      !n0?.title &&
-      !n0?.body
+      !isClickAction && n0?.event === 'message' && !n0?.title && !n0?.body
     if (
       !n0?.callkeepUuid &&
       (shouldReplayInitialCallPn || shouldFlushInitialChatPn)
