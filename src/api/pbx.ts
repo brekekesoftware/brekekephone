@@ -35,6 +35,7 @@ import {
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/accountStore'
+import { getAccountUniqueId } from '#/stores/accountStore'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -143,6 +144,8 @@ const rebuildCustomPageUrlPbxToken = async (url: string) => {
 
 // ----------------------------------------------------------------------------
 // actual pbx class
+type SyncMfaResult = 'continue' | 'stop'
+
 export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
@@ -408,10 +411,17 @@ export class PBX extends EventEmitter {
 
   // wait auth state to be success
   private connectTimeoutId = 0
+  // Skip the Android server-availability probe on the reconnect right after a same-host
+  // account switch (server was just reachable) to avoid the probe WebSocket wedging the
+  // bridge amid the teardown storm. Set by authStore.signInByNotification, consumed once;
+  // other reconnects still probe (BUG-1238).
+  skipProbeOnce = false
+  private probeVerifiedUri: string | undefined = undefined
   connect = async (
     a: Account,
     palParamUserReconnect?: boolean,
     forSyncPnToken?: boolean,
+    allowMfaPromptForPnSync = false,
   ): Promise<boolean> => {
     console.log('PBX PN debug: call pbx.connect')
     if (this.client) {
@@ -442,8 +452,11 @@ export class PBX extends EventEmitter {
     })
     this.client = client
     client.debugLevel = 2
-    // Check server availability before login (Android only)
-    if (isAndroid) {
+    // Check server availability before login (Android only), unless this reconnect
+    // immediately follows a same-host account switch (server just verified) (BUG-1238).
+    const skipProbe = this.skipProbeOnce && this.probeVerifiedUri === wsUri
+    this.skipProbeOnce = false
+    if (isAndroid && !skipProbe) {
       if (!(await this.probeServer(wsUri))) {
         this.logMainInstance('PAL Server not ready - aborting login')
         this.disconnect()
@@ -565,11 +578,29 @@ export class PBX extends EventEmitter {
       )
     })
 
+    // this.client cleared by disconnect() (e.g. account switch) also means stale —
+    // events from this connect attempt must not update global state (BUG-1250)
+    const isStaleClient = () => this.client !== client
+
     // listeners to be added after login successfully
     const listeners = {
-      onClose: this.onClose,
+      onClose: () => {
+        if (isStaleClient()) {
+          console.log('PBX guard debug: drop onClose from stale client')
+          return
+        }
+        this.onClose()
+      },
       onError: this.onError,
-      notify_serverstatus: this.onServerStatus,
+      notify_serverstatus: (e: PbxEvent['serverStatus']) => {
+        // a stale client's "active" status would wrongly set pbxState=success while
+        // pbx.client is already null/replaced, deadlocking SIP auth (BUG-1250)
+        if (isStaleClient()) {
+          console.log('PBX guard debug: drop serverstatus from stale client')
+          return
+        }
+        this.onServerStatus(e)
+      },
       notify_park: this.onPark,
       notify_callrecording: this.onCallRecording,
       notify_voicemail: this.onVoicemail,
@@ -590,10 +621,22 @@ export class PBX extends EventEmitter {
     )
     // pending listeners before login successfully
     const pendingOnCloseOrError = () => {
+      if (isStaleClient()) {
+        console.log(
+          'PBX guard debug: drop pending close/error from stale client',
+        )
+        return
+      }
       resolveFn?.(false)
       resolveFn = undefined
     }
     const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
+      if (isStaleClient()) {
+        console.log(
+          'PBX guard debug: drop pending serverstatus from stale client',
+        )
+        return
+      }
       if (!e?.status) {
         return
       }
@@ -622,12 +665,25 @@ export class PBX extends EventEmitter {
     await Promise.race([login, newTimeoutPromise()])
     this.clearConnectTimeoutId()
 
+    // disposed/replaced while logging in (e.g. account switch): close the socket to
+    // avoid a zombie server session causing "login from another place" (BUG-1250)
+    if (isStaleClient()) {
+      console.log('PBX guard debug: close stale client after login')
+      try {
+        client.close()
+      } catch {}
+      return false
+    }
+
     // in syncPnToken, isMainInstance = false
     if (!this.isMainInstance) {
       if (forSyncPnToken) {
-        const mfaNeeded = await this.checkMFAForSyncPnToken(a)
-        if (mfaNeeded) {
-          return true
+        const syncMfaResult = await this.checkMFAForSyncPnToken(
+          a,
+          allowMfaPromptForPnSync,
+        )
+        if (syncMfaResult === 'stop') {
+          return false
         }
       }
       const r = await Promise.race([connected, newTimeoutPromise()])
@@ -648,6 +704,9 @@ export class PBX extends EventEmitter {
     if (!(await isConnected())) {
       return false
     }
+    // Server verified reachable for this host — lets a same-host account switch skip the
+    // redundant probe (see skipProbeOnce) (BUG-1238).
+    this.probeVerifiedUri = wsUri
 
     // check again webphone.pal.param.user
     if (!palParamUserReconnect) {
@@ -808,8 +867,17 @@ export class PBX extends EventEmitter {
     const data = ctx.account.findDataSync(ca)
     const connectedWithDeviceToken = data?.palParams?.['device_token']
     const isFreshLogin = ctx.auth.pbxFreshLogin
+    const skipFreshLoginMFAWithDeviceToken =
+      isEmbed &&
+      !!connectedWithDeviceToken &&
+      isFreshLogin &&
+      ctx.account.consumeSkipFreshLoginMFAWithDeviceToken(ca)
     ctx.auth.pbxFreshLogin = false
-    if (!connectedWithDeviceToken || isFreshLogin || inMFA) {
+    if (
+      !connectedWithDeviceToken ||
+      (isFreshLogin && !skipFreshLoginMFAWithDeviceToken) ||
+      inMFA
+    ) {
       await ctx.account.handleMFA(ca)
       // Re-check: handleMFA may have changed state to IN_PROGRESS (OTP required).
       return ctx.account.isAccountInMFA(ca)
@@ -817,66 +885,176 @@ export class PBX extends EventEmitter {
     return false
   }
 
-  // Handle MFA for syncPnToken flow (isMainInstance=false).
-  // When MFA is required and no device_token exists, lend the socket
-  // to ctx.pbx so the OTP page can use it, then return true to stop
-  // syncPnToken from continuing (which would disconnect the socket).
-  private checkMFAForSyncPnToken = async (a: Account): Promise<boolean> => {
+  private checkMFAForSyncPnToken = async (
+    a: Account,
+    allowMfaPrompt: boolean,
+  ): Promise<SyncMfaResult> => {
+    const debug = (reason: string, detail = '') =>
+      console.log(
+        `PN MFA debug: checkMFAForSyncPnToken user=${a.pbxUsername} reason=${reason}${detail}`,
+      )
+    const hasPendingPnToggle = () =>
+      allowMfaPrompt &&
+      ctx.account.pendingPnAccountId === a.id &&
+      ctx.account.pendingPnEnabled !== undefined
+    const applyPendingPnToggle = () => {
+      if (!hasPendingPnToggle()) {
+        return
+      }
+      a.pushNotificationEnabled = ctx.account.pendingPnEnabled as boolean
+      a.pushNotificationEnabledSynced = false
+      ctx.account.pendingPnAccountId = undefined
+      ctx.account.pendingPnEnabled = undefined
+      ctx.account.saveAccountsToLocalStorageDebounced()
+    }
+    const clearPendingPnToggle = () => {
+      if (!hasPendingPnToggle()) {
+        return false
+      }
+      ctx.account.pendingPnAccountId = undefined
+      ctx.account.pendingPnEnabled = undefined
+      return true
+    }
+
     const pc = await this.getConfig(true)
     if (!isMFASupported(pc)) {
-      return false
+      debug('mfa-not-supported')
+      applyPendingPnToggle()
+      return 'continue'
     }
-    // Main MFA flow already handling this account — don't duplicate mfaStart
-    // (would invalidate active session + send duplicate OTP email)
     if (ctx.mfa.isShowing(a.id)) {
-      return false
+      debug('mfa-already-showing')
+      if (ctx.account.pendingPnEnabled === false) {
+        applyPendingPnToggle()
+        return 'continue'
+      }
+      if (clearPendingPnToggle()) {
+        return 'stop'
+      }
+      return 'continue'
     }
-    // Skip MFA if account has been removed — prevents spurious mfaStart
-    // + "Account does not exist" on OTP screen during pnToken.sync(noUpsert)
     if (!ctx.account.accounts.some(acc => acc.id === a.id)) {
-      return false
+      debug('account-removed')
+      if (clearPendingPnToggle()) {
+        return 'stop'
+      }
+      return 'continue'
     }
     const data = ctx.account.findDataSync(a)
     if (data?.palParams?.['device_token']) {
-      return false
+      debug('has-device-token')
+      applyPendingPnToggle()
+      return 'continue'
+    }
+    if (ctx.account.isMFANotRequired(a)) {
+      debug('mfa-not-required')
+      applyPendingPnToggle()
+      return 'continue'
+    }
+    if (!hasPendingPnToggle()) {
+      if (data?.mfa?.required !== true) {
+        debug('mfa-requirement-unknown')
+        return 'continue'
+      }
+      debug(
+        'not-user-toggle',
+        ` allowMfaPrompt=${allowMfaPrompt} pendingAccountMatch=${
+          ctx.account.pendingPnAccountId === a.id
+        } pendingPnEnabled=${ctx.account.pendingPnEnabled}`,
+      )
+      return 'stop'
     }
 
-    const savedClient = ctx.pbx.client
-    ctx.pbx.client = this.client
-    const started = await ctx.account.mfaStart(a)
-
-    if (started === false || started === 'none') {
-      ctx.pbx.client = savedClient
-      return false
+    // BUG-1235 (R12): turning push OFF never needs OTP — apply the OFF state and
+    // let syncPnToken run pnmanage(remove). Only turning ON triggers mfaStart.
+    if (ctx.account.pendingPnEnabled === false) {
+      debug('toggle-off')
+      applyPendingPnToggle()
+      return 'continue'
     }
 
-    // started is true (OK) or { error } (server FAILED) — both surface modal.
-    // For the error case, propagate the message so the modal explains why.
-    const errorMsg =
-      typeof started === 'object' && 'error' in started
-        ? started.error
-        : undefined
-    await ctx.account.setMFAPending(a, true)
-    ctx.mfa.show(a.id, { skipReconnect: true, error: errorMsg })
+    const palClient = this.client
+    if (!palClient) {
+      debug('no-pal-client')
+      clearPendingPnToggle()
+      return 'stop'
+    }
 
-    // Revert PN to previous value — UI should only change after
-    // MFA verify + sync succeed.
-    const pnEnabled = ctx.account.pendingPnEnabled ?? a.pushNotificationEnabled
-    a.pushNotificationEnabled = !pnEnabled
-    a.pushNotificationEnabledSynced = false
-    ctx.account.saveAccountsToLocalStorageDebounced()
-    ctx.account.pendingPnEnabled = undefined
+    return this.runPnSyncMfaPrompt(a, palClient)
+  }
 
-    const ok = await ctx.mfa.waitComplete()
-    ctx.pbx.client = savedClient
-    if (ok) {
+  private runPnSyncMfaPrompt = async (
+    a: Account,
+    palClient: Pbx,
+  ): Promise<SyncMfaResult> => {
+    if (ctx.auth.signedInId && ctx.auth.signedInId !== a.id) {
+      ctx.account.pendingPnAccountId = undefined
+      ctx.account.pendingPnEnabled = undefined
+      return 'stop'
+    }
+
+    ctx.mfa.palClient = {
+      accountKey: getAccountUniqueId(a),
+      client: palClient,
+    }
+
+    try {
+      const started = await ctx.account.mfaStart(a)
+      console.log(
+        `PN MFA debug: mfaStart result user=${a.pbxUsername} result=${
+          typeof started === 'object' ? JSON.stringify(started) : started
+        }`,
+      )
+      // Consume the pending toggle regardless of mfaStart result so a failed
+      // mfaStart doesn't leave pendingPnAccountId set for the next sync.
+      const pnEnabled = ctx.account.pendingPnEnabled as boolean
+      ctx.account.pendingPnAccountId = undefined
+      ctx.account.pendingPnEnabled = undefined
+
+      if (started === false) {
+        return 'stop'
+      }
+
+      if (started === 'none') {
+        a.pushNotificationEnabled = pnEnabled
+        a.pushNotificationEnabledSynced = false
+        ctx.account.saveAccountsToLocalStorageDebounced()
+        return 'continue'
+      }
+
+      const errorMsg =
+        typeof started === 'object' && 'error' in started
+          ? started.error
+          : undefined
+
+      a.pushNotificationEnabled = !pnEnabled
+      a.pushNotificationEnabledSynced = false
+      ctx.account.saveAccountsToLocalStorageDebounced()
+
+      await ctx.account.setMFAPending(a, true)
+
+      if (ctx.auth.signedInId && ctx.auth.signedInId !== a.id) {
+        await ctx.account.setMFAPending(a, false)
+        return 'stop'
+      }
+
+      ctx.mfa.show(a.id, { skipReconnect: true, error: errorMsg })
+
+      const ok = await ctx.mfa.waitComplete()
+      if (!ok) {
+        return 'stop'
+      }
+      await ctx.account.setMFAPending(a, false)
       ctx.account.upsertAccount({
         id: a.id,
         pushNotificationEnabled: pnEnabled,
       })
+      return 'continue'
+    } finally {
+      if (ctx.mfa.palClient?.client === palClient) {
+        ctx.mfa.palClient = undefined
+      }
     }
-    this.disconnect()
-    return ok
   }
 
   private probeServer = (wsUri: string): Promise<boolean> =>
