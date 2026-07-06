@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+// import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
 import {
@@ -10,7 +11,6 @@ import {
   mdiServerNetwork,
   mdiWeb,
 } from '#/assets/icons'
-import { promptForegroundService } from '#/components/AccountCreateForm'
 import { Field } from '#/components/Field'
 import { FooterActions } from '#/components/FooterActions'
 import { RnText, RnTouchableOpacity } from '#/components/Rn'
@@ -45,6 +45,21 @@ const css = StyleSheet.create({
     left: 15,
     right: 15,
   },
+  // Keep for optional PN-sync loading UI.
+  // AccountSignInItem_Loading: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   borderRadius: v.borderRadius,
+  //   backgroundColor: 'black',
+  //   opacity: 0.3,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  // AccountSignInItem_BlockingLayer: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   borderRadius: v.borderRadius,
+  //   backgroundColor: 'black',
+  //   opacity: 0.3,
+  // },
 })
 
 export const AccountSignInItem: FC<{
@@ -80,7 +95,10 @@ export const AccountSignInItem: FC<{
   if (!a) {
     return null
   }
-  const isLoading = ctx.account.pnSyncLoadingMap[props.id]
+  const isLoading = !!ctx.account.pnSyncLoadingMap[props.id]
+  // Keep for optional PN-sync loading UI.
+  // const isBlockedByOtherLoading =
+  //   !isLoading && Object.values(ctx.account.pnSyncLoadingMap).some(Boolean)
 
   const onPressSignIn = async () => {
     if (!(await permForCall(a.pushNotificationEnabled))) {
@@ -93,8 +111,14 @@ export const AccountSignInItem: FC<{
     }
   }
   const onSwitchEnableNotification = async (e: boolean) => {
-    if (e) {
-      promptForegroundService()
+    console.log(
+      `PN MFA debug: toggle user=${a.pbxUsername} next=${e} isLoading=${isLoading}`,
+    )
+    if (isLoading) {
+      console.log(
+        `PN MFA debug: toggle ignored user=${a.pbxUsername} reason=sync-loading`,
+      )
+      return
     }
     if (e && !(await checkPermForCall(true, true))) {
       return
@@ -104,9 +128,14 @@ export const AccountSignInItem: FC<{
       ctx.toast.internet()
       return
     }
-    if (ctx.account.needsMFAForPnSync(a)) {
+    const needsMFA = e && !ctx.account.findDataSync(a)?.palParams?.device_token
+    console.log(
+      `PN MFA debug: toggle user=${a.pbxUsername} needsMFA=${needsMFA}`,
+    )
+    if (needsMFA) {
+      ctx.account.pendingPnAccountId = a.id
       ctx.account.pendingPnEnabled = e
-      ctx.pnToken.sync(a)
+      ctx.pnToken.sync(a, { allowMfaPrompt: true })
       return
     }
     ctx.account.upsertAccount({
@@ -136,10 +165,10 @@ export const AccountSignInItem: FC<{
       </RnTouchableOpacity>
       <Field
         label={intl`PUSH NOTIFICATION`}
+        loading={isLoading}
         onValueChange={(e: boolean) => onSwitchEnableNotification(e)}
         type='Switch'
         value={a.pushNotificationEnabled}
-        loading={isLoading}
       />
       <Field
         label='UC'
@@ -174,6 +203,18 @@ export const AccountSignInItem: FC<{
           onNextText={intl`SIGN IN`}
         />
       </View>
+      {/* Keep for optional PN-sync loading UI.
+      {isLoading && (
+        <View style={css.AccountSignInItem_Loading}>
+          <ActivityIndicator size='small' color='white' />
+        </View>
+      )}
+      {isBlockedByOtherLoading && (
+        <View
+          onStartShouldSetResponder={() => true}
+          style={css.AccountSignInItem_BlockingLayer}
+        />
+      )} */}
     </View>
   )
 })

@@ -55,7 +55,7 @@
     </script>
     <script
       type="text/javascript"
-      src="./brekeke_phone2.17.8/webphone.js"
+      src="./brekeke_phone2.17.10/webphone.js"
     ></script>
   </head>
 
@@ -85,8 +85,146 @@
 
     var imports = window._BrekekePhoneEmbedImports
     var { observer } = imports['mobx-react']
-    var { useEffect, useRef, createElement: jsx } = imports['react']
+    var { useEffect, useRef, useState, createElement: jsx } = imports['react']
     var { createRoot } = imports['react-dom/client']
+
+    // --- Embed MFA demo (left panel only; right panel = webphone untouched) ---
+    var mfaStatus = imports.mobx.observable.box('-')
+    var mfaLog = imports.mobx.observable.array([])
+    phone.on('mfa', function (e) {
+      console.log('[embed mfa]', e)
+      mfaStatus.set(e.status)
+      mfaLog.unshift(
+        new Date().toLocaleTimeString() +
+          '  ' +
+          e.status +
+          (e.message ? ' — ' + e.message : ''),
+      )
+    })
+
+    // Host reuses the webphone's built-in OTP UI (right panel);
+    // only needs the `mfa` event to know when to show/hide its container.
+    var MfaEvent = observer(function () {
+      var status = mfaStatus.get()
+      var shouldShow = status === 'required' || status === 'error'
+      var [otp, setOtp] = useState('')
+      var [apiResult, setApiResult] = useState('')
+      var run = function (label, fn) {
+        Promise.resolve()
+          .then(fn)
+          .then(function (r) {
+            setApiResult(label + ' → ' + JSON.stringify(r == null ? null : r))
+          })
+          .catch(function (err) {
+            setApiResult(
+              label +
+                ' error: ' +
+                (err && err.message ? err.message : String(err)),
+            )
+          })
+      }
+      return jsx('div', {
+        style: { border: '1px solid #999', padding: 10, marginTop: 10 },
+        children: [
+          jsx('b', { children: 'MFA event' }),
+          jsx('div', {
+            children: ['event status: ', jsx('b', { children: status })],
+          }),
+          jsx('div', {
+            children: [
+              'host action: ',
+              jsx('span', {
+                style: {
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  color: 'white',
+                  background: shouldShow ? '#2e7d32' : '#757575',
+                },
+                children: shouldShow
+                  ? 'SHOW OTP screen webphone'
+                  : 'HIDE OTP screen webphone',
+              }),
+            ],
+          }),
+          jsx('div', {
+            style: { fontSize: 12, color: '#555', marginTop: 6 },
+            children:
+              'Built-in OTP modal shows in the right panel; host just toggles its own container on these events.',
+          }),
+          jsx('div', {
+            style: { marginTop: 8 },
+            children: [
+              jsx('b', { children: 'API controls for this OTP screen' }),
+              jsx('div', {
+                style: {
+                  display: 'flex',
+                  gap: 6,
+                  margin: '8px 0',
+                  flexWrap: 'wrap',
+                },
+                children: [
+                  jsx('input', {
+                    placeholder: 'OTP code',
+                    value: otp,
+                    onChange: e => setOtp(e.target.value),
+                    style: { padding: 4 },
+                  }),
+                  jsx('button', {
+                    onClick: () =>
+                      run('verifyMfaCode', () => phone.verifyMfaCode(otp)),
+                    children: 'Verify',
+                  }),
+                  jsx('button', {
+                    onClick: () =>
+                      run('resendMfaCode', () => phone.resendMfaCode()),
+                    children: 'Resend',
+                  }),
+                  jsx('button', {
+                    onClick: () => run('cancelMfa', () => phone.cancelMfa()),
+                    children: 'Cancel',
+                  }),
+                  jsx('button', {
+                    onClick: () =>
+                      run('getMfaState', () => phone.getMfaState()),
+                    children: 'getState',
+                  }),
+                ],
+              }),
+              apiResult &&
+                jsx('div', {
+                  style: {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    color: '#1565c0',
+                  },
+                  children: apiResult,
+                }),
+            ],
+          }),
+          jsx('div', {
+            style: { marginTop: 8 },
+            children: [
+              jsx('b', { children: 'events' }),
+              jsx('ul', {
+                style: {
+                  margin: 0,
+                  paddingLeft: 18,
+                  maxHeight: 140,
+                  overflow: 'auto',
+                },
+                children: mfaLog.map((l, i) =>
+                  jsx('li', {
+                    key: i,
+                    style: { fontFamily: 'monospace', fontSize: 12 },
+                    children: l,
+                  }),
+                ),
+              }),
+            ],
+          }),
+        ],
+      })
+    })
 
     var App = observer(() =>
       jsx('div', {
@@ -115,9 +253,14 @@
             children: ['SIP - ', ctx.auth.sipState, ' | '],
           }),
           jsx('span', {
-            children: ['Calls - ', ctx.call.calls.length, ' '],
+            children: ['Calls - ', ctx.call.calls.length, ' | '],
+          }),
+          jsx('span', {
+            children: ['MFA - ', mfaStatus.get(), ' '],
           }),
           jsx('hr'),
+
+          jsx(MfaEvent),
 
           // display all calls
           ctx.call.calls.map(c => jsx(Call, { call: c })),

@@ -228,6 +228,10 @@ export class AuthStore {
     // mfa.accountId is the reliable fallback to catch switches when the
     // previous account had an active MFA modal.
     const prevAccountId = this.signedInId || ctx.mfa.accountId
+    if (this.signedInId && this.signedInId !== a.id) {
+      this.resetPrevAccountConnection()
+      await waitTimeout()
+    }
     if (prevAccountId && prevAccountId !== a.id) {
       // Clear MFA state from previous account — all three are account-specific
       // and would cause stale-session bugs if carried over to the new account.
@@ -252,6 +256,25 @@ export class AuthStore {
       await saveLastSignedInId(getAccountUniqueId(a))
     }
     return true
+  }
+
+  // Clear signedInId first so auth reactions cannot reconnect the old account
+  // while switching runtime PBX/SIP/UC state to the next account.
+  @action private resetPrevAccountConnection = () => {
+    this.signedInId = ''
+    this.resetFailureState()
+    this.pbxState = 'stopped'
+    console.log('SIP PN debug: set sipState stopped account switch')
+    this.sipState = 'stopped'
+    this.ucState = 'stopped'
+    this.sipPn = {}
+    this.pbxConfig = undefined
+    this.ucConfig = undefined
+    this.pbxConnectedAt = 0
+    this.pbxFreshLogin = false
+    ctx.pbx.disconnect()
+    ctx.sip.stopWebRTC()
+    ctx.uc.disconnect()
   }
 
   autoSignInLast = async () => {
@@ -678,6 +701,8 @@ export class AuthStore {
       } else {
         ctx.nav.goToPageAccountUpdate({ id: a.id })
       }
+      // Consume the deep link so resuming from background doesn't re-process it.
+      this.clearUrlParams()
       return true
     }
     //
@@ -698,6 +723,8 @@ export class AuthStore {
     } else {
       ctx.nav.goToPageAccountUpdate({ id: newA.id })
     }
+    // Consume the deep link so resuming from background doesn't re-process it.
+    this.clearUrlParams()
     return true
   }
 
@@ -761,12 +788,18 @@ export class AuthStore {
       // causing "Already signed out after long await" error.
       ctx.authSIP.dispose()
       if (this.signedInId) {
+        // Switching from a connected account: let the reconnect skip the redundant
+        // same-host probe (connect() validates the host) (BUG-1238).
+        ctx.pbx.skipProbeOnce = true
         this.signedInId = ''
         await waitTimeout()
       }
       await this.signIn(acc)
     } finally {
       this.isSigningInByNotification = false
+      if (!this.signedInId) {
+        ctx.nav.goToPageIndex()
+      }
     }
   }
   phoneappliEnabled = () =>

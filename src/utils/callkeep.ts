@@ -9,6 +9,7 @@ import RNCallKeep from 'react-native-callkeep'
 import inCallManager from 'react-native-incall-manager'
 
 import { bundleIdentifier, isAndroid, isIos, isWeb } from '#/config'
+import { resetForegroundPrompt } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -464,6 +465,7 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('onDestroyMainActivity', () => {
     console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()
+    resetForegroundPrompt()
     ctx.auth.signOutWithoutSaving()
   })
 }

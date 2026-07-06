@@ -246,6 +246,9 @@ class Api {
     created: number
     conf_id: string
   }) => {
+    if (!ctx.auth.signedInId) {
+      return
+    }
     ctx.chat.pushMessages(chat.creator, chat, true)
   }
 
@@ -258,6 +261,9 @@ class Api {
     file?: string
     created: number
   }) => {
+    if (!ctx.auth.signedInId) {
+      return
+    }
     ctx.chat.pushMessages(chat.group, chat, true)
   }
 
