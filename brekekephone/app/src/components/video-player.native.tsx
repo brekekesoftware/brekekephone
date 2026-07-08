@@ -15,12 +15,13 @@ export const VideoPlayer = observer(
     sourceObject?: MediaStream | null
     zOrder?: number
     isShowLoading?: boolean
+    objectFit?: 'contain' | 'cover'
   }) =>
     p.sourceObject ? (
       <RnRTCView
         streamURL={p.sourceObject.toURL()}
         className='h-full w-full'
-        objectFit='cover'
+        objectFit={p.objectFit || 'cover'}
         zOrder={p.zOrder}
       />
     ) : p.isShowLoading ? (

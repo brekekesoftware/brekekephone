@@ -267,6 +267,7 @@ export const PageCallManage = observer(
               : null
           }
           zOrder={0}
+          objectFit={isLandscape ? 'contain' : 'cover'}
         />
       </View>
       <CallVideosCarousel

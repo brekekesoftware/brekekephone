@@ -7,10 +7,12 @@ export const VideoPlayer = observer(
   ({
     sourceObject,
     isShowLoading,
+    objectFit,
   }: {
     sourceObject?: MediaStream | null
     isShowLoading?: boolean
     zOrder?: number
+    objectFit?: 'contain' | 'cover'
   }) =>
     sourceObject ? (
       <video
@@ -19,7 +21,11 @@ export const VideoPlayer = observer(
             video.srcObject = sourceObject
           }
         }}
-        className='h-full w-full object-cover'
+        className={
+          objectFit === 'contain'
+            ? 'h-full w-full object-contain'
+            : 'h-full w-full object-cover'
+        }
         playsInline
         autoPlay
       />
