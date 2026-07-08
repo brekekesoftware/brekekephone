@@ -9,6 +9,7 @@ import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 
 export const ChatInput: FC<{
+  inputRef?: any
   onEmojiTurnOn?(): void
   onSelectionChange?(
     event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
@@ -19,6 +20,7 @@ export const ChatInput: FC<{
   text: string
 }> = p => {
   const {
+    inputRef,
     onEmojiTurnOn,
     onSelectionChange,
     onTextChange,
@@ -38,9 +40,14 @@ export const ChatInput: FC<{
         onPress={onEmojiTurnOn}
         className='bg-muted border-border w-12.5 border-t border-r border-b py-2'
       >
-        <RnIcon className='text-foreground-subtle' path={mdiEmoticon} />
+        <RnIcon
+          className='text-foreground-subtle'
+          path={mdiEmoticon}
+          size={20}
+        />
       </RnTouchableOpacity>
       <RnTextInput
+        ref={inputRef}
         blurOnSubmit={false}
         onChangeText={onTextChange}
         onSelectionChange={onSelectionChange}

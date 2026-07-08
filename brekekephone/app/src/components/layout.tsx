@@ -51,6 +51,10 @@ export const Layout: FC<
     iconRights?: string[]
     iconRightColors?: string[]
     iconRightFuncs?: Function[]
+    // in-app region pinned below the footer input (emoji picker). Its height is
+    // reserved in both the footer offset and the scroll content padding.
+    bottomPanel?: ReactNode
+    bottomPanelHeight?: number
   }>
 > = observer(originalProps => {
   const [headerOverflow, setHeaderOverflow] = useState(false)
@@ -60,6 +64,11 @@ export const Layout: FC<
   } // clone so it can be mutated
   const outerClassName = props.className // applied to outer View only
   delete props.className // don't leak className to Footer/Header via {...props}
+
+  const bottomPanel = props.bottomPanel
+  const bottomPanelHeight = props.bottomPanelHeight || 0
+  delete props.bottomPanel // rendered here directly, not via Footer/Header spread
+  delete props.bottomPanelHeight
 
   const Container = props.noScroll ? View : ScrollView
   const containerProps = Object.entries(props).reduce(
@@ -85,9 +94,14 @@ export const Layout: FC<
 
   if (!props.noScroll) {
     containerProps.contentContainerClassName = tw`grow`
-    if (shouldApplyKbPadding && RnKeyboard.isKeyboardShowing) {
+    const kbPadding =
+      shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
+        ? RnKeyboard.keyboardHeight
+        : 0
+    const bottomReserve = Math.max(kbPadding, bottomPanelHeight)
+    if (bottomReserve) {
       containerProps.contentContainerStyle = {
-        paddingBottom: RnKeyboard.keyboardHeight,
+        paddingBottom: bottomReserve,
       }
     }
     containerProps.keyboardShouldPersistTaps = 'always'
@@ -156,7 +170,21 @@ export const Layout: FC<
           }}
         />
       )}
-      <Footer {...props} menu={props.menu as string} />
+      {bottomPanel && (
+        <View
+          className='absolute right-0 bottom-0 left-0'
+          style={{
+            height: bottomPanelHeight,
+          }}
+        >
+          {bottomPanel}
+        </View>
+      )}
+      <Footer
+        {...props}
+        menu={props.menu as string}
+        bottomPanelHeight={bottomPanelHeight}
+      />
       <Header {...props} compact={props.compact || headerOverflow} />
     </View>
   )

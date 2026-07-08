@@ -22,6 +22,7 @@ const noKeyboardClassName = tw`bg-background shadow-opacity-10 shadow-radius-[2p
 export const Footer: FC<{
   menu: string
   isTab?: boolean
+  bottomPanelHeight?: number
 }> = observer(props => {
   const fabProps: {
     onNext?(): void
@@ -41,10 +42,16 @@ export const Footer: FC<{
   ) {
     return null
   }
-  const bottomOffset =
+  // lift the footer above whichever bottom region is showing: the keyboard
+  // (android 15+ manual offset) or an in-app bottom panel (emoji picker). Using
+  // max keeps the input fixed while one region hands off to the other, so
+  // swapping keyboard <-> emoji does not move the input.
+  const bottomOffset = Math.max(
     shouldApplyKbPadding && RnKeyboard.isKeyboardShowing
       ? RnKeyboard.keyboardHeight
-      : 0
+      : 0,
+    props.bottomPanelHeight || 0,
+  )
   const noKeyboard = render || !RnKeyboard.isKeyboardShowing
   return (
     <View

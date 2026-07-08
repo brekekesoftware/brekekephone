@@ -13,6 +13,9 @@ class RnKeyboardStore {
   isKeyboardAnimating = false
   // tracked on all android, consumed by Layout only on android 15+ (BUG-1220)
   keyboardHeight = 0
+  // last non-zero keyboard height, kept after the keyboard hides so an in-app
+  // panel (emoji picker) can size itself to match the keyboard area
+  lastKeyboardHeight = 0
   waitKeyboardTimeoutId = 0
 
   waitKeyboard =
@@ -48,9 +51,12 @@ class RnKeyboardStore {
 export const RnKeyboard = new RnKeyboardStore()
 
 // ios
-Keyboard.addListener('keyboardWillShow', () => {
+Keyboard.addListener('keyboardWillShow', e => {
   RnKeyboard.setKeyboardAnimatingTimeout()
   RnKeyboard.isKeyboardShowing = true
+  if (e.endCoordinates?.height) {
+    RnKeyboard.lastKeyboardHeight = e.endCoordinates.height
+  }
 })
 Keyboard.addListener('keyboardWillHide', () => {
   RnKeyboard.setKeyboardAnimatingTimeout()
@@ -61,6 +67,9 @@ Keyboard.addListener('keyboardWillHide', () => {
 Keyboard.addListener('keyboardDidShow', e => {
   RnKeyboard.isKeyboardShowing = true
   RnKeyboard.keyboardHeight = e.endCoordinates.height
+  if (e.endCoordinates.height) {
+    RnKeyboard.lastKeyboardHeight = e.endCoordinates.height
+  }
 })
 Keyboard.addListener('keyboardDidHide', () => {
   RnKeyboard.isKeyboardShowing = false

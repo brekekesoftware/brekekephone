@@ -1,6 +1,7 @@
 import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
+import { Keyboard } from 'react-native'
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -10,6 +11,7 @@ import type {
 
 import { numberOfChatsPerLoad } from '#/components/chat-config'
 import { MessageList } from '#/components/chat-message-list'
+import { EmojiPicker } from '#/components/emoji-picker'
 import { ChatInput } from '#/components/footer-chat-input'
 import { Layout } from '#/components/layout'
 import { RnText, RnTouchableOpacity } from '#/components/rn'
@@ -19,6 +21,7 @@ import { getPbxName } from '#/stores/contact-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
+import { RnKeyboard } from '#/stores/rn-keyboard'
 import { arrToMap } from '#/utils/arr-to-map'
 import { BackgroundTimer } from '#/utils/background-timer'
 import { formatFileType } from '#/utils/format-file-type'
@@ -36,8 +39,11 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
   const [topic_id, setTopicId] = useState('')
   const [emojiTurnOn, setEmojiTurnOn] = useState(false)
   const numberOfChatsPerLoadMoreRef = useRef(numberOfChatsPerLoad)
-  const edittingTextEmojiRef = useRef('')
-  const editingTextReplaceRef = useRef(false)
+  const selectionRef = useRef<{ start: number; end: number } | undefined>(
+    undefined,
+  )
+  const prevKbShowingRef = useRef(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const viewRef = useRef<ScrollView | undefined>(undefined)
   const justMountedRef = useRef(true)
   const closeToBottomRef = useRef(true)
@@ -141,19 +147,35 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
     }
   }, [isUnread])
 
+  // close the emoji panel once the keyboard has fully risen, handing the bottom
+  // region back to it. rising-edge only: dismissing the keyboard to open the
+  // panel is a falling edge and must not close it.
+  const isKeyboardShowing = RnKeyboard.isKeyboardShowing
+  useEffect(() => {
+    const rising = isKeyboardShowing && !prevKbShowingRef.current
+    prevKbShowingRef.current = isKeyboardShowing
+    if (rising && emojiTurnOn) {
+      setEmojiTurnOn(false)
+    }
+  }, [isKeyboardShowing, emojiTurnOn])
+
   const onSelectionChange = (
     event: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
   ) => {
-    const selection = event.nativeEvent.selection
-    editingTextReplaceRef.current = false
-    if (selection.start !== selection.end) {
-      edittingTextEmojiRef.current = editingText.substring(
-        selection.start,
-        selection.end,
-      )
-      editingTextReplaceRef.current = true
-    } else {
-      edittingTextEmojiRef.current = editingText.substring(0, selection.start)
+    selectionRef.current = event.nativeEvent.selection
+  }
+
+  const insertEmoji = (emoji: string) => {
+    const { start, end } = selectionRef.current || {
+      start: editingText.length,
+      end: editingText.length,
+    }
+    const next = editingText.slice(0, start) + emoji + editingText.slice(end)
+    setEditingText(next)
+    const pos = start + emoji.length
+    selectionRef.current = {
+      start: pos,
+      end: pos,
     }
   }
 
@@ -378,8 +400,21 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
 
   const renderChatInput = () => (
     <ChatInput
+      inputRef={inputRef}
       onEmojiTurnOn={() => {
-        setEmojiTurnOn(!emojiTurnOn)
+        if (emojiTurnOn) {
+          // hand the bottom region back to the keyboard; on native the
+          // rising-edge effect closes the panel once the keyboard is fully
+          // up so the input never moves. web has no keyboard events, close
+          // the panel directly
+          inputRef.current?.focus()
+          if (isWeb) {
+            setEmojiTurnOn(false)
+          }
+          return
+        }
+        setEmojiTurnOn(true)
+        Keyboard.dismiss()
         viewRef.current?.scrollToEnd()
       }}
       onSelectionChange={onSelectionChange}
@@ -395,6 +430,9 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
     ? listMessage[listMessage.length - 1]?.text
     : undefined
   const isShowToastMessage = emojiTurnOn && isUnread
+  // match the emoji panel to the keyboard area so swapping does not move the
+  // input; fall back before the keyboard has ever been measured
+  const emojiHeight = RnKeyboard.lastKeyboardHeight || 300
 
   return (
     <Layout
@@ -405,6 +443,8 @@ export const PageChatDetail = observer(({ buddy }: { buddy: string }) => {
         viewRef.current = ref
       }}
       fabRender={renderChatInput}
+      bottomPanelHeight={emojiTurnOn ? emojiHeight : 0}
+      bottomPanel={emojiTurnOn ? <EmojiPicker onSelect={insertEmoji} /> : null}
       onBack={ctx.nav.backToPageChatRecents}
       title={
         getPbxName({
