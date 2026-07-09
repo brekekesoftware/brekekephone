@@ -20,6 +20,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { useAnimationOnDidMount } from '#/utils/animation'
 import { getPublicIp } from '#/utils/public-ip-address'
+import { isEmbed } from '#/embed/polyfill'
 
 const WEB_CONTAINER_MAX_WIDTH = 480
 const TOAST_ANIMATION_DURATION = 800
@@ -169,19 +170,41 @@ export const Page2StepVerification = () => {
           ctx.mfa.reset()
           return
         }
-        if (!result) {
-          showToast(intl`Unable to send new code. Please try again.`, 'err')
+        if (!result || (typeof result === 'object' && 'error' in result)) {
+          const error =
+            typeof result === 'object' && 'error' in result
+              ? result.error
+              : intl`Unable to send new code. Please try again.`
+          if (isEmbed) {
+            ctx.mfa.show(account.id, { error })
+          }
+          showToast(error, 'err')
           return
+        }
+        if (isEmbed) {
+          if (typeof result === 'object') {
+            ctx.mfa.show(account.id, { type: result.type, url: result.url })
+          } else {
+            ctx.mfa.show(account.id)
+          }
         }
         showToast(intl`A new OTP code was sent to your email`, 'info')
       } catch (e) {
         console.error('mfaStart failed:', e)
-        showToast(intl`Network error. Please try again.`, 'err')
+        const error = intl`Network error. Please try again.`
+        if (isEmbed) {
+          ctx.mfa.show(account.id, { error })
+        }
+        showToast(error, 'err')
       } finally {
         setLoading(false)
       }
     } else {
-      showToast(intl`Unable to resend code. Please try again.`, 'err')
+      const error = intl`Unable to resend code. Please try again.`
+      if (isEmbed) {
+        ctx.mfa.show(account.id, { error })
+      }
+      showToast(error, 'err')
       setLoading(false)
     }
   }
@@ -190,6 +213,7 @@ export const Page2StepVerification = () => {
     if (account && ctx.account.keySessionMFA) {
       await ctx.account.mfaDelete(account)
     }
+    ctx.account.disableUnsyncedPushNotification(account ?? undefined)
     // Sync: cancel + signOut in same tick so MobX batches the state transitions
     // into a single render. Avoids a brief flash where modal has unmounted but
     // signedInId/sipState still show "Internet connection failed" banner.

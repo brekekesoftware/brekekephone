@@ -131,6 +131,53 @@ export class ChatStore {
   isWebchat = (conf_id: string) =>
     this.groups.filter(gr => gr.webchat).some(w => w.id === conf_id)
 
+  // Suppress the duplicate local notification for a chat message the user just
+  // opened from a chat notification (remote FCM/LPC or local). When UC reconnects
+  // and reloads unread chats, pushMessages() re-creates a local notification for
+  // that same message — mark it on tap and skip it once, matching thread + body,
+  // with a short TTL and consume-once (BUG-1238).
+  private suppressedLocalNotifications: {
+    threadId: string
+    body: string
+    at: number
+  }[] = []
+  private suppressLocalNotificationTtl = 60000
+  private normalizeLocalNotificationBody = (body: string) => decode(body).trim()
+  private pruneSuppressedLocalNotifications = (now: number) => {
+    this.suppressedLocalNotifications =
+      this.suppressedLocalNotifications.filter(
+        m => now - m.at < this.suppressLocalNotificationTtl,
+      )
+  }
+  suppressNextLocalNotification = (threadId?: string, body?: string) => {
+    if (!threadId || !body) {
+      return
+    }
+    const b = this.normalizeLocalNotificationBody(body)
+    if (!b) {
+      return
+    }
+    const now = Date.now()
+    this.pruneSuppressedLocalNotifications(now)
+    this.suppressedLocalNotifications.push({ threadId, body: b, at: now })
+  }
+  private consumeSuppressedLocalNotification = (
+    threadId: string,
+    text: string,
+  ) => {
+    const now = Date.now()
+    this.pruneSuppressedLocalNotifications(now)
+    const t = this.normalizeLocalNotificationBody(text)
+    const idx = this.suppressedLocalNotifications.findIndex(
+      m => m.threadId === threadId && !!t && m.body.endsWith(t),
+    )
+    if (idx < 0) {
+      return false
+    }
+    this.suppressedLocalNotifications.splice(idx, 1)
+    return true
+  }
+
   pushChatNotification = (
     title: string,
     body: string,
@@ -252,13 +299,16 @@ export class ChatStore {
     }
 
     if (m.length === 1 && AppState.currentState !== 'active') {
-      this.pushChatNotification(
-        name,
-        m[0]?.text || '',
-        threadId,
-        isGroup,
-        ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
-      )
+      const text = m[0]?.text || ''
+      if (!this.consumeSuppressedLocalNotification(threadId, text)) {
+        this.pushChatNotification(
+          name,
+          text,
+          threadId,
+          isGroup,
+          ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
+        )
+      }
     }
     // play chat notification sound & vibration
     const isTalking =

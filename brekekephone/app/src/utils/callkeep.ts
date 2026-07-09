@@ -10,6 +10,7 @@ import RNCallKeep from 'react-native-callkeep'
 import inCallManager from 'react-native-incall-manager'
 
 import { bundleIdentifier } from '#/config'
+import { resetForegroundPrompt } from '#/stores/account-store'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'
@@ -55,7 +56,7 @@ const setupCallKeep = async () => {
       foregroundService: {
         channelId: bundleIdentifier,
         channelName: intl`Background service for ${ctx.global.productName}`,
-        notificationTitle: intl`${ctx.global.productName} is running on background`,
+        notificationTitle: intl`${ctx.global.productName} call is ongoing`,
         notificationIcon: 'ic_launcher',
       },
       selfManaged: true,
@@ -463,6 +464,7 @@ export const setupCallKeepEvents = async () => {
   eventEmitter.addListener('onDestroyMainActivity', () => {
     console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()
+    resetForegroundPrompt()
     ctx.auth.signOutWithoutSaving()
   })
 }
