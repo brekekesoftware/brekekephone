@@ -14,7 +14,10 @@ import { toBoolean } from '#/utils/string'
 
 const syncPnTokenWithoutCatch = async (
   p: Account,
-  { noUpsert }: Pick<SyncPnTokenOption, 'noUpsert'>,
+  {
+    allowMfaPrompt,
+    noUpsert,
+  }: Pick<SyncPnTokenOption, 'allowMfaPrompt' | 'noUpsert'>,
 ) => {
   console.log('PN sync debug: syncPnTokenWithoutCatch')
 
@@ -29,14 +32,27 @@ const syncPnTokenWithoutCatch = async (
     return
   }
 
+  const pendingPnEnabled =
+    allowMfaPrompt &&
+    ctx.account.pendingPnAccountId === p.id &&
+    ctx.account.pendingPnEnabled !== undefined
+      ? ctx.account.pendingPnEnabled
+      : undefined
   let pnEnabled =
     !ctx.auth.pbxLoginFromAnotherPlace && p.pushNotificationEnabled
+  if (pendingPnEnabled !== undefined) {
+    pnEnabled = pendingPnEnabled
+  }
 
   console.log(
     `PN sync debug: trying to turn ${pnEnabled ? 'on' : 'off'} PN for account ${
       p.pbxUsername
     }`,
   )
+  if (!ctx.account.hasPnSyncCredential(p)) {
+    console.log('PN sync debug: skip sync because account has no credential')
+    return
+  }
   if (
     AppState.currentState === 'active' &&
     pnEnabled &&
@@ -64,7 +80,7 @@ const syncPnTokenWithoutCatch = async (
   }
 
   try {
-    const success = await pbx.connect(p, false, true)
+    const success = await pbx.connect(p, false, true, !!allowMfaPrompt)
     if (!success) {
       console.log('PN sync debug: failed to connect to pbx')
       return disconnectPbx()
@@ -202,6 +218,7 @@ const syncPnTokenWithoutCatch = async (
 }
 
 export type SyncPnTokenOption = {
+  allowMfaPrompt?: boolean
   noUpsert?: boolean
   onError?: (err: Error) => void
 }
@@ -212,17 +229,20 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
     return
   }
   ctx.account.pnSyncLoadingMap[p.id] = true
-  await syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
-    if (o.onError) {
-      o.onError(err)
-      return
-    }
-    console.error(
-      `Failed to sync Push Notification settings for ${p.pbxUsername}`,
-      err,
-    )
-  })
-  ctx.account.pnSyncLoadingMap[p.id] = false
+  try {
+    await syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
+      if (o.onError) {
+        o.onError(err)
+        return
+      }
+      console.error(
+        `Failed to sync Push Notification settings for ${p.pbxUsername}`,
+        err,
+      )
+    })
+  } finally {
+    ctx.account.pnSyncLoadingMap[p.id] = false
+  }
 }
 
 const syncPnTokenForAllAccounts = async () => {
@@ -231,6 +251,9 @@ const syncPnTokenForAllAccounts = async () => {
       return
     }
     if (ctx.account.isAccountInMFA(a)) {
+      return
+    }
+    if (ctx.account.needsMFAForPnSync(a)) {
       return
     }
     // Skip if user just cancelled MFA for this account - prevents

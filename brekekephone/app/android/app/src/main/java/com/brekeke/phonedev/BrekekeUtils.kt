@@ -753,8 +753,17 @@ class BrekekeUtils(ctx: ReactApplicationContext) : ReactContextBaseJavaModule(ct
             r,
             Intent(ctx, BrekekeLpcService::class.java),
         )
-    ctx.startForegroundService(i)
-    ctx.bindService(i, LpcUtils.connection, Context.BIND_AUTO_CREATE)
+    // Only startForegroundService when the service isn't already running. If the app is
+    // relaunched while the LPC foreground service survived, calling startForegroundService again
+    // would go through onStartCommand -> startForeground and re-post the notification. When the
+    // service is alive, update its config directly so account/phone switches replace the socket
+    // without touching the foreground notification.
+    if (BrekekeLpcService.updateRunningConfig(i)) {
+      Emitter.debug("BrekekeLpcService config updated while running")
+    } else {
+      ctx.startForegroundService(i)
+      ctx.bindService(i, LpcUtils.connection, Context.BIND_AUTO_CREATE)
+    }
     if (LpcUtils.LpcCallback.cb == null) {
       LpcUtils.LpcCallback.setLpcCallback(
           object : LpcUtils.LpcCallback.CallbackInterface {

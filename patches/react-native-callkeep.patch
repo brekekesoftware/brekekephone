@@ -1,5 +1,16 @@
+diff --git a/android/src/main/java/io/wazo/callkeep/Constants.java b/android/src/main/java/io/wazo/callkeep/Constants.java
+index 5a8f7c6ef0e83413c512141ce3b1cfc5a94fa3d6..766cc0d659381ab1ef7408cbd3fa594f86ae86ed 100644
+--- a/android/src/main/java/io/wazo/callkeep/Constants.java
++++ b/android/src/main/java/io/wazo/callkeep/Constants.java
+@@ -26,6 +26,4 @@ public class Constants {
+     public static final String EXTRA_PAYLOAD = "EXTRA_PAYLOAD";
+     // Can't use telecom.EXTRA_DISABLE_ADD_CALL ...
+     public static final String EXTRA_DISABLE_ADD_CALL = "android.telecom.extra.DISABLE_ADD_CALL";
+-
+-    public static final int FOREGROUND_SERVICE_TYPE_MICROPHONE = 128;
+ }
 diff --git a/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java b/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
-index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f703d4497b5 100644
+index 025480ac97460cc45775ea11aa43af36522d5df6..deba3718c34b409096bdf6ea9a3db7e9ee07cee0 100644
 --- a/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 +++ b/android/src/main/java/io/wazo/callkeep/RNCallKeepModule.java
 @@ -16,6 +16,8 @@
@@ -11,7 +22,15 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
  import com.facebook.react.bridge.LifecycleEventListener;
  import android.Manifest;
  import android.app.Activity;
-@@ -133,6 +135,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -52,6 +54,7 @@ import android.telephony.TelephonyManager;
+ import android.telephony.TelephonyCallback;
+ import android.telephony.PhoneStateListener;
+ import android.util.Log;
++import android.view.WindowManager;
+ 
+ import com.facebook.react.bridge.Arguments;
+ import com.facebook.react.bridge.Dynamic;
+@@ -133,6 +136,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
      private boolean hasListeners = false;
      private boolean hasActiveCall = false;
  
@@ -21,7 +40,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
      public static RNCallKeepModule getInstance(ReactApplicationContext reactContext, boolean realContext) {
          if (instance == null) {
              Log.d(TAG, "[RNCallKeepModule] getInstance : " + (reactContext == null ? "null" : "ok"));
-@@ -164,10 +169,11 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -164,10 +170,11 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          delayedEvents = new WritableNativeArray();
      }
  
@@ -34,7 +53,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
              return false;
          }
      }
-@@ -218,8 +224,15 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -218,8 +225,15 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              Log.w(TAG, "[RNCallKeepModule][initializeTelecomManager] no react context found.");
              return;
          }
@@ -51,7 +70,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
  
          handle = new PhoneAccountHandle(cName, appName);
          telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
-@@ -263,6 +276,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -263,6 +277,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
           }
      }
  
@@ -59,7 +78,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
      private class CallStateListener extends TelephonyCallback implements TelephonyCallback.CallStateListener {
  
            @Override
-@@ -398,6 +412,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -398,6 +413,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
      public void registerPhoneAccount(ReadableMap options) {
          setSettings(options);
  
@@ -69,7 +88,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          if (!isConnectionServiceAvailable()) {
              Log.w(TAG, "[RNCallKeepModule] registerPhoneAccount ignored due to no ConnectionService");
              return;
-@@ -434,23 +451,17 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -434,23 +452,17 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          this.hasListeners = false;
      }
  
@@ -97,7 +116,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
  
          Bundle extras = new Bundle();
          Uri uri = Uri.fromParts(PhoneAccount.SCHEME_TEL, number, null);
-@@ -462,7 +473,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -462,7 +474,9 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          if (payload != null) {
              extras.putBundle(EXTRA_PAYLOAD, payload);
          }
@@ -108,7 +127,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          telecomManager.addNewIncomingCall(handle, extras);
      }
  
-@@ -483,11 +496,6 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -483,11 +497,6 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          conn.onAnswer();
      }
  
@@ -120,7 +139,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
      @ReactMethod
      public void startCall(String uuid, String number, String callerName, boolean hasVideo) {
          this.startCall(uuid, number, callerName, hasVideo, null);
-@@ -517,7 +525,10 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -517,7 +526,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          extras.putParcelable(TelecomManager.EXTRA_OUTGOING_CALL_EXTRAS, callExtras);
  
          Log.d(TAG, "[RNCallKeepModule] startCall, uuid: " + uuid);
@@ -129,10 +148,21 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
 +        if (RNCallKeepModule.instance != null) {
 +            RNCallKeepModule.instance.listenToNativeCallsState();
 +        }
++
++        if (ActivityCompat.checkSelfPermission(this.getAppContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
++            // TODO: Consider calling
++            //    ActivityCompat#requestPermissions
++            // here to request the missing permissions, and then overriding
++            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
++            //                                          int[] grantResults)
++            // to handle the case where the user grants the permission. See the documentation
++            // for ActivityCompat#requestPermissions for more details.
++            return;
++        }
          telecomManager.placeCall(uri, extras);
      }
  
-@@ -528,18 +539,30 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -528,18 +551,30 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
             Log.w(TAG, "[RNCallKeepModule] endCall ignored due to no ConnectionService or no phone account");
              return;
          }
@@ -166,7 +196,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          Log.d(TAG, "[RNCallKeepModule] endCall executed, uuid: " + uuid);
      }
  
-@@ -551,14 +574,23 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -551,14 +586,23 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              return;
          }
  
@@ -190,7 +220,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          Log.d(TAG, "[RNCallKeepModule] endAllCalls executed");
      }
  
-@@ -594,7 +626,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -594,7 +638,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
                 allPermissionaw.pushString(allPermission);
              }
  
@@ -199,7 +229,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
                  .getNativeModule(PermissionsModule.class)
                  .requestMultiplePermissions(allPermissionaw, new Promise() {
                      @Override
-@@ -679,6 +711,10 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -679,6 +723,10 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          }
  
          boolean hasSim = telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
@@ -210,7 +240,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          boolean hasDefaultAccount = telecomManager.getDefaultOutgoingPhoneAccount("tel") != null;
  
          promise.resolve(!hasSim || hasDefaultAccount);
-@@ -746,17 +782,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -746,17 +794,21 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
             Log.w(TAG, "[RNCallKeepModule] onHostDestroy ignored due to no ConnectionService or no phone account");
             return;
         }
@@ -241,7 +271,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
     }
  
      @ReactMethod
-@@ -856,6 +896,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -856,6 +908,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              conn.setAudioRoute(CallAudioState.ROUTE_WIRED_OR_EARPIECE);
              promise.resolve(true);
          } catch (Exception e) {
@@ -249,7 +279,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
              promise.reject("SetAudioRoute", e.getMessage());
          }
      }
-@@ -889,6 +930,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -889,6 +942,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
              }
              promise.resolve(devices);
          } catch(Exception e) {
@@ -257,7 +287,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
              promise.reject("GetAudioRoutes Error", e.getMessage());
          }
      }
-@@ -1113,22 +1155,20 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1113,22 +1167,20 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          return this.reactContext.getCurrentActivity();
      }
  
@@ -286,7 +316,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
              builder.setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED);
          }
          else {
-@@ -1143,7 +1183,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1143,7 +1195,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
  
          PhoneAccount account = builder.build();
  
@@ -295,7 +325,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
  
          telecomManager.registerPhoneAccount(account);
      }
-@@ -1166,7 +1206,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1166,7 +1218,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
          }
      }
  
@@ -304,7 +334,7 @@ index 025480ac97460cc45775ea11aa43af36522d5df6..537a1382ef355b677c2428623f708f70
          ApplicationInfo applicationInfo = appContext.getApplicationInfo();
          int stringId = applicationInfo.labelRes;
  
-@@ -1276,6 +1316,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
+@@ -1276,6 +1328,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
                  _settings = MapUtils.convertJsonToMap(jsonObject);
              }
          } catch(JSONException e) {
@@ -378,18 +408,19 @@ index 1ea76fba750addda6b5587849aaa8f5bb5973098..675b7ae2fb8db9d84425347d43bf5fe5
          sendCallRequestToActivity(ACTION_SHOW_INCOMING_CALL_UI, handle);
      }
 diff --git a/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java b/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-index 5d586923d8fc69c90e8a8dbd9db95e5fb21e653e..e84073b375fbeedb28d0b30ff6e40fb05c7dfb88 100644
+index 5d586923d8fc69c90e8a8dbd9db95e5fb21e653e..9abb6026ca70ec4052095c6272927382c06e15c7 100644
 --- a/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
 +++ b/android/src/main/java/io/wazo/callkeep/VoiceConnectionService.java
-@@ -25,6 +25,7 @@ import android.app.NotificationChannel;
+@@ -25,6 +25,8 @@ import android.app.NotificationChannel;
  import android.app.NotificationManager;
  import android.app.PendingIntent;
  import android.app.Activity;
 +import android.content.pm.PackageManager;
++import android.content.pm.ServiceInfo;
  import android.content.res.Resources;
  import android.content.Intent;
  import android.content.Context;
-@@ -51,6 +52,8 @@ import android.util.Log;
+@@ -51,6 +53,8 @@ import android.util.Log;
  import com.facebook.react.HeadlessJsTaskService;
  import com.facebook.react.bridge.ReadableMap;
  import com.facebook.react.bridge.WritableMap;
@@ -398,6 +429,14 @@ index 5d586923d8fc69c90e8a8dbd9db95e5fb21e653e..e84073b375fbeedb28d0b30ff6e40fb0
  
  import java.util.ArrayList;
  import java.util.HashMap;
+@@ -70,7 +74,6 @@ import static io.wazo.callkeep.Constants.EXTRA_CALL_NUMBER;
+ import static io.wazo.callkeep.Constants.EXTRA_CALL_NUMBER_SCHEMA;
+ import static io.wazo.callkeep.Constants.EXTRA_CALL_UUID;
+ import static io.wazo.callkeep.Constants.EXTRA_DISABLE_ADD_CALL;
+-import static io.wazo.callkeep.Constants.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+ import static io.wazo.callkeep.Constants.ACTION_ON_CREATE_CONNECTION_FAILED;
+ 
+ // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionService.java
 @@ -122,6 +125,22 @@ public class VoiceConnectionService extends ConnectionService {
  
      public static WritableMap getSettings(@Nullable Context context) {
@@ -447,7 +486,31 @@ index 5d586923d8fc69c90e8a8dbd9db95e5fb21e653e..e84073b375fbeedb28d0b30ff6e40fb0
              notificationBuilder.setContentIntent(pendingIntent);
          }
  
-@@ -358,6 +378,13 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -343,7 +363,22 @@ public class VoiceConnectionService extends ConnectionService {
+         Notification notification = notificationBuilder.build();
+ 
+         try {
+-            startForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
++            // On Android 14+ the foreground service type is enforced against the
++            // runtime permissions actually granted. Build the type from what we have
++            // so an audio-only call (camera not granted) does not throw and drop the
++            // whole FGS, which would also kill the background microphone.
++            int fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
++            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
++                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
++            }
++            if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
++                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
++            }
++            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
++                startForeground(NOTIFICATION_ID, notification, fgsType);
++            } else {
++                startForeground(NOTIFICATION_ID, notification);
++            }
+         } catch (Exception e) {
+             Log.w(TAG, "[VoiceConnectionService] Can't start foreground service : " + e.toString());
+         }
+@@ -358,8 +393,15 @@ public class VoiceConnectionService extends ConnectionService {
              return;
          }
  
@@ -459,8 +522,11 @@ index 5d586923d8fc69c90e8a8dbd9db95e5fb21e653e..e84073b375fbeedb28d0b30ff6e40fb0
 +        }
 +
          try {
-             stopForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE);
+-            stopForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE);
++            stopForeground(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL);
          } catch (Exception e) {
+             Log.w(TAG, "[VoiceConnectionService] can't stop foreground service :" + e.toString());
+         }
 diff --git a/index.d.ts b/index.d.ts
 index 25b43da9726f61ccdb3cf31233c21ff7941507eb..0a9528a37ec1560d6bbe08bfccdcea36495cf29f 100644
 --- a/index.d.ts

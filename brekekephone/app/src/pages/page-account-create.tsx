@@ -7,7 +7,9 @@ export const PageAccountCreate = () => (
   <AccountCreateForm
     onBack={ctx.nav.backToPageAccountSignIn}
     onSave={(p: Account) => {
-      ctx.account.upsertAccount(p)
+      ctx.account.upsertAccount(p, {
+        allowPnMfaPrompt: true,
+      })
       ctx.nav.backToPageAccountSignIn()
     }}
     title={intl`New Account`}

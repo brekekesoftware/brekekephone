@@ -1,4 +1,4 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
+import { isAndroid, isWeb } from '@rntwsc/rn/core/utils/platform'
 import { jsonSafe } from '@rntwsc/shared/json-safe'
 import { jsonStable } from '@rntwsc/shared/json-stable'
 import { debounce, uniqBy } from '@rntwsc/shared/lodash'
@@ -16,11 +16,14 @@ import type {
   MFADeviceTokenDelete,
   MFAStart,
   MFAStartRes,
+  MfaVerifyStatus,
+  Pbx,
   UcBuddy,
   UcBuddyGroup,
 } from '#/brekekejs'
 import { RnAsyncStorage } from '#/components/rn'
 import { currentVersion } from '#/config'
+import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debug-store'
 import { intl, intlDebug } from '#/stores/intl'
@@ -100,6 +103,7 @@ type MFAInfo = {
   createdAt?: number
   checkedAt?: number
   expiration_time?: number
+  required?: boolean
   verified?: boolean
   pending?: boolean
   sessKey?: string
@@ -112,7 +116,49 @@ type MFADeviceTokenKey = `br+dtoken+${string}+${string}`
 //   'none'          - server says no MFA required for this account
 //   { error }       - server returned status=FAILED with a message
 //   false           - network/exception, no usable response
-type MfaStartResult = true | 'none' | { error: string } | false
+type MfaStartResult =
+  | true
+  | { type: 'code' | 'url'; url?: string }
+  | 'none'
+  | { error: string }
+  | false
+
+type UpsertAccountOptions = {
+  allowPnMfaPrompt?: boolean
+}
+
+type SetDeviceTokenOptions = {
+  reconnect?: boolean
+  skipFreshLoginMFA?: boolean
+}
+
+let foregroundPromptShown = false
+
+// reset the per-session guard so the prompt can show again in a new app session — called from the
+// onDestroyMainActivity handler (same place deeplink resets its first-open flag)
+export const resetForegroundPrompt = () => {
+  foregroundPromptShown = false
+}
+
+export const promptForegroundService = async () => {
+  if (!isAndroid) {
+    return
+  }
+  if (foregroundPromptShown) {
+    return
+  }
+  foregroundPromptShown = true
+  if ((await RnAsyncStorage.getItem('okForegroundService')) === '1') {
+    return
+  }
+  RnAlert.prompt({
+    title: intl`Fallback local connection`,
+    message: intl`This option enables a fallback Local Push Connectivity (LPC) connection for real-time call and message delivery from your Brekeke PBX when Firebase Cloud Messaging is unavailable or blocked by your network. Android will show a foreground service notification while this connection is active. You can stop it anytime by turning this option off in Account Settings.`,
+    confirmText: intl`OK and remember`,
+    dismissText: intl`OK`,
+    onConfirm: () => RnAsyncStorage.setItem('okForegroundService', '1'),
+  })
+}
 
 export class AccountStore {
   constructor() {
@@ -132,13 +178,22 @@ export class AccountStore {
   accountData: AccountData[] = []
 
   keySessionMFA: string = ''
+  pendingPnAccountId?: string
   pendingPnEnabled?: boolean
+  private skipFreshLoginMFAWithDeviceTokenAccountId = ''
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted - if app restarts without calls, onPBXConnectionStarted handles MFA normally.
   mfaPendingAfterCallsId = ''
   setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
+  }
+  consumeSkipFreshLoginMFAWithDeviceToken = (a: Account) => {
+    if (!isEmbed || this.skipFreshLoginMFAWithDeviceTokenAccountId !== a.id) {
+      return false
+    }
+    this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+    return true
   }
 
   genEmptyAccount = (): Account => ({
@@ -240,11 +295,68 @@ export class AccountStore {
   saveAccountsToLocalStorageWithoutDebounced = async () =>
     await this.saveAccountsToLocalStorage()
 
-  upsertAccount = async (p: Partial<Account>) => {
+  hasSignInCredential = (a?: Partial<Account>) =>
+    !!a?.pbxPassword || !!this.findDataSync(a as AccountUnique)?.accessToken
+
+  hasPnSyncCredential = (a?: Partial<Account>) => {
+    const d = this.findDataSync(a as AccountUnique)
+    return (
+      !!a?.pbxPassword || !!d?.accessToken || !!d?.palParams?.['device_token']
+    )
+  }
+
+  // account will start the LPC foreground service: push on + can sign in
+  private isFgsEligible = (a?: Partial<Account>) =>
+    !!a?.pushNotificationEnabled && this.hasSignInCredential(a)
+
+  disableUnsyncedPushNotification = (a?: Account) => {
+    if (!a?.pushNotificationEnabled) {
+      return
+    }
+    if (a.pushNotificationEnabledSynced) {
+      return
+    }
+    if (this.findDataSync(a)?.palParams?.['device_token']) {
+      return
+    }
+    a.pushNotificationEnabled = false
+    a.pushNotificationEnabledSynced = false
+    if (this.pendingPnAccountId === a.id) {
+      this.pendingPnAccountId = undefined
+      this.pendingPnEnabled = undefined
+    }
+    this.saveAccountsToLocalStorageDebounced()
+  }
+
+  private syncPnTokenWithMfaPrompt = (a: Account) => {
+    a.pushNotificationEnabledSynced = false
+    if (ctx.auth.signedInId && ctx.auth.signedInId !== a.id) {
+      this.saveAccountsToLocalStorageDebounced()
+      return Promise.resolve()
+    }
+    this.pendingPnAccountId = a.id
+    this.pendingPnEnabled = true
+    this.saveAccountsToLocalStorageDebounced()
+    return ctx.pnToken.sync(a, {
+      allowMfaPrompt: true,
+    })
+  }
+
+  upsertAccount = async (
+    p: Partial<Account>,
+    options: UpsertAccountOptions = {},
+  ) => {
     const a = this.accounts.find(_ => _.id === p.id)
 
     if (!a) {
-      this.accounts.push(p as Account)
+      const newAccount = p as Account
+      if (this.isFgsEligible(newAccount)) {
+        promptForegroundService()
+      }
+      this.accounts.push(newAccount)
+      if (newAccount.pushNotificationEnabled && options.allowPnMfaPrompt) {
+        void this.syncPnTokenWithMfaPrompt(newAccount)
+      }
       this.saveAccountsToLocalStorageDebounced()
       return
     }
@@ -252,6 +364,7 @@ export class AccountStore {
     const clonedA = {
       ...a,
     } // clone before assign
+    const wasFgsEligible = this.isFgsEligible(clonedA)
     // TODO: nav should be in AccountData then we dont need to update here
     const navUpdate = compareAccountPartial(a, p)
       ? null
@@ -260,31 +373,51 @@ export class AccountStore {
           navSubMenus: [],
         }
     Object.assign(a, p, navUpdate)
+    // prompt only on the transition into eligible (avoids re-prompting on every sync/update)
+    if (this.isFgsEligible(a) && !wasFgsEligible) {
+      promptForegroundService()
+    }
     this.saveAccountsToLocalStorageDebounced()
     // check and sync pn token
     const phoneIndexChanged =
       p.pbxPhoneIndex && p.pbxPhoneIndex !== clonedA.pbxPhoneIndex
     const wholeAccountChanged = !compareAccount(clonedA, a)
+    const pushNotificationChanged =
+      typeof p.pushNotificationEnabled === 'boolean' &&
+      p.pushNotificationEnabled !== clonedA.pushNotificationEnabled
     if (phoneIndexChanged || wholeAccountChanged) {
       // delete pn token for old phone_index / account
       clonedA.pushNotificationEnabled = false
       clonedA.pushNotificationEnabledSynced = false
-      ctx.pnToken.sync(clonedA, {
+      const removeOldPnToken = ctx.pnToken.sync(clonedA, {
         noUpsert: true,
       })
       if (wholeAccountChanged) {
+        if (a.pushNotificationEnabled) {
+          a.pushNotificationEnabledSynced = false
+          this.saveAccountsToLocalStorageDebounced()
+          if (options.allowPnMfaPrompt) {
+            void removeOldPnToken.then(() => this.syncPnTokenWithMfaPrompt(a))
+          }
+        }
         return
       }
     }
     if (
-      phoneIndexChanged ||
-      (typeof p.pushNotificationEnabled === 'boolean' &&
-        p.pushNotificationEnabled !== clonedA.pushNotificationEnabled)
+      options.allowPnMfaPrompt &&
+      a.pushNotificationEnabled &&
+      !a.pushNotificationEnabledSynced &&
+      !phoneIndexChanged &&
+      !pushNotificationChanged
     ) {
+      void this.syncPnTokenWithMfaPrompt(a)
+      return
+    }
+    if (phoneIndexChanged || pushNotificationChanged) {
       // When MFA verification is needed, revert the PN change - the actual
       // toggle will happen after MFA verify + sync succeeds, triggered by
       // onSwitchEnableNotification in AccountSignInItem.
-      if (this.needsMFAForPnSync(a)) {
+      if (a.pushNotificationEnabled && this.needsMFAForPnSync(a)) {
         a.pushNotificationEnabled = clonedA.pushNotificationEnabled
         a.pushNotificationEnabledSynced = clonedA.pushNotificationEnabledSynced
         this.saveAccountsToLocalStorageDebounced()
@@ -320,7 +453,7 @@ export class AccountStore {
 
       const d = await this.findData(a)
 
-      if (this.keySessionMFA && d?.mfa?.pending) {
+      if (this.keySessionMFA && this.keySessionMFA === d?.mfa?.sessKey) {
         await this.mfaDelete(a)
       }
 
@@ -447,6 +580,7 @@ export class AccountStore {
       if (!res.token) {
         return
       }
+      mfa.required = true
       mfa.verified = true
       mfa.pending = false
       mfa.sessKey = undefined
@@ -493,13 +627,45 @@ export class AccountStore {
     return !!d?.mfa?.pending
   }
 
+  isMFANotRequired = (a: AccountUnique): boolean =>
+    this.findDataSync(a)?.mfa?.required === false
+
   needsMFAForPnSync = (a: AccountUnique): boolean => {
     const d = this.findDataSync(a)
-    if (!d?.mfa?.verified) {
+    const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
+    const hasDeviceToken = !!d?.palParams?.['device_token']
+    const hasMfaToken = !!d?.mfa?.token?.[key]
+    if (d?.mfa?.required === false) {
+      console.log(
+        `PN MFA debug: needsMFAForPnSync=false user=${a.pbxUsername} reason=mfa-not-required`,
+      )
       return false
     }
-    const key = this.getMFAKey(a.pbxTenant, a.pbxUsername)
-    return !(d.palParams?.['device_token'] || d.mfa?.token?.[key])
+    if (d?.mfa?.required === true) {
+      const needsMFA = !(hasDeviceToken || hasMfaToken)
+      console.log(
+        `PN MFA debug: needsMFAForPnSync=${needsMFA} user=${a.pbxUsername} reason=mfa-required hasDeviceToken=${hasDeviceToken} hasMfaToken=${hasMfaToken}`,
+      )
+      return needsMFA
+    }
+    if (!d?.mfa?.verified) {
+      console.log(
+        `PN MFA debug: needsMFAForPnSync=false user=${a.pbxUsername} reason=mfa-not-verified`,
+      )
+      return false
+    }
+    const needsMFA = !(hasDeviceToken || hasMfaToken)
+    console.log(
+      `PN MFA debug: needsMFAForPnSync=${needsMFA} user=${a.pbxUsername} hasDeviceToken=${hasDeviceToken} hasMfaToken=${hasMfaToken}`,
+    )
+    return needsMFA
+  }
+
+  private getMfaPalClient = (ca: AccountUnique): Pbx | undefined => {
+    const palClient = ctx.mfa.palClient
+    return palClient?.accountKey === getAccountUniqueId(ca)
+      ? palClient.client
+      : ctx.pbx.client
   }
 
   createMFADeviceToken = async (
@@ -507,27 +673,50 @@ export class AccountStore {
     ca: Account,
     skipReconnect?: boolean,
   ) => {
+    const failMessage = intl`Token creation failed. Please get a new code.`
     try {
       const o = {
         options: {},
         ...p,
       }
-      const res = await ctx.pbx.client?.call_pal('device_token/create', o)
+      const res = await this.getMfaPalClient(ca)?.call_pal(
+        'device_token/create',
+        o,
+      )
       if (!res) {
+        if (isEmbed) {
+          ctx.mfa.fail(failMessage, ca)
+          return false
+        }
         return
       }
       await this.updateTokenToAccountData(ca, res)
       const isOK = res.status === 'OK'
-      if (isOK && res.token) {
-        if (skipReconnect) {
-          await this.saveDeviceToken(ca, res.token)
-        } else {
-          await this.reconnectWithDeviceToken(ca, res.token)
+      if (!isOK) {
+        if (isEmbed) {
+          ctx.mfa.fail(failMessage, ca)
         }
+        return false
       }
-      return isOK
+      if (!res.token) {
+        if (isEmbed) {
+          // Valid code but token creation failed — surface to embed host.
+          ctx.mfa.fail(failMessage, ca)
+          return false
+        }
+        return true
+      }
+      if (skipReconnect) {
+        await this.saveDeviceToken(ca, res.token)
+      } else {
+        await this.reconnectWithDeviceToken(ca, res.token)
+      }
+      return true
     } catch (err) {
       console.error('[MFA] createMFADeviceToken error:', err)
+      if (isEmbed) {
+        ctx.mfa.fail(failMessage, ca)
+      }
     }
     return false
   }
@@ -552,9 +741,79 @@ export class AccountStore {
     console.log('MFA: reconnectWithDeviceToken')
   }
 
+  setDeviceToken = async (
+    ca: Account,
+    token: string,
+    options: SetDeviceTokenOptions = {},
+  ) => {
+    if (!isEmbed) {
+      return false
+    }
+
+    const deviceToken = token.trim()
+    if (!deviceToken) {
+      return false
+    }
+
+    ca.pbxTenant = ca.pbxTenant || '-'
+    await this.findDataWithDefault(ca)
+    await this.updateTokenToAccountData(ca, {
+      status: 'OK',
+      token: deviceToken,
+    })
+    if (this.mfaPendingAfterCallsId === ca.id) {
+      this.setMFAPendingAfterCallsId('')
+    }
+    if (ctx.mfa.isShowing(ca.id)) {
+      ctx.mfa.reset()
+    }
+    if (options.skipFreshLoginMFA) {
+      this.skipFreshLoginMFAWithDeviceTokenAccountId = ca.id
+    }
+    if (options.reconnect) {
+      await this.reconnectWithDeviceToken(ca, deviceToken)
+    } else {
+      await this.saveDeviceToken(ca, deviceToken)
+    }
+    return true
+  }
+
+  clearDeviceToken = async (ca: Account) => {
+    const d = await this.findData(ca)
+    if (!d) {
+      if (this.skipFreshLoginMFAWithDeviceTokenAccountId === ca.id) {
+        this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+      }
+      return
+    }
+
+    const tenant = ca.pbxTenant || '-'
+    const key = this.getMFAKey(tenant, ca.pbxUsername)
+    if (d.palParams?.device_token) {
+      delete d.palParams.device_token
+    }
+    if (d.mfa) {
+      if (d.mfa.token?.[key]) {
+        delete d.mfa.token[key]
+      }
+      Object.assign(d.mfa, {
+        verified: false,
+        pending: false,
+        sessKey: undefined,
+      })
+    }
+    if (this.skipFreshLoginMFAWithDeviceTokenAccountId === ca.id) {
+      this.skipFreshLoginMFAWithDeviceTokenAccountId = ''
+    }
+    await this.saveAccountsToLocalStorageWithoutDebounced()
+  }
+
   checkMFADeviceToken = async (p: MFADeviceTokenCheck, ca: Account) => {
     try {
-      const res = await ctx.pbx.client?.call_pal('device_token/check', p)
+      const res = await this.getMfaPalClient(ca)?.call_pal(
+        'device_token/check',
+        p,
+      )
       if (!res) {
         return false
       }
@@ -591,7 +850,10 @@ export class AccountStore {
         tenant: ca.pbxTenant,
         user: ca.pbxUsername,
       }
-      const res = await ctx.pbx.client?.call_pal('device_token/delete', p)
+      const res = await this.getMfaPalClient(ca)?.call_pal(
+        'device_token/delete',
+        p,
+      )
 
       const d = await this.findData(ca)
       if (!d) {
@@ -624,10 +886,9 @@ export class AccountStore {
         tenant: ca.pbxTenant,
         user: ca.pbxUsername,
       }
-      const res: MFAStartRes | undefined = await ctx.pbx.client?.call_pal(
-        'mfa/start',
-        param,
-      )
+      const res: MFAStartRes | undefined = await this.getMfaPalClient(
+        ca,
+      )?.call_pal('mfa/start', param)
       if (!res) {
         return false
       }
@@ -638,7 +899,20 @@ export class AccountStore {
       }
       if (res.status === 'OK') {
         if (res.type === 'none') {
-          await this.setMFAPending(ca, false)
+          const d = await this.findDataWithDefault(ca)
+          const mfa = (d.mfa ??= {
+            verified: false,
+          })
+          Object.assign(mfa, {
+            required: false,
+            verified: false,
+            pending: false,
+            sessKey: undefined,
+          })
+          if (ctx.mfa.accountId === ca.id) {
+            ctx.mfa.hide()
+          }
+          await this.saveAccountsToLocalStorageWithoutDebounced()
           return 'none'
         }
         this.keySessionMFA = res.sess_key
@@ -646,16 +920,22 @@ export class AccountStore {
         const smfa = (sd.mfa ??= {
           verified: false,
         })
+        smfa.required = true
         smfa.sessKey = res.sess_key
         await this.saveAccountsToLocalStorageWithoutDebounced()
-        return true
+        return isEmbed
+          ? {
+              type: res.type,
+              url: res.url,
+            }
+          : true
       }
     } catch (err) {
       console.error('mfaStart error:', err)
     }
     return false
   }
-  mfaCheck = async (ca: Account, code: string) => {
+  mfaCheck = async (ca: Account, code: string): Promise<MfaVerifyStatus> => {
     try {
       const param: MFACheck = {
         tenant: ca.pbxTenant,
@@ -663,11 +943,16 @@ export class AccountStore {
         sess_key: this.keySessionMFA,
         code,
       }
-      const res: MFACheckRes | undefined = await ctx.pbx.client?.call_pal(
-        'mfa/check',
-        param,
-      )
-      return res?.status ?? 'FAILED'
+      const res: MFACheckRes | undefined = await this.getMfaPalClient(
+        ca,
+      )?.call_pal('mfa/check', param)
+      if (
+        res?.status === 'OK' ||
+        res?.status === 'WRONG_CODE' ||
+        res?.status === 'NO_SESSION'
+      ) {
+        return res.status
+      }
     } catch (err) {
       console.error('[MFA] mfaCheck error:', err)
     }
@@ -680,10 +965,9 @@ export class AccountStore {
         user: ca.pbxUsername,
         sess_key: this.keySessionMFA,
       }
-      const res: MFADeleteRes | undefined = await ctx.pbx.client?.call_pal(
-        'mfa/delete',
-        param,
-      )
+      const res: MFADeleteRes | undefined = await this.getMfaPalClient(
+        ca,
+      )?.call_pal('mfa/delete', param)
       if (!res) {
         return false
       }
@@ -752,7 +1036,7 @@ export class AccountStore {
     // just re-show the modal without sending another OTP email.
     // Active-call guard still needed here: this branch returns before reaching
     // the pre-mfaStart guard below.
-    if (this.keySessionMFA) {
+    if (this.keySessionMFA && this.keySessionMFA === d.mfa?.sessKey) {
       if (ctx.call.calls.length > 0) {
         ctx.account.setMFAPendingAfterCallsId(ca.id)
         return
@@ -794,7 +1078,14 @@ export class AccountStore {
       return
     }
     await this.setMFAPending(ca, true)
-    ctx.mfa.show(ca.id)
+    if (typeof result === 'object') {
+      ctx.mfa.show(ca.id, {
+        type: result.type,
+        url: result.url,
+      })
+    } else {
+      ctx.mfa.show(ca.id)
+    }
   }
 }
 

@@ -21,7 +21,7 @@ patchedDependencies:
   event-target-shim: 55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab
   jssip: 8217b76a5fea6baa6498d5a96392c62eecb12ddc0de980e381fd8f377b6f8202
   react-native: 6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc
-  react-native-callkeep: 03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66
+  react-native-callkeep: 270c85559997068fb8934c17234f65b650f7e2156e84c59a54f81b56bed3f556
   react-native-notifications: 3b100bf1fa6963b7bad68769c8a53fc14438becf3458649ccc3ba137c1d0c4ab
   react-native-splash-screen: 823794f1fa4cfe445d047771fc37150f03a44f57686f5e478f11556ea2b116b1
   react-native-voip-push-notification: ce88f445c6564a43e241fa8e90d4a9e76403aacb4091bfb5c6a1aff04c5537f5
@@ -141,7 +141,7 @@ importers:
         version: 2.4.1(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-callkeep:
         specifier: 4.3.16
-        version: 4.3.16(patch_hash=03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
+        version: 4.3.16(patch_hash=270c85559997068fb8934c17234f65b650f7e2156e84c59a54f81b56bed3f556)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
       react-native-device-info:
         specifier: 15.0.2
         version: 15.0.2(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0))
@@ -17890,7 +17890,7 @@ snapshots:
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 
-  react-native-callkeep@4.3.16(patch_hash=03a602f4aae6a67d6c4049a233ef5c2ab59a25b49873c8f51d80fb3b5b8d4d66)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
+  react-native-callkeep@4.3.16(patch_hash=270c85559997068fb8934c17234f65b650f7e2156e84c59a54f81b56bed3f556)(react-native@0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)):
     dependencies:
       react-native: 0.80.1(patch_hash=6d87ba92ce6672322ae49a5f06369438121def4d1812c1476c045c48ebf296dc)(@babel/core@7.29.0)(@react-native-community/cli@19.1.0(typescript@6.0.3))(@types/react@19.2.14)(react@19.1.0)
 

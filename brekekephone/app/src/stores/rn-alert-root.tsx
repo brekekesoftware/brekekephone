@@ -101,7 +101,7 @@ const RnAlertR = ({
           {props.dismissText && (
             <RnTouchableOpacity
               onPress={props.onDismiss}
-              className='bg-foreground rounded-button mr-2.5 w-25 px-3.75 py-2.5'
+              className='bg-foreground rounded-button mr-2.5 min-w-25 px-3.75 py-2.5'
             >
               <RnText small className='text-background text-center'>
                 {props.dismissText}
@@ -110,7 +110,7 @@ const RnAlertR = ({
           )}
           <RnTouchableOpacity
             onPress={props.onConfirm}
-            className='bg-primary rounded-button w-25 px-3.75 py-2.5'
+            className='bg-primary rounded-button min-w-25 px-3.75 py-2.5'
           >
             <RnText small white className='text-center'>
               {props.confirmText}
