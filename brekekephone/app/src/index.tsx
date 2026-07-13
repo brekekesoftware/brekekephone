@@ -1,4 +1,4 @@
-import '#/init-global'
+import '#/init-globals'
 
 import { webClassName } from '@rntwsc/rn/core/tailwind'
 import { composeProviders } from '@rntwsc/rn/core/utils/compose-providers'

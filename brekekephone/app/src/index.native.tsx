@@ -1,4 +1,4 @@
-import '#/init-global'
+import '#/init-globals'
 
 import { composeProviders } from '@rntwsc/rn/core/utils/compose-providers'
 import { AppRegistry } from 'react-native'

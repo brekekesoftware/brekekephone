@@ -1,13 +1,13 @@
 import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import { Keyboard } from 'react-native'
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   TextInputSelectionChangeEventData,
 } from 'react-native'
+import { Keyboard } from 'react-native'
 
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'

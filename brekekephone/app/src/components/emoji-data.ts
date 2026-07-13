@@ -2,7 +2,7 @@
 // (project rule bans emoji literals). Rendered at runtime via toEmoji().
 // Only single-code-point emoji are listed here (no ZWJ/skin-tone sequences).
 
-export interface EmojiGroup {
+export type EmojiGroup = {
   key: string
   tabCodePoint: number // representative emoji shown on the category tab
   codePoints: number[]
