@@ -40,6 +40,9 @@ class BrekekeLpcSocket {
     private lateinit var settings: LpcModel.Settings
     private val utf8: Charset = StandardCharsets.UTF_8
     private val gson = Gson()
+    // BUG-1230: let the service cancel a parked socket from another thread
+    @Volatile private var isShutdown = false
+    @Volatile private var selector: Selector? = null
 
     inner class CodableHelper {
       fun <T> encode(obj: T): String = gson.toJson(obj)
@@ -60,7 +63,7 @@ class BrekekeLpcSocket {
           )
     }
 
-    inner class Wrapper(val payload: Payload) {
+    inner class Wrapper(val payload: Payload?) {
       val requestIdentifier: String = ""
       val command: String = "request"
     }
@@ -76,9 +79,22 @@ class BrekekeLpcSocket {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onCancelled")
     }
 
+    // BUG-1230: cancel this socket from another thread. Wakes the selector so a parked
+    // select() returns immediately and the mainloop exits via the isShutdown check.
+    fun shutdown() {
+      isShutdown = true
+      try {
+        selector?.wakeup()
+      } catch (_: Exception) {}
+    }
+
     override fun onPostExecute(result: String) {
       Log.d(LpcUtils.TAG, "BrekekeLpcSocket.onPostExecute")
-      BrekekeLpcService.con!!.onDisconnected()
+      // BUG-1230: only notify the watchdog when the socket died on its own. A deliberate
+      // shutdown (reconnect/teardown) must not start another disconnect/reconnect loop.
+      if (!isShutdown) {
+        BrekekeLpcService.con!!.onDisconnected()
+      }
     }
 
     private fun handleCallToServer() {
@@ -103,7 +119,7 @@ class BrekekeLpcSocket {
       } catch (e: IOException) {
         Log.d(LpcUtils.TAG, "IOException: ${e.message}")
         if (e.message == "Connection refused") {
-          LpcUtils.LpcCallback.cb!!.getStateServer(false)
+          LpcUtils.LpcCallback.cb?.getStateServer(false)
           Emitter.error("[BrekekeLpcSocket] Connection refused")
         } else {
           Emitter.error("[BrekekeLpcSocket] IOException: ${e.message}")
@@ -118,81 +134,117 @@ class BrekekeLpcSocket {
     fun createChannel(sslContext: SSLContext) {
       var requestBuffer: ByteBuffer? = null
       val responseBuffer = ByteBuffer.allocateDirect(8096)
-      val selector = Selector.open()
+      val sel = Selector.open()
+      selector = sel
       var isConnected = false
-      SocketChannel.open().use { rawChannel ->
-        rawChannel.configureBlocking(false)
-        rawChannel.setOption(SO_KEEPALIVE, true)
-        rawChannel.setOption(TCP_NODELAY, true)
-        rawChannel.connect(InetSocketAddress(settings.host, settings.port))
-        rawChannel.register(selector, SelectionKey.OP_CONNECT)
-        val builder = ClientTlsChannel.newBuilder(rawChannel, sslContext)
-        builder.build().use { tlsChannel ->
-          mainloop@ while (true) {
-            selector.select()
-            val iterator = selector.selectedKeys().iterator()
-            while (iterator.hasNext()) {
-              val key = iterator.next()
-              iterator.remove()
-              when {
-                key.isConnectable -> {
-                  if (rawChannel.finishConnect()) {
-                    rawChannel.register(selector, SelectionKey.OP_WRITE)
-                  }
-                }
-                key.isReadable || key.isWritable -> {
-                  try {
-                    if (!BrekekeLpcService.isServiceStarted) {
-                      rawChannel.shutdownInput()
-                      rawChannel.shutdownOutput()
-                      rawChannel.close()
-                      break@mainloop
+      try {
+        SocketChannel.open().use { rawChannel ->
+          rawChannel.configureBlocking(false)
+          rawChannel.setOption(SO_KEEPALIVE, true)
+          rawChannel.setOption(TCP_NODELAY, true)
+          rawChannel.connect(InetSocketAddress(settings.host, settings.port))
+          rawChannel.register(sel, SelectionKey.OP_CONNECT)
+          val builder = ClientTlsChannel.newBuilder(rawChannel, sslContext)
+          builder.build().use { tlsChannel ->
+            mainloop@ while (true) {
+              // BUG-1230: bounded select + shutdown check so a parked socket (server never
+              // sends anything) can still be cancelled instead of blocking select() forever
+              if (isShutdown) {
+                break@mainloop
+              }
+              sel.select(1000)
+              val iterator = sel.selectedKeys().iterator()
+              while (iterator.hasNext()) {
+                val key = iterator.next()
+                iterator.remove()
+                when {
+                  key.isConnectable -> {
+                    if (rawChannel.finishConnect()) {
+                      rawChannel.register(sel, SelectionKey.OP_WRITE)
                     }
-                    if (!requestSent) {
-                      requestBuffer?.let { if (it.hasRemaining()) it.clear() }
-                      val data = if (isConnected) getAcknowledeParams() else getDataParams()
-                      requestBuffer = ByteBuffer.wrap(data, 0, data.size)
-                      tlsChannel.write(requestBuffer)
-                      if (requestBuffer!!.remaining() == 0) {
-                        requestSent = true
-                        isConnected = true
-                      }
-                    } else {
-                      responseBuffer.clear()
-                      val c = tlsChannel.read(responseBuffer)
-                      if (c > 0) {
-                        responseBuffer.flip()
-                        handleResponse(responseBuffer)
-                        Thread.sleep(1000)
-                      } else {
-                        tlsChannel.close()
+                  }
+                  key.isReadable || key.isWritable -> {
+                    try {
+                      if (isShutdown || !BrekekeLpcService.isServiceStarted) {
+                        // BUG-1230 diag: this socket noticed the service was stopped and is
+                        // closing. Lets us see WHEN the old account's socket actually tears down
+                        // vs when the new account registers (suspected unregister-before-register
+                        // race).
+                        Emitter.debug("[BrekekeLpcSocket] service stopped -> closing socket (teardown)")
+                        rawChannel.shutdownInput()
+                        rawChannel.shutdownOutput()
+                        rawChannel.close()
                         break@mainloop
                       }
+                      if (!requestSent) {
+                        requestBuffer?.let { if (it.hasRemaining()) it.clear() }
+                        val isAck = isConnected
+                        val data = if (isAck) getAcknowledeParams() else getDataParams()
+                        requestBuffer = ByteBuffer.wrap(data, 0, data.size)
+                        tlsChannel.write(requestBuffer)
+                        if (requestBuffer!!.remaining() == 0) {
+                          requestSent = true
+                          isConnected = true
+                          // BUG-1230 diag: log every outgoing frame so we can tell whether the
+                          // server ever replies to this account's register/heartbeat
+                          Emitter.debug(
+                              "[BrekekeLpcSocket] sent " +
+                                  (if (isAck) "acknowledge(heartbeat)" else "register(getDataParams)")
+                          )
+                        }
+                      } else {
+                        responseBuffer.clear()
+                        val c = tlsChannel.read(responseBuffer)
+                        if (c > 0) {
+                          responseBuffer.flip()
+                          handleResponse(responseBuffer)
+                          Thread.sleep(1000)
+                        } else {
+                          // BUG-1230 diag: non-positive read = server closed / EOF. (The
+                          // silent-idle case never reaches here — it stays parked in
+                          // selector.select().)
+                          Emitter.debug("[BrekekeLpcSocket] read returned $c -> closing socket")
+                          tlsChannel.close()
+                          break@mainloop
+                        }
+                      }
+                    } catch (e: NeedsReadException) {
+                      key.interestOps(SelectionKey.OP_READ)
+                    } catch (e: NeedsWriteException) {
+                      key.interestOps(SelectionKey.OP_WRITE)
+                    } catch (e: InterruptedException) {
+                      throw RuntimeException(e)
                     }
-                  } catch (e: NeedsReadException) {
-                    key.interestOps(SelectionKey.OP_READ)
-                  } catch (e: NeedsWriteException) {
-                    key.interestOps(SelectionKey.OP_WRITE)
-                  } catch (e: InterruptedException) {
-                    throw RuntimeException(e)
                   }
+                  else -> throw IllegalStateException()
                 }
-                else -> throw IllegalStateException()
               }
             }
           }
         }
+      } finally {
+        // BUG-1230: selector was leaked on every (re)connect; close it so reconnects don't
+        // accumulate epoll file descriptors
+        try {
+          selector?.close()
+        } catch (_: IOException) {}
       }
     }
 
     private fun handleResponse(responseBuffer: ByteBuffer) {
       val json = utf8.decode(responseBuffer).toString().substring(4)
       val wr = CodableHelper().decode(json, Wrapper::class.java)
+      // BUG-1230 diag: log every inbound server frame (command + codingKey) BEFORE filtering,
+      // to confirm whether the server services this account's connection at all
+      Emitter.debug(
+          "[BrekekeLpcSocket] server msg command=${wr.command} codingKey=${wr.payload?.codingKey}"
+      )
       try {
         if (wr.command == "request") {
           requestSent = false
-          if (wr.payload.codingKey == 3) {
-            val res = String(decodeLpcPayloadBase64(wr.payload.data))
+          val payload = wr.payload
+          if (payload != null && payload.codingKey == 3) {
+            val res = String(decodeLpcPayloadBase64(payload.data))
             Log.d(LpcUtils.TAG, "handleResponse: $res")
             val obj = JSONObject(res)
             @Suppress("UNCHECKED_CAST")
@@ -266,8 +318,11 @@ class BrekekeLpcSocket {
       return addSizeToMessage(CodableHelper().encode(map))
     }
 
+    // check both x_pn-id and pn-id: server may omit the x_ prefix on some versions
     private fun isChatMessage(m: Map<String, String>): Boolean =
-        m["x_pn-id"] == null && "message".equals(m["event"], ignoreCase = true)
+        m["x_pn-id"] == null &&
+            m["pn-id"] == null &&
+            "message".equals(m["event"], ignoreCase = true)
 
     private fun handleChatmessageResponse(obj: JSONObject, m: MutableMap<String, String>) {
       try {

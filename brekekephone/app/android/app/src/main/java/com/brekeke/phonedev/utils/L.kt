@@ -24,7 +24,7 @@ object L {
 
   fun nCallsInBackground(n: Int): String =
       n.toString() +
-          if (l == "ja") " 他の通話はバックグランドにあります"
+          if (l == "ja") " 他の通話はバックグラウンドにあります"
           else (" OTHER CALL" + (if (n > 1) "S ARE" else " IS") + " IN BACKGROUND")
 
   fun incomingCall(): String = if (l == "ja") "着信" else "Incoming Call"
@@ -64,8 +64,14 @@ object L {
 
   fun goToSetting(): String = if (l == "ja") "設定に移動" else "Go to settings"
 
-  fun serviceIsRunning(): String = if (l == "ja") "サービスは実行中です" else "Service is running"
+  fun serviceIsRunning(): String =
+      if (l == "ja") "Brekeke Phoneは通話とメッセージの受信準備が整いました。"
+      else "Brekeke Phone is ready to receive calls and messages"
 
   fun serviceIsRunningInBackground(): String =
-      if (l == "ja") "サービスはバックグラウンドで実行されています" else "Service is running in background"
+      if (l == "ja")
+          "ローカルプッシュ接続（LPC）で通話とメッセージを受信できる状態です。\n不要な場合は、アカウント設定で「プッシュ通知」を無効にしてください。"
+      else
+          "Fallback local connection is active. Tap to open. To stop: turn off Push Notification in" +
+              " Account Settings."
 }

@@ -31,7 +31,10 @@ import org.json.JSONObject
 
 object LpcUtils {
   const val TAG = "[BrekekeLpcService]"
-  const val NOTI_CHANNEL_ID = "NOTIFICATION_CHANNEL"
+  // new channel ID for the silent (IMPORTANCE_LOW) FGS notification — channel properties are
+  // immutable after first creation, so we use a fresh ID to ensure existing users on the old
+  // IMPORTANCE_DEFAULT channel get the silent settings on upgrade
+  const val NOTI_CHANNEL_ID = "BREKEKE_LPC_SERVICE"
   const val NOTI_ID = 0
 
   fun putConfigToIntent(

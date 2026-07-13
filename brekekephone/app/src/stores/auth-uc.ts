@@ -1,6 +1,6 @@
 import { debounce } from '@rntwsc/shared/lodash'
 import type { Lambda } from 'mobx'
-import { reaction } from 'mobx'
+import { action, reaction } from 'mobx'
 
 import { Errors } from '#/brekekejs/ucclient'
 import { defaultTimeout } from '#/config'
@@ -44,15 +44,24 @@ export class AuthUC {
     if (!ca) {
       return
     }
+    const accountId = ca.id
     await ctx.uc.connect(
       ca,
       c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
     )
+    if (ctx.auth.signedInId !== accountId) {
+      return
+    }
     this.loadUsers()
-    this.loadUnreadChats().then(() => {
-      ctx.auth.ucState = 'success'
-      ctx.auth.ucTotalFailure = 0
-    })
+    this.loadUnreadChats(accountId).then(
+      action(() => {
+        if (ctx.auth.signedInId !== accountId) {
+          return
+        }
+        ctx.auth.ucState = 'success'
+        ctx.auth.ucTotalFailure = 0
+      }),
+    )
   }
   authWithCheck = async () => {
     if (!ctx.auth.ucShouldAuth()) {
@@ -94,10 +103,10 @@ export class AuthUC {
     const users = ctx.uc.getUsers()
     ctx.contact.ucUsers = users
   }
-  loadUnreadChats = () =>
+  private loadUnreadChats = (accountId: string) =>
     ctx.uc
       .getUnreadChats()
-      .then(this.onLoadUnreadChatsSuccess)
+      .then(chats => this.onLoadUnreadChatsSuccess(chats, accountId))
       .catch(this.onLoadUnreadChatsFailure)
   onLoadUnreadChatsSuccess = (
     chats: {
@@ -106,7 +115,11 @@ export class AuthUC {
       creator: string | undefined
       created: string
     }[],
+    accountId: string,
   ) => {
+    if (ctx.auth.signedInId !== accountId) {
+      return
+    }
     chats.forEach(c0 => {
       const chat = c0 as any as ChatMessage
       ctx.chat.pushMessages(chat.creator, [chat], true)
