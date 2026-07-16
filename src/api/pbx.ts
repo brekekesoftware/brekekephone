@@ -1126,8 +1126,13 @@ export class PBX extends EventEmitter {
 
     // the custom page only load at the first time the tab is shown after you log in
     //    even after re-connected it, don't refresh it again
-    const urlCustomPage = ctx.auth.listCustomPage?.[0]?.url
-    if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
+    // check all pages instead of [0] since the url is built lazily per page:
+    //    re-parsing here would wipe the built url of the page being viewed
+    //    and turn its webview into a blank screen
+    const anyCustomPageBuilt = ctx.auth.listCustomPage.some(cp =>
+      isCustomPageUrlBuilt(cp.url),
+    )
+    if (!anyCustomPageBuilt) {
       parseListCustomPage()
     }
 

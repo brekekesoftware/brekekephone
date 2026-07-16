@@ -270,6 +270,9 @@ export class AuthStore {
     this.sipPn = {}
     this.pbxConfig = undefined
     this.ucConfig = undefined
+    this.listCustomPage = []
+    this.customPageLoadings = {}
+    this.activeCustomPageId = undefined
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = false
     ctx.pbx.disconnect()
