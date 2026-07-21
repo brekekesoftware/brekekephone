@@ -506,6 +506,9 @@ export class CallStore {
     // construct a new call
     const c = new Call(this)
     Object.assign(c, p)
+    if (c.incoming && !c.answered) {
+      ctx.auth.queueIncomingCustomPageEvent(c.pnId || c.id, ctx.auth.signedInId)
+    }
     // clear start call interval timer when the outgoing call is created
     if (isWeb && !c.incoming) {
       this.clearStartCallIntervalTimer()

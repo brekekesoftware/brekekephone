@@ -112,7 +112,14 @@ const parseListCustomPage = () => {
       incoming,
     })
   })
-  ctx.auth.listCustomPage = results
+  results.sort((a, b) => {
+    const aOrder = parseInt(a.pos.split(',')[2])
+    const bOrder = parseInt(b.pos.split(',')[2])
+    const normalizedA = Number.isNaN(aOrder) ? Number.MAX_SAFE_INTEGER : aOrder
+    const normalizedB = Number.isNaN(bOrder) ? Number.MAX_SAFE_INTEGER : bOrder
+    return normalizedA - normalizedB || a.id.localeCompare(b.id)
+  })
+  ctx.auth.setCustomPages(results)
 }
 
 const buildCustomPageUrl = async (url: string) => {
@@ -1135,6 +1142,7 @@ export class PBX extends EventEmitter {
     if (!anyCustomPageBuilt) {
       parseListCustomPage()
     }
+    void ctx.auth.processPendingCustomPageEvents()
 
     // get resource line
     if (!isEmbed) {

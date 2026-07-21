@@ -2,6 +2,7 @@ import { debounce } from 'lodash'
 import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
+import { isCustomPageUrlBuilt } from '#/api/customPage'
 import type {
   PbxCustomPage,
   PbxGetProductInfoRes,
@@ -41,6 +42,21 @@ export type ConnectionState =
   | 'connecting'
   | 'success'
   | 'failure'
+
+type PendingCustomPageEvent = {
+  key: string
+  accountId: string
+  createdAt: number
+  completedPageIds: string[]
+}
+
+type CompletedCustomPageEvent = {
+  key: string
+  completedAt: number
+}
+
+const completedCustomPageEventDedupeTime = 60000
+const pendingCustomPageEventExpirationTime = 5 * 60 * 1000
 
 export class AuthStore {
   hasInternetConnected: boolean | null = null
@@ -136,15 +152,283 @@ export class AuthStore {
   @observable pbxConfig?: PbxGetProductInfoRes
   @observable listCustomPage: PbxCustomPage[] = []
   @observable activeCustomPageId?: string
-  saveActionOpenCustomPage = false
-  customPageLoadings: { [k: string]: boolean } = {}
+  @observable private pendingCustomPageEvents: PendingCustomPageEvent[] = []
+  private completedCustomPageEvents: CompletedCustomPageEvent[] = []
+  private customPageBuildPromises: {
+    [pageId: string]: Promise<boolean> | undefined
+  } = {}
+  private processingCustomPageEvents = false
+  private customPageProcessRequested = false
+  private customPageRuntimeVersion = 0
+
   getCustomPageById = (id: string) => this.listCustomPage.find(i => i.id == id)
-  updateCustomPage = (cp: PbxCustomPage) => {
-    const found = this.listCustomPage.find(p => p.id === cp.id)
-    if (!found) {
+
+  @action setCustomPages = (pages: PbxCustomPage[]) => {
+    this.listCustomPage = pages
+  }
+
+  @action updateCustomPage = (cp: PbxCustomPage) => {
+    this.listCustomPage = this.listCustomPage.map(page =>
+      page.id === cp.id ? cp : page,
+    )
+  }
+
+  private buildCustomPageUrl = async (pageId: string) => {
+    const accountId = this.signedInId
+    const runtimeVersion = this.customPageRuntimeVersion
+    const page = this.getCustomPageById(pageId)
+    if (!accountId || !page) {
+      return false
+    }
+    const sourceUrl = page.url
+    try {
+      const url = await ctx.pbx.buildCustomPageUrl(sourceUrl)
+      const current = this.getCustomPageById(pageId)
+      if (
+        this.signedInId !== accountId ||
+        this.customPageRuntimeVersion !== runtimeVersion ||
+        !current
+      ) {
+        return false
+      }
+      if (current.url !== sourceUrl) {
+        return isCustomPageUrlBuilt(current.url)
+      }
+      if (!isCustomPageUrlBuilt(url)) {
+        return false
+      }
+      this.updateCustomPage({ ...current, url })
+      return true
+    } catch (err) {
+      console.error(`Failed to build custom page ${pageId}`, err)
+      return false
+    }
+  }
+
+  ensureCustomPageUrlBuilt = (pageId: string): Promise<boolean> => {
+    const page = this.getCustomPageById(pageId)
+    if (!page) {
+      return Promise.resolve(false)
+    }
+    if (isCustomPageUrlBuilt(page.url)) {
+      return Promise.resolve(true)
+    }
+    const pending = this.customPageBuildPromises[pageId]
+    if (pending) {
+      return pending
+    }
+    const promise = this.buildCustomPageUrl(pageId)
+    this.customPageBuildPromises[pageId] = promise
+    const clearPromise = () => {
+      if (this.customPageBuildPromises[pageId] === promise) {
+        delete this.customPageBuildPromises[pageId]
+      }
+    }
+    // The Android JavaScriptCore version used by the app has no Promise.finally.
+    void promise.then(clearPromise, clearPromise)
+    return promise
+  }
+
+  reloadCustomPageWithNewToken = async (pageId: string) => {
+    const page = this.getCustomPageById(pageId)
+    if (!page) {
+      return false
+    }
+    if (!isCustomPageUrlBuilt(page.url)) {
+      return this.ensureCustomPageUrlBuilt(pageId)
+    }
+    const accountId = this.signedInId
+    const sourceUrl = page.url
+    const url = await ctx.pbx.rebuildCustomPageUrlPbxToken(sourceUrl)
+    const current = this.getCustomPageById(pageId)
+    if (
+      this.signedInId !== accountId ||
+      current?.url !== sourceUrl ||
+      !isCustomPageUrlBuilt(url)
+    ) {
+      return false
+    }
+    this.updateCustomPage({ ...current, url })
+    return true
+  }
+
+  private getIncomingCustomPages = () =>
+    this.listCustomPage.filter(page => page.incoming === 'open')
+
+  @action private removeExpiredCustomPageEvents = () => {
+    const now = Date.now()
+    this.pendingCustomPageEvents = this.pendingCustomPageEvents.filter(
+      event => now - event.createdAt < pendingCustomPageEventExpirationTime,
+    )
+    this.completedCustomPageEvents = this.completedCustomPageEvents.filter(
+      event => now - event.completedAt < completedCustomPageEventDedupeTime,
+    )
+  }
+
+  @action queueIncomingCustomPageEvent = (
+    eventId: string,
+    accountId = this.signedInId,
+  ) => {
+    if (!eventId || !accountId) {
       return
     }
-    Object.assign(found, cp)
+    this.removeExpiredCustomPageEvents()
+    const key = `${accountId}:${eventId}`
+    if (
+      this.completedCustomPageEvents.some(event => event.key === key) ||
+      this.pendingCustomPageEvents.some(event => event.key === key)
+    ) {
+      return
+    }
+    this.pendingCustomPageEvents = [
+      ...this.pendingCustomPageEvents,
+      { key, accountId, createdAt: Date.now(), completedPageIds: [] },
+    ]
+    BackgroundTimer.setTimeout(this.processPendingCustomPageEvents, 0)
+  }
+
+  @action private markCustomPageEventPageCompleted = (
+    eventKey: string,
+    pageId: string,
+  ) => {
+    this.pendingCustomPageEvents = this.pendingCustomPageEvents.map(event =>
+      event.key === eventKey && !event.completedPageIds.includes(pageId)
+        ? {
+            ...event,
+            completedPageIds: [...event.completedPageIds, pageId],
+          }
+        : event,
+    )
+  }
+
+  private processCustomPageEventPage = async (
+    eventKey: string,
+    pageId: string,
+  ) => {
+    const event = this.pendingCustomPageEvents.find(
+      item => item.key === eventKey,
+    )
+    if (!event || event.accountId !== this.signedInId) {
+      return false
+    }
+    if (event.completedPageIds.includes(pageId)) {
+      return true
+    }
+    const page = this.getCustomPageById(pageId)
+    if (!page || page.incoming !== 'open') {
+      this.markCustomPageEventPageCompleted(eventKey, pageId)
+      return true
+    }
+    const wasBuilt = isCustomPageUrlBuilt(page.url)
+    if (!(await this.ensureCustomPageUrlBuilt(pageId))) {
+      return false
+    }
+    const currentEvent = this.pendingCustomPageEvents.find(
+      item => item.key === eventKey,
+    )
+    const currentPage = this.getCustomPageById(pageId)
+    if (
+      !currentEvent ||
+      currentEvent.accountId !== this.signedInId ||
+      !currentPage ||
+      !isCustomPageUrlBuilt(currentPage.url)
+    ) {
+      return false
+    }
+    if (wasBuilt) {
+      const url = ctx.pbx.rebuildCustomPageUrlNonce(currentPage.url)
+      this.updateCustomPage({ ...currentPage, url })
+    }
+    this.markCustomPageEventPageCompleted(eventKey, pageId)
+    return true
+  }
+
+  @action private navigateForCustomPageEvent = (pages: PbxCustomPage[]) => {
+    if (!pages.length) {
+      return true
+    }
+    const stack = RnStacker.stacks[RnStacker.stacks.length - 1]
+    if (!stack) {
+      return false
+    }
+    if (stack.name === 'PageCustomPage') {
+      return true
+    }
+    const page = pages[0]
+    this.activeCustomPageId = page.id
+    ctx.nav.goToPageCustomPage({ id: page.id })
+    return true
+  }
+
+  private processCustomPageEvent = async (event: PendingCustomPageEvent) => {
+    const pages = this.getIncomingCustomPages()
+    for (const page of pages) {
+      if (!(await this.processCustomPageEventPage(event.key, page.id))) {
+        return false
+      }
+    }
+    return this.navigateForCustomPageEvent(pages)
+  }
+
+  @action private completeCustomPageEvent = (eventKey: string) => {
+    this.pendingCustomPageEvents = this.pendingCustomPageEvents.filter(
+      event => event.key !== eventKey,
+    )
+    this.completedCustomPageEvents = [
+      ...this.completedCustomPageEvents,
+      { key: eventKey, completedAt: Date.now() },
+    ]
+  }
+
+  processPendingCustomPageEvents = async () => {
+    this.customPageProcessRequested = true
+    if (!this.pendingCustomPageEvents.length) {
+      this.customPageProcessRequested = false
+      return
+    }
+    this.removeExpiredCustomPageEvents()
+    if (!this.pendingCustomPageEvents.length) {
+      this.customPageProcessRequested = false
+      return
+    }
+    if (
+      this.processingCustomPageEvents ||
+      !this.signedInId ||
+      this.pbxState !== 'success' ||
+      !this.pbxConfig
+    ) {
+      return
+    }
+    this.processingCustomPageEvents = true
+    this.customPageProcessRequested = false
+    try {
+      let event = this.pendingCustomPageEvents[0]
+      while (event) {
+        if (event.accountId !== this.signedInId) {
+          this.completeCustomPageEvent(event.key)
+        } else if (await this.processCustomPageEvent(event)) {
+          this.completeCustomPageEvent(event.key)
+        } else {
+          break
+        }
+        event = this.pendingCustomPageEvents[0]
+      }
+    } finally {
+      this.processingCustomPageEvents = false
+      if (this.customPageProcessRequested) {
+        BackgroundTimer.setTimeout(this.processPendingCustomPageEvents, 0)
+      }
+    }
+  }
+
+  private resetCustomPageRuntime = () => {
+    this.customPageRuntimeVersion += 1
+    this.listCustomPage = []
+    this.activeCustomPageId = undefined
+    this.pendingCustomPageEvents = []
+    this.completedCustomPageEvents = []
+    this.customPageBuildPromises = {}
+    this.customPageProcessRequested = false
   }
 
   @observable resourceLines: PbxResourceLine[] = []
@@ -270,9 +554,7 @@ export class AuthStore {
     this.sipPn = {}
     this.pbxConfig = undefined
     this.ucConfig = undefined
-    this.listCustomPage = []
-    this.customPageLoadings = {}
-    this.activeCustomPageId = undefined
+    this.resetCustomPageRuntime()
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = false
     ctx.pbx.disconnect()
@@ -336,8 +618,7 @@ export class AuthStore {
     this.resetFailureStateIncludePbxOrUc()
     this.pbxConfig = undefined
     this.ucConfig = undefined
-    this.listCustomPage = []
-    this.customPageLoadings = {}
+    this.resetCustomPageRuntime()
     ctx.user.clearStore()
     ctx.contact.clearStore()
     ctx.chat.clearStore()

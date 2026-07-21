@@ -250,6 +250,12 @@ export const parse = async (
   console.log('SIP PN debug: call signInByNotification')
   await ctx.auth.signInByNotification(n)
   const notificationAccountId = acc.id
+  if (n.isCall) {
+    ctx.auth.queueIncomingCustomPageEvent(
+      n.id || n.callkeepUuid,
+      notificationAccountId,
+    )
+  }
   const isNotificationAccountActive = () =>
     ctx.auth.signedInId === notificationAccountId
   const clearCustomPageIndex = (fn: Function) => {
@@ -358,14 +364,6 @@ export const parse = async (
       }
     })
     return
-  }
-
-  // handle call notification
-  if (n.callkeepAt) {
-    console.log(
-      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
-    )
-    ctx.auth.saveActionOpenCustomPage = true
   }
 
   // custom fork of react-native-voip-push-notification to get callkeepUuid
