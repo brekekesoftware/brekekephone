@@ -1,5 +1,5 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { makeAutoObservable } from 'mobx'
+import { isWeb } from 'rntwsc/platform'
 
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'

@@ -1,6 +1,6 @@
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import type { FC } from 'react'
 import type { LinearGradientProps } from 'react-native-linear-gradient'
+import type { ClassName } from 'rntwsc/tw/class-name'
 
 import { RnLinearGradient } from '#/components/rn-class-name-components'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'

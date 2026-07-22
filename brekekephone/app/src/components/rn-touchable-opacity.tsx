@@ -1,11 +1,11 @@
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { clsx } from '@rntwsc/rn/core/tw/clsx'
-import { createClassNameComponent } from '@rntwsc/rn/core/tw/lib/create-class-name-component'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { FC } from 'react'
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import type { GestureResponderEvent, TouchableOpacityProps } from 'react-native'
 import { TouchableOpacity } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { clsx } from 'rntwsc/tw/clsx'
+import { createClassNameComponent } from 'rntwsc/tw/lib/create-class-name-component'
 
 import { defaultTimeout } from '#/config'
 

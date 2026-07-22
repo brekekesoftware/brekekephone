@@ -1,13 +1,13 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { tw } from '@rntwsc/rn/core/tw/tw'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { flow, omit } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { ReactElementLike } from 'prop-types'
 import type { FC } from 'react'
 import { useRef } from 'react'
 import { Keyboard } from 'react-native'
+import { flow, omit } from 'rntwsc/libs/lodash'
+import { isWeb } from 'rntwsc/platform'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import {
   mdiCardsDiamond,

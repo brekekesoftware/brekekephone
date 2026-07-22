@@ -1,7 +1,7 @@
-import { jsonStable } from '@rntwsc/shared/json-stable'
-import { cloneDeep } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { cloneDeep } from 'rntwsc/libs/lodash'
 
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn-text'

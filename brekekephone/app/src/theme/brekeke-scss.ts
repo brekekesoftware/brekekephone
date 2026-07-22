@@ -1,4 +1,4 @@
-import type { ThemeVariables } from '@rntwsc/rn/core/twrnc-config'
+import type { ThemeVariables } from 'rntwsc/twrnc-config'
 
 // The framework has a configuration to load variables automatically using
 // .extract-variables.scss but it is difficult to setup with craco react-scripts here.

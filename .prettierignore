@@ -1,4 +1,5 @@
-# AUTOMATICALLY INHERIT FROM GITIGNORE - BEGIN
+# AUTOMATED PRAGMA - BEGIN
+
 # Xcode
 #
 **/build/
@@ -112,10 +113,13 @@
 # yaml templates
 **/*template.yaml
 **/*template*/**/*.yaml
+
 # other files those dont need prettier
 **/package-lock.json
 **/yarn.lock
 **/pnpm-lock.yaml
+
 # match with eslint ignore
 **/*.min.*
-# AUTOMATICALLY INHERIT FROM GITIGNORE - END
+
+# AUTOMATED PRAGMA - END

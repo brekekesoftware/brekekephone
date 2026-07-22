@@ -1,27 +1,27 @@
-import type { SvgIconProps } from '@rntwsc/rn/components/svg-icon'
-import { useTextStyle } from '@rntwsc/rn/components/text/text-style-context'
-import {
-  darkModeCompose,
-  toClassNameDarkModeState,
-} from '@rntwsc/rn/core/dark-mode/config'
-import { useDarkModeUser } from '@rntwsc/rn/core/dark-mode/index.native'
-import { useResponsiveState } from '@rntwsc/rn/core/responsive/use-responsive-state'
-import { getThemeVariables } from '@rntwsc/rn/core/theme/config'
-import { useTheme } from '@rntwsc/rn/core/theme/index.native'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { clsx } from '@rntwsc/rn/core/tw/clsx'
-import {
-  useMarkerGroupState,
-  useMarkerPeerState,
-} from '@rntwsc/rn/core/tw/lib/marker.native'
-import { runtimeStyle } from '@rntwsc/rn/core/tw/runtime-style'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { ComponentType } from 'react'
 import { createElement } from 'react'
 import {
   useColorScheme,
   useWindowDimensions as useWindowDimensionsOriginal,
 } from 'react-native'
+import type { SvgIconProps } from 'rntwsc/components/icon'
+import { useTextStyle } from 'rntwsc/components/text/text-style-context'
+import {
+  darkModeCompose,
+  toClassNameDarkModeState,
+} from 'rntwsc/dark-mode/config'
+import { useDarkModeUser } from 'rntwsc/dark-mode/index.native'
+import { isWeb } from 'rntwsc/platform'
+import { useResponsiveState } from 'rntwsc/responsive/use-responsive-state'
+import { getThemeVariables } from 'rntwsc/theme/config'
+import { useTheme } from 'rntwsc/theme/index.native'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { clsx } from 'rntwsc/tw/clsx'
+import {
+  useMarkerGroupState,
+  useMarkerPeerState,
+} from 'rntwsc/tw/lib/marker.native'
+import { runtimeStyle } from 'rntwsc/tw/runtime-style'
 
 export const useWindowDimensions = useWindowDimensionsOriginal
 

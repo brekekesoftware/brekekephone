@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { tw } from '@rntwsc/rn/core/tw/tw'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import {
   mdiArrowRight,

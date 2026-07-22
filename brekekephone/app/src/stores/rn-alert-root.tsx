@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { flow } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { ReactElement } from 'react'
+import { flow } from 'rntwsc/libs/lodash'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedView } from '#/components/rn-class-name-components'

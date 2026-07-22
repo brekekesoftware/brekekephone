@@ -1,4 +1,3 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import { Platform } from 'react-native'
 import {
   checkMultiple,
@@ -9,6 +8,7 @@ import {
   requestMultiple,
   requestNotifications,
 } from 'react-native-permissions'
+import { isIos } from 'rntwsc/platform'
 
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'

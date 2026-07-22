@@ -1,5 +1,5 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import DeviceInfo from 'react-native-device-info'
+import { isIos } from 'rntwsc/platform'
 
 export const devicePlatform = () => (isIos ? 'iOS' : 'Android')
 export const deviceDetail = () => {

@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiImageBrokenVariant } from '#/assets/icons'
 import {

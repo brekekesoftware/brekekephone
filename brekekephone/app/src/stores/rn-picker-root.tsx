@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import { useState } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiClose, mdiRadioboxBlank, mdiRadioboxMarked } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'

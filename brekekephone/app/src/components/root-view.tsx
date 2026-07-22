@@ -1,9 +1,9 @@
-import { SafeAreaView } from '@rntwsc/rn/core/components/safe-area-view'
-import { View } from '@rntwsc/rn/core/components/view'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { ReactNode } from 'react'
 import { memo } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { isWeb } from 'rntwsc/platform'
+import { SafeAreaView } from 'rntwsc/tw/components/safe-area-view'
+import { View } from 'rntwsc/tw/components/view'
 
 type RootViewProps = {
   children: ReactNode

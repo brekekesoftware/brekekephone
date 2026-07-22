@@ -1,6 +1,6 @@
-import { jsonStable } from '@rntwsc/shared/json-stable'
-import { orderBy, uniqBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { orderBy, uniqBy } from 'rntwsc/libs/lodash'
 
 import type { UcMessageLog } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'

@@ -1,9 +1,9 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { cloneDeep, isEqual } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useEffect } from 'react'
+import { cloneDeep, isEqual } from 'rntwsc/libs/lodash'
+import { isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import { Layout } from '#/components/layout'
 import { RnText } from '#/components/rn'

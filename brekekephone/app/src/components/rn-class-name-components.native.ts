@@ -1,9 +1,9 @@
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { createClassNameComponent } from '@rntwsc/rn/core/tw/lib/create-class-name-component'
 import type { ComponentProps, FC } from 'react'
 import VideoWocn from 'react-native-video'
 import { RTCView as RTCViewWocn } from 'react-native-webrtc'
 import WebViewWocn from 'react-native-webview'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { createClassNameComponent } from 'rntwsc/tw/lib/create-class-name-component'
 
 export * from '#/components/rn-class-name-components-shared'
 

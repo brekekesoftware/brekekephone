@@ -1,8 +1,8 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import type { ScrollView } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiFolderPlus } from '#/assets/icons'
 import { ContactList } from '#/components/contact-list'

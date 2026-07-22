@@ -44,18 +44,13 @@ export type EmbedNotificationOptions = {
   closeNotificationOnCallEnd: boolean
   notificationInterval: number
   notificationCallCompletedElseWhere:
-    | boolean
-    | ((call: CallHistoryInfo) => boolean)
+    boolean | ((call: CallHistoryInfo) => boolean)
   notificationCallCompletedElseWhereInterval: number
 }
 
 // MFA lifecycle event emitted by the embedded webphone (embed mode only).
 export type MfaEventStatus =
-  | 'required'
-  | 'error'
-  | 'verified'
-  | 'cancelled'
-  | 'closed'
+  'required' | 'error' | 'verified' | 'cancelled' | 'closed'
 export type MfaEventPayload = {
   status: MfaEventStatus
   accountId: string
@@ -110,7 +105,7 @@ export type EmbedDeviceInfo = {
   label: string
   kind: MediaDeviceKind
 }
-// Instance returned by Brekeke.Phone.render() — the embed api surface.
+// Instance returned by Brekeke.Phone.render() - the embed api surface.
 export type EmbedPhoneApi = {
   [method: string]: any
   on(event: 'mfa', listener: (e: MfaEventPayload) => void): EmbedPhoneApi

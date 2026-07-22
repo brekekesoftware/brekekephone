@@ -1,5 +1,5 @@
-import { twrncConfig as twrncCore } from '@rntwsc/rn/core/twrnc-config'
-import { mergeWithArray } from '@rntwsc/shared/lodash'
+import { mergeWithArray } from 'rntwsc/libs/lodash'
+import { twrncConfig as twrncCore } from 'rntwsc/tw/twrnc-config'
 import type { TwConfig } from 'twrnc'
 
 const config: TwConfig = {

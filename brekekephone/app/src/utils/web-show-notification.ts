@@ -1,5 +1,5 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonStable } from '@rntwsc/shared/json-stable'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { isWeb } from 'rntwsc/platform'
 
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'

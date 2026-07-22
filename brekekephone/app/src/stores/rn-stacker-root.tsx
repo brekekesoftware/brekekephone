@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import type { ReactComponentLike } from 'prop-types'
 import type { FC } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { AnimatedView } from '#/components/rn-class-name-components'
 import { RnStacker } from '#/stores/rn-stacker'

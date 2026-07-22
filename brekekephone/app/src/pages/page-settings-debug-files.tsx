@@ -1,6 +1,6 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { filesize } from 'filesize'
 import { observer } from 'mobx-react'
+import { isWeb } from 'rntwsc/platform'
 
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'

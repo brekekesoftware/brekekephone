@@ -1,6 +1,6 @@
-import { debounce } from '@rntwsc/shared/lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
+import { debounce } from 'rntwsc/libs/lodash'
 
 import { Errors } from '#/brekekejs/ucclient'
 import { defaultTimeout } from '#/config'

@@ -1,5 +1,5 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
+import { isIos } from 'rntwsc/platform'
 
 import {
   AnsweredItem,

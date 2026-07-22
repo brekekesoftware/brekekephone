@@ -1,4 +1,4 @@
-import { View } from '@rntwsc/rn/core/components/view'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiBackspace,

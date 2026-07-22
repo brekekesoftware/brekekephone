@@ -1,9 +1,9 @@
-import { useDarkModeUser } from '@rntwsc/rn/core/dark-mode/index.native'
-import { darkClassName, lightClassName } from '@rntwsc/rn/core/tailwind'
-import { qsStableStringify } from '@rntwsc/shared/qs'
 import type { PropsWithChildren } from 'react'
 import { useEffect, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
+import { useDarkModeUser } from 'rntwsc/dark-mode/index.native'
+import { qsStableStringify } from 'rntwsc/libs/qs'
+import { darkClassName, lightClassName } from 'rntwsc/tw/styles'
 import type Url from 'url-parse'
 
 import brand from '#/assets/brand.png'

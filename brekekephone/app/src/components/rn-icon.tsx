@@ -1,7 +1,7 @@
-import type { ViewProps } from '@rntwsc/rn/core/components/view'
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import Svg, { Path } from 'react-native-svg'
+import type { ViewProps } from 'rntwsc/tw/components/view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'
 

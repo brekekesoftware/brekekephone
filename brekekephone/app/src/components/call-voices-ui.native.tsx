@@ -1,7 +1,7 @@
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import IncallManager from 'react-native-incall-manager'
+import { isAndroid } from 'rntwsc/platform'
 
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/brekeke-utils'

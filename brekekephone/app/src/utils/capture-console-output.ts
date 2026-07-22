@@ -1,6 +1,6 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
 import moment from 'moment'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { isWeb } from 'rntwsc/platform'
 // eslint-disable-next-line
 import { format } from 'util'
 

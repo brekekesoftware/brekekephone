@@ -1,7 +1,7 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { flow, get } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import { Fragment } from 'react'
+import { flow, get } from 'rntwsc/libs/lodash'
+import { isWeb } from 'rntwsc/platform'
 import type { Rules } from 'validatorjs'
 import Validator from 'validatorjs'
 

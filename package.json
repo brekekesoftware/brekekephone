@@ -19,17 +19,10 @@
     "node": ">=24.11",
     "pnpm": ">=11"
   },
-  "dependencies": {
-    "@babel/runtime": "7.29.2",
-    "@rntwsc/devtools": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:devtools",
-    "@rntwsc/nodejs": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:nodejs",
-    "@rntwsc/rn": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:rn",
-    "@rntwsc/shared": "github:namnm/rntwsc#36cb218a0b23dd1fec72335524fcf2c113ed51ea&path:shared",
-    "json5": "2.2.3",
-    "tsconfig-paths": "4.2.0"
-  },
   "devDependencies": {
     "@types/node": "25.6.2",
+    "rntwsc": "0.0.5",
+    "tsx": "4.23.1",
     "typescript": "6.0.3"
   },
   "ignoreTsc": true,

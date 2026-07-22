@@ -1,5 +1,3 @@
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { createClassNameComponent } from '@rntwsc/rn/core/tw/lib/create-class-name-component'
 import type { ComponentProps, FC } from 'react'
 import {
   ActivityIndicator as ActivityIndicatorWocn,
@@ -8,6 +6,8 @@ import {
 } from 'react-native'
 import FastImageWocn from 'react-native-fast-image'
 import LinearGradientWocn from 'react-native-linear-gradient'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { createClassNameComponent } from 'rntwsc/tw/lib/create-class-name-component'
 
 export const RnFastImage = createClassNameComponent({
   FastImageWocn,

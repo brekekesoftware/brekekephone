@@ -1,5 +1,5 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import BgTimer from 'react-native-background-timer'
+import { isWeb } from 'rntwsc/platform'
 
 export type TBackgroundTimer = {
   setTimeout(callback: () => void, timeout: number): number

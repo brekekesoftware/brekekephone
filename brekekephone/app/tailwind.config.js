@@ -1,7 +1,5 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-})
-const { mergeWithArray } = require('@rntwsc/shared/lodash')
+require('tsx/cjs')
+const { mergeWithArray } = require('rntwsc/libs/lodash')
 
 module.exports = mergeWithArray(
   {},

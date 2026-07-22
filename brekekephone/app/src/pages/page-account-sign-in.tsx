@@ -1,6 +1,6 @@
-import { FlatList } from '@rntwsc/rn/core/components/flat-list'
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
+import { FlatList } from 'rntwsc/tw/components/flat-list'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiDotsHorizontal, mdiUnfoldMoreHorizontal } from '#/assets/icons'
 import { AccountSignInItem } from '#/components/account-sign-in-item'

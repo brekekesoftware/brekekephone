@@ -1,14 +1,14 @@
 import NetInfo from '@react-native-community/netinfo'
-import { View } from '@rntwsc/rn/core/components/view'
-import { TwPeerProvider } from '@rntwsc/rn/core/tw/marker.native'
-import { composeProviders } from '@rntwsc/rn/core/utils/compose-providers'
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
-import { debounce } from '@rntwsc/shared/lodash'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { AppState, DeviceEventEmitter, Platform } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
+import { debounce } from 'rntwsc/libs/lodash'
+import { isIos, isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
+import { TwClassNamePeerProvider } from 'rntwsc/tw/marker.native'
+import { composeProviders } from 'rntwsc/utils/compose-providers'
 
 import { AnimatedSize } from '#/components/animated-size'
 import { CallBar } from '#/components/call-bar'
@@ -61,7 +61,7 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCall() || checkWakeFromPN()
 
   const autoLogin = async () => {
-    // skip when a notification-triggered sign-in is switching accounts — autoLogin
+    // skip when a notification-triggered sign-in is switching accounts - autoLogin
     // would re-sign-in the old account and race the switch (BUG-1250)
     if (ctx.auth.isSigningInByNotification) {
       return
@@ -77,7 +77,7 @@ const initApp = async () => {
     }
     const d = await getLastSignedInId(true)
     const a = await ctx.account.findByUniqueId(d.id)
-    // re-check after the awaits above — the PN sign-in may have started meanwhile
+    // re-check after the awaits above - the PN sign-in may have started meanwhile
     if (ctx.auth.isSigningInByNotification) {
       return
     }
@@ -349,4 +349,7 @@ const AppWithoutProviders = observer(() => {
   )
 })
 
-export const App = composeProviders(TwPeerProvider, AppWithoutProviders)
+export const App = composeProviders(
+  TwClassNamePeerProvider,
+  AppWithoutProviders,
+)

@@ -1,8 +1,8 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import type { VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
+import { View } from 'rntwsc/tw/components/view'
 
 import { ctx } from '#/stores/ctx'
 import { RnAppState } from '#/stores/rn-app-state'

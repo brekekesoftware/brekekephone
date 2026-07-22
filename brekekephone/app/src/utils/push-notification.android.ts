@@ -1,6 +1,5 @@
 import '#/utils/callkeep'
 
-import { isEmpty } from '@rntwsc/shared/lodash'
 import { AppRegistry } from 'react-native'
 import type {
   Notification,
@@ -8,6 +7,7 @@ import type {
   RegistrationError,
 } from 'react-native-notifications'
 import { Notifications } from 'react-native-notifications'
+import { isEmpty } from 'rntwsc/libs/lodash'
 
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'

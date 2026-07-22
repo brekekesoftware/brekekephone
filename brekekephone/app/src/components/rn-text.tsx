@@ -1,11 +1,11 @@
-import { Text } from '@rntwsc/rn/components/text'
-import type { TextProps } from '@rntwsc/rn/core/components/text'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { clsx } from '@rntwsc/rn/core/tw/clsx'
-import { tw } from '@rntwsc/rn/core/tw/tw'
-import { pickBy } from '@rntwsc/shared/lodash'
 import type { FC } from 'react'
 import { forwardRef } from 'react'
+import { Text } from 'rntwsc/components/text'
+import { pickBy } from 'rntwsc/libs/lodash'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { clsx } from 'rntwsc/tw/clsx'
+import type { TextProps } from 'rntwsc/tw/components/text'
+import { tw } from 'rntwsc/tw/tw'
 
 const classMap = {
   title: tw`text-[25.2px] leading-9 font-bold`,

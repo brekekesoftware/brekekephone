@@ -7,9 +7,9 @@
 #root {
   right: 50%;
   left: 0;
-  border-right: 1px solid black;
   overflow-x: hidden;
   overflow-y: auto;
+  border-right: 1px solid black;
 }
 #brekeke_phone {
   right: 0;
@@ -76,12 +76,12 @@
 }
 
 .device-token-result {
-  max-height: 160px;
   overflow: auto;
+  max-height: 160px;
   padding: 6px;
-  color: #1565c0;
   background: #eef6ff;
-  font-family: monospace;
+  color: #1565c0;
   font-size: 12px;
+  font-family: monospace;
   white-space: pre-wrap;
 }

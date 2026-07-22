@@ -1,9 +1,9 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { tw } from '@rntwsc/rn/core/tw/tw'
-import { sortBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
+import { sortBy } from 'rntwsc/libs/lodash'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import { mdiCheck, mdiClose } from '#/assets/icons'
 import { ButtonIcon } from '#/components/button-icon'

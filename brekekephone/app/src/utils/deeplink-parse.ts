@@ -1,4 +1,4 @@
-import { qsParse } from '@rntwsc/shared/qs'
+import { qsParse } from 'rntwsc/libs/qs'
 import Url from 'url-parse'
 
 export const parse = (location: string | Url<any> | null) => {

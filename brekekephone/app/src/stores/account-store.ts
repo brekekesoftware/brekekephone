@@ -1,8 +1,8 @@
-import { isAndroid, isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
-import { jsonStable } from '@rntwsc/shared/json-stable'
-import { debounce, uniqBy } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { debounce, uniqBy } from 'rntwsc/libs/lodash'
+import { isAndroid, isWeb } from 'rntwsc/platform'
 import { v4 as newUuid } from 'uuid'
 
 import type {
@@ -134,7 +134,7 @@ type SetDeviceTokenOptions = {
 
 let foregroundPromptShown = false
 
-// reset the per-session guard so the prompt can show again in a new app session — called from the
+// reset the per-session guard so the prompt can show again in a new app session - called from the
 // onDestroyMainActivity handler (same place deeplink resets its first-open flag)
 export const resetForegroundPrompt = () => {
   foregroundPromptShown = false
@@ -700,7 +700,7 @@ export class AccountStore {
       }
       if (!res.token) {
         if (isEmbed) {
-          // Valid code but token creation failed — surface to embed host.
+          // Valid code but token creation failed - surface to embed host.
           ctx.mfa.fail(failMessage, ca)
           return false
         }

@@ -1,9 +1,9 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import moment from 'moment'
 import { useEffect, useRef } from 'react'
 import type { NativeEventSubscription } from 'react-native'
 import { AppState } from 'react-native'
+import { isIos } from 'rntwsc/platform'
 
 import { mdiMagnify, mdiPhone, mdiVideo } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'

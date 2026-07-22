@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import { useState } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { BackBtn } from '#/components/header-back-btn'
 import { CreateBtn } from '#/components/header-create-btn'

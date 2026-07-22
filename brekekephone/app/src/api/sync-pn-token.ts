@@ -1,5 +1,5 @@
-import { isAndroid, isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
 import { AppState } from 'react-native'
+import { isAndroid, isIos, isWeb } from 'rntwsc/platform'
 
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pn-config'

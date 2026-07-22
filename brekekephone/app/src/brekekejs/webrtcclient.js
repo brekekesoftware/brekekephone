@@ -386,7 +386,7 @@ if (!Brekeke.WebrtcClient) {
       if (eventId) {
         // remove one
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             if (this._eventNameIdsTable[eventName][i] === eventId) {
               this._eventNameIdsTable[eventName].splice(i, 1)
             }
@@ -396,7 +396,7 @@ if (!Brekeke.WebrtcClient) {
       } else {
         // remove all events in eventName
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             delete this._eventIdFuncTable[this._eventNameIdsTable[eventName][i]]
           }
           this._eventNameIdsTable[eventName] = []

@@ -1,9 +1,9 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import type {
   NativeSyntheticEvent,
   TextInputSelectionChangeEventData,
 } from 'react-native'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiEmoticon, mdiPaperclip, mdiSend } from '#/assets/icons'
 import { RnIcon, RnTextInput, RnTouchableOpacity } from '#/components/rn'

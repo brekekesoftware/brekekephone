@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { debounce, isEmpty, orderBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import { Fragment, useEffect, useRef } from 'react'
+import { debounce, isEmpty, orderBy } from 'rntwsc/libs/lodash'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiBriefcase,

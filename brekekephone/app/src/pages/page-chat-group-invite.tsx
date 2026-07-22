@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import { useState } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { UserItem } from '#/components/contact-user-item'
 import { Field } from '#/components/field'

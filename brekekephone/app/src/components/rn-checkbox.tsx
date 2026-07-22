@@ -1,6 +1,6 @@
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
+import type { ClassName } from 'rntwsc/tw/class-name'
 
 import { mdiCheck } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'

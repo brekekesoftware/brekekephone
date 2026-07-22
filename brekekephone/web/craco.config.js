@@ -1,10 +1,8 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-})
+require('tsx/cjs')
 
 const CircularDependencyPlugin = require('circular-dependency-plugin')
-const { path } = require('@rntwsc/nodejs/path')
-const { getAlias } = require('@rntwsc/devtools/babel-config/get-alias')
+const { path } = require('rntwsc/devtools/path')
+const { getAlias } = require('rntwsc/devtools/babel-config/get-alias')
 
 const babel = require('../app/babel.config')
 

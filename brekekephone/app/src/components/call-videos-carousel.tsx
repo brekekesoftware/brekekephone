@@ -1,9 +1,9 @@
-import type { ScrollViewRn } from '@rntwsc/rn/core/components/scroll-view'
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { Dimensions } from 'react-native'
+import type { ScrollViewRn } from 'rntwsc/tw/components/scroll-view'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { VideoViewItem } from '#/components/video-view-item'
 import type { Call } from '#/stores/call'

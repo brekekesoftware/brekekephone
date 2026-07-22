@@ -1,5 +1,5 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnActivityIndicator } from '#/components/rn-class-name-components'
 import { RnRTCView } from '#/components/rn-class-name-components.native'

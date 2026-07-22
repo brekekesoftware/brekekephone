@@ -1,9 +1,9 @@
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
+import { isWeb } from 'rntwsc/platform'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import type { PbxBook } from '#/brekekejs'
 import { RnText } from '#/components/rn-text'

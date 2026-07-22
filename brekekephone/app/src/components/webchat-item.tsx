@@ -1,8 +1,8 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { tw } from '@rntwsc/rn/core/tw/tw'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback } from 'react'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import { mdiClose } from '#/assets/icons'
 import type { Conference } from '#/brekekejs'

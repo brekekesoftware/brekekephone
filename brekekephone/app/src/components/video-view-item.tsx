@@ -1,5 +1,5 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiCameraRotate, mdiVideo, mdiVideoOff } from '#/assets/icons'
 import { RnIcon } from '#/components/rn-icon'

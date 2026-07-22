@@ -1,6 +1,5 @@
-import { isAndroid, isIos } from '@rntwsc/rn/core/utils/platform'
-import { jsonStable } from '@rntwsc/shared/json-stable'
 import { AppState } from 'react-native'
+import { isAndroid, isIos } from 'rntwsc/platform'
 
 import { ctx } from '#/stores/ctx'
 import { BrekekeUtils } from '#/utils/brekeke-utils'
@@ -331,7 +330,7 @@ export const parse = async (
     }
     // Mark the message the user just opened so the UC unread reload doesn't
     // re-create a duplicate local notification for it (BUG-1238 #1). Fires for
-    // BOTH remote (FCM/LPC) and local chat notification taps — the duplicate from
+    // BOTH remote (FCM/LPC) and local chat notification taps - the duplicate from
     // loadUnreadChats happens regardless of which one was tapped.
     if (isAndroid && isClickAction) {
       ctx.chat.suppressNextLocalNotification(

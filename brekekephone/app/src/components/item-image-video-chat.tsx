@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiCloseCircle } from '#/assets/icons'
 import { RnIcon, RnImageVideoLoader, RnText } from '#/components/rn'

@@ -1,4 +1,4 @@
-import type { ThemeConfig } from '@rntwsc/rn/core/theme/config'
+import type { ThemeConfig } from 'rntwsc/theme/config'
 
 import { darkVariables, variables } from '#/theme/brekeke-scss'
 

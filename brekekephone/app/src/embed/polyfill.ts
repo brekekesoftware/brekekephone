@@ -1,9 +1,9 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import * as Mobx from 'mobx'
 import * as MobxReact from 'mobx-react'
 // eslint-disable-next-line custom/no-import-default
 import * as React from 'react'
 import * as ReactDOMClient from 'react-dom/client'
+import { isWeb } from 'rntwsc/platform'
 
 declare global {
   type Window = {

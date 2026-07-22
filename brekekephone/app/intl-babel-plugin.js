@@ -1,9 +1,9 @@
 // this file will be imported from babel config
 // already register tsconfig-paths and devtools
 
-const { path } = require('@rntwsc/nodejs/path')
-const { fs } = require('@rntwsc/nodejs/fs')
-const { jsonSafe } = require('@rntwsc/shared/json-safe')
+const { path } = require('rntwsc/devtools/path')
+const { fs } = require('rntwsc/devtools/fs')
+const { jsonSafe } = require('rntwsc/libs/json-safe')
 
 const jsonOutputPath = path.join(__dirname, './intl-new-en.local.json')
 

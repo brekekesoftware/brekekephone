@@ -1,4 +1,4 @@
-import '@rntwsc/rn/storage/polyfill-async-storage'
+import 'rntwsc/libs/storage/polyfill-async-storage'
 import '#/polyfill/mobx'
 
 import JsSIP from 'jssip'

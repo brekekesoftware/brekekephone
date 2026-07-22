@@ -1,8 +1,8 @@
 import '#/init-globals'
 
-import { webClassName } from '@rntwsc/rn/core/tailwind'
-import { composeProviders } from '@rntwsc/rn/core/utils/compose-providers'
 import { createRoot } from 'react-dom/client'
+import { webClassName } from 'rntwsc/tw/styles'
+import { composeProviders } from 'rntwsc/utils/compose-providers'
 
 import '../tailwind.css'
 import '#/index.scss'

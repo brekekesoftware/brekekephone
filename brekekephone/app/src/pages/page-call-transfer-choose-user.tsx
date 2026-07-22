@@ -1,7 +1,7 @@
-import { orderBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import { SectionList } from 'react-native'
+import { orderBy } from 'rntwsc/libs/lodash'
 
 import { mdiMagnify, mdiPhone, mdiPhoneForward } from '#/assets/icons'
 import { ContactSectionList } from '#/components/contact-section-list'

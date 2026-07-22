@@ -1,4 +1,3 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import type {
@@ -8,6 +7,7 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 import { Keyboard } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
 
 import { Constants } from '#/brekekejs/ucclient'
 import { numberOfChatsPerLoad } from '#/components/chat-config'

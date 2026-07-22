@@ -1,9 +1,9 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
-import { isAndroid, isIos } from '@rntwsc/rn/core/utils/platform'
-import { jsonStable } from '@rntwsc/shared/json-stable'
 import moment from 'moment'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { isAndroid, isIos } from 'rntwsc/platform'
 import { v4 as newUuid } from 'uuid'
 
 import { isEmbed } from '#/embed/polyfill'

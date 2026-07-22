@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { FC } from 'react'
 import { StatusBar } from 'react-native'
+import { isIos, isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnTouchableOpacity } from '#/components/rn-touchable-opacity'
 import { useRuntimeStyle } from '#/utils/rn-core-hooks'

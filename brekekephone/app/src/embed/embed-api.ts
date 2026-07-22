@@ -145,7 +145,7 @@ export class EmbedApi extends EventEmitter {
     return this._waitForSetDeviceTokenConnect(ca)
   }
 
-  /* MFA — for hosts using their own OTP UI (listen to the `mfa` event too) */
+  /* MFA - for hosts using their own OTP UI (listen to the `mfa` event too) */
   getMfaState = (): MfaState => {
     const id = ctx.mfa.accountId
     if (!id) {
@@ -261,7 +261,7 @@ export class EmbedApi extends EventEmitter {
         ok: true,
       }
     }
-    // success — same account, show() merges state without re-emitting
+    // success - same account, show() merges state without re-emitting
     ctx.mfa.show(ca.id, {
       type: result.type,
       url: result.url,

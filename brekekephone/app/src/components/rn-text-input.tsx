@@ -1,8 +1,8 @@
-import type { InputProps } from '@rntwsc/rn/core/components/input'
-import { Input } from '@rntwsc/rn/core/components/input'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import type { ReactElement } from 'react'
 import type { TextInputProps } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
+import type { InputProps } from 'rntwsc/tw/components/input'
+import { Input } from 'rntwsc/tw/components/input'
 
 // Loose `ref` for legacy callers using `useRef<HTMLInputElement>` (web bias).
 export type RnTextInputProps = Omit<InputProps, 'ref'> & {

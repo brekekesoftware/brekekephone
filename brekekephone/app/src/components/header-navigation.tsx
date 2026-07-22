@@ -1,10 +1,10 @@
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useCallback, useEffect, useRef } from 'react'
 import type { ScrollView as RnScrollView } from 'react-native'
 import { Dimensions } from 'react-native'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { unreadClassName } from '#/components/footer-navigation'
 import { getSubMenus, getTabs } from '#/components/navigation-config'

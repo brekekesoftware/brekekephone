@@ -1,4 +1,4 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
+import { isWeb } from 'rntwsc/platform'
 
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/rn-alert'

@@ -1,4 +1,3 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC, RefObject } from 'react'
 import type {
   NativeSyntheticEvent,
@@ -6,6 +5,7 @@ import type {
   TextInputSelectionChangeEventData,
 } from 'react-native'
 import { Keyboard } from 'react-native'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnTextInput } from '#/components/rn'
 import { intl } from '#/stores/intl'

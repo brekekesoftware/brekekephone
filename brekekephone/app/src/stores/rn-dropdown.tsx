@@ -1,5 +1,5 @@
-import { cloneDeep, uniq } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
+import { cloneDeep, uniq } from 'rntwsc/libs/lodash'
 
 export type DropdownPosition = {
   top?: number

@@ -1,8 +1,8 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { useSafeAreaInsets } from '@rntwsc/rn/core/responsive/use-safe-area'
 import { useEffect, useState } from 'react'
 import type { KeyboardEvent, KeyboardEventEasing } from 'react-native'
 import { Dimensions, Keyboard, LayoutAnimation } from 'react-native'
+import { useSafeAreaInsets } from 'rntwsc/responsive/use-safe-area'
+import { View } from 'rntwsc/tw/components/view'
 
 type Props = {
   topSpacing?: number

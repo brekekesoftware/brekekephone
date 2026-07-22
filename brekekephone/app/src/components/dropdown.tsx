@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
+import { View } from 'rntwsc/tw/components/view'
 
 import type { DropdownItemProps } from '#/components/dropdown-item'
 import { DropdownItem } from '#/components/dropdown-item'

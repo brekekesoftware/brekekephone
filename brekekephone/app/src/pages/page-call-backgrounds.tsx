@@ -1,5 +1,5 @@
-import { tw } from '@rntwsc/rn/core/tw/tw'
 import { observer } from 'mobx-react'
+import { tw } from 'rntwsc/tw/tw'
 
 import { mdiPhone, mdiPhoneHangup } from '#/assets/icons'
 import { UserItem } from '#/components/contact-user-item'

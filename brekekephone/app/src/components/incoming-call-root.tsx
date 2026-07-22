@@ -1,7 +1,7 @@
-import { TwPeerProvider } from '@rntwsc/rn/core/tw/marker.native'
 import { observer } from 'mobx-react'
 import { useEffect, useRef } from 'react'
 import { ActivityIndicator } from 'react-native'
+import { TwPeerProvider } from 'rntwsc/tw/marker.native'
 
 import { BrekekeGradient } from '#/components/brekeke-gradient'
 import { RnText } from '#/components/rn-text'

@@ -1,4 +1,4 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
+import { isWeb } from 'rntwsc/platform'
 
 import { webPlayDing } from '#/utils/web-play-ding'
 

@@ -1,3 +1,5 @@
+# AUTOMATED PRAGMA - BEGIN
+
 # Xcode
 #
 **/build/
@@ -102,6 +104,8 @@
 **/package-lock.json
 **/yarn.lock
 # **/pnpm-lock.yaml
+
+# AUTOMATED PRAGMA - END
 
 # others
 **/GoogleService-Info.plist

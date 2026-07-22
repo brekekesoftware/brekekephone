@@ -1,12 +1,12 @@
 import Clipboard from '@react-native-clipboard/clipboard'
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { isEmpty } from '@rntwsc/shared/lodash'
 import { decode } from 'html-entities'
 import { observer } from 'mobx-react'
 import type { FC, ReactNode } from 'react'
 import { Pressable } from 'react-native'
+import { isEmpty } from 'rntwsc/libs/lodash'
+import { isWeb } from 'rntwsc/platform'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiAccountGroup,

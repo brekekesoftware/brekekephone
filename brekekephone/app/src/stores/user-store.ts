@@ -1,6 +1,6 @@
-import { cloneDeep } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
 import type { SectionListData } from 'react-native'
+import { cloneDeep } from 'rntwsc/libs/lodash'
 
 import { isUcBuddy } from '#/api/uc'
 import type { UcBuddy, UcBuddyGroup } from '#/brekekejs'

@@ -1,7 +1,7 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
 import EventEmitter from 'eventemitter3'
 import { encode } from 'html-entities'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { isWeb } from 'rntwsc/platform'
 
 import type {
   UcBuddy,

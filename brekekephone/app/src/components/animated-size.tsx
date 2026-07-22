@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import type { FC, PropsWithChildren } from 'react'
 import { useState } from 'react'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
 
 import { AnimatedView } from '#/components/rn-class-name-components'
 import { useAnimationOnDidMount } from '#/utils/animation'

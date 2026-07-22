@@ -70,7 +70,7 @@ phone.on('mfa', (e: any) => {
     new Date().toLocaleTimeString() +
       '  ' +
       e.status +
-      (e.message ? ' — ' + e.message : ''),
+      (e.message ? ' - ' + e.message : ''),
   )
 })
 
@@ -84,7 +84,7 @@ const MfaEvent = observer(() => {
   const run = async (label: string, fn: () => any) => {
     try {
       const r = await fn()
-      setApiResult(label + ' → ' + JSON.stringify(r ?? null))
+      setApiResult(label + ' -> ' + JSON.stringify(r ?? null))
     } catch (e: any) {
       setApiResult(label + ' error: ' + (e?.message || String(e)))
     }

@@ -1,7 +1,7 @@
-import { jsonSafe } from '@rntwsc/shared/json-safe'
-import { debounce } from '@rntwsc/shared/lodash'
 import type { Lambda } from 'mobx'
 import { reaction } from 'mobx'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { debounce } from 'rntwsc/libs/lodash'
 
 import type { SipLoginOption } from '#/api/sip'
 import { updatePhoneIndex } from '#/api/update-phone-index'

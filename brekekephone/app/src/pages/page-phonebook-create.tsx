@@ -1,5 +1,5 @@
-import { isEmpty } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
+import { isEmpty } from 'rntwsc/libs/lodash'
 
 import { ContactsCreateForm } from '#/components/contact-create-form'
 import type { ContactInfo, Phonebook } from '#/stores/contact-store'

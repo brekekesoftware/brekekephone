@@ -1,10 +1,10 @@
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
-import { useSafeAreaInsets } from '@rntwsc/rn/core/responsive/use-safe-area'
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
 import { autorun } from 'mobx'
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
+import { isIos, isWeb } from 'rntwsc/platform'
+import { useSafeAreaInsets } from 'rntwsc/responsive/use-safe-area'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiClose } from '#/assets/icons'
 import {

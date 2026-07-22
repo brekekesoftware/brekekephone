@@ -1,9 +1,9 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isAndroid, isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import type { NativeEventSubscription } from 'react-native'
 import { AppState } from 'react-native'
+import { isAndroid, isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiAlphaPCircle,

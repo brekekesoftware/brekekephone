@@ -1,8 +1,8 @@
-import { Image } from '@rntwsc/rn/core/components/image'
-import { View } from '@rntwsc/rn/core/components/view'
-import { tw } from '@rntwsc/rn/core/tw/tw'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
+import { isWeb } from 'rntwsc/platform'
+import { Image } from 'rntwsc/tw/components/image'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 

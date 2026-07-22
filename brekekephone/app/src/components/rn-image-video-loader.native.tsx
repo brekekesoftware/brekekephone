@@ -1,10 +1,10 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import { Modal, StatusBar } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
+import { isAndroid } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiCloseCircleOutline,

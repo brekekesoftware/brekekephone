@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactVideoSource, VideoRef } from 'react-native-video'
 import Video from 'react-native-video'
+import { View } from 'rntwsc/tw/components/view'
 
 import { BrekekeUtils, staticRingtones } from '#/utils/brekeke-utils'
 import { isSameSource } from '#/utils/ringtone-picker'

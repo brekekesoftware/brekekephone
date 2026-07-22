@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import { useEffect, useState } from 'react'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
 
 import noPhoto from '#/assets/no_photo.png'
 

@@ -1,4 +1,4 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
+import { isIos } from 'rntwsc/platform'
 
 export const webviewInjectSendJsonToRnOnLoad = () =>
   isIos

@@ -83,7 +83,7 @@ export class MFAStore {
     },
   ) => {
     if (this.accountId === id) {
-      // Same session/account (e.g. resend) — merge state only, do NOT re-emit.
+      // Same session/account (e.g. resend) - merge state only, do NOT re-emit.
       this.skipReconnect = this.skipReconnect && (opts?.skipReconnect ?? false)
       this.error = opts?.error || this.error
       if (

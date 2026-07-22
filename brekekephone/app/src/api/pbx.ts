@@ -1,7 +1,7 @@
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
-import { debounce, random } from '@rntwsc/shared/lodash'
 import EventEmitter from 'eventemitter3'
 import { makeAutoObservable } from 'mobx'
+import { debounce, random } from 'rntwsc/libs/lodash'
+import { isAndroid } from 'rntwsc/platform'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -590,7 +590,7 @@ export class PBX extends EventEmitter {
       )
     })
 
-    // this.client cleared by disconnect() (e.g. account switch) also means stale —
+    // this.client cleared by disconnect() (e.g. account switch) also means stale -
     // events from this connect attempt must not update global state (BUG-1250)
     const isStaleClient = () => this.client !== client
 
@@ -716,7 +716,7 @@ export class PBX extends EventEmitter {
     if (!(await isConnected())) {
       return false
     }
-    // Server verified reachable for this host — lets a same-host account switch skip the
+    // Server verified reachable for this host - lets a same-host account switch skip the
     // redundant probe (see skipProbeOnce) (BUG-1238).
     this.probeVerifiedUri = wsUri
 
@@ -979,7 +979,7 @@ export class PBX extends EventEmitter {
       return 'stop'
     }
 
-    // BUG-1235 (R12): turning push OFF never needs OTP — apply the OFF state and
+    // BUG-1235 (R12): turning push OFF never needs OTP - apply the OFF state and
     // let syncPnToken run pnmanage(remove). Only turning ON triggers mfaStart.
     if (ctx.account.pendingPnEnabled === false) {
       debug('toggle-off')

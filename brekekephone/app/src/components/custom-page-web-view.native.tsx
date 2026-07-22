@@ -1,7 +1,7 @@
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
 import { useRef } from 'react'
 import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
+import { isAndroid } from 'rntwsc/platform'
 
 import { RnWebView } from '#/components/rn-class-name-components.native'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webview-inject-send-json-to-rn-on-load'

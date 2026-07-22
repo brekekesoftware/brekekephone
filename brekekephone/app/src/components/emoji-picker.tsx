@@ -1,7 +1,7 @@
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
 import { useState } from 'react'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { emojiGroups, toEmoji } from '#/components/emoji-data'
 import { RnText, RnTouchableOpacity } from '#/components/rn'

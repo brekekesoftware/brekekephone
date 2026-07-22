@@ -1,15 +1,9 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import {
-  darkModeDisabled,
-  darkModeEnabled,
-} from '@rntwsc/rn/core/dark-mode/config'
-import {
-  useDarkModeUser,
-  useSetDarkMode,
-} from '@rntwsc/rn/core/dark-mode/index.native'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import moment from 'moment'
+import { darkModeDisabled, darkModeEnabled } from 'rntwsc/dark-mode/config'
+import { useDarkModeUser, useSetDarkMode } from 'rntwsc/dark-mode/index.native'
+import { isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiKeyboardBackspace, mdiTranslate } from '#/assets/icons'
 import { Field } from '#/components/field'

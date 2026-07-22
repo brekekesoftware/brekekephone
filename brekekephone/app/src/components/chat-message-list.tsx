@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { sortBy, uniqBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
+import { sortBy, uniqBy } from 'rntwsc/libs/lodash'
+import { View } from 'rntwsc/tw/components/view'
 
 import { Avatar } from '#/components/avatar'
 import { groupByTimestamp } from '#/components/chat-config'

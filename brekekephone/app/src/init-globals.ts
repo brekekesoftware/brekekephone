@@ -7,13 +7,10 @@ import '#/brekekejs/phonebook'
 import '#/brekekejs/webnotification'
 import '#/stores/ctx-imports'
 
-import {
-  darkModeCookieKey,
-  darkModeDisabled,
-} from '@rntwsc/rn/core/dark-mode/config'
-import { initDarkModeNative } from '@rntwsc/rn/core/dark-mode/index.native'
-import { initTheme } from '@rntwsc/rn/core/theme/config'
-import { storage } from '@rntwsc/rn/storage'
+import { darkModeCookieKey, darkModeDisabled } from 'rntwsc/dark-mode/config'
+import { initDarkModeNative } from 'rntwsc/dark-mode/index.native'
+import { storage } from 'rntwsc/libs/storage'
+import { initTheme } from 'rntwsc/theme/config'
 
 import { ctx } from '#/stores/ctx'
 import { brekekeTheme } from '#/theme/brekeke'

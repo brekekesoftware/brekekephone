@@ -1,10 +1,10 @@
 import Clipboard from '@react-native-clipboard/clipboard'
-import { View } from '@rntwsc/rn/core/components/view'
-import { tw } from '@rntwsc/rn/core/tw/tw'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import Share from 'react-native-share'
+import { isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import { mdiContentCopy, mdiDotsHorizontal, mdiFile } from '#/assets/icons'
 import { ItemImageVideoChat } from '#/components/item-image-video-chat'

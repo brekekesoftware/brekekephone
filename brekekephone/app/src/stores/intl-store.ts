@@ -1,7 +1,7 @@
 import RnAsyncStorage from '@react-native-async-storage/async-storage'
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import { makeAutoObservable } from 'mobx'
 import { NativeModules } from 'react-native'
+import { isIos } from 'rntwsc/platform'
 
 // import vi from '#/assets/intl-vi.json'
 import en from '#/assets/intl-en.json'

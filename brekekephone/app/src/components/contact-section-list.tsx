@@ -1,11 +1,11 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC, MutableRefObject } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import type { View as RNView, ViewProps } from 'react-native'
 import { SectionList, TouchableWithoutFeedback } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiMenuDown,

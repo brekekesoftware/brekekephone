@@ -1,9 +1,9 @@
 // reexport config at root to be compatible with vscode intellisense
-require('./devtools-register')
-const { mergeWithArray } = require('@rntwsc/shared/lodash')
+require('tsx/cjs')
+const { mergeWithArray } = require('rntwsc/libs/lodash')
 
 module.exports = mergeWithArray(
   {},
-  require('@rntwsc/rn/core/tw-config').twConfig,
-  require('@rntwsc/rn/core/twrnc-config').twrncConfig,
+  require('rntwsc/tw/tailwind-config').config,
+  require('rntwsc/tw/twrnc-config').twrncConfig,
 )

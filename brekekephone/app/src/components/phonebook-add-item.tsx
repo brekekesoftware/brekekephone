@@ -1,9 +1,9 @@
-import { ScrollView } from '@rntwsc/rn/core/components/scroll-view'
-import { View } from '@rntwsc/rn/core/components/view'
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useRef, useState } from 'react'
 import { Platform } from 'react-native'
+import { isAndroid } from 'rntwsc/platform'
+import { ScrollView } from 'rntwsc/tw/components/scroll-view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnText, RnTextInput, RnTouchableOpacity } from '#/components/rn'
 import { AnimatedView } from '#/components/rn-class-name-components'

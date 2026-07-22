@@ -1,5 +1,5 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
 import type { ReactComponentLike } from 'prop-types'
+import { isIos } from 'rntwsc/platform'
 
 import { isCustomPageUrlBuilt } from '#/api/custom-page'
 import {

@@ -1,15 +1,14 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-})
+require('tsx/cjs')
 
-const config = require('@rntwsc/devtools/metro-config').config({
+const { path } = require('rntwsc/devtools/path')
+const { fs } = require('rntwsc/devtools/fs')
+
+const config = require('rntwsc/devtools/metro-config').config({
   dir: __dirname,
+  repoRoot: path.join(__dirname, '../../'),
 })
 
 module.exports = config
-
-const { path } = require('@rntwsc/nodejs/path')
-const { fs } = require('@rntwsc/nodejs/fs')
 
 const polyfill = k => path.join(__dirname, `./src/polyfill/${k}.ts`)
 const nullPolyfill = polyfill('null')

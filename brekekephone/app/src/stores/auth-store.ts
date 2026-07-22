@@ -1,7 +1,7 @@
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
-import { debounce } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
+import { debounce } from 'rntwsc/libs/lodash'
+import { isIos, isWeb } from 'rntwsc/platform'
 
 import type {
   PbxCustomPage,
@@ -37,11 +37,7 @@ import { waitForActiveAppState } from '#/utils/wait-for-active-app-state'
 import { waitTimeout } from '#/utils/wait-timeout'
 
 export type ConnectionState =
-  | 'stopped'
-  | 'waiting'
-  | 'connecting'
-  | 'success'
-  | 'failure'
+  'stopped' | 'waiting' | 'connecting' | 'success' | 'failure'
 
 export class AuthStore {
   constructor() {

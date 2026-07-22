@@ -1,9 +1,9 @@
-import { isIos } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
 import type { IReactionDisposer } from 'mobx'
 import { autorun, makeAutoObservable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { isIos } from 'rntwsc/platform'
 
 import type { Session, SessionStatus } from '#/brekekejs'
 import { defaultTimeout } from '#/config'

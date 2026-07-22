@@ -1,4 +1,4 @@
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
+import { isIos, isWeb } from 'rntwsc/platform'
 
 export const formatFileType = (name: string) => {
   const typeImage = ['PNG', 'JPG', 'JPEG', 'GIF']

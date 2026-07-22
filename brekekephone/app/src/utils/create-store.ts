@@ -1,5 +1,5 @@
-import { get, set } from '@rntwsc/shared/lodash'
 import { extendObservable } from 'mobx'
+import { get, set } from 'rntwsc/libs/lodash'
 
 export const createStore = (mixin: Function, ...args: unknown[]) => {
   const $ = {

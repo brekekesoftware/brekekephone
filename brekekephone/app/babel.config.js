@@ -1,18 +1,16 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-  babel: false,
-})
+require('tsx/cjs')
 
-const { getAlias } = require('@rntwsc/devtools/babel-config/get-alias')
-const { twPlugin } = require('@rntwsc/devtools/babel-plugin-tw')
-const { asyncHookPlugin } = require('@rntwsc/devtools/babel-plugin-async-hook')
+const { getAlias } = require('rntwsc/devtools/babel-config/get-alias')
+const { twPlugin } = require('rntwsc/devtools/babel-plugin-tw')
+const { asyncHookPlugin } = require('rntwsc/devtools/babel-plugin-async-hook')
 const { twrncConfig } = require('#/twrnc-config')
 
 const twOptions = {
+  reactNativeVersion: require('./package.json').dependencies['react-native'],
   twrncConfig,
-  extractOutputPath: __dirname,
+  extractClassNameOutputPath: __dirname,
 }
-const asyncHookOptions = {
+const isServerOptions = {
   isServer: false,
 }
 const moduleResolverOptions = {
@@ -23,7 +21,7 @@ const moduleResolverOptions = {
 
 module.exports = {
   plugins: [
-    [asyncHookPlugin, asyncHookOptions],
+    [asyncHookPlugin, isServerOptions],
     [twPlugin, twOptions],
 
     require.resolve('./intl-babel-plugin'),

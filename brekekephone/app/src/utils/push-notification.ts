@@ -1,4 +1,4 @@
-import { qsStableStringify } from '@rntwsc/shared/qs'
+import { qsStableStringify } from 'rntwsc/libs/qs'
 
 const uint8ArrayToUrlBase64 = (arr: ArrayBuffer) =>
   window

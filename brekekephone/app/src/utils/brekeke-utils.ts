@@ -1,7 +1,7 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { get, set } from '@rntwsc/shared/lodash'
 import type { NativeModule } from 'react-native'
 import { NativeModules } from 'react-native'
+import { get, set } from 'rntwsc/libs/lodash'
+import { isWeb } from 'rntwsc/platform'
 
 import type { TCallKeepAction } from '#/stores/call-store'
 

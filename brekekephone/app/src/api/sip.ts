@@ -1,7 +1,7 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
-import { jsonSafe } from '@rntwsc/shared/json-safe'
-import { jsonStable } from '@rntwsc/shared/json-stable'
 import EventEmitter from 'eventemitter3'
+import { jsonSafe } from 'rntwsc/libs/json-safe'
+import { jsonStable } from 'rntwsc/libs/json-stable'
+import { isWeb } from 'rntwsc/platform'
 
 import { getCameraSourceIds } from '#/api/get-camera-source-id'
 import { turnConfig } from '#/api/turn-config.local'

@@ -1,5 +1,5 @@
 {
-  "extends": "@rntwsc/devtools/tsconfig.base.json",
+  "extends": "rntwsc/devtools/tsconfig.base.json",
 
   "compilerOptions": {
     /* ===== Output Formatting ===== */
@@ -277,7 +277,7 @@
     // "ignoreDeprecations": "",
   },
   "exclude": [
-    // AUTOMATICALLY INHERIT FROM GITIGNORE - BEGIN
+    // AUTOMATED PRAGMA - BEGIN
     "**/build/",
     "**/xcuserdata/",
     "**/DerivedData/",
@@ -309,6 +309,6 @@
     "**/brekeke_phone*/",
     // match with eslint
     "**/*.min.*"
-    // AUTOMATICALLY INHERIT FROM GITIGNORE - END
+    // AUTOMATED PRAGMA - END
   ]
 }

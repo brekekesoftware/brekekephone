@@ -1,5 +1,5 @@
-import { debounce, isEqual, uniqBy } from '@rntwsc/shared/lodash'
 import { makeAutoObservable } from 'mobx'
+import { debounce, isEqual, uniqBy } from 'rntwsc/libs/lodash'
 
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'

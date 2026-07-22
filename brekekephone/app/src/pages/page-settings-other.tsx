@@ -1,6 +1,6 @@
-import { isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
+import { isIos, isWeb } from 'rntwsc/platform'
 
 import { mdiCheck } from '#/assets/icons'
 import { Field } from '#/components/field'

@@ -1,11 +1,9 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-})
+require('tsx/cjs')
 
 const cheerio = require('cheerio')
-const { fs } = require('@rntwsc/nodejs/fs')
-const { path } = require('@rntwsc/nodejs/path')
-const { jsonSafe } = require('@rntwsc/shared/json-safe')
+const { fs } = require('rntwsc/devtools/fs')
+const { path } = require('rntwsc/devtools/path')
+const { jsonSafe } = require('rntwsc/libs/json-safe')
 
 const buildPath = path.join(__dirname, './build')
 const b = p => path.join(buildPath, p)

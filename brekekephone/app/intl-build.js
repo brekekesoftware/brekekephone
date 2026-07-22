@@ -1,8 +1,6 @@
-require('@rntwsc/nodejs/entrypoint')({
-  target: __dirname,
-})
+require('tsx/cjs')
 
-const { fs } = require('@rntwsc/nodejs/fs')
+const { fs } = require('rntwsc/devtools/fs')
 
 const currentEn = './src/assets/intl-en.json'
 const currentJa = './src/assets/intl-ja.json'

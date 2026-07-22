@@ -1,7 +1,7 @@
-import { uniqBy } from '@rntwsc/shared/lodash'
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
 import { Animated } from 'react-native'
+import { uniqBy } from 'rntwsc/libs/lodash'
 
 import { Field } from '#/components/field'
 import { Layout } from '#/components/layout'

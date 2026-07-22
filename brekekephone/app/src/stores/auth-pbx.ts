@@ -1,6 +1,6 @@
-import { debounce } from '@rntwsc/shared/lodash'
 import type { Lambda } from 'mobx'
 import { reaction } from 'mobx'
+import { debounce } from 'rntwsc/libs/lodash'
 
 import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'

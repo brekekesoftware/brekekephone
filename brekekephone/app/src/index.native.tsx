@@ -1,8 +1,8 @@
 import '#/init-globals'
 
-import { composeProviders } from '@rntwsc/rn/core/utils/compose-providers'
 import { AppRegistry } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { composeProviders } from 'rntwsc/utils/compose-providers'
 
 import { App } from '#/app'
 import { IncomingCallRoot } from '#/components/incoming-call-root'

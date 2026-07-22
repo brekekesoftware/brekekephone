@@ -1,12 +1,12 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { createClassNameComponent } from '@rntwsc/rn/core/tw/lib/create-class-name-component'
-import { isAndroid } from '@rntwsc/rn/core/utils/platform'
 import type { ComponentProps, FC } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Image as ImageWocn } from 'react-native'
 import type { WebViewMessageEvent } from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
+import { isAndroid } from 'rntwsc/platform'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
+import { createClassNameComponent } from 'rntwsc/tw/lib/create-class-name-component'
 
 import noPhoto from '#/assets/no_photo.png'
 

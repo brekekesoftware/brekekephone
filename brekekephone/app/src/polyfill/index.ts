@@ -1,5 +1,5 @@
-import '@rntwsc/rn/core/polyfill/react-native-web'
-import '@rntwsc/rn/core/polyfill/react-native-web-client'
+import 'rntwsc/tw/polyfill/react-native-web'
+import 'rntwsc/tw/polyfill/react-native-web-enhancer'
 import '#/polyfill/dev'
 import '#/polyfill/shared'
 

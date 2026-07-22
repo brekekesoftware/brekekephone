@@ -1,4 +1,3 @@
-import { isAndroid, isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
 import {
   AppState,
   Keyboard,
@@ -8,6 +7,7 @@ import {
 import type { EventsPayload } from 'react-native-callkeep'
 import RNCallKeep from 'react-native-callkeep'
 import inCallManager from 'react-native-incall-manager'
+import { isAndroid, isIos, isWeb } from 'rntwsc/platform'
 
 import { bundleIdentifier } from '#/config'
 import { resetForegroundPrompt } from '#/stores/account-store'

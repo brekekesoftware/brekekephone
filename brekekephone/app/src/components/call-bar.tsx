@@ -1,6 +1,6 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
+import { isWeb } from 'rntwsc/platform'
+import { View } from 'rntwsc/tw/components/view'
 
 import {
   mdiMicrophone,

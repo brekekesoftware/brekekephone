@@ -1,10 +1,10 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
-import { isAndroid, isIos, isWeb } from '@rntwsc/rn/core/utils/platform'
-import { sortBy, uniqBy } from '@rntwsc/shared/lodash'
 import { decode } from 'html-entities'
 import { makeAutoObservable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
+import { sortBy, uniqBy } from 'rntwsc/libs/lodash'
+import { isAndroid, isIos, isWeb } from 'rntwsc/platform'
 
 import type { Conference } from '#/brekekejs'
 import { Constants } from '#/brekekejs/ucclient'
@@ -134,7 +134,7 @@ export class ChatStore {
   // Suppress the duplicate local notification for a chat message the user just
   // opened from a chat notification (remote FCM/LPC or local). When UC reconnects
   // and reloads unread chats, pushMessages() re-creates a local notification for
-  // that same message — mark it on tap and skip it once, matching thread + body,
+  // that same message - mark it on tap and skip it once, matching thread + body,
   // with a short TTL and consume-once (BUG-1238).
   private suppressedLocalNotifications: {
     threadId: string

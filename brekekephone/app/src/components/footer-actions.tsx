@@ -1,5 +1,5 @@
-import { View } from '@rntwsc/rn/core/components/view'
 import type { FC } from 'react'
+import { View } from 'rntwsc/tw/components/view'
 
 import { mdiCached, mdiKeyboardBackspace } from '#/assets/icons'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/rn'

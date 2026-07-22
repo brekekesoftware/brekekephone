@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
 
 export const RnSwitch: FC<
   Omit<ViewProps, 'style'> & {

@@ -1,6 +1,3 @@
-import type { ViewRn } from '@rntwsc/rn/core/components/view'
-import { View } from '@rntwsc/rn/core/components/view'
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { useEffect, useRef } from 'react'
@@ -9,6 +6,9 @@ import type {
   PanResponderGestureState,
 } from 'react-native'
 import { Dimensions, PanResponder } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
+import type { ViewRn } from 'rntwsc/tw/components/view'
+import { View } from 'rntwsc/tw/components/view'
 
 import { VideoPlayer } from '#/components/video-player'
 import { ctx } from '#/stores/ctx'

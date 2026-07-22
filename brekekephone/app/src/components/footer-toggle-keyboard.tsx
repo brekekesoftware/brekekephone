@@ -1,7 +1,7 @@
-import { isWeb } from '@rntwsc/rn/core/utils/platform'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Keyboard } from 'react-native'
+import { isWeb } from 'rntwsc/platform'
 
 import { mdiKeyboardOffOutline, mdiKeyboardOutline } from '#/assets/icons'
 import { AnimatedSize } from '#/components/animated-size'

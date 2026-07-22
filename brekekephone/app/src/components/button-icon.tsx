@@ -1,8 +1,8 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
 import type { FC } from 'react'
 import { useState } from 'react'
 import Svg, { Path } from 'react-native-svg'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
 
 import { RnText, RnTouchableOpacity } from '#/components/rn'
 import { RnActivityIndicator } from '#/components/rn-class-name-components'

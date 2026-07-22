@@ -1,7 +1,7 @@
-import { View } from '@rntwsc/rn/core/components/view'
-import type { ClassName } from '@rntwsc/rn/core/tw/class-name'
-import { tw } from '@rntwsc/rn/core/tw/tw'
 import type { FC } from 'react'
+import type { ClassName } from 'rntwsc/tw/class-name'
+import { View } from 'rntwsc/tw/components/view'
+import { tw } from 'rntwsc/tw/tw'
 
 import { mdiKeyboardBackspace } from '#/assets/icons'
 import { Field } from '#/components/field'
