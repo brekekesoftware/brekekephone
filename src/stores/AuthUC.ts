@@ -8,12 +8,35 @@ import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { waitTimeout } from '#/utils/waitTimeout'
+
+// UC sign-in only has a conditional client-side timeout (ucclient
+// SIGN_IN_TIMEOUT_DEFAULT is 30s but its handler is a no-op unless
+// _signInStatus === 2), so on a multi-account switch where the shared UC client
+// is still wedged by a not-yet-torn-down session, ctx.uc.connect() can hang and
+// ucState pins on 'connecting' forever. This app-side watchdog forces
+// failure+retry so the state machine recovers (BUG-1256). It is deliberately
+// longer than the 30s client timeout so it never pre-empts a connect the client
+// itself would still resolve or reject.
+const ucConnectingTimeoutMs = 45000
 
 export class AuthUC {
   private clearShouldAuthReaction?: Lambda
+  private clearConnectingWatchdogReaction?: Lambda
+  private connectingWatchdogTimeoutId = 0
 
   auth = () => {
+    this.clearConnectingWatchdogReaction?.()
+    // Key by account so connecting(B) -> connecting(A) resets the deadline;
+    // fireImmediately arms even if ucState is already stuck on 'connecting' when
+    // auth() re-registers the reaction.
+    this.clearConnectingWatchdogReaction = reaction(
+      () =>
+        ctx.auth.ucState === 'connecting' ? ctx.auth.signedInId || '_' : '',
+      this.onUcConnectingKeyChanged,
+      { fireImmediately: true },
+    )
     this.authWithCheck()
     ctx.uc.on('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
@@ -26,9 +49,38 @@ export class AuthUC {
   @action dispose = () => {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
+    this.clearConnectingWatchdogReaction?.()
+    this.clearConnectingWatchdogTimeout()
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'stopped'
+  }
+
+  // Armed whenever ucState is 'connecting' (re-armed on account change),
+  // disarmed as soon as it leaves 'connecting'.
+  private onUcConnectingKeyChanged = (key: string) => {
+    this.clearConnectingWatchdogTimeout()
+    if (key) {
+      this.connectingWatchdogTimeoutId = BackgroundTimer.setTimeout(
+        this.onUcConnectingTimeout,
+        ucConnectingTimeoutMs,
+      )
+    }
+  }
+  private clearConnectingWatchdogTimeout = () => {
+    if (this.connectingWatchdogTimeoutId) {
+      BackgroundTimer.clearTimeout(this.connectingWatchdogTimeoutId)
+      this.connectingWatchdogTimeoutId = 0
+    }
+  }
+  @action private onUcConnectingTimeout = () => {
+    this.connectingWatchdogTimeoutId = 0
+    if (ctx.auth.ucState !== 'connecting') {
+      return
+    }
+    ctx.auth.ucState = 'failure'
+    ctx.auth.ucTotalFailure += 1
+    this.authWithCheck()
   }
 
   @action private authWithoutCatch = async () => {
