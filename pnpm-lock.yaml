@@ -16,6 +16,7 @@ overrides:
 patchedDependencies:
   '@react-native-documents/picker': 16f974cd0eadaf29aae11e18edff3b7c0f53ce793e7358fba88aa7e64ea684b0
   '@react-native/gradle-plugin': 07ebd10d76d949aedbcbec9cc6d0a6f41d4f69065e60ddc8708f8bd7bdc3c4f1
+  bezier-easing: f2ce49dd2c72771e2d976b8bfb693325926b4a68041895d2cc8da310fad6438b
   eslint-plugin-import: 7f5c1b3ac0419b772c3abd1152f946a5f6c8f5ebf558cb49b732215630c2f48b
   eslint-plugin-react: 24ed0c82b63c09560e6a640404cb8b5769455a704db5068d2ac54d9c68e9b43e
   event-target-shim: 55363e9743064572ff9ecc527aaf75377943ae6cf4cf2751994b6737e1727fab
@@ -13945,7 +13946,7 @@ snapshots:
 
   batch@0.6.1: {}
 
-  bezier-easing@3.0.1: {}
+  bezier-easing@3.0.1(patch_hash=f2ce49dd2c72771e2d976b8bfb693325926b4a68041895d2cc8da310fad6438b): {}
 
   bfj@7.1.0:
     dependencies:
@@ -19440,7 +19441,7 @@ snapshots:
       '@typescript-eslint/utils': 8.65.0(eslint@10.7.0(jiti@2.7.0))(typescript@6.0.3)
       babel-plugin-module-resolver: 5.0.3
       babel-plugin-react-compiler: 1.0.0
-      bezier-easing: 3.0.1
+      bezier-easing: 3.0.1(patch_hash=f2ce49dd2c72771e2d976b8bfb693325926b4a68041895d2cc8da310fad6438b)
       color-rgba: 3.0.0
       colors: 1.4.0
       css-tree: 3.2.1
@@ -19575,7 +19576,7 @@ snapshots:
       '@typescript-eslint/utils': 8.65.0(eslint@10.7.0(jiti@2.7.0))(typescript@6.0.3)
       babel-plugin-module-resolver: 5.0.3
       babel-plugin-react-compiler: 1.0.0
-      bezier-easing: 3.0.1
+      bezier-easing: 3.0.1(patch_hash=f2ce49dd2c72771e2d976b8bfb693325926b4a68041895d2cc8da310fad6438b)
       color-rgba: 3.0.0
       colors: 1.4.0
       css-tree: 3.2.1
@@ -19710,7 +19711,7 @@ snapshots:
       '@typescript-eslint/utils': 8.65.0(eslint@10.7.0(jiti@2.7.0))(typescript@6.0.3)
       babel-plugin-module-resolver: 5.0.3
       babel-plugin-react-compiler: 1.0.0
-      bezier-easing: 3.0.1
+      bezier-easing: 3.0.1(patch_hash=f2ce49dd2c72771e2d976b8bfb693325926b4a68041895d2cc8da310fad6438b)
       color-rgba: 3.0.0
       colors: 1.4.0
       css-tree: 3.2.1

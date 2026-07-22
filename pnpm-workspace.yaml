@@ -21,6 +21,7 @@ overrides:
 patchedDependencies:
   '@react-native-documents/picker': patches/@react-native-documents__picker.patch
   '@react-native/gradle-plugin': patches/@react-native__gradle-plugin.patch
+  bezier-easing: patches/bezier-easing.patch
   eslint-plugin-import: 'patches/eslint-plugin-import.patch'
   eslint-plugin-react: 'patches/eslint-plugin-react.patch'
   event-target-shim: patches/event-target-shim.patch
