@@ -284,6 +284,9 @@ export class AuthStore {
       ...this.pendingCustomPageEvents,
       { key, accountId, createdAt: Date.now(), completedPageIds: [] },
     ]
+    console.log(
+      `CustomPage debug: queue event key=${key} accountId=${accountId} signedInId=${this.signedInId}`,
+    )
     BackgroundTimer.setTimeout(this.processPendingCustomPageEvents, 0)
   }
 
@@ -355,6 +358,9 @@ export class AuthStore {
       return true
     }
     const page = pages[0]
+    console.log(
+      `CustomPage debug: navigate to page id=${page.id} signedInId=${this.signedInId}`,
+    )
     this.activeCustomPageId = page.id
     ctx.nav.goToPageCustomPage({ id: page.id })
     return true
@@ -405,8 +411,14 @@ export class AuthStore {
       let event = this.pendingCustomPageEvents[0]
       while (event) {
         if (event.accountId !== this.signedInId) {
+          console.log(
+            `CustomPage debug: skip stale event key=${event.key} eventAccount=${event.accountId} signedInId=${this.signedInId}`,
+          )
           this.completeCustomPageEvent(event.key)
         } else if (await this.processCustomPageEvent(event)) {
+          console.log(
+            `CustomPage debug: processed event key=${event.key} signedInId=${this.signedInId}`,
+          )
           this.completeCustomPageEvent(event.key)
         } else {
           break

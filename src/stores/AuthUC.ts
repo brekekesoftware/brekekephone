@@ -61,11 +61,18 @@ export class AuthUC {
   // as PBX is ready. Guarded by account id so a genuine in-flight connect for the
   // current account is never interrupted.
   @action private clearStaleConnecting = () => {
-    if (
-      ctx.auth.ucState === 'connecting' &&
-      this.connectingAccountId !== ctx.auth.signedInId
-    ) {
+    if (ctx.auth.ucState !== 'connecting') {
+      return
+    }
+    if (this.connectingAccountId !== ctx.auth.signedInId) {
+      console.log(
+        `UC debug: clearStaleConnecting reset connecting from=${this.connectingAccountId} for=${ctx.auth.signedInId}`,
+      )
       ctx.auth.ucState = 'stopped'
+    } else {
+      console.log(
+        `UC debug: clearStaleConnecting keep connecting (same account=${ctx.auth.signedInId})`,
+      )
     }
   }
   @action dispose = () => {
@@ -100,6 +107,9 @@ export class AuthUC {
     if (ctx.auth.ucState !== 'connecting') {
       return
     }
+    console.log(
+      `UC debug: watchdog FIRED after ${ucConnectingTimeoutMs}ms, forcing failure+retry account=${ctx.auth.signedInId}`,
+    )
     ctx.auth.ucState = 'failure'
     ctx.auth.ucTotalFailure += 1
     this.authWithCheck()
@@ -120,9 +130,13 @@ export class AuthUC {
       return
     }
     const accountId = ca.id
+    console.log(`UC debug: uc.connect start account=${accountId}`)
     await ctx.uc.connect(
       ca,
       c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
+    )
+    console.log(
+      `UC debug: uc.connect resolved account=${accountId} stillCurrent=${ctx.auth.signedInId === accountId}`,
     )
     if (ctx.auth.signedInId !== accountId) {
       return
@@ -135,11 +149,16 @@ export class AuthUC {
         }
         ctx.auth.ucState = 'success'
         ctx.auth.ucTotalFailure = 0
+        console.log(`UC debug: ucState=success account=${accountId}`)
       }),
     )
   }
   @action private authWithCheck = async () => {
-    if (!ctx.auth.ucShouldAuth()) {
+    const shouldAuth = ctx.auth.ucShouldAuth()
+    console.log(
+      `UC debug: authWithCheck shouldAuth=${!!shouldAuth} ucState=${ctx.auth.ucState} pbxState=${ctx.auth.pbxState} isSignInByNotif=${ctx.auth.isSignInByNotification} ucLoginFromAnotherPlace=${ctx.auth.ucLoginFromAnotherPlace} ucTotalFailure=${ctx.auth.ucTotalFailure} signedInId=${ctx.auth.signedInId}`,
+    )
+    if (!shouldAuth) {
       return
     }
     if (ctx.auth.ucTotalFailure > 1) {
@@ -158,6 +177,7 @@ export class AuthUC {
           // this sign-in; let that one own ucState. Counting it as a failure
           // would spawn a competing retry that ping-pongs with the newer
           // attempt (BUG-1256).
+          console.log('UC debug: sign-in superseded (ignored)')
           return
         }
         ctx.auth.ucState = 'failure'
