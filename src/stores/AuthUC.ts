@@ -2,6 +2,7 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
+import { ucSignInSupersededError } from '#/api/uc'
 import { Errors } from '#/brekekejs/ucclient'
 import { defaultTimeout } from '#/config'
 import type { ChatMessage } from '#/stores/chatStore'
@@ -130,6 +131,13 @@ export class AuthUC {
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
+        if (err === ucSignInSupersededError) {
+          // A newer connect/disconnect (account switch or teardown) took over
+          // this sign-in; let that one own ucState. Counting it as a failure
+          // would spawn a competing retry that ping-pongs with the newer
+          // attempt (BUG-1256).
+          return
+        }
         ctx.auth.ucState = 'failure'
         ctx.auth.ucTotalFailure += 1
         console.error('Failed to connect to uc:', err)

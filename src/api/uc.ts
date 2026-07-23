@@ -49,8 +49,17 @@ const getFileStateFromCode = (code: number) =>
   codeMapFileState[code as keyof typeof codeMapFileState] ||
   codeMapFileState['0']
 
+// Rejection reason for an in-flight UC sign-in that is superseded by a later
+// disconnect()/connect(). AuthUC treats it specially (no failure, no retry):
+// a newer attempt or a teardown already owns the state. ucclient.signOut()
+// drops the sign-in callbacks and its 30s timeout without settling the promise,
+// so without this the connect() promise would dangle forever and pin ucState
+// on 'connecting' (BUG-1256).
+export const ucSignInSupersededError = new Error('UC sign-in superseded')
+
 export class UC extends EventEmitter {
   client: UcChatClient
+  private rejectPendingConnect?: (reason?: unknown) => void
   constructor() {
     super()
     const logger = new Logger('all')
@@ -232,11 +241,15 @@ export class UC extends EventEmitter {
   }
 
   connect = (a: Account, ucHost: string) => {
+    // Settle any pending sign-in before starting a new one so its promise can't
+    // dangle when the shared ucclient is reused across accounts (BUG-1256).
+    this.settlePendingConnect()
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }
     const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
-    return new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) => {
+      this.rejectPendingConnect = reject
       this.client.signIn(
         `${ucScheme}://${ucHost}`,
         'uc',
@@ -244,14 +257,32 @@ export class UC extends EventEmitter {
         a.pbxUsername,
         a.pbxPassword,
         undefined,
-        () => resolve(undefined),
-        reject,
-      ),
-    )
+        () => {
+          this.rejectPendingConnect = undefined
+          resolve(undefined)
+        },
+        (err: Error) => {
+          this.rejectPendingConnect = undefined
+          reject(err)
+        },
+      )
+    })
   }
 
   disconnect = () => {
+    // signOut() drops the pending sign-in callbacks and its timeout without
+    // settling the promise, so reject it first to avoid a permanent hang.
+    this.settlePendingConnect()
     this.client.signOut()
+  }
+
+  private settlePendingConnect = () => {
+    const reject = this.rejectPendingConnect
+    if (!reject) {
+      return
+    }
+    this.rejectPendingConnect = undefined
+    reject(ucSignInSupersededError)
   }
 
   me = () => {
