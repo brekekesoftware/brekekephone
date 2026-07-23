@@ -26,8 +26,13 @@ export class AuthUC {
   private clearShouldAuthReaction?: Lambda
   private clearConnectingWatchdogReaction?: Lambda
   private connectingWatchdogTimeoutId = 0
+  // The account whose sign-in owns the current 'connecting' ucState. Used to tell
+  // a stale 'connecting' (left by a previous account) apart from a genuine
+  // in-flight connect for the current account (BUG-1256).
+  private connectingAccountId = ''
 
   auth = () => {
+    this.clearStaleConnecting()
     this.clearConnectingWatchdogReaction?.()
     // Key by account so connecting(B) -> connecting(A) resets the deadline;
     // fireImmediately arms even if ucState is already stuck on 'connecting' when
@@ -46,6 +51,22 @@ export class AuthUC {
       ctx.auth.ucShouldAuth,
       this.authWithCheckDebounced,
     )
+  }
+
+  // BUG-1256: a rapid multi-account switch (the FCM/PN switch path does not go
+  // through authStore.resetPrevAccountConnection) can leave ucState pinned on
+  // 'connecting' from the previous account's superseded sign-in. ucShouldAuth only
+  // allows a fresh sign-in from 'stopped'/'failure', so the new account would wait
+  // out the full 45s watchdog. Reset the stale state here so it connects as soon
+  // as PBX is ready. Guarded by account id so a genuine in-flight connect for the
+  // current account is never interrupted.
+  @action private clearStaleConnecting = () => {
+    if (
+      ctx.auth.ucState === 'connecting' &&
+      this.connectingAccountId !== ctx.auth.signedInId
+    ) {
+      ctx.auth.ucState = 'stopped'
+    }
   }
   @action dispose = () => {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
@@ -88,6 +109,7 @@ export class AuthUC {
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'connecting'
+    this.connectingAccountId = ctx.auth.signedInId
     ctx.auth.ucLoginFromAnotherPlace = false
     const c = await ctx.pbx.getConfig()
     if (!c) {
