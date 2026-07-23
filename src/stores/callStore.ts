@@ -152,6 +152,19 @@ export class CallStore {
       this.endCallKeep(uuid)
       return
     }
+    // BUG-1257 / BUG-1254: on iOS an incoming call is delivered via CallKit, not the
+    // FCM parse path, so neither queueIncomingCustomPageEvent site (onCallUpsert or
+    // PushNotification-parse) fires when the call is missed before the SIP INVITE
+    // reaches JS - the incoming=open custom pages then never load. Queue the durable
+    // event here too, keyed by pnId to dedupe with the onCallUpsert queue. Resolve
+    // the account from the PN because signInByNotification (which sets signedInId)
+    // runs after this handler.
+    if (isIos && n.id) {
+      const account = await ctx.account.findByPn(n)
+      if (account) {
+        ctx.auth.queueIncomingCustomPageEvent(n.id, account.id)
+      }
+    }
     // auto reconnect if no activity
     // this logic is about the case connection has dropped silently
     // so even if sipState is `success` but the connection has dropped
