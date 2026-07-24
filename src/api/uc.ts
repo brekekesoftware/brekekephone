@@ -76,6 +76,27 @@ export class UC extends EventEmitter {
       invitedToConference: this.onGroupInvited,
       conferenceMemberChanged: this.onGroupUpdated,
     })
+
+    // BUG-1256: on a switch-while-connecting (e.g. tapping another account's chat
+    // message while the current one is still signing in), a stale RPC from the
+    // torn-down session makes ucclient run _forcedSignOut. It resets the shared
+    // client and clears its own 30s sign-in timeout, but only raises the
+    // forcedSignOut event when already signed in (status 3) - an in-flight sign-in
+    // is dropped without settling connect()'s promise, so it hangs until the
+    // AuthUC watchdog. Wrap _forcedSignOut to reject the pending connect so AuthUC
+    // fails fast and retries immediately instead of waiting out the watchdog.
+    const client = this.client as unknown as {
+      _forcedSignOut: (code: number, message: string) => void
+    }
+    const forcedSignOut = client._forcedSignOut.bind(this.client)
+    client._forcedSignOut = (code, message) => {
+      forcedSignOut(code, message)
+      const reject = this.rejectPendingConnect
+      if (reject) {
+        this.rejectPendingConnect = undefined
+        reject(new Error(`UC forced sign-out during sign-in (code: ${code})`))
+      }
+    }
   }
 
   onConnectionStopped: UcListeners['forcedSignOut'] = ev => {
