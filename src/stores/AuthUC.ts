@@ -25,6 +25,7 @@ const ucConnectingTimeoutMs = 45000
 export class AuthUC {
   private clearShouldAuthReaction?: Lambda
   private clearConnectingWatchdogReaction?: Lambda
+  private clearGateTrackerReaction?: Lambda
   private connectingWatchdogTimeoutId = 0
   // The account whose sign-in owns the current 'connecting' ucState. Used to tell
   // a stale 'connecting' (left by a previous account) apart from a genuine
@@ -50,6 +51,21 @@ export class AuthUC {
     this.clearShouldAuthReaction = reaction(
       ctx.auth.ucShouldAuth,
       this.authWithCheckDebounced,
+    )
+
+    // BUG-1256 diagnostics: log every change of the inputs to ucShouldAuth (even
+    // when the computed value stays false, which the ucShouldAuth reaction would
+    // not fire on) so the exact blocking gate at pbxState=success /
+    // isSignInByNotification-clear is captured in one repro.
+    this.clearGateTrackerReaction?.()
+    this.clearGateTrackerReaction = reaction(
+      () =>
+        `ucState=${ctx.auth.ucState} pbxState=${ctx.auth.pbxState} isSignInByNotif=${ctx.auth.isSignInByNotification} ucFromAnother=${ctx.auth.ucLoginFromAnotherPlace} signedInId=${ctx.auth.signedInId}`,
+      snapshot =>
+        console.log(
+          `UC debug: gates ${snapshot} shouldAuth=${!!ctx.auth.ucShouldAuth()}`,
+        ),
+      { fireImmediately: true },
     )
   }
 
@@ -79,6 +95,7 @@ export class AuthUC {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
     this.clearConnectingWatchdogReaction?.()
+    this.clearGateTrackerReaction?.()
     this.clearConnectingWatchdogTimeout()
     ctx.uc.disconnect()
 

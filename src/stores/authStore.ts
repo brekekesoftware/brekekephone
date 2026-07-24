@@ -1087,6 +1087,12 @@ export class AuthStore {
         // Switching from a connected account: let the reconnect skip the redundant
         // same-host probe (connect() validates the host) (BUG-1238).
         ctx.pbx.skipProbeOnce = true
+        // BUG-1257 regression: this PN-driven switch clears signedInId here, so
+        // signIn()'s resetPrevAccountConnection guard (gated on signedInId) is
+        // skipped and the previous account's custom-page runtime (built pages,
+        // activeCustomPageId, pending events) leaks into the new account and shows
+        // its custom page. Reset it explicitly before clearing signedInId.
+        this.resetCustomPageRuntime()
         this.signedInId = ''
         await waitTimeout()
       }
