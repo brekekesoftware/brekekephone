@@ -294,7 +294,72 @@ export class UC extends EventEmitter {
     // signOut() drops the pending sign-in callbacks and its timeout without
     // settling the promise, so reject it first to avoid a permanent hang.
     this.settlePendingConnect()
-    this.client.signOut()
+    this.skipLogoutIfRpcNotOpen()
+    try {
+      this.client.signOut()
+    } catch (err) {
+      // The guard above should have prevented this. If a future ucclient
+      // reshuffle routes the Logout past it, still finish the teardown here so
+      // the shared client is not left wedged mid-sign-out.
+      console.error('UC debug: signOut threw, forcing teardown', err)
+      this.forceSignedOut()
+    }
+  }
+
+  // ucclient.signOut() sends its Logout through the jsonrpc notification path,
+  // the only send path without an isOpen() guard (_sendMethod has one). Tearing
+  // the session down while the UC websocket is still CONNECTING makes the react
+  // native WebSocket.send() throw INVALID_STATE_ERR, and that throw escapes
+  // signOut() before it resets _signInStatus and runs _signedOut(): the socket,
+  // the sign-in timeout and the previous account state leak into the next
+  // sign-in, which then fails with 'Now in sign-in process' (BUG-1256). Mute the
+  // send while the rpc is not open - the Logout cannot be delivered anyway and
+  // the server sees the close that _signedOut() does right after - so signOut()
+  // completes its teardown. The rpc object belongs to that one sign-in and is
+  // dropped by _signedOut(), so muting it cannot affect a later connect.
+  private skipLogoutIfRpcNotOpen = () => {
+    const client = this.client as unknown as {
+      _rpc?: {
+        isOpen?: () => boolean
+        send: (msg: string) => void
+      }
+    }
+    const rpc = client._rpc
+    if (!rpc) {
+      return
+    }
+    // isOpen() is the same check the guarded _sendMethod path uses, so it holds
+    // for both the websocket and the ajax transport. It dereferences a socket
+    // that close() may already have nulled, hence the try. Only a proven-open
+    // rpc keeps its send, so a future ucclient change cannot silently bring the
+    // throw back.
+    let isOpen = false
+    try {
+      isOpen = rpc.isOpen?.() === true
+    } catch {
+      isOpen = false
+    }
+    if (isOpen) {
+      return
+    }
+    console.log('UC debug: skip Logout, rpc not open')
+    rpc.send = () => {}
+  }
+
+  // Last resort when signOut() itself throws: reproduce the two steps it does
+  // after sending Logout, so ucclient does not stay in the signing-in state that
+  // makes every later sign-in fail with 'Now in sign-in process'.
+  private forceSignedOut = () => {
+    const client = this.client as unknown as {
+      _signInStatus?: number
+      _signedOut?: () => void
+    }
+    client._signInStatus = 0
+    try {
+      client._signedOut?.()
+    } catch (err) {
+      console.error('UC debug: forced teardown failed', err)
+    }
   }
 
   private settlePendingConnect = () => {
