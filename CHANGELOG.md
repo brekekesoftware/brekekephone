@@ -1,3 +1,11 @@
+#### 2.17.21
+
+- Hot fix custom pages should not become blank after PAL reconnect or account switch
+- Hot fix incoming=open custom pages should load reliably for all configured pages, including short, missed, background, lock-screen and killed-app calls (issue 1253, 1254, 1257)
+- Hot fix custom page runtime should not leak to the wrong account when switching accounts from push notification or chat notification (issue 1257)
+- Hot fix UC should not get stuck or stay long at "Connecting to UC" when switching accounts, especially while UC is still connecting or after opening another account's chat notification (issue 1256)
+- Hot fix chat detail should not show a failed recent-chat error while UC is still preparing after an account switch (issue 1256)
+
 #### 2.17.16
 
 - Hot fix it should not get stuck at connecting to SIP after switching account via chat message notification (issue 1250)
