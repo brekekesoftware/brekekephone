@@ -250,6 +250,12 @@ export const parse = async (
   console.log('SIP PN debug: call signInByNotification')
   await ctx.auth.signInByNotification(n)
   const notificationAccountId = acc.id
+  if (n.isCall) {
+    ctx.auth.queueIncomingCustomPageEvent(
+      n.id || n.callkeepUuid,
+      notificationAccountId,
+    )
+  }
   const isNotificationAccountActive = () =>
     ctx.auth.signedInId === notificationAccountId
   const clearCustomPageIndex = (fn: Function) => {
@@ -287,6 +293,12 @@ export const parse = async (
     console.log(
       'SIP PN debug: PushNotification-parse: local notification missed call',
     )
+    // BUG-1257: on a killed-app missed call, any incoming custom-page event queued
+    // during the brief PN wake dies with the process, and this cold-start tap
+    // (n.isCall=false, so the queue above is skipped) is the only remaining entry
+    // point. Re-queue keyed by the notification id so incoming=open pages still
+    // load. Cross-platform: covers Android and the iOS process-death residual.
+    ctx.auth.queueIncomingCustomPageEvent(rawId, notificationAccountId)
 
     if (ctx.auth.userExtensionProperties && ctx.auth.phoneappliEnabled()) {
       navIndex(() => ctx.nav.goToPageCallKeypad())
@@ -358,14 +370,6 @@ export const parse = async (
       }
     })
     return
-  }
-
-  // handle call notification
-  if (n.callkeepAt) {
-    console.log(
-      `SIP PN debug: PN received on android java code at ${n.callkeepAt}`,
-    )
-    ctx.auth.saveActionOpenCustomPage = true
   }
 
   // custom fork of react-native-voip-push-notification to get callkeepUuid

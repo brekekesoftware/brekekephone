@@ -49,8 +49,17 @@ const getFileStateFromCode = (code: number) =>
   codeMapFileState[code as keyof typeof codeMapFileState] ||
   codeMapFileState['0']
 
+// Rejection reason for an in-flight UC sign-in that is superseded by a later
+// disconnect()/connect(). AuthUC treats it specially (no failure, no retry):
+// a newer attempt or a teardown already owns the state. ucclient.signOut()
+// drops the sign-in callbacks and its 30s timeout without settling the promise,
+// so without this the connect() promise would dangle forever and pin ucState
+// on 'connecting' (BUG-1256).
+export const ucSignInSupersededError = new Error('UC sign-in superseded')
+
 export class UC extends EventEmitter {
   client: UcChatClient
+  private rejectPendingConnect?: (reason?: unknown) => void
   constructor() {
     super()
     const logger = new Logger('all')
@@ -67,6 +76,27 @@ export class UC extends EventEmitter {
       invitedToConference: this.onGroupInvited,
       conferenceMemberChanged: this.onGroupUpdated,
     })
+
+    // BUG-1256: on a switch-while-connecting (e.g. tapping another account's chat
+    // message while the current one is still signing in), a stale RPC from the
+    // torn-down session makes ucclient run _forcedSignOut. It resets the shared
+    // client and clears its own 30s sign-in timeout, but only raises the
+    // forcedSignOut event when already signed in (status 3) - an in-flight sign-in
+    // is dropped without settling connect()'s promise, so it hangs until the
+    // AuthUC watchdog. Wrap _forcedSignOut to reject the pending connect so AuthUC
+    // fails fast and retries immediately instead of waiting out the watchdog.
+    const client = this.client as unknown as {
+      _forcedSignOut: (code: number, message: string) => void
+    }
+    const forcedSignOut = client._forcedSignOut.bind(this.client)
+    client._forcedSignOut = (code, message) => {
+      forcedSignOut(code, message)
+      const reject = this.rejectPendingConnect
+      if (reject) {
+        this.rejectPendingConnect = undefined
+        reject(new Error(`UC forced sign-out during sign-in (code: ${code})`))
+      }
+    }
   }
 
   onConnectionStopped: UcListeners['forcedSignOut'] = ev => {
@@ -232,11 +262,15 @@ export class UC extends EventEmitter {
   }
 
   connect = (a: Account, ucHost: string) => {
+    // Settle any pending sign-in before starting a new one so its promise can't
+    // dangle when the shared ucclient is reused across accounts (BUG-1256).
+    this.settlePendingConnect()
     if (ucHost.indexOf(':') < 0) {
       ucHost += ':443'
     }
     const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
-    return new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) => {
+      this.rejectPendingConnect = reject
       this.client.signIn(
         `${ucScheme}://${ucHost}`,
         'uc',
@@ -244,14 +278,97 @@ export class UC extends EventEmitter {
         a.pbxUsername,
         a.pbxPassword,
         undefined,
-        () => resolve(undefined),
-        reject,
-      ),
-    )
+        () => {
+          this.rejectPendingConnect = undefined
+          resolve(undefined)
+        },
+        (err: Error) => {
+          this.rejectPendingConnect = undefined
+          reject(err)
+        },
+      )
+    })
   }
 
   disconnect = () => {
-    this.client.signOut()
+    // signOut() drops the pending sign-in callbacks and its timeout without
+    // settling the promise, so reject it first to avoid a permanent hang.
+    this.settlePendingConnect()
+    this.skipLogoutIfRpcNotOpen()
+    try {
+      this.client.signOut()
+    } catch (err) {
+      // The guard above should have prevented this. If a future ucclient
+      // reshuffle routes the Logout past it, still finish the teardown here so
+      // the shared client is not left wedged mid-sign-out.
+      console.error('UC debug: signOut threw, forcing teardown', err)
+      this.forceSignedOut()
+    }
+  }
+
+  // ucclient.signOut() sends its Logout through the jsonrpc notification path,
+  // the only send path without an isOpen() guard (_sendMethod has one). Tearing
+  // the session down while the UC websocket is still CONNECTING makes the react
+  // native WebSocket.send() throw INVALID_STATE_ERR, and that throw escapes
+  // signOut() before it resets _signInStatus and runs _signedOut(): the socket,
+  // the sign-in timeout and the previous account state leak into the next
+  // sign-in, which then fails with 'Now in sign-in process' (BUG-1256). Mute the
+  // send while the rpc is not open - the Logout cannot be delivered anyway and
+  // the server sees the close that _signedOut() does right after - so signOut()
+  // completes its teardown. The rpc object belongs to that one sign-in and is
+  // dropped by _signedOut(), so muting it cannot affect a later connect.
+  private skipLogoutIfRpcNotOpen = () => {
+    const client = this.client as unknown as {
+      _rpc?: {
+        isOpen?: () => boolean
+        send: (msg: string) => void
+      }
+    }
+    const rpc = client._rpc
+    if (!rpc) {
+      return
+    }
+    // isOpen() is the same check the guarded _sendMethod path uses, so it holds
+    // for both the websocket and the ajax transport. It dereferences a socket
+    // that close() may already have nulled, hence the try. Only a proven-open
+    // rpc keeps its send, so a future ucclient change cannot silently bring the
+    // throw back.
+    let isOpen = false
+    try {
+      isOpen = rpc.isOpen?.() === true
+    } catch {
+      isOpen = false
+    }
+    if (isOpen) {
+      return
+    }
+    console.log('UC debug: skip Logout, rpc not open')
+    rpc.send = () => {}
+  }
+
+  // Last resort when signOut() itself throws: reproduce the two steps it does
+  // after sending Logout, so ucclient does not stay in the signing-in state that
+  // makes every later sign-in fail with 'Now in sign-in process'.
+  private forceSignedOut = () => {
+    const client = this.client as unknown as {
+      _signInStatus?: number
+      _signedOut?: () => void
+    }
+    client._signInStatus = 0
+    try {
+      client._signedOut?.()
+    } catch (err) {
+      console.error('UC debug: forced teardown failed', err)
+    }
+  }
+
+  private settlePendingConnect = () => {
+    const reject = this.rejectPendingConnect
+    if (!reject) {
+      return
+    }
+    this.rejectPendingConnect = undefined
+    reject(ucSignInSupersededError)
   }
 
   me = () => {
