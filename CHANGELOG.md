@@ -1,6 +1,56 @@
+#### 2.17.21
+
+- Hot fix custom pages should not become blank after PAL reconnect or account switch
+- Hot fix incoming=open custom pages should load reliably for all configured pages, including short, missed, background, lock-screen and killed-app calls (issue 1253, 1254, 1257)
+- Hot fix custom page runtime should not leak to the wrong account when switching accounts from push notification or chat notification (issue 1257)
+- Hot fix UC should not get stuck or stay long at "Connecting to UC" when switching accounts, especially while UC is still connecting or after opening another account's chat notification (issue 1256)
+- Hot fix chat detail should not show a failed recent-chat error while UC is still preparing after an account switch (issue 1256)
+
+#### 2.17.16
+
+- Hot fix it should not get stuck at connecting to SIP after switching account via chat message notification (issue 1250)
+
+#### 2.17.15
+
+- Hot fix android 14+ audio-only call should not crash and lose background microphone when camera permission is not granted (issue 1247)
+
+#### 2.17.14
+
+- Hot fix android it should not freeze when switching accounts on the same host (issue 1238)
+
+#### 2.17.13
+
+- Hot fix android it should not show duplicate chat notifications and should open chat detail without delay (issue 1238)
+- Hot fix android it should not navigate to stale UC chat of the previous account after switching (issue 1238)
+- Hot fix android it should not have one-way audio when opening another app while talking (issue 1244)
+
+#### 2.17.12
+
+- Hot fix android lpc it should still receive PN calls after switching account via URL scheme login (issue 1237)
+- Hot fix android it should not lose chat message PN due to call PN dedupe and cache flush (issue 1238)
+- Hot fix android lpc it should not misroute or drop call and chat PN, fix races and NPE in LPC service (issue 1246)
+
+#### 2.17.11
+
+- Hot fix it should not create a new MFA instance while one is in progress, OTP is only shown for the account being verified (issue 1234, 1235, 1236)
+- Hot fix multiple accounts: MFA for the correct account on URL scheme login, no auto OTP on background sync, PN toggle OFF on OTP cancel, no stale state reuse on account switch
+- Embed:
+  - Add setDeviceToken with example
+
+#### 2.17.10
+
+- Hot fix android it should block account item interaction while push notification toggle is syncing (issue 1235)
+
+#### 2.17.9
+
+- Hot fix android it should show loading indicator for push notification on the account sign-in screen (issue 1234)
+
 #### 2.17.8
 
 - Hot fix android google play store permission policy
+- Hot fix android lpc foreground service disclosure prompt and notification (issue 1233)
+- Hot fix push notification should be enabled by default for mobile accounts
+- Update Japanese text for LPC foreground service disclosure and notification
 
 #### 2.17.7
 

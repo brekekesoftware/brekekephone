@@ -64,6 +64,11 @@ const initApp = async () => {
   const hasCallOrWakeFromPN = checkHasCall() || checkWakeFromPN()
 
   const autoLogin = async () => {
+    // skip when a notification-triggered sign-in is switching accounts — autoLogin
+    // would re-sign-in the old account and race the switch (BUG-1250)
+    if (ctx.auth.isSigningInByNotification) {
+      return
+    }
     // skip autoLogin when MFA modal is showing
     const cau = ctx.auth.getCurrentAccount()
     if (cau && ctx.account.isAccountInMFA(cau)) {
@@ -75,6 +80,10 @@ const initApp = async () => {
     }
     const d = await getLastSignedInId(true)
     const a = await ctx.account.findByUniqueId(d.id)
+    // re-check after the awaits above — the PN sign-in may have started meanwhile
+    if (ctx.auth.isSigningInByNotification) {
+      return
+    }
     if (d.autoSignInBrekekePhone && (await ctx.auth.signIn(a, true))) {
       console.log('App navigated by auto signin')
       // already navigated
@@ -122,6 +131,7 @@ const initApp = async () => {
     ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
+    void ctx.auth.processPendingCustomPageEvents()
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
       await autoLogin()
@@ -259,6 +269,7 @@ const initApp = async () => {
 
   if (AppState.currentState === 'active') {
     ctx.pnToken.syncForAllAccounts()
+    void ctx.auth.processPendingCustomPageEvents()
   }
 }
 
