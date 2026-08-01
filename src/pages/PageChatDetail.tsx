@@ -88,6 +88,16 @@ export class PageChatDetail extends Component<{
         BackgroundTimer.setTimeout(this.onContentSizeChange, defaultTimeout)
       })
       .catch((err: Error) => {
+        // UC may not be signed in yet during a multi-account switch (BUG-1256);
+        // that surfaces here as a "Not signed-in" reject. Don't alarm the user
+        // with an error dialog for that transient case - only report a genuine
+        // failure once UC is actually connected.
+        if (ctx.auth.ucState !== 'success') {
+          console.log(
+            'CustomPage debug: getBuddyChats skipped, UC not signed in yet',
+          )
+          return
+        }
         RnAlert.error({
           message: intlDebug`Failed to get recent chats`,
           err,

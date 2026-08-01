@@ -1,7 +1,6 @@
 import { action } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 
-import { isCustomPageUrlBuilt } from '#/api/customPage'
 import {
   mdiAccountCircleOutline,
   mdiCogOutline,
@@ -166,22 +165,12 @@ const genMenus = (customPages: PbxCustomPage[]) => {
           }
         }
 
-        // should update custom page URL if not built
-        const updateCustomPageUrl = async (c: PbxCustomPage) => {
-          if (isCustomPageUrlBuilt(c.url)) {
-            return
-          }
-          const url = await ctx.pbx.buildCustomPageUrl(c.url)
-          ctx.auth.updateCustomPage({ ...c, url })
-          ctx.auth.customPageLoadings[c.id] = true
-        }
-
         if (s.navFnKey === 'goToPageCustomPage') {
           const cp = ctx.auth.getCustomPageById(s.key)
           if (!cp) {
             return
           }
-          updateCustomPageUrl(cp)
+          void ctx.auth.ensureCustomPageUrlBuilt(cp.id)
           ctx.auth.activeCustomPageId = s.key
         }
         // @ts-ignore

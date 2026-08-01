@@ -131,6 +131,7 @@ const initApp = async () => {
     ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
     ctx.pnToken.syncForAllAccounts()
+    void ctx.auth.processPendingCustomPageEvents()
 
     if (Platform.OS === 'android' && !isAlreadyHandleFirstOpen()) {
       await autoLogin()
@@ -268,6 +269,7 @@ const initApp = async () => {
 
   if (AppState.currentState === 'active') {
     ctx.pnToken.syncForAllAccounts()
+    void ctx.auth.processPendingCustomPageEvents()
   }
 }
 

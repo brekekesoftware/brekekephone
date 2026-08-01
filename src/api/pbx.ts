@@ -112,7 +112,14 @@ const parseListCustomPage = () => {
       incoming,
     })
   })
-  ctx.auth.listCustomPage = results
+  results.sort((a, b) => {
+    const aOrder = parseInt(a.pos.split(',')[2])
+    const bOrder = parseInt(b.pos.split(',')[2])
+    const normalizedA = Number.isNaN(aOrder) ? Number.MAX_SAFE_INTEGER : aOrder
+    const normalizedB = Number.isNaN(bOrder) ? Number.MAX_SAFE_INTEGER : bOrder
+    return normalizedA - normalizedB || a.id.localeCompare(b.id)
+  })
+  ctx.auth.setCustomPages(results)
 }
 
 const buildCustomPageUrl = async (url: string) => {
@@ -1126,10 +1133,16 @@ export class PBX extends EventEmitter {
 
     // the custom page only load at the first time the tab is shown after you log in
     //    even after re-connected it, don't refresh it again
-    const urlCustomPage = ctx.auth.listCustomPage?.[0]?.url
-    if (!urlCustomPage || !isCustomPageUrlBuilt(urlCustomPage)) {
+    // check all pages instead of [0] since the url is built lazily per page:
+    //    re-parsing here would wipe the built url of the page being viewed
+    //    and turn its webview into a blank screen
+    const anyCustomPageBuilt = ctx.auth.listCustomPage.some(cp =>
+      isCustomPageUrlBuilt(cp.url),
+    )
+    if (!anyCustomPageBuilt) {
       parseListCustomPage()
     }
+    void ctx.auth.processPendingCustomPageEvents()
 
     // get resource line
     if (!isEmbed) {

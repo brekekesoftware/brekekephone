@@ -16,6 +16,7 @@ import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { decodeParkNumber } from '#/utils/parkNumber'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
@@ -70,6 +71,8 @@ class Api {
     clearAlreadyHistoryMap()
     ctx.auth.pbxState = 'success'
     ctx.auth.pbxTotalFailure = 0
+    // Run pending custom-page work outside this MobX connection action.
+    BackgroundTimer.setTimeout(ctx.auth.processPendingCustomPageEvents, 0)
 
     ctx.authSIP.auth()
     await ctx.auth.waitSip()
