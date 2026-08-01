@@ -2,18 +2,48 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
+import { ucSignInSupersededError } from '#/api/uc'
 import { Errors } from '#/brekekejs/ucclient'
 import { defaultTimeout } from '#/config'
 import type { ChatMessage } from '#/stores/chatStore'
 import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
+import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { waitTimeout } from '#/utils/waitTimeout'
+
+// UC sign-in only has a conditional client-side timeout (ucclient
+// SIGN_IN_TIMEOUT_DEFAULT is 30s but its handler is a no-op unless
+// _signInStatus === 2), so on a multi-account switch where the shared UC client
+// is still wedged by a not-yet-torn-down session, ctx.uc.connect() can hang and
+// ucState pins on 'connecting' forever. This app-side watchdog forces
+// failure+retry so the state machine recovers (BUG-1256). It is deliberately
+// longer than the 30s client timeout so it never pre-empts a connect the client
+// itself would still resolve or reject.
+const ucConnectingTimeoutMs = 45000
 
 export class AuthUC {
   private clearShouldAuthReaction?: Lambda
+  private clearConnectingWatchdogReaction?: Lambda
+  private clearGateTrackerReaction?: Lambda
+  private connectingWatchdogTimeoutId = 0
+  // The account whose sign-in owns the current 'connecting' ucState. Used to tell
+  // a stale 'connecting' (left by a previous account) apart from a genuine
+  // in-flight connect for the current account (BUG-1256).
+  private connectingAccountId = ''
 
   auth = () => {
+    this.clearStaleConnecting()
+    this.clearConnectingWatchdogReaction?.()
+    // Key by account so connecting(B) -> connecting(A) resets the deadline;
+    // fireImmediately arms even if ucState is already stuck on 'connecting' when
+    // auth() re-registers the reaction.
+    this.clearConnectingWatchdogReaction = reaction(
+      () =>
+        ctx.auth.ucState === 'connecting' ? ctx.auth.signedInId || '_' : '',
+      this.onUcConnectingKeyChanged,
+      { fireImmediately: true },
+    )
     this.authWithCheck()
     ctx.uc.on('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
@@ -22,19 +52,91 @@ export class AuthUC {
       ctx.auth.ucShouldAuth,
       this.authWithCheckDebounced,
     )
+
+    // BUG-1256 diagnostics: log every change of the inputs to ucShouldAuth (even
+    // when the computed value stays false, which the ucShouldAuth reaction would
+    // not fire on) so the exact blocking gate at pbxState=success /
+    // isSignInByNotification-clear is captured in one repro.
+    this.clearGateTrackerReaction?.()
+    this.clearGateTrackerReaction = reaction(
+      () =>
+        `ucState=${ctx.auth.ucState} pbxState=${ctx.auth.pbxState} isSignInByNotif=${ctx.auth.isSignInByNotification} ucFromAnother=${ctx.auth.ucLoginFromAnotherPlace} signedInId=${ctx.auth.signedInId}`,
+      snapshot =>
+        console.log(
+          `UC debug: gates ${snapshot} shouldAuth=${!!ctx.auth.ucShouldAuth()}`,
+        ),
+      { fireImmediately: true },
+    )
+  }
+
+  // BUG-1256: a rapid multi-account switch (the FCM/PN switch path does not go
+  // through authStore.resetPrevAccountConnection) can leave ucState pinned on
+  // 'connecting' from the previous account's superseded sign-in. ucShouldAuth only
+  // allows a fresh sign-in from 'stopped'/'failure', so the new account would wait
+  // out the full 45s watchdog. Reset the stale state here so it connects as soon
+  // as PBX is ready. Guarded by account id so a genuine in-flight connect for the
+  // current account is never interrupted.
+  @action private clearStaleConnecting = () => {
+    if (ctx.auth.ucState !== 'connecting') {
+      return
+    }
+    if (this.connectingAccountId !== ctx.auth.signedInId) {
+      console.log(
+        `UC debug: clearStaleConnecting reset connecting from=${this.connectingAccountId} for=${ctx.auth.signedInId}`,
+      )
+      ctx.auth.ucState = 'stopped'
+    } else {
+      console.log(
+        `UC debug: clearStaleConnecting keep connecting (same account=${ctx.auth.signedInId})`,
+      )
+    }
   }
   @action dispose = () => {
     ctx.uc.off('connection-stopped', this.onConnectionStopped)
     this.clearShouldAuthReaction?.()
+    this.clearConnectingWatchdogReaction?.()
+    this.clearGateTrackerReaction?.()
+    this.clearConnectingWatchdogTimeout()
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'stopped'
+  }
+
+  // Armed whenever ucState is 'connecting' (re-armed on account change),
+  // disarmed as soon as it leaves 'connecting'.
+  private onUcConnectingKeyChanged = (key: string) => {
+    this.clearConnectingWatchdogTimeout()
+    if (key) {
+      this.connectingWatchdogTimeoutId = BackgroundTimer.setTimeout(
+        this.onUcConnectingTimeout,
+        ucConnectingTimeoutMs,
+      )
+    }
+  }
+  private clearConnectingWatchdogTimeout = () => {
+    if (this.connectingWatchdogTimeoutId) {
+      BackgroundTimer.clearTimeout(this.connectingWatchdogTimeoutId)
+      this.connectingWatchdogTimeoutId = 0
+    }
+  }
+  @action private onUcConnectingTimeout = () => {
+    this.connectingWatchdogTimeoutId = 0
+    if (ctx.auth.ucState !== 'connecting') {
+      return
+    }
+    console.log(
+      `UC debug: watchdog FIRED after ${ucConnectingTimeoutMs}ms, forcing failure+retry account=${ctx.auth.signedInId}`,
+    )
+    ctx.auth.ucState = 'failure'
+    ctx.auth.ucTotalFailure += 1
+    this.authWithCheck()
   }
 
   @action private authWithoutCatch = async () => {
     ctx.uc.disconnect()
 
     ctx.auth.ucState = 'connecting'
+    this.connectingAccountId = ctx.auth.signedInId
     ctx.auth.ucLoginFromAnotherPlace = false
     const c = await ctx.pbx.getConfig()
     if (!c) {
@@ -45,9 +147,13 @@ export class AuthUC {
       return
     }
     const accountId = ca.id
+    console.log(`UC debug: uc.connect start account=${accountId}`)
     await ctx.uc.connect(
       ca,
       c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
+    )
+    console.log(
+      `UC debug: uc.connect resolved account=${accountId} stillCurrent=${ctx.auth.signedInId === accountId}`,
     )
     if (ctx.auth.signedInId !== accountId) {
       return
@@ -60,11 +166,16 @@ export class AuthUC {
         }
         ctx.auth.ucState = 'success'
         ctx.auth.ucTotalFailure = 0
+        console.log(`UC debug: ucState=success account=${accountId}`)
       }),
     )
   }
   @action private authWithCheck = async () => {
-    if (!ctx.auth.ucShouldAuth()) {
+    const shouldAuth = ctx.auth.ucShouldAuth()
+    console.log(
+      `UC debug: authWithCheck shouldAuth=${!!shouldAuth} ucState=${ctx.auth.ucState} pbxState=${ctx.auth.pbxState} isSignInByNotif=${ctx.auth.isSignInByNotification} ucLoginFromAnotherPlace=${ctx.auth.ucLoginFromAnotherPlace} ucTotalFailure=${ctx.auth.ucTotalFailure} signedInId=${ctx.auth.signedInId}`,
+    )
+    if (!shouldAuth) {
       return
     }
     if (ctx.auth.ucTotalFailure > 1) {
@@ -78,6 +189,14 @@ export class AuthUC {
     }
     this.authWithoutCatch().catch(
       action((err: Error) => {
+        if (err === ucSignInSupersededError) {
+          // A newer connect/disconnect (account switch or teardown) took over
+          // this sign-in; let that one own ucState. Counting it as a failure
+          // would spawn a competing retry that ping-pongs with the newer
+          // attempt (BUG-1256).
+          console.log('UC debug: sign-in superseded (ignored)')
+          return
+        }
         ctx.auth.ucState = 'failure'
         ctx.auth.ucTotalFailure += 1
         console.error('Failed to connect to uc:', err)
