@@ -2,6 +2,7 @@
 
 - [Styling and UI](#styling-and-ui)
   - [Tailwind class names via the rntwsc babel compiler, not RN `StyleSheet`](#tailwind-class-names-via-the-rntwsc-babel-compiler-not-rn-stylesheet)
+  - [Why rntwsc instead of NativeWind or UniWind](#why-rntwsc-instead-of-nativewind-or-uniwind)
   - [Dark mode](#dark-mode)
   - [Orientation (portrait/landscape) support](#orientation-portraitlandscape-support)
   - [`react-native-reanimated` is present, but only transitively so far](#react-native-reanimated-is-present-but-only-transitively-so-far)
@@ -37,6 +38,14 @@ Related files:
 - `brekekephone/app/babel.config.js`
 - `brekekephone/app/src/twrnc-config.ts`
 - `brekekephone/app/tailwind.config.js`
+
+## Why rntwsc instead of NativeWind or UniWind
+
+At the time this was implemented, Brekeke Phone was still on the React Native Old Architecture, with Turbo Modules, Hermes, and Fabric all off. NativeWind and UniWind (the two more widely known Tailwind-for-React-Native libraries) were tried first, but both failed to build or were not supported in that configuration.
+
+Since the same author already maintained `rntwsc`, an existing open source Babel transpiler (MIT licensed) that compiles Tailwind class names into React Native styles, it was brought into Brekeke Phone instead of blocking the Tailwind conversion on NativeWind/UniWind support. This is a devtools/build-time dependency, not something carrying app business logic, so the risk of adopting it was mostly limited to the styling layer itself.
+
+3.0.0 later upgraded the app to New Architecture with Turbo Modules, Hermes, and Fabric all on (see [Architecture and startup](./architecture-and-startup.md)), which is the configuration NativeWind/UniWind actually expect. If `rntwsc` ever stops being the right fit, migrating to NativeWind or UniWind is a realistic option now, and should be a low-cost change: both use the same `className` convention as `rntwsc`, so component code would not need to be rewritten, mainly just the import paths and build config that wire the Tailwind compiler in.
 
 ## Dark mode
 
