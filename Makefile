@@ -161,7 +161,8 @@ clean_deep_rm:
 # fmt
 
 fmt:
-	@pnpm fmt \
+	@git add -A \
+	&& pnpm fmt \
 	&& make fmt_objc \
 	&& make fmt_swift \
 	&& make fmt_java \
@@ -169,28 +170,34 @@ fmt:
 	&& make fmt_xml;
 
 fmt_objc:
-	@export EXT="h|m" \
+	@git add -A \
+	&& export EXT="h|m" \
 	&& make git-ls \
 	| xargs clang-format-11 -i -style=file;
 fmt_swift:
-	@export EXT="swift" \
+	@git add -A \
+	&& export EXT="swift" \
 	&& make git-ls \
 	| xargs swiftformat --quiet;
 fmt_java:
-	@export EXT="java" \
+	@git add -A \
+	&& export EXT="java" \
 	&& make git-ls \
 	| xargs google-java-format -i;
 fmt_kotlin:
-	@export EXT="kt" \
+	@git add -A \
+	&& export EXT="kt" \
 	&& make git-ls \
 	| xargs ktfmt --quiet -i;
 fmt_xml:
-	@export EXT="storyboard|xcscheme|xcworkspacedata" \
+	@git add -A \
+	&& export EXT="storyboard|xcscheme|xcworkspacedata" \
 	&& make git-ls \
 	| xargs pnpm dlx prettier --parser=xml --log-level=error --write;
 
 imagemin:
-	@export EXT="png|jpg|gif|ico" \
+	@git add -A \
+	&& export EXT="png|jpg|gif|ico" \
 	&& make git-ls \
 	| xargs -L1 bash -c 'imagemin $$0 --out-dir $$(dirname $$0)';
 git-ls:
