@@ -1,3 +1,10 @@
+#### 3.0.0
+
+- Upgrade dev tools and framework to use tailwind and modern code base structure
+- Fix ios X-Ringtone does not work with some URL, and reject cached ringtone files whose content is not actually mp3 (issue 1999)
+- Fix DTMF should be sent via SIP INFO through the early dialog when the call is still in early media (before 200 OK), since the SIP session is not yet confirmed
+- Fix DTMF native send mode should pick an RTC sender that supports DTMF instead of assuming the first sender always does
+
 #### 2.17.21
 
 - Hot fix custom pages should not become blank after PAL reconnect or account switch
@@ -81,6 +88,11 @@
 
 - Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+
+#### 2.17.3
+
+- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
+- Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix ios should not crash call uuid empty (issue 1205)
 - Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
 - Hot fix ios CTI auto answer Call-Info header (issue 1210)
@@ -172,7 +184,7 @@
 
 #### 2.16.4
 
-- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
+- Initial implementation of [custom ringtone](./docs/custom-ringtone.md)
 - Initial implementation of multiple custom pages
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
@@ -911,3 +923,6 @@
   - bug with transfer hold/hangup
   - bug show `Connecting...` after end call
   - bug in debug log
+
+<!-- START doctoc -->
+<!-- END doctoc -->

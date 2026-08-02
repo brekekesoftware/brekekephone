@@ -1,0 +1,39 @@
+diff --git a/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h b/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
+index 054ef592fd5e36a3e55a76a53ea3b98801dff9d5..ab5069aadabe097c092056c42857ff32b992a997 100644
+--- a/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
++++ b/ios/RNVoipPushNotification/RNVoipPushNotificationManager.h
+@@ -20,7 +20,7 @@ typedef void (^RNVoipPushNotificationCompletion)(void);
+ 
+ + (void)voipRegistration;
+ + (void)didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type;
+-+ (void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type;
+++ (void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type callkeepUuid:(NSString *)callkeepUuid;
+ + (void)addCompletionHandler:(NSString *)uuid completionHandler:(RNVoipPushNotificationCompletion)completionHandler;
+ + (void)removeCompletionHandler:(NSString *)uuid;
+ 
+diff --git a/ios/RNVoipPushNotification/RNVoipPushNotificationManager.m b/ios/RNVoipPushNotification/RNVoipPushNotificationManager.m
+index f4b3701f644a8bfd0f61c6b57b1219b32bb7d75e..b94803f82bd4a14862fb501511546a6d39c39810 100644
+--- a/ios/RNVoipPushNotification/RNVoipPushNotificationManager.m
++++ b/ios/RNVoipPushNotification/RNVoipPushNotificationManager.m
+@@ -170,14 +170,19 @@ + (void)didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSStr
+ }
+ 
+ // --- should be called from `AppDelegate.didReceiveIncomingPushWithPayload`
+-+ (void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type
+++ (void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type callkeepUuid:(NSString *)callkeepUuid
+ {
+ #ifdef DEBUG
+     RCTLog(@"[RNVoipPushNotificationManager] didReceiveIncomingPushWithPayload payload.dictionaryPayload = %@, type = %@", payload.dictionaryPayload, type);
+ #endif
+ 
+     RNVoipPushNotificationManager *voipPushManager = [RNVoipPushNotificationManager sharedInstance];
+-    [voipPushManager sendEventWithNameWrapper:RNVoipPushRemoteNotificationReceivedEvent body:payload.dictionaryPayload];
++
++    NSDictionary *body = @{
++        @"dictionaryPayload": payload.dictionaryPayload,
++        @"callkeepUuid": callkeepUuid
++    };
++    [voipPushManager sendEventWithNameWrapper:RNVoipPushRemoteNotificationReceivedEvent body:body];
+ }
+ 
+ // --- getter for completionHandlers

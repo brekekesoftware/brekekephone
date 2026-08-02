@@ -1,21 +1,23 @@
+# AUTOMATED PRAGMA - BEGIN
+
 # Xcode
 #
 **/build/
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata
-*.xccheckout
-*.moved-aside
-DerivedData
-*.hmap
-*.ipa
-*.xcuserstate
+**/*.pbxuser
+!**/default.pbxuser
+**/*.mode1v3
+!**/default.mode1v3
+**/*.mode2v3
+!**/default.mode2v3
+**/*.perspectivev3
+!**/default.perspectivev3
+**/xcuserdata/
+**/*.xccheckout
+**/*.moved-aside
+**/DerivedData/
+**/*.hmap
+**/*.ipa
+**/*.xcuserstate
 **/ios/.xcode.env.local
 
 # Android/IntelliJ
@@ -24,12 +26,12 @@ DerivedData
 **/.cxx/
 **/.idea/
 **/.kotlin/
-.gradle
-local.properties
-*.iml
-*.hprof
-*.keystore
-!debug.keystore
+**/.gradle/
+**/local.properties
+**/*.iml
+**/*.hprof
+**/*.keystore
+!**/debug.keystore
 
 # node.js
 #
@@ -37,12 +39,12 @@ local.properties
 **/.pnpm/
 **/.pnpm-store/
 **/.pnp/
-.pnp.js
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+**/.pnp.js
+**/logs/
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
 
 # fastlane
 #
@@ -53,63 +55,59 @@ yarn-error.log*
 
 **/fastlane/report.xml
 **/fastlane/Preview.html
-**/fastlane/screenshots
-**/fastlane/test_output
+**/fastlane/screenshots/
+**/fastlane/test_output/
 
 # Bundle artifact
-*.jsbundle
+**/*.jsbundle
 
 # Ruby / CocoaPods
 **/ios/Pods/
 **/vendor/bundle/
 
 # Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
+**/.metro-health-check*
 
 # testing
 **/coverage/
 
 # misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+**/.DS_Store
+**/.env
+**/.env.test
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
 **/.vscode/
 **/dist/
-next-env.d.ts
+**/dist-*/
+**/next-env.d.ts
 **/.next/
 **/.vercel/
-**/.velite/
 **/out/
-
-# local/debug output
-*.local
-*.sqlite
-*.sqlite3
-*.debug.png
-
-# pick one between npm/yarn/pnpm
-package-lock.json
-yarn.lock
-# pnpm-lock.yaml
-
-# go, rust
+**/.velite/
+**/.tamagui/
+**/.terraform/
+**/.terraform.lock.hcl
 **/.*-cache/
 **/target/
 
-###############################################################################
-# others in this project
+# local/debug output
+**/*.local
+**/*.local.*
+**/*.debug.*
+**/*.sqlite
+**/*.sqlite3
 
-# google service keys for firebase
-GoogleService-Info.plist
-google-services.json
-# turn server config
-turnConfig.*
-# intl output
-.intlNewEn.json
+# pick one between npm/yarn/pnpm
+**/package-lock.json
+**/yarn.lock
+# **/pnpm-lock.yaml
 
-# embed
-!embed/**/package-lock.json
-embed/**/brekeke_phone*
+# AUTOMATED PRAGMA - END
+
+# others
+**/GoogleService-Info.plist
+**/google-services.json
+**/brekeke_phone*/
