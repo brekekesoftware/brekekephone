@@ -112,9 +112,9 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		0A82854A2EA623F80082DD25 /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
-		0A887F942F2F74B9007B3611 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = incallmanager_ringtone.mp3; sourceTree = "<group>"; };
-		0ABBE3FE2E4EDA3000D88CF0 /* BrekekeEmitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrekekeEmitter.swift; sourceTree = "<group>"; };
+		0A82854A2EA623F80082DD25 /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BrekekePhone/silent.mp3; sourceTree = "<group>"; };
+		0A887F942F2F74B9007B3611 /* incallmanager_ringtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = BrekekePhone/incallmanager_ringtone.mp3; sourceTree = "<group>"; };
+		0ABBE3FE2E4EDA3000D88CF0 /* BrekekeEmitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrekekePhone/BrekekeEmitter.swift; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Brekeke Phone Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Brekeke Phone Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BrekekePhone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BrekekePhone/Info.plist; sourceTree = "<group>"; };
@@ -220,6 +220,7 @@
 				9CD3B8F225AE45B200D8A122 /* callkit.png */,
 				9CE4DA022565F16E00512187 /* incallmanager_ringback.mp3 */,
 				9CE4DA032565F16E00512187 /* incallmanager_ringtone.mp3 */,
+				0A887F942F2F74B9007B3611 /* incallmanager_ringtone.mp3 */,
 				CBAD324C29F374A20057D82C /* ding.mp3 */,
 				0A82854A2EA623F80082DD25 /* silent.mp3 */,
 				C7761E98534786ADF5B029D2 /* PrivacyInfo.xcprivacy */,
@@ -253,7 +254,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				0A887F942F2F74B9007B3611 /* incallmanager_ringtone.mp3 */,
 				13B07FAE1A68108700A75B9A /* BrekekePhone */,
 				9CF3829C28ED8495008FC490 /* BrekekeLPC */,
 				9C972B8F28E1B34C00DD89B4 /* BrekekeLPCExtension */,
