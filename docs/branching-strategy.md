@@ -18,12 +18,12 @@ Both bundle ids can be installed side by side on the same device/simulator. This
 
 #### What actually differs between them
 
-`release` is not an independent line of development. As of this writing it is exactly **one commit ahead** of a past point on `master` (`git log origin/master..origin/release` shows a single `Release` commit). That commit only renames the bundle id/package/app name across both platforms -- for example (from the actual last "Release" commit):
+`release` is not an independent line of development. As of this writing it is exactly one commit ahead of a past point on `master` (`git log origin/master..origin/release` shows a single `Release` commit). That commit only renames the bundle id/package/app name across both platforms -- for example (from the actual last "Release" commit):
 
 - Android: `android/app/build.gradle` (`applicationId`), `AndroidManifest.xml`, and the whole `com/brekeke/phonedev` Java/Kotlin package tree renamed to `com/brekeke/phone`.
 - iOS: bundle identifier and related Xcode project settings.
 
-Everything else on `release` is whatever `master` looked like the last time `release` was rebased -- it is **not** kept continuously up to date with `master`, so if you `git diff origin/master origin/release` right now you will see a large diff (all of `master`'s work since the last rebase), not just the rename commit. That is expected, not a sign `release` is broken; it just means `release` hasn't been rebased since then.
+Everything else on `release` is whatever `master` looked like the last time `release` was rebased -- it is not kept continuously up to date with `master`, so if you `git diff origin/master origin/release` right now you will see a large diff (all of `master`'s work since the last rebase), not just the rename commit. That is expected, not a sign `release` is broken; it just means `release` hasn't been rebased since then.
 
 #### The release workflow
 
@@ -33,7 +33,7 @@ When it's time to cut a release:
 2. Resolve any conflicts the rebase produces. Since `release`'s only diff from `master` is a mechanical rename, conflicts are usually just the rename touching the same lines `master` changed since -- read them carefully rather than blindly taking one side, especially in files the rename touches directly (`build.gradle`, `AndroidManifest.xml`, the renamed Java/Kotlin package, Xcode project settings).
 3. Double-check the rebased `release` branch actually builds and runs correctly (both platforms) before treating it as ready.
 4. Build for release from this branch -- see [Building for the App Store and Play Store](./app-store-release.md).
-5. Once the release is approved and shipped, cut a **version branch** from this exact commit as a permanent, named reference (see below).
+5. Once the release is approved and shipped, cut a version branch from this exact commit as a permanent, named reference (see below).
 
 #### Version branches as a fixed reference
 

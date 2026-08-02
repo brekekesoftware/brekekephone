@@ -47,7 +47,7 @@ Run this after adding/changing any UI text, then translate the new `**TRANSLATE*
 
 #### Build and upload to dev01
 
-These targets assume the release IPA was **already built and exported from Xcode** (Archive -> Export, Ad-hoc or Enterprise) to `./build/BrekekePhone/<scheme name>.ipa` at the repo root -- the Makefile does not invoke Xcode itself. See [Building and deploying to dev01](./dev01-deploy.md) for the full walkthrough, including exactly how to produce that IPA and where the matching Android keystore comes from.
+These targets assume the release IPA was already built and exported from Xcode (Archive -> Export, Ad-hoc or Enterprise) to `./build/BrekekePhone/<scheme name>.ipa` at the repo root -- the Makefile does not invoke Xcode itself. See [Building and deploying to dev01](./dev01-deploy.md) for the full walkthrough, including exactly how to produce that IPA and where the matching Android keystore comes from.
 
 ##### `phonedev`
 
@@ -55,7 +55,7 @@ These targets assume the release IPA was **already built and exported from Xcode
 make phonedev
 ```
 
-Uploads the dev build (`com.brekeke.phonedev` / "Brekeke Phone Dev") from **`master`**:
+Uploads the dev build (`com.brekeke.phonedev` / "Brekeke Phone Dev") from `master`:
 
 1. `pnpm i --frozen-lockfile` at the repo root.
 2. `scp`s `./build/BrekekePhone/Brekeke Phone Dev.ipa` to `dev01:/var/www/upload/brekeke_phonedev$(V).ipa`, then deletes the local `./build/BrekekePhone` directory.
@@ -67,7 +67,7 @@ Result: downloadable from `https://dev01.brekeke.com/dev` (served by `dev01/web`
 
 ##### `phone`
 
-Identical to `phonedev`, but for the **`release`** branch build (`com.brekeke.phone` / "Brekeke Phone") -- same IPA-already-exported assumption, same Android build steps, uploads to `brekeke_phone$(V).ipa`/`.apk` instead. See [Branching strategy](./branching-strategy.md) for what `release` actually is.
+Identical to `phonedev`, but for the `release` branch build (`com.brekeke.phone` / "Brekeke Phone") -- same IPA-already-exported assumption, same Android build steps, uploads to `brekeke_phone$(V).ipa`/`.apk` instead. See [Branching strategy](./branching-strategy.md) for what `release` actually is.
 
 ##### `web`
 

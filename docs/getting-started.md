@@ -12,7 +12,7 @@
 
 #### Repo layout
 
-This is a pnpm workspace (`pnpm-workspace.yaml`'s `packages: ['./*/*']`) with **five** packages in total -- the two you'll actually work in day to day, plus three supporting infra packages covered in [Repo layout](./repo-layout.md):
+This is a pnpm workspace (`pnpm-workspace.yaml`'s `packages: ['./*/*']`) with five packages in total: the two you'll actually work in day to day, plus three supporting infra packages covered in [Repo layout](./repo-layout.md).
 
 - `brekekephone/app` -- the React Native app (iOS + Android). Almost all shared app logic (`src/`) lives here; the web package imports it directly.
 - `brekekephone/web` -- the Vite package that builds the web/embed bundle. Its own `src/` is a thin shim around `brekekephone/app/src`.

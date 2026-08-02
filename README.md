@@ -4,8 +4,11 @@
 
 VoIP/SIP softphone for Web, iOS, and Android. A pnpm workspace with two packages: `brekekephone/app` (React Native, also the source of truth for shared app logic) and `brekekephone/web` (Vite web/embed build). Uses [rntwsc](https://github.com/namnm/rntwsc) for Tailwind class names in React Native and shared devtools (format/lint/type-check).
 
+### Table of contents
+
 <!-- START doctoc -->
 
+- [Branch status](#branch-status)
 - [Quick access](#quick-access)
 - [Documentation](#documentation)
   - [Build, test, and release](#build-test-and-release)
@@ -15,17 +18,24 @@ VoIP/SIP softphone for Web, iOS, and Android. A pnpm workspace with two packages
 
 <!-- END doctoc -->
 
+### Branch status
+
+`master` is version `3.0.0`. The team considers it unstable and expects more iteration, since it just went through a large tooling/library upgrade (see [Codebase overview](./docs/codebase-overview.md)).
+
+`2.17.8-dev` is the latest stable dev version, fully verified by QA and other teams. For a minor change on top of it: checkout a new branch from `2.17.8-dev`, implement the change, then build/QA/upload it per the docs below. Squash merge that branch into a single commit, with a changelog entry, into the `2.x` tracking stable branch. Then rebase (or merge, rebase is recommended for a clean history) `master`/`3.x` on top of that updated `2.x` tracking branch. This lets the team keep working on both the new (`3.x`) and old stable (`2.x`) branches at the same time.
+
+Recommendation: work on `master` and stabilize/test it until it is ready to release, instead of keeping both branches going. Once release bundle ids are counted too, that is 4+ branches to track, not 2. `3.0.0` has already been tested and built on all platforms and should basically work; what is left is edge-case testing and incremental improvements, not a rewrite.
+
 ### Quick access
 
-- Recommended OS version as of Apr 2026:
-  - [Android 14-15](https://developer.android.com/google/play/requirements/target-sdk)
-  - [iOS 26](https://developer.apple.com/ios/submit/)
+Recommended OS version as of Apr 2026: [Android 14-15](https://developer.android.com/google/play/requirements/target-sdk), [iOS 26](https://developer.apple.com/ios/submit/).
+
 - [Getting started](./docs/getting-started.md)
 - [Building for the App Store and Play Store](./docs/app-store-release.md) -- the most common reason to be here: bump a version or ship a small fix, then get it built, tested, and uploaded
 
 ### Documentation
 
-Most changes to this app are small (a version bump, a one-line hotfix) and don't need any of the deep architecture knowledge further down this list. **Build, test, and release** is the path that actually matters day to day; the engineering deep-dive at the bottom is only for when you need to understand _why_ the code does something, not just _how_ to ship it.
+If you are getting started or just need a quick update (a version bump, a one-line hotfix), you don't need any of the deep architecture knowledge further down this list. Build, test, and release is the path that actually matters day to day; the engineering deep-dive at the bottom is only for when you need to understand why the code does something, not just how to ship it.
 
 #### Build, test, and release
 

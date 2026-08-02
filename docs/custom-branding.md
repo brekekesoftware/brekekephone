@@ -57,9 +57,9 @@ brekekephone/app/src/assets/brand.png
 brekekephone/app/src/assets/logo.png
 ```
 
-- To update the app's branding color, note this app has **two separate places** that each hold their own brand color -- they are not the same value today, so update both deliberately rather than assuming one covers the other:
+- To update the app's branding color, note this app has two separate places that each hold their own brand color -- they are not the same value today, so update both deliberately rather than assuming one covers the other:
   - Native splash screen background: open `brekekephone/app/ios/BrekekePhone/LaunchScreen.storyboard` in Xcode and change the view's background color there (use Xcode's color picker rather than hand-editing the decimal RGB numbers in the XML). The equivalent Android splash background comes from the `launch_screen.png` images above, not a color value.
-  - In-app theme color: the primary color is a full light/dark scale (`--primary-50` through `--primary-950`, plus `--ring`), defined in **two files that must be kept in sync with each other** (the second file has a comment saying exactly this):
+  - In-app theme color: the primary color is a full light/dark scale (`--primary-50` through `--primary-950`, plus `--ring`), defined in two files that must be kept in sync with each other (the second file has a comment saying exactly this):
     - `brekekephone/app/src/theme/brekeke.scss` (CSS custom properties, `:root`/dark-mode block)
     - `brekekephone/app/src/theme/brekeke-scss.ts` (the same values, extracted manually into TypeScript because auto-extracting them wasn't practical with the app's build pipeline)
   - You can also update the other color scales (`--secondary-*`, `--info-*`, `--success-*`, `--warning-*`, `--error-*`) in the same two files if you want to change more than just the brand color.
