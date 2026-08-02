@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index 045cf8bb2890a73e03d8aad727ab9f81bae2176a..420303ed1a1f19884d53f8d6bc23316cb68a3973 100644
+--- a/package.json
++++ b/package.json
+@@ -8,6 +8,10 @@
+       "import": "./index.mjs",
+       "require": "./index.js"
+     },
++    "./index": {
++      "import": "./index.mjs",
++      "require": "./index.js"
++    },
+     "./es5": {
+       "import": "./es5.mjs",
+       "require": "./es5.js"

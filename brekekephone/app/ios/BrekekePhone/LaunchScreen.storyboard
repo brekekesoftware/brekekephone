@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document
+  colorMatched="YES"
+  initialViewController="01J-lp-oVM"
+  launchScreen="YES"
+  propertyAccessControl="none"
+  targetRuntime="iOS.CocoaTouch"
+  toolsVersion="15705"
+  type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB"
+  useAutolayout="YES"
+  useSafeAreas="YES"
+  useTraitCollections="YES"
+  version="3.0"
+>
+  <device appearance="light" id="retina4_7" orientation="portrait" />
+  <dependencies>
+    <deployment identifier="iOS" />
+    <plugIn
+      identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin"
+      version="15706"
+    />
+    <capability minToolsVersion="9.0" name="Safe area layout guides" />
+    <capability
+      minToolsVersion="8.0"
+      name="documents saved in the Xcode 8 format"
+    />
+  </dependencies>
+  <scenes>
+    <!--View Controller-->
+    <scene sceneID="EHf-IW-A2E">
+      <objects>
+        <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+          <view contentMode="scaleToFill" id="Ze5-6b-2t3" key="view">
+            <rect height="667" key="frame" width="375" x="0.0" y="0.0" />
+            <autoresizingMask
+              heightSizable="YES"
+              key="autoresizingMask"
+              widthSizable="YES"
+            />
+            <subviews>
+              <imageView
+                clipsSubviews="YES"
+                contentMode="scaleAspectFit"
+                horizontalHuggingPriority="251"
+                id="aDZ-Vc-rp6"
+                image="LaunchScreenLogo"
+                userInteractionEnabled="NO"
+                verticalHuggingPriority="251"
+              >
+                <rect height="128" key="frame" width="240" x="67" y="270" />
+                <autoresizingMask
+                  flexibleMaxX="YES"
+                  flexibleMaxY="YES"
+                  flexibleMinX="YES"
+                  flexibleMinY="YES"
+                  key="autoresizingMask"
+                />
+              </imageView>
+            </subviews>
+            <color
+              alpha="1"
+              blue="0.43766238667172563"
+              colorSpace="custom"
+              customColorSpace="displayP3"
+              green="0.7693973183631897"
+              key="backgroundColor"
+              red="0.53498854138206386"
+            />
+            <viewLayoutGuide id="Bcu-3y-fUS" key="safeArea" />
+          </view>
+        </viewController>
+        <placeholder
+          id="iYj-Kq-Ea1"
+          placeholderIdentifier="IBFirstResponder"
+          sceneMemberID="firstResponder"
+          userLabel="First Responder"
+        />
+      </objects>
+      <point key="canvasLocation" x="52.173913043478265" y="375" />
+    </scene>
+  </scenes>
+  <resources>
+    <image height="129" name="LaunchScreenLogo" width="168" />
+  </resources>
+</document>
