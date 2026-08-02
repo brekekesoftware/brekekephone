@@ -1,0 +1,22 @@
+import type { FC } from 'react'
+
+import { RnText } from '@/components/rn-text'
+import { RnTouchableOpacity } from '@/components/rn-touchable-opacity'
+
+export type DropdownItemProps = {
+  title?: string
+  onPress?: () => void
+  disabled?: boolean
+}
+
+export const DropdownItem: FC<DropdownItemProps> = ({
+  title,
+  onPress,
+  disabled = false,
+}: DropdownItemProps) => (
+  <RnTouchableOpacity onPress={onPress} className='py-1.25' disabled={disabled}>
+    <RnText className={disabled ? 'text-foreground-disabled' : undefined}>
+      {title}
+    </RnText>
+  </RnTouchableOpacity>
+)

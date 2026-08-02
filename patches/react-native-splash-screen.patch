@@ -1,0 +1,16 @@
+diff --git a/ios/SplashScreen.xcodeproj/project.pbxproj b/ios/SplashScreen.xcodeproj/project.pbxproj
+index 7bc3afc2bcc5ae46ec9f34ba1bce48b50af7068f..339aa7c521640050ad0bacd1b422f2b2b67580a8 100755
+--- a/ios/SplashScreen.xcodeproj/project.pbxproj
++++ b/ios/SplashScreen.xcodeproj/project.pbxproj
+@@ -83,11 +83,9 @@
+ 			isa = PBXProject;
+ 			attributes = {
+ 				LastUpgradeCheck = 0730;
+-				ORGANIZATIONNAME = cboy;
+ 				TargetAttributes = {
+ 					3D7682751D8E76B80014119E = {
+ 						CreatedOnToolsVersion = 7.3.1;
+-						DevelopmentTeam = Y3MLDMF5L7;
+ 					};
+ 				};
+ 			};
