@@ -53,6 +53,9 @@ function sendJsonToRn(json) {
 
 ${webviewInjectSendJsonToRnOnLoad()}
 `
+// Aiphone nurse-call WebToApp I/F: no-op stubs so the content's WebInterface.* calls
+// don't fall back to its own dummy. Injected before content load when the feature is on.
+const stubJs = `window.WebInterface = { display10key(){}, displayPhoneControl(){}, updateUrlString(){}, callMainPage(){}, closePhoneControl(){} };`
 enum StatusImage {
   loading = 0,
   loaded = 1,
@@ -68,19 +71,39 @@ export const SmartImage = ({
   uri,
   style,
   incoming,
+  urlInfo,
 }: {
   uri: string
   style: object
   incoming: boolean
+  urlInfo?: string
 }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(
     StatusImage.loading,
   )
   const cUrl = useRef(uri)
+  const webviewRef = useRef<WebView>(null)
+  const firedRef = useRef(false)
   useEffect(() => {
     setStatusImageLoading(0)
-    console.log(`SmartImage url=${uri}`)
+    firedRef.current = false
   }, [uri])
+  const aiphoneOn = ctx.auth.aiphoneNurseCallEnabled()
+  useEffect(() => {
+    if (
+      !aiphoneOn ||
+      !urlInfo ||
+      statusImageLoading !== StatusImage.loaded ||
+      firedRef.current
+    ) {
+      return
+    }
+    firedRef.current = true
+    const hc = ctx.auth.getCurrentAccount()?.pbxUsername ?? ''
+    webviewRef.current?.injectJavaScript(
+      `try { window.updatePhoneState && window.updatePhoneState(${JSON.stringify(urlInfo)}, ${JSON.stringify(hc)}, 2, 0); } catch (e) {} true;`,
+    )
+  }, [aiphoneOn, urlInfo, statusImageLoading])
 
   const onMessage = (event: WebViewMessageEvent) => {
     try {
@@ -142,9 +165,12 @@ export const SmartImage = ({
       )}
       {!uri ? null : !isImageUrl ? (
         <WebView
+          ref={webviewRef}
           source={{ uri }}
           injectedJavaScript={js}
-          injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
+          injectedJavaScriptBeforeContentLoaded={
+            (aiphoneOn ? stubJs : '') + (isAndroid ? js : '')
+          }
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}

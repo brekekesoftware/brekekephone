@@ -552,6 +552,7 @@ export class AuthStore {
     )
     console.log(`signIn debug: account ${a.pbxUsername} signed in`)
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
+    BrekekeUtils.setAiphoneNurseCallEnabled(!!this.aiphoneNurseCallEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
     }
@@ -1127,11 +1128,16 @@ export class AuthStore {
     !isWeb &&
     (this.userExtensionProperties?.phoneappli ||
       ctx.auth.getCurrentData()?.phoneappliEnabled)
+  aiphoneNurseCallEnabled = () =>
+    !isWeb &&
+    (this.userExtensionProperties?.aiphoneNurseCall ||
+      ctx.auth.getCurrentData()?.aiphoneNurseCallEnabled)
   userExtensionProperties: null | {
     id: string
     name: string
     language: string
     phoneappli: boolean
+    aiphoneNurseCall: boolean
     phones: {
       id: string
       type: string

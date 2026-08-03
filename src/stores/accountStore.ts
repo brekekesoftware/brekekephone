@@ -104,6 +104,7 @@ export type AccountData = {
   lpcServer?: { available: boolean; optional: boolean }
   pnExpires?: string
   phoneappliEnabled?: boolean
+  aiphoneNurseCallEnabled?: boolean
   mfa?: MFAInfo
 }
 

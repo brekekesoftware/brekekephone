@@ -35,6 +35,7 @@ export const handlePhoneAppli = async extProps => {
   const paEnabled = extProps.phoneappli
   if (d) {
     d.phoneappliEnabled = paEnabled
+    d.aiphoneNurseCallEnabled = extProps.aiphoneNurseCall
     ctx.account.updateAccountData(d)
   }
 

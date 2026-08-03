@@ -324,6 +324,8 @@ export const setupCallKeepEvents = async () => {
           uuid,
           c.talkingImageUrl,
           c.partyImageSize === 'large',
+          c.urlInfo,
+          ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
         )
         await waitTimeout(17)
       }

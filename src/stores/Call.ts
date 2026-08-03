@@ -43,6 +43,7 @@ export class Call {
   @observable partyImageUrl = ''
   @observable partyImageSize = ''
   @observable talkingImageUrl = ''
+  @observable urlInfo = ''
   @observable partyName = ''
   @observable pbxTenant = ''
   @observable pbxRoomId = ''
