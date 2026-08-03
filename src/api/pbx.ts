@@ -1228,6 +1228,7 @@ export class PBX extends EventEmitter {
         'pnumber',
         'language',
         'phoneappli.enable',
+        'aiphone.nursecall.enable',
       ],
     })
 
@@ -1261,6 +1262,7 @@ export class PBX extends EventEmitter {
       phones,
       language: lang,
       phoneappli: toBoolean(res?.[7]),
+      aiphoneNurseCall: toBoolean(res?.[8]),
     }
   }
 

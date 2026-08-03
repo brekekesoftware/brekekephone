@@ -31,7 +31,13 @@ type TBrekekeUtils = {
   setPbxConfig(jsonStr: string): void
   setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
-  setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
+  setTalkingAvatar(
+    uuid: string,
+    url: string,
+    isLarge: boolean,
+    urlInfo: string,
+    hc: string,
+  ): void
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
   setIsVideoCall(uuid: string, isVideoCall: boolean, isMuted: boolean): void
@@ -40,6 +46,7 @@ type TBrekekeUtils = {
   setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
   setPhoneappliEnabled(enabled: boolean): void
+  setAiphoneNurseCallEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
@@ -148,6 +155,7 @@ const Polyfill: TBrekekeUtils = {
   setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
   setPhoneappliEnabled: () => undefined,
+  setAiphoneNurseCallEnabled: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,

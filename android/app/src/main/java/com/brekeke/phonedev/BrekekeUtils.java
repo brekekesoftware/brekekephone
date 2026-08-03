@@ -103,6 +103,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
+  public static boolean aiphoneNurseCallEnabled = false;
   public static String userAgentConfig = null;
 
   BrekekeUtils(ReactApplicationContext ctx) {
@@ -809,11 +810,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setTalkingAvatar(String uuid, String url, boolean isLarge) {
+  public void setTalkingAvatar(
+      String uuid, String url, boolean isLarge, String urlInfo, String hc) {
     UiThreadUtil.runOnUiThread(
         () -> {
           try {
-            at(uuid).setImageTalkingUrl(url, isLarge);
+            at(uuid).setImageTalkingUrl(url, isLarge, urlInfo, hc);
           } catch (Exception e) {
           }
         });
@@ -911,6 +913,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setPhoneappliEnabled(Boolean isEnabled) {
     phoneappliEnabled = isEnabled;
+  }
+
+  @ReactMethod
+  public void setAiphoneNurseCallEnabled(Boolean isEnabled) {
+    aiphoneNurseCallEnabled = isEnabled;
   }
 
   @ReactMethod

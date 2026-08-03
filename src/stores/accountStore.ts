@@ -94,6 +94,7 @@ export type AccountData = {
   userAgent?: string
   pnExpires?: string
   phoneappliEnabled?: boolean
+  aiphoneNurseCallEnabled?: boolean
   mfa?: MFAInfo
 }
 

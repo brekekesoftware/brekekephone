@@ -335,6 +335,8 @@ export class CallStore {
       c.callkeepUuid,
       c.talkingImageUrl,
       c.partyImageSize === 'large',
+      c.urlInfo,
+      ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
     )
   }
   @action private upsertCall = async (
@@ -458,6 +460,8 @@ export class CallStore {
           e.callkeepUuid,
           e.talkingImageUrl,
           e.partyImageSize === 'large',
+          e.urlInfo,
+          ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
         )
       }
 
