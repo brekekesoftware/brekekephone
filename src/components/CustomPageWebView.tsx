@@ -4,9 +4,11 @@ import type { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
 import WebView from 'react-native-webview'
 import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes'
 
+import { webviewInjectConsoleForward } from '#/components/webviewInjectConsoleForward'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { buildWebViewSource, isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
+import { handleWebviewConsoleMessage } from '#/utils/handleWebviewConsoleMessage'
 
 const css = StyleSheet.create({
   image: {
@@ -66,6 +68,9 @@ export const CustomPageWebView = ({
       if (!data) {
         return
       }
+      if (handleWebviewConsoleMessage(data)) {
+        return
+      }
       // check load page 1 time
       if (!nLoading.current) {
         return
@@ -118,11 +123,18 @@ export const CustomPageWebView = ({
     return null
   }
 
+  const consoleForwardJs =
+    ctx.auth.pbxConfig?.['webphone.webview.log'] === 'true'
+      ? webviewInjectConsoleForward
+      : ''
+
   return (
     <WebView
       source={buildWebViewSource(url)}
-      injectedJavaScript={js}
-      injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
+      injectedJavaScript={consoleForwardJs + js}
+      injectedJavaScriptBeforeContentLoaded={
+        consoleForwardJs + (isAndroid ? js : '')
+      }
       style={css.full}
       bounces={false}
       originWhitelist={['*']}

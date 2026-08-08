@@ -23,6 +23,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -273,6 +275,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatar.getSettings().setJavaScriptEnabled(true);
     webViewAvatar.getSettings().setAllowFileAccess(true);
     webViewAvatar.getSettings().setDomStorageEnabled(true);
+    attachWebviewConsoleForward(webViewAvatar);
 
     webViewAvatarTalking = (WebView) findViewById(R.id.avatar_talking_html);
     webViewAvatarTalking.setBackgroundColor(Color.WHITE);
@@ -282,6 +285,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
+    attachWebviewConsoleForward(webViewAvatarTalking);
     if (BrekekeUtils.isUserAgentConfig()) {
       webViewAvatar.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
       webViewAvatarTalking.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
@@ -534,6 +538,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
+              if (webviewLogEnabled()) {
+                view.evaluateJavascript(webviewConsoleForwardJs, null);
+              }
             }
 
             @Override
@@ -1072,6 +1079,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
               vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
+              if (webviewLogEnabled()) {
+                view.evaluateJavascript(webviewConsoleForwardJs, null);
+              }
               if (BrekekeUtils.aiphoneNurseCallEnabled) {
                 view.evaluateJavascript(
                     "window.WebInterface = window.WebInterface || {"
@@ -1613,5 +1623,33 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   private void error(String k, String d) {
     Emitter.error("IncomingCallActivity " + callerName + " " + k, d);
+  }
+
+  private boolean webviewLogEnabled() {
+    return pbxConfig != null && "true".equals(pbxConfig.optString("webphone.webview.log"));
+  }
+
+  private static final String webviewConsoleForwardJs =
+      "if(!window.__brekekeConsoleForwarded){window.__brekekeConsoleForwarded=true;"
+          + "window.addEventListener('error',function(e){console.error('[WebView] '+(e.message||e)+' '+(e.filename||'')+':'+(e.lineno||''));});"
+          + "window.addEventListener('unhandledrejection',function(e){console.error('[WebView] unhandledrejection: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason));});}";
+
+  private void attachWebviewConsoleForward(WebView view) {
+    view.setWebChromeClient(
+        new WebChromeClient() {
+          @Override
+          public boolean onConsoleMessage(ConsoleMessage cm) {
+            if (webviewLogEnabled()) {
+              String msg =
+                  "[WebView] " + cm.message() + " (" + cm.sourceId() + ":" + cm.lineNumber() + ")";
+              if (cm.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
+                Emitter.error(msg);
+              } else {
+                Emitter.debug(msg);
+              }
+            }
+            return true;
+          }
+        });
   }
 }
