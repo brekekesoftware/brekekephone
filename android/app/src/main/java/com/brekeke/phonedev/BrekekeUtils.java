@@ -20,6 +20,9 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
+import android.webkit.CookieManager;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
@@ -665,6 +668,44 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
           });
     }
     BrekekeUtils.userAgentConfig = userAgentConfig;
+  }
+
+  @ReactMethod
+  public void clearWebViewCache(Promise p) {
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          WebView tmp = null;
+          try {
+            // each WebView instance owns its own in-memory cache
+            for (var a : activities) {
+              try {
+                if (a.webViewAvatar != null) {
+                  a.webViewAvatar.clearCache(true);
+                }
+                if (a.webViewAvatarTalking != null) {
+                  a.webViewAvatarTalking.clearCache(true);
+                }
+              } catch (Exception e) {
+                Emitter.error("a.clearWebViewCache", e.getMessage());
+              }
+            }
+            // the app wide disk cache needs any WebView instance to be cleared
+            tmp = new WebView(main != null ? main : getReactApplicationContext());
+            tmp.clearCache(true);
+            WebStorage.getInstance().deleteAllData();
+            var cm = CookieManager.getInstance();
+            cm.removeAllCookies(null);
+            cm.flush();
+            p.resolve(true);
+          } catch (Exception e) {
+            Emitter.error("clearWebViewCache", e.getMessage());
+            p.resolve(false);
+          } finally {
+            if (tmp != null) {
+              tmp.destroy();
+            }
+          }
+        });
   }
 
   @ReactMethod

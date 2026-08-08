@@ -4,6 +4,7 @@ import AVKit
 import Combine
 import Foundation
 import UIKit
+import WebKit
 import WebRTC
 
 @available(iOS 13.0, *)
@@ -38,6 +39,19 @@ public class BrekekeUtils: NSObject {
   func isSpeakerOn(_ resolve: @escaping RCTPromiseResolveBlock,
                    rejecter _: @escaping RCTPromiseRejectBlock) {
     resolve(am.isSpeakerEnabled())
+  }
+
+  @objc
+  func clearWebViewCache(_ resolve: @escaping RCTPromiseResolveBlock,
+                         rejecter _: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.main.async {
+      WKWebsiteDataStore.default().removeData(
+        ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+        modifiedSince: Date(timeIntervalSince1970: 0)
+      ) {
+        resolve(true)
+      }
+    }
   }
 
   @objc

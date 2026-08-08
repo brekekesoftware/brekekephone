@@ -14,6 +14,7 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 
 declare global {
@@ -239,6 +240,29 @@ export class DebugStore {
       this.totalLogFiles = 0
       this.currentFile = undefined
     })
+
+  clearWebViewCache = () => {
+    RnAlert.prompt({
+      title: intl`Clear WebView Cache`,
+      message: intl`Do you want to clear the cache of all web pages? You may need to sign in again on custom pages.`,
+      onConfirm: this.clearWebViewCacheWithoutPrompt,
+      confirmText: intl`CLEAR`,
+    })
+  }
+  clearWebViewCacheWithoutPrompt = () =>
+    BrekekeUtils.clearWebViewCache()
+      .then(ok => {
+        if (!ok) {
+          throw new Error('BrekekeUtils.clearWebViewCache returned false')
+        }
+        ctx.toast.success(intl`WebView cache cleared`)
+      })
+      .catch((err: Error) => {
+        RnAlert.error({
+          message: intlDebug`Failed to clear the WebView cache`,
+          err,
+        })
+      })
 
   @observable isCheckingForUpdate = false
   @observable remoteVersion = ''
