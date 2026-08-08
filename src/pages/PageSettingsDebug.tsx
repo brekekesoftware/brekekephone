@@ -69,6 +69,16 @@ export class PageSettingsDebug extends Component {
               value={ctx.debug.getLogSizeStr()}
             />
 
+            <Field hasMargin isGroup label={intl`WEBVIEW`} />
+            <Field
+              createBtnIcon={mdiKeyboardBackspace}
+              createBtnIconStyle={css.BtnIcon}
+              label={intl`CLEAR WEBVIEW CACHE`}
+              onCreateBtnPress={ctx.debug.clearWebViewCache}
+              onTouchPress={ctx.debug.clearWebViewCache}
+              value={intl`Clear cached avatar and custom pages`}
+            />
+
             <Field hasMargin isGroup label={intl`UPDATE`} />
             <Field
               createBtnIcon={mdiKeyboardBackspace}

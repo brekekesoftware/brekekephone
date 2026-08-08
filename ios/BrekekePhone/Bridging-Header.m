@@ -32,6 +32,9 @@ RCT_EXTERN_METHOD(systemUptimeMs
 RCT_EXTERN_METHOD(getRingtoneOptions
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(clearWebViewCache
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(validateRingtone
                   : (NSString *)ringtone username
                   : (NSString *)username tenant
