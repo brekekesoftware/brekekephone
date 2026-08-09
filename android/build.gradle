@@ -1,10 +1,10 @@
 buildscript {
   ext {
-    buildToolsVersion = "35.0.0"
+    buildToolsVersion = "36.0.0"
     minSdkVersion = 27
-    compileSdkVersion = 35
+    compileSdkVersion = 36
     // https://developer.android.com/google/play/requirements/target-sdk
-    targetSdkVersion = 35
+    targetSdkVersion = 36
     ndkVersion = "27.1.12297006"
     kotlinVersion = "2.1.20"
   }
@@ -14,7 +14,8 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath("com.android.tools.build:gradle")
+    // react-native 0.80 pins agp 8.9.2 which supports compileSdk 35 at most
+    classpath("com.android.tools.build:gradle:8.11.1")
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     // react-native-notifications
