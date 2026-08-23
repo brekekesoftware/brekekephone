@@ -54,8 +54,20 @@ const css = StyleSheet.create({
   Field__focusing: {
     backgroundColor: v.colors.primaryFn(0.5),
   },
+  // the fill alone is imperceptible (hoverBg is a 5% darken), and `disabled` has
+  // no effect on RN's TextInput, so the real signals are the muted value text and
+  // dimmed control applied alongside this
   Field__disabled: {
     backgroundColor: v.hoverBg,
+  },
+  Field_TextInput__disabled: {
+    color: v.subColor,
+  },
+  // the picker chevron on a disabled row is not pressable, so it fades. safe to
+  // use opacity here because it is a single icon with nothing beneath it - see
+  // RnSwitch for why the switch uses colours instead
+  Field_ControlDisabled: {
+    opacity: 0.35,
   },
   Field__group: {
     marginHorizontal: 0,
@@ -429,7 +441,11 @@ export const Field: FC<
           props.valueRender ||
           ((e: boolean) => (e ? intl`Enabled` : intl`Disabled`)),
         iconRender: (e: boolean) => (
-          <RnSwitch enabled={e} style={css.Field_Switch} />
+          <RnSwitch
+            enabled={e}
+            disabled={props.disabled}
+            style={css.Field_Switch}
+          />
         ),
         onTouchPress: () => {
           props.onValueChange?.(!props.value)
@@ -541,7 +557,11 @@ export const Field: FC<
                 disabled
                 maxLength={props?.maxLength || 100000}
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
-                style={[css.Field_TextInput, props.textInputStyle]}
+                style={[
+                  css.Field_TextInput,
+                  props.disabled && css.Field_TextInput__disabled,
+                  props.textInputStyle,
+                ]}
                 value={
                   props.valueRender?.(props.value) || props.value || '\u200a'
                 }
@@ -559,7 +579,10 @@ export const Field: FC<
             <RnIcon
               path={props.icon}
               pointerEvents='none'
-              style={css.Field_Icon}
+              style={[
+                css.Field_Icon,
+                props.disabled && css.Field_ControlDisabled,
+              ]}
             />
           ))}
         {props.loading && (
