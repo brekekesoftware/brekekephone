@@ -6,7 +6,7 @@ import { View } from 'react-native'
 
 import { Layout } from '#/components/Layout'
 import { RnText } from '#/components/Rn'
-import { isWeb } from '#/config'
+import { isAndroid, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
@@ -52,6 +52,17 @@ export const AccountCreateForm: FC<{
         },
         confirmText: intl`RESET`,
       })
+    },
+    // explains the lpc foreground service in place. read from the cached server
+    // capability because this form is editable only while signed out, where
+    // ctx.auth.pbxConfig is not available
+    lpcDescription: () => {
+      const base = intl`Keeps a direct encrypted connection to your Brekeke PBX so incoming calls and messages arrive in real time when Google's push service is blocked or unreliable on your network. Android shows an ongoing notification while this connection is active.`
+      const s = ctx.account.findDataSync($.account)?.lpcServer
+      if (s?.available && !s.optional) {
+        return `${base}\n${intl`Your PBX is set to deliver calls only through this connection. Turning it off may stop call notifications while the app is closed.`}`
+      }
+      return base
     },
     //
     onAddingParkSubmit: () => {
@@ -270,6 +281,17 @@ export const AccountCreateForm: FC<{
             name: 'pushNotificationEnabled',
             label: intl`PUSH NOTIFICATION`,
             hidden: isWeb,
+          },
+          {
+            // subordinate to PUSH NOTIFICATION: lpc has no effect while push is
+            // off, since syncPnToken removes every service in that case
+            disabled: props.footerLogout || !$.account.pushNotificationEnabled,
+            nested: true,
+            type: 'Switch',
+            name: 'lpcEnabled',
+            label: intl`FALLBACK LOCAL CONNECTION (LPC)`,
+            hidden: isWeb || !isAndroid,
+            description: $.lpcDescription(),
           },
           {
             isGroup: true,

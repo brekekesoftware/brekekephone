@@ -41,7 +41,6 @@ let resolveFn: Function | undefined
 const storagePromise = new Promise(resolve => {
   resolveFn = resolve
 })
-export type PNOptions = 'APNs' | 'LPC' | undefined
 export type Account = {
   id: string
   pbxHostname: string
@@ -54,6 +53,10 @@ export type Account = {
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
+  // android only opt-in for the LPC foreground service. defaults to false so the
+  // service is never started without an explicit user action (google play
+  // "user initiated" requirement). ignored on ios where LPC is os-gated by ssid
+  lpcEnabled: boolean
   parks?: string[]
   parkNames?: string[]
   ucEnabled: boolean
@@ -92,6 +95,13 @@ export type AccountData = {
   }
   palParams?: { [k: string]: string }
   userAgent?: string
+  // cached webphone.lpc.* capability from the last successful pn sync. the account
+  // settings form is only reachable while signed out, where ctx.auth.pbxConfig is
+  // undefined, so the ui reads this instead.
+  //   available - server has both lpc port and tls keyhash configured
+  //   optional  - webphone.lpc.pn is on, ie cloud push runs alongside lpc so
+  //               turning lpc off still leaves a working transport
+  lpcServer?: { available: boolean; optional: boolean }
   pnExpires?: string
   phoneappliEnabled?: boolean
   mfa?: MFAInfo
@@ -201,6 +211,7 @@ export class AccountStore {
     pbxPhoneIndex: '',
     pbxTurnEnabled: false,
     pushNotificationEnabled: isWeb ? false : true,
+    lpcEnabled: false,
     parks: [] as string[],
     parkNames: [] as string[],
     ucEnabled: false,
@@ -300,9 +311,13 @@ export class AccountStore {
     )
   }
 
-  // account will start the LPC foreground service: push on + can sign in
+  // account will start the LPC foreground service: lpc opted in + push on + can
+  // sign in. lpcEnabled is part of the condition so we never show the foreground
+  // service disclosure to a user who will not get a foreground service
   private isFgsEligible = (a?: Partial<Account>) =>
-    !!a?.pushNotificationEnabled && this.hasSignInCredential(a)
+    !!a?.lpcEnabled &&
+    !!a?.pushNotificationEnabled &&
+    this.hasSignInCredential(a)
 
   @action disableUnsyncedPushNotification = (a?: Account) => {
     if (!a?.pushNotificationEnabled) {
@@ -375,6 +390,10 @@ export class AccountStore {
     const pushNotificationChanged =
       typeof p.pushNotificationEnabled === 'boolean' &&
       p.pushNotificationEnabled !== clonedA.pushNotificationEnabled
+    // toggling lpc changes the service_id set sent to pnmanage and starts/stops
+    // the android foreground service, so it needs a pn sync just like push does
+    const lpcEnabledChanged =
+      typeof p.lpcEnabled === 'boolean' && p.lpcEnabled !== clonedA.lpcEnabled
     if (phoneIndexChanged || wholeAccountChanged) {
       // delete pn token for old phone_index / account
       clonedA.pushNotificationEnabled = false
@@ -403,13 +422,14 @@ export class AccountStore {
       void this.syncPnTokenWithMfaPrompt(a)
       return
     }
-    if (phoneIndexChanged || pushNotificationChanged) {
+    if (phoneIndexChanged || pushNotificationChanged || lpcEnabledChanged) {
       // When MFA verification is needed, revert the PN change — the actual
       // toggle will happen after MFA verify + sync succeeds, triggered by
       // onSwitchEnableNotification in AccountSignInItem.
       if (a.pushNotificationEnabled && this.needsMFAForPnSync(a)) {
         a.pushNotificationEnabled = clonedA.pushNotificationEnabled
         a.pushNotificationEnabledSynced = clonedA.pushNotificationEnabledSynced
+        a.lpcEnabled = clonedA.lpcEnabled
         this.saveAccountsToLocalStorageDebounced()
         return
       }
@@ -423,6 +443,7 @@ export class AccountStore {
           a.pushNotificationEnabled = clonedA.pushNotificationEnabled
           a.pushNotificationEnabledSynced =
             clonedA.pushNotificationEnabledSynced
+          a.lpcEnabled = clonedA.lpcEnabled
           this.saveAccountsToLocalStorageDebounced()
         },
       })
@@ -584,6 +605,21 @@ export class AccountStore {
       this.keySessionMFA = ''
     }
 
+    this.saveAccountsToLocalStorageDebounced()
+  }
+
+  // cache the server side lpc capability read during a pn sync. the account
+  // settings form is only editable while signed out, where ctx.auth.pbxConfig is
+  // undefined, so the ui describes lpc from this cache instead
+  updateLpcServerToAccountData = async (
+    a: AccountUnique,
+    lpcServer: NonNullable<AccountData['lpcServer']>,
+  ) => {
+    const d = await this.findData(a)
+    if (!d) {
+      return
+    }
+    d.lpcServer = lpcServer
     this.saveAccountsToLocalStorageDebounced()
   }
 
