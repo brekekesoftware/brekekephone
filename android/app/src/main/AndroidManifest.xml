@@ -56,18 +56,18 @@
   />
 
   <!-- android >= 14 background permissions -->
-  <!-- Required so the ongoing-call foreground service keeps microphone (and,
-       for video calls, camera) access while the app is in the background
-       (while-in-use permission model). phoneCall type alone does NOT grant
-       background microphone/camera access. The camera type is only applied at
-       runtime when the CAMERA permission is granted (see VoiceConnectionService). -->
+  <!-- Required so the ongoing-call foreground service keeps microphone access
+       while the app is in the background (while-in-use permission model).
+       phoneCall type alone does NOT grant background microphone access.
+       FOREGROUND_SERVICE_CAMERA is intentionally NOT declared, see the Play
+       policy notes in play-declaration.md before adding it back. Removing it is
+       not enough on its own: this foreground service keeps the process at
+       foreground importance, so android still allows camera capture while
+       backgrounded. callStore stops the capturer explicitly, see
+       setLocalVideoCapturing. -->
   <uses-permission
     android:minSdkVersion="34"
     android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"
-  />
-  <uses-permission
-    android:minSdkVersion="34"
-    android:name="android.permission.FOREGROUND_SERVICE_CAMERA"
   />
 
   <!-- call history -->
@@ -144,7 +144,7 @@
       android:name="io.wazo.callkeep.VoiceConnectionService"
       android:label="Wazo"
       android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-      android:foregroundServiceType="phoneCall|microphone|camera"
+      android:foregroundServiceType="phoneCall|microphone"
       android:exported="false"
       tools:ignore="ForegroundServicePermission"
     >
