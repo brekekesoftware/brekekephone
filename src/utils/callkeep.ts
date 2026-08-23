@@ -462,6 +462,10 @@ export const setupCallKeepEvents = async () => {
   // TODO: should check additional conditions when user switches between activities
   eventEmitter.addListener('onResume', () => ctx.pbx.ping())
 
+  eventEmitter.addListener('appVisibility', (v: string) =>
+    ctx.call.setLocalVideoCapturing(v === '1'),
+  )
+
   eventEmitter.addListener('onDestroyMainActivity', () => {
     console.log('clean up because of onDestroyMainActivity')
     cleanUpDeepLink()

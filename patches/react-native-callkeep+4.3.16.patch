@@ -465,21 +465,18 @@ index 5d58692..9abb602 100644
              notificationBuilder.setContentIntent(pendingIntent);
          }
  
-@@ -343,7 +363,22 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -343,7 +363,19 @@ public class VoiceConnectionService extends ConnectionService {
          Notification notification = notificationBuilder.build();
  
          try {
 -            startForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
 +            // On Android 14+ the foreground service type is enforced against the
-+            // runtime permissions actually granted. Build the type from what we have
-+            // so an audio-only call (camera not granted) does not throw and drop the
-+            // whole FGS, which would also kill the background microphone.
++            // runtime permissions actually granted. The camera type is never
++            // requested, callStore stops the capturer when backgrounded instead
++            // 
 +            int fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
 +            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
 +                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
-+            }
-+            if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-+                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
 +            }
 +            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 +                startForeground(NOTIFICATION_ID, notification, fgsType);
@@ -489,7 +486,7 @@ index 5d58692..9abb602 100644
          } catch (Exception e) {
              Log.w(TAG, "[VoiceConnectionService] Can't start foreground service : " + e.toString());
          }
-@@ -358,8 +393,15 @@ public class VoiceConnectionService extends ConnectionService {
+@@ -358,8 +390,15 @@ public class VoiceConnectionService extends ConnectionService {
              return;
          }
  

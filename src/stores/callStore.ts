@@ -1275,6 +1275,19 @@ export class CallStore {
     })
   }
 
+  // the ongoing call foreground service keeps the process at foreground
+  // importance, so android does NOT revoke the camera when the app is not
+  // visible even without FOREGROUND_SERVICE_CAMERA. stop the capturer explicitly
+  // to match ios, where no background camera mode exists. driven by the native
+  // appVisibility event, see MainApplication.registerAppVisibilityCallbacks
+  setLocalVideoCapturing = (capturing: boolean) => {
+    this.calls.forEach(c =>
+      c.localStreamObject
+        ?.getVideoTracks()
+        .forEach(t => (t.enabled = capturing)),
+    )
+  }
+
   constructor() {
     if (!isAndroid) {
       return
