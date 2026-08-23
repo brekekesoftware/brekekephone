@@ -152,9 +152,10 @@
         <action android:name="android.telecom.ConnectionService" />
       </intent-filter>
     </service>
+    <!-- HeadlessJsTaskService started with startService, never startForeground,
+         so it must not declare a foregroundServiceType -->
     <service
       android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"
-      android:foregroundServiceType="phoneCall|microphone|camera"
     />
 
     <!-- react dev -->
