@@ -15,6 +15,12 @@ const css = StyleSheet.create({
   RnSwitch__enabled: {
     backgroundColor: v.colors.primaryFn(0.1),
   },
+  // disabled only needs to neutralise the "on" colours - the off state is already
+  // grey. colours rather than opacity: the knob overhangs the track, so fading the
+  // group lets the track show through the knob and kills the boxShadow
+  RnSwitch__disabled: {
+    backgroundColor: v.borderBg,
+  },
   Circle: {
     position: 'absolute',
     top: -3,
@@ -29,14 +35,32 @@ const css = StyleSheet.create({
     transform: [{ translateX: 20 }],
     backgroundColor: v.colors.primary,
   },
+  Circle__disabled: {
+    backgroundColor: v.colors.greyTextChat,
+  },
 })
 
 export const RnSwitch: FC<
   ViewProps & {
     enabled: boolean
+    disabled?: boolean
   }
-> = ({ enabled, style, ...p }) => (
-  <View {...p} style={[css.RnSwitch, enabled && css.RnSwitch__enabled, style]}>
-    <View style={[css.Circle, enabled && css.Circle__enabled]} />
+> = ({ enabled, disabled, style, ...p }) => (
+  <View
+    {...p}
+    style={[
+      css.RnSwitch,
+      enabled && css.RnSwitch__enabled,
+      enabled && disabled && css.RnSwitch__disabled,
+      style,
+    ]}
+  >
+    <View
+      style={[
+        css.Circle,
+        enabled && css.Circle__enabled,
+        enabled && disabled && css.Circle__disabled,
+      ]}
+    />
   </View>
 )
