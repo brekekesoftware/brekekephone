@@ -82,6 +82,16 @@ const css = StyleSheet.create({
     borderColor: 'transparent',
     marginHorizontal: 0,
   },
+  // one level of indentation, to read as a sub-setting of the row above.
+  // padding rather than margin so the row's background (and the disabled fill)
+  // extends under the indentation instead of leaving a page-coloured gutter
+  Field__nested: {
+    paddingLeft: 15,
+  },
+  // when a description follows, it carries the divider instead of the row
+  Field__noBorder: {
+    borderBottomWidth: 0,
+  },
   Field_Label: {
     paddingTop: 13,
     paddingBottom: 0,
@@ -97,6 +107,17 @@ const css = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
+      },
+    }),
+  },
+  // on web Field_Label is position:absolute with left:0, and an absolutely
+  // positioned child resolves against the padding box — so the container's
+  // paddingLeft does not move it. compensate there only; on native the label is
+  // in normal flow and already inherits the indentation
+  Field_Label__nested: {
+    ...Platform.select({
+      web: {
+        paddingLeft: 22,
       },
     }),
   },
@@ -191,6 +212,30 @@ const css = StyleSheet.create({
     top: 15,
     right: 15,
   },
+  Field_Description: {
+    // margin 15 keeps the divider aligned with every other row, +7 padding keeps
+    // the text aligned under the label
+    marginLeft: 15,
+    marginRight: 15,
+    paddingLeft: 7,
+    marginTop: 2,
+    paddingBottom: 6,
+    color: v.subColor,
+    // the row above sets Field__noBorder and hands the divider to us, so the row
+    // and its description read as one block
+    borderBottomWidth: 1,
+    borderColor: v.borderBg,
+  },
+  // 7 (base) + 15 (one indent level) so the text lines up with the nested row's
+  // label. padding rather than margin, so the fill covers the indentation
+  Field_Description__nested: {
+    paddingLeft: 22,
+  },
+  // the description sits outside the row container, so it has to repeat the
+  // disabled fill or a greyed row would sit above an unfilled description
+  Field_Description__disabled: {
+    backgroundColor: v.hoverBg,
+  },
   Field_Error: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -261,6 +306,11 @@ export const Field: FC<
     transparent: boolean
     secureTextEntry: boolean
     iconRender: Function
+    // explanatory text rendered under the row, outside the absolutely
+    // positioned label/input area so it can wrap to multiple lines
+    description: string
+    // indents the row so it reads as a sub-setting of the row above it
+    nested: boolean
     error: string
     loading: boolean
     horizontalInput: string[]
@@ -379,6 +429,8 @@ export const Field: FC<
             'onRemoveBtnPress',
             'removeBtnIcon',
             'disabled',
+            'description',
+            'nested',
             'error',
           ])}
           placeholder={intl`park number`}
@@ -412,6 +464,8 @@ export const Field: FC<
             'onRemoveBtnPress',
             'removeBtnIcon',
             'disabled',
+            'description',
+            'nested',
             'error',
           ])}
           placeholder={intl`label`}
@@ -495,6 +549,8 @@ export const Field: FC<
               'onRemoveBtnPress',
               'removeBtnIcon',
               'disabled',
+              'description',
+              'nested',
               'error',
             ])}
             onBlur={flow([
@@ -524,7 +580,10 @@ export const Field: FC<
   }
   const Container = props.onTouchPress ? RnTouchableOpacity : View
   const label = (
-    <View pointerEvents='none' style={css.Field_Label}>
+    <View
+      pointerEvents='none'
+      style={[css.Field_Label, props.nested && css.Field_Label__nested]}
+    >
       <RnText small style={css.Field_LabelText}>
         {props.label}
       </RnText>
@@ -541,6 +600,8 @@ export const Field: FC<
           ($.isFocusing || $.isParkNameFocusing) && css.Field__focusing,
           props.disabled && css.Field__disabled,
           props.transparent && css.Field__transparent,
+          props.nested && css.Field__nested,
+          !!props.description && css.Field__noBorder,
         ]}
       >
         {/* Fix form auto fill style on web */}
@@ -591,6 +652,19 @@ export const Field: FC<
           </View>
         )}
       </Container>
+      {!!props.description && (
+        <RnText
+          normal
+          small
+          style={[
+            css.Field_Description,
+            props.nested && css.Field_Description__nested,
+            props.disabled && css.Field_Description__disabled,
+          ]}
+        >
+          {props.description}
+        </RnText>
+      )}
       {props.error && (
         <RnTouchableOpacity
           onPress={() => inputRef.current?.focus()}
