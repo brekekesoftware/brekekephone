@@ -143,9 +143,21 @@ const syncPnTokenWithoutCatch = async (
         'webphone.lpc.port is present but empty webphone.lpc.keyhash, thus lpc is disabled since we dont allow non-tls lpc connection',
       )
     }
+    const lpcPn = toBoolean(c['webphone.lpc.pn'])
+    // remember what the server offers so the signed out account settings form can
+    // describe it without a pbx connection
+    await ctx.account.updateLpcServerToAccountData(p, {
+      available: !!lpcEnabled,
+      optional: lpcPn,
+    })
+
+    // the android lpc foreground service is opt in. when the user has not opted in
+    // we register cloud push only, exactly as if the server had no lpc config.
+    // ios is unaffected: there lpc is os-gated by ssid and has no visible cost
+    const lpcUserOn = isAndroid ? !!p.lpcEnabled : true
     // if lpc is enabled pnmanageNew must be true
     // since lpc is only available in pbx 3.14.5 and above
-    if (!lpcEnabled || !newParams) {
+    if (!lpcEnabled || !newParams || !lpcUserOn) {
       BrekekeUtils.disableLPC()
       if (newParams) {
         await pbx.pnmanage(newParams)
@@ -174,7 +186,6 @@ const syncPnTokenWithoutCatch = async (
         .filter(w => w) || []
     const localSsid = ''
 
-    const lpcPn = toBoolean(c['webphone.lpc.pn'])
     console.log('PN sync debug: lpc data', {
       pnmanageNew,
       lpcPort,
