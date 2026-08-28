@@ -56,14 +56,17 @@
   />
 
   <!-- android >= 14 background permissions -->
-  <!-- Required so the ongoing-call foreground service keeps microphone access
+  <!-- Declared so the ongoing-call foreground service keeps microphone access
        while the app is in the background (while-in-use permission model).
-       phoneCall type alone does NOT grant background microphone access.
+       Tested: phoneCall alone does keep background audio working today, because
+       the running foreground service holds the process at foreground importance
+       and that is what the platform enforces against. The microphone type is
+       kept deliberately anyway - that is undocumented leniency, and relying on
+       it would break call audio if a future android starts enforcing the type.
+
        FOREGROUND_SERVICE_CAMERA is intentionally NOT declared, see the Play
        policy notes in play-declaration.md before adding it back. Removing it is
-       not enough on its own: this foreground service keeps the process at
-       foreground importance, so android still allows camera capture while
-       backgrounded. callStore stops the capturer explicitly, see
+       not enough on its own: callStore stops the capturer explicitly, see
        setLocalVideoCapturing. -->
   <uses-permission
     android:minSdkVersion="34"
@@ -131,8 +134,6 @@
       android:name=".push_notification.BrekekeMessagingService"
       android:enabled="true"
       android:exported="true"
-      android:foregroundServiceType="remoteMessaging"
-      tools:ignore="ForegroundServicePermission"
     >
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
