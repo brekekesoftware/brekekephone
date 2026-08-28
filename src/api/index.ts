@@ -10,6 +10,7 @@ import type {
 } from '#/brekekejs'
 import { successConnectCheckPeriod } from '#/config'
 import { clearAlreadyHistoryMap } from '#/stores/addCallHistory'
+import { hasRingingCallWithSipPn } from '#/stores/AuthSIP'
 import type { Call } from '#/stores/Call'
 import { FileEvent } from '#/stores/chatStore'
 import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
@@ -190,7 +191,10 @@ class Api {
     resetProcessedPn()
     ctx.auth.sipState = 'failure'
     ctx.auth.sipTotalFailure += 1
-    if (ctx.auth.sipTotalFailure > 3) {
+    // this is the failure path that actually runs for a PN-driven sip connect, keep the
+    // guard in sync with AuthSIP.onSipFailure: dropping the PN token while the call is
+    // still ringing stops every retry until the app becomes active
+    if (ctx.auth.sipTotalFailure > 3 && !hasRingingCallWithSipPn()) {
       ctx.auth.sipPn = {}
     }
     if (ctx.auth.sipState === 'failure') {
