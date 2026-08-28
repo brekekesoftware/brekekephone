@@ -141,31 +141,19 @@ type SetDeviceTokenOptions = {
   skipFreshLoginMFA?: boolean
 }
 
-let foregroundPromptShown = false
-
-// reset the per-session guard so the prompt can show again in a new app session — called from the
-// onDestroyMainActivity handler (same place deeplink resets its first-open flag)
-export const resetForegroundPrompt = () => {
-  foregroundPromptShown = false
-}
-
-export const promptForegroundService = async () => {
+export const promptForegroundService = () => {
   if (!isAndroid) {
     return
   }
-  if (foregroundPromptShown) {
-    return
-  }
-  foregroundPromptShown = true
-  if ((await RnAsyncStorage.getItem('okForegroundService')) === '1') {
+  const title = intl`Fallback local connection`
+  if (RnAlert.alerts.some(a => 'prompt' in a && a.prompt.title === title)) {
     return
   }
   RnAlert.prompt({
-    title: intl`Fallback local connection`,
+    title,
     message: intl`This option enables a fallback Local Push Connectivity (LPC) connection for real-time call and message delivery from your Brekeke PBX when Firebase Cloud Messaging is unavailable or blocked by your network. Android will show a foreground service notification while this connection is active. You can stop it anytime by turning this option off in Account Settings.`,
-    confirmText: intl`OK and remember`,
-    dismissText: intl`OK`,
-    onConfirm: () => RnAsyncStorage.setItem('okForegroundService', '1'),
+    confirmText: intl`OK`,
+    dismissText: false,
   })
 }
 
