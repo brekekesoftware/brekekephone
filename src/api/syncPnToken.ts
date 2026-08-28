@@ -7,6 +7,7 @@ import { isAndroid, isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { compareSemVer } from '#/stores/debugStore'
+import { RnLoading } from '#/stores/RnLoading'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { isMFASupported } from '#/utils/mfaUtils'
 import { PushNotification } from '#/utils/PushNotification'
@@ -224,6 +225,7 @@ const syncPnTokenWithoutCatch = async (
 
 export interface SyncPnTokenOption {
   allowMfaPrompt?: boolean
+  blockUi?: boolean
   noUpsert?: boolean
   onError?: (err: Error) => void
 }
@@ -234,6 +236,9 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
     return
   }
   ctx.account.pnSyncLoadingMap[p.id] = true
+  if (o.blockUi) {
+    RnLoading.show()
+  }
   try {
     await syncPnTokenWithoutCatch(p, o).catch((err: Error) => {
       if (o.onError) {
@@ -247,6 +252,9 @@ const syncPnToken = async (p: Account, o: SyncPnTokenOption = {}) => {
     })
   } finally {
     ctx.account.pnSyncLoadingMap[p.id] = false
+    if (o.blockUi) {
+      RnLoading.hide()
+    }
   }
 }
 
