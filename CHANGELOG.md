@@ -1,3 +1,14 @@
+#### 2.17.22
+
+
+- fix/android: remove redundant foregroundServiceType in the android manifest
+- fix/android: video call should stop the camera while the app is not visible, matching iOS behavior and Google Play foreground service policy
+- fix/android: it should not declare the camera foreground service type and permission
+- fix/android: separate Fallback Local Connectivity (LPC) toggle from Push Notification (FCM/APN) toggle in Account update page. Push Notification is ON by default, LPC toggle is OFF by default. Turn OFF Push Notification will also turn off LPC toggle too.
+- fix/android: it should be able to answer an incoming call from push notification when the app was killed
+- fix/android: PBX+SIP auth process should not give up too early
+
+
 #### 2.17.21
 
 - Hot fix custom pages should not become blank after PAL reconnect or account switch
