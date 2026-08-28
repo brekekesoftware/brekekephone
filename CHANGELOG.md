@@ -7,6 +7,15 @@
 - fix/android: separate Fallback Local Connectivity (LPC) toggle from Push Notification (FCM/APN) toggle in Account update page. Push Notification is ON by default, LPC toggle is OFF by default. Turn OFF Push Notification will also turn off LPC toggle too.
 - fix/android: it should be able to answer an incoming call from push notification when the app was killed
 - fix/android: PBX+SIP auth process should not give up too early
+- fix/android: video call should not turn the camera back on when returning from background if the user had muted their own video
+- fix: reduce timeout between SIP auth retries
+- fix/android: always show disclosure message about LPC foreground service every time LPC toggle is turned on, removed `OK and remember` button
+- fix: show a loading overlay while the Push Notification toggle is being turned ON/OFF so the user can not disrupt the process
+- fix/android: it should be able to answer an incoming call that arrives while the Push Notification toggle is being turned off: the call could not enter the talking view, the incoming call screen stayed on top and the call was answered only after it closed (issue 1239)
+- fix: pressing a UC chat notification left the app signed in but stuck on the sign-in page (issue 1238)
+- fix: signing in with wrong account information showed `Connecting to PBX...` forever and kept retrying. The app now reports that the PBX rejected the sign-in and stops retrying until the user retries, the app returns to foreground, or the internet reconnects (issue 1243)
+- fix: a push notification for another account should no longer switch account while a call is talking. The switch tore down SIP under the live call, so hangup became a no-op in both the mini and the fullscreen view and the far end never received a BYE (issue 1261)
+- fix: an incoming call for another account while a call is already talking should no longer be shown as answerable. Answering it put the ongoing call on hold and then dropped the new call because the app can only keep one account connected at a time. The new call is now rejected immediately so the ongoing call is never disturbed (issue 1262)
 
 
 #### 2.17.21
