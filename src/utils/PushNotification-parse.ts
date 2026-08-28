@@ -390,6 +390,11 @@ export const parse = async (
   // also we forked fcm to insert callkeepUuid there as well
   // then this should not happen
   if (!n.callkeepUuid) {
+    // release the dedupe claim: lpc and fcm both deliver the same call pn, and dropping this copy
+    // while still holding the pn-id would also swallow the good copy that follows
+    if (isAndroid && n.id) {
+      delete androidAlreadyProccessedPn[n.id]
+    }
     console.error(
       `SIP PN debug: PushNotification-parse got pnId=${n.id} without callkeepUuid`,
     )
