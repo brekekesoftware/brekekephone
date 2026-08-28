@@ -135,13 +135,16 @@ export const AccountSignInItem: FC<{
     if (needsMFA) {
       ctx.account.pendingPnAccountId = a.id
       ctx.account.pendingPnEnabled = e
-      ctx.pnToken.sync(a, { allowMfaPrompt: true })
+      ctx.pnToken.sync(a, { allowMfaPrompt: true, blockUi: true })
       return
     }
-    ctx.account.upsertAccount({
-      id: a.id,
-      pushNotificationEnabled: e,
-    })
+    ctx.account.upsertAccount(
+      {
+        id: a.id,
+        pushNotificationEnabled: e,
+      },
+      { blockUi: true },
+    )
   }
   return (
     <View

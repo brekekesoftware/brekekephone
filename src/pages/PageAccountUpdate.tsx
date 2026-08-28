@@ -12,7 +12,7 @@ export const PageAccountUpdate: FC<{
   <AccountCreateForm
     onBack={ctx.nav.backToPageAccountSignIn}
     onSave={(p: Account) => {
-      ctx.account.upsertAccount(p, { allowPnMfaPrompt: true })
+      ctx.account.upsertAccount(p, { allowPnMfaPrompt: true, blockUi: true })
       ctx.nav.backToPageAccountSignIn()
     }}
     title={intl`Update Account`}

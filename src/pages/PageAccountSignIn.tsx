@@ -10,6 +10,7 @@ import { AccountSignInItem } from '#/components/AccountSignInItem'
 import { BrekekeGradient } from '#/components/BrekekeGradient'
 import { Layout } from '#/components/Layout'
 import { RnIcon, RnText, RnTouchableOpacity } from '#/components/Rn'
+import { RnLoadingOverlay } from '#/components/RnLoadingOverlay'
 import { v } from '#/components/variables'
 import { currentVersion } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -151,6 +152,7 @@ export const PageAccountSignIn = observer(() => {
         </View>
       </RnTouchableOpacity>
       <View style={css.Space} />
+      <RnLoadingOverlay />
     </BrekekeGradient>
   )
 })
