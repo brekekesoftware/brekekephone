@@ -1066,7 +1066,6 @@ export class AuthStore {
     console.log(
       `SIP PN debug: signInByNotification pnId=${n.id} token=${n.sipPn.sipAuth}`,
     )
-    this.sipPn = n.sipPn
     try {
       // find account for the notification target
       const acc = await ctx.account.findByPn(n)
@@ -1074,6 +1073,21 @@ export class AuthStore {
         console.log('SIP PN debug: can not find account from notification')
         return
       }
+      // switching account disposes sip while the session is still alive, so the call
+      // is left in callStore with no phone to terminate it: hangup becomes a no-op in
+      // both mini and fullscreen views and the far end never gets a BYE. same
+      // invariant as sipShouldAuth: no sip teardown while a call exists
+      if (
+        this.signedInId &&
+        this.signedInId !== acc.id &&
+        ctx.call.calls.length
+      ) {
+        console.log(
+          `SIP PN debug: skip account switch during ongoing call pnId=${n.id}`,
+        )
+        return
+      }
+      this.sipPn = n.sipPn
       // use isSignInByNotification to disable UC auto sign in for a while
       if (n.isCall) {
         this.isSignInByNotification = true
