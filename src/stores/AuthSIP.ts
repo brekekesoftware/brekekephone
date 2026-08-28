@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { action, reaction, when } from 'mobx'
 
 import type { SipLoginOption } from '#/api/sip'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
@@ -161,25 +161,22 @@ export class AuthSIP {
     }
     if (ctx.auth.sipTotalFailure > 1) {
       ctx.auth.sipState = 'waiting'
-      const ringing = hasRingingCallWithSipPn()
-      const until =
-        Date.now() +
-        (ringing
-          ? 2000
-          : ctx.auth.sipTotalFailure < 5
-            ? ctx.auth.sipTotalFailure * 1000
-            : 15000)
-      while (Date.now() < until) {
-        await waitTimeout(100)
-        if (ctx.auth.sipState !== 'waiting') {
-          return
-        }
-        // the pn sip login is rejected until the pal session exists, so once pbx is up
-        // there is nothing left to wait for - retry immediately instead of ringing out
-        if (ringing && ctx.auth.pbxState === 'success') {
-          break
-        }
-      }
+      const ms = hasRingingCallWithSipPn()
+        ? 2000
+        : ctx.auth.sipTotalFailure < 5
+          ? ctx.auth.sipTotalFailure * 1000
+          : 15000
+      // the pn sip login is rejected until the pal session exists, so once pbx is up
+      // there is nothing left to wait for - retry immediately instead of ringing out.
+      // re-evaluated on every observable change, so a pn arriving mid backoff is picked
+      // up too. when().cancel() rejects, hence the catch
+      const w = when(
+        () =>
+          ctx.auth.sipState !== 'waiting' ||
+          (hasRingingCallWithSipPn() && ctx.auth.pbxState === 'success'),
+      )
+      await Promise.race([waitTimeout(ms), w.catch(() => undefined)])
+      w.cancel()
       if (ctx.auth.sipState !== 'waiting') {
         return
       }
