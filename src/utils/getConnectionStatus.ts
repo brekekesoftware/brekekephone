@@ -28,7 +28,9 @@ export const getConnectionStatus = () => {
   }
 
   if (isFailure) {
-    if (ctx.auth.showMsgPbxLoginFromAnotherPlace) {
+    if (ctx.auth.pbxLoginRejected) {
+      message = intl`Sign-in rejected by PBX. Please check your account information`
+    } else if (ctx.auth.showMsgPbxLoginFromAnotherPlace) {
       message = intl`Logged in from another location as the same phone`
     } else if (ctx.auth.ucLoginFromAnotherPlace) {
       message = intl`UC signed in from another location`

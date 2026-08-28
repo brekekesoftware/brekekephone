@@ -2,6 +2,7 @@ import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
 import { action, reaction } from 'mobx'
 
+import { PbxLoginRejectedError } from '#/api/pbx'
 import { defaultTimeout } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { waitTimeout } from '#/utils/waitTimeout'
@@ -59,6 +60,10 @@ export class AuthPBX {
           ctx.auth.pbxState = 'failure'
           ctx.auth.pbxTotalFailure += 1
           console.error('Failed to connect to pbx:', err)
+          if (err instanceof PbxLoginRejectedError) {
+            ctx.auth.pbxLoginRejected = true
+            return
+          }
           this.authWithCheck()
         }),
       )

@@ -154,6 +154,16 @@ const rebuildCustomPageUrlPbxToken = async (url: string) => {
 // actual pbx class
 type SyncMfaResult = 'continue' | 'stop'
 
+export class PbxLoginRejectedError extends Error {}
+
+const getWsFailureReason = (e: any) =>
+  typeof e === 'string' ? e : e?.reason || e?.message || ''
+
+const isWsLoginRejected = (e: any) =>
+  /HTTP 101|bad response code|invalid http|\b(401|403|500)\b/i.test(
+    getWsFailureReason(e),
+  )
+
 export class PBX extends EventEmitter {
   client?: Pbx
   isMainInstance = true
@@ -576,7 +586,9 @@ export class PBX extends EventEmitter {
         }, 10000)
       })
     }
+    let rejectLoginFn: ((err: Error) => void) | undefined = undefined
     const login = new Promise<boolean>((resolve, reject) => {
+      rejectLoginFn = reject
       this.logMainInstance('PAL login start')
       client.login(
         () => {
@@ -632,7 +644,7 @@ export class PBX extends EventEmitter {
       {} as { [k: string]: any[] },
     )
     // pending listeners before login successfully
-    const pendingOnCloseOrError = () => {
+    const pendingOnCloseOrError = (e?: any) => {
       if (isStaleClient()) {
         console.log(
           'PBX guard debug: drop pending close/error from stale client',
@@ -641,6 +653,15 @@ export class PBX extends EventEmitter {
       }
       resolveFn?.(false)
       resolveFn = undefined
+      const reason = getWsFailureReason(e)
+      if (reason) {
+        this.logMainInstance(`PAL login closed before success: ${reason}`)
+      }
+      if (isWsLoginRejected(e)) {
+        rejectLoginFn?.(new PbxLoginRejectedError(reason))
+        rejectLoginFn = undefined
+        this.disconnect()
+      }
     }
     const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
       if (isStaleClient()) {
@@ -674,8 +695,11 @@ export class PBX extends EventEmitter {
       })
     })
 
-    await Promise.race([login, newTimeoutPromise()])
-    this.clearConnectTimeoutId()
+    try {
+      await Promise.race([login, newTimeoutPromise()])
+    } finally {
+      this.clearConnectTimeoutId()
+    }
 
     // disposed/replaced while logging in (e.g. account switch): close the socket to
     // avoid a zombie server session causing "login from another place" (BUG-1250)
