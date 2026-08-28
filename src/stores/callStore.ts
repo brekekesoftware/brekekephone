@@ -595,14 +595,18 @@ export class CallStore {
         return
       }
 
-      if (!ca?.pushNotificationEnabled) {
-        await displayCall()
+      // check the pn first: a pn for this call may have created a callkeep call natively even
+      // while push is off in local state (toggle just turned off, server removal still in
+      // flight). displayCall below would then mint a 2nd uuid, and the native incoming call ui
+      // of the 1st one stays on screen while js answers the invisible one
+      const uuidFromPN = c.pnId ? this.getUuidFromPnId(c.pnId) : undefined
+      if (uuidFromPN) {
+        c.callkeepUuid = uuidFromPN
         return
       }
 
-      const uuidFromPN = this.getUuidFromPnId(c.pnId)
-      if (uuidFromPN) {
-        c.callkeepUuid = uuidFromPN
+      if (!ca?.pushNotificationEnabled) {
+        await displayCall()
         return
       }
 

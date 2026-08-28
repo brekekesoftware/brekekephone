@@ -76,8 +76,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   // Using ConcurrentHashMap because LPC runs on its socket thread while FCM runs on
   // FirebaseMessagingService thread — both can call onFcmMessageReceived() concurrently.
   // Cache is cleared on user logout via clearProcessedPnIds().
-  private static final ConcurrentHashMap<String, Boolean> processedPnIds =
-      new ConcurrentHashMap<>();
+  // The value is the callkeepUuid assigned to that key, so the duplicate copy can be stamped with
+  // the same uuid instead of reaching js without one.
+  private static final ConcurrentHashMap<String, String> processedPnIds = new ConcurrentHashMap<>();
 
   public static void acquireWakeLock() {
     if (!wl.isHeld()) {
@@ -204,7 +205,15 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     // same call from LPC and FCM has identical pn-id and time
     var time = PN.time(m);
     var dedupKey = time != null ? pnId + "_" + time : pnId;
-    if (processedPnIds.putIfAbsent(dedupKey, Boolean.TRUE) != null) {
+    // generate before claiming the key so the claim itself carries the uuid
+    var uuid = UUID.randomUUID().toString().toUpperCase();
+    var claimed = processedPnIds.putIfAbsent(dedupKey, uuid);
+    if (claimed != null) {
+      // the other channel (lpc/fcm) already created the callkeep call for this pn. both copies are
+      // forwarded to js anyway, so stamp the uuid it assigned - without it js drops this copy as
+      // "without callkeepUuid" after it has already claimed the pn-id, and the call is never
+      // signed in / connected
+      m.put("callkeepUuid", claimed);
       Emitter.debug("onFcmMessageReceived skip duplicate key=" + dedupKey);
       return;
     }
@@ -217,7 +226,6 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     // (CallKeep display, JS lpcPnMessage listener) always see a valid uuid
     var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     m.put("callkeepAt", now);
-    var uuid = UUID.randomUUID().toString().toUpperCase();
     m.put("callkeepUuid", uuid);
     // init services if not
     initStaticServices();
