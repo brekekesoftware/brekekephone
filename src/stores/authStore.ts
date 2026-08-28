@@ -70,6 +70,7 @@ export class AuthStore {
   @observable ucState: ConnectionState = 'stopped'
   @observable ucTotalFailure = 0
 
+  @observable pbxLoginRejected = false
   @observable pbxLoginFromAnotherPlace = false
   @observable showMsgPbxLoginFromAnotherPlace = false
   @observable ucLoginFromAnotherPlace = false
@@ -80,6 +81,7 @@ export class AuthStore {
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
     !this.pbxLoginFromAnotherPlace &&
+    !this.pbxLoginRejected &&
     this.pbxState !== 'waiting' &&
     // pbx used to be held back while a PN sip token was pending ("wait until sip login
     // success or failure"), to give the PN sip login the whole pipe. That deadlocks a
@@ -647,6 +649,7 @@ export class AuthStore {
   }
 
   @action resetFailureState = () => {
+    this.pbxLoginRejected = false
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
