@@ -81,11 +81,13 @@ export class AuthStore {
     this.getCurrentAccount() &&
     !this.pbxLoginFromAnotherPlace &&
     this.pbxState !== 'waiting' &&
-    // do not auth pbx if sip token is provided in case of PN
-    // wait until sip login success or failure
-    (!this.sipPn.sipAuth ||
-      this.sipState === 'success' ||
-      this.sipState === 'failure') &&
+    // pbx used to be held back while a PN sip token was pending ("wait until sip login
+    // success or failure"), to give the PN sip login the whole pipe. That deadlocks a
+    // killed-app PN call: the pbx (pal) session has to exist before the server accepts the
+    // webphone wss connection, so sip retried and failed forever while sipState was never
+    // 'failure' long enough for the AuthPBX debounce to fire. pbx now logs in in parallel.
+    // Warm calls are unaffected: pbxState is already 'success' there, so the clause below
+    // is false anyway.
     (this.pbxState === 'stopped' ||
       (this.pbxState === 'failure' &&
         // !this.pbxTotalFailure &&

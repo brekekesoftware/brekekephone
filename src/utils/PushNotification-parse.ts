@@ -186,7 +186,21 @@ let androidProcessedLocalChatNotification: { [k: string]: boolean } = {}
 // after pbx server reset, call id (number) on the server side will be reset to 1, 2, 3...
 // if the cache contain those ids previously, the new calls will be rejected
 export const resetProcessedPn = () => {
-  ctx.call.callkeepActionMap = {}
+  // BUG-1207: keep the actions of the callkeep calls that are still ringing. sip.connect
+  // calls this on every (re)connect attempt, so a sip retry while an incoming call is
+  // ringing used to drop the answerCall the user already pressed, and the call could no
+  // longer enter talking mode once sip finally connected and the INVITE arrived.
+  const keep: typeof ctx.call.callkeepActionMap = {}
+  Object.values(ctx.call.callkeepMap).forEach(c => {
+    const keys = [c.uuid, c.incomingPnData?.id]
+    keys.forEach(k => {
+      const a = k ? ctx.call.callkeepActionMap[k] : undefined
+      if (k && a) {
+        keep[k] = a
+      }
+    })
+  })
+  ctx.call.callkeepActionMap = keep
   androidAlreadyProccessedPn = {}
   androidProcessedLocalChatNotification = {}
 }
