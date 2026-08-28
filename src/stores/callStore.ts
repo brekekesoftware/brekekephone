@@ -152,6 +152,24 @@ export class CallStore {
       this.endCallKeep(uuid)
       return
     }
+    // BUG-1262: only one account can hold a sip connection, so signInByNotification
+    // refuses to switch account while a call is alive. the callkeep ui is driven by
+    // the pn payload and would still be displayed, but answering it finds no session:
+    // it only holds the ongoing call and then dies on the callkeep timeout. reject it
+    // right away so the caller is not left ringing into nothing.
+    const pnAcc = await ctx.account.findByPn(n)
+    if (
+      ctx.auth.signedInId &&
+      pnAcc &&
+      pnAcc.id !== ctx.auth.signedInId &&
+      this.calls.length
+    ) {
+      console.log(
+        `SIP PN debug: reject pn of another account during ongoing call pnId=${n.id}`,
+      )
+      this.endCallKeep(uuid)
+      return
+    }
     // BUG-1257 / BUG-1254: on iOS an incoming call is delivered via CallKit, not the
     // FCM parse path, so neither queueIncomingCustomPageEvent site (onCallUpsert or
     // PushNotification-parse) fires when the call is missed before the SIP INVITE
@@ -159,11 +177,8 @@ export class CallStore {
     // event here too, keyed by pnId to dedupe with the onCallUpsert queue. Resolve
     // the account from the PN because signInByNotification (which sets signedInId)
     // runs after this handler.
-    if (isIos && n.id) {
-      const account = await ctx.account.findByPn(n)
-      if (account) {
-        ctx.auth.queueIncomingCustomPageEvent(n.id, account.id)
-      }
+    if (isIos && n.id && pnAcc) {
+      ctx.auth.queueIncomingCustomPageEvent(n.id, pnAcc.id)
     }
     // auto reconnect if no activity
     // this logic is about the case connection has dropped silently
