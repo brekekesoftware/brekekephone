@@ -251,6 +251,14 @@ const initApp = async () => {
     }
   }, 17)
   const clearReaction = reaction(() => ctx.auth.signedInId, onAuthUpdate)
+  // a PN tap can sign in before this reaction exists: onNotification awaits initApp
+  // but the alreadyInitApp guard returns without awaiting the in-flight init. mobx
+  // never fires a reaction for a change that predates it, so without this catch-up
+  // goToPageIndex and authPBX/SIP/UC.auth are skipped and the app is stuck signed in
+  // on PageAccountSignIn with SIGN IN doing nothing
+  if (ctx.auth.signedInId) {
+    onAuthUpdate()
+  }
   void clearReaction
   if (await ctx.auth.handleUrlParams()) {
     console.log('App navigated by url params')
