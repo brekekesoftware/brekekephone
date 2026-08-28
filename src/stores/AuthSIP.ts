@@ -42,7 +42,7 @@ export class AuthSIP {
 
     ctx.auth.sipState = 'failure'
     ctx.auth.sipTotalFailure += 1
-    if (ctx.auth.sipTotalFailure > 3) {
+    if (ctx.auth.sipTotalFailure > 3 && !hasRingingCallWithSipPn()) {
       ctx.auth.sipPn = {}
     }
     // auto reconnect
@@ -161,9 +161,25 @@ export class AuthSIP {
     }
     if (ctx.auth.sipTotalFailure > 1) {
       ctx.auth.sipState = 'waiting'
-      await waitTimeout(
-        ctx.auth.sipTotalFailure < 5 ? ctx.auth.sipTotalFailure * 1000 : 15000,
-      )
+      const ringing = hasRingingCallWithSipPn()
+      const until =
+        Date.now() +
+        (ringing
+          ? 2000
+          : ctx.auth.sipTotalFailure < 5
+            ? ctx.auth.sipTotalFailure * 1000
+            : 15000)
+      while (Date.now() < until) {
+        await waitTimeout(100)
+        if (ctx.auth.sipState !== 'waiting') {
+          return
+        }
+        // the pn sip login is rejected until the pal session exists, so once pbx is up
+        // there is nothing left to wait for - retry immediately instead of ringing out
+        if (ringing && ctx.auth.pbxState === 'success') {
+          break
+        }
+      }
       if (ctx.auth.sipState !== 'waiting') {
         return
       }
@@ -184,3 +200,15 @@ ctx.authSIP = new AuthSIP()
 // empty or expire after 90 seconds
 const isSipPnExpired = (pn: Partial<SipPn>) =>
   !pn.sipAuthAt || Date.now() - pn.sipAuthAt > 90000
+
+// The wss connect can fail for a few seconds right after a PN wakes the app: the process
+// is in background and its network is not usable yet. sipShouldAuth can only auth in that
+// state through `signedInId && sipPn.sipAuth`, so dropping the PN token on failure stops
+// every retry until the app becomes active - and the ringing call is already gone by then.
+// Keep retrying with a short backoff while the callkeep call is still ringing; the token
+// still expires via isSipPnExpired, and callkeepMap is cleared after 20s by
+// callStore.setAutoEndCallKeepTimer, so this cannot retry forever.
+export const hasRingingCallWithSipPn = () =>
+  !!Object.keys(ctx.call.callkeepMap).length &&
+  !!ctx.auth.sipPn.sipAuth &&
+  !isSipPnExpired(ctx.auth.sipPn)

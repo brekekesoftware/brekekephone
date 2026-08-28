@@ -36,6 +36,7 @@ import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
 import type { Account } from '#/stores/accountStore'
 import { getAccountUniqueId } from '#/stores/accountStore'
+import { hasRingingCallWithSipPn } from '#/stores/AuthSIP'
 import type { PbxUser, Phonebook } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
@@ -461,7 +462,11 @@ export class PBX extends EventEmitter {
     client.debugLevel = 2
     // Check server availability before login (Android only), unless this reconnect
     // immediately follows a same-host account switch (server just verified) (BUG-1238).
-    const skipProbe = this.skipProbeOnce && this.probeVerifiedUri === wsUri
+    // also skip while a pn call is ringing: that pn came from this pbx moments ago, so the
+    // probe only adds ~1.4s to the critical path of answering the call
+    const skipProbe =
+      (this.skipProbeOnce && this.probeVerifiedUri === wsUri) ||
+      hasRingingCallWithSipPn()
     this.skipProbeOnce = false
     if (isAndroid && !skipProbe) {
       if (!(await this.probeServer(wsUri))) {
