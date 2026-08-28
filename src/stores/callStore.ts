@@ -1281,11 +1281,10 @@ export class CallStore {
   // to match ios, where no background camera mode exists. driven by the native
   // appVisibility event, see MainApplication.registerAppVisibilityCallbacks
   setLocalVideoCapturing = (capturing: boolean) => {
-    this.calls.forEach(c =>
-      c.localStreamObject
-        ?.getVideoTracks()
-        .forEach(t => (t.enabled = capturing)),
-    )
+    this.calls.forEach(c => {
+      const on = capturing && c.getLocalVideoEnabled()
+      c.localStreamObject?.getVideoTracks().forEach(t => (t.enabled = on))
+    })
   }
 
   constructor() {
