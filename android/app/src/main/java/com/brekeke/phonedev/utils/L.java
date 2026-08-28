@@ -123,7 +123,7 @@ public class L {
 
   public static String serviceIsRunningInBackground() {
     return "ja".equals(l)
-        ? "ローカルプッシュ接続（LPC）で通話とメッセージを受信できる状態です。\n不要な場合は、アカウント設定で「フォールバックローカル接続（LPC）」を無効にしてください。"
+        ? "ローカルプッシュ接続（LPC）で通話とメッセージを受信できる状態です。\n不要な場合は、アカウント設定で「ローカルプッシュ接続（LPC）」を無効にしてください。"
         : "Fallback local connection is active. Tap to open. To stop: turn off Fallback local"
             + " connection (LPC) in Account Settings.";
   }
