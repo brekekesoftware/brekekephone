@@ -13,6 +13,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { permNotifications } from '#/utils/permissions'
+import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { parse, parseNotificationData } from '#/utils/PushNotification-parse'
 
 let fcmTokenFn: Function | undefined = undefined
@@ -37,6 +38,18 @@ const onFcmToken = async (t: string) => {
   fcmTokenFn = undefined
 }
 
+// BUG-1238: replaying an old call PN from the native cache runs signInByNotification,
+// which switches account and hijacks/blocks the navigation the user actually asked for.
+// Same expiry rule as callStore.onCallKeepDidDisplayIncomingCall.
+const isStaleCallPn = async (n: ParsedPn) => {
+  if (ctx.call.isCallRejected({ callkeepUuid: n.callkeepUuid, pnId: n.id })) {
+    return true
+  }
+  const d = await ctx.account.findDataByPn(n)
+  const pnExpires = Number(d?.pnExpires) || 50000
+  return !!n.time && Date.now() - n.time > pnExpires
+}
+
 const onNotification = async (
   n0: { [k: string]: unknown },
   initApp: Function,
@@ -44,16 +57,33 @@ const onNotification = async (
 ) => {
   try {
     await initApp()
-    const shouldReplayInitialCallPn = !!parseNotificationData(n0)?.id
+    // app killed and woken by a data-only call PN: nothing was ever delivered to js
+    // (no react context when fcm arrived, no tray notification to open), so
+    // getInitialNotification resolves null and the native cache is the only source
+    const isColdStartWithoutPayload = isEmpty(n0)
+    const shouldReplayInitialCallPn =
+      !!parseNotificationData(n0)?.id || isColdStartWithoutPayload
     const shouldFlushInitialChatPn =
       !isClickAction && n0?.event === 'message' && !n0?.title && !n0?.body
     if (
       !n0?.callkeepUuid &&
       (shouldReplayInitialCallPn || shouldFlushInitialChatPn)
     ) {
-      getInitialNotifications().then(ns => {
-        if (shouldReplayInitialCallPn) {
-          ns.forEach(n => onNotification(n, initApp))
+      // BUG-1238: only live call PNs are replayed, see isStaleCallPn. Replay on every
+      // flush (not only shouldReplayInitialCallPn) so the chat flush above cannot drain
+      // a live call PN and discard it. Sequential await: two concurrent replays would
+      // race isSigningInByNotification and one would be dropped.
+      getInitialNotifications().then(async ns => {
+        for (const n of ns) {
+          const p = parseNotificationData(n)
+          if (!p?.id || !p.callkeepUuid || (await isStaleCallPn(p))) {
+            console.log(
+              `SIP PN debug: skip replay initial pn pnId=${p?.id} uuid=${p?.callkeepUuid}`,
+            )
+            continue
+          }
+          console.log(`SIP PN debug: replay initial call pn pnId=${p.id}`)
+          await onNotification(n, initApp)
         }
       })
     }
@@ -209,6 +239,13 @@ const getInitialNotifications = async () => {
         senderUserId || confId,
         !senderUserId,
         payload?.to || '',
+      )
+      // BUG-1238 #1: this drain is the first producer of the notification for that
+      // message, so mark it or the UC unread reload posts a second one for the same
+      // message once it connects (chatStore.pushMessages)
+      ctx.chat.suppressNextLocalNotification(
+        senderUserId || confId,
+        payload?.message,
       )
     })
 
