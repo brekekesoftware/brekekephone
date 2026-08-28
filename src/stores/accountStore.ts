@@ -134,6 +134,7 @@ type MfaStartResult =
 
 type UpsertAccountOptions = {
   allowPnMfaPrompt?: boolean
+  blockUi?: boolean
 }
 
 type SetDeviceTokenOptions = {
@@ -326,7 +327,7 @@ export class AccountStore {
     this.saveAccountsToLocalStorageDebounced()
   }
 
-  private syncPnTokenWithMfaPrompt = (a: Account) => {
+  private syncPnTokenWithMfaPrompt = (a: Account, blockUi?: boolean) => {
     a.pushNotificationEnabledSynced = false
     if (ctx.auth.signedInId && ctx.auth.signedInId !== a.id) {
       this.saveAccountsToLocalStorageDebounced()
@@ -337,6 +338,7 @@ export class AccountStore {
     this.saveAccountsToLocalStorageDebounced()
     return ctx.pnToken.sync(a, {
       allowMfaPrompt: true,
+      blockUi,
     })
   }
 
@@ -394,7 +396,9 @@ export class AccountStore {
           a.pushNotificationEnabledSynced = false
           this.saveAccountsToLocalStorageDebounced()
           if (options.allowPnMfaPrompt) {
-            void removeOldPnToken.then(() => this.syncPnTokenWithMfaPrompt(a))
+            void removeOldPnToken.then(() =>
+              this.syncPnTokenWithMfaPrompt(a, options.blockUi),
+            )
           }
         }
         return
@@ -407,7 +411,7 @@ export class AccountStore {
       !phoneIndexChanged &&
       !pushNotificationChanged
     ) {
-      void this.syncPnTokenWithMfaPrompt(a)
+      void this.syncPnTokenWithMfaPrompt(a, options.blockUi)
       return
     }
     if (phoneIndexChanged || pushNotificationChanged || lpcEnabledChanged) {
@@ -423,6 +427,7 @@ export class AccountStore {
       }
       a.pushNotificationEnabledSynced = false
       ctx.pnToken.sync(a, {
+        blockUi: options.blockUi,
         onError: err => {
           RnAlert.error({
             message: intlDebug`Failed to sync Push Notification settings for ${a.pbxUsername}`,
