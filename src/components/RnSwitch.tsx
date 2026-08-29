@@ -1,4 +1,4 @@
-import { darken } from 'polished'
+import { darken, transparentize } from 'polished'
 import type { FC } from 'react'
 import type { ViewProps } from 'react-native'
 import { StyleSheet, View } from 'react-native'
@@ -15,11 +15,12 @@ const css = StyleSheet.create({
   RnSwitch__enabled: {
     backgroundColor: v.colors.primaryFn(0.1),
   },
-  // disabled only needs to neutralise the "on" colours - the off state is already
-  // grey. colours rather than opacity: the knob overhangs the track, so fading the
-  // group lets the track show through the knob and kills the boxShadow
+  // disabled only mutes the "on" colours - the off state is already grey, and both
+  // parts stay green so an on row is still readable. a translucent colour rather
+  // than an opacity prop: the knob overhangs the track, so fading the group lets
+  // the track show through the knob and kills the boxShadow
   RnSwitch__disabled: {
-    backgroundColor: v.borderBg,
+    backgroundColor: transparentize(0.6, v.colors.primaryFn(0.1)),
   },
   Circle: {
     position: 'absolute',
@@ -36,7 +37,7 @@ const css = StyleSheet.create({
     backgroundColor: v.colors.primary,
   },
   Circle__disabled: {
-    backgroundColor: v.colors.greyTextChat,
+    backgroundColor: v.colors.primaryFn(0.25),
   },
 })
 
