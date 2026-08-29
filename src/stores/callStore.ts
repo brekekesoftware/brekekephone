@@ -471,6 +471,13 @@ export class CallStore {
         withSDPControls: e.withSDPControls || p.withSDP,
       })
 
+      // hold ends the video client session and brekekejs stashes the same
+      // MediaStream to reuse on unhold, so a track disabled while the app was
+      // hidden stays disabled forever unless it is reapplied on the new stream
+      if (isAndroid && p.localStreamObject) {
+        this.applyLocalVideoCapturing(e)
+      }
+
       // handle always show Avatar and Username when phoneappli enabled with outgoing call
       if (ctx.auth.phoneappliEnabled() && !e.incoming) {
         Object.assign(e, {
@@ -1299,11 +1306,14 @@ export class CallStore {
   // visible even without FOREGROUND_SERVICE_CAMERA. stop the capturer explicitly
   // to match ios, where no background camera mode exists. driven by the native
   // appVisibility event, see MainApplication.registerAppVisibilityCallbacks
+  private isAppVisible = true
   setLocalVideoCapturing = (capturing: boolean) => {
-    this.calls.forEach(c => {
-      const on = capturing && c.getLocalVideoEnabled()
-      c.localStreamObject?.getVideoTracks().forEach(t => (t.enabled = on))
-    })
+    this.isAppVisible = capturing
+    this.calls.forEach(this.applyLocalVideoCapturing)
+  }
+  private applyLocalVideoCapturing = (c: Call) => {
+    const on = this.isAppVisible && c.getLocalVideoEnabled()
+    c.localStreamObject?.getVideoTracks().forEach(t => (t.enabled = on))
   }
 
   constructor() {
