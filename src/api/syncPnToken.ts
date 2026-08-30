@@ -125,11 +125,12 @@ const syncPnTokenWithoutCatch = async (
       username,
       device_id: t,
     }
+    const cloudServiceId = isAndroid ? PnServiceId.fcm : PnServiceId.apns
     const newParams = pnmanageNew
       ? {
           ...params,
           command: pnEnabled ? PnCommand.set : PnCommand.remove,
-          service_id: [isAndroid ? PnServiceId.fcm : PnServiceId.apns],
+          service_id: [cloudServiceId],
           pnmanageNew: true,
           device_id_voip: tvoip,
         }
@@ -161,6 +162,14 @@ const syncPnTokenWithoutCatch = async (
     if (!lpcEnabled || !newParams || !lpcUserOn) {
       BrekekeUtils.disableLPC()
       if (newParams) {
+        // lpc does not run on this path: either the user opted out of it or push is off
+        // entirely, so any lpc registration from an earlier sync has to go too. and on
+        // an lpc only server (webphone.lpc.pn off) there is no fallback to cloud push -
+        // registering fcm here would push despite the admin having disabled it
+        if (lpcEnabled && (!lpcPn || !pnEnabled)) {
+          newParams.command = PnCommand.remove
+          newParams.service_id = [PnServiceId.lpc, cloudServiceId]
+        }
         await pbx.pnmanage(newParams)
       } else {
         // backward compatibility
@@ -211,9 +220,19 @@ const syncPnTokenWithoutCatch = async (
     } else {
       BrekekeUtils.disableLPC()
     }
+    // webphone.lpc.pn is off: lpc is the only transport, so actively remove any cloud
+    // push registration a previous sync may have left behind before setting lpc
+    if (!lpcPn && pnEnabled) {
+      await pbx.pnmanage({
+        ...newParams,
+        command: PnCommand.remove,
+        service_id: [cloudServiceId],
+      })
+    }
     newParams.service_id = [PnServiceId.lpc]
-    if (lpcPn) {
-      newParams.service_id.push(isAndroid ? PnServiceId.fcm : PnServiceId.apns)
+    // when turning everything off, remove cloud push too, not just lpc
+    if (lpcPn || !pnEnabled) {
+      newParams.service_id.push(cloudServiceId)
     }
     await pbx.pnmanage(newParams)
     return disconnectPbx(true)
