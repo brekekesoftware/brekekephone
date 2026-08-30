@@ -363,7 +363,10 @@ export class PBX extends EventEmitter {
   }
   ping = debounce(
     () => {
-      if (!this.client || !this.isMainInstance) {
+      // connect() publishes this.client before awaiting probeServer and only assigns
+      // call_pal after it. checking call_pal (not just this.client) is what keeps a ping
+      // in that window from throwing into its caller - see onCallKeepDidDisplayIncomingCall
+      if (!this.client?.call_pal || !this.isMainInstance) {
         return
       }
       const d = Date.now() - this.pingActivityAt

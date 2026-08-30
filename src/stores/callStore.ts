@@ -73,8 +73,11 @@ export class CallStore {
     uuid: string,
     n?: ParsedPn,
   ) => {
-    ctx.pbx.ping()
+    // must stay first: this registers the uuid<->pnId mapping in callkeepMap, which is what
+    // upsertCall uses to replay an Answer pressed before the INVITE arrives. anything above
+    // it that throws loses the mapping and the call rings out unanswered
     this.setAutoEndCallKeepTimer(uuid, n)
+    ctx.pbx.ping()
     if (!uuid || !n) {
       return
     }
