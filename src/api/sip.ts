@@ -6,7 +6,8 @@ import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
-import type { AccountUnique } from '#/stores/accountStore'
+import type { Account, AccountUnique } from '#/stores/accountStore'
+import { pnPhoneIndex, toPhoneIndex } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
 import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
@@ -432,12 +433,17 @@ export class SIP extends EventEmitter {
 
   checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
     const acc = await ctx.account.findByPn(n)
+    const stale = !!acc && isPnForOtherPhoneIndex(acc, n.sipPn.phoneId)
     const k = n.id || jsonStable(n)
-    if (!alreadyRemovePnTokenViaSip[k] && !acc) {
+    if (!alreadyRemovePnTokenViaSip[k] && (!acc || stale)) {
       alreadyRemovePnTokenViaSip[k] = true
-      removePnTokenViaSip(n)
+      // catch: removePnTokenViaSip throws when the registrator is missing, and this
+      // call is not awaited - without it that becomes an unhandled rejection
+      void removePnTokenViaSip(n).catch(err =>
+        console.error('removePnTokenViaSip:', err),
+      )
     }
-    return acc
+    return stale ? undefined : acc
   }
 }
 ctx.sip = new SIP()
@@ -453,6 +459,23 @@ export interface SipLoginOption {
 }
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
+
+// the pbx keeps one pn registration per phone id, so a registration left behind by
+// a previous phone index still pushes to this device: the account matches but the
+// call has no sip session on it, and answering that callkeep call does nothing.
+// findByPn already resolved to the account owning this phone id when one exists, so
+// a mismatch here means no account uses that index. a phone id in any other shape
+// gives index 0 and is never rejected, it belongs to a setup we must not guess about
+const isPnForOtherPhoneIndex = (a: Account, phoneId?: string) => {
+  const idx = pnPhoneIndex(a, phoneId)
+  if (!idx || idx === toPhoneIndex(a.pbxPhoneIndex)) {
+    return false
+  }
+  console.log(
+    `checkAndRemovePnTokenViaSip debug: pn for another phone index phoneId=${phoneId} accountPhoneIndex=${a.pbxPhoneIndex}`,
+  )
+  return true
+}
 
 const removePnTokenViaSip = async (n: ParsedPn) => {
   if (n.callkeepUuid) {

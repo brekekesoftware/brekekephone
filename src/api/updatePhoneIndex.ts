@@ -1,4 +1,5 @@
 import { isIos } from '#/config'
+import { toPhoneIndex } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
@@ -61,7 +62,7 @@ export const updatePhoneIndex = async (
     return null
   }
   //
-  const phoneIndex = parseInt(p.pbxPhoneIndex) || 4
+  const phoneIndex = toPhoneIndex(p.pbxPhoneIndex)
   const extProps = await api.getPbxPropertiesForCurrentUser(
     p.pbxTenant,
     p.pbxUsername,
