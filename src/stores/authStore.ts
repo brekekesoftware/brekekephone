@@ -18,7 +18,6 @@ import {
   getAccountUniqueId,
   getLastSignedInId,
   saveLastSignedInId,
-  toPhoneIndex,
 } from '#/stores/accountStore'
 import type { CallHistoryInfo } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
@@ -991,31 +990,14 @@ export class AuthStore {
       if (!a.pbxPassword) {
         a.pbxPassword = password
       }
+      a.pbxPhoneIndex = `${phoneIdx}`
       const d = await ctx.account.findDataWithDefault(a)
       if (_wn) {
         d.accessToken = _wn
       }
-      // signIn only tears down the previous connection when the account id changes,
-      // and neither pbxShouldAuth nor sipShouldAuth fires while both are 'success',
-      // so a new phone index would otherwise never reach the live pbx/sip
-      // registration. must be read before upsertAccount updates pbxPhoneIndex
-      const reconnectForPhoneIndex =
-        this.signedInId === a.id && toPhoneIndex(a.pbxPhoneIndex) !== phoneIdx
-      // pbxPhoneIndex must go through upsertAccount rather than be assigned on `a`
-      // (the live stored account): upsertAccount compares it against the stored
-      // value to remove the previous phone id's pn registration on the pbx. assign
-      // it here and the change is invisible, the old phone id keeps pushing, and the
-      // callkeep call the user answers can be the one with no sip session behind it.
-      // must also run after d.accessToken above, that remove needs a credential
-      await ctx.account.upsertAccount({
-        id: a.id,
-        pbxPhoneIndex: `${phoneIdx}`,
-      })
+      //
+      ctx.account.upsertAccount(a)
       if (a.pbxPassword || d.accessToken) {
-        if (reconnectForPhoneIndex) {
-          this.resetPrevAccountConnection()
-          await waitTimeout()
-        }
         this.signIn(a)
       } else {
         ctx.nav.goToPageAccountUpdate({ id: a.id })
