@@ -1,91 +1,154 @@
-# Brekeke Phone
-
-[App Store](https://apps.apple.com/us/app/brekeke-phone/id1233825750) | [Google Play](https://play.google.com/store/apps/details?id=com.brekeke.phone)
-
-VoIP/SIP softphone for Web, iOS, and Android. A pnpm workspace with two packages: `brekekephone/app` (React Native, also the source of truth for shared app logic) and `brekekephone/web` (Vite web/embed build). Uses [rntwsc](https://github.com/namnm/rntwsc) for Tailwind class names in React Native and shared devtools (format/lint/type-check).
-
-### Table of contents
-
-<!-- START doctoc -->
-
-- [Branch status](#branch-status)
-- [Quick access](#quick-access)
-- [Documentation](#documentation)
-  - [Build, test, and release](#build-test-and-release)
-  - [Config and credentials reference](#config-and-credentials-reference)
-  - [Feature notes](#feature-notes)
-  - [Engineering deep-dive (lowest priority -- only if you need to understand the internals)](#engineering-deep-dive-lowest-priority----only-if-you-need-to-understand-the-internals)
-
-<!-- END doctoc -->
-
-### Branch status
-
-`master` is version `3.0.0`. The team considers it unstable and expects more iteration, since it just went through a large tooling/library upgrade (see [Codebase overview](./docs/codebase-overview.md)).
-
-`2.17.8-dev` is the latest stable dev version, fully verified by QA and other teams. For a minor change on top of it: checkout a new branch from `2.17.8-dev`, implement the change, then build/QA/upload it per the docs below. Squash merge that branch into a single commit, with a changelog entry, into the `2.x` tracking stable branch. Then rebase (or merge, rebase is recommended for a clean history) `master`/`3.x` on top of that updated `2.x` tracking branch. This lets the team keep working on both the new (`3.x`) and old stable (`2.x`) branches at the same time.
-
-Recommendation: work on `master` and stabilize/test it until it is ready to release, instead of keeping both branches going. Once release bundle ids are counted too, that is 4+ branches to track, not 2. `3.0.0` has already been tested and built on all platforms and should basically work; what is left is edge-case testing and incremental improvements, not a rewrite.
-
 ### Quick access
 
-Recommended OS version as of Apr 2026: [Android 14-15](https://developer.android.com/google/play/requirements/target-sdk), [iOS 26](https://developer.apple.com/ios/submit/).
+- Recommended OS version as of Apr 2026:
+  - [Android 14-15](https://developer.android.com/google/play/requirements/target-sdk)
+  - [iOS 26](https://developer.apple.com/ios/submit/)
+- [Custom branding build](./.doc/custom-branding.md)
+- [Network proxy setup](./.doc/network-proxy-setup.md)
 
-- [Getting started](./docs/getting-started.md)
-- [Building for the App Store and Play Store](./docs/app-store-release.md) -- the most common reason to be here: bump a version or ship a small fix, then get it built, tested, and uploaded
+### Environment requirement
 
-### Documentation
+- Should have the latest node version 12.x LTS
+  - You can use `nvm` to install and manage node versions: https://github.com/nvm-sh/nvm
+- Install `yarn` and use it instead of `npm`: `npm i -g yarn`
+- Install node packages:
 
-If you are getting started or just need a quick update (a version bump, a one-line hotfix), you don't need any of the deep architecture knowledge further down this list. Build, test, and release is the path that actually matters day to day; the engineering deep-dive at the bottom is only for when you need to understand why the code does something, not just how to ship it.
+```sh
+# IMPORTANT: Do not run react-native link, we already linked them manually because the automation link has issues sometimes
+cd /path/to/brekekephone
+yarn
+```
 
-#### Build, test, and release
+- Start the metro bundler and let it running
 
-The full path from "I changed one line" to "it's on the store" / "it's on `dev01` for QA":
+```sh
+yarn rn
+```
 
-- [Getting started](./docs/getting-started.md) -- requirements, install, running the app/web dev servers
-- [Android build](./docs/android-build.md)
-- [iOS build](./docs/ios-build.md)
-- [Web and embed](./docs/web-and-embed.md)
-- [Format and lint](./docs/format-and-lint.md) -- run before every PR
-- [Branching strategy](./docs/branching-strategy.md) -- which branch to work on (`master`/`release`), how they're kept in sync, version branches
-- [Makefile reference](./docs/makefile-reference.md) -- what every `make` target actually does
-- [Building and deploying to dev01](./docs/dev01-deploy.md) -- internal ad-hoc/testing builds for QA, iOS provisioning profile requirements
-- [Building for the App Store and Play Store](./docs/app-store-release.md) -- the official public release path
+- If it has some strange errors, we may need to delete node_module then reset cache as well
 
-#### Config and credentials reference
+```sh
+yarn cache clean && yarn --check-files && yarn rn --reset-cache
+```
 
-- [Repo layout](./docs/repo-layout.md) -- the three main directories (`brekekephone/`, `dev01/`, `embed-example/`) and what each is for
-- [Credentials and config](./docs/credentials-and-config.md) -- keystores, `google-services.json`, TURN config, version bump locations
-- [Push notification setup](./docs/push-notification-setup.md)
+### Keystores and other credentials keys
 
-#### Feature notes
+- Those private files are ignored from git history, you need to download or generate your own files to build your custom app. See [Custom branding build](./.doc/custom-branding.md) for more detail
+  - `android/app/google-services.json`
+  - `android/keystores/release.keystore`
+  - `src/api/turnConfig.ts`
+- Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off. Example of real turn config:
 
-- [Custom branding build](./docs/custom-branding.md)
-- [Network proxy setup](./docs/network-proxy-setup.md)
-- [Custom ringtone](./docs/custom-ringtone.md)
-- [URL scheme - open custom page](./docs/url-scheme-custompage.md)
+```js
+export const turnConfig = {
+  pcConfig: {
+    iceServers: [
+      {
+        urls: 'turn:HOST:PORT/PATH',
+        username: 'USERNAME',
+        credential: 'PASSWORD',
+      },
+      // other ice servers
+    ],
+  },
+}
+```
 
-#### Engineering deep-dive (lowest priority -- only if you need to understand the internals)
+### Android
 
-Architecture, risk areas, and pitfalls across the whole codebase. Start with [Codebase overview](./docs/codebase-overview.md) if you're new here, otherwise jump straight to the topic you need:
+##### Android SDK tools
 
-- [Codebase overview](./docs/codebase-overview.md) -- risk areas and a pre-merge checklist for any change that touches app logic, not just build/version
-- [Architecture and startup](./docs/architecture-and-startup.md) -- monorepo/pnpm/Vite layout, the `ctx` singleton, MobX 6, why MobX was chosen over Redux, New Architecture/Hermes/Fabric now enabled and what that unlocked
-- [Styling and UI](./docs/styling-and-ui.md) -- Tailwind class names via the rntwsc babel compiler, dark mode, orientation support, Reanimated
-- [Auth and accounts](./docs/auth-and-accounts.md) -- PBX/SIP/UC state machines, multi-account switch teardown, account persistence
-- [MFA](./docs/mfa.md) -- OTP flow, device tokens, PAL client scoping, interaction with active calls and embed
-- [Push notifications](./docs/push-notifications.md) -- app init from PN, PN dedupe and `callkeepUuid`
-- [Calling and telephony](./docs/calling-and-telephony.md) -- CallKeep/CallKit, the bridgeless native incoming-call UI, Android foreground service, call line header, DTMF, call actions, recents/missed call
-- [LPC subsystem](./docs/lpc.md) -- Local Push Connectivity
-- [Custom page](./docs/custom-page.md) -- custom page and incoming/missed call handling
-- [PBX API and config-driven behavior](./docs/pbx-api-and-config.md) -- the PAL request/retry layer, server probing, MFA method gating, `webphone.*` feature flags
-- [i18n](./docs/i18n.md) -- index-based translation system and the `make intl` build step
-- [Logging and user notifications](./docs/logging-and-notifications.md) -- debug log capture, toast/alert/banner layers
-- [Contacts and chat](./docs/contacts-and-chat.md) -- phonebook/buddy list/PhoneAppli, UC chat state
-- [Permissions and ringtone](./docs/permissions-and-ringtone.md) -- platform permission matrix, ringtone subsystem
-- [Timers and app state](./docs/timers-and-app-state.md) -- background timers, app state handling
-- [SDK and dependencies](./docs/sdk-and-dependencies.md) -- vendored Brekeke SDK, pnpm-native patches, forked native dependencies, pinned versions
-- [Web, embed, and navigation](./docs/web-embed-and-navigation.md) -- the Vite web package, embed mode, custom navigation stack
-- [Config and build](./docs/config-and-build.md) -- credentials/version config, Makefile-based build and release
-- [Quality and testing](./docs/quality-and-testing.md) -- lack of automated tests, current state of type coverage/lint/pre-commit gates
-- [Current state and PR guidelines](./docs/current-state-and-pr-guidelines.md) -- how to read `CHANGELOG.md`, things that should not be bundled in one PR
-- [TODO](./docs/TODO.md) -- known bugs, dead code, and process/tooling gaps found while working in this codebase
+- The binary tools are located at the following locations. To use them directly in the command line, we should add them into the PATH environment variable:
+- Windows:
+
+```sh
+%USERPROFILE%\AppData\Local\Android\Sdk\platform-tools
+%USERPROFILE%\AppData\Local\Android\Sdk\tools
+%USERPROFILE%\AppData\Local\Android\Sdk\tools\bin
+```
+
+- Mac: https://stackoverflow.com/questions/26483370
+
+```sh
+export ANDROID_HOME=/Users/$USER/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+##### Run and debug app in Android Emulator:
+
+- To create a virtual device:
+  - Option 1: Using Android Studio: Go to `Tools > AVD Manager` to install a new virtual device
+  - Option 2: Using command line tool: Follow the instruction at: https://developer.android.com/studio/command-line/avdmanager
+- To run the virtual device:
+  - Option 1: Using Android Studio: In AVD Manager, click the Run button on the Emulator we want to run
+  - Option 2: Using command line tool: Execute `emulator -list-avds` to list all virtual devices. Then execute `emulator -avd <DEVICE_NAME>` to run it. If you are on Windows, you may need to `cd %USERPROFILE%\AppData\Local\Android\Sdk\emulator` first
+- Start the react native bundle at the project root: `yarn android`
+
+- Some errors:
+  - If we can not run the emulator and it throws an error like: `Emulator: ERROR: x86 emulation currently requires hardware acceleration!`. Try to follow these steps to fix:
+    - In Android Studio, go to SDK Manager and make sure the option `Intel x86 Emulator Accelerator` is checked
+    - Open folder `%USERPROFILE%\AppData\Local\Android\sdk\extras\intel\Hardware_Accelerated_Execution_Manager`
+    - Open `intelhaxm-android.exe`. If it shows that the installation is completed, we need to click the remove button to remove it, then reopen and reinstall it again
+    - When reinstalling, if it shows an error like: `... Intel Virtualization Technology (VT-x) is not turned on`: We need to restart the computer, enter the BIOS and configure the CPU to support Virtualization. After that try to reopen and reinstall `intelhaxm-android.exe` again
+  - The device starts up but the Command Line shows endless loop of `VCPU shutdown request`
+    - This is a bug of Intel HAXM: https://issuetracker.google.com/issues/37124550
+    - Remove the old HAXM then download and reinstall the latest HAXM version should fix this
+  - `You have not accepted the license agreements of the following SDK components`: Execute `cd %USERPROFILE%\AppData\Local\Android\Sdk\tools\bin` then `sdkmanager --licenses` then press y and enter for all licenses
+
+##### Run and debug app in a real device:
+
+- Prepare with the real device:
+  - Go to Settings > Privacy
+  - Enable "Unknown Sources" (Allow installation of apps from unknown sources)
+  - We may need to enable Developer Mode as well, each phone has a different way to enable it, please give a search on the internet if you don't know how
+- Then run those commands on the computer:
+
+```sh
+adb devices
+adb -s DEVICE_ID reverse tcp:8081 tcp:8081
+yarn android --deviceId=DEVICE_ID
+```
+
+##### Build app in release mode and install it in a real device:
+
+- At the project root execute: `cd android && ./gradlew clean && ./gradlew assembleRelease`
+- After the build is finished, the apk file is located at: `android/app/build/outputs/apk/release`. We can upload the apk file to our server or to Google Play Dashboard for a new release
+- To enable LogCat: https://stackoverflow.com/questions/25610936
+
+### iOS
+
+- CocoaPods is required: https://cocoapods.org/
+- Install Pods: `cd ios && pod install --repo-update`
+- Start development: `yarn ios`
+- Sometimes we need to clear cache if it doesn't reflect changes or has some strange errors: `rm -rf ios/build/* && rm -rf ~/Library/Developer/Xcode/DerivedData/*`
+- To have the push notification permision and other permission related popups show up again, we need to uninstall the app before reinstalling it
+
+##### Build app for distribution
+
+- Download bitcode for react-native-webrtc: `yarn bitcode`
+- Request for distribution certificate and install it correctly on local machine if haven't
+- Archive and distribute for Ad-hoc / Team distribution to manually upload to our server so the others can download and test
+- We can also choose to validate for App Store to see if it has any issue, then distribute it to App Store for a new release
+
+### Push notification issues
+
+- Android
+  - Ensure latest google-services.json
+  - Ensure correct firebase config in the pbx admin push notification
+- iOS
+  - Ensure the push notification gets configured correctly in General, Info.plist, Phone.entitlements
+  - Ensure correct APN config in the pbx admin push notification
+
+### Automation format tools
+
+- To have the js/ts files follow a single code format consistency, you can run `yarn format`
+  - It will be automatically run in each commit using `husky` and `lint-staged`
+- To run the format command for all possible files `make format`, we must install the following packages (on macOS):
+
+```sh
+brew install clang-format@11 swiftformat google-java-format ktfmt
+npm i -g imagemin-cli
+```

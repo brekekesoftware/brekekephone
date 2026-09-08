@@ -1,21 +1,3 @@
-#### 3.0.0
-
-- Upgrade dev tools and framework to use tailwind and modern code base structure:
-  - Convert from yarn to pnpm workspace. Why: Previously all depedencies of mobile app, web, and others are in the same package.json. Now with pnpm workspace, each package will be separated, reduce the dependencies complexity per package. Pnpm is also more preferred by the community by now, more efficient and support builtin patches.
-  - Update devtools such as prettier, eslint with new config. Why: More rules to make code quality better, most rules are fixable, and warn by default, no error blocking overhead.
-  - Replace react-scripts craco with vite. Vite has better development performance and speed, react-scripts is deprecated years ago and soon breaks the build pipeline with new NodeJS version. Details: https://react.dev/blog/2025/02/14/sunsetting-create-react-app
-  - Convert from react native cssjs stylesheet to tailwind class names using rntwsc babel compiler. Why: Make code shorter and easier to read, catch up with the latest technology in the community.
-  - Enable react native new arch, turbo, hermes and fabric. Why: Since RN 0.82, it is not allowed to use old arch any more, we must reconfigure enable those flags to catch up and be able to upgrade to new RN versions. Details: https://reactnative.dev/blog/2025/10/08/react-native-0.82#new-architecture-only
-  - Upgrade libs and patch them to be compatible with react native new arch. Why: Must be turbo compatible to compile and use with the new arch.
-  - Add react native reanimated to use instead of old react native animated api. Why: Improve performance using native thread animation instead of blocking UI js thread.
-  - Replace android native java incoming call screen to use react native fragment to reuse react native code instead of duplicated logic in java code. Why: Previously all incoming call logic needed to be duplicated and difficult to maintain java code since it is not declarative like react. Now we can reuse the existing code.
-  - Support UI dark mode.
-  - Support UI vertical horizontal mode.
-  - Minors UI bugs fixes and other small improvements. New improvements are easier through tailwind class names.
-- Fix ios X-Ringtone does not work with some URL, and reject cached ringtone files whose content is not actually mp3 (issue 1999)
-- Fix DTMF should be sent via SIP INFO through the early dialog when the call is still in early media (before 200 OK), since the SIP session is not yet confirmed
-- Fix DTMF native send mode should pick an RTC sender that supports DTMF instead of assuming the first sender always does
-
 #### 2.17.21
 
 - Hot fix custom pages should not become blank after PAL reconnect or account switch
@@ -99,11 +81,6 @@
 
 - Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
-
-#### 2.17.3
-
-- Hot fix android auto answer 3PCC paging regression (issue 1203, 1209)
-- Hot fix webphone.pal.mfa (issue 1204)
 - Hot fix ios should not crash call uuid empty (issue 1205)
 - Hot fix auth dispose should not hang on immediately pickup call (issue 1207)
 - Hot fix ios CTI auto answer Call-Info header (issue 1210)
@@ -195,7 +172,7 @@
 
 #### 2.16.4
 
-- Initial implementation of [custom ringtone](./docs/custom-ringtone.md)
+- Initial implementation of [custom ringtone](./.doc/custom-ringtone.md)
 - Initial implementation of multiple custom pages
 - Add ctype=2 to pal url params, it should overwrite webphone.pal.param.ctype
 - Change error message to show "Internet connection failed" whenever an error occurred
@@ -934,6 +911,3 @@
   - bug with transfer hold/hangup
   - bug show `Connecting...` after end call
   - bug in debug log
-
-<!-- START doctoc -->
-<!-- END doctoc -->

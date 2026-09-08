@@ -1,0 +1,27 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_pressed="true">
+    <layer-list>
+      <shape>
+        <solid android:color="#0A808080" />
+      </shape>
+      <item
+        android:top="5dp"
+        android:left="5dp"
+        android:bottom="5dp"
+        android:right="5dp"
+        android:drawable="@drawable/ic_chat"
+      />
+    </layer-list>
+  </item>
+  <item android:state_pressed="false">
+    <layer-list>
+      <item
+        android:top="5dp"
+        android:left="5dp"
+        android:bottom="5dp"
+        android:right="5dp"
+        android:drawable="@drawable/ic_chat"
+      />
+    </layer-list>
+  </item>
+</selector>

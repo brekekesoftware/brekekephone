@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-web/dist/cjs/exports/ScrollView/ScrollViewBase.js b/node_modules/react-native-web/dist/cjs/exports/ScrollView/ScrollViewBase.js
+index 03ca85c..f0ff66c 100644
+--- a/node_modules/react-native-web/dist/cjs/exports/ScrollView/ScrollViewBase.js
++++ b/node_modules/react-native-web/dist/cjs/exports/ScrollView/ScrollViewBase.js
+@@ -123,7 +123,8 @@ var ScrollViewBase = /*#__PURE__*/React.forwardRef((props, forwardedRef) => {
+       onScroll(normalizeScrollEvent(e));
+     }
+   }
+-  var hideScrollbar = showsHorizontalScrollIndicator === false || showsVerticalScrollIndicator === false;
++  var hideScrollbar = false;
++  // var hideScrollbar = showsHorizontalScrollIndicator === false || showsVerticalScrollIndicator === false;
+   return /*#__PURE__*/React.createElement(_View.default, (0, _extends2.default)({}, rest, {
+     onScroll: handleScroll,
+     onTouchMove: createPreventableScrollHandler(onTouchMove),
+diff --git a/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js b/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
+index f5dc225..06423d6 100644
+--- a/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
++++ b/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
+@@ -382,6 +382,7 @@ function createAtomicRules(identifier, property, value) {
+     // https://drafts.csswg.org/css-scrollbars-1/
+     case 'scrollbarWidth':
+       {
++        break;
+         if (value === 'none') {
+           rules.push(selector + "::-webkit-scrollbar{display:none}");
+         }

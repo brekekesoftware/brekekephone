@@ -1,0 +1,21 @@
+{
+  "name": "@brekekephone/embed-example-react",
+  "version": "0.0.0-locked",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "https": "cross-env HTTPS=true vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "@vitejs/plugin-basic-ssl": "2.1.0",
+    "@vitejs/plugin-react-swc": "3.9.0",
+    "cross-env": "10.1.0",
+    "vite": "6.3.5"
+  }
+}
