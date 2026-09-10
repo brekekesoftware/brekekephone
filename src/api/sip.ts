@@ -129,6 +129,7 @@ export class SIP extends EventEmitter {
         partyImageUrl: m?.getHeader('X-PBX-IMAGE-RINGING'),
         talkingImageUrl: m?.getHeader('X-PBX-IMAGE-TALKING'),
         partyImageSize: m?.getHeader('X-PBX-IMAGE-SIZE'),
+        urlInfo: m?.getHeader('X-URL-Info'),
         pbxTenant: arr?.[0],
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],

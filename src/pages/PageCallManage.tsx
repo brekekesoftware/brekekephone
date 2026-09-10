@@ -517,15 +517,16 @@ class PageCallManage extends Component<{
         >
           {c.answered && (
             <SmartImage
-              key={c.talkingImageUrl}
+              key={`talking-${c.talkingImageUrl}`}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}
+              urlInfo={c.urlInfo}
             />
           )}
           {!c.answered && (
             <SmartImage
-              key={c.partyImageUrl}
+              key={`ringing-${c.partyImageUrl}`}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}

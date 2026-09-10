@@ -901,6 +901,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
   public boolean isAvatarTalkingLoaded = false;
+  // aiphone nurse-call AppToWeb I/F data (passed down from JS via setTalkingAvatar)
+  public String aiphoneUrlInfo = "";
+  public String aiphoneHc = "";
 
   public void toggleCallManageControls() {
     if (isCallManageControlsHidden) {
@@ -1052,12 +1055,31 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               super.onPageFinished(view, url);
               vWebViewAvatarTalkingLoading.setVisibility(View.GONE);
               isAvatarTalkingLoaded = true;
+              if (BrekekeUtils.aiphoneNurseCallEnabled
+                  && aiphoneUrlInfo != null
+                  && !aiphoneUrlInfo.isEmpty()) {
+                view.evaluateJavascript(
+                    "try{window.updatePhoneState&&window.updatePhoneState("
+                        + org.json.JSONObject.quote(aiphoneUrlInfo)
+                        + ","
+                        + org.json.JSONObject.quote(aiphoneHc == null ? "" : aiphoneHc)
+                        + ",2,0)}catch(e){}",
+                    null);
+              }
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
               vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
+              if (BrekekeUtils.aiphoneNurseCallEnabled) {
+                view.evaluateJavascript(
+                    "window.WebInterface = window.WebInterface || {"
+                        + " display10key:function(){}, displayPhoneControl:function(){},"
+                        + " updateUrlString:function(){}, callMainPage:function(){},"
+                        + " closePhoneControl:function(){} };",
+                    null);
+              }
             }
           });
       if (!isAvatarTalkingLoaded) {
@@ -1480,7 +1502,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSpeaker.setSelected(isSpeakerOn);
   }
 
-  public void setImageTalkingUrl(String url, boolean _isLarge) {
+  public void setImageTalkingUrl(String url, boolean _isLarge, String urlInfo, String hc) {
+    aiphoneUrlInfo = urlInfo == null ? "" : urlInfo;
+    aiphoneHc = hc == null ? "" : hc;
     if (url.equalsIgnoreCase(talkingAvatar)) {
       return;
     }
