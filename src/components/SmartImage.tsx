@@ -6,10 +6,12 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import noPhoto from '#/assets/no_photo.png'
 
+import { webviewInjectConsoleForward } from '#/components/webviewInjectConsoleForward'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/checkImageUrl'
+import { handleWebviewConsoleMessage } from '#/utils/handleWebviewConsoleMessage'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
@@ -107,11 +109,14 @@ export const SmartImage = ({
 
   const onMessage = (event: WebViewMessageEvent) => {
     try {
+      const data = event?.nativeEvent?.data
+      if (handleWebviewConsoleMessage(data)) {
+        return
+      }
       // for sure just update load page 1 time
       if (statusImageLoading === StatusImage.loaded) {
         return
       }
-      const data = event?.nativeEvent?.data
       if (!data) {
         return
       }
@@ -154,6 +159,10 @@ export const SmartImage = ({
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
+  const consoleForwardJs =
+    ctx.auth.pbxConfig?.['webphone.webview.log'] === 'true'
+      ? webviewInjectConsoleForward
+      : ''
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (
@@ -167,9 +176,9 @@ export const SmartImage = ({
         <WebView
           ref={webviewRef}
           source={{ uri }}
-          injectedJavaScript={js}
+          injectedJavaScript={consoleForwardJs + js}
           injectedJavaScriptBeforeContentLoaded={
-            (aiphoneOn ? stubJs : '') + (isAndroid ? js : '')
+            consoleForwardJs + (aiphoneOn ? stubJs : '') + (isAndroid ? js : '')
           }
           style={[css.image, css.full]}
           bounces={false}
