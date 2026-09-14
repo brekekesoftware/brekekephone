@@ -108,6 +108,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
   public static boolean aiphoneNurseCallEnabled = false;
+  public static boolean webviewLogEnabled = false;
   public static String userAgentConfig = null;
 
   BrekekeUtils(ReactApplicationContext ctx) {
@@ -967,6 +968,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setAiphoneNurseCallEnabled(Boolean isEnabled) {
     aiphoneNurseCallEnabled = isEnabled;
+  }
+
+  @ReactMethod
+  public void setWebviewLogEnabled(Boolean isEnabled) {
+    webviewLogEnabled = isEnabled;
   }
 
   @ReactMethod

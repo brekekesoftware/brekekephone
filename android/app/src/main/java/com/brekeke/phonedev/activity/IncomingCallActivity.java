@@ -1626,7 +1626,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   }
 
   private boolean webviewLogEnabled() {
-    return pbxConfig != null && "true".equals(pbxConfig.optString("webphone.webview.log"));
+    return BrekekeUtils.webviewLogEnabled;
   }
 
   private static final String webviewConsoleForwardJs =
