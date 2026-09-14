@@ -472,8 +472,8 @@ index 5d58692..9abb602 100644
 -            startForeground(FOREGROUND_SERVICE_TYPE_MICROPHONE, notification);
 +            // On Android 14+ the foreground service type is enforced against the
 +            // runtime permissions actually granted. The camera type is never
-+            // requested, callStore stops the capturer when backgrounded instead
-+            // 
++            // requested, callStore stops the capturer when backgrounded instead,
++            // see play-declaration.md before adding it back.
 +            int fgsType = ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
 +            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
 +                fgsType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
