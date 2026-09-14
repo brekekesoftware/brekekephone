@@ -47,6 +47,7 @@ type TBrekekeUtils = {
   setLocale(locale: string): void
   setPhoneappliEnabled(enabled: boolean): void
   setAiphoneNurseCallEnabled(enabled: boolean): void
+  setWebviewLogEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
@@ -157,6 +158,7 @@ const Polyfill: TBrekekeUtils = {
   setLocale: () => undefined,
   setPhoneappliEnabled: () => undefined,
   setAiphoneNurseCallEnabled: () => undefined,
+  setWebviewLogEnabled: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
