@@ -84,12 +84,12 @@ android {
   }
 
   defaultConfig {
-    applicationId "com.brekeke.phonedev"
+    applicationId "com.brekeke.phone"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     multiDexEnabled true
-    versionCode 217008
-    versionName "2.17.8"
+    versionCode 218004
+    versionName "2.18.00"
   }
 
   signingConfigs {

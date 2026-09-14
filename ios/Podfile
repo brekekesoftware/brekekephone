@@ -38,6 +38,9 @@ target 'BrekekePhone' do
   pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
   pod 'react-native-document-picker', :path => '../node_modules/@react-native-documents/picker', :modular_headers => true
   pod 'react-native-video', :path => '../node_modules/react-native-video', :modular_headers => true
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec', :modular_headers => true
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
+  pod 'RCT-Folly', :podspec => '../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec', :modular_headers => true
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -65,6 +68,27 @@ target 'BrekekePhone' do
           config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
         end
       end
+
+      target.build_configurations.each do |config|
+        # Force minimum deployment target to 13.0 or 14.0 across all pod targets
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+        # Suppress C++ warning for literal operator whitespace
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = "$(inherited) -Wno-deprecated-literal-operator -Wno-bitwise-instead-of-logical"
+
+        # Disable script sandboxing across all pod targets
+        config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+
+        # Restore C++17 removed std::unary_function for legacy Boost / Folly headers
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) '
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_FUNCTION'
+
+        # Fix RCT-Folly clockid_t redefinition on modern SDKs
+        if target.name == 'RCT-Folly' || target.name == 'Folly'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) '
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' FOLLY_HAVE_CLOCK_GETTIME=1 HAVE_CLOCK_GETTIME=1'
+        end
+      end
+
     end
   end
 end

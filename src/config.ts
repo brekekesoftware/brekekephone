@@ -8,7 +8,7 @@ export const jssipVersion = json.dependencies.jssip
 
 export const successConnectCheckPeriod = 600000 // 10 minutes
 export const fcmApplicationId = '22177122297'
-export const bundleIdentifier = 'com.brekeke.phonedev'
+export const bundleIdentifier = 'com.brekeke.phone'
 
 export const buildWebViewSource = (uri: string): WebViewSource => ({
   uri,
