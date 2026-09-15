@@ -32,6 +32,32 @@ public class Account {
     return null;
   }
 
+  // the account js is signed in as, pushed from js on sign in and cleared on sign out
+  // and on account switch. empty user means unknown: callers must not act on it
+  private static String signedInUser = "";
+  private static String signedInTenant = "";
+  private static String signedInHost = "";
+  private static String signedInPort = "";
+
+  public static void setSignedIn(String u, String t, String h, String p) {
+    signedInUser = u == null ? "" : u;
+    signedInTenant = t == null ? "" : t;
+    signedInHost = h == null ? "" : h;
+    signedInPort = p == null ? "" : p;
+  }
+
+  public static boolean hasSignedIn() {
+    return !TextUtils.isEmpty(signedInUser);
+  }
+
+  // is this pn for the account js is signed in as, same matching rule as find()
+  public static boolean isSignedIn(Map<String, String> m) {
+    return signedInUser.equals(PN.username(m))
+        && equals(signedInTenant, PN.tenant(m))
+        && equals(signedInHost, PN.host(m))
+        && equals(signedInPort, PN.port(m));
+  }
+
   // find from pn data map
   public static JSONObject find(Map<String, String> m) {
     var u = PN.username(m);

@@ -250,6 +250,27 @@ const initApp = async () => {
       ctx.authUC.dispose()
     }
   }, 17)
+  // native refuses a call pn of another account while a call is alive, and needs the
+  // signed in account to tell them apart. watch the account record rather than the
+  // sign in event: Settings > Current Account saves in place and re-signs-in only
+  // after a delay, and a stale copy here refuses a call that should ring
+  const clearSignedInAccountReaction = reaction(
+    () => {
+      const ca = ctx.auth.getCurrentAccount()
+      return [
+        ca?.pbxUsername || '',
+        ca?.pbxTenant || '',
+        ca?.pbxHostname || '',
+        ca?.pbxPort || '',
+      ].join('\t')
+    },
+    v => {
+      const [u, t, h, p] = v.split('\t')
+      BrekekeUtils.setSignedInAccount(u, t, h, p)
+    },
+    { fireImmediately: true },
+  )
+  void clearSignedInAccountReaction
   const clearReaction = reaction(() => ctx.auth.signedInId, onAuthUpdate)
   // a PN tap can sign in before this reaction exists: onNotification awaits initApp
   // but the alreadyInitApp guard returns without awaiting the in-flight init. mobx
