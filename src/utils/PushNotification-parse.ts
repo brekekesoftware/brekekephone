@@ -2,7 +2,6 @@ import { AppState } from 'react-native'
 
 import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
-import { intl } from '#/stores/intl'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
 import { get } from '#/utils/lodash'
@@ -275,25 +274,10 @@ export const parse = async (
     ctx.auth.signedInId !== notificationAccountId &&
     ctx.call.hasAnyCall()
   ) {
-    const uuid =
-      ctx.call.getOngoingCall()?.callkeepUuid ||
-      Object.keys(ctx.call.callkeepMap)[0]
     console.log(
-      `SIP PN debug: PushNotification-parse: refuse pn of another account during call pnId=${n.id} accountId=${notificationAccountId} signedInId=${ctx.auth.signedInId} uuid=${uuid}`,
+      `SIP PN debug: PushNotification-parse: refuse pn of another account during call pnId=${n.id} accountId=${notificationAccountId} signedInId=${ctx.auth.signedInId}`,
     )
-    const msg = intl`Cannot switch account during a call`
-    // an outgoing call has a callkeepUuid but no native call screen, so the uuid alone
-    // does not tell us where the toast can be seen
-    const hasCallScreen =
-      isAndroid && !!uuid && (await BrekekeUtils.hasIncomingCallActivity(uuid))
-    if (hasCallScreen) {
-      // the native call screen is brought to front right below, so a js toast
-      // would be hidden behind it
-      BrekekeUtils.toast(uuid, msg, '', 'warning')
-      BrekekeUtils.onPageCallManage(uuid)
-    } else if (!ctx.toast.items.find(v => v.msg === msg)) {
-      ctx.toast.warning(msg, 3000)
-    }
+    await ctx.call.showCannotSwitchAccountDuringCall()
     // release the dedupe claim taken above: without it the same notification tapped
     // again after the call ends is skipped as already opened and does nothing
     if (localChatNotificationId) {

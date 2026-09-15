@@ -28,6 +28,7 @@ type TBrekekeUtils = {
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
   clearProcessedPnIds(): void
+  setSignedInAccount(u: string, t: string, h: string, p: string): void
   setPbxConfig(jsonStr: string): void
   setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
@@ -145,6 +146,7 @@ const Polyfill: TBrekekeUtils = {
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
   clearProcessedPnIds: () => undefined,
+  setSignedInAccount: () => undefined,
   setPbxConfig: () => undefined,
   setCallConfig: () => undefined,
   setIsAppActive: () => undefined,

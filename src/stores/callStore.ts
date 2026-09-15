@@ -173,6 +173,7 @@ export class CallStore {
       console.log(
         `SIP PN debug: reject pn of another account during ongoing call pnId=${n.id}`,
       )
+      await this.showCannotSwitchAccountDuringCall(uuid)
       this.endCallKeep(uuid)
       return
     }
@@ -1410,6 +1411,29 @@ export class CallStore {
       ctx.sip.phone?.getSessionCount() ||
       this.calls.some(c => !isIgnored(c.callkeepUuid, c.pnId))
     )
+  }
+
+  // tell the user a pn of another account was refused. on android the native call
+  // screen is brought to front right after, so a js toast would be hidden behind it
+  // and the message must go to that screen instead. excludeUuid is the refused call,
+  // the message belongs on the screen of the call already running
+  showCannotSwitchAccountDuringCall = async (excludeUuid?: string) => {
+    const uuid =
+      this.getOngoingCall()?.callkeepUuid ||
+      Object.keys(this.callkeepMap).find(k => k !== excludeUuid)
+    const msg = intl`Cannot switch account during a call`
+    // an outgoing call has a callkeepUuid but no native call screen, so the uuid alone
+    // does not tell us where the message can be seen
+    const hasCallScreen =
+      isAndroid && !!uuid && (await BrekekeUtils.hasIncomingCallActivity(uuid))
+    if (hasCallScreen && uuid) {
+      BrekekeUtils.toast(uuid, msg, '', 'warning')
+      BrekekeUtils.onPageCallManage(uuid)
+      return
+    }
+    if (!ctx.toast.items.find(v => v.msg === msg)) {
+      ctx.toast.warning(msg, 3000)
+    }
   }
 
   // to check if has any active call or it is outgoing call

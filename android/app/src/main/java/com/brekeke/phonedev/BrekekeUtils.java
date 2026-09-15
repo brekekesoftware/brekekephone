@@ -232,6 +232,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     m.put("callkeepAt", now);
     m.put("callkeepUuid", uuid);
+    // js refuses to switch account while a call is alive, so this call can never be
+    // answered. js can only refuse after the screen is already displayed, which shows
+    // as a flash. do it here instead, before anything is displayed. the pn is still
+    // forwarded to js, which adds the missed call to the history
+    if (Account.hasSignedIn()
+        && !Account.isSignedIn(m)
+        && (jsCallsSize > 0 || activitiesSize > 0)) {
+      Emitter.debug("onFcmMessageReceived reject pn of another account during call id=" + pnId);
+      putUserActionRejectCall(uuid);
+      return;
+    }
     // init services if not
     initStaticServices();
     acquireWakeLock();
@@ -807,6 +818,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void closeAllIncomingCalls() {
     Emitter.debug("closeAllIncomingCalls");
     removeAll();
+  }
+
+  @ReactMethod
+  public void setSignedInAccount(String u, String t, String h, String p) {
+    Account.setSignedIn(u, t, h, p);
   }
 
   // Clear processed PN dedup cache
