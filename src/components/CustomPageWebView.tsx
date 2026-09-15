@@ -123,10 +123,9 @@ export const CustomPageWebView = ({
     return null
   }
 
-  const consoleForwardJs =
-    ctx.auth.pbxConfig?.['webphone.webview.log'] === 'true'
-      ? webviewInjectConsoleForward
-      : ''
+  const consoleForwardJs = ctx.debug.isCapturingWebviewLog()
+    ? webviewInjectConsoleForward
+    : ''
 
   return (
     <WebView

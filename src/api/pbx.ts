@@ -1158,7 +1158,6 @@ export class PBX extends EventEmitter {
     }
 
     BrekekeUtils.setPbxConfig(jsonSafe(parseCallParams(config)))
-    BrekekeUtils.setWebviewLogEnabled(config['webphone.webview.log'] === 'true')
 
     ctx.auth.pbxConfig = config
     ctx.auth.setUserAgentConfig(config['webphone.http.useragent.product'])

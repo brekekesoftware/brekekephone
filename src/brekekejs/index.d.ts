@@ -453,7 +453,6 @@ export type PbxGetProductInfoRes = {
   'webphone.http.useragent.product': string
   'webphone.error_toast.suppress_enabled': string
   'webphone.error_toast.suppress_patterns': string
-  'webphone.webview.log'?: string
   version: string
 }
 export type PbxGetProductInfoParam = {
