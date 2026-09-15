@@ -136,6 +136,7 @@ type MfaStartResult =
 type UpsertAccountOptions = {
   allowPnMfaPrompt?: boolean
   blockUi?: boolean
+  skipFgsPrompt?: boolean
 }
 
 type SetDeviceTokenOptions = {
@@ -351,7 +352,7 @@ export class AccountStore {
 
     if (!a) {
       const newAccount = p as Account
-      if (this.isFgsEligible(newAccount)) {
+      if (this.isFgsEligible(newAccount) && !options.skipFgsPrompt) {
         promptForegroundService()
       }
       this.accounts.push(newAccount)
@@ -370,7 +371,7 @@ export class AccountStore {
       : { navIndex: -1, navSubMenus: [] }
     Object.assign(a, p, navUpdate)
     // prompt only on the transition into eligible (avoids re-prompting on every sync/update)
-    if (this.isFgsEligible(a) && !wasFgsEligible) {
+    if (this.isFgsEligible(a) && !wasFgsEligible && !options.skipFgsPrompt) {
       promptForegroundService()
     }
     this.saveAccountsToLocalStorageDebounced()

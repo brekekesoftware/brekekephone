@@ -19,6 +19,7 @@ import { intl } from '#/stores/intl'
 import { sipErrorEmitter } from '#/stores/sipErrorEmitter'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { decodeParkNumber } from '#/utils/parkNumber'
+import { promptEnableLpc } from '#/utils/promptEnableLpc'
 import { resetProcessedPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
 
@@ -133,7 +134,17 @@ class Api {
       )
       return
     }
-    ctx.pnToken.sync(ca).then(() => ctx.pnToken.syncForAllAccounts())
+    ctx.pnToken.sync(ca).then(() => {
+      console.log(
+        `LPC prompt debug: calling promptEnableLpc user=${ca.pbxUsername}`,
+      )
+      try {
+        promptEnableLpc(ca)
+      } catch (err) {
+        console.error('LPC prompt debug: caught error', err)
+      }
+      return ctx.pnToken.syncForAllAccounts()
+    })
 
     ctx.auth.pbxConnectedAt = Date.now()
   }

@@ -273,7 +273,7 @@
   "This file cannot be selected",
   "This option enables a fallback Local Push Connectivity (LPC) connection for real-time call and message delivery from your Brekeke PBX when Firebase Cloud Messaging is unavailable or blocked by your network. Android will show a foreground service notification while this connection is active. You can stop it anytime by turning this option off in Account Settings.",
   "This phone index is already in use. Do you want to continue?",
-  "This server delivers calls and messages only through the local connection. When turned off, calls and messages may not arrive while the app is closed. Would you like to enable the fallback local connection?",
+  "This server delivers calls and messages only through the local connection. When turned off, calls and messages may not arrive while the app is closed. While it is on, Android shows an ongoing notification. You can switch it off anytime in Account Settings. Would you like to enable the fallback local connection?",
   "To ensure the best user experience, the application requires the \"Show on Lock screen\" and \"Display pop-up windows while running in the background\" permissions. Please enable these two permissions in your device settings to proceed",
   "To ensure the best user experience, we require the permission to display content on top of other apps. Please enable the 'Overlay Permission' in your device settings to proceed",
   "To ensure the best user experience, we require the permission to unrestricted use Battery. Please enable the 'Disable Battery Optimization' in your device settings to proceed",

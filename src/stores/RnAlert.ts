@@ -7,6 +7,7 @@ import type { IntlDebug } from '#/stores/intl'
 type CommonRnAlertFields = {
   confirmText?: string | boolean
   dismissText?: string | boolean
+  dismissOnBackdropPress?: boolean
 }
 
 export type PromptRnAlert = CommonRnAlertFields & {
