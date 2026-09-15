@@ -159,10 +159,9 @@ export const SmartImage = ({
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
-  const consoleForwardJs =
-    ctx.auth.pbxConfig?.['webphone.webview.log'] === 'true'
-      ? webviewInjectConsoleForward
-      : ''
+  const consoleForwardJs = ctx.debug.isCapturingWebviewLog()
+    ? webviewInjectConsoleForward
+    : ''
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (

@@ -131,7 +131,18 @@ export class DebugStore {
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
     RnAsyncStorage.setItem('captureDebugLog', jsonSafe(this.captureDebugLog))
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
   }
+  @observable captureWebviewLog = false
+  toggleCaptureWebviewLog = () => {
+    this.captureWebviewLog = !this.captureWebviewLog
+    RnAsyncStorage.setItem(
+      'captureWebviewLog',
+      jsonSafe(this.captureWebviewLog),
+    )
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
+  }
+  isCapturingWebviewLog = () => this.captureDebugLog && this.captureWebviewLog
 
   getLogSizeStr = () => `${filesize(this.totalLogFiles)}`
 
@@ -360,6 +371,19 @@ export class DebugStore {
           })
         }),
     )
+    // read webview log setting from storage
+    promises.push(
+      RnAsyncStorage.getItem('captureWebviewLog')
+        .then(v => {
+          this.captureWebviewLog = v ? JSON.parse(v) : false
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to read debug log settings from storage`,
+            err,
+          })
+        }),
+    )
     // read remote app version from storage
     promises.push(
       RnAsyncStorage.getItem('remoteVersion')
@@ -377,6 +401,7 @@ export class DebugStore {
     )
     //
     await Promise.all(promises)
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
     this.loading = false
   }
 }

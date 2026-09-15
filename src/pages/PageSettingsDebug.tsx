@@ -61,6 +61,15 @@ export class PageSettingsDebug extends Component {
               value={ctx.debug.captureDebugLog}
             />
             <Field
+              description={intl`Also capture messages from web pages`}
+              disabled={!ctx.debug.captureDebugLog}
+              label={intl`CAPTURE WEBVIEW LOG`}
+              nested
+              onValueChange={ctx.debug.toggleCaptureWebviewLog}
+              type='Switch'
+              value={ctx.debug.captureWebviewLog}
+            />
+            <Field
               createBtnIcon={mdiKeyboardBackspace}
               createBtnIconStyle={css.BtnIcon}
               label={intl`OPEN DEBUG LOG`}
