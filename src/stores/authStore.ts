@@ -1088,7 +1088,7 @@ export class AuthStore {
       if (
         this.signedInId &&
         this.signedInId !== acc.id &&
-        ctx.call.calls.length
+        ctx.call.hasAnyCall({ callkeepUuid: n.callkeepUuid, pnId: n.id })
       ) {
         console.log(
           `SIP PN debug: skip account switch during ongoing call pnId=${n.id}`,
