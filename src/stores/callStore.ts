@@ -165,7 +165,10 @@ export class CallStore {
       ctx.auth.signedInId &&
       pnAcc &&
       pnAcc.id !== ctx.auth.signedInId &&
-      this.calls.length
+      // same predicate as the gate in signInByNotification: a narrower one here would
+      // display this call and let the sign in refuse it, leaving the caller ringing
+      // into nothing. ignore this call, it is already in callkeepMap by now
+      this.hasAnyCall({ callkeepUuid: uuid, pnId: n.id })
     ) {
       console.log(
         `SIP PN debug: reject pn of another account during ongoing call pnId=${n.id}`,
@@ -1388,6 +1391,25 @@ export class CallStore {
   @observable ringtone = ''
   @action setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
+  }
+
+  // a call can exist on the native side only: on a cold start woken by a call pn,
+  // callkeepMap is filled as soon as the pn is parsed while this.calls stays empty
+  // until sip connects and the invite arrives.
+  // ignore is the call a caller is asking on behalf of: onCallKeepDidDisplayIncomingCall
+  // registers the new call in callkeepMap before signInByNotification runs, so without
+  // it that call would count as an ongoing call and block its own account sign in
+  hasAnyCall = (ignore?: { callkeepUuid?: string; pnId?: string }) => {
+    const isIgnored = (callkeepUuid?: string, pnId?: string) =>
+      (!!ignore?.callkeepUuid && ignore.callkeepUuid === callkeepUuid) ||
+      (!!ignore?.pnId && ignore.pnId === pnId)
+    return !!(
+      Object.values(this.callkeepMap).some(
+        k => !isIgnored(k.uuid, k.incomingPnData?.id),
+      ) ||
+      ctx.sip.phone?.getSessionCount() ||
+      this.calls.some(c => !isIgnored(c.callkeepUuid, c.pnId))
+    )
   }
 
   // to check if has any active call or it is outgoing call
