@@ -144,6 +144,7 @@ export class AuthStore {
   }
 
   @observable signedInId = ''
+  lpcPromptIntent?: { id: string; at: number }
   getCurrentAccount = () =>
     ctx.account.accounts.find(a => a.id === this.signedInId)
   getCurrentData = () => ctx.account.findDataSync(this.getCurrentAccount())
@@ -545,6 +546,10 @@ export class AuthStore {
     }
 
     this.signedInId = a.id
+    this.lpcPromptIntent =
+      !autoSignIn && !this.isSigningInByNotification
+        ? { id: a.id, at: Date.now() }
+        : undefined
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = true
     console.log(
@@ -563,6 +568,7 @@ export class AuthStore {
   // while switching runtime PBX/SIP/UC state to the next account.
   @action private resetPrevAccountConnection = () => {
     this.signedInId = ''
+    this.lpcPromptIntent = undefined
     this.resetFailureState()
     this.pbxState = 'stopped'
     console.log('SIP PN debug: set sipState stopped account switch')
@@ -626,6 +632,7 @@ export class AuthStore {
   }
   @action private resetState = () => {
     this.signedInId = ''
+    this.lpcPromptIntent = undefined
     this.pbxState = 'stopped'
     console.log('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'

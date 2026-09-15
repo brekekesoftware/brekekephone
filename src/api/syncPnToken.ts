@@ -3,6 +3,7 @@ import { AppState } from 'react-native'
 import { PBX } from '#/api/pbx'
 import { PnCommand, PnServiceId } from '#/api/pnConfig'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
+import type { PbxGetProductInfoRes } from '#/brekekejs'
 import { isAndroid, isIos, isWeb } from '#/config'
 import type { Account } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
@@ -12,6 +13,25 @@ import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { isMFASupported } from '#/utils/mfaUtils'
 import { PushNotification } from '#/utils/PushNotification'
 import { toBoolean } from '#/utils/string'
+
+export const getLpcServerFromConfig = (
+  c?: PbxGetProductInfoRes,
+): { available: boolean; optional: boolean } => {
+  if (!c) {
+    return { available: false, optional: false }
+  }
+  const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
+  const tlsKeyHash = c['webphone.lpc.keyhash'] || ''
+  if (lpcPort && !tlsKeyHash) {
+    console.warn(
+      'webphone.lpc.port is present but empty webphone.lpc.keyhash, thus lpc is disabled since we dont allow non-tls lpc connection',
+    )
+  }
+  return {
+    available: !!(lpcPort && tlsKeyHash),
+    optional: toBoolean(c['webphone.lpc.pn']),
+  }
+}
 
 const syncPnTokenWithoutCatch = async (
   p: Account,
@@ -138,20 +158,11 @@ const syncPnTokenWithoutCatch = async (
 
     const lpcPort = parseInt(c['webphone.lpc.port'] || '0', 10)
     const tlsKeyHash = c['webphone.lpc.keyhash'] || ''
-    // never establish plain non-tls lpc connection
-    const lpcEnabled = lpcPort && tlsKeyHash
-    if (lpcPort && !tlsKeyHash) {
-      console.warn(
-        'webphone.lpc.port is present but empty webphone.lpc.keyhash, thus lpc is disabled since we dont allow non-tls lpc connection',
-      )
-    }
     const lpcPn = toBoolean(c['webphone.lpc.pn'])
+    const lpcServer = getLpcServerFromConfig(c)
     // remember what the server offers so the signed out account settings form can
     // describe it without a pbx connection
-    await ctx.account.updateLpcServerToAccountData(p, {
-      available: !!lpcEnabled,
-      optional: lpcPn,
-    })
+    await ctx.account.updateLpcServerToAccountData(p, lpcServer)
 
     // the android lpc foreground service is opt in. when the user has not opted in
     // we register cloud push only, exactly as if the server had no lpc config.
@@ -159,14 +170,14 @@ const syncPnTokenWithoutCatch = async (
     const lpcUserOn = isAndroid ? !!p.lpcEnabled : true
     // if lpc is enabled pnmanageNew must be true
     // since lpc is only available in pbx 3.14.5 and above
-    if (!lpcEnabled || !newParams || !lpcUserOn) {
+    if (!lpcServer.available || !newParams || !lpcUserOn) {
       BrekekeUtils.disableLPC()
       if (newParams) {
         // lpc does not run on this path: either the user opted out of it or push is off
         // entirely, so any lpc registration from an earlier sync has to go too. and on
         // an lpc only server (webphone.lpc.pn off) there is no fallback to cloud push -
         // registering fcm here would push despite the admin having disabled it
-        if (lpcEnabled && (!lpcPn || !pnEnabled)) {
+        if (lpcServer.available && (!lpcServer.optional || !pnEnabled)) {
           newParams.command = PnCommand.remove
           newParams.service_id = [PnServiceId.lpc, cloudServiceId]
         }

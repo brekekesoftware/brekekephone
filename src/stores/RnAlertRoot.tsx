@@ -80,6 +80,7 @@ const RnAlertR = ({
     message: string | ReactElement
     dismissText?: string | boolean
     confirmText?: string | boolean
+    dismissOnBackdropPress?: boolean
     onConfirm(): void
     onDismiss(): void
   }
@@ -134,6 +135,7 @@ const RnAlertR = ({
         ]}
       >
         <RnTouchableOpacity
+          disabled={props.dismissOnBackdropPress === false}
           onPress={props.onDismiss}
           style={StyleSheet.absoluteFill}
         />
