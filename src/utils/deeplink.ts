@@ -1,6 +1,6 @@
 import { Linking } from 'react-native'
 
-import { compareAccountPartial } from '#/stores/accountStore'
+import { compareAccountPartial, toPhoneIndex } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import type { UrlParams } from '#/utils/deeplink-parse'
 import { parse } from '#/utils/deeplink-parse'
@@ -43,15 +43,16 @@ export const getUrlParams = async () => {
       return
     }
     const ca = ctx.auth.getCurrentAccount()
-    // check against the current user
+    // compareAccountPartial omits phone index; a link with a new index must not early-return
     if (
       !ca ||
-      compareAccountPartial(ca, {
+      (compareAccountPartial(ca, {
         pbxHostname: urlParams.host,
         pbxPort: urlParams.port,
         pbxUsername: urlParams.user,
         pbxTenant: urlParams.tenant,
-      })
+      }) &&
+        toPhoneIndex(ca.pbxPhoneIndex) === toPhoneIndex(urlParams.phone_idx))
     ) {
       return
     }
