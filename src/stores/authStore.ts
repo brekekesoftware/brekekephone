@@ -553,6 +553,11 @@ export class AuthStore {
         : undefined
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = true
+    // these belong to whoever was signed in before, which may be another account.
+    // cleared unconditionally: signInByNotification pre-clears signedInId, so the
+    // account-switch branch above does not run on the pn path. api/index only
+    // re-reads the properties while this is empty
+    this.userExtensionProperties = null
     console.log(
       '=======================================================================',
     )
@@ -1149,15 +1154,20 @@ export class AuthStore {
       }
     }
   }
+  // once extension properties are read, they decide for both settings below: a fresh
+  // false must beat the cached true, otherwise an extension that had it on keeps
+  // behaving as on forever
   phoneappliEnabled = () =>
     !isWeb &&
-    (this.userExtensionProperties?.phoneappli ||
-      ctx.auth.getCurrentData()?.phoneappliEnabled)
+    (this.userExtensionProperties
+      ? this.userExtensionProperties.phoneappli
+      : !!ctx.auth.getCurrentData()?.phoneappliEnabled)
   aiphoneNurseCallEnabled = () =>
     !isWeb &&
-    (this.userExtensionProperties?.aiphoneNurseCall ||
-      ctx.auth.getCurrentData()?.aiphoneNurseCallEnabled)
-  userExtensionProperties: null | {
+    (this.userExtensionProperties
+      ? this.userExtensionProperties.aiphoneNurseCall
+      : !!ctx.auth.getCurrentData()?.aiphoneNurseCallEnabled)
+  @observable userExtensionProperties: null | {
     id: string
     name: string
     language: string

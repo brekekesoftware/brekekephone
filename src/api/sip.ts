@@ -130,7 +130,9 @@ export class SIP extends EventEmitter {
         partyImageUrl: m?.getHeader('X-PBX-IMAGE-RINGING'),
         talkingImageUrl: m?.getHeader('X-PBX-IMAGE-TALKING'),
         partyImageSize: m?.getHeader('X-PBX-IMAGE-SIZE'),
-        urlInfo: m?.getHeader('X-URL-Info'),
+        // outgoing calls must not pick up X-URL-Info from the 180/200 responses:
+        // it makes updatePhoneState fire on calls we placed (aiphone nurse call)
+        urlInfo: isOutgoing ? undefined : m?.getHeader('X-URL-Info'),
         pbxTenant: arr?.[0],
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],
