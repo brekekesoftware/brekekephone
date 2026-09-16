@@ -1497,8 +1497,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
-    if (isVideoCall) {
-      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE);
+    // isVideoCall stays true after the user turns video off, and the video view is dropped
+    // when the remote stream ends: gating on it left the loading circle stuck on the black
+    // video area until unhold, and threw on the null vWebrtcVideo below
+    var isShowingVideo = vWebrtcVideo != null && vWebrtc.getVisibility() == View.VISIBLE;
+    videoLoading.setVisibility(holding && isShowingVideo ? View.VISIBLE : View.GONE);
+    if (isShowingVideo) {
       vWebrtcVideo.setVisibility(holding ? View.GONE : View.VISIBLE);
     }
   }
