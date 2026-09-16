@@ -51,6 +51,7 @@ import { checkPermForCall, permForCall } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { registerOnUnhandledError } from '#/utils/registerOnUnhandledError'
 import { waitTimeout } from '#/utils/waitTimeout'
+import { waitOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
 import { webPromptPermission } from '#/utils/webPromptPermission'
 
 const initApp = async () => {
@@ -308,6 +309,9 @@ PushNotification.register(async () => {
     return
   }
   alreadyInitApp = true
+  if (isWeb) {
+    await waitOpenInBrowserChoice()
+  }
   await initApp().catch(console.error)
   await waitTimeout(100)
   runInAction(() => {

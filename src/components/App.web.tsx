@@ -2,7 +2,7 @@
 
 import qs from 'qs'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isAndroid, isIOS } from 'react-device-detect'
 import { StyleSheet, View } from 'react-native'
 import type Url from 'url-parse'
@@ -19,6 +19,7 @@ import { v } from '#/components/variables'
 import { bundleIdentifier, isWeb } from '#/config'
 import { isEmbed, webRootId } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
+import { resolveOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
 import { parse } from '#/utils/deeplink-parse'
 
 // only insert css that affect this root id
@@ -98,6 +99,12 @@ const css = StyleSheet.create({
 export const App = () => {
   const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
   const isBrowserOrEmbed = isBrowser || isEmbed
+
+  useEffect(() => {
+    if (isBrowserOrEmbed) {
+      resolveOpenInBrowserChoice()
+    }
+  }, [isBrowserOrEmbed])
 
   let child: ReactElement | null = null
   if (isBrowserOrEmbed) {
