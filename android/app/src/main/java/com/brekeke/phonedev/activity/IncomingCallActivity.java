@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -911,6 +913,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   // aiphone nurse-call AppToWeb I/F data (passed down from JS via setTalkingAvatar)
   public String aiphoneUrlInfo = "";
   public String aiphoneHc = "";
+  public String aiphoneUrlInfoSent = "";
+  public boolean isAvatarTalkingPageLoaded = false;
+  public String avatarTalkingUrlLoading = "";
 
   public void toggleCallManageControls() {
     if (isCallManageControlsHidden) {
@@ -1062,22 +1067,23 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               super.onPageFinished(view, url);
               vWebViewAvatarTalkingLoading.setVisibility(View.GONE);
               isAvatarTalkingLoaded = true;
-              if (BrekekeUtils.aiphoneNurseCallEnabled
-                  && aiphoneUrlInfo != null
-                  && !aiphoneUrlInfo.isEmpty()) {
-                view.evaluateJavascript(
-                    "try{window.updatePhoneState&&window.updatePhoneState("
-                        + org.json.JSONObject.quote(aiphoneUrlInfo)
-                        + ","
-                        + org.json.JSONObject.quote(aiphoneHc == null ? "" : aiphoneHc)
-                        + ",2,0)}catch(e){}",
-                    null);
-              }
+              isAvatarTalkingPageLoaded = true;
+              sendAiphonePhoneState();
+            }
+
+            @Override
+            public void onReceivedError(
+                WebView view, WebResourceRequest request, WebResourceError error) {
+              super.onReceivedError(view, request, error);
+              // let the next call update try the load again
+              avatarTalkingUrlLoading = "";
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
+              isAvatarTalkingPageLoaded = false;
+              aiphoneUrlInfoSent = "";
               vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
               if (webviewLogEnabled()) {
                 view.evaluateJavascript(webviewConsoleForwardJs, null);
@@ -1092,10 +1098,13 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               }
             }
           });
-      if (!isAvatarTalkingLoaded) {
+      // isAvatarTalkingLoaded only turns true when the first load finishes, so two calls
+      // inside that window loaded the page twice and the page got updatePhoneState twice
+      if (!isAvatarTalkingLoaded && !talkingAvatar.equals(avatarTalkingUrlLoading)) {
         // TODO:
         // webViewAvatar: BrekekeUtils.userAgentConfig != null
         // webViewAvatarTalking: !isAvatarTalkingLoaded
+        avatarTalkingUrlLoading = talkingAvatar;
         webViewAvatarTalking.loadUrl(talkingAvatar);
       }
     }
@@ -1516,9 +1525,33 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSpeaker.setSelected(isSpeakerOn);
   }
 
+  // the nurse call setting and the url info arrive from js separately and either can land
+  // after the page has finished loading, so the send is retried from all three places.
+  // isAvatarTalkingPageLoaded is not isAvatarTalkingLoaded: that one stays true forever and
+  // would let a js trigger send into a page that is still loading, marking it sent and
+  // making onPageFinished skip the only send that would have worked
+  public void sendAiphonePhoneState() {
+    if (!BrekekeUtils.aiphoneNurseCallEnabled
+        || !isAvatarTalkingPageLoaded
+        || aiphoneUrlInfo == null
+        || aiphoneUrlInfo.isEmpty()
+        || aiphoneUrlInfo.equals(aiphoneUrlInfoSent)) {
+      return;
+    }
+    aiphoneUrlInfoSent = aiphoneUrlInfo;
+    webViewAvatarTalking.evaluateJavascript(
+        "try{window.updatePhoneState&&window.updatePhoneState("
+            + org.json.JSONObject.quote(aiphoneUrlInfo)
+            + ","
+            + org.json.JSONObject.quote(aiphoneHc == null ? "" : aiphoneHc)
+            + ",2,0)}catch(e){}",
+        null);
+  }
+
   public void setImageTalkingUrl(String url, boolean _isLarge, String urlInfo, String hc) {
     aiphoneUrlInfo = urlInfo == null ? "" : urlInfo;
     aiphoneHc = hc == null ? "" : hc;
+    sendAiphonePhoneState();
     if (url.equalsIgnoreCase(talkingAvatar)) {
       return;
     }

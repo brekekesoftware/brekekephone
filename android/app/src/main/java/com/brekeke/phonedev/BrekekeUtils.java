@@ -984,6 +984,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setAiphoneNurseCallEnabled(Boolean isEnabled) {
     aiphoneNurseCallEnabled = isEnabled;
+    // js reads this setting after sign in, so it can turn on while a call screen is already
+    // showing a loaded page: without this the page never gets its url info for that call
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.sendAiphonePhoneState();
+              } catch (Exception e) {
+              }
+            }
+          } catch (Exception e) {
+          }
+        });
   }
 
   @ReactMethod

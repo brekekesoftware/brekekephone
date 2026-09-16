@@ -141,6 +141,9 @@ export const SmartImage = ({
       return
     }
     cUrl.current = cPageUrl
+    // the page navigated by itself: without this the new page never gets updatePhoneState,
+    // because firedRef is otherwise only cleared when the avatar url changes
+    firedRef.current = false
     setStatusImageLoading(StatusImage.loading)
   }
   const onLoadEnd = () => {

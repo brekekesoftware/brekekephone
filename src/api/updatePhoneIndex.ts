@@ -4,6 +4,7 @@ import { ctx } from '#/stores/ctx'
 import { intl } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { RnStacker } from '#/stores/RnStacker'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { openLinkSafely, urls } from '#/utils/deeplink'
 import { PushNotification } from '#/utils/PushNotification'
 
@@ -39,6 +40,9 @@ export const handlePhoneAppli = async extProps => {
     d.aiphoneNurseCallEnabled = extProps.aiphoneNurseCall
     ctx.account.updateAccountData(d)
   }
+  // the native call screen is told at sign in, before this read returns, so it must
+  // be told again here or it keeps the stale value for the whole session
+  BrekekeUtils.setAiphoneNurseCallEnabled(!!ctx.auth.aiphoneNurseCallEnabled())
 
   // open PhoneAppli app when phoneappli.enable is true and on PageCallRecents
   const s = RnStacker.stacks[RnStacker.stacks.length - 1]
