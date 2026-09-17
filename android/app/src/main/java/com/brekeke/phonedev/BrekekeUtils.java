@@ -84,14 +84,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   private static final ConcurrentHashMap<String, String> processedPnIds = new ConcurrentHashMap<>();
 
   public static void acquireWakeLock() {
-    if (!wl.isHeld()) {
+    // same as isLocked: wl is null in a process android started without the rn module
+    // or a pn, so it must be inited here - dropping this brings a null wl crash back
+    initStaticServices();
+    if (wl != null && !wl.isHeld()) {
       Emitter.debug("calling wl.acquire()");
       wl.acquire();
     }
   }
 
   public static void releaseWakeLock() {
-    if (wl.isHeld()) {
+    initStaticServices();
+    if (wl != null && wl.isHeld()) {
       Emitter.debug("calling wl.release()");
       wl.release();
     }
@@ -133,6 +137,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void initStaticServices() {
     var ctx = Ctx.app();
+    if (ctx == null) {
+      return;
+    }
     if (wl == null) {
       var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
       wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::BrekekeUtils");
@@ -333,7 +340,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static boolean isLocked() {
-    return km.isKeyguardLocked() || km.isDeviceLocked();
+    // android can recreate IncomingCallActivity in a process where neither the rn module
+    // constructor nor onFcmMessageReceived ran, so km is null and onCreate crashes. init
+    // it here too - dropping this init or null check brings the launch crash back
+    initStaticServices();
+    return km != null && (km.isKeyguardLocked() || km.isDeviceLocked());
   }
 
   //
