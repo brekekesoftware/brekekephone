@@ -130,6 +130,7 @@ export const CustomPageWebView = ({
   return (
     <WebView
       source={buildWebViewSource(url)}
+      webviewDebuggingEnabled={ctx.debug.isCapturingWebviewLog()}
       injectedJavaScript={consoleForwardJs + js}
       injectedJavaScriptBeforeContentLoaded={
         consoleForwardJs + (isAndroid ? js : '')

@@ -34,7 +34,7 @@ export const webviewInjectConsoleForward = `
     };
   });
   window.addEventListener('error', function(e) {
-    send('error', (e.message || e) + ' ' + (e.filename || '') + ':' + (e.lineno || ''));
+    send('error', (e.message || e) + ' ' + (e.filename || '') + ':' + (e.lineno || '') + (e.error && e.error.stack ? ' ' + e.error.stack : ''));
   });
   window.addEventListener('unhandledrejection', function(e) {
     var reason = e.reason && (e.reason.stack || e.reason.message) ? e.reason.stack || e.reason.message : e.reason;
