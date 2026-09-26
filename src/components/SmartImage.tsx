@@ -42,19 +42,24 @@ const css = StyleSheet.create({
   },
 })
 
-const js = `
-// set meta data config viewport
-const meta = document.createElement('meta');
-meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
-meta.setAttribute('name', 'viewport');
-document.getElementsByTagName('head')[0].appendChild(meta);
-// send data to rn to stop loading
-function sendJsonToRn(json) {
-  window.ReactNativeWebView.postMessage(JSON.stringify(json));
-}
-
-${webviewInjectSendJsonToRnOnLoad()}
-`
+const js = `(function() {
+  function sendJsonToRn(json) {
+    window.ReactNativeWebView.postMessage(JSON.stringify(json));
+  }
+  function addViewport() {
+    if (document.__brekekeViewportAdded || !document.head) {
+      return;
+    }
+    document.__brekekeViewportAdded = true;
+    var meta = document.createElement('meta');
+    meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
+    meta.setAttribute('name', 'viewport');
+    document.head.appendChild(meta);
+  }
+  addViewport();
+  document.addEventListener('DOMContentLoaded', addViewport);
+  ${webviewInjectSendJsonToRnOnLoad()}
+})();`
 // Aiphone nurse-call WebToApp I/F: no-op stubs so the content's WebInterface.* calls
 // don't fall back to its own dummy. Injected before content load when the feature is on.
 const stubJs = `window.WebInterface = { display10key(){}, displayPhoneControl(){}, updateUrlString(){}, callMainPage(){}, closePhoneControl(){} };`
@@ -178,6 +183,7 @@ export const SmartImage = ({
         <WebView
           ref={webviewRef}
           source={{ uri }}
+          webviewDebuggingEnabled={ctx.debug.isCapturingWebviewLog()}
           injectedJavaScript={consoleForwardJs + js}
           injectedJavaScriptBeforeContentLoaded={
             consoleForwardJs + (aiphoneOn ? stubJs : '') + (isAndroid ? js : '')
