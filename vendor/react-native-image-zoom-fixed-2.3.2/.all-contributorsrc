@@ -1,0 +1,69 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "kingdaro",
+      "name": "Darius",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/19603573?v=4",
+      "profile": "http://kingdaro.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "TPXP",
+      "name": "Thomas P.",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/7191841?v=4",
+      "profile": "https://tpxp.ddns.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ditorojuan",
+      "name": "Juan Di Toro",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/22530892?v=4",
+      "profile": "https://github.com/ditorojuan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "AlhaythamElhassan",
+      "name": "Alhaytham Elhassan",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/20684701?v=4",
+      "profile": "https://github.com/AlhaythamElhassan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "alexandrius",
+      "name": "Alexander Pataridze",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/5978212?v=4",
+      "profile": "http://alexandrius.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "pxpeterxu",
+      "name": "Peter Xu",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2924388?v=4",
+      "profile": "https://github.com/pxpeterxu",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "react-native-image-zoom",
+  "projectOwner": "ascoders",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
