@@ -64,8 +64,10 @@ export const Navigation: FC<{
         !active
       return (
         <RnTouchableOpacity
+          accessibilityLabel={`${m.key} tab`}
           key={m.key}
           onPress={active ? undefined : m.navFn}
+          testID={`${m.key} tab`}
           style={css.Btn}
         >
           <View style={[css.BtnBg, active && css.BtnBg__active]}>

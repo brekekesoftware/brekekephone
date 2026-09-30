@@ -27,7 +27,9 @@ export const CreateBtn: FC<{
   const { onPress, white } = p
   return (
     <RnTouchableOpacity
+      accessibilityLabel='Create new'
       onPress={onPress}
+      testID='Create new'
       style={[css.CreateBtn, white && css.CreateBtn__white]}
     >
       <RnIcon color={white ? 'black' : 'white'} path={mdiPlus} />

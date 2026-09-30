@@ -55,8 +55,10 @@ export const FooterActions: FC<
   Partial<{
     onBack(): void
     onBackIcon: string
+    onBackLabel: string
     onMore(): void
     onMoreIcon: string
+    onMoreLabel: string
     onNext(): void
     onNextColor: string
     onNextText: string
@@ -65,8 +67,10 @@ export const FooterActions: FC<
   const {
     onBack,
     onBackIcon,
+    onBackLabel,
     onMore,
     onMoreIcon,
+    onMoreLabel,
     onNext,
     onNextColor,
     onNextText,
@@ -76,7 +80,9 @@ export const FooterActions: FC<
     <View style={css.Actions}>
       {onBack && (
         <RnTouchableOpacity
+          accessibilityLabel={onBackLabel}
           onPress={onBack}
+          testID={onBackLabel}
           style={[css.Btn, css.Btn__back, !onMore && css.Btn__33]}
         >
           <RnIcon
@@ -87,7 +93,9 @@ export const FooterActions: FC<
       )}
       {onMore && (
         <RnTouchableOpacity
+          accessibilityLabel={onMoreLabel}
           onPress={onMore}
+          testID={onMoreLabel}
           style={[css.Btn, css.Btn__more, !onBack && css.Btn__33]}
         >
           <RnIcon path={onMoreIcon || mdiCached} />
