@@ -85,6 +85,7 @@ export const CallBar = observer(() => {
               <ButtonIcon
                 bdcolor={v.borderBg}
                 color={v.colors.danger}
+                label='Hang up'
                 onPress={oc.hangupWithUnhold}
                 path={mdiPhoneHangup}
               />

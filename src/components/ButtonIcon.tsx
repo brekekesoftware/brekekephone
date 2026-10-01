@@ -40,6 +40,7 @@ export const ButtonIcon: FC<{
   styleContainer?: ViewProps['style']
   msLoading?: number
   loading?: boolean
+  label?: string
 }> = p => {
   const [isLoading, setLoading] = useState(false)
   const onBtnPress = () => {
@@ -56,8 +57,10 @@ export const ButtonIcon: FC<{
   return (
     <View style={[css.ButtonIcon, p.styleContainer]}>
       <RnTouchableOpacity
+        accessibilityLabel={p.label}
         disabled={isLoading || p.loading || p.disabled}
         onPress={onBtnPress}
+        testID={p.label}
         style={[
           css.ButtonIcon_Btn,
           p.style,
