@@ -701,8 +701,28 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     BrekekeUtils.userAgentConfig = userAgentConfig;
   }
 
+  private static void deleteChildren(java.io.File dir) {
+    var files = dir != null ? dir.listFiles() : null;
+    if (files == null) {
+      return;
+    }
+    for (var f : files) {
+      if (f.getName().equals("image_manager_disk_cache")) {
+        continue;
+      }
+      try {
+        if (f.isDirectory()) {
+          deleteChildren(f);
+        }
+        f.delete();
+      } catch (Exception e) {
+        // skip any file that fails
+      }
+    }
+  }
+
   @ReactMethod
-  public void clearWebViewCache(Promise p) {
+  public void clearAppCache(Promise p) {
     UiThreadUtil.runOnUiThread(
         () -> {
           WebView tmp = null;
@@ -717,7 +737,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
                   a.webViewAvatarTalking.clearCache(true);
                 }
               } catch (Exception e) {
-                Emitter.error("a.clearWebViewCache", e.getMessage());
+                Emitter.error("a.clearAppCache", e.getMessage());
               }
             }
             // the app wide disk cache needs any WebView instance to be cleared
@@ -727,9 +747,14 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
             var cm = CookieManager.getInstance();
             cm.removeAllCookies(null);
             cm.flush();
+            // the Glide folder is emptied from JS by FastImage itself,
+            // because the app keeps running and Glide may be writing to it
+            var ctx = getReactApplicationContext();
+            deleteChildren(ctx.getCacheDir());
+            deleteChildren(ctx.getExternalCacheDir());
             p.resolve(true);
           } catch (Exception e) {
-            Emitter.error("clearWebViewCache", e.getMessage());
+            Emitter.error("clearAppCache", e.getMessage());
             p.resolve(false);
           } finally {
             if (tmp != null) {
