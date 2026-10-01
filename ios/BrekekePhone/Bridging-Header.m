@@ -32,7 +32,7 @@ RCT_EXTERN_METHOD(systemUptimeMs
 RCT_EXTERN_METHOD(getRingtoneOptions
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(clearWebViewCache
+RCT_EXTERN_METHOD(clearAppCache
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(validateRingtone

@@ -116,7 +116,7 @@ type TBrekekeUtils = {
     h: string,
     p: string,
   ): Promise<string>
-  clearWebViewCache(): Promise<boolean>
+  clearAppCache(): Promise<boolean>
 }
 
 export type TNativeModules = {
@@ -202,7 +202,7 @@ const Polyfill: TBrekekeUtils = {
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
   validateRingtone: () => Promise.resolve(''),
-  clearWebViewCache: () => Promise.resolve(false),
+  clearAppCache: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

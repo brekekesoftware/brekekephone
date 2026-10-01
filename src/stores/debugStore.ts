@@ -5,6 +5,7 @@ import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
 import type { ReadDirItem } from 'react-native-fs'
+import FastImage from 'react-native-fast-image'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
@@ -252,25 +253,35 @@ export class DebugStore {
       this.currentFile = undefined
     })
 
-  clearWebViewCache = () => {
+  clearAppCache = () => {
     RnAlert.prompt({
-      title: intl`Clear WebView Cache`,
-      message: intl`Do you want to clear the cache of all web pages? You may need to sign in again on custom pages.`,
-      onConfirm: this.clearWebViewCacheWithoutPrompt,
+      title: intl`Clear App Cache`,
+      message: intl`Do you want to clear the app cache? Avatars and images will be downloaded again. You may need to sign in again on custom pages.`,
+      onConfirm: this.clearAppCacheWithoutPrompt,
       confirmText: intl`CLEAR`,
     })
   }
-  clearWebViewCacheWithoutPrompt = () =>
-    BrekekeUtils.clearWebViewCache()
-      .then(ok => {
+  clearAppCacheWithoutPrompt = () =>
+    BrekekeUtils.clearAppCache()
+      .then(async ok => {
         if (!ok) {
-          throw new Error('BrekekeUtils.clearWebViewCache returned false')
+          throw new Error('BrekekeUtils.clearAppCache returned false')
         }
-        ctx.toast.success(intl`WebView cache cleared`)
+        if (!isWeb) {
+          // the image library owns its folders, so it must empty them itself
+          await FastImage.clearMemoryCache()
+          await FastImage.clearDiskCache()
+        }
+        RnAlert.prompt({
+          title: intl`App cache cleared`,
+          message: intl`Please close the app and open it again to finish clearing the cache.`,
+          confirmText: intl`OK`,
+          dismissText: false,
+        })
       })
       .catch((err: Error) => {
         RnAlert.error({
-          message: intlDebug`Failed to clear the WebView cache`,
+          message: intlDebug`Failed to clear the app cache`,
           err,
         })
       })
