@@ -14,3 +14,10 @@
 - Evidence: simulator log: `NSInvalidArgumentException ... attempt to insert nil object`, top app frame `-[WebRTCModule(RTCMediaStream) enumerateDevices:]` (react-native-webrtc).
 - Not proven: that it is the missing camera on the simulator (very likely: no device id to put in the list). Not proven if it also happens with the new react-native-webrtc version.
 - Effect: the simulator cannot run call tests. Plan P14 fallback: run the iOS call tests on the real iPhone too.
+
+## iPhone: a killed app is not woken by a call from the web phone (seen 2026-10-02)
+
+- Where seen: real iPhone 13 mini, app 2.18.00 built with development signing, signed in as 102. `e2e/test-ios-pn.mjs` kills the app, the web phone (100) calls 102 (offline users shown). Run: `~/e2e-artifacts/brekeke-phone/ios-pn-first/`.
+- Evidence: for 15 s the iPhone stays on the home screen (screenshot), no CallKit banner or slider; the web phone keeps ringing. With the app open the same call rings and connects (test `ios-call-in-out`, 11 of 11 passed).
+- Not proven: the cause. Likely a development-signed build gets a sandbox push token while the PBX sends to production APNs. Also not proven: that the PUSH NOTIFICATION switch of the 102 card is on, or that the same fails on an App Store build.
+- Fix: check the card's PUSH NOTIFICATION switch; read the PBX push log for the call; try a TestFlight/ad-hoc build. Treat as red before any upgrade (iOS baseline).
