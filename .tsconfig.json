@@ -39,7 +39,7 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Module Resolution Options */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     // "baseUrl": "./",
     // "paths": {},
     // "rootDirs": [],
