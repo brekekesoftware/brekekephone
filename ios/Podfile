@@ -30,12 +30,11 @@ target 'BrekekePhone' do
   use_react_native!(
     :path => config[:reactNativePath],
     :new_arch_enabled => false,
-    :hermes_enabled => false,
+    :hermes_enabled => true,
     :fabric_enabled => false,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
   pod 'react-native-document-picker', :path => '../node_modules/@react-native-documents/picker', :modular_headers => true
   pod 'react-native-video', :path => '../node_modules/react-native-video', :modular_headers => true
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec', :modular_headers => true
