@@ -96,14 +96,12 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       console.warn('pickFile cancelled by user')
       return
     }
-    if (
-      !(
-        err &&
-        typeof err === 'object' &&
-        'message' in err &&
-        (err as any).message === 'User canceled document picker'
-      )
-    ) {
+    if (!(
+      err &&
+      typeof err === 'object' &&
+      'message' in err &&
+      (err as any).message === 'User canceled document picker'
+    )) {
       onPickFileNativeError(err as Error)
     }
   }
