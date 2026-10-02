@@ -22,3 +22,10 @@
 - Update (user, same day): push calls work by hand when the app is in the foreground or background (CallKit banner on top). A force-quit app is not woken, as the user knows it. So this may be iOS behaviour, not a fault. The code path is PushKit (`PKPushRegistry`, `AppDelegate.swift:103`) then CallKit (react-native-callkeep `reportNewIncomingCall`). Apple's design (iOS 13+) says a VoIP push relaunches a terminated app; a swiped-away app is the unclear case. Not proven for XCUITest `terminateApp`.
 - Effect: `test-ios-pn` now sends the app to the background (works: 10 of 10 pass). The kill variant is `E2E_IOS_KILL=1` and is expected to fail until someone proves what iOS does.
 - Fix: none needed for the background case. To settle the killed case: one manual swipe-away test and the PBX push log.
+
+## ESLint 10 cannot be used yet (seen 2026-10-02, S1)
+
+- Where seen: S1 upgrade, `eslint` 9.31 -> 10.11 with `@eslint/js` 10.0.1, then `npx eslint --ext=.js,.ts,.tsx .`.
+- Evidence: lint crashes in `eslint-plugin-no-relative-import-paths` (`index.js:4`, reads a rule-context API that ESLint 10 removed). `yarn install` also warns that `@react-native/eslint-config` (0.80.1) and its plugins want ESLint 8/9.
+- Not proven: if every other plugin works on 10 (the first crash stopped the run).
+- Fix: stay on ESLint 9. Retry after the React Native upgrade (S6+) brings a newer `@react-native/eslint-config`, and replace or wrap the old plugins (`@eslint/compat` `fixupPluginRules`).
