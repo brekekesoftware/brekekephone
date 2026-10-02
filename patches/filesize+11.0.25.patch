@@ -1,0 +1,64 @@
+diff --git a/node_modules/filesize/dist/filesize.cjs b/node_modules/filesize/dist/filesize.cjs
+index f5f72f6..1b79644 100644
+--- a/node_modules/filesize/dist/filesize.cjs
++++ b/node_modules/filesize/dist/filesize.cjs
+@@ -245,11 +245,11 @@ function calculateBigIntExponent(num, e, exponent, isDecimal, precision) {
+ 	if (e === -1 || isNaN(e)) {
+ 		e = 0;
+ 		if (isDecimal) {
+-			while (e < 8 && num >= 10n ** BigInt(3 * (e + 1))) {
++			while (e < 8 && num >= BigInt(10) ** BigInt(3 * (e + 1))) {
+ 				e++;
+ 			}
+ 		} else {
+-			while (e < 8 && num >= 1024n ** BigInt(e + 1)) {
++			while (e < 8 && num >= BigInt(1024) ** BigInt(e + 1)) {
+ 				e++;
+ 			}
+ 		}
+@@ -280,11 +280,11 @@ function calculateBigIntExponent(num, e, exponent, isDecimal, precision) {
+  * @returns {Object} Object with result and e properties
+  */
+ function calculateBigIntValue(num, e, isDecimal, bits, ceil, autoExponent = true) {
+-	const power = isDecimal ? 10n ** BigInt(3 * e) : 1024n ** BigInt(e);
++	const power = isDecimal ? BigInt(10) ** BigInt(3 * e) : BigInt(1024) ** BigInt(e);
+ 	// Scaled division preserves precision above Number.MAX_SAFE_INTEGER.
+ 	// Multiply by 10^16 before dividing, then scale back down, so the
+ 	// quotient keeps ~16 significant digits instead of collapsing to a float.
+-	const SHIFT = 10n ** 16n;
++	const SHIFT = BigInt(10) ** BigInt(16);
+ 	let result = Number((num * SHIFT) / power) / Number(SHIFT);
+ 
+ 	if (bits) {
+diff --git a/node_modules/filesize/dist/filesize.js b/node_modules/filesize/dist/filesize.js
+index 3b42145..dd03f4a 100644
+--- a/node_modules/filesize/dist/filesize.js
++++ b/node_modules/filesize/dist/filesize.js
+@@ -241,11 +241,11 @@ function calculateBigIntExponent(num, e, exponent, isDecimal, precision) {
+ 	if (e === -1 || isNaN(e)) {
+ 		e = 0;
+ 		if (isDecimal) {
+-			while (e < 8 && num >= 10n ** BigInt(3 * (e + 1))) {
++			while (e < 8 && num >= BigInt(10) ** BigInt(3 * (e + 1))) {
+ 				e++;
+ 			}
+ 		} else {
+-			while (e < 8 && num >= 1024n ** BigInt(e + 1)) {
++			while (e < 8 && num >= BigInt(1024) ** BigInt(e + 1)) {
+ 				e++;
+ 			}
+ 		}
+@@ -276,11 +276,11 @@ function calculateBigIntExponent(num, e, exponent, isDecimal, precision) {
+  * @returns {Object} Object with result and e properties
+  */
+ function calculateBigIntValue(num, e, isDecimal, bits, ceil, autoExponent = true) {
+-	const power = isDecimal ? 10n ** BigInt(3 * e) : 1024n ** BigInt(e);
++	const power = isDecimal ? BigInt(10) ** BigInt(3 * e) : BigInt(1024) ** BigInt(e);
+ 	// Scaled division preserves precision above Number.MAX_SAFE_INTEGER.
+ 	// Multiply by 10^16 before dividing, then scale back down, so the
+ 	// quotient keeps ~16 significant digits instead of collapsing to a float.
+-	const SHIFT = 10n ** 16n;
++	const SHIFT = BigInt(10) ** BigInt(16);
+ 	let result = Number((num * SHIFT) / power) / Number(SHIFT);
+ 
+ 	if (bits) {
