@@ -43,3 +43,10 @@
 - Evidence: filesize 11.0.25 has BigInt literals (`10n**BigInt(...)`) in its bundle code; Hermes cannot parse them. With filesize 11.0.1 the bundle has none.
 - Not proven: the first filesize version that added them.
 - Fix (done): `patches/filesize+11.0.25.patch` (patch-package, runs on postinstall) swaps `10n` for `BigInt(10)`, so filesize stays on the latest version. Run `scripts/check-bundle-bigint.sh <bundle>` after every package upgrade; it fails on the bad bundle and passes on the patched one. When filesize is upgraded again, check if the patch is still needed.
+
+## react-native-share 12.3.1 breaks "share debug log" on Android (seen 2026-10-03, S2)
+
+- Where seen: S2, Android release build. Debug Log screen, tap the arrow on a log file: no share sheet opens. `test-boot-info` fails at "android share sheet Files by Google" (10 s timeout).
+- Evidence: logcat `E RNShare: Attempt to invoke virtual method 'java.lang.String android.net.Uri.getScheme()' on a null object reference` at every tap. Same flow worked with 12.1.0 (S1 build). The app passes a `data:text/plain;base64,...` URL (`src/stores/debugStore.ts:225`).
+- Not proven: which version between 12.1.0 and 12.3.1 broke it (12.2.x not tried); what exactly is null.
+- Fix: pinned to 12.1.0. Retry a newer version later with the share-log check (`node e2e/test-boot-info.mjs`).
