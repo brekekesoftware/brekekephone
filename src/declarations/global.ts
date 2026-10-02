@@ -2,12 +2,7 @@ export type TFlatten<T> = {} & {
   [k in keyof T]: T[k]
 }
 export type TImmutable<T> = T extends
-  | Function
-  | boolean
-  | number
-  | string
-  | null
-  | undefined
+  Function | boolean | number | string | null | undefined
   ? T
   : T extends Array<infer A>
     ? ReadonlyArray<Immutable<A>>

@@ -354,10 +354,10 @@ export const parse = async (
 
   const isLocalChatNotification = Boolean(
     isLocal ||
-      raw.my_custom_data ||
-      raw.is_local_notification ||
-      n.my_custom_data ||
-      n.is_local_notification,
+    raw.my_custom_data ||
+    raw.is_local_notification ||
+    n.my_custom_data ||
+    n.is_local_notification,
   )
   const isChatMessage = isLocalChatNotification || !n.isCall
   // handle uc chat notification on press

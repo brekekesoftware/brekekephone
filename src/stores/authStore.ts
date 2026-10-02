@@ -38,11 +38,7 @@ import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 export type ConnectionState =
-  | 'stopped'
-  | 'waiting'
-  | 'connecting'
-  | 'success'
-  | 'failure'
+  'stopped' | 'waiting' | 'connecting' | 'success' | 'failure'
 
 type PendingCustomPageEvent = {
   key: string
