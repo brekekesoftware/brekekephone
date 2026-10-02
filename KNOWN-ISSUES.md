@@ -36,3 +36,10 @@
 - Evidence: TypeScript 7 (native compiler) has no JavaScript API. `typescript-eslint` 8.71 needs `typescript >=4.8.4 <6.1.0`; `type-coverage` uses the same API. The app is on TypeScript 6.0.3 instead (type check clean, type coverage 99.46% as before).
 - Not proven: running `tsc` 7 next to TS 6 (alias setup from typescript-eslint docs).
 - Fix: retry when typescript-eslint supports 7, or add `@typescript/native` for `tsc` only.
+
+## filesize 11.0.25 freezes the Android app (seen 2026-10-02, S1)
+
+- Where seen: S1 release APK stuck on the splash screen. Logcat: `JavascriptException: No identifiers allowed directly after numeric literal` (Hermes).
+- Evidence: filesize 11.0.25 has BigInt literals (`10n**BigInt(...)`) in its bundle code; Hermes cannot parse them. With filesize 11.0.1 the bundle has none.
+- Not proven: the first filesize version that added them.
+- Fix: filesize stays at 11.0.1. Run `scripts/check-bundle-bigint.sh <bundle>` after every package upgrade (it fails on the bad bundle, passes on the good one).
