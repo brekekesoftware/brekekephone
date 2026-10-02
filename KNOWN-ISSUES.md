@@ -42,4 +42,4 @@
 - Where seen: S1 release APK stuck on the splash screen. Logcat: `JavascriptException: No identifiers allowed directly after numeric literal` (Hermes).
 - Evidence: filesize 11.0.25 has BigInt literals (`10n**BigInt(...)`) in its bundle code; Hermes cannot parse them. With filesize 11.0.1 the bundle has none.
 - Not proven: the first filesize version that added them.
-- Fix: filesize stays at 11.0.1. Run `scripts/check-bundle-bigint.sh <bundle>` after every package upgrade (it fails on the bad bundle, passes on the good one).
+- Fix (done): `patches/filesize+11.0.25.patch` (patch-package, runs on postinstall) swaps `10n` for `BigInt(10)`, so filesize stays on the latest version. Run `scripts/check-bundle-bigint.sh <bundle>` after every package upgrade; it fails on the bad bundle and passes on the patched one. When filesize is upgraded again, check if the patch is still needed.

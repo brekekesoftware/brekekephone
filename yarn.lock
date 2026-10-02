@@ -6645,10 +6645,10 @@ filelist@^1.0.4:
   dependencies:
     minimatch "^5.0.1"
 
-filesize@11.0.1:
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/filesize/-/filesize-11.0.1.tgz#b3749a660c1ea5cb5f5a6286b181d28824f640c8"
-  integrity sha512-ua1SLPcFgqf1lICRVqTA5d8T6kqg2ZTIm0BImnUk4pZzfAlwhqO9zKv7GCE5FGl3zIbBZZSmq7yLikFNsi5eXw==
+filesize@11.0.25:
+  version "11.0.25"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-11.0.25.tgz#4ca7f2a0703041e7c6eabaf1ddf5896ffef6c0b4"
+  integrity sha512-oPVK4S+B5nRK8eL5FORi4RSzbz/1PmUx17NQLMIWv8tlNVDUFgLY0GNApL7tEebL4WgkBqSJGB3AJsCXUs01hw==
 
 filesize@^8.0.6:
   version "8.0.7"
@@ -11080,7 +11080,7 @@ react-native-image-size@^1.1.3:
   version "3.2.5"
   dependencies:
     react-native-image-size "^1.1.3"
-    react-native-image-zoom-fixed "file:../../../../../../Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-97b1d927-cb33-4536-92d2-c3137dd4d24e-1790958615977/node_modules/react-native-image-zoom-fixed-2.3.2"
+    react-native-image-zoom-fixed "file:../../../../../../Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-8826acfe-42a4-4d18-8029-cbb6f2a25bdd-1790959402655/node_modules/react-native-image-zoom-fixed-2.3.2"
 
 react-native-incall-manager@4.2.1:
   version "4.2.1"
