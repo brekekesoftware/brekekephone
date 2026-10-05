@@ -33,7 +33,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
       launchOptions: launchOptions
     )
     UNUserNotificationCenter.current().delegate = self
-    RNSplashScreen.show()
     return true
   }
 
@@ -221,5 +220,10 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
     #else
       Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
+  }
+
+  override func customize(_ rootView: RCTRootView) {
+    super.customize(rootView)
+    RNBootSplash.initWithStoryboard("LaunchScreen", rootView: rootView)
   }
 }

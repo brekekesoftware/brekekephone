@@ -12,7 +12,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import SplashScreen from 'react-native-splash-screen'
+import BootSplash from 'react-native-bootsplash'
 
 import { AnimatedSize } from '#/components/AnimatedSize'
 import { CallBar } from '#/components/CallBar'
@@ -351,8 +351,8 @@ const css = StyleSheet.create({
 
 export const App = observer(() => {
   useEffect(() => {
-    if (!isWeb) {
-      SplashScreen.hide()
+    if (isIos) {
+      BootSplash.hide()
     }
   }, [])
 
