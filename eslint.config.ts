@@ -67,7 +67,7 @@ const base: ConfigWithExtends = {
     semi: [warn, 'never'],
     'arrow-body-style': [warn, 'as-needed'],
     'no-useless-rename': warn,
-    'object-shorthand': [warn, 'always'],
+    'object-shorthand': [warn, 'always', { methodsIgnorePattern: '^init$' }],
     'one-var': [warn, 'never'],
     'prefer-const': warn,
     'react/jsx-no-useless-fragment': warn,
