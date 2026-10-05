@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
-index 3fd7238..5776e03 100644
+index 5d95b90..0c25bd4 100644
 --- a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
 +++ b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
-@@ -7,35 +7,33 @@
+@@ -7,30 +7,20 @@
  
  #import <React/RCTWebSocketModule.h>
  
@@ -42,6 +42,9 @@ index 3fd7238..5776e03 100644
  
  @end
  
+@@ -42,7 +32,15 @@ void RCTSetCustomSRWebSocketProvider(SRWebSocketProvider provider)
+ }
+ 
  @implementation RCTWebSocketModule {
 -  NSMutableDictionary<NSNumber *, SRWebSocket *> *_sockets;
 +  // SRWebSocket is no longer used → it has been replaced with NSURLSessionWebSocketTask
@@ -56,7 +59,7 @@ index 3fd7238..5776e03 100644
    NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
  }
  
-@@ -51,15 +49,19 @@ RCT_EXPORT_MODULE()
+@@ -58,15 +56,19 @@ RCT_EXPORT_MODULE()
    return @[ @"websocketMessage", @"websocketOpen", @"websocketFailed", @"websocketClosed" ];
  }
  
@@ -78,29 +81,33 @@ index 3fd7238..5776e03 100644
 +  _sharedSession = nil;
  }
  
- RCT_EXPORT_METHOD(connect
-@@ -89,21 +91,37 @@ RCT_EXPORT_METHOD(connect
-       [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+ RCT_EXPORT_METHOD(
+@@ -95,26 +97,37 @@ RCT_EXPORT_METHOD(
      }];
    }
+ 
+-  SRWebSocket *webSocket;
+-  if (srWebSocketProvider != nullptr) {
+-    webSocket = srWebSocketProvider(request);
 +  // NSURLSessionWebSocketTask does not accept protocol parameters like SocketRocket.
 +  // Set subprotocols via Sec-WebSocket-Protocol header. Avoid being rejected by the server during handshake
 +  if (protocols.count > 0) {
 +    [request setValue:[protocols componentsJoinedByString:@", "] forHTTPHeaderField:@"Sec-WebSocket-Protocol"];
-+  }
+   }
+-  if (webSocket == nil) {
+-    webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
 +
 +  // Lazily create a shared session so TLS sessions are cached and reused across reconnections.
 +  // This avoids full TLS handshakes on every reconnect (e.g. during UC nonce re-auth).
 +  if (!_sharedSession) {
 +    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
 +    _sharedSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-+  }
-+  NSURLSessionWebSocketTask *task = [_sharedSession webSocketTaskWithRequest:request];
- 
--  SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+   }
 -  [webSocket setDelegateDispatchQueue:[self methodQueue]];
 -  webSocket.delegate = self;
 -  webSocket.reactTag = @(socketID);
++  NSURLSessionWebSocketTask *task = [_sharedSession webSocketTaskWithRequest:request];
++
    if (!_sockets) {
      _sockets = [NSMutableDictionary new];
    }
@@ -124,7 +131,7 @@ index 3fd7238..5776e03 100644
  }
  
  RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)socketID)
-@@ -113,18 +131,25 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
+@@ -124,18 +137,25 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
  
  - (void)sendData:(NSData *)data forSocketID:(NSNumber *__nonnull)socketID
  {
@@ -156,14 +163,13 @@ index 3fd7238..5776e03 100644
  }
  
  - (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
-@@ -135,59 +160,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
+@@ -146,59 +166,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
    _contentHandlers[socketID] = handler;
  }
  
 -#pragma mark - RCTSRWebSocketDelegate methods
 +#pragma mark - Receive loop
- 
--- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
++
 +/**
 + * Reason:
 + * - Apple employs a "pull model" for WebSocket tasks (not a push event system).
@@ -193,7 +199,8 @@ index 3fd7238..5776e03 100644
 +    });
 +  }];
 +}
-+
+ 
+-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 +- (void)_handleMessage:(NSURLSessionWebSocketMessage *)message forSocketID:(NSNumber *)socketID
  {
    NSString *type;

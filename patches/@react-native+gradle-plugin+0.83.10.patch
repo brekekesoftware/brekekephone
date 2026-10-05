@@ -1,5 +1,5 @@
 diff --git a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
-index 1273354..9ffc076 100644
+index e62b7be..969bca9 100644
 --- a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
 +++ b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
 @@ -40,11 +40,7 @@ abstract class GenerateEntryPointTask : DefaultTask() {
