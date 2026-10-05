@@ -10,10 +10,8 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import com.brekeke.phonedev.BuildConfig;
 import com.brekeke.phonedev.utils.Emitter;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 import java.io.BufferedReader;
@@ -61,14 +59,7 @@ public class LpcUtils {
 
   // construct and load our normal React JS code bundle
   public static void createReactContextInBackground(ReactApplication r) {
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      r.getReactHost().start();
-      return;
-    }
-    ReactInstanceManager rim = r.getReactNativeHost().getReactInstanceManager();
-    if (!rim.hasStartedCreatingInitialContext()) {
-      rim.createReactContextInBackground();
-    }
+    r.getReactHost().start();
   }
 
   public static boolean checkAppInBackground() {

@@ -14,7 +14,7 @@ index f9c858b..94ea188 100644
  public abstract class NotificationManagerCompatFacade {
      public static NotificationManagerCompat from(@NonNull Context context) {
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
-index 1e7e871..52c8939 100644
+index 1e7e871..7fb516d 100644
 --- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
 +++ b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
 @@ -19,11 +19,15 @@ public class NotificationIntentAdapter {
@@ -33,7 +33,7 @@ index 1e7e871..52c8939 100644
 +            // Direct PendingIntent creation without TaskStackBuilder to prevent unnecessary activity recreation.
 +            // FLAG_UPDATE_CURRENT ensures the PendingIntent is updated if it exists, and FLAG_IMMUTABLE for security on Android 12+.
 +            return PendingIntent.getActivity(appContext, (int) System.currentTimeMillis(), mainActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-         }  
+         }
      }
  
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
@@ -48,6 +48,25 @@ index ac04274..d6741c3 100644
                  .setDefaults(Notification.DEFAULT_ALL)
                  .setAutoCancel(true);
  
+diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
+index fb1aba4..fe26eeb 100644
+--- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
++++ b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
+@@ -88,13 +88,7 @@ public class FcmToken implements IFcmToken {
+     }
+ 
+     protected void sendTokenToJS() {
+-        final ReactInstanceManager instanceManager = ((ReactApplication) mAppContext).getReactNativeHost().getReactInstanceManager();
+-        ReactContext reactContext = instanceManager.getCurrentReactContext();
+-
+-        if (reactContext == null) {
+-            // If the react context is not available, try to get the current context from the react host (RN0.76).
+-            reactContext = ((ReactApplication) mAppContext).getReactHost().getCurrentReactContext();
+-        }
++        ReactContext reactContext = ((ReactApplication) mAppContext).getReactHost().getCurrentReactContext();
+         // Note: Cannot assume react-context exists cause this is an async dispatched service.
+         if (reactContext != null && reactContext.hasActiveReactInstance()) {
+             Bundle tokenMap = new Bundle();
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java b/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
 index f9c858b..94ea188 100644
 --- a/node_modules/react-native-notifications/lib/android/app/src/reactNative59/java/com/wix/reactnativenotifications/NotificationManagerCompatFacade.java
