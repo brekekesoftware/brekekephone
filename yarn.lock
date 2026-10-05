@@ -11037,11 +11037,6 @@ react-native-emoji-selector@0.2.0:
   dependencies:
     emoji-datasource "^6.0.0"
 
-react-native-exception-handler@2.10.10:
-  version "2.10.10"
-  resolved "https://registry.yarnpkg.com/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz#b6bfe2b7e6ea4a4deb1f518f48ce2ee1d4843497"
-  integrity sha512-otAXGoZDl1689OoUJWN/rXxVbdoZ3xcmyF1uq/CsizdLwwyZqVGd6d+p/vbYvnF996FfEyAEBnHrdFxulTn51w==
-
 react-native-fast-image@8.6.3:
   version "8.6.3"
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
@@ -11087,7 +11082,7 @@ react-native-image-size@^1.1.3:
   version "3.2.5"
   dependencies:
     react-native-image-size "^1.1.3"
-    react-native-image-zoom-fixed "file:../../../../Users/vu/Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-dda0f70a-f039-4f63-b798-8cdd10073067-1791191176856/node_modules/react-native-image-zoom-fixed-2.3.2"
+    react-native-image-zoom-fixed "file:../../../../Users/vu/Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-f2f72c2f-c00f-486d-87b3-0e5a68386199-1791191268433/node_modules/react-native-image-zoom-fixed-2.3.2"
 
 react-native-incall-manager@4.3.0:
   version "4.3.0"
