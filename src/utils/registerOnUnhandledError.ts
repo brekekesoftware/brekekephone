@@ -1,13 +1,17 @@
-import type { JSExceptionHandler } from 'react-native-exception-handler'
-import {
-  setJSExceptionHandler,
-  setNativeExceptionHandler,
-} from 'react-native-exception-handler'
+const errorUtils = ErrorUtils as typeof ErrorUtils & {
+  reportError: (error: unknown) => void
+}
 
-export const registerOnUnhandledError = (fn: JSExceptionHandler) => {
-  setJSExceptionHandler(fn)
-  setNativeExceptionHandler(nativeErr => {
-    //
-    console.error('exception-handler error:', nativeErr)
-  })
+export const registerOnUnhandledError = (
+  fn: (error: any, isFatal?: boolean) => void,
+) => {
+  if (__DEV__) {
+    return
+  }
+  errorUtils.setGlobalHandler(fn)
+  const consoleError = console.error
+  console.error = (...args) => {
+    errorUtils.reportError(args[0])
+    consoleError(...args)
+  }
 }
