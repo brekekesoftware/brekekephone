@@ -1,5 +1,5 @@
+import Image from '@d11/react-native-fast-image'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import Image from 'react-native-fast-image'
 
 import { AudioPlayer } from '#/components/AudioPlayer'
 import { RnIcon } from '#/components/RnIcon'

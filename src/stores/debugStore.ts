@@ -1,3 +1,4 @@
+import FastImage from '@d11/react-native-fast-image'
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
@@ -5,7 +6,6 @@ import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
 import type { ReadDirItem } from 'react-native-fs'
-import FastImage from 'react-native-fast-image'
 import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
