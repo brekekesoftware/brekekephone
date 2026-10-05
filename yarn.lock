@@ -11087,17 +11087,12 @@ react-native-image-size@^1.1.3:
   version "3.2.5"
   dependencies:
     react-native-image-size "^1.1.3"
-    react-native-image-zoom-fixed "file:../../../../../../Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-939da8f9-29d7-4a5d-a518-a9a8843a0e7e-1790964786675/node_modules/react-native-image-zoom-fixed-2.3.2"
+    react-native-image-zoom-fixed "file:../../../../Users/vu/Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-dda0f70a-f039-4f63-b798-8cdd10073067-1791191176856/node_modules/react-native-image-zoom-fixed-2.3.2"
 
 react-native-incall-manager@4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-4.3.0.tgz#67c3402bd9f4ea3f7139d854af9f18cea784a62a"
   integrity sha512-T9TayjZH0n8kVX0KMaVCRethCJWgWC83xL8elVUV54Ue0BpFh5B8YvQUsn8p0Kxoh5zYz+MCOD9/6RrFpC+IRg==
-
-react-native-keyboard-spacer@0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-keyboard-spacer/-/react-native-keyboard-spacer-0.4.1.tgz#46f18a320432098a25ea9fa89f5143dd254d332d"
-  integrity sha512-QPX2El4U2VfhRQm1YOTrTsOJIDjJBydpdz87jmiFOxBmKJfVn7CwiTzzipKTiLwfAFoUYQ+sB/xcnIhRZPF+SQ==
 
 react-native-linear-gradient@2.8.3:
   version "2.8.3"
