@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { ViewProps } from 'react-native'
+import type { TouchableOpacityProps } from 'react-native'
 import { StyleSheet } from 'react-native'
 
 import { mdiCheck } from '#/assets/icons'
@@ -20,7 +20,7 @@ const css = StyleSheet.create({
 })
 
 export const RnCheckBox: FC<
-  ViewProps & {
+  TouchableOpacityProps & {
     isSelected: boolean
     onPress(): void
     disabled: boolean
