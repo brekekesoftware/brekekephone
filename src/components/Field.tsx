@@ -608,6 +608,8 @@ export const Field: FC<
         {!isWeb && label}
         {
           <View
+            // new arch flattens this view when pointerEvents turns null, which re-parents the input and moves focus to the first field
+            collapsable={false}
             pointerEvents={
               ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
             }
