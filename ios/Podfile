@@ -1,3 +1,6 @@
+# Build React Native from source: patches/react-native+*.patch changes RCTWebSocketModule.mm
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+ENV['RCT_USE_RN_DEP'] = '0'
 # Resolve react_native_pods.rb with node to allow for hoisting
 require_relative('../node_modules/react-native/scripts/react_native_pods')
 require_relative('../node_modules/react-native-permissions/scripts/setup')
