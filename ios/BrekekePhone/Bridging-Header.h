@@ -16,7 +16,7 @@
 
 #import "RNCPushNotificationIOS.h"
 #import "RNCallKeep.h"
-#import "RNSplashScreen.h"
+#import "RNBootSplash.h"
 #import "RNVoipPushNotificationManager.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <RNCAsyncStorage.h>
