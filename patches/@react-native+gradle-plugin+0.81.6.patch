@@ -1,11 +1,11 @@
 diff --git a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
-index c845624..108dae9 100644
+index f069eef..c50f514 100644
 --- a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
 +++ b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/tasks/GenerateEntryPointTask.kt
 @@ -39,10 +39,10 @@ abstract class GenerateEntryPointTask : DefaultTask() {
        """
                      .trimIndent())
-
+ 
 -    val packageName =
 -        model.project?.android?.packageName
 -            ?: error(
@@ -15,5 +15,5 @@ index c845624..108dae9 100644
 +        //     ?: error(
 +        //         "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
      val generatedFileContents = composeFileContent(packageName)
-
+ 
      val outputDir = generatedOutputDirectory.get().asFile
