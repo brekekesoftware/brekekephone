@@ -1,8 +1,8 @@
+import FastImage from '@d11/react-native-fast-image'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ViewProps } from 'react-native'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import Svg, { Path } from 'react-native-svg'
 
 import { mdiImageBrokenVariant } from '#/assets/icons'

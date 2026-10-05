@@ -1,7 +1,7 @@
+import type { FastImageProps } from '@d11/react-native-fast-image'
 import { observer } from 'mobx-react'
 import type { ViewProps } from 'react-native'
 import { StyleSheet, View } from 'react-native'
-import type { FastImageProps } from 'react-native-fast-image'
 
 import avatarPlaceholder from '#/assets/avatar-placeholder.png'
 
