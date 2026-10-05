@@ -7,11 +7,11 @@ import {
   ActivityIndicator,
   AppState,
   DeviceEventEmitter,
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   View,
 } from 'react-native'
-import KeyboardSpacer from 'react-native-keyboard-spacer'
 import SplashScreen from 'react-native-splash-screen'
 
 import { AnimatedSize } from '#/components/AnimatedSize'
@@ -50,8 +50,8 @@ import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { registerOnUnhandledError } from '#/utils/registerOnUnhandledError'
-import { waitTimeout } from '#/utils/waitTimeout'
 import { waitOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
+import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
 
 const initApp = async () => {
@@ -410,7 +410,7 @@ export const App = observer(() => {
           />
         )}
       </View>
-      {isIos && <KeyboardSpacer />}
+      {isIos && <KeyboardAvoidingView behavior='padding' />}
 
       {!ctx.account.appInitDone && (
         <View style={css.LoadingFullscreen}>
