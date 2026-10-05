@@ -13,47 +13,28 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
   }
 
   var window: UIWindow?
-  var bridge: RCTBridge!
+  var reactNativeDelegate: ReactNativeDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication
       .LaunchOptionsKey: Any]?
   ) -> Bool {
-    let jsCodeLocation: URL
-    jsCodeLocation = RCTBundleURLProvider.sharedSettings()
-      .jsBundleURL(forBundleRoot: "index")!
-    let rootView = RCTRootView(
-      bundleURL: jsCodeLocation,
-      moduleName: "BrekekePhone",
-      initialProperties: nil,
+    let delegate = ReactNativeDelegate()
+    let factory = RCTReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    window = UIWindow(frame: UIScreen.main.bounds)
+    factory.startReactNative(
+      withModuleName: "BrekekePhone",
+      in: window,
       launchOptions: launchOptions
     )
-    let rootViewController = UIViewController()
-    rootViewController.view = rootView
-    window = UIWindow(frame: UIScreen.main.bounds)
-    window?.rootViewController = rootViewController
-    window?.makeKeyAndVisible()
     UNUserNotificationCenter.current().delegate = self
     RNSplashScreen.show()
     return true
-  }
-
-  func sourceURLForBridge(bridge _: RCTBridge!) -> NSURL! {
-    #if DEBUG
-      return (
-        RCTBundleURLProvider
-          .sharedSettings()
-          .jsBundleURL(
-            forBundleRoot: "index",
-            fallbackExtension: nil
-          )
-      ) as NSURL?
-    #else
-      return Bundle
-        .main
-        .url(forResource: "main", withExtension: "jsbundle") as NSURL?
-    #endif
   }
 
   /// deep links
@@ -226,5 +207,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, PKPushRegistryDelegate,
                                        host: host,
                                        port: port
                                      ))
+  }
+}
+
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+  override func sourceURL(for _: RCTBridge) -> URL? {
+    bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+    #if DEBUG
+      RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+    #else
+      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    #endif
   }
 }
