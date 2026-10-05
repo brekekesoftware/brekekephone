@@ -29,9 +29,9 @@ target 'BrekekePhone' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :new_arch_enabled => false,
+    :new_arch_enabled => true,
     :hermes_enabled => true,
-    :fabric_enabled => false,
+    :fabric_enabled => true,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
