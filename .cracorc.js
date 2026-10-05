@@ -18,7 +18,7 @@ module.exports = {
         'react-native-fs': nullAlias,
         'react-native-incall-manager': nullAlias,
         'react-native-share': nullAlias,
-        'react-native-splash-screen': nullAlias,
+        'react-native-bootsplash': nullAlias,
         'react-native-background-timer': nullAlias,
         '@react-native-documents/picker': nullAlias,
       }
