@@ -1,5 +1,5 @@
 import { debounce, isEmpty } from 'lodash'
-import { action, computed, makeObservable, observable, runInAction } from 'mobx'
+import { action, computed, observable, runInAction } from 'mobx'
 import { AppState } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -39,9 +39,11 @@ import {
 } from '#/utils/webShowNotification'
 
 export class CallStore {
-  @observable inPageCallManage?: {
-    isFromCallBar?: boolean
-  } = undefined
+  @observable accessor inPageCallManage:
+    | {
+        isFromCallBar?: boolean
+      }
+    | undefined = undefined
 
   private recentCallActivityAt = 0
 
@@ -252,15 +254,15 @@ export class CallStore {
     this.endCallKeep(uuid)
   }
 
-  @observable calls: Call[] = []
+  @observable accessor calls: Call[] = []
 
   setCurrentCallId = (id: string) => {
     this.displayingCallId = id
     this.ongoingCallId = id
     this.updateBackgroundCalls()
   }
-  @observable ongoingCallId: string = ''
-  @observable displayingCallId = ''
+  @observable accessor ongoingCallId: string = ''
+  @observable accessor displayingCallId = ''
   prevDisplayingCallId = ''
   // Set when didActivateAudioSession fires before any SIP call exists (kill app +
   // quick answer). Consumed by upsertCall to correctly set isAudioActive on the call.
@@ -805,7 +807,7 @@ export class CallStore {
     }
   }
   private callkeepUuidPending = ''
-  @observable isStartingCall = false
+  @observable accessor isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (this.isStartingCall) {
       console.log('[startCall] blocked double tap')
@@ -1021,7 +1023,7 @@ export class CallStore {
   )
 
   // callkeep + pn data
-  @observable callkeepMap: {
+  @observable accessor callkeepMap: {
     [uuid: string]: {
       uuid: string
       at: number
@@ -1169,7 +1171,7 @@ export class CallStore {
 
   // actions map in case of call is not available at the time receive the action
   // this map wont be deleted if the callkeep end
-  @observable callkeepActionMap: {
+  @observable accessor callkeepActionMap: {
     [uuidOrPnId: string]: TCallKeepAction
   } = {}
   private setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
@@ -1328,7 +1330,6 @@ export class CallStore {
   }
 
   constructor() {
-    makeObservable(this)
     if (!isAndroid) {
       return
     }
@@ -1349,7 +1350,7 @@ export class CallStore {
     })
   }
 
-  @observable parkNumbers: { [k: string]: boolean } = {}
+  @observable accessor parkNumbers: { [k: string]: boolean } = {}
   @action addParkNumber = (parkNumber: string) => {
     this.parkNumbers[parkNumber] = true
   }
@@ -1358,7 +1359,7 @@ export class CallStore {
   }
 
   // some other fields
-  @observable isLoudSpeakerEnabled = false
+  @observable accessor isLoudSpeakerEnabled = false
 
   @action updateLoudSpeakerStatus = async () => {
     if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
@@ -1381,16 +1382,16 @@ export class CallStore {
     RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
     BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
-  @observable newVoicemailCount = 0
+  @observable accessor newVoicemailCount = 0
   @action setNewVoicemailCount = (n: number) => {
     this.newVoicemailCount = n
   }
   // style in CallVideosUI to save the previous video position
-  @observable videoPositionT = 25
-  @observable videoPositionL = 5
+  @observable accessor videoPositionT = 25
+  @observable accessor videoPositionL = 5
   // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
-  @observable ringtone = ''
+  @observable accessor ringtone = ''
   @action setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
   }

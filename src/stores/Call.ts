@@ -1,5 +1,5 @@
 import type { IReactionDisposer } from 'mobx'
-import { action, autorun, makeObservable, observable } from 'mobx'
+import { action, autorun, observable, observableShallow } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
@@ -29,35 +29,33 @@ const isIosBug1224Affected =
   isIos && compareSemVer(String(Platform.Version), '26') >= 0
 
 export class Call {
-  constructor(private store: CallStore) {
-    makeObservable(this)
-  }
+  constructor(private store: CallStore) {}
   line?: string
   rawSession?: Session
 
-  @observable earlyMedia: MediaStream | null = null
-  @observable withSDP: boolean = false
-  @observable withSDPControls: boolean = false
-  @observable sessionStatus: SessionStatus = 'dialing'
-  @observable id = ''
-  @observable pnId = ''
-  @observable partyNumber = ''
-  @observable partyImageUrl = ''
-  @observable partyImageSize = ''
-  @observable talkingImageUrl = ''
-  @observable urlInfo = ''
-  @observable partyName = ''
-  @observable pbxTenant = ''
-  @observable pbxRoomId = ''
-  @observable pbxTalkerId = ''
-  @observable pbxUsername = ''
-  @observable isFrontCamera = true
-  @observable callConfig: CallConfig = {}
-  @observable rqLoadings: { [k: string]: boolean } = {
+  @observable accessor earlyMedia: MediaStream | null = null
+  @observable accessor withSDP: boolean = false
+  @observable accessor withSDPControls: boolean = false
+  @observable accessor sessionStatus: SessionStatus = 'dialing'
+  @observable accessor id = ''
+  @observable accessor pnId = ''
+  @observable accessor partyNumber = ''
+  @observable accessor partyImageUrl = ''
+  @observable accessor partyImageSize = ''
+  @observable accessor talkingImageUrl = ''
+  @observable accessor urlInfo = ''
+  @observable accessor partyName = ''
+  @observable accessor pbxTenant = ''
+  @observable accessor pbxRoomId = ''
+  @observable accessor pbxTalkerId = ''
+  @observable accessor pbxUsername = ''
+  @observable accessor isFrontCamera = true
+  @observable accessor callConfig: CallConfig = {}
+  @observable accessor rqLoadings: { [k: string]: boolean } = {
     hold: false,
     record: false,
   }
-  @observable ringtoneFromSip = ''
+  @observable accessor ringtoneFromSip = ''
 
   phoneappliUsername = ''
   phoneappliAvatar = ''
@@ -79,9 +77,9 @@ export class Call {
   isAudioActive = false
   partyAnswered = false
 
-  @observable incoming = false
-  @observable answered = false
-  @observable answeredAt = 0
+  @observable accessor incoming = false
+  @observable accessor answered = false
+  @observable accessor answeredAt = 0
 
   getDuration = () => this.answeredAt && Date.now() - this.answeredAt
 
@@ -196,9 +194,9 @@ export class Call {
     ctx.sip.hangupSession(this.id)
   }
 
-  @observable videoSessionId = ''
-  @observable localVideoEnabled = false
-  @observable mutedVideo = false
+  @observable accessor videoSessionId = ''
+  @observable accessor localVideoEnabled = false
+  @observable accessor mutedVideo = false
   getLocalVideoEnabled = () => this.localVideoEnabled && !this.mutedVideo
   getRemoteVideoEnabled = (user?: string) => {
     if (user) {
@@ -237,11 +235,14 @@ export class Call {
     ctx.sip.switchCamera(this.id, this.isFrontCamera)
   }
 
-  @observable localStreamObject: MediaStream | null = null
-  @observable videoClientSessionTable: Array<Session & { vId: string }> = []
-  @observable remoteVideoEnabled = false
-  @observable videoStreamActive: (Session & { vId: string }) | null = null
-  @observable remoteUserOptionsTable: {
+  @observable accessor localStreamObject: MediaStream | null = null
+  @observable accessor videoClientSessionTable: Array<
+    Session & { vId: string }
+  > = []
+  @observable accessor remoteVideoEnabled = false
+  @observable accessor videoStreamActive: (Session & { vId: string }) | null =
+    null
+  @observable accessor remoteUserOptionsTable: {
     [key: string]: {
       withVideo: boolean
       exInfo: string
@@ -262,7 +263,7 @@ export class Call {
     item && this.updateVideoStreamActive(item)
   }
 
-  @observable muted = false
+  @observable accessor muted = false
   @action toggleMuted = () => {
     this.muted = !this.muted
     if (this.callkeepUuid) {
@@ -272,7 +273,7 @@ export class Call {
     return ctx.sip.setMuted(this.muted, this.id)
   }
 
-  @observable recording = false
+  @observable accessor recording = false
   @action updateRecordingStatus = (status: boolean) => {
     this.recording = status
     BrekekeUtils.setRecordingStatus(this.callkeepUuid, this.recording)
@@ -297,7 +298,7 @@ export class Call {
     this.recording = !this.recording
   }
 
-  @observable holding = false
+  @observable accessor holding = false
   private prevHolding = false
   // TODO: make this more generic to support all pal functions
   pendingRequestIds: string[] = []
@@ -427,7 +428,7 @@ export class Call {
     }
   }
 
-  @observable transferring = ''
+  @observable accessor transferring = ''
   private prevTransferring = ''
   transferBlind = (number: string) => {
     ctx.nav.goToPageCallRecents()

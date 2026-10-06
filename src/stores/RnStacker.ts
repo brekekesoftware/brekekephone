@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable, observableShallow } from 'mobx'
 import type { ReactComponentLike } from 'prop-types'
 import type { SyntheticEvent } from 'react'
 
@@ -20,12 +20,8 @@ export type RnStack = {
 }
 
 export class RnStackerStore {
-  @observable.shallow stacks: RnStack[] = []
-  @observable stackAnimating = false
-
-  constructor() {
-    makeObservable(this)
-  }
+  @observableShallow accessor stacks: RnStack[] = []
+  @observable accessor stackAnimating = false
 
   @action openStack = (stack: RnStack) => {
     if (stack.isRoot) {

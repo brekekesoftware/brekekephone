@@ -1,5 +1,5 @@
 import { debounce, uniqBy } from 'lodash'
-import { action, computed, makeObservable, observable, runInAction } from 'mobx'
+import { action, computed, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import type {
@@ -161,30 +161,26 @@ export const promptForegroundService = () => {
 }
 
 export class AccountStore {
-  @observable appInitDone = false
-  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  @observable accessor appInitDone = false
+  @observable accessor pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise
 
-  @observable accounts: Account[] = []
+  @observable accessor accounts: Account[] = []
   @computed get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
   }
-  @observable accountData: AccountData[] = []
+  @observable accessor accountData: AccountData[] = []
 
   keySessionMFA: string = ''
   pendingPnAccountId?: string
   pendingPnEnabled?: boolean
   private skipFreshLoginMFAWithDeviceTokenAccountId = ''
 
-  constructor() {
-    makeObservable(this)
-  }
-
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.
-  @observable mfaPendingAfterCallsId = ''
+  @observable accessor mfaPendingAfterCallsId = ''
   @action setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
   }
@@ -216,7 +212,7 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
-  @observable ringtonePicker: RingtonePickerType = {}
+  @observable accessor ringtonePicker: RingtonePickerType = {}
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')

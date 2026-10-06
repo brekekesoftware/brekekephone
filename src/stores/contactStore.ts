@@ -1,5 +1,5 @@
 import { debounce, isEqual, uniqBy } from 'lodash'
-import { action, computed, makeObservable, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'
@@ -59,18 +59,14 @@ export type PickerItemOption = {
 }
 
 export class ContactStore {
-  @observable usersSearchTerm = ''
-  @observable phonebookSearchTerm = ''
-  @observable chatSearchTerm = ''
-  @observable callSearchRecents = ''
-  @observable loading = false
-  @observable hasLoadmore = false
-  @observable offset = 0
+  @observable accessor usersSearchTerm = ''
+  @observable accessor phonebookSearchTerm = ''
+  @observable accessor chatSearchTerm = ''
+  @observable accessor callSearchRecents = ''
+  @observable accessor loading = false
+  @observable accessor hasLoadmore = false
+  @observable accessor offset = 0
   numberOfContactsPerPage = 20
-
-  constructor() {
-    makeObservable(this)
-  }
 
   loadContacts = async () => {
     await ctx.auth.waitPbx()
@@ -94,7 +90,7 @@ export class ContactStore {
     this.loading = false
   }
 
-  @observable alreadyLoadContactsFirstTime = false
+  @observable accessor alreadyLoadContactsFirstTime = false
   @action loadContactsFirstTime = () => {
     if (this.alreadyLoadContactsFirstTime) {
       return
@@ -112,8 +108,8 @@ export class ContactStore {
     this.loadContacts()
   }
   // delete function
-  @observable selectedContactIds: { [id: string]: boolean } = {}
-  @observable isDeleteState: boolean = false
+  @observable accessor selectedContactIds: { [id: string]: boolean } = {}
+  @observable accessor isDeleteState: boolean = false
 
   @action selectContactId = (userId: string) => {
     if (this.selectedContactIds[userId]) {
@@ -130,7 +126,7 @@ export class ContactStore {
   }
 
   // create/update contact
-  @observable showPickerItem: PickerItemOption | null = null
+  @observable accessor showPickerItem: PickerItemOption | null = null
 
   @action openPicker = (picker: PickerItemOption) => {
     this.showPickerItem = picker
@@ -163,7 +159,7 @@ export class ContactStore {
   }
 
   // pbxUsers
-  @observable pbxUsers: PbxUser[] = []
+  @observable accessor pbxUsers: PbxUser[] = []
 
   getPbxUsers = async () => {
     try {
@@ -210,7 +206,7 @@ export class ContactStore {
       [k: string]: PbxUser
     }
   }
-  @observable private extraPbxUsersMap: { [k: string]: PbxUser } = {}
+  @observable private accessor extraPbxUsersMap: { [k: string]: PbxUser } = {}
   getPbxUserById = (id: string) => {
     const u = this.pbxUsersMap[id] || this.extraPbxUsersMap[id]
     if (!u && !this.extraPbxUsersLoadingMap[id]) {
@@ -247,7 +243,7 @@ export class ContactStore {
       )
   }, 17)
 
-  @observable ucUsers: UcUser[] = []
+  @observable accessor ucUsers: UcUser[] = []
   updateUcUser = (u: UcUser) => {
     const u0 = this.getUcUserById(u.id)
     if (!u0) {
@@ -266,8 +262,8 @@ export class ContactStore {
   }
   getUcUserById = (id: string) => this.ucUsersMap[id]
 
-  @observable phoneBooks: Phonebook[] = []
-  @observable pbxBooks: PbxBook[] = []
+  @observable accessor phoneBooks: Phonebook[] = []
+  @observable accessor pbxBooks: PbxBook[] = []
 
   @action loadPbxBoook = () => {
     this.pbxBooks = []

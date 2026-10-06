@@ -1,5 +1,5 @@
 import { orderBy } from 'lodash'
-import { makeObservable, observable } from 'mobx'
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { SectionList } from 'react-native'
@@ -16,11 +16,7 @@ import { intl } from '#/stores/intl'
 @observer
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
-  @observable txtSearch: string = ''
-  constructor(props: {}) {
-    super(props)
-    makeObservable(this)
-  }
+  @observable accessor txtSearch: string = ''
   componentDidMount() {
     if (!ctx.contact.pbxUsers.length) {
       ctx.contact.getPbxUsers()
