@@ -1,14 +1,15 @@
 diff --git a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
-index 5d95b90..0c25bd4 100644
+index bd95c32..4bd0dec 100644
 --- a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
 +++ b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
-@@ -7,30 +7,20 @@
+@@ -7,31 +7,21 @@
  
  #import <React/RCTWebSocketModule.h>
  
 -#import <objc/runtime.h>
 -
  #import <FBReactNativeSpec/FBReactNativeSpec.h>
+ #import <React/RCTAssert.h>
  #import <React/RCTConvert.h>
  #import <React/RCTUtils.h>
 -#import <SocketRocket/SRWebSocket.h>
@@ -42,7 +43,7 @@ index 5d95b90..0c25bd4 100644
  
  @end
  
-@@ -42,7 +32,15 @@ void RCTSetCustomSRWebSocketProvider(SRWebSocketProvider provider)
+@@ -43,7 +33,15 @@ void RCTSetCustomSRWebSocketProvider(SRWebSocketProvider provider)
  }
  
  @implementation RCTWebSocketModule {
@@ -59,7 +60,7 @@ index 5d95b90..0c25bd4 100644
    NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
  }
  
-@@ -58,15 +56,19 @@ RCT_EXPORT_MODULE()
+@@ -59,15 +57,19 @@ RCT_EXPORT_MODULE()
    return @[ @"websocketMessage", @"websocketOpen", @"websocketFailed", @"websocketClosed" ];
  }
  
@@ -82,7 +83,7 @@ index 5d95b90..0c25bd4 100644
  }
  
  RCT_EXPORT_METHOD(
-@@ -95,26 +97,37 @@ RCT_EXPORT_METHOD(
+@@ -121,26 +123,37 @@ RCT_EXPORT_METHOD(
      }];
    }
  
@@ -131,7 +132,7 @@ index 5d95b90..0c25bd4 100644
  }
  
  RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)socketID)
-@@ -124,18 +137,25 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
+@@ -150,18 +163,25 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
  
  - (void)sendData:(NSData *)data forSocketID:(NSNumber *__nonnull)socketID
  {
@@ -163,13 +164,14 @@ index 5d95b90..0c25bd4 100644
  }
  
  - (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
-@@ -146,59 +166,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
+@@ -172,72 +192,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
    _contentHandlers[socketID] = handler;
  }
  
 -#pragma mark - RCTSRWebSocketDelegate methods
 +#pragma mark - Receive loop
-+
+ 
+-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 +/**
 + * Reason:
 + * - Apple employs a "pull model" for WebSocket tasks (not a push event system).
@@ -179,12 +181,16 @@ index 5d95b90..0c25bd4 100644
 + * - Without recursion, the socket will freeze.
 + */
 +- (void)_receiveMessageForSocketID:(NSNumber *)socketID
-+{
+ {
+-  NSString *type;
+-
+-  NSNumber *socketID = [webSocket reactTag];
+-  if (!socketID) {
 +  __weak RCTWebSocketModule *weakSelf = self;
 +  NSURLSessionWebSocketTask *task = _sockets[socketID];
 +  if (!task || task.state != NSURLSessionTaskStateRunning) {
-+    return;
-+  }
+     return;
+   }
 +  [task receiveMessageWithCompletionHandler:^(NSURLSessionWebSocketMessage *message, NSError *error) {
 +    if (error) {
 +      return;
@@ -199,14 +205,12 @@ index 5d95b90..0c25bd4 100644
 +    });
 +  }];
 +}
- 
--- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
++
 +- (void)_handleMessage:(NSURLSessionWebSocketMessage *)message forSocketID:(NSNumber *)socketID
- {
-   NSString *type;
++{
++  NSString *type;
 +  id messageData;
- 
--  NSNumber *socketID = [webSocket reactTag];
++
    id contentHandler = _contentHandlers[socketID];
 -  if (contentHandler) {
 -    message = [contentHandler processWebsocketMessage:message forSocketID:socketID withType:&type];
@@ -232,7 +236,7 @@ index 5d95b90..0c25bd4 100644
 +    }
    }
  
--  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : webSocket.reactTag}];
+-  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : socketID}];
 +  [self sendEventWithName:@"websocketMessage" body:@{@"data" : messageData, @"type" : type, @"id" : socketID}];
  }
  
@@ -240,7 +244,8 @@ index 5d95b90..0c25bd4 100644
 +#pragma mark - NSURLSessionWebSocketDelegate methods
 +
 +- (NSNumber *)_socketIDForTask:(NSURLSessionWebSocketTask *)task
-+{
+ {
+-  NSNumber *socketID = [webSocket reactTag];
 +  for (NSNumber *key in _sockets) {
 +    if (_sockets[key] == task) {
 +      return key;
@@ -250,13 +255,13 @@ index 5d95b90..0c25bd4 100644
 +}
 +// Provide the protocol that is accepted by the server.
 +- (void)URLSession:(NSURLSession *)session webSocketTask:(NSURLSessionWebSocketTask *)webSocketTask didOpenWithProtocol:(NSString *)protocol
- {
--  [self sendEventWithName:@"websocketOpen"
--                     body:@{@"id" : webSocket.reactTag, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
++{
 +  NSNumber *socketID = [self _socketIDForTask:webSocketTask];
-+  if (!socketID) {
-+    return;
-+  }
+   if (!socketID) {
+     return;
+   }
+-  [self sendEventWithName:@"websocketOpen"
+-                     body:@{@"id" : socketID, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
 +  dispatch_async(dispatch_get_main_queue(), ^{
 +    [self sendEventWithName:@"websocketOpen"
 +                       body:@{@"id" : socketID, @"protocol" : protocol ?: @""}];
@@ -268,15 +273,15 @@ index 5d95b90..0c25bd4 100644
 +- (void)URLSession:(NSURLSession *)session webSocketTask:(NSURLSessionWebSocketTask *)webSocketTask didCloseWithCode:(NSURLSessionWebSocketCloseCode)closeCode reason:(NSData *)reason
  {
 -  NSNumber *socketID = [webSocket reactTag];
++  NSNumber *socketID = [self _socketIDForTask:webSocketTask];
+   if (!socketID) {
+     return;
+   }
 -  _contentHandlers[socketID] = nil;
 -  _sockets[socketID] = nil;
 -  NSDictionary *body =
 -      @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
 -  [self sendEventWithName:@"websocketFailed" body:body];
-+  NSNumber *socketID = [self _socketIDForTask:webSocketTask];
-+  if (!socketID) {
-+    return;
-+  }
 +  NSString *reasonString = reason ? [[NSString alloc] initWithData:reason encoding:NSUTF8StringEncoding] : @"";
 +  dispatch_async(dispatch_get_main_queue(), ^{
 +    self->_contentHandlers[socketID] = nil;
@@ -300,6 +305,17 @@ index 5d95b90..0c25bd4 100644
 +- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
  {
 -  NSNumber *socketID = [webSocket reactTag];
++  if (!error) {
++    return;
++  }
++  if (![task isKindOfClass:[NSURLSessionWebSocketTask class]]) {
++    return;
++  }
++  NSURLSessionWebSocketTask *wsTask = (NSURLSessionWebSocketTask *)task;
++  NSNumber *socketID = [self _socketIDForTask:wsTask];
+   if (!socketID) {
+     return;
+   }
 -  _contentHandlers[socketID] = nil;
 -  _sockets[socketID] = nil;
 -  [self sendEventWithName:@"websocketClosed"
@@ -309,17 +325,6 @@ index 5d95b90..0c25bd4 100644
 -                       @"clean" : @(wasClean),
 -                       @"id" : socketID
 -                     }];
-+  if (!error) {
-+    return;
-+  }
-+  if (![task isKindOfClass:[NSURLSessionWebSocketTask class]]) {
-+    return;
-+  }
-+  NSURLSessionWebSocketTask *wsTask = (NSURLSessionWebSocketTask *)task;
-+  NSNumber *socketID = [self _socketIDForTask:wsTask];
-+  if (!socketID) {
-+    return;
-+  }
 +  // NSURLErrorCancelled means client called cancelWithCloseCode → treat as normal close, not error
 +  BOOL isCancelled = (error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled);
 +  dispatch_async(dispatch_get_main_queue(), ^{
