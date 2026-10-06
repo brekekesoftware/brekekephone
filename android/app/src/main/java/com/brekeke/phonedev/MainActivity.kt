@@ -48,6 +48,8 @@ class MainActivity : ReactActivity() {
   // check if notification pressed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    // RN 0.87 removed StatusBar backgroundColor, which used to replace the green splash bar
+    window.statusBarColor = getColor(R.color.white_darken)
     if (BrekekeUtils.main == null) {
       BrekekeUtils.main = this
     }
