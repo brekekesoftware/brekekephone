@@ -147,7 +147,7 @@ const css = StyleSheet.create({
     top: '60%',
   },
   LoadingFullScreen: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
