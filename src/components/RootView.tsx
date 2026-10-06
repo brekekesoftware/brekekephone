@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context'
 
 import { v } from '#/components/variables'
 import { isWeb } from '#/config'
@@ -25,7 +28,21 @@ export const RootView = memo(({ children }: RootViewProps) => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={s}>{children}</SafeAreaView>
+      <InsetView>{children}</InsetView>
     </SafeAreaProvider>
   )
 })
+
+// a SafeAreaView root commits insets from the UI thread; on Android that raced JS mounts (addViewAt crash)
+const InsetView = ({ children }: RootViewProps) => {
+  const i = useSafeAreaInsets()
+  const padding = {
+    paddingTop: i.top,
+    paddingBottom: i.bottom,
+    paddingLeft: i.left,
+    paddingRight: i.right,
+  }
+  return (
+    <View style={[StyleSheet.absoluteFill, css.App, padding]}>{children}</View>
+  )
+}
