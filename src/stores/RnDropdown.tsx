@@ -1,5 +1,5 @@
 import { cloneDeep, uniq } from 'lodash'
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 
 export type DropdownPosition = {
   top?: number
@@ -9,6 +9,9 @@ export type DropdownPosition = {
 }
 
 export class RnDropdownStore {
+  constructor() {
+    makeObservable(this)
+  }
   @observable positions: DropdownPosition[] = []
   @observable shouldUpdatePosition: boolean = false
   @observable hiddenIndexes: number[] = []

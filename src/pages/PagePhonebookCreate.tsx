@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash'
-import { action } from 'mobx'
+import { action, makeObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
@@ -12,6 +12,10 @@ import { intl } from '#/stores/intl'
 export class PagePhonebookCreate extends Component<{
   phonebook?: string
 }> {
+  constructor(props: { phonebook?: string }) {
+    super(props)
+    makeObservable(this)
+  }
   render() {
     return (
       <ContactsCreateForm

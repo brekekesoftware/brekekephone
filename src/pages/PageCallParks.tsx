@@ -21,7 +21,7 @@ export class PageCallParks extends Component<{
   // fresh loop each time we need to start animating.
   flashLoop?: Animated.CompositeAnimation
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.updateFlashLoop()
     this.componentDidUpdate()
   }

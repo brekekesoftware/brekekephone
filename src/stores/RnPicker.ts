@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 
 export type RnPickerOption = {
   options: {
@@ -16,6 +16,10 @@ export type RnPickerOption = {
 
 export class RnPickerStore {
   @observable currentRnPicker: RnPickerOption | null = null
+
+  constructor() {
+    makeObservable(this)
+  }
 
   @action open = (picker: RnPickerOption) => {
     this.currentRnPicker = picker

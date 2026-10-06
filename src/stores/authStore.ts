@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '#/api/customPage'
@@ -142,6 +142,10 @@ export class AuthStore {
 
   @observable signedInId = ''
   lpcPromptIntent?: { id: string; at: number }
+  constructor() {
+    makeObservable(this)
+  }
+
   getCurrentAccount = () =>
     ctx.account.accounts.find(a => a.id === this.signedInId)
   getCurrentData = () => ctx.account.findDataSync(this.getCurrentAccount())

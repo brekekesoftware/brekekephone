@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { Keyboard } from 'react-native'
 
 import { defaultTimeout } from '#/config'
@@ -10,6 +10,10 @@ class RnKeyboardStore {
   // tracked on all android, consumed by Layout only on android 15+ (BUG-1220)
   @observable keyboardHeight = 0
   waitKeyboardTimeoutId = 0
+
+  constructor() {
+    makeObservable(this)
+  }
 
   waitKeyboard =
     (fn: Function) =>

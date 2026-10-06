@@ -18,7 +18,7 @@ import { filterTextOnly } from '#/utils/formatChatContent'
 export class PageContactUsers extends Component {
   displayOfflineUsers = new DelayFlag()
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.componentDidUpdate()
   }
 

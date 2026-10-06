@@ -1,5 +1,5 @@
 import type { IReactionDisposer } from 'mobx'
-import { action, autorun, observable } from 'mobx'
+import { action, autorun, makeObservable, observable } from 'mobx'
 import { Platform } from 'react-native'
 import RNCallKeep from 'react-native-callkeep'
 
@@ -29,7 +29,9 @@ const isIosBug1224Affected =
   isIos && compareSemVer(String(Platform.Version), '26') >= 0
 
 export class Call {
-  constructor(private store: CallStore) {}
+  constructor(private store: CallStore) {
+    makeObservable(this)
+  }
   line?: string
   rawSession?: Session
 

@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { action, makeObservable, reaction } from 'mobx'
 
 import { ucSignInSupersededError } from '#/api/uc'
 import { Errors } from '#/brekekejs/ucclient'
@@ -31,6 +31,10 @@ export class AuthUC {
   // a stale 'connecting' (left by a previous account) apart from a genuine
   // in-flight connect for the current account (BUG-1256).
   private connectingAccountId = ''
+
+  constructor() {
+    makeObservable(this)
+  }
 
   auth = () => {
     this.clearStaleConnecting()

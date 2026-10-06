@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
-import { action, reaction } from 'mobx'
+import { action, makeObservable, reaction } from 'mobx'
 
 import { PbxLoginRejectedError } from '#/api/pbx'
 import { defaultTimeout } from '#/config'
@@ -9,6 +9,10 @@ import { waitTimeout } from '#/utils/waitTimeout'
 
 export class AuthPBX {
   private clearShouldAuthReaction?: Lambda
+
+  constructor() {
+    makeObservable(this)
+  }
 
   auth = () => {
     this.authWithCheck()

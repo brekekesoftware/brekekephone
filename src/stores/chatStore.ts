@@ -1,7 +1,7 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
@@ -77,6 +77,11 @@ export class ChatStore {
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
   @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
+
+  constructor() {
+    makeObservable(this)
+  }
+
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(

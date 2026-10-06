@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
@@ -20,11 +20,16 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 export class PageContactGroupCreate extends Component {
   @observable selectedUserItems: { [k: string]: UcBuddy } = {}
 
+  constructor(props: {}) {
+    super(props)
+    makeObservable(this)
+  }
+
   state = {
     name: '',
     didMount: false,
   }
-  componentDidMount = () => {
+  componentDidMount() {
     BackgroundTimer.setTimeout(
       () => this.setState({ didMount: true }),
       defaultTimeout,

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 class RnAppStateStore {
@@ -12,6 +12,7 @@ class RnAppStateStore {
         this.foregroundOnce = this.foregroundOnce || nextAppState === 'active'
       }),
     )
+    makeObservable(this)
   }
 }
 

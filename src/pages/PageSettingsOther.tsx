@@ -35,7 +35,7 @@ export class PageSettingsOther extends Component {
     preview: '',
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     try {
       this.initData()
     } catch (err) {

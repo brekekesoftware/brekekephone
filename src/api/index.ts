@@ -1,4 +1,4 @@
-import { action } from 'mobx'
+import { action, makeObservable } from 'mobx'
 
 import { updatePhoneAppli } from '#/api/updatePhoneIndex'
 import type {
@@ -55,6 +55,7 @@ class Api {
     ctx.uc.on('file-received', this.onFileReceived)
     ctx.uc.on('file-progress', this.onFileProgress)
     ctx.uc.on('file-finished', this.onFileFinished)
+    makeObservable(this)
   }
 
   onPalRetrying = ({ id }: Request<keyof PbxPal>) => {

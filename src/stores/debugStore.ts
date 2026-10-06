@@ -4,7 +4,7 @@ import * as RNFS from '@dr.pogodin/react-native-fs'
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
 import Share from 'react-native-share'
@@ -49,6 +49,10 @@ export class DebugStore {
   @observable logFiles: ReadDirItem[] = []
   @observable totalLogFiles = 0
   @observable currentFile: ReadDirItem | undefined
+
+  constructor() {
+    makeObservable(this)
+  }
 
   checkAndCreateFile = async (rootPath: string, fileName: string) => {
     if (!fileName) {

@@ -50,7 +50,7 @@ const IncomingItemIos = () =>
 export const IncomingItem = isAndroid ? IncomingItemAndroid : IncomingItemIos
 
 export class OutgoingItem extends Component {
-  componentDidMount = () => {
+  componentDidMount() {
     if (ctx.call.ongoingCallId) {
       ctx.sip.disableMedia(ctx.call.ongoingCallId)
     }
@@ -70,7 +70,7 @@ export class OutgoingItem extends Component {
 export class OutgoingItemWithSDP extends Component<{
   earlyMedia: MediaStream | null
 }> {
-  componentDidMount = () => {
+  componentDidMount() {
     if (ctx.call.ongoingCallId) {
       ctx.sip.enableMedia(ctx.call.ongoingCallId)
     }
@@ -82,7 +82,7 @@ export class OutgoingItemWithSDP extends Component<{
 export class AnsweredItem extends Component<{
   voiceStreamObject: MediaStream | null
 }> {
-  componentDidMount = () => {
+  componentDidMount() {
     const oc = ctx.call.getOngoingCall()
     if (oc) {
       ctx.sip.enableMedia(oc.id)
