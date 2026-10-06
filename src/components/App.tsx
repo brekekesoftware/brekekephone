@@ -342,7 +342,7 @@ const css = StyleSheet.create({
     height: 30,
   },
   LoadingFullscreen: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#74bf53', // old color from design, not g.colors.primary
     alignItems: 'center',
     justifyContent: 'center',
