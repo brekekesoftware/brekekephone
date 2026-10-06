@@ -23,11 +23,11 @@ clean_deep_rm:
 
 start:
 	make -Bs rm_babel_cache \
-	&& yarn craco start;
+	&& yarn vite;
 
 build:
 	make -Bs rm_babel_cache \
-	&& yarn craco build \
+	&& yarn vite build \
 	&& node .embed;
 
 intl:
