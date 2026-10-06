@@ -13,7 +13,8 @@ if (!Brekeke.WebNotification) {
 }
 const WebNotification = {}
 var debug = function () {}
-;((notificationIdCounter = 0), (notificationInfoTable = {}))
+var notificationIdCounter = 0
+var notificationInfoTable = {}
 /**
  * requestPermission function: request permission from the user to display notifications
  *  parameters:
@@ -87,7 +88,7 @@ WebNotification.showNotification = function (options) {
   timeout = int(options.timeout) || 86400000
   interval = int(options.interval) || 3000
   title = string(options.title)
-  noisiness = int(options.noisiness)
+  var noisiness = int(options.noisiness)
   opt = {
     tag: string(
       options.tag ||

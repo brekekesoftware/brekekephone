@@ -386,7 +386,7 @@ if (!Brekeke.WebrtcClient) {
       if (eventId) {
         // remove one
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             if (this._eventNameIdsTable[eventName][i] === eventId) {
               this._eventNameIdsTable[eventName].splice(i, 1)
             }
@@ -396,7 +396,7 @@ if (!Brekeke.WebrtcClient) {
       } else {
         // remove all events in eventName
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             delete this._eventIdFuncTable[this._eventNameIdsTable[eventName][i]]
           }
           this._eventNameIdsTable[eventName] = []
@@ -1681,7 +1681,7 @@ if (!Brekeke.WebrtcClient) {
 
       muted = muted || {}
       sessionId = string(sessionId) || this._getLatestSessionId()
-      session = this._sessionTable[sessionId]
+      var session = this._sessionTable[sessionId]
 
       mutedOrg = {
         main: false,
@@ -3482,7 +3482,7 @@ if (!Brekeke.WebrtcClient) {
               ) !== Boolean(session.mainMuted) ||
               Boolean(
                 rtcInfo.echo[myUser].muted &&
-                  rtcInfo.echo[myUser].muted.videoClient,
+                rtcInfo.echo[myUser].muted.videoClient,
               ) !== Boolean(session.videoClientMuted) ||
               rtcInfo.echo[myUser].exInfo !== session.exInfo
             ) {
@@ -3517,7 +3517,7 @@ if (!Brekeke.WebrtcClient) {
                     ),
                     videoClient: Boolean(
                       rtcInfo.echo[u].muted &&
-                        rtcInfo.echo[u].muted.videoClient,
+                      rtcInfo.echo[u].muted.videoClient,
                     ),
                   },
                   exInfo: string(rtcInfo.echo[u].exInfo),
@@ -3547,11 +3547,11 @@ if (!Brekeke.WebrtcClient) {
             session.remoteUserOptionsTable[user].withVideo !== withVideo ||
             Boolean(
               session.remoteUserOptionsTable[user].muted &&
-                session.remoteUserOptionsTable[user].muted.main,
+              session.remoteUserOptionsTable[user].muted.main,
             ) !== muted.main ||
             Boolean(
               session.remoteUserOptionsTable[user].muted &&
-                session.remoteUserOptionsTable[user].muted.videoClient,
+              session.remoteUserOptionsTable[user].muted.videoClient,
             ) !== muted.videoClient ||
             session.remoteUserOptionsTable[user].exInfo !== exInfo
           ) {
@@ -3768,7 +3768,7 @@ if (!Brekeke.WebrtcClient) {
           data.session.direction === 'outgoing'
             ? Boolean(
                 this._outgoingRtcInfo.muted &&
-                  this._outgoingRtcInfo.muted.videoClient,
+                this._outgoingRtcInfo.muted.videoClient,
               )
             : false,
         initialVolumePercent: null,

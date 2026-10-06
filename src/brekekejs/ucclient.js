@@ -4648,7 +4648,7 @@ ChatClient.prototype = {
 
     if (target.conf_id && makeCallParamsArray.length === 0) {
       // create sessionBundle
-      sessionBundle = {
+      var sessionBundle = {
         target,
         sessionIdArray: [],
         lastCallInfo: '',
