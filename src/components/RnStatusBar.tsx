@@ -49,12 +49,7 @@ export const RnStatusBar: FC<TRnStatusBarProps> = p =>
       ]}
       onPress={p.onPress}
     >
-      <StatusBar
-        backgroundColor={
-          p.danger ? v.colors.danger : p.warning ? v.colors.warning : v.hoverBg
-        }
-        barStyle='dark-content'
-      />
+      <StatusBar barStyle='dark-content' />
       <View style={css.Border} />
     </RnTouchableOpacity>
   )

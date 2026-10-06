@@ -1,5 +1,5 @@
 diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
-index 7e1f98b..770d5d4 100644
+index 7e1f98b..9146180 100644
 --- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
 +++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
 @@ -24,180 +24,218 @@ import java.io.OutputStream
@@ -375,11 +375,37 @@ index 7e1f98b..770d5d4 100644
      }
 -  }
  }
-\ No newline at end of file
 diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
-index e79951c..6aa268c 100644
+index e79951c..81fc72d 100644
 --- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
 +++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
+@@ -83,7 +83,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
+ 
+   @ReactMethod
+   override fun pick(opts: ReadableMap, promise: Promise) {
+-    val currentActivity = currentActivity
++    val currentActivity = getCurrentActivity()
+ 
+     if (currentActivity == null) {
+       rejectWithNullActivity(promise)
+@@ -106,7 +106,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
+   }
+ 
+   override fun saveDocument(options: ReadableMap, promise: Promise) {
+-    val currentActivity = currentActivity
++    val currentActivity = getCurrentActivity()
+     if (currentActivity == null) {
+       rejectWithNullActivity(promise)
+       return
+@@ -145,7 +145,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
+ 
+   @ReactMethod
+   override fun pickDirectory(opts: ReadableMap, promise: Promise) {
+-    val currentActivity = currentActivity
++    val currentActivity = getCurrentActivity()
+     if (currentActivity == null) {
+       rejectWithNullActivity(promise)
+       return
 @@ -188,7 +188,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
        val results = fileOps.copyFilesToLocalStorage(
                reactApplicationContext,

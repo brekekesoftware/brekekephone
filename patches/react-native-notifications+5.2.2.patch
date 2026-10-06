@@ -13,6 +13,29 @@ index f9c858b..94ea188 100644
  
  public abstract class NotificationManagerCompatFacade {
      public static NotificationManagerCompat from(@NonNull Context context) {
+diff --git a/node_modules/react-native-notifications/lib/android/app/build.gradle b/node_modules/react-native-notifications/lib/android/app/build.gradle
+index 5ea984c..7423e03 100644
+--- a/node_modules/react-native-notifications/lib/android/app/build.gradle
++++ b/node_modules/react-native-notifications/lib/android/app/build.gradle
+@@ -66,6 +66,9 @@ android {
+     }
+ 
+     compileSdkVersion androidSdkVersion
++    buildFeatures {
++        buildConfig true
++    }
+     defaultConfig {
+         minSdkVersion androidMinSdkVersion
+         targetSdkVersion androidTargetSdkVersion
+@@ -86,7 +89,7 @@ android {
+     buildTypes {
+         release {
+             minifyEnabled false
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+         }
+         debug {
+             debuggable true
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
 index 1e7e871..7fb516d 100644
 --- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/NotificationIntentAdapter.java
