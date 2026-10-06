@@ -169,14 +169,21 @@ export class AuthSIP {
       // the pn sip login is rejected until the pal session exists, so once pbx is up
       // there is nothing left to wait for - retry immediately instead of ringing out.
       // re-evaluated on every observable change, so a pn arriving mid backoff is picked
-      // up too. when().cancel() rejects, hence the catch
-      const w = when(
-        () =>
-          ctx.auth.sipState !== 'waiting' ||
-          (hasRingingCallWithSipPn() && ctx.auth.pbxState === 'success'),
-      )
-      await Promise.race([waitTimeout(ms), w.catch(() => undefined)])
-      w.cancel()
+      // up too. not the promise form of when(): it calls .finally, which the es6-shim
+      // Promise lacks on hermes, so it throws and sip never retries again
+      let disposeWhen = () => {}
+      await Promise.race([
+        waitTimeout(ms),
+        new Promise<void>(resolve => {
+          disposeWhen = when(
+            () =>
+              ctx.auth.sipState !== 'waiting' ||
+              (hasRingingCallWithSipPn() && ctx.auth.pbxState === 'success'),
+            resolve,
+          )
+        }),
+      ])
+      disposeWhen()
       if (ctx.auth.sipState !== 'waiting') {
         return
       }
