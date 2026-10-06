@@ -13,10 +13,10 @@ index 03ca85c..f0ff66c 100644
      onScroll: handleScroll,
      onTouchMove: createPreventableScrollHandler(onTouchMove),
 diff --git a/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js b/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
-index f5dc225..06423d6 100644
+index fbdf038..a6e3d74 100644
 --- a/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
 +++ b/node_modules/react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js
-@@ -382,6 +382,7 @@ function createAtomicRules(identifier, property, value) {
+@@ -387,6 +387,7 @@ function createAtomicRules(identifier, property, value) {
      // https://drafts.csswg.org/css-scrollbars-1/
      case 'scrollbarWidth':
        {
