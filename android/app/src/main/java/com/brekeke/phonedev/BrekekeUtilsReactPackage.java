@@ -1,23 +1,35 @@
 package com.brekeke.phonedev;
 
-import com.facebook.react.ReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import java.util.HashMap;
 
-class BrekekeUtilsReactPackage implements ReactPackage {
+class BrekekeUtilsReactPackage extends BaseReactPackage {
   @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext ctx) {
-    var l = new ArrayList<NativeModule>();
-    l.add(new BrekekeUtils(ctx));
-    return l;
+  public NativeModule getModule(String name, ReactApplicationContext ctx) {
+    if (NativeBrekekeUtilsSpec.NAME.equals(name)) {
+      return new BrekekeUtils(ctx);
+    }
+    return null;
   }
 
   @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext ctx) {
-    return Collections.emptyList();
+  public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    return () -> {
+      var m = new HashMap<String, ReactModuleInfo>();
+      m.put(
+          NativeBrekekeUtilsSpec.NAME,
+          new ReactModuleInfo(
+              NativeBrekekeUtilsSpec.NAME,
+              BrekekeUtils.class.getName(),
+              false,
+              false,
+              false,
+              true));
+      return m;
+    };
   }
 }

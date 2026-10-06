@@ -2,6 +2,14 @@
   "name": "brekekephone",
   "version": "2.18.00",
   "private": true,
+  "codegenConfig": {
+    "name": "BrekekePhoneSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.brekeke.phonedev"
+    }
+  },
   "homepage": "./",
   "scripts": {
     "start": "make -Bs start",
