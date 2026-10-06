@@ -1,5 +1,5 @@
 import { debounce, isEmpty } from 'lodash'
-import { action, computed, observable, runInAction } from 'mobx'
+import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { AppState } from 'react-native'
 import RNCallKeep, { CONSTANTS } from 'react-native-callkeep'
 import IncallManager from 'react-native-incall-manager'
@@ -1328,6 +1328,7 @@ export class CallStore {
   }
 
   constructor() {
+    makeObservable(this)
     if (!isAndroid) {
       return
     }

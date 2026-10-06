@@ -1,5 +1,5 @@
 import { debounce, isEqual, uniqBy } from 'lodash'
-import { action, computed, observable } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 
 import type { ItemPhonebook, PbxBook } from '#/brekekejs'
 import { ctx } from '#/stores/ctx'
@@ -67,6 +67,10 @@ export class ContactStore {
   @observable hasLoadmore = false
   @observable offset = 0
   numberOfContactsPerPage = 20
+
+  constructor() {
+    makeObservable(this)
+  }
 
   loadContacts = async () => {
     await ctx.auth.waitPbx()

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, Fragment } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -38,7 +38,11 @@ const css = StyleSheet.create({
 export class DidMountTimer extends Component<any> {
   private didMountTimer = 0
   @observable didMount = false
-  componentDidMount = () => {
+  constructor(props: any) {
+    super(props)
+    makeObservable(this)
+  }
+  componentDidMount() {
     this.didMountTimer = BackgroundTimer.setTimeout(
       action(() => {
         this.didMountTimer = 0

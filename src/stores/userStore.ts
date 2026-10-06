@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash'
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import type { SectionListData } from 'react-native'
 
 import { isUcBuddy } from '#/api/uc'
@@ -16,6 +16,10 @@ export type GroupUserSectionListData = SectionListData<
 export type BuddyType = 'PbxBuddy' | 'UcBuddy'
 
 export class UserStore {
+  constructor() {
+    makeObservable(this)
+  }
+
   @observable dataGroupAllUser: GroupUserSectionListData[] = []
   @observable dataListAllUser: UcBuddy[] = []
   @observable buddyMax = defaultBuddyMax

@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 import type {
@@ -20,6 +20,11 @@ export class PageCallKeypad extends Component {
   @observable txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
+
+  constructor(props: {}) {
+    super(props)
+    makeObservable(this)
+  }
 
   showKeyboard = () => {
     // android: focus() on an already-focused input is a no-op and the IME

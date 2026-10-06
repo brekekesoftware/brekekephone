@@ -1,4 +1,4 @@
-import { action, observable, runInAction } from 'mobx'
+import { action, makeObservable, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
@@ -214,7 +214,7 @@ export const backAction = () =>
 export class RenderAllCalls extends Component {
   prevCallsLength = ctx.call.calls.length
 
-  componentDidMount = () => {
+  componentDidMount() {
     if (ctx.call.inPageCallManage && !ctx.call.calls.length) {
       backAction()
     }
@@ -252,7 +252,12 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  componentDidMount = () => {
+  constructor(props: { call: Call }) {
+    super(props)
+    makeObservable(this)
+  }
+
+  componentDidMount() {
     // handle the case when app is killed and opened during a call with incoming call
     if (this.props.call.incoming) {
       this.onAppStateChange(AppState.currentState)

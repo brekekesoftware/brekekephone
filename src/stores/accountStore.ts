@@ -1,5 +1,5 @@
 import { debounce, uniqBy } from 'lodash'
-import { action, computed, observable, runInAction } from 'mobx'
+import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 
 import type {
@@ -177,6 +177,10 @@ export class AccountStore {
   pendingPnAccountId?: string
   pendingPnEnabled?: boolean
   private skipFreshLoginMFAWithDeviceTokenAccountId = ''
+
+  constructor() {
+    makeObservable(this)
+  }
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 
 import type { MfaEventStatus, Pbx } from '#/brekekejs'
 import { isEmbed } from '#/embed/polyfill'
@@ -36,6 +36,10 @@ export class MFAStore {
     client: Pbx
   }
   private _resolvers: Array<(ok: boolean) => void> = []
+
+  constructor() {
+    makeObservable(this)
+  }
 
   private snapshot = (
     accountId: string | null = this.accountId,
