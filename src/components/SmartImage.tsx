@@ -89,7 +89,7 @@ export const SmartImage = ({
     StatusImage.loading,
   )
   const cUrl = useRef(uri)
-  const webviewRef = useRef<WebView>(null)
+  const webviewRef = useRef<WebView<object>>(null)
   const firedRef = useRef(false)
   useEffect(() => {
     setStatusImageLoading(0)
