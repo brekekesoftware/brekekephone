@@ -30,7 +30,7 @@ const css = StyleSheet.create({
 
 @observer
 export class PageContactPhonebook extends Component {
-  componentDidMount = () => {
+  componentDidMount() {
     ctx.contact.getManageItems()
     const id = BackgroundTimer.setInterval(() => {
       if (!ctx.pbx.client) {

@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 import type {
@@ -17,7 +17,11 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 @observer
 export class PageCallDtmfKeypad extends Component {
   prevId?: string
-  componentDidMount = () => {
+  constructor(props: {}) {
+    super(props)
+    makeObservable(this)
+  }
+  componentDidMount() {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {

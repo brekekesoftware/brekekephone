@@ -151,7 +151,7 @@ export class OutgoingItemWithSDP extends Component<{
 }> {
   audioRef = createRef<HTMLAudioElement>()
   _unmounted = false
-  componentDidMount = () => {
+  componentDidMount() {
     this._setup()
   }
   componentDidUpdate = () => {
@@ -190,7 +190,7 @@ export class AnsweredItem extends Component<{
 }> {
   audioRef = createRef<HTMLAudioElement>()
   _unmounted = false
-  componentDidMount = () => {
+  componentDidMount() {
     this._setup()
   }
   componentDidUpdate = () => {

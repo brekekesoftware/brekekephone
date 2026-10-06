@@ -145,7 +145,7 @@ export class PageCallTransferAttend extends Component {
     }
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.getPhoneappliInfo()
     this.componentDidUpdate()
   }

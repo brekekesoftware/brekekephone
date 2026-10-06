@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 
 import { RnText } from '#/components/Rn'
@@ -10,6 +10,7 @@ class TimerStore {
   @observable now = Date.now()
   constructor() {
     BackgroundTimer.setInterval(this.updateNow, 1000)
+    makeObservable(this)
   }
   @action private updateNow = () => {
     this.now = Date.now()

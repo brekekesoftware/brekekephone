@@ -1,4 +1,3 @@
-import { computed } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type {
@@ -48,7 +47,7 @@ const css = StyleSheet.create({
 export class PageChatDetail extends Component<{
   buddy: string
 }> {
-  @computed get chatById() {
+  get chatById() {
     return arrToMap(
       ctx.chat.getMessagesByThreadId(this.props.buddy),
       'id',
@@ -73,7 +72,7 @@ export class PageChatDetail extends Component<{
   edittingTextEmoji = ''
   editingTextReplace = false
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.componentDidMountAsync()
   }
   componentDidMountAsync = async () => {

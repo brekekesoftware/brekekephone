@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, makeObservable, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
@@ -21,10 +21,15 @@ export class PageContactGroupEdit extends Component<{
   listItem: UcBuddy[]
 }> {
   @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+  constructor(props: { groupName: string; listItem: UcBuddy[] }) {
+    super(props)
+    makeObservable(this)
+  }
+
   state = {
     didMount: false,
   }
-  componentDidMount = () => {
+  componentDidMount() {
     this.props.listItem.forEach(u => {
       if (ctx.user.selectedUserIds[u.user_id]) {
         this.selectedUserItems[u.user_id] = u
