@@ -69,7 +69,7 @@
     "react-native-voip-push-notification": "3.3.3",
     "react-native-web": "0.20.0",
     "react-native-web-linear-gradient": "1.1.2",
-    "react-native-webrtc": "111.0.3",
+    "react-native-webrtc": "124.0.8",
     "react-native-webview": "14.0.1",
     "url-parse": "1.5.10",
     "util": "0.12.5",

@@ -10,7 +10,7 @@ PODS:
   - hermes-engine (250829098.0.17):
     - hermes-engine/Pre-built (= 250829098.0.17)
   - hermes-engine/Pre-built (250829098.0.17)
-  - JitsiWebRTC (111.0.2)
+  - JitsiWebRTC (124.0.2)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -2256,8 +2256,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-webrtc (111.0.3):
-    - JitsiWebRTC (~> 111.0.0)
+  - react-native-webrtc (124.0.8):
+    - JitsiWebRTC (~> 124.0.0)
     - React-Core
   - react-native-webview (14.0.1):
     - boost
@@ -3470,7 +3470,7 @@ SPEC CHECKSUMS:
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
   glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   hermes-engine: 63c5db7d529c36335fada6582fd293ae2a105d77
-  JitsiWebRTC: 80f62908fcf2a1160e0d14b584323fb6e6be630b
+  JitsiWebRTC: b47805ab5668be38e7ee60e2258f49badfe8e1d0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3521,7 +3521,7 @@ SPEC CHECKSUMS:
   react-native-notifications: e2d3c022d6077de7e420ba5c01b4bd9464f3941d
   react-native-safe-area-context: ea0a66722c0838c99f36c2dd8bf87546dab4560e
   react-native-video: 1f6f038a9173b2be025e948d1f59faf890cc945a
-  react-native-webrtc: 2423dee5d8c5921000b0d70c7bd6d59e8490b81a
+  react-native-webrtc: da75ba1f85a36981cbcb3fdae7dfbab7ad63c040
   react-native-webview: 941d18f45168750ea4de46e1d31515c2848016fc
   React-NativeModulesApple: 461ef67544d391e24ad598ed09314a2527943faf
   React-networking: 7942a43ba47eed92e9b406ec2c7c79f86aeddf5f
