@@ -39,7 +39,6 @@ import com.brekeke.phonedev.utils.Perm;
 import com.brekeke.phonedev.utils.Ringtone;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -64,7 +63,7 @@ enum DialerCheckState {
   COMPLETED
 }
 
-public class BrekekeUtils extends ReactContextBaseJavaModule {
+public class BrekekeUtils extends NativeBrekekeUtilsSpec {
 
   public static Promise defaultDialerPromise;
   private static String TAG = "[BrekekeUtils]";
@@ -129,7 +128,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "BrekekeUtils";
+    return NAME;
   }
 
   // [callkeepUuid] -> display/answerCall/rejectCall
@@ -616,7 +615,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void permRequestAndroidLpc(Promise p) {
+  public void permRequestAndroidLpc(Promise p) {
     Perm.request(Perm.AndroidLpc, p);
   }
 
@@ -805,9 +804,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setAudioMode(int mode) {
+  public void setAudioMode(double mode) {
     try {
-      Ringtone.setAudioMode(mode);
+      Ringtone.setAudioMode((int) mode);
     } catch (Exception e) {
     }
   }
@@ -924,7 +923,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setJsCallsSize(int n) {
+  public void setJsCallsSize(double d) {
+    var n = (int) d;
     if (n > 0) {
       acquireWakeLock();
     } else if (activitiesSize == 0) {
@@ -980,7 +980,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setSpeakerStatus(Boolean isSpeakerOn) {
+  public void setSpeakerStatus(boolean isSpeakerOn) {
     UiThreadUtil.runOnUiThread(
         () -> {
           try {
@@ -1013,12 +1013,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setPhoneappliEnabled(Boolean isEnabled) {
+  public void setPhoneappliEnabled(boolean isEnabled) {
     phoneappliEnabled = isEnabled;
   }
 
   @ReactMethod
-  public void setAiphoneNurseCallEnabled(Boolean isEnabled) {
+  public void setAiphoneNurseCallEnabled(boolean isEnabled) {
     aiphoneNurseCallEnabled = isEnabled;
     // js reads this setting after sign in, so it can turn on while a call screen is already
     // showing a loaded page: without this the page never gets its url info for that call
@@ -1037,7 +1037,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setWebviewLogEnabled(Boolean isEnabled) {
+  public void setWebviewLogEnabled(boolean isEnabled) {
     webviewLogEnabled = isEnabled;
   }
 
@@ -1082,12 +1082,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void insertCallLog(String number, int type) {
+  public void insertCallLog(String number, double type) {
     var ctx = Ctx.app();
     var v = new ContentValues();
     v.put(CallLog.Calls.NUMBER, number);
     v.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    v.put(CallLog.Calls.TYPE, type);
+    v.put(CallLog.Calls.TYPE, (int) type);
     v.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
     ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, v);
   }
@@ -1109,7 +1109,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       String tokenVoip,
       String username,
       String host,
-      int port,
+      double port,
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
@@ -1117,7 +1117,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     var r = LpcUtils.convertReadableArrayToStringList(remoteSsids);
     var i =
         LpcUtils.putConfigToIntent(
-            host, port, token, username, tlsKeyHash, r, new Intent(ctx, BrekekeLpcService.class));
+            host, (int) port, token, username, tlsKeyHash, r,
+            new Intent(ctx, BrekekeLpcService.class));
     // Only startForegroundService when the service isn't already running. If the app is
     // relaunched while the LPC foreground service survived, calling startForegroundService again
     // would go through onStartCommand -> startForeground and re-post the notification. When the
@@ -1221,7 +1222,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setShouldSkipPlayRingtone(Boolean s) {
+  public void setShouldSkipPlayRingtone(boolean s) {
     Ringtone.shouldSkipPlayRingtone = s;
   }
 
@@ -1229,4 +1230,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void shouldPlayRingtone(Promise p) {
     p.resolve(!activities.isEmpty() && !BrekekeUtils.anyCallAnswered());
   }
+
+  @ReactMethod
+  public void webrtcSetAudioEnabled(boolean enabled, String action) {}
+
+  @ReactMethod
+  public void playRBT(boolean isLoudSpeaker) {}
+
+  @ReactMethod
+  public void stopRBT(Promise p) {
+    p.resolve(null);
+  }
+
+  @ReactMethod
+  public void setProximityMonitoring(boolean enabled) {}
+
+  @ReactMethod
+  public void isSpeakerOn(Promise p) {
+    p.resolve(false);
+  }
+
+  @ReactMethod
+  public void resetAudioConfig() {}
 }
