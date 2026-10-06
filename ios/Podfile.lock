@@ -2079,8 +2079,34 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-netinfo (11.4.1):
+  - react-native-netinfo (12.0.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-notifications (5.2.2):
     - React-Core
   - react-native-safe-area-context (5.10.1):
@@ -3543,7 +3569,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: a93a63a8371395902397835ebb83803abc83f88a
   react-native-get-random-values: e6abe603431bb9dfa323e251663a726f4323ee77
   react-native-image-picker: 10a9551647d764e78a121dfdc097f15ea7cca1e7
-  react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
+  react-native-netinfo: 36b41a843c14f430ee9ce6133af7f6f84fffe961
   react-native-notifications: e2d3c022d6077de7e420ba5c01b4bd9464f3941d
   react-native-safe-area-context: ea0a66722c0838c99f36c2dd8bf87546dab4560e
   react-native-video: 1f6f038a9173b2be025e948d1f59faf890cc945a
