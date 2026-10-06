@@ -2480,10 +2480,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-documents/picker@10.1.5":
-  version "10.1.5"
-  resolved "https://registry.yarnpkg.com/@react-native-documents/picker/-/picker-10.1.5.tgz#3b9cd338210e70602a30d739f2c3ee919177c6a9"
-  integrity sha512-ajn55rNyxUqbQbz5gmm9gYFI1ifHBmMLH4jVWViA7IFqk1EiEM+pJcpoHizWr5hetR6tzQsaoI4vzCNv/WyA7w==
+"@react-native-documents/picker@12.0.2":
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/@react-native-documents/picker/-/picker-12.0.2.tgz#b0f7f615a27d7a7f2ba52c4e8b04a4eb7ab4a4b0"
+  integrity sha512-tiaPQjSdsaCkKw/N8XB+DXfhOJ+KJ1OYDliBGoBHEqLI7AhUsSPhn8fRI/gHs7hpYzqOBKf+em9MUrPIA9mlWA==
 
 "@react-native/asset-utils@0.87.1":
   version "0.87.1"
@@ -11166,10 +11166,10 @@ react-native-fs@2.20.0:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-get-random-values@1.11.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.11.0.tgz#1ca70d1271f4b08af92958803b89dccbda78728d"
-  integrity sha512-4BTbDbRmS7iPdhYLRcz3PGFIpFJBwNZg9g42iwa2P6FOv9vZj/xJc678RZXnLNZzd0qd7Q3CCF6Yd+CU2eoXKQ==
+react-native-get-random-values@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-2.0.0.tgz#21b6e40601d297a342378792a8cb9c8f853bff66"
+  integrity sha512-wx7/aPqsUIiWsG35D+MsUJd8ij96e3JKddklSdrdZUrheTx89gPtz3Q2yl9knBArj5u26Cl23T88ai+Q0vypdQ==
   dependencies:
     fast-base64-decode "^1.0.0"
 
@@ -11198,7 +11198,7 @@ react-native-image-size@^1.1.3:
   version "3.2.5"
   dependencies:
     react-native-image-size "^1.1.3"
-    react-native-image-zoom-fixed "file:../../../../../../Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-6619fe1f-b489-4c32-b1c0-ee7fa36487f1-1791256080889/node_modules/react-native-image-zoom-fixed-2.3.2"
+    react-native-image-zoom-fixed "file:../../../../../../Library/Caches/Yarn/v6/npm-react-native-image-zoom-viewer-fixed-3.2.5-22d53689-dffb-4656-8152-4fa35e57c525-1791265652525/node_modules/react-native-image-zoom-fixed-2.3.2"
 
 react-native-incall-manager@4.3.0:
   version "4.3.0"
@@ -11295,10 +11295,10 @@ react-native-webrtc@111.0.3:
     debug "4.3.4"
     event-target-shim "6.0.2"
 
-react-native-webview@13.15.0:
-  version "13.15.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.15.0.tgz#b6d2f8d8dd65897db76659ddd8198d2c74ec5a79"
-  integrity sha512-Vzjgy8mmxa/JO6l5KZrsTC7YemSdq+qB01diA0FqjUTaWGAGwuykpJ73MDj3+mzBSlaDxAEugHzTtkUQkQEQeQ==
+react-native-webview@14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-14.0.1.tgz#b851c9e4d185c089575ef3eb3d8e15f42845ada7"
+  integrity sha512-lBUuvFk459Mo+5vUNqwzGvn+I8rDJE6zvOulG2hWWudeEOJfWTsQwOfuYnRu+27djUIXrESFfC+EQE3PGu+FWA==
   dependencies:
     escape-string-regexp "^4.0.0"
     invariant "2.2.4"
