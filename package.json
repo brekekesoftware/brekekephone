@@ -8,6 +8,11 @@
     "jsSrcsDir": "src/specs",
     "android": {
       "javaPackageName": "com.brekeke.phonedev"
+    },
+    "ios": {
+      "modulesProvider": {
+        "BrekekeUtils": "BrekekeUtilsTurbo"
+      }
     }
   },
   "homepage": "./",
