@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import type { Lambda } from 'mobx'
-import { action, makeObservable, reaction, when } from 'mobx'
+import { action, reaction, when } from 'mobx'
 
 import type { SipLoginOption } from '#/api/sip'
 import { updatePhoneIndex } from '#/api/updatePhoneIndex'
@@ -18,10 +18,6 @@ const getPbxConfig = <K extends keyof PbxGetProductInfoRes>(k: K) =>
 
 export class AuthSIP {
   private clearShouldAuthReaction?: Lambda
-
-  constructor() {
-    makeObservable(this)
-  }
 
   auth = () => {
     this.authWithCheck()

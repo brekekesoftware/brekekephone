@@ -1,4 +1,4 @@
-import { action, makeObservable } from 'mobx'
+import { action } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
@@ -86,7 +86,6 @@ class Mini extends Component<Props> {
       onPanResponderRelease: this.onDrop,
       onPanResponderTerminate: this.onDrop,
     })
-    makeObservable(this)
   }
 
   componentDidMount() {

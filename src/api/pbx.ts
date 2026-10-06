@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { debounce, random } from 'lodash'
-import { makeObservable, observable } from 'mobx'
+import { observable } from 'mobx'
 import { v4 as newUuid } from 'uuid'
 import validator from 'validator'
 
@@ -171,12 +171,7 @@ export class PBX extends EventEmitter {
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  @observable retryingRequests: string[] = []
-
-  constructor() {
-    super()
-    makeObservable(this)
-  }
+  @observable accessor retryingRequests: string[] = []
 
   private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
     'hold',

@@ -1,11 +1,7 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 
 export class RnLoadingStore {
-  @observable count = 0
-
-  constructor() {
-    makeObservable(this)
-  }
+  @observable accessor count = 0
 
   @action show = () => {
     this.count += 1

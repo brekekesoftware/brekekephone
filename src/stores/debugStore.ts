@@ -4,7 +4,7 @@ import * as RNFS from '@dr.pogodin/react-native-fs'
 import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
-import { makeObservable, observable } from 'mobx'
+import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
 import Share from 'react-native-share'
@@ -46,13 +46,9 @@ export const getTotalFilesSize = (files: ReadDirItem[]) => {
 export class DebugStore {
   loading = true
   private timer = 0
-  @observable logFiles: ReadDirItem[] = []
-  @observable totalLogFiles = 0
-  @observable currentFile: ReadDirItem | undefined
-
-  constructor() {
-    makeObservable(this)
-  }
+  @observable accessor logFiles: ReadDirItem[] = []
+  @observable accessor totalLogFiles = 0
+  @observable accessor currentFile: ReadDirItem | undefined
 
   checkAndCreateFile = async (rootPath: string, fileName: string) => {
     if (!fileName) {
@@ -132,13 +128,13 @@ export class DebugStore {
   // if this flag is turned on, all logs will be captured
   // this flag will be saved to storage and we will read it again
   //    as soon as possible when app starts up
-  @observable captureDebugLog = false
+  @observable accessor captureDebugLog = false
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
     RnAsyncStorage.setItem('captureDebugLog', jsonSafe(this.captureDebugLog))
     BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
   }
-  @observable captureWebviewLog = false
+  @observable accessor captureWebviewLog = false
   toggleCaptureWebviewLog = () => {
     this.captureWebviewLog = !this.captureWebviewLog
     RnAsyncStorage.setItem(
@@ -290,9 +286,9 @@ export class DebugStore {
         })
       })
 
-  @observable isCheckingForUpdate = false
-  @observable remoteVersion = ''
-  @observable remoteVersionLastCheck = 0
+  @observable accessor isCheckingForUpdate = false
+  @observable accessor remoteVersion = ''
+  @observable accessor remoteVersionLastCheck = 0
 
   checkForUpdate = () => {
     if (this.isCheckingForUpdate) {

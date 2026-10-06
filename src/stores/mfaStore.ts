@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 
 import type { MfaEventStatus, Pbx } from '#/brekekejs'
 import { isEmbed } from '#/embed/polyfill'
@@ -18,10 +18,10 @@ const getEmbedApi = () =>
   (require('#/embed/embedApi') as typeof import('#/embed/embedApi')).embedApi
 
 export class MFAStore {
-  @observable accountId: string | null = null
+  @observable accessor accountId: string | null = null
   // OTP delivery type + url from mfa/start, surfaced to host via embed events.
-  @observable type: 'code' | 'url' | undefined = undefined
-  @observable url = ''
+  @observable accessor type: 'code' | 'url' | undefined = undefined
+  @observable accessor url = ''
   // When true, skip PBX reconnect after MFA verification.
   // Used by syncPnToken flow which only needs to save the token
   // without triggering a full PBX reconnect with device_token.
@@ -30,16 +30,12 @@ export class MFAStore {
   cancelledAccountId: string | null = null
   // Server error from mfa/start FAILED response (e.g. "No email address.").
   // When non-empty, modal renders in error mode instead of normal OTP entry.
-  @observable error = ''
+  @observable accessor error = ''
   palClient?: {
     accountKey: string
     client: Pbx
   }
   private _resolvers: Array<(ok: boolean) => void> = []
-
-  constructor() {
-    makeObservable(this)
-  }
 
   private snapshot = (
     accountId: string | null = this.accountId,

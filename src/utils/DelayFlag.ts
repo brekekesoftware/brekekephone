@@ -1,15 +1,11 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 
 import { defaultTimeout } from '#/config'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export class DelayFlag {
-  @observable enabled = false
+  @observable accessor enabled = false
   timeoutId = 0
-
-  constructor() {
-    makeObservable(this)
-  }
 
   setEnabled = (enabled?: boolean) => {
     if (this.timeoutId) {

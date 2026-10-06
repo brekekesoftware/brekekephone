@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import type { ReactElement } from 'react'
 import { AppState } from 'react-native'
 
@@ -36,12 +36,8 @@ export type TRnAlert =
 export class RnAlertStore {
   // need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
-  @observable alertsCount = 0
+  @observable accessor alertsCount = 0
   alerts: TRnAlert[] = []
-
-  constructor() {
-    makeObservable(this)
-  }
 
   @action prompt = (prompt: PromptRnAlert) => {
     this.alerts.push({ prompt })
