@@ -1,7 +1,7 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 import { decode } from 'html-entities'
 import { sortBy, uniqBy } from 'lodash'
-import { action, computed, makeObservable, observable } from 'mobx'
+import { action, computed, observable } from 'mobx'
 import { AppState } from 'react-native'
 import { Notifications } from 'react-native-notifications'
 
@@ -73,14 +73,10 @@ export const TIMEOUT_TRANSFER_VIDEO = 180000
 export class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
-  @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  @observable accessor messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
-  @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
-
-  constructor() {
-    makeObservable(this)
-  }
+  @observable accessor threadConfig: { [k: string]: ChatMessageConfig } = {}
 
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
@@ -379,7 +375,7 @@ export class ChatStore {
       ctx.nav.goToPageChatGroupDetail({ groupId })
     }
   }
-  @observable chatNotificationSoundRunning: boolean = false
+  @observable accessor chatNotificationSoundRunning: boolean = false
   private playChatNotificationSoundVibration = async () => {
     if (isWeb) {
       webPlayDing()
@@ -436,7 +432,7 @@ export class ChatStore {
     }
   }
 
-  @observable private filesMap: { [k: string]: ChatFile } = {}
+  @observable private accessor filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
     Object.assign(f, { save: 'started' })
@@ -510,7 +506,7 @@ export class ChatStore {
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
 
-  @observable groups: ChatGroup[] = []
+  @observable accessor groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
     const g0 = this.getGroupById(g.id)

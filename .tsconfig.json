@@ -60,7 +60,7 @@
     // "declarationDir": "lib",
 
     /* Experimental Options */
-    "experimentalDecorators": true,
+    "experimentalDecorators": false,
     "emitDecoratorMetadata": false
   },
   "include": ["src"]

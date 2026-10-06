@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash'
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable, observableShallow } from 'mobx'
 import type { SectionListData } from 'react-native'
 
 import { isUcBuddy } from '#/api/uc'
@@ -16,21 +16,17 @@ export type GroupUserSectionListData = SectionListData<
 export type BuddyType = 'PbxBuddy' | 'UcBuddy'
 
 export class UserStore {
-  constructor() {
-    makeObservable(this)
-  }
-
-  @observable dataGroupAllUser: GroupUserSectionListData[] = []
-  @observable dataListAllUser: UcBuddy[] = []
-  @observable buddyMax = defaultBuddyMax
-  @observable isDisableAddAllUserToTheList = false
-  @observable isSelectedAddAllUser: boolean = true
-  @observable selectedUserIds: { [userId: string]: boolean } = {}
-  @observable saveSelectedUserIds: { [userId: string]: boolean } = {}
-  @observable userOnline: { [userId: string]: string } = {}
-  @observable isCapacityInvalid = false
-  @observable buddyMode = 0
-  @observable dataDisplayGroupAllUser: GroupUserSectionListData[] = []
+  @observable accessor dataGroupAllUser: GroupUserSectionListData[] = []
+  @observable accessor dataListAllUser: UcBuddy[] = []
+  @observable accessor buddyMax = defaultBuddyMax
+  @observable accessor isDisableAddAllUserToTheList = false
+  @observable accessor isSelectedAddAllUser: boolean = true
+  @observable accessor selectedUserIds: { [userId: string]: boolean } = {}
+  @observable accessor saveSelectedUserIds: { [userId: string]: boolean } = {}
+  @observable accessor userOnline: { [userId: string]: string } = {}
+  @observable accessor isCapacityInvalid = false
+  @observable accessor buddyMode = 0
+  @observable accessor dataDisplayGroupAllUser: GroupUserSectionListData[] = []
   type: BuddyType = 'UcBuddy'
   groups: UcBuddyGroup[] = []
 
@@ -241,7 +237,7 @@ export class UserStore {
     })
   }
 
-  @observable isSelectEditGroupingAndUserOrder: boolean = false
+  @observable accessor isSelectEditGroupingAndUserOrder: boolean = false
   @action toggleIsSelectEditGroupingAndUserOrder = () => {
     this.isSelectEditGroupingAndUserOrder =
       !this.isSelectEditGroupingAndUserOrder

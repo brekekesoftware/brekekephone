@@ -1,4 +1,4 @@
-import { action, makeObservable, observable, runInAction } from 'mobx'
+import { action, observable, runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 import type { NativeEventSubscription } from 'react-native'
@@ -252,11 +252,6 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  constructor(props: { call: Call }) {
-    super(props)
-    makeObservable(this)
-  }
-
   componentDidMount() {
     // handle the case when app is killed and opened during a call with incoming call
     if (this.props.call.incoming) {
@@ -287,7 +282,7 @@ class PageCallManage extends Component<{
     }
   }
 
-  @observable private showButtonsInVideoCall = true
+  @observable private accessor showButtonsInVideoCall = true
   private alreadySetShowButtonsInVideoCall = false
   @action private toggleButtons = () => {
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
@@ -303,7 +298,7 @@ class PageCallManage extends Component<{
     }
   }
 
-  @observable private hasJavaPn = true
+  @observable private accessor hasJavaPn = true
   private checkJavaPn = async () => {
     if (
       !isAndroid ||

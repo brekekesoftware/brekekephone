@@ -1,4 +1,4 @@
-import { makeObservable, observable } from 'mobx'
+import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component, createRef } from 'react'
 import type {
@@ -19,10 +19,6 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 @observer
 export class PageCallTransferDial extends Component {
   prevId?: string
-  constructor(props: {}) {
-    super(props)
-    makeObservable(this)
-  }
   componentDidMount() {
     this.componentDidUpdate()
   }
@@ -33,7 +29,7 @@ export class PageCallTransferDial extends Component {
     this.prevId = ctx.call.ongoingCallId
   }
 
-  @observable txt = ''
+  @observable accessor txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 

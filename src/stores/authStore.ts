@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 import { isCustomPageUrlBuilt } from '#/api/customPage'
@@ -58,22 +58,22 @@ const pendingCustomPageEventExpirationTime = 5 * 60 * 1000
 export class AuthStore {
   hasInternetConnected: boolean | null = null
 
-  @observable sipPn: Partial<SipPn> = {}
+  @observable accessor sipPn: Partial<SipPn> = {}
 
-  @observable pbxState: ConnectionState = 'stopped'
-  @observable pbxTotalFailure = 0
-  @observable sipState: ConnectionState = 'stopped'
-  @observable sipTotalFailure = 0
-  @observable ucState: ConnectionState = 'stopped'
-  @observable ucTotalFailure = 0
+  @observable accessor pbxState: ConnectionState = 'stopped'
+  @observable accessor pbxTotalFailure = 0
+  @observable accessor sipState: ConnectionState = 'stopped'
+  @observable accessor sipTotalFailure = 0
+  @observable accessor ucState: ConnectionState = 'stopped'
+  @observable accessor ucTotalFailure = 0
 
-  @observable pbxLoginRejected = false
-  @observable pbxLoginFromAnotherPlace = false
-  @observable showMsgPbxLoginFromAnotherPlace = false
-  @observable ucLoginFromAnotherPlace = false
+  @observable accessor pbxLoginRejected = false
+  @observable accessor pbxLoginFromAnotherPlace = false
+  @observable accessor showMsgPbxLoginFromAnotherPlace = false
+  @observable accessor ucLoginFromAnotherPlace = false
 
-  @observable pbxConnectedAt = 0
-  @observable pbxFreshLogin = false
+  @observable accessor pbxConnectedAt = 0
+  @observable accessor pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -140,11 +140,8 @@ export class AuthStore {
     return !states.includes('connecting') && states.includes('failure')
   }
 
-  @observable signedInId = ''
+  @observable accessor signedInId = ''
   lpcPromptIntent?: { id: string; at: number }
-  constructor() {
-    makeObservable(this)
-  }
 
   getCurrentAccount = () =>
     ctx.account.accounts.find(a => a.id === this.signedInId)
@@ -154,11 +151,12 @@ export class AuthStore {
     return ca && ctx.account.findDataWithDefault(ca)
   }
 
-  @observable ucConfig?: UcConfig
-  @observable pbxConfig?: PbxGetProductInfoRes
-  @observable listCustomPage: PbxCustomPage[] = []
-  @observable activeCustomPageId?: string
-  @observable private pendingCustomPageEvents: PendingCustomPageEvent[] = []
+  @observable accessor ucConfig: UcConfig | undefined
+  @observable accessor pbxConfig: PbxGetProductInfoRes | undefined
+  @observable accessor listCustomPage: PbxCustomPage[] = []
+  @observable accessor activeCustomPageId: string | undefined
+  @observable
+  private accessor pendingCustomPageEvents: PendingCustomPageEvent[] = []
   private completedCustomPageEvents: CompletedCustomPageEvent[] = []
   private customPageBuildPromises: {
     [pageId: string]: Promise<boolean> | undefined
@@ -449,7 +447,7 @@ export class AuthStore {
     this.customPageProcessRequested = false
   }
 
-  @observable resourceLines: PbxResourceLine[] = []
+  @observable accessor resourceLines: PbxResourceLine[] = []
 
   // user agent for sip pal client
   // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
@@ -471,7 +469,7 @@ export class AuthStore {
   }
 
   // user agent for http request such as iframe webview smart avatar...
-  @observable private userAgentConfig: string | undefined = undefined
+  @observable private accessor userAgentConfig: string | undefined = undefined
   setUserAgentConfig = async (useragent: string | undefined) => {
     const isEnabled = useragent === undefined || toBoolean(useragent)
     if (!isEnabled) {
@@ -702,11 +700,11 @@ export class AuthStore {
   }
 
   recentCallsMax: number = 200
-  @observable cRecentCalls: RecentCall[] = []
+  @observable accessor cRecentCalls: RecentCall[] = []
   rcPerPage: number = 15
   rcPage: number = 0
-  @observable rcLoading: boolean = false
-  @observable rcCount: number = 0
+  @observable accessor rcLoading: boolean = false
+  @observable accessor rcCount: number = 0
   // recentCallsMax with default 200 and limit 1000
   setRecentCallsMax = async (max: number | string) => {
     const numericMax = Number(max)
@@ -1060,7 +1058,7 @@ export class AuthStore {
     return true
   }
 
-  @observable isSignInByNotification = false
+  @observable accessor isSignInByNotification = false
   clearSignInByNotification = debounce(
     () => {
       // clearSignInByNotification will activate UC login
@@ -1167,7 +1165,7 @@ export class AuthStore {
     (this.userExtensionProperties
       ? this.userExtensionProperties.aiphoneNurseCall
       : !!ctx.auth.getCurrentData()?.aiphoneNurseCallEnabled)
-  @observable userExtensionProperties: null | {
+  @observable accessor userExtensionProperties: null | {
     id: string
     name: string
     language: string

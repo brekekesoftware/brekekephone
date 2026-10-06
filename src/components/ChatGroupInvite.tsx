@@ -1,5 +1,5 @@
 import { sortBy } from 'lodash'
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import type { FC } from 'react'
 import { Component } from 'react'
@@ -87,12 +87,7 @@ const Notify: FC<{
 
 @observer
 export class ChatGroupInvite extends Component {
-  @observable loading = false
-
-  constructor(props: {}) {
-    super(props)
-    makeObservable(this)
-  }
+  @observable accessor loading = false
 
   formatGroup = (group: string) => {
     const { id, inviter, name } = ctx.chat.getGroupById(group) || {}
@@ -155,22 +150,21 @@ export class ChatGroupInvite extends Component {
 
 @observer
 export class UnreadChatNoti extends Component {
-  @observable unreadChat: null | {
-    id: string
-    isGroup: boolean
-    lastMessage: {
-      text?: string
-      created: number
-    }
-  } = null
+  @observable accessor unreadChat:
+    | null
+    | {
+        id: string
+        isGroup: boolean
+        lastMessage: {
+          text?: string
+          created: number
+        }
+      }
+    | undefined = null
+
   alreadyShowNoti: { [k: string]: boolean } = {}
   prevLastMessageId = ''
   prevUnreadChatTimeoutId = 0
-
-  constructor(props: {}) {
-    super(props)
-    makeObservable(this)
-  }
 
   componentDidMount() {
     this.updateLatestUnreadChat()

@@ -48,7 +48,8 @@ module.exports = {
 
     '@babel/plugin-proposal-optional-chaining',
     ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-    ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
+    '@babel/plugin-transform-class-static-block',
+    ['@babel/plugin-proposal-decorators', { version: '2023-11' }],
     ['@babel/plugin-transform-class-properties', { loose: true }],
 
     // fix warnings
