@@ -313,6 +313,33 @@ export class SIP extends EventEmitter {
       console.log(`SIP PN debug: newNotify canceled pnIds=${jsonSafe(pnIds)}`)
       pnIds.forEach(cancelRecentPn)
     })
+    // the pbx rejects the old token once pal has reconnected, and jssip keeps it in the url while a call holds the ua
+    let refreshingToken = false
+    phone._ua?.on('disconnected', async () => {
+      if (refreshingToken || !phone.getSessionCount()) {
+        return
+      }
+      refreshingToken = true
+      const token = await ctx.pbx
+        .createSIPAccessToken(o.username)
+        .catch((err: unknown) => {
+          console.error('SIP PN debug: createSIPAccessToken failed:', err)
+          return undefined
+        })
+      refreshingToken = false
+      if (!token || this.phone !== phone) {
+        return
+      }
+      console.log('SIP PN debug: new sip token for the reconnect during a call')
+      const param = `Authorization=${encodeURIComponent(token)}`
+      ;[phone._ua, phone._vua].forEach(ua => {
+        const socket = ua?._transport?.socket
+        if (socket?._url) {
+          socket._url = socket._url.replace(/Authorization=[^&]*/, param)
+        }
+        ua?.registrator?.().setExtraHeaders([`Authorization: ${token}`])
+      })
+    })
   }
 
   private hackJssipFork = () => {
