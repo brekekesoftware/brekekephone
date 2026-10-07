@@ -3610,6 +3610,17 @@ if (!Brekeke.WebrtcClient) {
     },
     _ua_registered: function (e) {
       this._uaStarting = false
+      for (var sessionId in this._sessionTable) {
+        var rtcSession = this._sessionTable[sessionId].rtcSession
+        if (
+          rtcSession &&
+          rtcSession.connection &&
+          rtcSession.connection.iceConnectionState === 'failed'
+        ) {
+          this._logger.log('info', 'restart ICE after re-register')
+          rtcSession.renegotiate({ rtcOfferConstraints: { iceRestart: true } })
+        }
+      }
       if (this._vuaStarting) {
         try {
           this._vua.start()
