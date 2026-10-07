@@ -311,7 +311,50 @@ if (!Brekeke.WebrtcClient) {
         return origSetRemoteDescription.apply(pc, arguments)
       }
       var signalingState = pc.signalingState
-      if (pc._mustSkipSetSdpRa) {
+      var localIceUfrag = /a=ice-ufrag:(\S+)/.exec(
+        (pc.localDescription && pc.localDescription.sdp) || '',
+      )
+      localIceUfrag = localIceUfrag && localIceUfrag[1]
+      var isIceRestartAnswer =
+        signalingState === 'have-local-offer' &&
+        !!pc.remoteDescription &&
+        localIceUfrag !== pc._sdpRaIceUfrag
+      if (isIceRestartAnswer) {
+        var oldRemoteSetup = /a=setup:(\w+)/.exec(
+          pc.remoteDescription.sdp || '',
+        )
+        var ownDtlsRole =
+          oldRemoteSetup && oldRemoteSetup[1] === 'active'
+            ? 'passive'
+            : 'active'
+        var peerDtlsRole = ownDtlsRole === 'active' ? 'passive' : 'active'
+        // without this, libwebrtc refuses a PBX answer that flips the DTLS role ("Failed to set SSL role") and the call ends
+        if (arguments[0].sdp.indexOf('a=setup:' + ownDtlsRole) >= 0) {
+          arguments[0] = {
+            type: 'answer',
+            sdp: arguments[0].sdp
+              .split('a=setup:' + ownDtlsRole)
+              .join('a=setup:' + peerDtlsRole),
+          }
+          self._logger.log(
+            'debug',
+            'origSetRemoteDescription keeps DTLS role ' + ownDtlsRole,
+          )
+        } else if (arguments[0].sdp.indexOf('a=setup:') < 0) {
+          arguments[0] = {
+            type: 'answer',
+            sdp: arguments[0].sdp.replace(
+              /(a=fingerprint:[^\r\n]*\r?\n)/g,
+              '$1a=setup:' + peerDtlsRole + '\r\n',
+            ),
+          }
+          self._logger.log(
+            'debug',
+            'origSetRemoteDescription adds DTLS role ' + peerDtlsRole,
+          )
+        }
+      }
+      if (pc._mustSkipSetSdpRa && !isIceRestartAnswer) {
         if (signalingState === 'have-local-offer') {
           // 200 OK
           pc._mustSkipSetSdpRa = false
@@ -331,6 +374,7 @@ if (!Brekeke.WebrtcClient) {
             'origSetRemoteDescription (' + signalingState + ') OK',
           )
           pc._mustSkipSetSdpRa = true
+          pc._sdpRaIceUfrag = localIceUfrag
         })
         .catch(function (error) {
           self._logger.log(
