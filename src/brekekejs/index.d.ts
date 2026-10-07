@@ -605,14 +605,16 @@ export type Sip = {
 
   _ua?: {
     _transport?: {
-      socket?: object
+      socket?: { _url?: string }
     }
     registrator?(): {
       _registered: boolean
       setExtraHeaders: Function
     }
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
+    on(n: 'disconnected', l: () => void): void
   }
+  _vua?: Sip['_ua']
   _removeEventListenerPhoneStatusChange?: Function
   reconnectMicrophone(
     sessionId?: string,
