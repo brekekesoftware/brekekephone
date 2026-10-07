@@ -1,5 +1,5 @@
 diff --git a/node_modules/jssip/lib/RTCSession.js b/node_modules/jssip/lib/RTCSession.js
-index 750c7fa..9892a50 100644
+index 750c7fa..7dc3bf4 100644
 --- a/node_modules/jssip/lib/RTCSession.js
 +++ b/node_modules/jssip/lib/RTCSession.js
 @@ -8,7 +8,6 @@ const Transactions = require('./Transactions');
@@ -264,7 +264,38 @@ index 750c7fa..9892a50 100644
  
              this.emit('peerconnection:setremotedescriptionfailed', error);
            });
-@@ -3315,7 +3344,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3278,10 +3307,18 @@ module.exports = class RTCSession extends EventEmitter
+     // I'm the refresher.
+     if (this._sessionTimers.refresher)
+     {
+-      this._sessionTimers.timer = setTimeout(() =>
++      const refresh = () =>
+       {
+         if (this._status === C.STATUS_TERMINATED) { return; }
+ 
++        // sending while the socket is down ends the call through onTransportError()
++        if (!this._ua.isConnected())
++        {
++          this._sessionTimers.timer = setTimeout(refresh, 5000);
++
++          return;
++        }
++
+         debug('runSessionTimer() | sending session refresh request');
+ 
+         if (this._sessionTimers.refreshMethod === JsSIP_C.UPDATE)
+@@ -3292,7 +3329,9 @@ module.exports = class RTCSession extends EventEmitter
+         {
+           this._sendReinvite();
+         }
+-      }, expires * 500); // Half the given interval (as the RFC states).
++      };
++
++      this._sessionTimers.timer = setTimeout(refresh, expires * 500); // Half the given interval (as the RFC states).
+     }
+ 
+     // I'm not the refresher.
+@@ -3315,7 +3354,7 @@ module.exports = class RTCSession extends EventEmitter
  
    _toogleMuteAudio(mute)
    {
@@ -273,7 +304,7 @@ index 750c7fa..9892a50 100644
  
      for (const stream of streams)
      {
-@@ -3330,7 +3359,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3330,7 +3369,7 @@ module.exports = class RTCSession extends EventEmitter
  
    _toogleMuteVideo(mute)
    {
