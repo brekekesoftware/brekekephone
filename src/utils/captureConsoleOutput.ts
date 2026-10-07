@@ -1,3 +1,6 @@
+// sets window._BrekekePhoneCaptureConsole; without it the web phone (Vite) captures nothing
+import '#/embed/polyfill'
+
 import moment from 'moment'
 import { format } from 'util'
 
