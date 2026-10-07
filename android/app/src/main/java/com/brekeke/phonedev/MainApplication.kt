@@ -15,6 +15,8 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 
 class MainApplication : Application(), ReactApplication {
   override val reactHost: ReactHost by lazy {
@@ -27,6 +29,11 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     super.onCreate()
     loadReactNative(this)
+    // preallocation can skip a view's Create, then Fabric crashes with "addViewAt: failed to insert view"
+    ReactNativeFeatureFlags.dangerouslyForceOverride(
+        object : ReactNativeNewArchitectureFeatureFlagsDefaults() {
+            override fun disableViewPreallocationAndroid(): Boolean = true
+        })
     Ctx.wakeFromMainRn(this)
     registerAppVisibilityCallbacks()
   }
