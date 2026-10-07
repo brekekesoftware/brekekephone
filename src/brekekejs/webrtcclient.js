@@ -3639,6 +3639,14 @@ if (!Brekeke.WebrtcClient) {
       data = e.data || e // jssip ~0.5: e.data, jssip 0.6~: e
 
       if (this._phoneStatus !== 'stopping' && this._phoneStatus !== 'stopped') {
+        // a socket drop unregisters with no cause; JsSIP reconnects and re-registers itself, stopping here ends live calls
+        if (!(data && data.cause) && this.getSessionCount()) {
+          this._logger.log(
+            'info',
+            'transport closed during a call, keep the session',
+          )
+          return
+        }
         this._stopReasonInfo = {
           from: 'server',
           reason: string(data && data.cause),
@@ -4000,6 +4008,14 @@ if (!Brekeke.WebrtcClient) {
       data = e.data || e // jssip ~0.5: e.data, jssip 0.6~: e
 
       if (this._phoneStatus !== 'stopping' && this._phoneStatus !== 'stopped') {
+        // same as _ua_unregistered: stopping on a socket drop ends live calls
+        if (!(data && data.cause) && this.getSessionCount()) {
+          this._logger.log(
+            'info',
+            'video transport closed during a call, keep the session',
+          )
+          return
+        }
         this._stopReasonInfo = {
           from: 'server',
           reason: string(data && data.cause),
