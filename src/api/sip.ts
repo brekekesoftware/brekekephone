@@ -287,6 +287,12 @@ export class SIP extends EventEmitter {
     if (o.turnConfig) {
       callOptions.pcConfig.iceServers.push(o.turnConfig)
     }
+    if (o.pbxTurnServer) {
+      callOptions.pcConfig.iceServers.push(o.pbxTurnServer)
+    }
+    console.log(
+      `SIP PN debug: ice servers ${callOptions.pcConfig.iceServers.map(s => s.urls).join(' ')}`,
+    )
     phone.setDefaultCallOptions(callOptions)
     //
     const userAgent = await ctx.auth.getUserAgent(a)
@@ -486,6 +492,7 @@ export interface SipLoginOption {
   accessToken: string
   dtmfSendPal: boolean
   turnConfig?: RTCIceServer
+  pbxTurnServer?: RTCIceServer
 }
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
