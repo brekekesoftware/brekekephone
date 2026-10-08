@@ -31,6 +31,7 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
 import type { UrlParams } from '#/utils/deeplink-parse'
+import { toAccountSettings } from '#/utils/deeplink-parse'
 import { deviceDetail, devicePlatform } from '#/utils/device'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
@@ -976,6 +977,7 @@ export class AuthStore {
     a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
   ) => {
     const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
+    const settings = toAccountSettings(urlParams)
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(ctx.call.callkeepMap).length ||
@@ -1012,6 +1014,17 @@ export class AuthStore {
       // registration. must be read before upsertAccount updates pbxPhoneIndex
       const reconnectForPhoneIndex =
         this.signedInId === a.id && toPhoneIndex(a.pbxPhoneIndex) !== phoneIdx
+      const turnChanged =
+        this.signedInId === a.id &&
+        (
+          [
+            'pbxTurnEnabled',
+            'pbxTurnServer',
+            'pbxTurnTransport',
+            'pbxTurnUsername',
+            'pbxTurnPassword',
+          ] as const
+        ).some(k => k in settings && (settings[k] || '') !== (a[k] || ''))
       // pbxPhoneIndex must go through upsertAccount rather than be assigned on `a`
       // (the live stored account): upsertAccount compares it against the stored
       // value to remove the previous phone id's pn registration on the pbx. assign
@@ -1019,11 +1032,12 @@ export class AuthStore {
       // callkeep call the user answers can be the one with no sip session behind it.
       // must also run after d.accessToken above, that remove needs a credential
       await ctx.account.upsertAccount({
+        ...settings,
         id: a.id,
         pbxPhoneIndex: `${phoneIdx}`,
       })
       if (a.pbxPassword || d.accessToken) {
-        if (reconnectForPhoneIndex) {
+        if (reconnectForPhoneIndex || turnChanged) {
           this.resetPrevAccountConnection()
           await waitTimeout()
         }
@@ -1038,6 +1052,7 @@ export class AuthStore {
     //
     const newA = {
       ...ctx.account.genEmptyAccount(),
+      ...settings,
       pbxTenant: tenant,
       pbxUsername: user,
       pbxPassword: password,
