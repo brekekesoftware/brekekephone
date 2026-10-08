@@ -3651,20 +3651,43 @@ if (!Brekeke.WebrtcClient) {
     _ua_disconnected: function (e) {
       this._uaSocket = null
       clearTimeout(this._uaSocketKeepAliveTimer)
+      if (this.getSessionCount()) {
+        // the pbx keeps sending in-dialog requests to the dead socket until a re-INVITE comes on the new one
+        this._uaDroppedInCall = true
+      }
     },
     _ua_registered: function (e) {
       this._uaStarting = false
       for (var sessionId in this._sessionTable) {
         var rtcSession = this._sessionTable[sessionId].rtcSession
         if (
+          this._uaDroppedInCall &&
           rtcSession &&
-          rtcSession.connection &&
-          rtcSession.connection.iceConnectionState === 'failed'
+          rtcSession.direction === 'incoming' &&
+          !rtcSession.isEstablished()
         ) {
+          this._logger.log(
+            'info',
+            'end the unanswered incoming call: its INVITE came on the dead socket',
+          )
+          rtcSession.terminate()
+          continue
+        }
+        if (!rtcSession || !rtcSession.connection) {
+          continue
+        }
+        if (rtcSession.connection.iceConnectionState === 'failed') {
           this._logger.log('info', 'restart ICE after re-register')
           rtcSession.renegotiate({ rtcOfferConstraints: { iceRestart: true } })
+        } else if (this._uaDroppedInCall) {
+          this._logger.log(
+            'info',
+            're-INVITE after re-register to move the dialog to the new socket',
+          )
+          rtcSession.renegotiate()
         }
       }
+      this._uaDroppedInCall = false
       if (this._vuaStarting) {
         try {
           this._vua.start()
