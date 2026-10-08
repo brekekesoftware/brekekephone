@@ -183,7 +183,7 @@ const css = StyleSheet.create({
   },
   Field_Switch: {
     position: 'absolute',
-    top: 22,
+    top: Platform.OS === 'android' ? 12 : 22,
     right: 11,
   },
   Field_Btn: {
