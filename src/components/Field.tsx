@@ -99,7 +99,6 @@ const css = StyleSheet.create({
     ...Platform.select({
       android: {
         paddingTop: 3,
-        top: 6,
       },
       web: {
         // fix form auto fill style on web
@@ -125,13 +124,7 @@ const css = StyleSheet.create({
     color: v.subColor,
     fontWeight: v.fontWeight,
   },
-  Field_LabelTextGroup: {
-    ...Platform.select({
-      android: {
-        top: -6,
-      },
-    }),
-  },
+  Field_LabelTextGroup: {},
   Field_ViewRow: {
     flexDirection: 'row',
     alignItems: 'center',
