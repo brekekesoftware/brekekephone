@@ -74,14 +74,23 @@ export class AuthSIP {
           credential: pn.turnCredential,
         }
       : undefined
+    const ownTurn: RTCIceServer | undefined =
+      ca.pbxTurnEnabled && ca.pbxTurnServer
+        ? {
+            urls: `${ca.pbxTurnTransport === 'tls' ? 'turns' : 'turn'}:${ca.pbxTurnServer}?transport=${ca.pbxTurnTransport === 'udp' || !ca.pbxTurnTransport ? 'udp' : 'tcp'}`,
+            username: ca.pbxTurnUsername,
+            credential: ca.pbxTurnPassword,
+          }
+        : undefined
     const o: SipLoginOption = {
       hostname: ca.pbxHostname,
       port: pn.sipWssPort,
       username: pn.phoneId,
       accessToken: pn.sipAuth,
-      pbxTurnEnabled: ca.pbxTurnEnabled,
+      pbxTurnEnabled: ca.pbxTurnEnabled && !ownTurn,
       dtmfSendPal: toBoolean(pn.dtmfSendPal),
       turnConfig,
+      pbxTurnServer: ownTurn,
     }
     await ctx.sip.connect(o, ca)
   }

@@ -50,6 +50,10 @@ export type Account = {
   pbxPassword: string
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
   pbxTurnEnabled: boolean
+  pbxTurnServer?: string
+  pbxTurnTransport?: string
+  pbxTurnUsername?: string
+  pbxTurnPassword?: string
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean

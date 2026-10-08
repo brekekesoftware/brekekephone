@@ -3,7 +3,7 @@ import { Linking } from 'react-native'
 import { compareAccountPartial, toPhoneIndex } from '#/stores/accountStore'
 import { ctx } from '#/stores/ctx'
 import type { UrlParams } from '#/utils/deeplink-parse'
-import { parse } from '#/utils/deeplink-parse'
+import { parse, toAccountSettings } from '#/utils/deeplink-parse'
 
 export const urls = {
   phoneappli: {
@@ -52,7 +52,8 @@ export const getUrlParams = async () => {
         pbxUsername: urlParams.user,
         pbxTenant: urlParams.tenant,
       }) &&
-        toPhoneIndex(ca.pbxPhoneIndex) === toPhoneIndex(urlParams.phone_idx))
+        toPhoneIndex(ca.pbxPhoneIndex) === toPhoneIndex(urlParams.phone_idx) &&
+        !Object.keys(toAccountSettings(urlParams)).length)
     ) {
       return
     }
