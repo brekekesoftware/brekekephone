@@ -28,6 +28,38 @@ let store = null as any as DebugStore
 const LOG_DIR = !isWeb ? `${RNFS.DocumentDirectoryPath}` : ''
 const LOG_PREFIX = 'brekeke_phone_log_'
 
+const folderStats = async (dir: string) => {
+  const total = { bytes: 0, files: 0 }
+  const items = await RNFS.readDir(dir).catch(() => [] as ReadDirItem[])
+  for (const item of items) {
+    if (item.isDirectory()) {
+      const sub = await folderStats(item.path)
+      total.bytes += sub.bytes
+      total.files += sub.files
+    } else {
+      total.bytes += Number(item.size) || 0
+      total.files += 1
+    }
+  }
+  return total
+}
+const logCacheStats = async (label: string) => {
+  if (isWeb) {
+    return
+  }
+  const dirs = [
+    RNFS.CachesDirectoryPath,
+    isAndroid ? RNFS.ExternalCachesDirectoryPath : RNFS.TemporaryDirectoryPath,
+  ].filter(Boolean)
+  const parts = await Promise.all(
+    dirs.map(async d => {
+      const s = await folderStats(d)
+      return `${d}: ${filesize(s.bytes)} in ${s.files} files`
+    }),
+  )
+  console.log(`clear app cache: ${label}: ${parts.join(', ')}`)
+}
+
 const maximumBytes = 300000 // 300KB
 const maxFiles = 20
 export const getFilePath = (rootPath: string, file: string) =>
@@ -262,7 +294,8 @@ export class DebugStore {
     })
   }
   clearAppCacheWithoutPrompt = () =>
-    BrekekeUtils.clearAppCache()
+    logCacheStats('start, before')
+      .then(() => BrekekeUtils.clearAppCache())
       .then(async ok => {
         if (!ok) {
           throw new Error('BrekekeUtils.clearAppCache returned false')
@@ -272,6 +305,7 @@ export class DebugStore {
           await FastImage.clearMemoryCache()
           await FastImage.clearDiskCache()
         }
+        await logCacheStats('done, after')
         RnAlert.prompt({
           title: intl`App cache cleared`,
           message: intl`Please close the app and open it again to finish clearing the cache.`,
@@ -280,6 +314,7 @@ export class DebugStore {
         })
       })
       .catch((err: Error) => {
+        console.error(`clear app cache: failed: ${err?.message}`)
         RnAlert.error({
           message: intlDebug`Failed to clear the app cache`,
           err,
