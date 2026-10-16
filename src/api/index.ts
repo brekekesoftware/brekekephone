@@ -77,6 +77,7 @@ class Api {
     BackgroundTimer.setTimeout(ctx.auth.processPendingCustomPageEvents, 0)
 
     ctx.authSIP.auth()
+    ctx.sip.reconnectInCall()
     await ctx.auth.waitSip()
 
     await ctx.pbx.getConfig()
