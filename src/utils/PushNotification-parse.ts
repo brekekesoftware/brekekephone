@@ -1,4 +1,5 @@
 import { AppState } from 'react-native'
+import { Notifications } from 'react-native-notifications'
 
 import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -240,6 +241,11 @@ export const parse = async (
     isAndroid && isClickAction && !n.isCall && rawId?.startsWith('message-')
       ? rawId
       : undefined
+  const removeChatNotification = () => {
+    if (localChatNotificationId && typeof raw['native_id'] === 'number') {
+      Notifications.cancelLocalNotification(raw['native_id'])
+    }
+  }
   if (localChatNotificationId) {
     if (androidProcessedLocalChatNotification[localChatNotificationId]) {
       console.log(
@@ -252,6 +258,7 @@ export const parse = async (
 
   const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)
   if (!acc) {
+    removeChatNotification()
     if (localChatNotificationId) {
       delete androidProcessedLocalChatNotification[localChatNotificationId]
     }
@@ -290,6 +297,7 @@ export const parse = async (
     }
     return
   }
+  removeChatNotification()
   if (n.isCall) {
     ctx.auth.queueIncomingCustomPageEvent(
       n.id || n.callkeepUuid,

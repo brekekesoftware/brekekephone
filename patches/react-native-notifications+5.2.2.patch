@@ -60,16 +60,29 @@ index 1e7e871..7fb516d 100644
      }
  
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
-index ac04274..d6741c3 100644
+index ac04274..c9c4a71 100644
 --- a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
 +++ b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/core/notification/PushNotification.java
-@@ -150,6 +150,7 @@ public class PushNotification implements IPushNotification {
+@@ -145,13 +145,19 @@ public class PushNotification implements IPushNotification {
+         return getNotificationBuilder(intent).build();
+     }
+ 
++    private boolean autoCancel() {
++        Bundle payload = mNotificationProps.asBundle().getBundle("payload");
++        return payload == null || payload.getBoolean("auto_cancel", true);
++    }
++
+     protected Notification.Builder getNotificationBuilder(PendingIntent intent) {
+         final Notification.Builder notification = new Notification.Builder(mContext)
                  .setContentTitle(mNotificationProps.getTitle())
                  .setContentText(mNotificationProps.getBody())
                  .setContentIntent(intent)
 +                .setShowWhen(true)
                  .setDefaults(Notification.DEFAULT_ALL)
-                 .setAutoCancel(true);
+-                .setAutoCancel(true);
++                .setAutoCancel(autoCancel());
+ 
+         setUpIcon(notification);
  
 diff --git a/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java b/node_modules/react-native-notifications/lib/android/app/src/main/java/com/wix/reactnativenotifications/fcm/FcmToken.java
 index fb1aba4..fe26eeb 100644
