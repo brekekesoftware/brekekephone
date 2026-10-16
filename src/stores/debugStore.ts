@@ -1,7 +1,6 @@
 import FastImage from '@d11/react-native-fast-image'
 import type { ReadDirResItemT as ReadDirItem } from '@dr.pogodin/react-native-fs'
 import * as RNFS from '@dr.pogodin/react-native-fs'
-import { Buffer } from 'buffer'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
 import { observable } from 'mobx'
@@ -247,16 +246,23 @@ export class DebugStore {
       return
     }
     const title = file.name
-    let url: string | null = null
-    // share works inconsistency between android and ios
     if (isIos) {
-      url = file.path // only works with `file://...`
-    } else {
-      const content = await RNFS.readFile(file.path, 'utf8')
-      const b64 = Buffer.from(content).toString('base64')
-      url = `data:text/plain;base64,${b64}` // only works with base64
+      Share.open({ title, url: file.path, subject: title, isNewTask: true })
+      return
     }
-    Share.open({ title, url, subject: title, isNewTask: true })
+    // a data: url of the live log file made Files fail with "File not found"
+    const snapshotPath = `${RNFS.CachesDirectoryPath}/${file.name}`
+    if (await RNFS.exists(snapshotPath)) {
+      await RNFS.unlink(snapshotPath)
+    }
+    await RNFS.copyFile(file.path, snapshotPath)
+    Share.open({
+      title,
+      url: `file://${snapshotPath}`,
+      type: 'text/plain',
+      subject: title,
+      isNewTask: true,
+    })
   }
 
   clearLogFiles = () => {
