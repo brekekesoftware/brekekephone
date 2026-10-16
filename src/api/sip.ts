@@ -419,8 +419,15 @@ export class SIP extends EventEmitter {
     this.phone?.setWithVideo(sessionId, true)
   disableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, false)
-  setMuted = (muted: boolean, sessionId: string) =>
-    this.phone?.setMuted({ main: muted }, sessionId)
+  setMuted = (muted: boolean, sessionId: string) => {
+    const r = this.phone?.setMuted({ main: muted }, sessionId)
+    const mic = this.phone
+      ?.getSession(sessionId)
+      ?.localStreamObject?.getAudioTracks()
+      .map(t => t.enabled)
+    console.log(`SIP debug: setMuted ${muted}, mic track enabled: ${mic}`)
+    return r
+  }
   setMutedVideo = (muted: boolean, sessionId: string) => {
     this.phone?.setMuted({ videoClient: muted }, sessionId)
   }
