@@ -1,5 +1,9 @@
+diff --git a/node_modules/react-native/.DS_Store b/node_modules/react-native/.DS_Store
+new file mode 100644
+index 0000000..352a25f
+Binary files /dev/null and b/node_modules/react-native/.DS_Store differ
 diff --git a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
-index bd95c32..4bd0dec 100644
+index bd95c32..7b0fc3c 100644
 --- a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
 +++ b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
 @@ -7,31 +7,21 @@
@@ -164,7 +168,7 @@ index bd95c32..4bd0dec 100644
  }
  
  - (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
-@@ -172,72 +192,145 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
+@@ -172,72 +192,153 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
    _contentHandlers[socketID] = handler;
  }
  
@@ -339,8 +343,16 @@ index bd95c32..4bd0dec 100644
 +                           @"id" : socketID
 +                         }];
 +    } else {
++      NSString *message = error.localizedDescription ?: @"Undefined, error is nil";
++      // the JS side finds a rejected login (401/403) only by this status: without it, a wrong password is retried forever
++      NSInteger status = [task.response isKindOfClass:[NSHTTPURLResponse class]]
++          ? ((NSHTTPURLResponse *)task.response).statusCode
++          : 0;
++      if (status > 0) {
++        message = [NSString stringWithFormat:@"%@ (HTTP %ld)", message, (long)status];
++      }
 +      NSDictionary *body = @{
-+        @"message" : error.localizedDescription ?: @"Undefined, error is nil",
++        @"message" : message,
 +        @"id" : socketID ?: @(-1)
 +      };
 +      [self sendEventWithName:@"websocketFailed" body:body];
