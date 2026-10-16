@@ -188,36 +188,43 @@ export class ChatStore {
     body = decode(body)
     const id = `message-${Date.now()}`
     if (isAndroid) {
-      Notifications.postLocalNotification({
-        payload: {
-          id,
-          title,
+      const nativeId = Date.now() % 2147483647
+      Notifications.postLocalNotification(
+        {
+          payload: {
+            id,
+            native_id: nativeId,
+            // a tap refused during a call of another account must leave it for a tap after the call
+            auto_cancel: false,
+            title,
+            body,
+            threadId,
+            isGroupChat,
+            number: 0,
+            sound: '',
+            priority: 'high',
+            show_in_foreground: true,
+            local_notification: true,
+            wake_screen: false,
+            ongoing: false,
+            lights: true,
+            channel: 'brekeke_chat',
+            icon: 'ic_launcher',
+            pre_app_state: AppState.currentState,
+            my_custom_data: 'local_notification',
+            is_local_notification: 'local_notification',
+            to,
+          },
+          identifier: id,
           body,
-          threadId,
-          isGroupChat,
-          number: 0,
-          sound: '',
-          priority: 'high',
-          show_in_foreground: true,
-          local_notification: true,
-          wake_screen: false,
-          ongoing: false,
-          lights: true,
-          channel: 'brekeke_chat',
-          icon: 'ic_launcher',
-          pre_app_state: AppState.currentState,
-          my_custom_data: 'local_notification',
-          is_local_notification: 'local_notification',
-          to,
+          title,
+          sound: 'ding.mp3',
+          badge: 0,
+          type: '',
+          thread: '',
         },
-        identifier: id,
-        body,
-        title,
-        sound: 'ding.mp3',
-        badge: 0,
-        type: '',
-        thread: '',
-      })
+        nativeId,
+      )
     } else {
       PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
         badge = Number(badge) || 0
