@@ -127,7 +127,7 @@ const initApp = async () => {
       return
     }
 
-    ctx.auth.resetFailureState()
+    ctx.auth.resetRetryCounters()
     ctx.call.onCallKeepAction()
     ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
@@ -180,7 +180,7 @@ const initApp = async () => {
     if (!isConnected) {
       return
     }
-    ctx.auth.resetFailureState()
+    ctx.auth.resetRetryCounters()
     ctx.authPBX.auth()
     ctx.authSIP.auth()
     ctx.authUC.auth()
