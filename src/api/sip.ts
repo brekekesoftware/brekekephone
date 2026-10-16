@@ -28,6 +28,7 @@ type DeviceInputWeb = {
 }
 export class SIP extends EventEmitter {
   phone?: Sip
+  reconnectInCall = () => {}
   currentCamera?: string
 
   cameraIds?: DeviceInputWeb[] = []
@@ -321,8 +322,13 @@ export class SIP extends EventEmitter {
     })
     // the pbx rejects the old token once pal has reconnected, and jssip keeps it in the url while a call holds the ua
     let refreshingToken = false
-    phone._ua?.on('disconnected', async () => {
-      if (refreshingToken || !phone.getSessionCount()) {
+    let connectAfterRefresh = false
+    const refreshTokenInCall = async (connectNow: boolean) => {
+      if (!phone.getSessionCount()) {
+        return
+      }
+      connectAfterRefresh ||= connectNow
+      if (refreshingToken) {
         return
       }
       refreshingToken = true
@@ -333,6 +339,8 @@ export class SIP extends EventEmitter {
           return undefined
         })
       refreshingToken = false
+      const shouldConnect = connectAfterRefresh
+      connectAfterRefresh = false
       if (!token || this.phone !== phone) {
         return
       }
@@ -344,8 +352,25 @@ export class SIP extends EventEmitter {
           socket._url = socket._url.replace(/Authorization=[^&]*/, param)
         }
         ua?.registrator?.().setExtraHeaders([`Authorization: ${token}`])
+        const transport = ua?._transport
+        if (
+          shouldConnect &&
+          transport &&
+          !transport.isConnected() &&
+          !transport.isConnecting()
+        ) {
+          console.log('SIP PN debug: connect sip now for the call')
+          if (transport.recovery_timer) {
+            clearTimeout(transport.recovery_timer)
+            transport.recovery_timer = null
+          }
+          transport.connect()
+        }
       })
-    })
+    }
+    // connect at once only after a pal login: on 'disconnected' a failed connect would fire it again in a tight loop
+    phone._ua?.on('disconnected', () => refreshTokenInCall(false))
+    this.reconnectInCall = () => refreshTokenInCall(true)
   }
 
   private hackJssipFork = () => {

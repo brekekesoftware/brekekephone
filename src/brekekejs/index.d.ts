@@ -44,18 +44,13 @@ export type EmbedNotificationOptions = {
   closeNotificationOnCallEnd: boolean
   notificationInterval: number
   notificationCallCompletedElseWhere:
-    | boolean
-    | ((call: CallHistoryInfo) => boolean)
+    boolean | ((call: CallHistoryInfo) => boolean)
   notificationCallCompletedElseWhereInterval: number
 }
 
 // MFA lifecycle event emitted by the embedded webphone (embed mode only).
 export type MfaEventStatus =
-  | 'required'
-  | 'error'
-  | 'verified'
-  | 'cancelled'
-  | 'closed'
+  'required' | 'error' | 'verified' | 'cancelled' | 'closed'
 export type MfaEventPayload = {
   status: MfaEventStatus
   accountId: string
@@ -606,6 +601,10 @@ export type Sip = {
   _ua?: {
     _transport?: {
       socket?: { _url?: string }
+      recovery_timer?: ReturnType<typeof setTimeout> | null
+      isConnected(): boolean
+      isConnecting(): boolean
+      connect(): void
     }
     registrator?(): {
       _registered: boolean
