@@ -663,6 +663,11 @@ export class AuthStore {
 
   @action resetFailureState = () => {
     this.pbxLoginRejected = false
+    this.resetRetryCounters()
+  }
+  // keeps pbxLoginRejected: a network return or a foreground is not a new password,
+  // and one more login with the rejected one can get the client blocked
+  @action resetRetryCounters = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
