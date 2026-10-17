@@ -632,7 +632,15 @@ export class PBX extends EventEmitter {
       notify_callrecording: this.onCallRecording,
       notify_voicemail: this.onVoicemail,
       notify_status: this.onUserStatus,
-      notify_pal: this.onUserLoginOtherDevices,
+      notify_pal: (e: PbxEvent['pal']) => {
+        // the PBX sends ANOTHER_LOGIN to this app's own old session when it logs in again; acting on it
+        // signs this device out of SIP and PBX
+        if (isStaleClient()) {
+          console.log('PBX guard debug: drop notify_pal from stale client')
+          return
+        }
+        this.onUserLoginOtherDevices(e)
+      },
     }
     Object.keys(listeners).forEach(k => {
       listeners[k] = this.wrapListenersWithLog(k, listeners[k])
