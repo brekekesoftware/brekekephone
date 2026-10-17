@@ -3664,7 +3664,9 @@ if (!Brekeke.WebrtcClient) {
           this._uaDroppedInCall &&
           rtcSession &&
           rtcSession.direction === 'incoming' &&
-          !rtcSession.isEstablished()
+          // ANSWERED here: answer() ran after the socket died, no 200 OK ever left, the PBX never saw it
+          (!rtcSession.isEstablished() ||
+            rtcSession.status === rtcSession.constructor.C.STATUS_ANSWERED)
         ) {
           this._logger.log(
             'info',
