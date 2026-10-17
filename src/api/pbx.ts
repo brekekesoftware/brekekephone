@@ -918,6 +918,13 @@ export class PBX extends EventEmitter {
       inMFA
     ) {
       await ctx.account.handleMFA(ca)
+      if (ctx.auth.pbxState === 'stopped') {
+        // this login is dead and checkTimeoutToReconnectPbx owns the retry; returning false here would let
+        // AuthPBX mark a failure and disconnect the new login; the fresh-login MFA check must run again
+        ctx.auth.pbxFreshLogin = isFreshLogin
+        ctx.auth.pbxTotalFailure += 1
+        return true
+      }
       // Re-check: handleMFA may have changed state to IN_PROGRESS (OTP required).
       return ctx.account.isAccountInMFA(ca)
     }

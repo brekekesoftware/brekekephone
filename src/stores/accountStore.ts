@@ -1095,6 +1095,13 @@ export class AccountStore {
     }
     // Network/exception failure — no usable response from server
     if (result === false) {
+      // a PAL drop during mfa/start already restarts the PBX login; signing out here stops that retry for good
+      if (ctx.auth.pbxState === 'stopped') {
+        console.log(
+          `MFA debug: mfaStart failed while PBX is stopped, keep sign-in ca=${ca.id}`,
+        )
+        return
+      }
       ctx.toast.show(intl`Unable to log in. Please try again.`, 'error')
       ctx.auth.signOut()
       return
