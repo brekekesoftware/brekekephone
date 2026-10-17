@@ -198,6 +198,24 @@ const initApp = async () => {
     ) {
       ctx.auth.sipState = 'stopped'
     }
+    if (isBackAfterDrop && ctx.auth.sipState === 'success') {
+      // a call is up, so SIP was not restarted above; JsSIP would wait a random back-off and the
+      // in-call connect waits for a PAL login: 6 s with no socket ends the call at UNHOLD (wifi E6)
+      ;[ctx.sip.phone?._ua, ctx.sip.phone?._vua].forEach(ua => {
+        const transport = ua?._transport
+        if (!transport || transport.isConnected() || transport.isConnecting()) {
+          return
+        }
+        console.log(
+          'SIP PN debug: connect sip at once after the network returns',
+        )
+        if (transport.recovery_timer) {
+          clearTimeout(transport.recovery_timer)
+          transport.recovery_timer = null
+        }
+        transport.connect()
+      })
+    }
     ctx.authPBX.auth()
     ctx.authSIP.auth()
     ctx.authUC.auth()
