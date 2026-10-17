@@ -176,11 +176,28 @@ const initApp = async () => {
     if (ctx.auth.hasInternetConnected === isConnected) {
       return
     }
+    const isBackAfterDrop = ctx.auth.hasInternetConnected === false
     ctx.auth.hasInternetConnected = isConnected
+    console.log(
+      `NetInfo debug: isConnected=${isConnected} pbxState=${ctx.auth.pbxState} sipState=${ctx.auth.sipState}`,
+    )
     if (!isConnected) {
       return
     }
     ctx.auth.resetRetryCounters()
+    // sockets opened before a drop can stay open but dead after it; the PBX then never gets
+    // this app's 200 OK and the answered call never connects (wifi C4)
+    if (isBackAfterDrop && ctx.auth.pbxState === 'success') {
+      ctx.auth.pbxState = 'stopped'
+    }
+    if (
+      isBackAfterDrop &&
+      ctx.auth.sipState === 'success' &&
+      !ctx.call.calls.length &&
+      !ctx.sip.phone?.getSessionCount()
+    ) {
+      ctx.auth.sipState = 'stopped'
+    }
     ctx.authPBX.auth()
     ctx.authSIP.auth()
     ctx.authUC.auth()
