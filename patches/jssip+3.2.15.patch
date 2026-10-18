@@ -1,3 +1,35 @@
+diff --git a/node_modules/jssip/lib/Dialog/RequestSender.js b/node_modules/jssip/lib/Dialog/RequestSender.js
+index e3a0311..ea29d8e 100644
+--- a/node_modules/jssip/lib/Dialog/RequestSender.js
++++ b/node_modules/jssip/lib/Dialog/RequestSender.js
+@@ -66,6 +66,7 @@ module.exports = class DialogRequestSender
+     });
+ 
+     request_sender.send();
++    this._clientTransaction = request_sender.clientTransaction;
+ 
+     // RFC3261 14.2 Modifying an Existing Session -UAC BEHAVIOR-.
+     if ((this._request.method === JsSIP_C.INVITE ||
+@@ -91,6 +92,19 @@ module.exports = class DialogRequestSender
+ 
+   _receiveResponse(response)
+   {
++    if (this._dialogLost)
++    {
++      return;
++    }
++    // the PBX lost the dialog (its BYE went to the dead socket) and rings this re-INVITE as a new call: E5
++    if (response.method === JsSIP_C.INVITE && response.status_code === 180)
++    {
++      this._dialogLost = true;
++      this._clientTransaction.cancel();
++      this._eventHandlers.onDialogError(response);
++
++      return;
++    }
+     // RFC3261 12.2.1.2 408 or 481 is received for a request within a dialog.
+     if (response.status_code === 408 || response.status_code === 481)
+     {
 diff --git a/node_modules/jssip/lib/RTCSession.js b/node_modules/jssip/lib/RTCSession.js
 index 750c7fa..7dc3bf4 100644
 --- a/node_modules/jssip/lib/RTCSession.js
