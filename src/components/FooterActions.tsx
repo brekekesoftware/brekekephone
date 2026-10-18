@@ -88,6 +88,8 @@ export const FooterActions: FC<
           <RnIcon
             color={v.colors.danger}
             path={onBackIcon || mdiKeyboardBackspace}
+            /* without it the svg takes the tap on Android and Delete does nothing */
+            pointerEvents='none'
           />
         </RnTouchableOpacity>
       )}
