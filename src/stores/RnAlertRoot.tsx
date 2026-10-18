@@ -177,6 +177,9 @@ const RnAlertR = ({
 
 export const RnAlertRoot = observer(() => {
   const a0 = RnAlert.alerts.find(a => a)
+  console.log(
+    `RnAlert debug: root render count=${RnAlert.alertsCount} a0=${a0 ? ('prompt' in a0 ? 'prompt' : 'error') : 'none'}`,
+  )
   if (!RnAlert.alertsCount || !a0) {
     return null
   }
