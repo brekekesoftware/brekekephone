@@ -40,6 +40,9 @@ export class RnAlertStore {
   alerts: TRnAlert[] = []
 
   @action prompt = (prompt: PromptRnAlert) => {
+    console.log(
+      `RnAlert debug: prompt before=${this.alerts.length} count=${this.alertsCount} kinds=${this.alerts.map(a => ('prompt' in a ? 'prompt' : 'error')).join(',')}`,
+    )
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
