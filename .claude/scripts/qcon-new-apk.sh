@@ -41,7 +41,7 @@ cmd_run() {
   shift
   ids=$(printf '%s\n' "$@" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.stringify(s.trim().split("\n"))))')
   out=$(mcp qcon_run "{\"tcIds\":$ids,\"env\":\"$ENV\",\"campaign\":\"$campaign\",\"confirm_destructive\":true}") || { echo "$out"; die "qcon_run (check qcon_run_status {} before a retry: it may have started)"; }
-  if echo "$out" | rg -q 'RUN_ALL_SKIPPED|"ok": false'; then
+  if echo "$out" | rg -q 'RUN_ALL_SKIPPED|"ok": false|"started": false'; then
     echo "$out" | head -20
     die "qcon_run refused"
   fi
