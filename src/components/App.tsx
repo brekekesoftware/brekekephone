@@ -172,14 +172,26 @@ const initApp = async () => {
     await autoLogin()
   })
 
-  NetInfo.addEventListener(({ isConnected }) => {
-    if (ctx.auth.hasInternetConnected === isConnected) {
+  let lastNetType = ''
+  NetInfo.addEventListener(({ isConnected, type }) => {
+    // after cellular -> wifi Android lingers the cellular network 30 s then kills the sockets opened
+    // on it; isConnected stays true, so without this the app is unreachable until JsSIP back-off
+    const isNetworkSwitch =
+      !!isConnected &&
+      ctx.auth.hasInternetConnected === true &&
+      !!lastNetType &&
+      type !== lastNetType
+    if (isConnected) {
+      lastNetType = type
+    }
+    if (ctx.auth.hasInternetConnected === isConnected && !isNetworkSwitch) {
       return
     }
-    const isBackAfterDrop = ctx.auth.hasInternetConnected === false
+    const isBackAfterDrop =
+      ctx.auth.hasInternetConnected === false || isNetworkSwitch
     ctx.auth.hasInternetConnected = isConnected
     console.log(
-      `NetInfo debug: isConnected=${isConnected} pbxState=${ctx.auth.pbxState} sipState=${ctx.auth.sipState}`,
+      `NetInfo debug: isConnected=${isConnected} type=${type} pbxState=${ctx.auth.pbxState} sipState=${ctx.auth.sipState}`,
     )
     if (!isConnected) {
       return
@@ -203,8 +215,15 @@ const initApp = async () => {
       // in-call connect waits for a PAL login: 6 s with no socket ends the call at UNHOLD (wifi E6)
       ;[ctx.sip.phone?._ua, ctx.sip.phone?._vua].forEach(ua => {
         const transport = ua?._transport
-        if (!transport || transport.isConnected() || transport.isConnecting()) {
+        if (
+          !transport ||
+          (!isNetworkSwitch &&
+            (transport.isConnected() || transport.isConnecting()))
+        ) {
           return
+        }
+        if (isNetworkSwitch) {
+          transport.disconnect()
         }
         console.log(
           'SIP PN debug: connect sip at once after the network returns',

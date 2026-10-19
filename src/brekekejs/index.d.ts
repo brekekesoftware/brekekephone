@@ -605,6 +605,7 @@ export type Sip = {
       isConnected(): boolean
       isConnecting(): boolean
       connect(): void
+      disconnect(): void
     }
     registrator?(): {
       _registered: boolean
