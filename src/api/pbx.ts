@@ -30,6 +30,7 @@ import {
   bundleIdentifier,
   fcmApplicationId,
   isAndroid,
+  isWeb,
   retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
@@ -590,6 +591,7 @@ export class PBX extends EventEmitter {
       })
     }
     let rejectLoginFn: ((err: Error) => void) | undefined = undefined
+    let socketOpened = false
     const login = new Promise<boolean>((resolve, reject) => {
       rejectLoginFn = reject
       this.logMainInstance('PAL login start')
@@ -603,6 +605,10 @@ export class PBX extends EventEmitter {
           reject(err)
         },
       )
+      const socket = (client as unknown as { socket?: WebSocket }).socket
+      socket?.addEventListener('open', () => {
+        socketOpened = true
+      })
     })
 
     // this.client cleared by disconnect() (e.g. account switch) also means stale —
@@ -672,6 +678,22 @@ export class PBX extends EventEmitter {
         rejectLoginFn?.(new PbxLoginRejectedError(reason))
         rejectLoginFn = undefined
         this.disconnect()
+      }
+      // Chrome hides the HTTP status of a refused handshake; without this the web retries a wrong password and the PBX blocks the client
+      if (isWeb && e?.code === 1006 && !socketOpened && rejectLoginFn) {
+        void this.probeServer(wsUri).then(isServerUp => {
+          if (!isServerUp || isStaleClient()) {
+            return
+          }
+          this.logMainInstance(
+            'PAL login closed before open while the server is up: rejected',
+          )
+          rejectLoginFn?.(
+            new PbxLoginRejectedError('closed before open, server up'),
+          )
+          rejectLoginFn = undefined
+          this.disconnect()
+        })
       }
     }
     const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
