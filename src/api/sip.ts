@@ -12,6 +12,8 @@ import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
 import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
+import { intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
@@ -264,9 +266,35 @@ export class SIP extends EventEmitter {
       })
     })
 
-    phone.addEventListener('rtcErrorOccurred', ev => {
-      console.error('sip.phone.rtcErrorOccurred:', ev)
-    })
+    phone.addEventListener(
+      'rtcErrorOccurred',
+      (
+        ev: Error & {
+          from?: string
+          client?: string
+          sessionId?: string | null
+          error?: Error
+        },
+      ) => {
+        console.error('sip.phone.rtcErrorOccurred:', ev)
+        if (ev.from !== 'browser' || ev.client !== 'main') {
+          return
+        }
+        RnAlert.error({
+          message: intlDebug`Cannot use the microphone. Allow microphone access for this site and check that a microphone is connected, then try again`,
+          err: ev.error,
+        })
+        if (ev.sessionId) {
+          this.hangupSession(ev.sessionId)
+          return
+        }
+        if (ctx.auth.phoneappliEnabled()) {
+          ctx.nav.backToPageCallKeypad()
+        } else {
+          ctx.nav.backToPageCallRecents()
+        }
+      },
+    )
 
     return phone
   }
