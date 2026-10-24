@@ -288,6 +288,10 @@ export class SIP extends EventEmitter {
           this.hangupSession(ev.sessionId)
           return
         }
+        // the startCall 3 s reconnect timer redials and asks the mic again; mobile keeps it so its 10 s guard ends the CallKit call
+        if (isWeb) {
+          ctx.call.clearStartCallIntervalTimer()
+        }
         if (ctx.auth.phoneappliEnabled()) {
           ctx.nav.backToPageCallKeypad()
         } else {

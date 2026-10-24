@@ -800,7 +800,7 @@ export class CallStore {
 
   private startCallIntervalAt = 0
   private startCallIntervalId = 0
-  private clearStartCallIntervalTimer = () => {
+  clearStartCallIntervalTimer = () => {
     if (this.startCallIntervalId) {
       BackgroundTimer.clearInterval(this.startCallIntervalId)
       this.startCallIntervalId = 0
