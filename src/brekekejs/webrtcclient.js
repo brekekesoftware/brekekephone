@@ -2643,6 +2643,30 @@ if (!Brekeke.WebrtcClient) {
       }
     },
     _iceCandidateGatheringTimedOut: function (iceCandidateInfo) {
+      var hasUdp = (
+        (iceCandidateInfo && iceCandidateInfo.icecandidates) ||
+        []
+      ).some(function (c) {
+        return /\sudp\s/i.test(c)
+      })
+      // the PBX offers UDP only: an answer with only TCP candidates has no audio
+      if (
+        iceCandidateInfo &&
+        !hasUdp &&
+        (iceCandidateInfo.udpWaitMs || 0) < 4000
+      ) {
+        iceCandidateInfo.udpWaitMs = (iceCandidateInfo.udpWaitMs || 0) + 500
+        this._logger.log(
+          'debug',
+          'ice candidate gathering waits for a UDP candidate: ' +
+            iceCandidateInfo.udpWaitMs,
+        )
+        iceCandidateInfo.gatheringTimer = setTimeout(
+          by(this, this._iceCandidateGatheringTimedOut, [iceCandidateInfo]),
+          500,
+        )
+        return
+      }
       this._logger.log(
         'debug',
         'ice candidate gathering timed out: ' +
