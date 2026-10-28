@@ -31,7 +31,7 @@ index e3a0311..ea29d8e 100644
      if (response.status_code === 408 || response.status_code === 481)
      {
 diff --git a/node_modules/jssip/lib/RTCSession.js b/node_modules/jssip/lib/RTCSession.js
-index 750c7fa..7dc3bf4 100644
+index 750c7fa..95486be 100644
 --- a/node_modules/jssip/lib/RTCSession.js
 +++ b/node_modules/jssip/lib/RTCSession.js
 @@ -8,7 +8,6 @@ const Transactions = require('./Transactions');
@@ -91,7 +91,7 @@ index 750c7fa..7dc3bf4 100644
        }
      }
  
-@@ -1793,6 +1796,15 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1793,6 +1796,20 @@ module.exports = class RTCSession extends EventEmitter
        // TODO: Do more with different states.
        if (state === 'failed')
        {
@@ -104,10 +104,15 @@ index 750c7fa..7dc3bf4 100644
 +        {
 +          return;
 +        }
++        // a re-INVITE is pending (the app's, after re-register): it restarts ICE; ending here drops a live call
++        if (this._dialog && (this._dialog.uac_pending_reply || this._dialog.uas_pending_reply))
++        {
++          return;
++        }
          this.terminate({
            cause         : JsSIP_C.causes.RTP_TIMEOUT,
            status_code   : 408,
-@@ -1828,7 +1840,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1828,7 +1845,8 @@ module.exports = class RTCSession extends EventEmitter
            return connection.createOffer(constraints)
              .catch((error) =>
              {
@@ -117,7 +122,7 @@ index 750c7fa..7dc3bf4 100644
  
                this.emit('peerconnection:createofferfailed', error);
  
-@@ -1840,7 +1853,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1840,7 +1858,8 @@ module.exports = class RTCSession extends EventEmitter
            return connection.createAnswer(constraints)
              .catch((error) =>
              {
@@ -127,7 +132,7 @@ index 750c7fa..7dc3bf4 100644
  
                this.emit('peerconnection:createanswerfailed', error);
  
-@@ -1856,7 +1870,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1856,7 +1875,8 @@ module.exports = class RTCSession extends EventEmitter
            {
              this._rtcReady = true;
  
@@ -137,7 +142,7 @@ index 750c7fa..7dc3bf4 100644
  
              this.emit('peerconnection:setlocaldescriptionfailed', error);
  
-@@ -1927,6 +1942,9 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1927,6 +1947,9 @@ module.exports = class RTCSession extends EventEmitter
     */
    _createDialog(message, type, early)
    {
@@ -147,7 +152,7 @@ index 750c7fa..7dc3bf4 100644
      const local_tag = (type === 'UAS') ? message.to_tag : message.from_tag;
      const remote_tag = (type === 'UAS') ? message.from_tag : message.to_tag;
      const id = message.call_id + local_tag + remote_tag;
-@@ -1947,7 +1965,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1947,7 +1970,7 @@ module.exports = class RTCSession extends EventEmitter
          // Dialog has been successfully created.
          if (early_dialog.error)
          {
@@ -156,7 +161,7 @@ index 750c7fa..7dc3bf4 100644
            this._failed('remote', message, JsSIP_C.causes.INTERNAL_ERROR);
  
            return false;
-@@ -1982,7 +2000,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -1982,7 +2005,7 @@ module.exports = class RTCSession extends EventEmitter
  
        if (dialog.error)
        {
@@ -165,7 +170,7 @@ index 750c7fa..7dc3bf4 100644
          this._failed('remote', message, JsSIP_C.causes.INTERNAL_ERROR);
  
          return false;
-@@ -2085,7 +2103,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2085,7 +2108,7 @@ module.exports = class RTCSession extends EventEmitter
        })
        .catch((error) =>
        {
@@ -174,7 +179,7 @@ index 750c7fa..7dc3bf4 100644
        });
  
      function sendAnswer(desc)
-@@ -2190,7 +2208,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2190,7 +2213,7 @@ module.exports = class RTCSession extends EventEmitter
        })
        .catch((error) =>
        {
@@ -183,7 +188,7 @@ index 750c7fa..7dc3bf4 100644
        });
  
      function sendAnswer(desc)
-@@ -2258,7 +2276,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2258,7 +2281,8 @@ module.exports = class RTCSession extends EventEmitter
            .catch((error) =>
            {
              request.reply(488);
@@ -193,7 +198,7 @@ index 750c7fa..7dc3bf4 100644
  
              this.emit('peerconnection:setremotedescriptionfailed', error);
  
-@@ -2543,7 +2562,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2543,7 +2567,8 @@ module.exports = class RTCSession extends EventEmitter
  
                this._failed('local', null, JsSIP_C.causes.USER_DENIED_MEDIA_ACCESS);
  
@@ -203,7 +208,7 @@ index 750c7fa..7dc3bf4 100644
  
                this.emit('getusermediafailed', error);
  
-@@ -2573,6 +2593,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2573,6 +2598,7 @@ module.exports = class RTCSession extends EventEmitter
            {
              this._failed('local', null, JsSIP_C.causes.WEBRTC_ERROR);
  
@@ -211,7 +216,7 @@ index 750c7fa..7dc3bf4 100644
              throw error;
            });
        })
-@@ -2586,7 +2607,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2586,7 +2612,7 @@ module.exports = class RTCSession extends EventEmitter
          this._request.body = desc;
          this._status = C.STATUS_INVITE_SENT;
  
@@ -220,7 +225,7 @@ index 750c7fa..7dc3bf4 100644
  
          // Emit 'sending' so the app can mangle the body before the request is sent.
          this.emit('sending', {
-@@ -2602,7 +2623,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2602,7 +2628,7 @@ module.exports = class RTCSession extends EventEmitter
            return;
          }
  
@@ -229,7 +234,7 @@ index 750c7fa..7dc3bf4 100644
        });
    }
  
-@@ -2613,6 +2634,9 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2613,6 +2639,9 @@ module.exports = class RTCSession extends EventEmitter
    {
      debug('receiveInviteResponse()');
  
@@ -239,7 +244,7 @@ index 750c7fa..7dc3bf4 100644
      // Handle 2XX retransmissions and responses from forked requests.
      if (this._dialog && (response.status_code >=200 && response.status_code <=299))
      {
-@@ -2637,7 +2661,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2637,7 +2666,7 @@ module.exports = class RTCSession extends EventEmitter
  
          if (dialog.error !== undefined)
          {
@@ -248,7 +253,7 @@ index 750c7fa..7dc3bf4 100644
  
            return;
          }
-@@ -2714,7 +2738,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2714,7 +2743,8 @@ module.exports = class RTCSession extends EventEmitter
            .then(() => this._connection.setRemoteDescription(answer))
            .catch((error) =>
            {
@@ -258,7 +263,7 @@ index 750c7fa..7dc3bf4 100644
  
              this.emit('peerconnection:setremotedescriptionfailed', error);
            });
-@@ -2756,6 +2781,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2756,6 +2786,7 @@ module.exports = class RTCSession extends EventEmitter
                  .then((offer) => this._connection.setLocalDescription(offer))
                  .catch((error) =>
                  {
@@ -266,7 +271,7 @@ index 750c7fa..7dc3bf4 100644
                    this._acceptAndTerminate(response, 500, error.toString());
                    this._failed('local', response, JsSIP_C.causes.WEBRTC_ERROR);
                  });
-@@ -2778,7 +2804,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2778,7 +2809,8 @@ module.exports = class RTCSession extends EventEmitter
                  this._acceptAndTerminate(response, 488, 'Not Acceptable Here');
                  this._failed('remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
  
@@ -276,7 +281,7 @@ index 750c7fa..7dc3bf4 100644
  
                  this.emit('peerconnection:setremotedescriptionfailed', error);
                });
-@@ -2906,7 +2933,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -2906,7 +2938,8 @@ module.exports = class RTCSession extends EventEmitter
          {
            onFailed.call(this);
  
@@ -286,7 +291,7 @@ index 750c7fa..7dc3bf4 100644
  
            this.emit('peerconnection:setremotedescriptionfailed', error);
          });
-@@ -3067,7 +3095,8 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3067,7 +3100,8 @@ module.exports = class RTCSession extends EventEmitter
            {
              onFailed.call(this);
  
@@ -296,7 +301,7 @@ index 750c7fa..7dc3bf4 100644
  
              this.emit('peerconnection:setremotedescriptionfailed', error);
            });
-@@ -3278,10 +3307,18 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3278,10 +3312,18 @@ module.exports = class RTCSession extends EventEmitter
      // I'm the refresher.
      if (this._sessionTimers.refresher)
      {
@@ -316,7 +321,7 @@ index 750c7fa..7dc3bf4 100644
          debug('runSessionTimer() | sending session refresh request');
  
          if (this._sessionTimers.refreshMethod === JsSIP_C.UPDATE)
-@@ -3292,7 +3329,9 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3292,7 +3334,9 @@ module.exports = class RTCSession extends EventEmitter
          {
            this._sendReinvite();
          }
@@ -327,7 +332,7 @@ index 750c7fa..7dc3bf4 100644
      }
  
      // I'm not the refresher.
-@@ -3315,7 +3354,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3315,7 +3359,7 @@ module.exports = class RTCSession extends EventEmitter
  
    _toogleMuteAudio(mute)
    {
@@ -336,7 +341,7 @@ index 750c7fa..7dc3bf4 100644
  
      for (const stream of streams)
      {
-@@ -3330,7 +3369,7 @@ module.exports = class RTCSession extends EventEmitter
+@@ -3330,7 +3374,7 @@ module.exports = class RTCSession extends EventEmitter
  
    _toogleMuteVideo(mute)
    {
