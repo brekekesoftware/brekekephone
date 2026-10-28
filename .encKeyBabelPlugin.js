@@ -21,3 +21,8 @@ module.exports = () => ({
     },
   },
 })
+module.exports.keyHash = require('crypto')
+  .createHash('sha256')
+  .update(key)
+  .digest('hex')
+  .slice(0, 16)
