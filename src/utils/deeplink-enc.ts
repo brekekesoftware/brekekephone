@@ -1,8 +1,14 @@
 import { gcm } from '@noble/ciphers/aes'
 import { Buffer } from 'buffer'
 
-// probe key; the final key is Vu's open pick
-const ENC_LINK_KEY = Buffer.from('0123456789abcdef0123456789abcdef', 'utf8')
+// the build puts the key in (.encKeyBabelPlugin.js); the probe key is only for code run without Babel
+declare const __ENC_LINK_KEY__: string
+const ENC_LINK_KEY = Buffer.from(
+  typeof __ENC_LINK_KEY__ === 'string'
+    ? __ENC_LINK_KEY__
+    : '0123456789abcdef0123456789abcdef',
+  'utf8',
+)
 
 const FIELDS = [
   'host',
