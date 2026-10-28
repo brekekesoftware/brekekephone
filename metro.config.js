@@ -6,6 +6,7 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config')
  *
  * @type {import('metro-config').MetroConfig}
  */
-const config = {}
+// a new enc link key must not reuse Metro's cached transform of the old one
+const config = { cacheVersion: require('./.encKeyBabelPlugin.js').keyHash }
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config)
