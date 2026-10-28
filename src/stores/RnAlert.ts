@@ -64,6 +64,14 @@ export class RnAlertStore {
       this.alertsCount = this.alerts.length
     }
   }
+  // an error that must be seen before alerts already waiting (the web "Action Required" prompt)
+  @action errorFirst = (a: ErrorRnAlert) => {
+    const before = this.alerts.length
+    this.error(a)
+    if (this.alerts.length > before) {
+      this.alerts.unshift(this.alerts.pop() as TRnAlert)
+    }
+  }
   @action dismiss = () => {
     this.alerts.shift()
     this.alertsCount = this.alerts.length

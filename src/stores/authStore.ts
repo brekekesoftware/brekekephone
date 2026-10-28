@@ -838,6 +838,17 @@ export class AuthStore {
     if (!urlParams) {
       return false
     }
+    if (urlParams.encError) {
+      // a refused enc link: say why, and leave every saved account as it is
+      RnAlert.errorFirst({
+        message:
+          urlParams.encError === 'expired'
+            ? intlDebug`This sign-in link has expired`
+            : intlDebug`This sign-in link is not valid`,
+      })
+      this.clearUrlParams()
+      return true
+    }
     const { host, port, tenant, user } = urlParams
     const a = await ctx.account.findPartial({
       pbxUsername: user,
