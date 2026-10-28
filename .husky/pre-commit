@@ -1,1 +1,2 @@
+bash .claude/scripts/enc-key-guard.sh
 npx lint-staged
