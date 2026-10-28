@@ -2,9 +2,7 @@ import { gcm } from '@noble/ciphers/aes'
 import { Buffer } from 'buffer'
 
 // probe key; the final key is Vu's open pick
-const ENC_LINK_KEY = new TextEncoder().encode(
-  '0123456789abcdef0123456789abcdef',
-)
+const ENC_LINK_KEY = Buffer.from('0123456789abcdef0123456789abcdef', 'utf8')
 
 const FIELDS = [
   'host',
@@ -39,7 +37,7 @@ export const decodeEnc = (
     const plain = gcm(ENC_LINK_KEY, bytes.subarray(0, 12)).decrypt(
       bytes.subarray(12),
     )
-    data = JSON.parse(new TextDecoder().decode(plain))
+    data = JSON.parse(Buffer.from(plain).toString('utf8'))
   } catch {
     return { error: 'bad' }
   }
