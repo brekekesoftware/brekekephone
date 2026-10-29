@@ -2,7 +2,6 @@ import qs from 'qs'
 import Url from 'url-parse'
 
 import type { Account } from '#/stores/accountStore'
-import { decodeEnc } from '#/utils/deeplink-enc'
 
 export const parse = (location: string | Url<any> | null) => {
   if (!location) {
@@ -16,17 +15,6 @@ export const parse = (location: string | Url<any> | null) => {
     qs.parse(location.hash.replace(/^[^?]*\?*/, '')),
     location.query || qs.parse((location as any).search.replace(/^\?*/, '')),
   )
-  if (params.enc) {
-    const r = decodeEnc(params.enc)
-    delete params.enc
-    if ('error' in r) {
-      params.encError = r.error
-      params.user = ''
-      params.password = ''
-    } else {
-      Object.assign(params, r.fields)
-    }
-  }
   if (params.pwhash !== undefined) {
     const h = String(params.pwhash).toLowerCase()
     if (/^[0-9a-f]{32}$/.test(h)) {
@@ -88,7 +76,6 @@ export interface UrlParams {
   pwhash?: string
   uc?: string
   parks?: string
-  encError?: 'bad' | 'expired'
 }
 
 export const toAccountSettings = (p: UrlParams): Partial<Account> => {

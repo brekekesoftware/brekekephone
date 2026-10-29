@@ -147,9 +147,3 @@ dependencies {
 
 // react-native-notifications
 apply plugin: "com.google.gms.google-services"
-
-// 2026-10-28: the enc link key comes from env or the Keychain (.encKeyBabelPlugin.js), which Gradle does not
-// see; without this a release after a build with another key keeps the old bundle (sprint 4 review).
-tasks.matching { it.name.startsWith("createBundle") && it.name.endsWith("JsAndAssets") }.configureEach {
-  outputs.upToDateWhen { false }
-}
