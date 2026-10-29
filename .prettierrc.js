@@ -14,4 +14,5 @@ module.exports = {
   insertPragma: false,
   endOfLine: 'lf',
   htmlWhitespaceSensitivity: 'ignore',
+  overrides: [{ files: 'pbx/**/*.js', options: { trailingComma: 'none' } }],
 }
