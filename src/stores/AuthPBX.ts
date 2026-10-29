@@ -54,6 +54,9 @@ export class AuthPBX {
         if (!connected) {
           throw new Error('PBX login connection timed out')
         }
+        if (ctx.auth.pwhashNewAccountId === ca.id) {
+          ctx.auth.pwhashNewAccountId = ''
+        }
       })
       .catch(
         action((err: Error) => {
@@ -62,6 +65,9 @@ export class AuthPBX {
           console.error('Failed to connect to pbx:', err)
           if (err instanceof PbxLoginRejectedError) {
             ctx.auth.pbxLoginRejected = true
+            if (ca.pbxPasswordHash) {
+              void ctx.auth.onPwhashRefused(ca)
+            }
             return
           }
           this.authWithCheck()
