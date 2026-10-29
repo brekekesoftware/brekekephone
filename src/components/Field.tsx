@@ -613,6 +613,8 @@ export const Field: FC<
                 editable={!disablePark}
                 disabled
                 maxLength={props?.maxLength || 100000}
+                placeholder={props.placeholder}
+                placeholderTextColor='grey'
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
                 style={[
                   css.Field_TextInput,
@@ -620,7 +622,9 @@ export const Field: FC<
                   props.textInputStyle,
                 ]}
                 value={
-                  props.valueRender?.(props.value) || props.value || '\u200a'
+                  props.valueRender?.(props.value) ||
+                  props.value ||
+                  (props.placeholder ? '' : '\u200a')
                 }
               />
             )}
