@@ -61,6 +61,20 @@ export class AuthStore {
 
   @observable accessor sipPn: Partial<SipPn> = {}
 
+  pwhashNewAccountId = ''
+
+  onPwhashRefused = async (ca: Account) => {
+    if (ca.id !== this.pwhashNewAccountId) {
+      return
+    }
+    this.pwhashNewAccountId = ''
+    this.signOut()
+    await ctx.account.removeAccount(ca.id)
+    RnAlert.error({
+      message: intlDebug`This link has expired. Ask for a new link.`,
+    })
+  }
+
   @observable accessor pbxState: ConnectionState = 'stopped'
   @observable accessor pbxTotalFailure = 0
   @observable accessor sipState: ConnectionState = 'stopped'
@@ -1018,6 +1032,14 @@ export class AuthStore {
       if (!a.pbxPort) {
         a.pbxPort = port
       }
+      const authChanged =
+        this.signedInId === a.id &&
+        ((!!pwhash && pwhash !== (a.pbxPasswordHash || '')) ||
+          (!!password && !pwhash && !!a.pbxPasswordHash))
+      if (password && !pwhash && a.pbxPasswordHash) {
+        a.pbxPassword = password
+        a.pbxPasswordHash = ''
+      }
       if (!a.pbxPassword) {
         a.pbxPassword = password
       }
@@ -1057,7 +1079,7 @@ export class AuthStore {
         pbxPhoneIndex: `${phoneIdx}`,
       })
       if (a.pbxPassword || a.pbxPasswordHash || d.accessToken) {
-        if (reconnectForPhoneIndex || turnChanged) {
+        if (reconnectForPhoneIndex || turnChanged || authChanged) {
           this.resetPrevAccountConnection()
           await waitTimeout()
         }
@@ -1082,7 +1104,8 @@ export class AuthStore {
       pbxPhoneIndex: `${phoneIdx}`,
     }
     const d = await ctx.account.findDataWithDefault(newA)
-    //
+    this.pwhashNewAccountId =
+      newA.pbxPasswordHash && !newA.pbxPassword ? newA.id : ''
     ctx.account.upsertAccount(newA)
     if (newA.pbxPassword || newA.pbxPasswordHash || d.accessToken) {
       this.signIn(newA)

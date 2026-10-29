@@ -610,6 +610,13 @@ export class PBX extends EventEmitter {
         },
         (err: any) => {
           this.logMainInstance('PAL login error:', err)
+          if (
+            a.pbxPasswordHash &&
+            /Login failed/.test(String(err?.message ?? err))
+          ) {
+            reject(new PbxLoginRejectedError('pwhash refused'))
+            return
+          }
           reject(err)
         },
       )
