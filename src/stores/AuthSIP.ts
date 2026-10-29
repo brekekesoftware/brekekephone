@@ -87,10 +87,9 @@ export class AuthSIP {
       port: pn.sipWssPort,
       username: pn.phoneId,
       accessToken: pn.sipAuth,
-      pbxTurnEnabled: ca.pbxTurnEnabled && !ownTurn,
       dtmfSendPal: toBoolean(pn.dtmfSendPal),
-      turnConfig,
-      pbxTurnServer: ownTurn,
+      pbxTurn: turnConfig,
+      ownTurn,
     }
     await ctx.sip.connect(o, ca)
   }

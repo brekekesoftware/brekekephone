@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3'
 
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
-import { turnConfig } from '#/api/turnConfig'
+import { iceServersFor } from '#/api/iceServers'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
@@ -310,21 +310,10 @@ export class SIP extends EventEmitter {
     this.stopWebRTC()
     const phone = await this.init(o)
     //
-    const callOptions = ((o.pbxTurnEnabled && turnConfig) || {}) as CallOptions
-    if (!callOptions.pcConfig) {
-      callOptions.pcConfig = {}
-    }
-    if (!Array.isArray(callOptions.pcConfig.iceServers)) {
-      callOptions.pcConfig.iceServers = []
-    }
-    if (o.turnConfig) {
-      callOptions.pcConfig.iceServers.push(o.turnConfig)
-    }
-    if (o.pbxTurnServer) {
-      callOptions.pcConfig.iceServers.push(o.pbxTurnServer)
-    }
+    const iceServers = iceServersFor(o.ownTurn, o.pbxTurn)
+    const callOptions = { pcConfig: { iceServers } } as CallOptions
     console.log(
-      `SIP PN debug: ice servers ${callOptions.pcConfig.iceServers.map(s => s.urls).join(' ')}`,
+      `SIP PN debug: ice servers ${iceServers.map(s => s.urls).join(' ')}`,
     )
     phone.setDefaultCallOptions(callOptions)
     //
@@ -551,12 +540,11 @@ ctx.sip = new SIP()
 export interface SipLoginOption {
   hostname: string
   port: string
-  pbxTurnEnabled: boolean
   username: string
   accessToken: string
   dtmfSendPal: boolean
-  turnConfig?: RTCIceServer
-  pbxTurnServer?: RTCIceServer
+  pbxTurn?: RTCIceServer
+  ownTurn?: RTCIceServer
 }
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
