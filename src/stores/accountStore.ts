@@ -48,6 +48,7 @@ export type Account = {
   pbxTenant: string
   pbxUsername: string
   pbxPassword: string
+  pbxPasswordHash?: string // MD5(password) from a pwhash sign-in link
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
   pbxTurnEnabled: boolean
   pbxTurnServer?: string
@@ -297,12 +298,17 @@ export class AccountStore {
     await this.saveAccountsToLocalStorage()
 
   hasSignInCredential = (a?: Partial<Account>) =>
-    !!a?.pbxPassword || !!this.findDataSync(a as AccountUnique)?.accessToken
+    !!a?.pbxPasswordHash ||
+    !!a?.pbxPassword ||
+    !!this.findDataSync(a as AccountUnique)?.accessToken
 
   hasPnSyncCredential = (a?: Partial<Account>) => {
     const d = this.findDataSync(a as AccountUnique)
     return (
-      !!a?.pbxPassword || !!d?.accessToken || !!d?.palParams?.['device_token']
+      !!a?.pbxPasswordHash ||
+      !!a?.pbxPassword ||
+      !!d?.accessToken ||
+      !!d?.palParams?.['device_token']
     )
   }
 

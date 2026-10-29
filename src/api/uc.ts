@@ -277,7 +277,7 @@ export class UC extends EventEmitter {
         a.pbxTenant,
         a.pbxUsername,
         a.pbxPassword,
-        undefined,
+        a.pbxPasswordHash ? { passwordMd5: a.pbxPasswordHash } : undefined,
         () => {
           this.rejectPendingConnect = undefined
           resolve(undefined)

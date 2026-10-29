@@ -454,20 +454,28 @@ export class PBX extends EventEmitter {
     const d = await ctx.account.findDataWithDefault(a)
     const oldPalParamUser = d.palParams?.['user']
     const wsUri = `wss://${a.pbxHostname}:${a.pbxPort}/pbx/ws`
+    const auth = a.pbxPasswordHash
+      ? {
+          login_password_md5: a.pbxPasswordHash,
+          secure_login_password: true,
+        }
+      : {
+          login_password: a.pbxPassword,
+          secure_login_password: false,
+        }
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
-      login_password: a.pbxPassword,
       ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
       park: (a.parks || []).map(encodeParkNumber),
       voicemail: 'self',
       status: true,
-      secure_login_password: false,
       phonetype: 'webphone',
       callrecording: 'self',
       ...d.palParams,
       ...embedApi._palParams,
+      ...auth,
       // doc: From the version 2.14.x, please add ctype=2 to the URL for PAL.
       // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
       ctype: 2,
