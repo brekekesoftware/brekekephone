@@ -39,6 +39,8 @@ export const AccountCreateForm: FC<{
       ringtoneOptions: [] as RingtoneOption[],
       preview: '',
     },
+    isLinkAccount: () =>
+      !!props.updating?.pbxPasswordHash && !props.updating?.pbxPassword,
     resetAllFields: () => {
       RnAlert.prompt({
         title: intl`Reset`,
@@ -130,7 +132,13 @@ export const AccountCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
-      props.onSave($.account, $.hasUnsavedChanges())
+      const a = $.account
+      const typed =
+        !!a.pbxPassword && a.pbxPassword !== (props.updating?.pbxPassword || '')
+      props.onSave(
+        typed && a.pbxPasswordHash ? { ...a, pbxPasswordHash: '' } : a,
+        $.hasUnsavedChanges(),
+      )
     },
     onUploadRingtone: async () => {
       try {
@@ -238,7 +246,11 @@ export const AccountCreateForm: FC<{
             secureTextEntry: true,
             name: 'pbxPassword',
             label: intl`PASSWORD`,
-            rule: 'required',
+            rule: $.isLinkAccount() ? '' : 'required',
+            placeholder: $.isLinkAccount() ? intl`Set a password` : undefined,
+            description: $.isLinkAccount()
+              ? intl`Signed in by link`
+              : undefined,
           },
           {
             disabled: props.footerLogout,

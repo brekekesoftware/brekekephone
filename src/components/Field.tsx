@@ -302,6 +302,7 @@ export const Field: FC<
     // explanatory text rendered under the row, outside the absolutely
     // positioned label/input area so it can wrap to multiple lines
     description: string
+    placeholder: string
     // indents the row so it reads as a sub-setting of the row above it
     nested: boolean
     error: string
