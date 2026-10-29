@@ -496,7 +496,7 @@ export class AuthStore {
       return false
     }
     const d = await ctx.account.findDataWithDefault(a)
-    if (!a.pbxPassword && !d.accessToken) {
+    if (!a.pbxPassword && !a.pbxPasswordHash && !d.accessToken) {
       ctx.nav.goToPageAccountUpdate({ id: a.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
@@ -992,7 +992,8 @@ export class AuthStore {
     urlParams: UrlParams,
     a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
   ) => {
-    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
+    const { _wn, host, phone_idx, port, tenant, user, password, pwhash } =
+      urlParams
     const settings = toAccountSettings(urlParams)
     // handle deep link: update account (try to keep old logic)
     if (
@@ -1019,6 +1020,9 @@ export class AuthStore {
       }
       if (!a.pbxPassword) {
         a.pbxPassword = password
+      }
+      if (pwhash) {
+        a.pbxPasswordHash = pwhash
       }
       const d = await ctx.account.findDataWithDefault(a)
       if (_wn) {
@@ -1052,7 +1056,7 @@ export class AuthStore {
         id: a.id,
         pbxPhoneIndex: `${phoneIdx}`,
       })
-      if (a.pbxPassword || d.accessToken) {
+      if (a.pbxPassword || a.pbxPasswordHash || d.accessToken) {
         if (reconnectForPhoneIndex || turnChanged) {
           this.resetPrevAccountConnection()
           await waitTimeout()
@@ -1072,6 +1076,7 @@ export class AuthStore {
       pbxTenant: tenant,
       pbxUsername: user,
       pbxPassword: password,
+      pbxPasswordHash: pwhash || '',
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
@@ -1079,7 +1084,7 @@ export class AuthStore {
     const d = await ctx.account.findDataWithDefault(newA)
     //
     ctx.account.upsertAccount(newA)
-    if (newA.pbxPassword || d.accessToken) {
+    if (newA.pbxPassword || newA.pbxPasswordHash || d.accessToken) {
       this.signIn(newA)
     } else {
       ctx.nav.goToPageAccountUpdate({ id: newA.id })

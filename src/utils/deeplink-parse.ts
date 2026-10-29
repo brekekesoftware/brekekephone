@@ -27,6 +27,14 @@ export const parse = (location: string | Url<any> | null) => {
       Object.assign(params, r.fields)
     }
   }
+  if (params.pwhash !== undefined) {
+    const h = String(params.pwhash).toLowerCase()
+    if (/^[0-9a-f]{32}$/.test(h)) {
+      params.pwhash = h
+    } else {
+      delete params.pwhash
+    }
+  }
   //
   if (params.url) {
     const url = new Url(params.url)
@@ -77,8 +85,7 @@ export interface UrlParams {
   customPageId: string | undefined
   turn?: string
   turn_transport?: string
-  turn_user?: string
-  turn_pass?: string
+  pwhash?: string
   uc?: string
   parks?: string
   encError?: 'bad' | 'expired'
@@ -107,14 +114,6 @@ export const toAccountSettings = (p: UrlParams): Partial<Account> => {
     ) {
       s.pbxTurnTransport = p.turn_transport
     }
-  }
-
-  if (p.turn_user !== undefined) {
-    s.pbxTurnUsername = p.turn_user
-  }
-
-  if (p.turn_pass !== undefined) {
-    s.pbxTurnPassword = p.turn_pass
   }
 
   if (p.uc !== undefined) {

@@ -19,9 +19,11 @@ Brekeke.pbx.getPalPrototype = function () {
   }
   var pal = Object.create(Brekeke.net.getJsonRpcOverWebSocketPrototype())
   pal.login = function (funcOK, funcErr) {
-    if (this.login_password) {
+    if (this.login_password || this.login_password_md5) {
       this.login_password_required = function (params) {
-        var pw = CryptoJS.MD5(this.login_password).toString()
+        var pw =
+          this.login_password_md5 ||
+          CryptoJS.MD5(this.login_password).toString()
         var login_str_cryp = CryptoJS.MD5(
           this.login_user + ':' + params.nonce + ':' + pw,
         ).toString()
@@ -161,6 +163,10 @@ Brekeke.pbx.getPal = function (wsurl, params) {
     pal.login_password = params.login_password
     params.login_password = null
   }
+  if (params.login_password_md5) {
+    pal.login_password_md5 = params.login_password_md5
+  }
+  delete params.login_password_md5
   var p = Brekeke.net.toURLParams(params)
   if (p.length > 0) {
     url = url + '?' + p

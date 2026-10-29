@@ -215,7 +215,8 @@ export type ItemPhonebook = {
 export type GetPalOptions = {
   tenant: string
   login_user: string
-  login_password: string
+  login_password?: string
+  login_password_md5?: string
   phone_idx?: string
   _wn: string
   park: string[]

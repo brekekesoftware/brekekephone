@@ -428,6 +428,7 @@ ChatClient.prototype = {
     this._tenant = string(tenant).replace(trimRegExp, '')
     this._user_id = string(user).replace(trimRegExp, '')
     this._pass = string(pass).replace(trimRegExp, '')
+    this._passMd5 = string(option && option.passwordMd5).replace(trimRegExp, '')
     this._forceAjax = Boolean(option.forceAjax)
     this._servlet = Boolean(option.servlet)
     this._useHttps = Boolean(
@@ -8108,7 +8109,8 @@ ChatClient.prototype = {
           }
         }
         // password required
-        var hashedPassword = CryptoJS.MD5(this._pass).toString()
+        var hashedPassword =
+          this._passMd5 || CryptoJS.MD5(this._pass).toString()
         var passwordHashedWithNonce = CryptoJS.MD5(
           this._user_id + ':' + args.nonce + ':' + hashedPassword,
         ).toString()
