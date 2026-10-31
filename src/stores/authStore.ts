@@ -1021,15 +1021,18 @@ export class AuthStore {
       if (!a.pbxPort) {
         a.pbxPort = port
       }
+      const linkPasswordChanged =
+        !!password && !pwhash && password !== a.pbxPassword
       const authChanged =
         this.signedInId === a.id &&
         ((!!pwhash && pwhash !== (a.pbxPasswordHash || '')) ||
-          (!!password && !pwhash && !!a.pbxPasswordHash))
+          (!!password && !pwhash && !!a.pbxPasswordHash) ||
+          linkPasswordChanged)
       if (password && !pwhash && a.pbxPasswordHash) {
         a.pbxPassword = password
         a.pbxPasswordHash = ''
       }
-      if (!a.pbxPassword) {
+      if (!a.pbxPassword || linkPasswordChanged) {
         a.pbxPassword = password
       }
       if (pwhash) {
