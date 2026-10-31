@@ -335,6 +335,24 @@ export const AccountCreateForm: FC<{
             label: intl`FALLBACK LOCAL CONNECTION (LPC)`,
             hidden: isWeb || !isAndroid,
             description: $.lpcDescription(),
+            onValueChange: (v: boolean) => {
+              const s = ctx.account.findDataSync($.account)?.lpcServer
+              const setLpc = (on: boolean) =>
+                $.set('account', (p: Account) => {
+                  p.lpcEnabled = on
+                  return p
+                })
+              if (v || !s?.available || s.optional) {
+                setLpc(v)
+                return
+              }
+              RnAlert.prompt({
+                title: intl`Warning`,
+                message: intl`Without LPC, this phone may miss calls while the app is closed.`,
+                confirmText: intl`TURN OFF`,
+                onConfirm: () => setLpc(false),
+              })
+            },
           },
           {
             isGroup: true,
