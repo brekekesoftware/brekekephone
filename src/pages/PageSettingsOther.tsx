@@ -1,3 +1,4 @@
+import { reaction } from 'mobx'
 import { observer } from 'mobx-react'
 import { Component } from 'react'
 
@@ -35,6 +36,11 @@ export class PageSettingsOther extends Component {
     preview: '',
   }
 
+  disposeCallReaction = reaction(
+    () => ctx.call.calls.length,
+    (n, prev) => n > prev && RnPicker.dismiss(),
+  )
+
   async componentDidMount() {
     try {
       this.initData()
@@ -44,6 +50,7 @@ export class PageSettingsOther extends Component {
   }
 
   componentWillUnmount(): void {
+    this.disposeCallReaction()
     RnPicker.dismiss()
   }
 
