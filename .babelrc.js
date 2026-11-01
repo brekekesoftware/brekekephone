@@ -40,6 +40,9 @@ module.exports = {
     ],
   ],
   plugins: [
+    ...(process.env.BRP_COVERAGE === '1'
+      ? [require('./.coverageBabelPlugin')]
+      : []),
     moduleResolverBabelPlugin,
     intlBabelPlugin,
 
