@@ -12,6 +12,7 @@ import com.brekeke.phonedev.utils.Perm
 import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.wix.reactnativenotifications.core.NotificationIntentAdapter
 import io.wazo.callkeep.RNCallKeepModule
 
 class MainActivity : ReactActivity() {
@@ -99,7 +100,8 @@ class MainActivity : ReactActivity() {
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
-    setIntent(intent)
+    // super already sent this tap to js; kept, onStart sends it again after the call screen closes (PNMA-011)
+    setIntent(if (NotificationIntentAdapter.canHandleIntent(intent)) Intent() else intent)
     // handle call from other app
     handleIntent(intent)
   }
