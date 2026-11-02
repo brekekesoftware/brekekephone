@@ -20,7 +20,8 @@ import org.json.JSONArray;
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   @Override
   public void onMessageReceived(RemoteMessage m) {
-    Log.i("BrekekePn", "onMessageReceived keys=" + m.getData().keySet() + " event=" + m.getData().get("event"));
+    var rh = ((ReactApplication) getApplication()).getReactHost();
+    Log.i("BrekekePn", "onMessageReceived keys=" + new ArrayList<>(m.getData().keySet()) + " event=" + m.getData().get("event") + " ctx=" + (rh != null && rh.getCurrentReactContext() != null) + " bg=" + LpcUtils.checkAppInBackground());
     Ctx.wakeFromPn(this);
 
     if (!BrekekeUtils.checkNotificationPermission()) {
@@ -42,6 +43,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
     }
     try {
       initialNotifications.add(ReactNativeJson.convertMapToJson(parse(m)).toString());
+      Log.i("BrekekePn", "queued size=" + initialNotifications.size());
     } catch (Exception e) {
       Emitter.error("initialNotifications.add", e.getMessage());
     }
