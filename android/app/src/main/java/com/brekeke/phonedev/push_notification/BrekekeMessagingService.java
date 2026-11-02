@@ -2,6 +2,7 @@ package com.brekeke.phonedev.push_notification;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
+import android.util.Log;
 import com.brekeke.phonedev.BrekekeUtils;
 import com.brekeke.phonedev.lpc.LpcUtils;
 import com.brekeke.phonedev.utils.Ctx;
@@ -19,6 +20,7 @@ import org.json.JSONArray;
 public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   @Override
   public void onMessageReceived(RemoteMessage m) {
+    Log.i("BrekekePn", "onMessageReceived keys=" + m.getData().keySet() + " event=" + m.getData().get("event"));
     Ctx.wakeFromPn(this);
 
     if (!BrekekeUtils.checkNotificationPermission()) {
@@ -52,6 +54,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
             .setData(m.getData())
             .build();
     super.onMessageReceived(m2);
+    Log.i("BrekekePn", "onMessageReceived after super");
 
     // android lpc
     // exception: Expected to run on UI thread
@@ -65,6 +68,7 @@ public class BrekekeMessagingService extends FcmInstanceIdListenerService {
   private static ArrayList<String> initialNotifications = null;
 
   public static void getInitialNotifications(Promise p) {
+    Log.i("BrekekePn", "getInitialNotifications size=" + (initialNotifications == null ? 0 : initialNotifications.size()));
     if (initialNotifications == null) {
       p.resolve(null);
       return;
