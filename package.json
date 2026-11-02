@@ -29,6 +29,8 @@
     "clean:deep": "bash scripts/clean-deep.sh",
     "pods": "bash scripts/pods.sh",
     "imagemin": "bash scripts/imagemin.sh",
+    "deploy:web": "bash scripts/deploy-web.sh",
+    "deploy:apk": "bash scripts/deploy-apk.sh",
     "postinstall": "husky && patch-package"
   },
   "dependencies": {
