@@ -150,6 +150,9 @@ export class SIP extends EventEmitter {
           delete patch[k]
         }
       }
+      console.log(
+        `SIP debug: call ${patch.id} ${patch.sessionStatus} incoming=${patch.incoming} image=${patch.partyImageUrl || 'none'}`,
+      )
       return patch
     }
 
@@ -183,6 +186,7 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
+        console.log(`SIP debug: call ${ev.sessionId} terminated`)
         ctx.call.callTerminated[ev.sessionId] = true
         const rawPartyNumber = ev.rtcSession?.remote_identity?.uri?.user
         if (rawPartyNumber) {
