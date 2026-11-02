@@ -50,6 +50,15 @@ const isStaleCallPn = async (n: ParsedPn) => {
   return !!n.time && Date.now() - n.time > pnExpires
 }
 
+// a UC chat PN from the PBX can carry only `message` (no event): without this it never shows (G4, PNMA-004)
+const isChatPnPayload = (p?: { [k: string]: unknown }) =>
+  !isEmpty(p) &&
+  !p?.title &&
+  !p?.body &&
+  !p?.callkeepUuid &&
+  (p?.event === 'message' ||
+    (!!p?.message && parseNotificationData(p)?.isCall === false))
+
 const onNotification = async (
   n0: { [k: string]: unknown },
   initApp: Function,
@@ -63,8 +72,7 @@ const onNotification = async (
     const isColdStartWithoutPayload = isEmpty(n0)
     const shouldReplayInitialCallPn =
       !!parseNotificationData(n0)?.id || isColdStartWithoutPayload
-    const shouldFlushInitialChatPn =
-      !isClickAction && n0?.event === 'message' && !n0?.title && !n0?.body
+    const shouldFlushInitialChatPn = !isClickAction && isChatPnPayload(n0)
     if (
       !n0?.callkeepUuid &&
       (shouldReplayInitialCallPn || shouldFlushInitialChatPn)
@@ -222,12 +230,7 @@ const getInitialNotifications = async () => {
     ns.forEach(i => {
       const payload = JSON.parse(i) as { [k: string]: string | undefined }
       // check notification type chat message
-      if (
-        isEmpty(payload) ||
-        payload?.event !== 'message' ||
-        payload?.title ||
-        payload?.body
-      ) {
+      if (!isChatPnPayload(payload)) {
         return
       }
       const senderUserId = payload?.senderUserId
