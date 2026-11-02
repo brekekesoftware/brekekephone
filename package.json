@@ -17,15 +17,18 @@
   },
   "homepage": "./",
   "scripts": {
-    "start": "make -Bs start",
-    "build": "make -Bs build",
-    "clean": "make -Bs clean",
-    "intl": "make -Bs intl",
+    "start": "bash scripts/start.sh",
+    "build": "bash scripts/build.sh",
+    "clean": "bash scripts/clean.sh",
+    "intl": "bash scripts/intl.sh",
     "rn": "react-native start --reset-cache",
     "android": "react-native run-android --no-packager",
     "ios": "react-native run-ios",
     "lint": "eslint --ext=.js,.ts,.tsx --fix . && prettier --log-level=error --write .",
-    "fmt": "make -Bs fmt",
+    "fmt": "bash scripts/fmt.sh",
+    "clean:deep": "bash scripts/clean-deep.sh",
+    "pods": "bash scripts/pods.sh",
+    "imagemin": "bash scripts/imagemin.sh",
     "postinstall": "husky && patch-package"
   },
   "dependencies": {
