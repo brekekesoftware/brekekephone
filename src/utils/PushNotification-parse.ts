@@ -256,7 +256,10 @@ export const parse = async (
     androidProcessedLocalChatNotification[localChatNotificationId] = true
   }
 
-  const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)
+  // UC 1.8 chat pushes name no account: findByPn would pick the first saved one and switch to it
+  const signedInForChat =
+    !n.isCall && !n.to ? ctx.auth.getCurrentAccount() : undefined
+  const acc = signedInForChat || (await ctx.sip.checkAndRemovePnTokenViaSip(n))
   if (!acc) {
     removeChatNotification()
     if (localChatNotificationId) {
@@ -268,8 +271,14 @@ export const parse = async (
     return
   }
 
-  console.log('SIP PN debug: call signInByNotification')
-  await ctx.auth.signInByNotification(n)
+  if (signedInForChat) {
+    console.log(
+      `SIP PN debug: PushNotification-parse: chat push names no account, stay on accountId=${signedInForChat.id}`,
+    )
+  } else {
+    console.log('SIP PN debug: call signInByNotification')
+    await ctx.auth.signInByNotification(n)
+  }
   const notificationAccountId = acc.id
   // the account of this pn can not be signed in while a call is alive, so opening it
   // would take the user off the call and land on a page of an account that is not
