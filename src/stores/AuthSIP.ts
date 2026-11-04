@@ -74,14 +74,22 @@ export class AuthSIP {
           credential: pn.turnCredential,
         }
       : undefined
+    const ownTurn: RTCIceServer | undefined =
+      ca.pbxTurnEnabled && ca.pbxTurnServer
+        ? {
+            urls: `${ca.pbxTurnTransport === 'tls' ? 'turns' : 'turn'}:${ca.pbxTurnServer}?transport=${ca.pbxTurnTransport === 'udp' || !ca.pbxTurnTransport ? 'udp' : 'tcp'}`,
+            username: ca.pbxTurnUsername,
+            credential: ca.pbxTurnPassword,
+          }
+        : undefined
     const o: SipLoginOption = {
       hostname: ca.pbxHostname,
       port: pn.sipWssPort,
       username: pn.phoneId,
       accessToken: pn.sipAuth,
-      pbxTurnEnabled: ca.pbxTurnEnabled,
       dtmfSendPal: toBoolean(pn.dtmfSendPal),
-      turnConfig,
+      pbxTurn: turnConfig,
+      ownTurn,
     }
     await ctx.sip.connect(o, ca)
   }
@@ -169,14 +177,21 @@ export class AuthSIP {
       // the pn sip login is rejected until the pal session exists, so once pbx is up
       // there is nothing left to wait for - retry immediately instead of ringing out.
       // re-evaluated on every observable change, so a pn arriving mid backoff is picked
-      // up too. when().cancel() rejects, hence the catch
-      const w = when(
-        () =>
-          ctx.auth.sipState !== 'waiting' ||
-          (hasRingingCallWithSipPn() && ctx.auth.pbxState === 'success'),
-      )
-      await Promise.race([waitTimeout(ms), w.catch(() => undefined)])
-      w.cancel()
+      // up too. not the promise form of when(): it calls .finally, which the es6-shim
+      // Promise lacks on hermes, so it throws and sip never retries again
+      let disposeWhen = () => {}
+      await Promise.race([
+        waitTimeout(ms),
+        new Promise<void>(resolve => {
+          disposeWhen = when(
+            () =>
+              ctx.auth.sipState !== 'waiting' ||
+              (hasRingingCallWithSipPn() && ctx.auth.pbxState === 'success'),
+            resolve,
+          )
+        }),
+      ])
+      disposeWhen()
       if (ctx.auth.sipState !== 'waiting') {
         return
       }

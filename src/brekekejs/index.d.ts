@@ -44,18 +44,13 @@ export type EmbedNotificationOptions = {
   closeNotificationOnCallEnd: boolean
   notificationInterval: number
   notificationCallCompletedElseWhere:
-    | boolean
-    | ((call: CallHistoryInfo) => boolean)
+    boolean | ((call: CallHistoryInfo) => boolean)
   notificationCallCompletedElseWhereInterval: number
 }
 
 // MFA lifecycle event emitted by the embedded webphone (embed mode only).
 export type MfaEventStatus =
-  | 'required'
-  | 'error'
-  | 'verified'
-  | 'cancelled'
-  | 'closed'
+  'required' | 'error' | 'verified' | 'cancelled' | 'closed'
 export type MfaEventPayload = {
   status: MfaEventStatus
   accountId: string
@@ -220,7 +215,8 @@ export type ItemPhonebook = {
 export type GetPalOptions = {
   tenant: string
   login_user: string
-  login_password: string
+  login_password?: string
+  login_password_md5?: string
   phone_idx?: string
   _wn: string
   park: string[]
@@ -605,14 +601,21 @@ export type Sip = {
 
   _ua?: {
     _transport?: {
-      socket?: object
+      socket?: { _url?: string }
+      recovery_timer?: ReturnType<typeof setTimeout> | null
+      isConnected(): boolean
+      isConnecting(): boolean
+      connect(): void
+      disconnect(): void
     }
     registrator?(): {
       _registered: boolean
       setExtraHeaders: Function
     }
     on(n: 'newNotify', l: (e?: { request?: { data?: string } }) => void): void
+    on(n: 'disconnected', l: () => void): void
   }
+  _vua?: Sip['_ua']
   _removeEventListenerPhoneStatusChange?: Function
   reconnectMicrophone(
     sessionId?: string,

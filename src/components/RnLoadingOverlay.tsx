@@ -6,7 +6,7 @@ import { RnLoading } from '#/stores/RnLoading'
 
 const css = StyleSheet.create({
   RnLoadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: v.layerBg,
     alignItems: 'center',
     justifyContent: 'center',

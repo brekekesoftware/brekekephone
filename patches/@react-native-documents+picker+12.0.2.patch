@@ -1,0 +1,200 @@
+diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
+index 074c3a7..17738f2 100644
+--- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
++++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/FileOperations.kt
+@@ -28,13 +28,14 @@ class FileOperations(private val uriMap: MutableMap<String, Uri>) {
+     context: ReactContext,
+     filesToCopy: ReadableArray,
+     copyTo: CopyDestination,
++    folderName: String?,
+   ): ReadableArray =
+     withContext(Dispatchers.IO) {
+       /**
+        * export type LocalCopyResponse = | { status: 'success'; localUri: string; sourceUri: string } |
+        * { status: 'error'; copyError: string; sourceUri: string }
+        */
+-      val destinationDir = getUniqueDir(context, copyTo)
++      val destinationDir = if (folderName != null) getNamedDir(context, copyTo, folderName) else getUniqueDir(context, copyTo)
+ 
+       val copyJobs = (0 until filesToCopy.size()).map { i ->
+         async {
+@@ -110,6 +111,17 @@ class FileOperations(private val uriMap: MutableMap<String, Uri>) {
+     return randomDir
+   }
+ 
++  private fun getNamedDir(context: Context, copyTo: CopyDestination, folderName: String): File {
++    val baseDir =
++      if (copyTo == CopyDestination.DOCUMENT_DIRECTORY) context.filesDir else context.cacheDir
++
++    val namedDir = File(baseDir, folderName)
++    if (!namedDir.exists() && !namedDir.mkdir()) {
++      throw IOException("Failed to create directory at ${namedDir.absolutePath}")
++    }
++    return namedDir
++  }
++
+   private fun copyFile(
+     context: Context,
+     from: Uri,
+diff --git a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
+index 05cdcf3..10ff759 100644
+--- a/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
++++ b/node_modules/@react-native-documents/picker/android/src/main/java/com/reactnativedocumentpicker/RNDocumentPickerModule.kt
+@@ -176,6 +176,7 @@ class RNDocumentPickerModule(reactContext: ReactApplicationContext) :
+               reactApplicationContext,
+               filesToCopy,
+               CopyDestination.fromPath(copyTo),
++              if (options.hasKey("folderName")) options.getString("folderName") else null,
+           )
+       promise.resolve(results)
+     }
+diff --git a/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm b/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
+index b31f009..8430e6c 100644
+--- a/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
++++ b/node_modules/@react-native-documents/picker/ios/RNDocumentPicker.mm
+@@ -68,8 +68,9 @@ RCT_EXPORT_METHOD(keepLocalCopy:
+                   (RCTPromiseRejectBlock) reject) {
+   NSArray *uris = options[@"files"];
+   NSString *destination = options[@"destination"];
++  NSString *folderName = options[@"folderName"];
+   
+-  [[FileOperations class] keepLocalCopyAtUniqueDestinationFrom:uris destinationPreset:destination resolve:resolve];
++  [[FileOperations class] keepLocalCopyAtUniqueDestinationFrom:uris destinationPreset:destination resolve:resolve folderName:folderName];
+ }
+ 
+ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, isKnownType:(NSString *)kind value:(NSString *)value) {
+diff --git a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift b/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
+index 19b96fa..b1a5cdb 100644
+--- a/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
++++ b/node_modules/@react-native-documents/picker/ios/swift/FileOperations.swift
+@@ -5,17 +5,17 @@ import React
+ 
+ @objc public class FileOperations: NSObject {
+ 
+-  @objc public static func keepLocalCopyAtUniqueDestination(from: [[String: String]], destinationPreset: String, resolve: @escaping RCTPromiseResolveBlock) {
++  @objc public static func keepLocalCopyAtUniqueDestination(from: [[String: String]], destinationPreset: String, resolve: @escaping RCTPromiseResolveBlock, folderName: String?) {
+     let callback = ResolveCallback(resolve: resolve)
+     Task.detached(priority: .userInitiated) {
+-      let results = Self.moveFiles(from: from, destinationPreset: destinationPreset)
++      let results = Self.moveFiles(from: from, destinationPreset: destinationPreset, folderName: folderName)
+       callback.resolve(results)
+     }
+   }
+ 
+-  private static func moveFiles(from: [[String: String]], destinationPreset: String) -> [[String: String?]] {
++  private static func moveFiles(from: [[String: String]], destinationPreset: String, folderName: String?) -> [[String: String?]] {
+     let destinationRootDir = getDirectoryForFileDestination(destinationPreset)
+-    let uniqueSubDirName = UUID().uuidString
++    let uniqueSubDirName = folderName ?? UUID().uuidString
+     let destinationDir = destinationRootDir.appendingPathComponent(uniqueSubDirName, isDirectory: true)
+ 
+     do {
+diff --git a/node_modules/@react-native-documents/picker/lib/typescript/src/keepLocalCopy.d.ts b/node_modules/@react-native-documents/picker/lib/typescript/src/keepLocalCopy.d.ts
+index 361f812..599885c 100644
+--- a/node_modules/@react-native-documents/picker/lib/typescript/src/keepLocalCopy.d.ts
++++ b/node_modules/@react-native-documents/picker/lib/typescript/src/keepLocalCopy.d.ts
+@@ -1,38 +1,39 @@
+-import type { NonEmptyArray } from './types';
+-import { type LocalCopyResponse } from './spec/NativeDocumentPicker';
++import type { NonEmptyArray } from './types'
++import { type LocalCopyResponse } from './spec/NativeDocumentPicker'
+ /**
+  * Parameter of {@link keepLocalCopy}. Object type representing the file(s) whose copy should be kept in the app's storage.
+  * */
+ export type FileToCopy = {
+-    /**
+-     * The uri to keep a local copy of. This would be a `content://` uri (Android), or a `file://` uri (iOS) that the user has previously picked.
+-     * */
+-    uri: string;
+-    /**
+-     * The name of the resulting file, with the file extension. You can use the `name` field from the response of the `pick()` method.
+-     *
+-     * Example: someFile.pdf
+-     *
+-     * */
+-    fileName: string;
+-    /**
+-     * Only for Android virtual files: the type of the file to export to. For example, `application/pdf` or `text/plain`.
+-     * Use one of the values from `convertibleToMimeTypes` from the response of the `pick()` method: {@link DocumentPickerResponse}.
+-     * */
+-    convertVirtualFileToType?: string;
+-};
++  /**
++   * The uri to keep a local copy of. This would be a `content://` uri (Android), or a `file://` uri (iOS) that the user has previously picked.
++   * */
++  uri: string
++  /**
++   * The name of the resulting file, with the file extension. You can use the `name` field from the response of the `pick()` method.
++   *
++   * Example: someFile.pdf
++   *
++   * */
++  fileName: string
++  /**
++   * Only for Android virtual files: the type of the file to export to. For example, `application/pdf` or `text/plain`.
++   * Use one of the values from `convertibleToMimeTypes` from the response of the `pick()` method: {@link DocumentPickerResponse}.
++   * */
++  convertVirtualFileToType?: string
++}
+ /**
+  * options for {@link keepLocalCopy}
+  *
+  * */
+ export type KeepLocalCopyOptions = {
+-    files: NonEmptyArray<FileToCopy>;
+-    destination: 'cachesDirectory' | 'documentDirectory';
+-};
++  files: NonEmptyArray<FileToCopy>
++  destination: 'cachesDirectory' | 'documentDirectory'
++  folderName?: string
++}
+ /**
+  * Result of the call to {@link keepLocalCopy}. Please note the promise always resolves, even if there was an error processing any uri(s) (as indicated by the `status` field, and `copyError` field).
+  * */
+-export type KeepLocalCopyResponse = NonEmptyArray<LocalCopyResponse>;
++export type KeepLocalCopyResponse = NonEmptyArray<LocalCopyResponse>
+ /**
+  * Makes the file available in the app's storage. The behavior is different on iOS and Android, and for simple use cases (such as uploading file to remote server), you may not need to call this method at all.
+  *
+@@ -42,5 +43,7 @@ export type KeepLocalCopyResponse = NonEmptyArray<LocalCopyResponse>;
+  *
+  * @group DocumentPicker
+  * */
+-export declare function keepLocalCopy(options: KeepLocalCopyOptions): Promise<KeepLocalCopyResponse>;
++export declare function keepLocalCopy(
++  options: KeepLocalCopyOptions,
++): Promise<KeepLocalCopyResponse>
+ //# sourceMappingURL=keepLocalCopy.d.ts.map
+diff --git a/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts b/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
+index 8aa8d13..f10889a 100644
+--- a/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
++++ b/node_modules/@react-native-documents/picker/src/keepLocalCopy.ts
+@@ -1,5 +1,8 @@
+ import type { NonEmptyArray } from './types'
+-import { type LocalCopyResponse, NativeDocumentPicker } from './spec/NativeDocumentPicker'
++import {
++  type LocalCopyResponse,
++  NativeDocumentPicker,
++} from './spec/NativeDocumentPicker'
+ 
+ /**
+  * Parameter of {@link keepLocalCopy}. Object type representing the file(s) whose copy should be kept in the app's storage.
+@@ -29,6 +32,7 @@ export type FileToCopy = {
+ export type KeepLocalCopyOptions = {
+   files: NonEmptyArray<FileToCopy>
+   destination: 'cachesDirectory' | 'documentDirectory'
++  folderName?: string
+ }
+ 
+ /**
+@@ -45,7 +49,9 @@ export type KeepLocalCopyResponse = NonEmptyArray<LocalCopyResponse>
+  *
+  * @group DocumentPicker
+  * */
+-export function keepLocalCopy(options: KeepLocalCopyOptions): Promise<KeepLocalCopyResponse> {
++export function keepLocalCopy(
++  options: KeepLocalCopyOptions,
++): Promise<KeepLocalCopyResponse> {
+   const response = NativeDocumentPicker.keepLocalCopy(options)
+   return response as Promise<KeepLocalCopyResponse>
+ }

@@ -1,11 +1,11 @@
-import { Buffer } from 'buffer'
+import FastImage from '@d11/react-native-fast-image'
+import type { ReadDirResItemT as ReadDirItem } from '@dr.pogodin/react-native-fs'
+import * as RNFS from '@dr.pogodin/react-native-fs'
 import { filesize } from 'filesize'
 import { debounce, orderBy } from 'lodash'
 import { observable } from 'mobx'
 import moment from 'moment'
 import { Linking } from 'react-native'
-import type { ReadDirItem } from 'react-native-fs'
-import RNFS from 'react-native-fs'
 import Share from 'react-native-share'
 
 import { RnAsyncStorage } from '#/components/Rn'
@@ -14,6 +14,7 @@ import { ctx } from '#/stores/ctx'
 import { intl, intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { jsonSafe } from '#/utils/jsonSafe'
 
 declare global {
@@ -25,6 +26,38 @@ declare global {
 let store = null as any as DebugStore
 const LOG_DIR = !isWeb ? `${RNFS.DocumentDirectoryPath}` : ''
 const LOG_PREFIX = 'brekeke_phone_log_'
+
+const folderStats = async (dir: string) => {
+  const total = { bytes: 0, files: 0 }
+  const items = await RNFS.readDir(dir).catch(() => [] as ReadDirItem[])
+  for (const item of items) {
+    if (item.isDirectory()) {
+      const sub = await folderStats(item.path)
+      total.bytes += sub.bytes
+      total.files += sub.files
+    } else {
+      total.bytes += Number(item.size) || 0
+      total.files += 1
+    }
+  }
+  return total
+}
+const logCacheStats = async (label: string) => {
+  if (isWeb) {
+    return
+  }
+  const dirs = [
+    RNFS.CachesDirectoryPath,
+    isAndroid ? RNFS.ExternalCachesDirectoryPath : RNFS.TemporaryDirectoryPath,
+  ].filter(Boolean)
+  const parts = await Promise.all(
+    dirs.map(async d => {
+      const s = await folderStats(d)
+      return `${d}: ${filesize(s.bytes)} in ${s.files} files`
+    }),
+  )
+  console.log(`clear app cache: ${label}: ${parts.join(', ')}`)
+}
 
 const maximumBytes = 300000 // 300KB
 const maxFiles = 20
@@ -44,9 +77,9 @@ export const getTotalFilesSize = (files: ReadDirItem[]) => {
 export class DebugStore {
   loading = true
   private timer = 0
-  @observable logFiles: ReadDirItem[] = []
-  @observable totalLogFiles = 0
-  @observable currentFile: ReadDirItem | undefined
+  @observable accessor logFiles: ReadDirItem[] = []
+  @observable accessor totalLogFiles = 0
+  @observable accessor currentFile: ReadDirItem | undefined
 
   checkAndCreateFile = async (rootPath: string, fileName: string) => {
     if (!fileName) {
@@ -126,11 +159,22 @@ export class DebugStore {
   // if this flag is turned on, all logs will be captured
   // this flag will be saved to storage and we will read it again
   //    as soon as possible when app starts up
-  @observable captureDebugLog = false
+  @observable accessor captureDebugLog = false
   toggleCaptureDebugLog = () => {
     this.captureDebugLog = !this.captureDebugLog
     RnAsyncStorage.setItem('captureDebugLog', jsonSafe(this.captureDebugLog))
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
   }
+  @observable accessor captureWebviewLog = false
+  toggleCaptureWebviewLog = () => {
+    this.captureWebviewLog = !this.captureWebviewLog
+    RnAsyncStorage.setItem(
+      'captureWebviewLog',
+      jsonSafe(this.captureWebviewLog),
+    )
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
+  }
+  isCapturingWebviewLog = () => this.captureDebugLog && this.captureWebviewLog
 
   getLogSizeStr = () => `${filesize(this.totalLogFiles)}`
 
@@ -202,16 +246,23 @@ export class DebugStore {
       return
     }
     const title = file.name
-    let url: string | null = null
-    // share works inconsistency between android and ios
     if (isIos) {
-      url = file.path // only works with `file://...`
-    } else {
-      const content = await RNFS.readFile(file.path, 'utf8')
-      const b64 = Buffer.from(content).toString('base64')
-      url = `data:text/plain;base64,${b64}` // only works with base64
+      Share.open({ title, url: file.path, subject: title, isNewTask: true })
+      return
     }
-    Share.open({ title, url, subject: title, isNewTask: true })
+    // a data: url of the live log file made Files fail with "File not found"
+    const snapshotPath = `${RNFS.CachesDirectoryPath}/${file.name}`
+    if (await RNFS.exists(snapshotPath)) {
+      await RNFS.unlink(snapshotPath)
+    }
+    await RNFS.copyFile(file.path, snapshotPath)
+    Share.open({
+      title,
+      url: `file://${snapshotPath}`,
+      type: 'text/plain',
+      subject: title,
+      isNewTask: true,
+    })
   }
 
   clearLogFiles = () => {
@@ -240,9 +291,45 @@ export class DebugStore {
       this.currentFile = undefined
     })
 
-  @observable isCheckingForUpdate = false
-  @observable remoteVersion = ''
-  @observable remoteVersionLastCheck = 0
+  clearAppCache = () => {
+    RnAlert.prompt({
+      title: intl`Clear App Cache`,
+      message: intl`Do you want to clear the app cache? Avatars and images will be downloaded again. You may need to sign in again on custom pages.`,
+      onConfirm: this.clearAppCacheWithoutPrompt,
+      confirmText: intl`CLEAR`,
+    })
+  }
+  clearAppCacheWithoutPrompt = () =>
+    logCacheStats('start, before')
+      .then(() => BrekekeUtils.clearAppCache())
+      .then(async ok => {
+        if (!ok) {
+          throw new Error('BrekekeUtils.clearAppCache returned false')
+        }
+        if (!isWeb) {
+          // the image library owns its folders, so it must empty them itself
+          await FastImage.clearMemoryCache()
+          await FastImage.clearDiskCache()
+        }
+        await logCacheStats('done, after')
+        RnAlert.prompt({
+          title: intl`App cache cleared`,
+          message: intl`Please close the app and open it again to finish clearing the cache.`,
+          confirmText: intl`OK`,
+          dismissText: false,
+        })
+      })
+      .catch((err: Error) => {
+        console.error(`clear app cache: failed: ${err?.message}`)
+        RnAlert.error({
+          message: intlDebug`Failed to clear the app cache`,
+          err,
+        })
+      })
+
+  @observable accessor isCheckingForUpdate = false
+  @observable accessor remoteVersion = ''
+  @observable accessor remoteVersionLastCheck = 0
 
   checkForUpdate = () => {
     if (this.isCheckingForUpdate) {
@@ -336,6 +423,19 @@ export class DebugStore {
           })
         }),
     )
+    // read webview log setting from storage
+    promises.push(
+      RnAsyncStorage.getItem('captureWebviewLog')
+        .then(v => {
+          this.captureWebviewLog = v ? JSON.parse(v) : false
+        })
+        .catch((err: Error) => {
+          RnAlert.error({
+            message: intlDebug`Failed to read debug log settings from storage`,
+            err,
+          })
+        }),
+    )
     // read remote app version from storage
     promises.push(
       RnAsyncStorage.getItem('remoteVersion')
@@ -353,6 +453,7 @@ export class DebugStore {
     )
     //
     await Promise.all(promises)
+    BrekekeUtils.setWebviewLogEnabled(this.isCapturingWebviewLog())
     this.loading = false
   }
 }

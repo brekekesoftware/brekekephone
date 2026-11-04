@@ -99,7 +99,6 @@ const css = StyleSheet.create({
     ...Platform.select({
       android: {
         paddingTop: 3,
-        top: 6,
       },
       web: {
         // fix form auto fill style on web
@@ -125,13 +124,7 @@ const css = StyleSheet.create({
     color: v.subColor,
     fontWeight: v.fontWeight,
   },
-  Field_LabelTextGroup: {
-    ...Platform.select({
-      android: {
-        top: -6,
-      },
-    }),
-  },
+  Field_LabelTextGroup: {},
   Field_ViewRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,7 +183,7 @@ const css = StyleSheet.create({
   },
   Field_Switch: {
     position: 'absolute',
-    top: 22,
+    top: Platform.OS === 'android' ? 12 : 22,
     right: 11,
   },
   Field_Btn: {
@@ -309,6 +302,7 @@ export const Field: FC<
     // explanatory text rendered under the row, outside the absolutely
     // positioned label/input area so it can wrap to multiple lines
     description: string
+    placeholder: string
     // indents the row so it reads as a sub-setting of the row above it
     nested: boolean
     error: string
@@ -608,6 +602,8 @@ export const Field: FC<
         {!isWeb && label}
         {
           <View
+            // new arch flattens this view when pointerEvents turns null, which re-parents the input and moves focus to the first field
+            collapsable={false}
             pointerEvents={
               ($.isFocusing || $.isParkNameFocusing ? null : 'none') as any
             }
@@ -617,6 +613,8 @@ export const Field: FC<
                 editable={!disablePark}
                 disabled
                 maxLength={props?.maxLength || 100000}
+                placeholder={props.placeholder}
+                placeholderTextColor='grey'
                 secureTextEntry={!!(props.secureTextEntry && props.value)}
                 style={[
                   css.Field_TextInput,
@@ -624,7 +622,9 @@ export const Field: FC<
                   props.textInputStyle,
                 ]}
                 value={
-                  props.valueRender?.(props.value) || props.value || '\u200a'
+                  props.valueRender?.(props.value) ||
+                  props.value ||
+                  (props.placeholder ? '' : '\u200a')
                 }
               />
             )}

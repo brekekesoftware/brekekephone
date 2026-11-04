@@ -7,6 +7,7 @@ import type { IntlDebug } from '#/stores/intl'
 type CommonRnAlertFields = {
   confirmText?: string | boolean
   dismissText?: string | boolean
+  dismissOnBackdropPress?: boolean
 }
 
 export type PromptRnAlert = CommonRnAlertFields & {
@@ -35,10 +36,13 @@ export type TRnAlert =
 export class RnAlertStore {
   // need to put `alerts` out of the observable
   //  because ReactElement can not stay in the mobx state
-  @observable alertsCount = 0
+  @observable accessor alertsCount = 0
   alerts: TRnAlert[] = []
 
   @action prompt = (prompt: PromptRnAlert) => {
+    console.log(
+      `RnAlert debug: prompt before=${this.alerts.length} count=${this.alertsCount} kinds=${this.alerts.map(a => ('prompt' in a ? 'prompt' : 'error')).join(',')}`,
+    )
     this.alerts.push({ prompt })
     this.alertsCount = this.alerts.length
   }
@@ -58,6 +62,14 @@ export class RnAlertStore {
         },
       })
       this.alertsCount = this.alerts.length
+    }
+  }
+  // an error that must be seen before alerts already waiting (the web "Action Required" prompt)
+  @action errorFirst = (a: ErrorRnAlert) => {
+    const before = this.alerts.length
+    this.error(a)
+    if (this.alerts.length > before) {
+      this.alerts.unshift(this.alerts.pop() as TRnAlert)
     }
   }
   @action dismiss = () => {

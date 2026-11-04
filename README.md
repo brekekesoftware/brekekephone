@@ -146,7 +146,7 @@ yarn android --deviceId=DEVICE_ID
 
 - To have the js/ts files follow a single code format consistency, you can run `yarn format`
   - It will be automatically run in each commit using `husky` and `lint-staged`
-- To run the format command for all possible files `make format`, we must install the following packages (on macOS):
+- To run the format command for all possible files `yarn fmt`, we must install the following packages (on macOS):
 
 ```sh
 brew install clang-format@11 swiftformat google-java-format ktfmt

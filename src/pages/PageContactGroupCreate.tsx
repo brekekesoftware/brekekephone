@@ -18,13 +18,13 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 @observer
 export class PageContactGroupCreate extends Component {
-  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+  @observable accessor selectedUserItems: { [k: string]: UcBuddy } = {}
 
   state = {
     name: '',
     didMount: false,
   }
-  componentDidMount = () => {
+  componentDidMount() {
     BackgroundTimer.setTimeout(
       () => this.setState({ didMount: true }),
       defaultTimeout,

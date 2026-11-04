@@ -28,10 +28,17 @@ type TBrekekeUtils = {
   closeIncomingCall(uuid: string): void
   closeAllIncomingCalls(): void
   clearProcessedPnIds(): void
+  setSignedInAccount(u: string, t: string, h: string, p: string): void
   setPbxConfig(jsonStr: string): void
   setCallConfig(uuid: string, jsonStr: string): void
   setIsAppActive(isAppActive: boolean, isAppActiveLocked: boolean): void
-  setTalkingAvatar(uuid: string, url: string, isLarge: boolean): void
+  setTalkingAvatar(
+    uuid: string,
+    url: string,
+    isLarge: boolean,
+    urlInfo: string,
+    hc: string,
+  ): void
   setJsCallsSize(n: number): void
   setRecordingStatus(uuid: string, recording: boolean): void
   setIsVideoCall(uuid: string, isVideoCall: boolean, isMuted: boolean): void
@@ -40,6 +47,8 @@ type TBrekekeUtils = {
   setSpeakerStatus(isSpeakerOn: boolean): void
   setLocale(locale: string): void
   setPhoneappliEnabled(enabled: boolean): void
+  setAiphoneNurseCallEnabled(enabled: boolean): void
+  setWebviewLogEnabled(enabled: boolean): void
   onCallConnected(uuid: string): void
   onCallKeepAction(uuid: string, action: TCallKeepAction): void
   onPageCallManage(uuid: string): void
@@ -107,6 +116,7 @@ type TBrekekeUtils = {
     h: string,
     p: string,
   ): Promise<string>
+  clearAppCache(): Promise<boolean>
 }
 
 export type TNativeModules = {
@@ -136,6 +146,7 @@ const Polyfill: TBrekekeUtils = {
   closeIncomingCall: () => undefined,
   closeAllIncomingCalls: () => undefined,
   clearProcessedPnIds: () => undefined,
+  setSignedInAccount: () => undefined,
   setPbxConfig: () => undefined,
   setCallConfig: () => undefined,
   setIsAppActive: () => undefined,
@@ -148,6 +159,8 @@ const Polyfill: TBrekekeUtils = {
   setSpeakerStatus: () => undefined,
   setLocale: () => undefined,
   setPhoneappliEnabled: () => undefined,
+  setAiphoneNurseCallEnabled: () => undefined,
+  setWebviewLogEnabled: () => undefined,
   onCallConnected: () => undefined,
   onCallKeepAction: () => undefined,
   onPageCallManage: () => undefined,
@@ -189,6 +202,7 @@ const Polyfill: TBrekekeUtils = {
   disableLPC: () => undefined,
   systemUptimeMs: () => Promise.resolve(-1),
   validateRingtone: () => Promise.resolve(''),
+  clearAppCache: () => Promise.resolve(false),
 }
 
 const M = NativeModules as TNativeModules

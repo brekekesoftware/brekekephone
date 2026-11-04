@@ -4,6 +4,7 @@ import AVKit
 import Combine
 import Foundation
 import UIKit
+import WebKit
 import WebRTC
 
 @available(iOS 13.0, *)
@@ -38,6 +39,31 @@ public class BrekekeUtils: NSObject {
   func isSpeakerOn(_ resolve: @escaping RCTPromiseResolveBlock,
                    rejecter _: @escaping RCTPromiseRejectBlock) {
     resolve(am.isSpeakerEnabled())
+  }
+
+  @objc
+  func clearAppCache(_ resolve: @escaping RCTPromiseResolveBlock,
+                     rejecter _: @escaping RCTPromiseRejectBlock) {
+    URLCache.shared.removeAllCachedResponses()
+    DispatchQueue.main.async {
+      WKWebsiteDataStore.default().removeData(
+        ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+        modifiedSince: Date(timeIntervalSince1970: 0)
+      ) {
+        // the image library folder is emptied from JS by FastImage itself,
+        // because the app keeps running and the library may be writing to it
+        let fm = FileManager.default
+        let caches = fm.urls(for: .cachesDirectory, in: .userDomainMask).first
+        let dirs = [caches, URL(fileURLWithPath: NSTemporaryDirectory())]
+        for case let dir? in dirs {
+          let items = (try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)) ?? []
+          for item in items where item.lastPathComponent != "com.hackemist.SDImageCache" {
+            try? fm.removeItem(at: item)
+          }
+        }
+        resolve(true)
+      }
+    }
   }
 
   @objc

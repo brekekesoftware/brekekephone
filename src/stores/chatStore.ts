@@ -73,10 +73,11 @@ export const TIMEOUT_TRANSFER_VIDEO = 180000
 export class ChatStore {
   timeoutTransferImage: { [k: string]: number } = {}
 
-  @observable messagesByThreadId: { [k: string]: ChatMessage[] } = {}
+  @observable accessor messagesByThreadId: { [k: string]: ChatMessage[] } = {}
   getMessagesByThreadId = (id: string) => this.messagesByThreadId[id] || []
 
-  @observable threadConfig: { [k: string]: ChatMessageConfig } = {}
+  @observable accessor threadConfig: { [k: string]: ChatMessageConfig } = {}
+
   @computed get unreadCount() {
     const idMap: { [k: string]: boolean } = {}
     const l1 = filterTextOnly(
@@ -187,36 +188,43 @@ export class ChatStore {
     body = decode(body)
     const id = `message-${Date.now()}`
     if (isAndroid) {
-      Notifications.postLocalNotification({
-        payload: {
-          id,
-          title,
+      const nativeId = Date.now() % 2147483647
+      Notifications.postLocalNotification(
+        {
+          payload: {
+            id,
+            native_id: nativeId,
+            // a tap refused during a call of another account must leave it for a tap after the call
+            auto_cancel: false,
+            title,
+            body,
+            threadId,
+            isGroupChat,
+            number: 0,
+            sound: '',
+            priority: 'high',
+            show_in_foreground: true,
+            local_notification: true,
+            wake_screen: false,
+            ongoing: false,
+            lights: true,
+            channel: 'brekeke_chat',
+            icon: 'ic_launcher',
+            pre_app_state: AppState.currentState,
+            my_custom_data: 'local_notification',
+            is_local_notification: 'local_notification',
+            to,
+          },
+          identifier: id,
           body,
-          threadId,
-          isGroupChat,
-          number: 0,
-          sound: '',
-          priority: 'high',
-          show_in_foreground: true,
-          local_notification: true,
-          wake_screen: false,
-          ongoing: false,
-          lights: true,
-          channel: 'brekeke_chat',
-          icon: 'ic_launcher',
-          pre_app_state: AppState.currentState,
-          my_custom_data: 'local_notification',
-          is_local_notification: 'local_notification',
-          to,
+          title,
+          sound: 'ding.mp3',
+          badge: 0,
+          type: '',
+          thread: '',
         },
-        identifier: id,
-        body,
-        title,
-        sound: 'ding.mp3',
-        badge: 0,
-        type: '',
-        thread: '',
-      })
+        nativeId,
+      )
     } else {
       PushNotificationIOS.getApplicationIconBadgeNumber(badge => {
         badge = Number(badge) || 0
@@ -374,7 +382,7 @@ export class ChatStore {
       ctx.nav.goToPageChatGroupDetail({ groupId })
     }
   }
-  @observable chatNotificationSoundRunning: boolean = false
+  @observable accessor chatNotificationSoundRunning: boolean = false
   private playChatNotificationSoundVibration = async () => {
     if (isWeb) {
       webPlayDing()
@@ -431,7 +439,7 @@ export class ChatStore {
     }
   }
 
-  @observable private filesMap: { [k: string]: ChatFile } = {}
+  @observable private accessor filesMap: { [k: string]: ChatFile } = {}
 
   download = (f: ChatFile) => {
     Object.assign(f, { save: 'started' })
@@ -505,7 +513,7 @@ export class ChatStore {
   }
   getFileById = (id?: string) => (id ? this.filesMap[id] : undefined)
 
-  @observable groups: ChatGroup[] = []
+  @observable accessor groups: ChatGroup[] = []
   upsertGroup = (g: Partial<ChatGroup> & Pick<ChatGroup, 'id'>) => {
     // add default webchatMessages
     const g0 = this.getGroupById(g.id)

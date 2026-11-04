@@ -7,7 +7,7 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { formatDuration } from '#/utils/formatDuration'
 
 class TimerStore {
-  @observable now = Date.now()
+  @observable accessor now = Date.now()
   constructor() {
     BackgroundTimer.setInterval(this.updateNow, 1000)
   }

@@ -200,8 +200,10 @@ export const AccountSignInItem: FC<{
             })
           }}
           onBackIcon={mdiClose}
+          onBackLabel='Delete account'
           onMore={() => ctx.nav.goToPageAccountUpdate({ id: a.id })}
           onMoreIcon={mdiDotsHorizontal}
+          onMoreLabel='Update account'
           onNext={onPressSignIn}
           onNextText={intl`SIGN IN`}
         />

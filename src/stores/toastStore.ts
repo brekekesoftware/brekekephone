@@ -17,8 +17,9 @@ interface Toast {
 }
 
 export class ToastStore {
-  @observable items: Toast[] = []
+  @observable accessor items: Toast[] = []
   private lastInternetToastTime = 0
+
   @action
   show = (
     msg: string | undefined,

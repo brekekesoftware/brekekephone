@@ -311,7 +311,50 @@ if (!Brekeke.WebrtcClient) {
         return origSetRemoteDescription.apply(pc, arguments)
       }
       var signalingState = pc.signalingState
-      if (pc._mustSkipSetSdpRa) {
+      var localIceUfrag = /a=ice-ufrag:(\S+)/.exec(
+        (pc.localDescription && pc.localDescription.sdp) || '',
+      )
+      localIceUfrag = localIceUfrag && localIceUfrag[1]
+      var isIceRestartAnswer =
+        signalingState === 'have-local-offer' &&
+        !!pc.remoteDescription &&
+        localIceUfrag !== pc._sdpRaIceUfrag
+      if (isIceRestartAnswer) {
+        var oldRemoteSetup = /a=setup:(\w+)/.exec(
+          pc.remoteDescription.sdp || '',
+        )
+        var ownDtlsRole =
+          oldRemoteSetup && oldRemoteSetup[1] === 'active'
+            ? 'passive'
+            : 'active'
+        var peerDtlsRole = ownDtlsRole === 'active' ? 'passive' : 'active'
+        // without this, libwebrtc refuses a PBX answer that flips the DTLS role ("Failed to set SSL role") and the call ends
+        if (arguments[0].sdp.indexOf('a=setup:' + ownDtlsRole) >= 0) {
+          arguments[0] = {
+            type: 'answer',
+            sdp: arguments[0].sdp
+              .split('a=setup:' + ownDtlsRole)
+              .join('a=setup:' + peerDtlsRole),
+          }
+          self._logger.log(
+            'debug',
+            'origSetRemoteDescription keeps DTLS role ' + ownDtlsRole,
+          )
+        } else if (arguments[0].sdp.indexOf('a=setup:') < 0) {
+          arguments[0] = {
+            type: 'answer',
+            sdp: arguments[0].sdp.replace(
+              /(a=fingerprint:[^\r\n]*\r?\n)/g,
+              '$1a=setup:' + peerDtlsRole + '\r\n',
+            ),
+          }
+          self._logger.log(
+            'debug',
+            'origSetRemoteDescription adds DTLS role ' + peerDtlsRole,
+          )
+        }
+      }
+      if (pc._mustSkipSetSdpRa && !isIceRestartAnswer) {
         if (signalingState === 'have-local-offer') {
           // 200 OK
           pc._mustSkipSetSdpRa = false
@@ -331,6 +374,7 @@ if (!Brekeke.WebrtcClient) {
             'origSetRemoteDescription (' + signalingState + ') OK',
           )
           pc._mustSkipSetSdpRa = true
+          pc._sdpRaIceUfrag = localIceUfrag
         })
         .catch(function (error) {
           self._logger.log(
@@ -386,7 +430,7 @@ if (!Brekeke.WebrtcClient) {
       if (eventId) {
         // remove one
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             if (this._eventNameIdsTable[eventName][i] === eventId) {
               this._eventNameIdsTable[eventName].splice(i, 1)
             }
@@ -396,7 +440,7 @@ if (!Brekeke.WebrtcClient) {
       } else {
         // remove all events in eventName
         if (this._eventNameIdsTable[eventName]) {
-          for (i = this._eventNameIdsTable[eventName].length; i--; ) {
+          for (i = this._eventNameIdsTable[eventName].length; i--;) {
             delete this._eventIdFuncTable[this._eventNameIdsTable[eventName][i]]
           }
           this._eventNameIdsTable[eventName] = []
@@ -1681,7 +1725,7 @@ if (!Brekeke.WebrtcClient) {
 
       muted = muted || {}
       sessionId = string(sessionId) || this._getLatestSessionId()
-      session = this._sessionTable[sessionId]
+      var session = this._sessionTable[sessionId]
 
       mutedOrg = {
         main: false,
@@ -2599,6 +2643,30 @@ if (!Brekeke.WebrtcClient) {
       }
     },
     _iceCandidateGatheringTimedOut: function (iceCandidateInfo) {
+      var hasUdp = (
+        (iceCandidateInfo && iceCandidateInfo.icecandidates) ||
+        []
+      ).some(function (c) {
+        return /\sudp\s/i.test(c)
+      })
+      // the PBX offers UDP only: an answer with only TCP candidates has no audio
+      if (
+        iceCandidateInfo &&
+        !hasUdp &&
+        (iceCandidateInfo.udpWaitMs || 0) < 4000
+      ) {
+        iceCandidateInfo.udpWaitMs = (iceCandidateInfo.udpWaitMs || 0) + 500
+        this._logger.log(
+          'debug',
+          'ice candidate gathering waits for a UDP candidate: ' +
+            iceCandidateInfo.udpWaitMs,
+        )
+        iceCandidateInfo.gatheringTimer = setTimeout(
+          by(this, this._iceCandidateGatheringTimedOut, [iceCandidateInfo]),
+          500,
+        )
+        return
+      }
       this._logger.log(
         'debug',
         'ice candidate gathering timed out: ' +
@@ -3482,7 +3550,7 @@ if (!Brekeke.WebrtcClient) {
               ) !== Boolean(session.mainMuted) ||
               Boolean(
                 rtcInfo.echo[myUser].muted &&
-                  rtcInfo.echo[myUser].muted.videoClient,
+                rtcInfo.echo[myUser].muted.videoClient,
               ) !== Boolean(session.videoClientMuted) ||
               rtcInfo.echo[myUser].exInfo !== session.exInfo
             ) {
@@ -3517,7 +3585,7 @@ if (!Brekeke.WebrtcClient) {
                     ),
                     videoClient: Boolean(
                       rtcInfo.echo[u].muted &&
-                        rtcInfo.echo[u].muted.videoClient,
+                      rtcInfo.echo[u].muted.videoClient,
                     ),
                   },
                   exInfo: string(rtcInfo.echo[u].exInfo),
@@ -3547,11 +3615,11 @@ if (!Brekeke.WebrtcClient) {
             session.remoteUserOptionsTable[user].withVideo !== withVideo ||
             Boolean(
               session.remoteUserOptionsTable[user].muted &&
-                session.remoteUserOptionsTable[user].muted.main,
+              session.remoteUserOptionsTable[user].muted.main,
             ) !== muted.main ||
             Boolean(
               session.remoteUserOptionsTable[user].muted &&
-                session.remoteUserOptionsTable[user].muted.videoClient,
+              session.remoteUserOptionsTable[user].muted.videoClient,
             ) !== muted.videoClient ||
             session.remoteUserOptionsTable[user].exInfo !== exInfo
           ) {
@@ -3607,9 +3675,45 @@ if (!Brekeke.WebrtcClient) {
     _ua_disconnected: function (e) {
       this._uaSocket = null
       clearTimeout(this._uaSocketKeepAliveTimer)
+      if (this.getSessionCount()) {
+        // the pbx keeps sending in-dialog requests to the dead socket until a re-INVITE comes on the new one
+        this._uaDroppedInCall = true
+      }
     },
     _ua_registered: function (e) {
       this._uaStarting = false
+      for (var sessionId in this._sessionTable) {
+        var rtcSession = this._sessionTable[sessionId].rtcSession
+        if (
+          this._uaDroppedInCall &&
+          rtcSession &&
+          rtcSession.direction === 'incoming' &&
+          // ANSWERED here: answer() ran after the socket died, no 200 OK ever left, the PBX never saw it
+          (!rtcSession.isEstablished() ||
+            rtcSession.status === rtcSession.constructor.C.STATUS_ANSWERED)
+        ) {
+          this._logger.log(
+            'info',
+            'end the unanswered incoming call: its INVITE came on the dead socket',
+          )
+          rtcSession.terminate()
+          continue
+        }
+        if (!rtcSession || !rtcSession.connection) {
+          continue
+        }
+        if (rtcSession.connection.iceConnectionState === 'failed') {
+          this._logger.log('info', 'restart ICE after re-register')
+          rtcSession.renegotiate({ rtcOfferConstraints: { iceRestart: true } })
+        } else if (this._uaDroppedInCall) {
+          this._logger.log(
+            'info',
+            're-INVITE after re-register to move the dialog to the new socket',
+          )
+          rtcSession.renegotiate()
+        }
+      }
+      this._uaDroppedInCall = false
       if (this._vuaStarting) {
         try {
           this._vua.start()
@@ -3639,6 +3743,14 @@ if (!Brekeke.WebrtcClient) {
       data = e.data || e // jssip ~0.5: e.data, jssip 0.6~: e
 
       if (this._phoneStatus !== 'stopping' && this._phoneStatus !== 'stopped') {
+        // a socket drop unregisters with no cause; JsSIP reconnects and re-registers itself, stopping here ends live calls
+        if (!(data && data.cause) && this.getSessionCount()) {
+          this._logger.log(
+            'info',
+            'transport closed during a call, keep the session',
+          )
+          return
+        }
         this._stopReasonInfo = {
           from: 'server',
           reason: string(data && data.cause),
@@ -3768,7 +3880,7 @@ if (!Brekeke.WebrtcClient) {
           data.session.direction === 'outgoing'
             ? Boolean(
                 this._outgoingRtcInfo.muted &&
-                  this._outgoingRtcInfo.muted.videoClient,
+                this._outgoingRtcInfo.muted.videoClient,
               )
             : false,
         initialVolumePercent: null,
@@ -4000,6 +4112,14 @@ if (!Brekeke.WebrtcClient) {
       data = e.data || e // jssip ~0.5: e.data, jssip 0.6~: e
 
       if (this._phoneStatus !== 'stopping' && this._phoneStatus !== 'stopped') {
+        // same as _ua_unregistered: stopping on a socket drop ends live calls
+        if (!(data && data.cause) && this.getSessionCount()) {
+          this._logger.log(
+            'info',
+            'video transport closed during a call, keep the session',
+          )
+          return
+        }
         this._stopReasonInfo = {
           from: 'server',
           reason: string(data && data.cause),

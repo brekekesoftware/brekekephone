@@ -1,4 +1,5 @@
 import { AppState } from 'react-native'
+import { Notifications } from 'react-native-notifications'
 
 import { isAndroid, isIos } from '#/config'
 import { ctx } from '#/stores/ctx'
@@ -240,6 +241,11 @@ export const parse = async (
     isAndroid && isClickAction && !n.isCall && rawId?.startsWith('message-')
       ? rawId
       : undefined
+  const removeChatNotification = () => {
+    if (localChatNotificationId && typeof raw['native_id'] === 'number') {
+      Notifications.cancelLocalNotification(raw['native_id'])
+    }
+  }
   if (localChatNotificationId) {
     if (androidProcessedLocalChatNotification[localChatNotificationId]) {
       console.log(
@@ -250,8 +256,12 @@ export const parse = async (
     androidProcessedLocalChatNotification[localChatNotificationId] = true
   }
 
-  const acc = await ctx.sip.checkAndRemovePnTokenViaSip(n)
+  // UC 1.8 chat pushes name no account: findByPn would pick the first saved one and switch to it
+  const signedInForChat =
+    !n.isCall && !n.to ? ctx.auth.getCurrentAccount() : undefined
+  const acc = signedInForChat || (await ctx.sip.checkAndRemovePnTokenViaSip(n))
   if (!acc) {
+    removeChatNotification()
     if (localChatNotificationId) {
       delete androidProcessedLocalChatNotification[localChatNotificationId]
     }
@@ -261,9 +271,42 @@ export const parse = async (
     return
   }
 
-  console.log('SIP PN debug: call signInByNotification')
-  await ctx.auth.signInByNotification(n)
+  if (signedInForChat) {
+    console.log(
+      `SIP PN debug: PushNotification-parse: chat push names no account, stay on accountId=${signedInForChat.id}`,
+    )
+  } else {
+    console.log('SIP PN debug: call signInByNotification')
+    await ctx.auth.signInByNotification(n)
+  }
   const notificationAccountId = acc.id
+  // the account of this pn can not be signed in while a call is alive, so opening it
+  // would take the user off the call and land on a page of an account that is not
+  // signed in. signInByNotification refuses the switch, this refuses the tap
+  if (
+    isClickAction &&
+    !n.isCall &&
+    ctx.auth.signedInId &&
+    ctx.auth.signedInId !== notificationAccountId &&
+    ctx.call.hasAnyCall()
+  ) {
+    console.log(
+      `SIP PN debug: PushNotification-parse: refuse pn of another account during call pnId=${n.id} accountId=${notificationAccountId} signedInId=${ctx.auth.signedInId}`,
+    )
+    await ctx.call.showCannotSwitchAccountDuringCall()
+    // release the dedupe claim taken above: without it the same notification tapped
+    // again after the call ends is skipped as already opened and does nothing
+    if (localChatNotificationId) {
+      delete androidProcessedLocalChatNotification[localChatNotificationId]
+    }
+    // BUG-1257: this tap is the last entry point for the missed call custom pages of
+    // that account, and refusing it must not lose the event
+    if (rawId?.startsWith('missedcall')) {
+      ctx.auth.queueIncomingCustomPageEvent(rawId, notificationAccountId)
+    }
+    return
+  }
+  removeChatNotification()
   if (n.isCall) {
     ctx.auth.queueIncomingCustomPageEvent(
       n.id || n.callkeepUuid,
@@ -328,10 +371,10 @@ export const parse = async (
 
   const isLocalChatNotification = Boolean(
     isLocal ||
-      raw.my_custom_data ||
-      raw.is_local_notification ||
-      n.my_custom_data ||
-      n.is_local_notification,
+    raw.my_custom_data ||
+    raw.is_local_notification ||
+    n.my_custom_data ||
+    n.is_local_notification,
   )
   const isChatMessage = isLocalChatNotification || !n.isCall
   // handle uc chat notification on press

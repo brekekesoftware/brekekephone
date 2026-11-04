@@ -169,9 +169,14 @@ class BrekekeLPCManager: NSObject {
       "tlsKeyHash": pushManagerSettings.tlsKeyHash,
     ]
     // set wifi matches
-    pushManager.matchSSIDs = !pushManagerSettings.remoteSsids
+    let ssids = !pushManagerSettings.remoteSsids
       .isEmpty ? pushManagerSettings.remoteSsids : pushManagerSettings
       .localSsids
+    // iOS refuses the whole configuration (NEAppPushErrorDomain Code=1) above 10 SSIDs
+    if ssids.count > 10 {
+      logger.log("matchSSIDs: \(ssids.count) SSIDs, iOS allows 10, using the first 10")
+    }
+    pushManager.matchSSIDs = Array(ssids.prefix(10))
     // set LTE matches (currently not using)
     if !pushManagerSettings.mobileCountryCode.isEmpty,
        !pushManagerSettings.mobileNetworkCode.isEmpty {

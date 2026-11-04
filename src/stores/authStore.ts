@@ -18,6 +18,7 @@ import {
   getAccountUniqueId,
   getLastSignedInId,
   saveLastSignedInId,
+  toPhoneIndex,
 } from '#/stores/accountStore'
 import type { CallHistoryInfo } from '#/stores/addCallHistory'
 import type { Call } from '#/stores/Call'
@@ -30,6 +31,7 @@ import { BackgroundTimer } from '#/utils/BackgroundTimer'
 import { BrekekeUtils } from '#/utils/BrekekeUtils'
 import { clearUrlParams, getUrlParams } from '#/utils/deeplink'
 import type { UrlParams } from '#/utils/deeplink-parse'
+import { toAccountSettings } from '#/utils/deeplink-parse'
 import { deviceDetail, devicePlatform } from '#/utils/device'
 import type { ParsedPn, SipPn } from '#/utils/PushNotification-parse'
 import { toBoolean } from '#/utils/string'
@@ -37,11 +39,7 @@ import { waitForActiveAppState } from '#/utils/waitForActiveAppState'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 export type ConnectionState =
-  | 'stopped'
-  | 'waiting'
-  | 'connecting'
-  | 'success'
-  | 'failure'
+  'stopped' | 'waiting' | 'connecting' | 'success' | 'failure'
 
 type PendingCustomPageEvent = {
   key: string
@@ -61,22 +59,36 @@ const pendingCustomPageEventExpirationTime = 5 * 60 * 1000
 export class AuthStore {
   hasInternetConnected: boolean | null = null
 
-  @observable sipPn: Partial<SipPn> = {}
+  @observable accessor sipPn: Partial<SipPn> = {}
 
-  @observable pbxState: ConnectionState = 'stopped'
-  @observable pbxTotalFailure = 0
-  @observable sipState: ConnectionState = 'stopped'
-  @observable sipTotalFailure = 0
-  @observable ucState: ConnectionState = 'stopped'
-  @observable ucTotalFailure = 0
+  pwhashNewAccountId = ''
 
-  @observable pbxLoginRejected = false
-  @observable pbxLoginFromAnotherPlace = false
-  @observable showMsgPbxLoginFromAnotherPlace = false
-  @observable ucLoginFromAnotherPlace = false
+  onPwhashRefused = async (ca: Account) => {
+    if (ca.id !== this.pwhashNewAccountId) {
+      return
+    }
+    this.pwhashNewAccountId = ''
+    this.signOut()
+    await ctx.account.removeAccount(ca.id)
+    RnAlert.error({
+      message: intlDebug`This link has expired. Ask for a new link.`,
+    })
+  }
 
-  @observable pbxConnectedAt = 0
-  @observable pbxFreshLogin = false
+  @observable accessor pbxState: ConnectionState = 'stopped'
+  @observable accessor pbxTotalFailure = 0
+  @observable accessor sipState: ConnectionState = 'stopped'
+  @observable accessor sipTotalFailure = 0
+  @observable accessor ucState: ConnectionState = 'stopped'
+  @observable accessor ucTotalFailure = 0
+
+  @observable accessor pbxLoginRejected = false
+  @observable accessor pbxLoginFromAnotherPlace = false
+  @observable accessor showMsgPbxLoginFromAnotherPlace = false
+  @observable accessor ucLoginFromAnotherPlace = false
+
+  @observable accessor pbxConnectedAt = 0
+  @observable accessor pbxFreshLogin = false
 
   pbxShouldAuth = () =>
     this.getCurrentAccount() &&
@@ -143,7 +155,9 @@ export class AuthStore {
     return !states.includes('connecting') && states.includes('failure')
   }
 
-  @observable signedInId = ''
+  @observable accessor signedInId = ''
+  lpcPromptIntent?: { id: string; at: number }
+
   getCurrentAccount = () =>
     ctx.account.accounts.find(a => a.id === this.signedInId)
   getCurrentData = () => ctx.account.findDataSync(this.getCurrentAccount())
@@ -152,11 +166,12 @@ export class AuthStore {
     return ca && ctx.account.findDataWithDefault(ca)
   }
 
-  @observable ucConfig?: UcConfig
-  @observable pbxConfig?: PbxGetProductInfoRes
-  @observable listCustomPage: PbxCustomPage[] = []
-  @observable activeCustomPageId?: string
-  @observable private pendingCustomPageEvents: PendingCustomPageEvent[] = []
+  @observable accessor ucConfig: UcConfig | undefined
+  @observable accessor pbxConfig: PbxGetProductInfoRes | undefined
+  @observable accessor listCustomPage: PbxCustomPage[] = []
+  @observable accessor activeCustomPageId: string | undefined
+  @observable
+  private accessor pendingCustomPageEvents: PendingCustomPageEvent[] = []
   private completedCustomPageEvents: CompletedCustomPageEvent[] = []
   private customPageBuildPromises: {
     [pageId: string]: Promise<boolean> | undefined
@@ -447,7 +462,7 @@ export class AuthStore {
     this.customPageProcessRequested = false
   }
 
-  @observable resourceLines: PbxResourceLine[] = []
+  @observable accessor resourceLines: PbxResourceLine[] = []
 
   // user agent for sip pal client
   // TODO: check embed api, dont need to set BrekekeUtils since this in web only?
@@ -469,7 +484,7 @@ export class AuthStore {
   }
 
   // user agent for http request such as iframe webview smart avatar...
-  @observable private userAgentConfig: string | undefined = undefined
+  @observable private accessor userAgentConfig: string | undefined = undefined
   setUserAgentConfig = async (useragent: string | undefined) => {
     const isEnabled = useragent === undefined || toBoolean(useragent)
     if (!isEnabled) {
@@ -495,7 +510,7 @@ export class AuthStore {
       return false
     }
     const d = await ctx.account.findDataWithDefault(a)
-    if (!a.pbxPassword && !d.accessToken) {
+    if (!a.pbxPassword && !a.pbxPasswordHash && !d.accessToken) {
       ctx.nav.goToPageAccountUpdate({ id: a.id })
       RnAlert.error({
         message: intlDebug`The account password is empty`,
@@ -545,13 +560,23 @@ export class AuthStore {
     }
 
     this.signedInId = a.id
+    this.lpcPromptIntent =
+      !autoSignIn && !this.isSigningInByNotification
+        ? { id: a.id, at: Date.now() }
+        : undefined
     this.pbxConnectedAt = 0
     this.pbxFreshLogin = true
+    // these belong to whoever was signed in before, which may be another account.
+    // cleared unconditionally: signInByNotification pre-clears signedInId, so the
+    // account-switch branch above does not run on the pn path. api/index only
+    // re-reads the properties while this is empty
+    this.userExtensionProperties = null
     console.log(
       '=======================================================================',
     )
     console.log(`signIn debug: account ${a.pbxUsername} signed in`)
     BrekekeUtils.setPhoneappliEnabled(!!this.phoneappliEnabled())
+    BrekekeUtils.setAiphoneNurseCallEnabled(!!this.aiphoneNurseCallEnabled())
     if (!autoSignIn) {
       await saveLastSignedInId(getAccountUniqueId(a))
     }
@@ -562,6 +587,7 @@ export class AuthStore {
   // while switching runtime PBX/SIP/UC state to the next account.
   @action private resetPrevAccountConnection = () => {
     this.signedInId = ''
+    this.lpcPromptIntent = undefined
     this.resetFailureState()
     this.pbxState = 'stopped'
     console.log('SIP PN debug: set sipState stopped account switch')
@@ -625,6 +651,7 @@ export class AuthStore {
   }
   @action private resetState = () => {
     this.signedInId = ''
+    this.lpcPromptIntent = undefined
     this.pbxState = 'stopped'
     console.log('SIP PN debug: set sipState stopped sign out')
     this.sipState = 'stopped'
@@ -650,6 +677,11 @@ export class AuthStore {
 
   @action resetFailureState = () => {
     this.pbxLoginRejected = false
+    this.resetRetryCounters()
+  }
+  // keeps pbxLoginRejected: a network return or a foreground is not a new password,
+  // and one more login with the rejected one can get the client blocked
+  @action resetRetryCounters = () => {
     this.pbxTotalFailure = 0
     this.sipTotalFailure = 0
     this.ucTotalFailure = 0
@@ -688,11 +720,11 @@ export class AuthStore {
   }
 
   recentCallsMax: number = 200
-  @observable cRecentCalls: RecentCall[] = []
+  @observable accessor cRecentCalls: RecentCall[] = []
   rcPerPage: number = 15
   rcPage: number = 0
-  @observable rcLoading: boolean = false
-  @observable rcCount: number = 0
+  @observable accessor rcLoading: boolean = false
+  @observable accessor rcCount: number = 0
   // recentCallsMax with default 200 and limit 1000
   setRecentCallsMax = async (max: number | string) => {
     const numericMax = Number(max)
@@ -963,7 +995,9 @@ export class AuthStore {
     urlParams: UrlParams,
     a: Awaited<ReturnType<typeof ctx.account.findPartial>>,
   ) => {
-    const { _wn, host, phone_idx, port, tenant, user, password } = urlParams
+    const { _wn, host, phone_idx, port, tenant, user, password, pwhash } =
+      urlParams
+    const settings = toAccountSettings(urlParams)
     // handle deep link: update account (try to keep old logic)
     if (
       Object.keys(ctx.call.callkeepMap).length ||
@@ -987,17 +1021,60 @@ export class AuthStore {
       if (!a.pbxPort) {
         a.pbxPort = port
       }
-      if (!a.pbxPassword) {
+      const linkPasswordChanged =
+        !!password && !pwhash && password !== a.pbxPassword
+      const authChanged =
+        this.signedInId === a.id &&
+        ((!!pwhash && pwhash !== (a.pbxPasswordHash || '')) ||
+          (!!password && !pwhash && !!a.pbxPasswordHash) ||
+          linkPasswordChanged)
+      if (password && !pwhash && a.pbxPasswordHash) {
+        a.pbxPassword = password
+        a.pbxPasswordHash = ''
+      }
+      if (!a.pbxPassword || linkPasswordChanged) {
         a.pbxPassword = password
       }
-      a.pbxPhoneIndex = `${phoneIdx}`
+      if (pwhash) {
+        a.pbxPasswordHash = pwhash
+      }
       const d = await ctx.account.findDataWithDefault(a)
       if (_wn) {
         d.accessToken = _wn
       }
-      //
-      ctx.account.upsertAccount(a)
-      if (a.pbxPassword || d.accessToken) {
+      // signIn only tears down the previous connection when the account id changes,
+      // and neither pbxShouldAuth nor sipShouldAuth fires while both are 'success',
+      // so a new phone index would otherwise never reach the live pbx/sip
+      // registration. must be read before upsertAccount updates pbxPhoneIndex
+      const reconnectForPhoneIndex =
+        this.signedInId === a.id && toPhoneIndex(a.pbxPhoneIndex) !== phoneIdx
+      const turnChanged =
+        this.signedInId === a.id &&
+        (
+          [
+            'pbxTurnEnabled',
+            'pbxTurnServer',
+            'pbxTurnTransport',
+            'pbxTurnUsername',
+            'pbxTurnPassword',
+          ] as const
+        ).some(k => k in settings && (settings[k] || '') !== (a[k] || ''))
+      // pbxPhoneIndex must go through upsertAccount rather than be assigned on `a`
+      // (the live stored account): upsertAccount compares it against the stored
+      // value to remove the previous phone id's pn registration on the pbx. assign
+      // it here and the change is invisible, the old phone id keeps pushing, and the
+      // callkeep call the user answers can be the one with no sip session behind it.
+      // must also run after d.accessToken above, that remove needs a credential
+      await ctx.account.upsertAccount({
+        ...settings,
+        id: a.id,
+        pbxPhoneIndex: `${phoneIdx}`,
+      })
+      if (a.pbxPassword || a.pbxPasswordHash || d.accessToken) {
+        if (reconnectForPhoneIndex || turnChanged || authChanged) {
+          this.resetPrevAccountConnection()
+          await waitTimeout()
+        }
         this.signIn(a)
       } else {
         ctx.nav.goToPageAccountUpdate({ id: a.id })
@@ -1009,17 +1086,20 @@ export class AuthStore {
     //
     const newA = {
       ...ctx.account.genEmptyAccount(),
+      ...settings,
       pbxTenant: tenant,
       pbxUsername: user,
       pbxPassword: password,
+      pbxPasswordHash: pwhash || '',
       pbxHostname: host,
       pbxPort: port,
       pbxPhoneIndex: `${phoneIdx}`,
     }
     const d = await ctx.account.findDataWithDefault(newA)
-    //
+    this.pwhashNewAccountId =
+      newA.pbxPasswordHash && !newA.pbxPassword ? newA.id : ''
     ctx.account.upsertAccount(newA)
-    if (newA.pbxPassword || d.accessToken) {
+    if (newA.pbxPassword || newA.pbxPasswordHash || d.accessToken) {
       this.signIn(newA)
     } else {
       ctx.nav.goToPageAccountUpdate({ id: newA.id })
@@ -1029,7 +1109,7 @@ export class AuthStore {
     return true
   }
 
-  @observable isSignInByNotification = false
+  @observable accessor isSignInByNotification = false
   clearSignInByNotification = debounce(
     () => {
       // clearSignInByNotification will activate UC login
@@ -1080,7 +1160,7 @@ export class AuthStore {
       if (
         this.signedInId &&
         this.signedInId !== acc.id &&
-        ctx.call.calls.length
+        ctx.call.hasAnyCall({ callkeepUuid: n.callkeepUuid, pnId: n.id })
       ) {
         console.log(
           `SIP PN debug: skip account switch during ongoing call pnId=${n.id}`,
@@ -1123,15 +1203,25 @@ export class AuthStore {
       }
     }
   }
+  // once extension properties are read, they decide for both settings below: a fresh
+  // false must beat the cached true, otherwise an extension that had it on keeps
+  // behaving as on forever
   phoneappliEnabled = () =>
     !isWeb &&
-    (this.userExtensionProperties?.phoneappli ||
-      ctx.auth.getCurrentData()?.phoneappliEnabled)
-  userExtensionProperties: null | {
+    (this.userExtensionProperties
+      ? this.userExtensionProperties.phoneappli
+      : !!ctx.auth.getCurrentData()?.phoneappliEnabled)
+  aiphoneNurseCallEnabled = () =>
+    !isWeb &&
+    (this.userExtensionProperties
+      ? this.userExtensionProperties.aiphoneNurseCall
+      : !!ctx.auth.getCurrentData()?.aiphoneNurseCallEnabled)
+  @observable accessor userExtensionProperties: null | {
     id: string
     name: string
     language: string
     phoneappli: boolean
+    aiphoneNurseCall: boolean
     phones: {
       id: string
       type: string

@@ -1,16 +1,19 @@
 import EventEmitter from 'eventemitter3'
 
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
-import { turnConfig } from '#/api/turnConfig'
+import { iceServersFor } from '#/api/iceServers'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
 import { isEmbed } from '#/embed/polyfill'
-import type { AccountUnique } from '#/stores/accountStore'
+import type { Account, AccountUnique } from '#/stores/accountStore'
+import { pnPhoneIndex, toPhoneIndex } from '#/stores/accountStore'
 import type { Call, CallConfig } from '#/stores/Call'
 import { cancelRecentPn } from '#/stores/cancelRecentPn'
 import { getPbxNameWithUpdateContact } from '#/stores/contactStore'
 import { ctx } from '#/stores/ctx'
+import { intlDebug } from '#/stores/intl'
+import { RnAlert } from '#/stores/RnAlert'
 import { jsonSafe } from '#/utils/jsonSafe'
 import { jsonStable } from '#/utils/jsonStable'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
@@ -27,6 +30,7 @@ type DeviceInputWeb = {
 }
 export class SIP extends EventEmitter {
   phone?: Sip
+  reconnectInCall = () => {}
   currentCamera?: string
 
   cameraIds?: DeviceInputWeb[] = []
@@ -129,6 +133,9 @@ export class SIP extends EventEmitter {
         partyImageUrl: m?.getHeader('X-PBX-IMAGE-RINGING'),
         talkingImageUrl: m?.getHeader('X-PBX-IMAGE-TALKING'),
         partyImageSize: m?.getHeader('X-PBX-IMAGE-SIZE'),
+        // outgoing calls must not pick up X-URL-Info from the 180/200 responses:
+        // it makes updatePhoneState fire on calls we placed (aiphone nurse call)
+        urlInfo: isOutgoing ? undefined : m?.getHeader('X-URL-Info'),
         pbxTenant: arr?.[0],
         pbxRoomId: arr?.[1],
         pbxTalkerId: arr?.[2],
@@ -143,6 +150,9 @@ export class SIP extends EventEmitter {
           delete patch[k]
         }
       }
+      console.log(
+        `SIP debug: call ${patch.id} ${patch.sessionStatus} incoming=${patch.incoming} image=${patch.partyImageUrl || 'none'}`,
+      )
       return patch
     }
 
@@ -176,6 +186,7 @@ export class SIP extends EventEmitter {
         return
       }
       if (ev.sessionStatus === 'terminated') {
+        console.log(`SIP debug: call ${ev.sessionId} terminated`)
         ctx.call.callTerminated[ev.sessionId] = true
         const rawPartyNumber = ev.rtcSession?.remote_identity?.uri?.user
         if (rawPartyNumber) {
@@ -259,9 +270,39 @@ export class SIP extends EventEmitter {
       })
     })
 
-    phone.addEventListener('rtcErrorOccurred', ev => {
-      console.error('sip.phone.rtcErrorOccurred:', ev)
-    })
+    phone.addEventListener(
+      'rtcErrorOccurred',
+      (
+        ev: Error & {
+          from?: string
+          client?: string
+          sessionId?: string | null
+          error?: Error
+        },
+      ) => {
+        console.error('sip.phone.rtcErrorOccurred:', ev)
+        if (ev.from !== 'browser' || ev.client !== 'main') {
+          return
+        }
+        RnAlert.error({
+          message: intlDebug`Cannot use the microphone. Allow microphone access for this site and check that a microphone is connected, then try again`,
+          err: ev.error,
+        })
+        if (ev.sessionId) {
+          this.hangupSession(ev.sessionId)
+          return
+        }
+        // the startCall 3 s reconnect timer redials and asks the mic again; mobile keeps it so its 10 s guard ends the CallKit call
+        if (isWeb) {
+          ctx.call.clearStartCallIntervalTimer()
+        }
+        if (ctx.auth.phoneappliEnabled()) {
+          ctx.nav.backToPageCallKeypad()
+        } else {
+          ctx.nav.backToPageCallRecents()
+        }
+      },
+    )
 
     return phone
   }
@@ -273,16 +314,11 @@ export class SIP extends EventEmitter {
     this.stopWebRTC()
     const phone = await this.init(o)
     //
-    const callOptions = ((o.pbxTurnEnabled && turnConfig) || {}) as CallOptions
-    if (!callOptions.pcConfig) {
-      callOptions.pcConfig = {}
-    }
-    if (!Array.isArray(callOptions.pcConfig.iceServers)) {
-      callOptions.pcConfig.iceServers = []
-    }
-    if (o.turnConfig) {
-      callOptions.pcConfig.iceServers.push(o.turnConfig)
-    }
+    const iceServers = iceServersFor(o.ownTurn, o.pbxTurn)
+    const callOptions = { pcConfig: { iceServers } } as CallOptions
+    console.log(
+      `SIP PN debug: ice servers ${iceServers.map(s => s.urls).join(' ')}`,
+    )
     phone.setDefaultCallOptions(callOptions)
     //
     const userAgent = await ctx.auth.getUserAgent(a)
@@ -309,6 +345,57 @@ export class SIP extends EventEmitter {
       console.log(`SIP PN debug: newNotify canceled pnIds=${jsonSafe(pnIds)}`)
       pnIds.forEach(cancelRecentPn)
     })
+    // the pbx rejects the old token once pal has reconnected, and jssip keeps it in the url while a call holds the ua
+    let refreshingToken = false
+    let connectAfterRefresh = false
+    const refreshTokenInCall = async (connectNow: boolean) => {
+      if (!phone.getSessionCount()) {
+        return
+      }
+      connectAfterRefresh ||= connectNow
+      if (refreshingToken) {
+        return
+      }
+      refreshingToken = true
+      const token = await ctx.pbx
+        .createSIPAccessToken(o.username)
+        .catch((err: unknown) => {
+          console.error('SIP PN debug: createSIPAccessToken failed:', err)
+          return undefined
+        })
+      refreshingToken = false
+      const shouldConnect = connectAfterRefresh
+      connectAfterRefresh = false
+      if (!token || this.phone !== phone) {
+        return
+      }
+      console.log('SIP PN debug: new sip token for the reconnect during a call')
+      const param = `Authorization=${encodeURIComponent(token)}`
+      ;[phone._ua, phone._vua].forEach(ua => {
+        const socket = ua?._transport?.socket
+        if (socket?._url) {
+          socket._url = socket._url.replace(/Authorization=[^&]*/, param)
+        }
+        ua?.registrator?.().setExtraHeaders([`Authorization: ${token}`])
+        const transport = ua?._transport
+        if (
+          shouldConnect &&
+          transport &&
+          !transport.isConnected() &&
+          !transport.isConnecting()
+        ) {
+          console.log('SIP PN debug: connect sip now for the call')
+          if (transport.recovery_timer) {
+            clearTimeout(transport.recovery_timer)
+            transport.recovery_timer = null
+          }
+          transport.connect()
+        }
+      })
+    }
+    // connect at once only after a pal login: on 'disconnected' a failed connect would fire it again in a tight loop
+    phone._ua?.on('disconnected', () => refreshTokenInCall(false))
+    this.reconnectInCall = () => refreshTokenInCall(true)
   }
 
   private hackJssipFork = () => {
@@ -382,8 +469,15 @@ export class SIP extends EventEmitter {
     this.phone?.setWithVideo(sessionId, true)
   disableLocalVideo = (sessionId: string) =>
     this.phone?.setWithVideo(sessionId, false)
-  setMuted = (muted: boolean, sessionId: string) =>
-    this.phone?.setMuted({ main: muted }, sessionId)
+  setMuted = (muted: boolean, sessionId: string) => {
+    const r = this.phone?.setMuted({ main: muted }, sessionId)
+    const mic = this.phone
+      ?.getSession(sessionId)
+      ?.localStreamObject?.getAudioTracks()
+      .map(t => t.enabled)
+    console.log(`SIP debug: setMuted ${muted}, mic track enabled: ${mic}`)
+    return r
+  }
   setMutedVideo = (muted: boolean, sessionId: string) => {
     this.phone?.setMuted({ videoClient: muted }, sessionId)
   }
@@ -432,12 +526,17 @@ export class SIP extends EventEmitter {
 
   checkAndRemovePnTokenViaSip = async (n: ParsedPn) => {
     const acc = await ctx.account.findByPn(n)
+    const stale = !!acc && isPnForOtherPhoneIndex(acc, n.sipPn.phoneId)
     const k = n.id || jsonStable(n)
-    if (!alreadyRemovePnTokenViaSip[k] && !acc) {
+    if (!alreadyRemovePnTokenViaSip[k] && (!acc || stale)) {
       alreadyRemovePnTokenViaSip[k] = true
-      removePnTokenViaSip(n)
+      // catch: removePnTokenViaSip throws when the registrator is missing, and this
+      // call is not awaited - without it that becomes an unhandled rejection
+      void removePnTokenViaSip(n).catch(err =>
+        console.error('removePnTokenViaSip:', err),
+      )
     }
-    return acc
+    return stale ? undefined : acc
   }
 }
 ctx.sip = new SIP()
@@ -445,14 +544,31 @@ ctx.sip = new SIP()
 export interface SipLoginOption {
   hostname: string
   port: string
-  pbxTurnEnabled: boolean
   username: string
   accessToken: string
   dtmfSendPal: boolean
-  turnConfig?: RTCIceServer
+  pbxTurn?: RTCIceServer
+  ownTurn?: RTCIceServer
 }
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
+
+// the pbx keeps one pn registration per phone id, so a registration left behind by
+// a previous phone index still pushes to this device: the account matches but the
+// call has no sip session on it, and answering that callkeep call does nothing.
+// findByPn already resolved to the account owning this phone id when one exists, so
+// a mismatch here means no account uses that index. a phone id in any other shape
+// gives index 0 and is never rejected, it belongs to a setup we must not guess about
+const isPnForOtherPhoneIndex = (a: Account, phoneId?: string) => {
+  const idx = pnPhoneIndex(a, phoneId)
+  if (!idx || idx === toPhoneIndex(a.pbxPhoneIndex)) {
+    return false
+  }
+  console.log(
+    `checkAndRemovePnTokenViaSip debug: pn for another phone index phoneId=${phoneId} accountPhoneIndex=${a.pbxPhoneIndex}`,
+  )
+  return true
+}
 
 const removePnTokenViaSip = async (n: ParsedPn) => {
   if (n.callkeepUuid) {

@@ -4,7 +4,7 @@ import { defaultTimeout } from '#/config'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
 
 export class DelayFlag {
-  @observable enabled = false
+  @observable accessor enabled = false
   timeoutId = 0
 
   setEnabled = (enabled?: boolean) => {

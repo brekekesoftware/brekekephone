@@ -39,6 +39,8 @@ export const AccountCreateForm: FC<{
       ringtoneOptions: [] as RingtoneOption[],
       preview: '',
     },
+    isLinkAccount: () =>
+      !!props.updating?.pbxPasswordHash && !props.updating?.pbxPassword,
     resetAllFields: () => {
       RnAlert.prompt({
         title: intl`Reset`,
@@ -130,7 +132,13 @@ export const AccountCreateForm: FC<{
       })
     },
     onValidSubmit: () => {
-      props.onSave($.account, $.hasUnsavedChanges())
+      const a = $.account
+      const typed =
+        !!a.pbxPassword && a.pbxPassword !== (props.updating?.pbxPassword || '')
+      props.onSave(
+        typed && a.pbxPasswordHash ? { ...a, pbxPasswordHash: '' } : a,
+        $.hasUnsavedChanges(),
+      )
     },
     onUploadRingtone: async () => {
       try {
@@ -238,7 +246,11 @@ export const AccountCreateForm: FC<{
             secureTextEntry: true,
             name: 'pbxPassword',
             label: intl`PASSWORD`,
-            rule: 'required',
+            rule: $.isLinkAccount() ? '' : 'required',
+            placeholder: $.isLinkAccount() ? intl`Set a password` : undefined,
+            description: $.isLinkAccount()
+              ? intl`Signed in by link`
+              : undefined,
           },
           {
             disabled: props.footerLogout,
@@ -277,6 +289,37 @@ export const AccountCreateForm: FC<{
           },
           {
             disabled: props.footerLogout,
+            nested: true,
+            hidden: !$.account.pbxTurnEnabled,
+            name: 'pbxTurnServer',
+            label: 'TURN SERVER',
+          },
+          {
+            disabled: props.footerLogout,
+            nested: true,
+            hidden: !$.account.pbxTurnEnabled,
+            type: 'RnPicker',
+            name: 'pbxTurnTransport',
+            label: 'TURN TRANSPORT',
+            options: ['udp', 'tcp', 'tls'].map(v => ({ key: v, label: v })),
+          },
+          {
+            disabled: props.footerLogout,
+            nested: true,
+            hidden: !$.account.pbxTurnEnabled,
+            name: 'pbxTurnUsername',
+            label: 'TURN USERNAME',
+          },
+          {
+            disabled: props.footerLogout,
+            nested: true,
+            hidden: !$.account.pbxTurnEnabled,
+            secureTextEntry: true,
+            name: 'pbxTurnPassword',
+            label: 'TURN PASSWORD',
+          },
+          {
+            disabled: props.footerLogout,
             type: 'Switch',
             name: 'pushNotificationEnabled',
             label: intl`PUSH NOTIFICATION`,
@@ -292,6 +335,24 @@ export const AccountCreateForm: FC<{
             label: intl`FALLBACK LOCAL CONNECTION (LPC)`,
             hidden: isWeb || !isAndroid,
             description: $.lpcDescription(),
+            onValueChange: (v: boolean) => {
+              const s = ctx.account.findDataSync($.account)?.lpcServer
+              const setLpc = (on: boolean) =>
+                $.set('account', (p: Account) => {
+                  p.lpcEnabled = on
+                  return p
+                })
+              if (v || !s?.available || s.optional) {
+                setLpc(v)
+                return
+              }
+              RnAlert.prompt({
+                title: intl`Warning`,
+                message: intl`Without LPC, this phone may miss calls while the app is closed.`,
+                confirmText: intl`TURN OFF`,
+                onConfirm: () => setLpc(false),
+              })
+            },
           },
           {
             isGroup: true,

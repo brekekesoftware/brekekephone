@@ -2,8 +2,8 @@ import { action, observable } from 'mobx'
 import { AppState } from 'react-native'
 
 class RnAppStateStore {
-  @observable foregroundOnce = AppState.currentState === 'active'
-  @observable currentState = AppState.currentState
+  @observable accessor foregroundOnce = AppState.currentState === 'active'
+  @observable accessor currentState = AppState.currentState
   constructor() {
     AppState.addEventListener(
       'change',

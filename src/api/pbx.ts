@@ -30,6 +30,7 @@ import {
   bundleIdentifier,
   fcmApplicationId,
   isAndroid,
+  isWeb,
   retryInterval,
 } from '#/config'
 import { embedApi } from '#/embed/embedApi'
@@ -171,7 +172,7 @@ export class PBX extends EventEmitter {
   private pendingRequests: Request<keyof PbxPal>[] = []
   private requests: Request<keyof PbxPal>[] = []
   private MAX_RETRY = 3
-  @observable retryingRequests: string[] = []
+  @observable accessor retryingRequests: string[] = []
 
   private readonly methodsWithRetry: readonly (keyof Pbx)[] = [
     'hold',
@@ -453,20 +454,28 @@ export class PBX extends EventEmitter {
     const d = await ctx.account.findDataWithDefault(a)
     const oldPalParamUser = d.palParams?.['user']
     const wsUri = `wss://${a.pbxHostname}:${a.pbxPort}/pbx/ws`
+    const auth = a.pbxPasswordHash
+      ? {
+          login_password_md5: a.pbxPasswordHash,
+          secure_login_password: true,
+        }
+      : {
+          login_password: a.pbxPassword,
+          secure_login_password: false,
+        }
     const client = window.Brekeke.pbx.getPal(wsUri, {
       tenant: a.pbxTenant,
       login_user: a.pbxUsername,
-      login_password: a.pbxPassword,
       ...(forSyncPnToken ? {} : { phone_idx: a.pbxPhoneIndex }),
       _wn: d.accessToken,
       park: (a.parks || []).map(encodeParkNumber),
       voicemail: 'self',
       status: true,
-      secure_login_password: false,
       phonetype: 'webphone',
       callrecording: 'self',
       ...d.palParams,
       ...embedApi._palParams,
+      ...auth,
       // doc: From the version 2.14.x, please add ctype=2 to the URL for PAL.
       // (If you receive webphone.pal.param.ctype=<something>, it should be overwritten.)
       ctype: 2,
@@ -590,6 +599,7 @@ export class PBX extends EventEmitter {
       })
     }
     let rejectLoginFn: ((err: Error) => void) | undefined = undefined
+    let socketOpened = false
     const login = new Promise<boolean>((resolve, reject) => {
       rejectLoginFn = reject
       this.logMainInstance('PAL login start')
@@ -600,9 +610,20 @@ export class PBX extends EventEmitter {
         },
         (err: any) => {
           this.logMainInstance('PAL login error:', err)
+          if (
+            a.pbxPasswordHash &&
+            /Login failed/.test(String(err?.message ?? err))
+          ) {
+            reject(new PbxLoginRejectedError('pwhash refused'))
+            return
+          }
           reject(err)
         },
       )
+      const socket = (client as unknown as { socket?: WebSocket }).socket
+      socket?.addEventListener('open', () => {
+        socketOpened = true
+      })
     })
 
     // this.client cleared by disconnect() (e.g. account switch) also means stale —
@@ -632,7 +653,15 @@ export class PBX extends EventEmitter {
       notify_callrecording: this.onCallRecording,
       notify_voicemail: this.onVoicemail,
       notify_status: this.onUserStatus,
-      notify_pal: this.onUserLoginOtherDevices,
+      notify_pal: (e: PbxEvent['pal']) => {
+        // the PBX sends ANOTHER_LOGIN to this app's own old session when it logs in again; acting on it
+        // signs this device out of SIP and PBX
+        if (isStaleClient()) {
+          console.log('PBX guard debug: drop notify_pal from stale client')
+          return
+        }
+        this.onUserLoginOtherDevices(e)
+      },
     }
     Object.keys(listeners).forEach(k => {
       listeners[k] = this.wrapListenersWithLog(k, listeners[k])
@@ -664,6 +693,22 @@ export class PBX extends EventEmitter {
         rejectLoginFn?.(new PbxLoginRejectedError(reason))
         rejectLoginFn = undefined
         this.disconnect()
+      }
+      // Chrome hides the HTTP status of a refused handshake; without this the web retries a wrong password and the PBX blocks the client
+      if (isWeb && e?.code === 1006 && !socketOpened && rejectLoginFn) {
+        void this.probeServer(wsUri).then(isServerUp => {
+          if (!isServerUp || isStaleClient()) {
+            return
+          }
+          this.logMainInstance(
+            'PAL login closed before open while the server is up: rejected',
+          )
+          rejectLoginFn?.(
+            new PbxLoginRejectedError('closed before open, server up'),
+          )
+          rejectLoginFn = undefined
+          this.disconnect()
+        })
       }
     }
     const pendingOnServerStatus = (e: PbxEvent['serverStatus']) => {
@@ -918,6 +963,13 @@ export class PBX extends EventEmitter {
       inMFA
     ) {
       await ctx.account.handleMFA(ca)
+      if (ctx.auth.pbxState === 'stopped') {
+        // this login is dead and checkTimeoutToReconnectPbx owns the retry; returning false here would let
+        // AuthPBX mark a failure and disconnect the new login; the fresh-login MFA check must run again
+        ctx.auth.pbxFreshLogin = isFreshLogin
+        ctx.auth.pbxTotalFailure += 1
+        return true
+      }
       // Re-check: handleMFA may have changed state to IN_PROGRESS (OTP required).
       return ctx.account.isAccountInMFA(ca)
     }
@@ -1273,6 +1325,7 @@ export class PBX extends EventEmitter {
         'pnumber',
         'language',
         'phoneappli.enable',
+        'aiphone.nursecall.enable',
       ],
     })
 
@@ -1306,6 +1359,7 @@ export class PBX extends EventEmitter {
       phones,
       language: lang,
       phoneappli: toBoolean(res?.[7]),
+      aiphoneNurseCall: toBoolean(res?.[8]),
     }
   }
 

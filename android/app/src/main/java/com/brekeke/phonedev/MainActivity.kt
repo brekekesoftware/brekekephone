@@ -12,6 +12,7 @@ import com.brekeke.phonedev.utils.Perm
 import com.brekeke.phonedev.utils.Ringtone
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.wix.reactnativenotifications.core.NotificationIntentAdapter
 import io.wazo.callkeep.RNCallKeepModule
 
 class MainActivity : ReactActivity() {
@@ -48,6 +49,8 @@ class MainActivity : ReactActivity() {
   // check if notification pressed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    // RN 0.87 removed StatusBar backgroundColor, which used to replace the green splash bar
+    window.statusBarColor = getColor(R.color.white_darken)
     if (BrekekeUtils.main == null) {
       BrekekeUtils.main = this
     }
@@ -91,13 +94,14 @@ class MainActivity : ReactActivity() {
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return object : ReactActivityDelegate(this, mainComponentName) {
-      override fun isFabricEnabled(): Boolean = false
+      override fun isFabricEnabled(): Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
     }
   }
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
-    setIntent(intent)
+    // super already sent this tap to js; kept, onStart sends it again after the call screen closes (PNMA-011)
+    setIntent(if (NotificationIntentAdapter.canHandleIntent(intent)) Intent() else intent)
     // handle call from other app
     handleIntent(intent)
   }

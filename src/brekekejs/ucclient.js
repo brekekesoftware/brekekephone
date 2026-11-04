@@ -428,11 +428,12 @@ ChatClient.prototype = {
     this._tenant = string(tenant).replace(trimRegExp, '')
     this._user_id = string(user).replace(trimRegExp, '')
     this._pass = string(pass).replace(trimRegExp, '')
+    this._passMd5 = string(option && option.passwordMd5).replace(trimRegExp, '')
     this._forceAjax = Boolean(option.forceAjax)
     this._servlet = Boolean(option.servlet)
     this._useHttps = Boolean(
       option.useHttps ||
-        string(host).toLowerCase().lastIndexOf('https', 0) === 0,
+      string(host).toLowerCase().lastIndexOf('https', 0) === 0,
     )
     this._auth_timeout = int(option.auth_timeout)
     this._admin_mode = Boolean(option.admin_mode)
@@ -4648,7 +4649,7 @@ ChatClient.prototype = {
 
     if (target.conf_id && makeCallParamsArray.length === 0) {
       // create sessionBundle
-      sessionBundle = {
+      var sessionBundle = {
         target,
         sessionIdArray: [],
         lastCallInfo: '',
@@ -8108,7 +8109,8 @@ ChatClient.prototype = {
           }
         }
         // password required
-        var hashedPassword = CryptoJS.MD5(this._pass).toString()
+        var hashedPassword =
+          this._passMd5 || CryptoJS.MD5(this._pass).toString()
         var passwordHashedWithNonce = CryptoJS.MD5(
           this._user_id + ':' + args.nonce + ':' + hashedPassword,
         ).toString()
@@ -10603,7 +10605,7 @@ code.google.com/p/crypto-js/wiki/License
           b.init.apply(b, arguments)
           return b
         },
-        init() {},
+        init: function () {},
         mixIn(b) {
           for (var h in b) {
             b.hasOwnProperty(h) && (this[h] = b[h])
@@ -10615,7 +10617,7 @@ code.google.com/p/crypto-js/wiki/License
         },
       })
       var q = (l.WordArray = r.extend({
-        init(b, h) {
+        init: function (b, h) {
           b = this.words = b || []
           this.sigBytes = h != p ? h : 4 * b.length
         },
@@ -10748,7 +10750,7 @@ code.google.com/p/crypto-js/wiki/License
       }))
       l.Hasher = g.extend({
         cfg: r.extend(),
-        init(b) {
+        init: function (b) {
           this.cfg = this.cfg.extend(b)
           this.reset()
         },

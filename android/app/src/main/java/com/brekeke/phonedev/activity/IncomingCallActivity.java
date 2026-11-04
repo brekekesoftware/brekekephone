@@ -23,6 +23,10 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -273,6 +277,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatar.getSettings().setJavaScriptEnabled(true);
     webViewAvatar.getSettings().setAllowFileAccess(true);
     webViewAvatar.getSettings().setDomStorageEnabled(true);
+    attachWebviewConsoleForward(webViewAvatar);
 
     webViewAvatarTalking = (WebView) findViewById(R.id.avatar_talking_html);
     webViewAvatarTalking.setBackgroundColor(Color.WHITE);
@@ -282,6 +287,7 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     webViewAvatarTalking.getSettings().setAllowFileAccess(true);
     webViewAvatarTalking.getSettings().setDomStorageEnabled(true);
     webViewAvatarTalking.getSettings().setJavaScriptEnabled(true);
+    attachWebviewConsoleForward(webViewAvatarTalking);
     if (BrekekeUtils.isUserAgentConfig()) {
       webViewAvatar.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
       webViewAvatarTalking.getSettings().setUserAgentString(BrekekeUtils.userAgentConfig);
@@ -534,6 +540,9 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
+              if (webviewLogEnabled()) {
+                view.evaluateJavascript(webviewConsoleForwardJs, null);
+              }
             }
 
             @Override
@@ -901,6 +910,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
   public boolean hasManuallyToggledCallManageControls = false;
   public boolean isCallManageControlsHidden = false;
   public boolean isAvatarTalkingLoaded = false;
+  // aiphone nurse-call AppToWeb I/F data (passed down from JS via setTalkingAvatar)
+  public String aiphoneUrlInfo = "";
+  public String aiphoneHc = "";
+  public String aiphoneUrlInfoSent = "";
+  public boolean isAvatarTalkingPageLoaded = false;
+  public String avatarTalkingUrlLoading = "";
 
   public void toggleCallManageControls() {
     if (isCallManageControlsHidden) {
@@ -1052,18 +1067,44 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
               super.onPageFinished(view, url);
               vWebViewAvatarTalkingLoading.setVisibility(View.GONE);
               isAvatarTalkingLoaded = true;
+              isAvatarTalkingPageLoaded = true;
+              sendAiphonePhoneState();
+            }
+
+            @Override
+            public void onReceivedError(
+                WebView view, WebResourceRequest request, WebResourceError error) {
+              super.onReceivedError(view, request, error);
+              // let the next call update try the load again
+              avatarTalkingUrlLoading = "";
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
               super.onPageStarted(view, url, favicon);
+              isAvatarTalkingPageLoaded = false;
+              aiphoneUrlInfoSent = "";
               vWebViewAvatarTalkingLoading.setVisibility(View.VISIBLE);
+              if (webviewLogEnabled()) {
+                view.evaluateJavascript(webviewConsoleForwardJs, null);
+              }
+              if (BrekekeUtils.aiphoneNurseCallEnabled) {
+                view.evaluateJavascript(
+                    "window.WebInterface = window.WebInterface || {"
+                        + " display10key:function(){}, displayPhoneControl:function(){},"
+                        + " updateUrlString:function(){}, callMainPage:function(){},"
+                        + " closePhoneControl:function(){} };",
+                    null);
+              }
             }
           });
-      if (!isAvatarTalkingLoaded) {
+      // isAvatarTalkingLoaded only turns true when the first load finishes, so two calls
+      // inside that window loaded the page twice and the page got updatePhoneState twice
+      if (!isAvatarTalkingLoaded && !talkingAvatar.equals(avatarTalkingUrlLoading)) {
         // TODO:
         // webViewAvatar: BrekekeUtils.userAgentConfig != null
         // webViewAvatarTalking: !isAvatarTalkingLoaded
+        avatarTalkingUrlLoading = talkingAvatar;
         webViewAvatarTalking.loadUrl(talkingAvatar);
       }
     }
@@ -1465,8 +1506,12 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     updateBtnHoldLabel();
     btnEndCall.setVisibility(holding ? View.GONE : View.VISIBLE);
     txtCallIsOnHold.setVisibility(holding ? View.VISIBLE : View.GONE);
-    if (isVideoCall) {
-      videoLoading.setVisibility(holding ? View.VISIBLE : View.GONE);
+    // isVideoCall stays true after the user turns video off, and the video view is dropped
+    // when the remote stream ends: gating on it left the loading circle stuck on the black
+    // video area until unhold, and threw on the null vWebrtcVideo below
+    var isShowingVideo = vWebrtcVideo != null && vWebrtc.getVisibility() == View.VISIBLE;
+    videoLoading.setVisibility(holding && isShowingVideo ? View.VISIBLE : View.GONE);
+    if (isShowingVideo) {
       vWebrtcVideo.setVisibility(holding ? View.GONE : View.VISIBLE);
     }
   }
@@ -1480,7 +1525,33 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
     btnSpeaker.setSelected(isSpeakerOn);
   }
 
-  public void setImageTalkingUrl(String url, boolean _isLarge) {
+  // the nurse call setting and the url info arrive from js separately and either can land
+  // after the page has finished loading, so the send is retried from all three places.
+  // isAvatarTalkingPageLoaded is not isAvatarTalkingLoaded: that one stays true forever and
+  // would let a js trigger send into a page that is still loading, marking it sent and
+  // making onPageFinished skip the only send that would have worked
+  public void sendAiphonePhoneState() {
+    if (!BrekekeUtils.aiphoneNurseCallEnabled
+        || !isAvatarTalkingPageLoaded
+        || aiphoneUrlInfo == null
+        || aiphoneUrlInfo.isEmpty()
+        || aiphoneUrlInfo.equals(aiphoneUrlInfoSent)) {
+      return;
+    }
+    aiphoneUrlInfoSent = aiphoneUrlInfo;
+    webViewAvatarTalking.evaluateJavascript(
+        "try{window.updatePhoneState&&window.updatePhoneState("
+            + org.json.JSONObject.quote(aiphoneUrlInfo)
+            + ","
+            + org.json.JSONObject.quote(aiphoneHc == null ? "" : aiphoneHc)
+            + ",2,0)}catch(e){}",
+        null);
+  }
+
+  public void setImageTalkingUrl(String url, boolean _isLarge, String urlInfo, String hc) {
+    aiphoneUrlInfo = urlInfo == null ? "" : urlInfo;
+    aiphoneHc = hc == null ? "" : hc;
+    sendAiphonePhoneState();
     if (url.equalsIgnoreCase(talkingAvatar)) {
       return;
     }
@@ -1589,5 +1660,33 @@ public class IncomingCallActivity extends Activity implements View.OnClickListen
 
   private void error(String k, String d) {
     Emitter.error("IncomingCallActivity " + callerName + " " + k, d);
+  }
+
+  private boolean webviewLogEnabled() {
+    return BrekekeUtils.webviewLogEnabled;
+  }
+
+  private static final String webviewConsoleForwardJs =
+      "if(!window.__brekekeConsoleForwarded){window.__brekekeConsoleForwarded=true;"
+          + "window.addEventListener('error',function(e){console.error('[WebView] '+(e.message||e)+' '+(e.filename||'')+':'+(e.lineno||''));});"
+          + "window.addEventListener('unhandledrejection',function(e){console.error('[WebView] unhandledrejection: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason));});}";
+
+  private void attachWebviewConsoleForward(WebView view) {
+    view.setWebChromeClient(
+        new WebChromeClient() {
+          @Override
+          public boolean onConsoleMessage(ConsoleMessage cm) {
+            if (webviewLogEnabled()) {
+              String msg =
+                  "[WebView] " + cm.message() + " (" + cm.sourceId() + ":" + cm.lineNumber() + ")";
+              if (cm.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
+                Emitter.error(msg);
+              } else {
+                Emitter.debug(msg);
+              }
+            }
+            return true;
+          }
+        });
   }
 }

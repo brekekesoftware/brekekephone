@@ -20,11 +20,12 @@ export class PageContactGroupEdit extends Component<{
   groupName: string
   listItem: UcBuddy[]
 }> {
-  @observable selectedUserItems: { [k: string]: UcBuddy } = {}
+  @observable accessor selectedUserItems: { [k: string]: UcBuddy } = {}
+
   state = {
     didMount: false,
   }
-  componentDidMount = () => {
+  componentDidMount() {
     this.props.listItem.forEach(u => {
       if (ctx.user.selectedUserIds[u.user_id]) {
         this.selectedUserItems[u.user_id] = u

@@ -17,7 +17,7 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 
 @observer
 export class PageCallKeypad extends Component {
-  @observable txt = ''
+  @observable accessor txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 

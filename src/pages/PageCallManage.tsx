@@ -147,7 +147,7 @@ const css = StyleSheet.create({
     top: '60%',
   },
   LoadingFullScreen: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
@@ -214,7 +214,7 @@ export const backAction = () =>
 export class RenderAllCalls extends Component {
   prevCallsLength = ctx.call.calls.length
 
-  componentDidMount = () => {
+  componentDidMount() {
     if (ctx.call.inPageCallManage && !ctx.call.calls.length) {
       backAction()
     }
@@ -252,7 +252,7 @@ export class RenderAllCalls extends Component {
 class PageCallManage extends Component<{
   call: Call
 }> {
-  componentDidMount = () => {
+  componentDidMount() {
     // handle the case when app is killed and opened during a call with incoming call
     if (this.props.call.incoming) {
       this.onAppStateChange(AppState.currentState)
@@ -282,7 +282,7 @@ class PageCallManage extends Component<{
     }
   }
 
-  @observable private showButtonsInVideoCall = true
+  @observable private accessor showButtonsInVideoCall = true
   private alreadySetShowButtonsInVideoCall = false
   @action private toggleButtons = () => {
     this.showButtonsInVideoCall = !this.showButtonsInVideoCall
@@ -298,7 +298,7 @@ class PageCallManage extends Component<{
     }
   }
 
-  @observable private hasJavaPn = true
+  @observable private accessor hasJavaPn = true
   private checkJavaPn = async () => {
     if (
       !isAndroid ||
@@ -517,15 +517,16 @@ class PageCallManage extends Component<{
         >
           {c.answered && (
             <SmartImage
-              key={c.talkingImageUrl}
+              key={`talking-${c.talkingImageUrl}`}
               uri={`${c.talkingImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}
+              urlInfo={c.urlInfo}
             />
           )}
           {!c.answered && (
             <SmartImage
-              key={c.partyImageUrl}
+              key={`ringing-${c.partyImageUrl}`}
               uri={`${c.partyImageUrl}`}
               style={{ flex: 1, aspectRatio: 1 }}
               incoming={c.incoming}

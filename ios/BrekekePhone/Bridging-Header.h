@@ -9,12 +9,14 @@
 #import "React/RCTConvert.h"
 #import "React/RCTEventDispatcher.h"
 #import "React/RCTLinkingManager.h"
-#import "React/RCTRootView.h"
 #import "React/RCTUtils.h"
+#import <React-RCTAppDelegate/RCTDefaultReactNativeFactoryDelegate.h>
+#import <React-RCTAppDelegate/RCTReactNativeFactory.h>
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 #import "RNCPushNotificationIOS.h"
 #import "RNCallKeep.h"
-#import "RNSplashScreen.h"
+#import "RNBootSplash.h"
 #import "RNVoipPushNotificationManager.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <RNCAsyncStorage.h>

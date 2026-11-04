@@ -48,8 +48,13 @@ export type Account = {
   pbxTenant: string
   pbxUsername: string
   pbxPassword: string
+  pbxPasswordHash?: string // MD5(password) from a pwhash sign-in link
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
   pbxTurnEnabled: boolean
+  pbxTurnServer?: string
+  pbxTurnTransport?: string
+  pbxTurnUsername?: string
+  pbxTurnPassword?: string
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
@@ -104,6 +109,7 @@ export type AccountData = {
   lpcServer?: { available: boolean; optional: boolean }
   pnExpires?: string
   phoneappliEnabled?: boolean
+  aiphoneNurseCallEnabled?: boolean
   mfa?: MFAInfo
 }
 
@@ -135,6 +141,7 @@ type MfaStartResult =
 type UpsertAccountOptions = {
   allowPnMfaPrompt?: boolean
   blockUi?: boolean
+  skipFgsPrompt?: boolean
 }
 
 type SetDeviceTokenOptions = {
@@ -159,17 +166,17 @@ export const promptForegroundService = () => {
 }
 
 export class AccountStore {
-  @observable appInitDone = false
-  @observable pnSyncLoadingMap: { [k: string]: boolean } = {}
+  @observable accessor appInitDone = false
+  @observable accessor pnSyncLoadingMap: { [k: string]: boolean } = {}
   waitStorageLoaded = () => storagePromise
 
-  @observable accounts: Account[] = []
+  @observable accessor accounts: Account[] = []
   @computed get accountsMap() {
     return arrToMap(this.accounts, 'id', (p: Account) => p) as {
       [k: string]: Account
     }
   }
-  @observable accountData: AccountData[] = []
+  @observable accessor accountData: AccountData[] = []
 
   keySessionMFA: string = ''
   pendingPnAccountId?: string
@@ -178,7 +185,7 @@ export class AccountStore {
 
   // In-memory flag: MFA needs to run after all calls end (stores account id, empty = none pending).
   // Not persisted — if app restarts without calls, onPBXConnectionStarted handles MFA normally.
-  @observable mfaPendingAfterCallsId = ''
+  @observable accessor mfaPendingAfterCallsId = ''
   @action setMFAPendingAfterCallsId = (id: string) => {
     this.mfaPendingAfterCallsId = id
   }
@@ -210,7 +217,7 @@ export class AccountStore {
     pbxRingtone: defaultRingtone,
   })
 
-  @observable ringtonePicker: RingtonePickerType = {}
+  @observable accessor ringtonePicker: RingtonePickerType = {}
 
   loadAccountsFromLocalStorage = async () => {
     const arr = await RnAsyncStorage.getItem('_api_profiles')
@@ -291,12 +298,17 @@ export class AccountStore {
     await this.saveAccountsToLocalStorage()
 
   hasSignInCredential = (a?: Partial<Account>) =>
-    !!a?.pbxPassword || !!this.findDataSync(a as AccountUnique)?.accessToken
+    !!a?.pbxPasswordHash ||
+    !!a?.pbxPassword ||
+    !!this.findDataSync(a as AccountUnique)?.accessToken
 
   hasPnSyncCredential = (a?: Partial<Account>) => {
     const d = this.findDataSync(a as AccountUnique)
     return (
-      !!a?.pbxPassword || !!d?.accessToken || !!d?.palParams?.['device_token']
+      !!a?.pbxPasswordHash ||
+      !!a?.pbxPassword ||
+      !!d?.accessToken ||
+      !!d?.palParams?.['device_token']
     )
   }
 
@@ -350,7 +362,7 @@ export class AccountStore {
 
     if (!a) {
       const newAccount = p as Account
-      if (this.isFgsEligible(newAccount)) {
+      if (this.isFgsEligible(newAccount) && !options.skipFgsPrompt) {
         promptForegroundService()
       }
       this.accounts.push(newAccount)
@@ -369,13 +381,17 @@ export class AccountStore {
       : { navIndex: -1, navSubMenus: [] }
     Object.assign(a, p, navUpdate)
     // prompt only on the transition into eligible (avoids re-prompting on every sync/update)
-    if (this.isFgsEligible(a) && !wasFgsEligible) {
+    if (this.isFgsEligible(a) && !wasFgsEligible && !options.skipFgsPrompt) {
       promptForegroundService()
     }
     this.saveAccountsToLocalStorageDebounced()
     // check and sync pn token
+    // compare the effective index: an unset index already means 4 on the pbx, so
+    // '' -> '4' must not count as a change or it would remove the pn token it is
+    // about to register
     const phoneIndexChanged =
-      p.pbxPhoneIndex && p.pbxPhoneIndex !== clonedA.pbxPhoneIndex
+      !!p.pbxPhoneIndex &&
+      toPhoneIndex(p.pbxPhoneIndex) !== toPhoneIndex(clonedA.pbxPhoneIndex)
     const wholeAccountChanged = !compareAccount(clonedA, a)
     const pushNotificationChanged =
       typeof p.pushNotificationEnabled === 'boolean' &&
@@ -384,11 +400,12 @@ export class AccountStore {
     // the android foreground service, so it needs a pn sync just like push does
     const lpcEnabledChanged =
       typeof p.lpcEnabled === 'boolean' && p.lpcEnabled !== clonedA.lpcEnabled
+    let removeOldPnToken: Promise<void> | undefined
     if (phoneIndexChanged || wholeAccountChanged) {
       // delete pn token for old phone_index / account
       clonedA.pushNotificationEnabled = false
       clonedA.pushNotificationEnabledSynced = false
-      const removeOldPnToken = ctx.pnToken.sync(clonedA, {
+      removeOldPnToken = ctx.pnToken.sync(clonedA, {
         noUpsert: true,
       })
       if (wholeAccountChanged) {
@@ -426,6 +443,14 @@ export class AccountStore {
         return
       }
       a.pushNotificationEnabledSynced = false
+      // the remove above holds pnSyncLoadingMap for this same account id, so without
+      // waiting the sync below is dropped as "sync is loading": the new phone id is
+      // left unregistered and on android the lpc foreground service stays stopped
+      // until the next foreground syncForAllAccounts. guarded so that every other
+      // caller still reaches ctx.pnToken.sync synchronously, without a microtask
+      if (removeOldPnToken) {
+        await removeOldPnToken
+      }
       ctx.pnToken.sync(a, {
         blockUi: options.blockUi,
         onError: err => {
@@ -493,13 +518,27 @@ export class AccountStore {
     // for eg: pn data doesnt have all the fields to compare
     return this.accounts.find(_ => compareAccountPartial(_, a))
   }
-  findByPn = (n: ParsedPn) =>
-    this.findPartial({
+  findByPn = async (n: ParsedPn) => {
+    const a = await this.findPartial({
       pbxUsername: n.to,
       pbxTenant: n.tenant,
       pbxHostname: n.pbxHostname,
       pbxPort: n.pbxPort,
     })
+    // the same pbx user can be added twice under two phone indexes, and only the
+    // phone id in the pn says which one it is for. findPartial returns whichever
+    // comes first, and picking the wrong one signs in the wrong sip registration:
+    // the call then has no session on it and can not be answered
+    const idx = pnPhoneIndex(a, n.sipPn?.phoneId)
+    if (!a || !idx || idx === toPhoneIndex(a.pbxPhoneIndex)) {
+      return a
+    }
+    return (
+      this.accounts.find(
+        o => compareAccount(o, a) && toPhoneIndex(o.pbxPhoneIndex) === idx,
+      ) || a
+    )
+  }
   findByUniqueId = async (id: string) => {
     await storagePromise
     return this.accounts.find(a => getAccountUniqueId(a) === id)
@@ -1062,6 +1101,13 @@ export class AccountStore {
     }
     // Network/exception failure — no usable response from server
     if (result === false) {
+      // a PAL drop during mfa/start already restarts the PBX login; signing out here stops that retry for good
+      if (ctx.auth.pbxState === 'stopped') {
+        console.log(
+          `MFA debug: mfaStart failed while PBX is stopped, keep sign-in ca=${ca.id}`,
+        )
+        return
+      }
       ctx.toast.show(intl`Unable to log in. Please try again.`, 'error')
       ctx.auth.signOut()
       return
@@ -1095,6 +1141,33 @@ export const getAccountUniqueId = (a: AccountUnique) =>
   })
 export const compareAccount = (a: AccountUnique, b: AccountUnique) =>
   getAccountUniqueId(a) === getAccountUniqueId(b)
+// Account.pbxPhoneIndex may be '': the pbx treats that as index 4
+export const toPhoneIndex = (pbxPhoneIndex?: string) =>
+  parseInt(pbxPhoneIndex || '') || 4
+// the phone index a pn is addressed to, read from its phone id which api/
+// updatePhoneIndex writes as `${tenant}_${user}_phone${index}_webphone`. 0 when the
+// id is missing or in any other shape - a setup we must not guess about
+export const pnPhoneIndex = (a?: AccountUnique, phoneId?: string) => {
+  if (!a) {
+    return 0
+  }
+  const prefix = `${a.pbxTenant}_${a.pbxUsername}_phone`
+  const suffix = '_webphone'
+  // typeof, not just a falsy check: phoneId comes from lodash get() over the raw pn
+  // payload, so a malformed push can put a number or an object here and startsWith
+  // would throw inside a pn handler that no caller catches
+  if (
+    typeof phoneId !== 'string' ||
+    !phoneId.startsWith(prefix) ||
+    !phoneId.endsWith(suffix)
+  ) {
+    return 0
+  }
+  const idx = parseInt(phoneId.slice(prefix.length, -suffix.length))
+  // the app only ever registers index 1..4 (the pbx exposes p1_ptype..p4_ptype), so
+  // anything outside that is not an id we wrote and must not be judged as ours
+  return idx >= 1 && idx <= 4 ? idx : 0
+}
 
 // compareAccount in case data is fragment
 const compareFalsishField = (

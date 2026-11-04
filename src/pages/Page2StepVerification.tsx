@@ -34,7 +34,7 @@ type ToastState = {
 
 const css = StyleSheet.create({
   ModalContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: v.bg,
   },
   Header: {

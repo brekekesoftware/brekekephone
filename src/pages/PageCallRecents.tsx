@@ -24,7 +24,7 @@ const css = StyleSheet.create({
 @observer
 export class PageCallRecents extends Component {
   appStateSubscription?: NativeEventSubscription
-  componentDidMount = () => {
+  componentDidMount() {
     if (isIos) {
       const h = () => {
         if (AppState.currentState === 'active') {

@@ -20,6 +20,9 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
+import android.webkit.CookieManager;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.NotificationManagerCompat;
 import com.brekeke.phonedev.activity.ExitActivity;
@@ -36,7 +39,6 @@ import com.brekeke.phonedev.utils.Perm;
 import com.brekeke.phonedev.utils.Ringtone;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -61,7 +63,7 @@ enum DialerCheckState {
   COMPLETED
 }
 
-public class BrekekeUtils extends ReactContextBaseJavaModule {
+public class BrekekeUtils extends NativeBrekekeUtilsSpec {
 
   public static Promise defaultDialerPromise;
   private static String TAG = "[BrekekeUtils]";
@@ -81,14 +83,18 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   private static final ConcurrentHashMap<String, String> processedPnIds = new ConcurrentHashMap<>();
 
   public static void acquireWakeLock() {
-    if (!wl.isHeld()) {
+    // same as isLocked: wl is null in a process android started without the rn module
+    // or a pn, so it must be inited here - dropping this brings a null wl crash back
+    initStaticServices();
+    if (wl != null && !wl.isHeld()) {
       Emitter.debug("calling wl.acquire()");
       wl.acquire();
     }
   }
 
   public static void releaseWakeLock() {
-    if (wl.isHeld()) {
+    initStaticServices();
+    if (wl != null && wl.isHeld()) {
       Emitter.debug("calling wl.release()");
       wl.release();
     }
@@ -104,6 +110,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public static boolean isAppActiveLocked = false;
   public static boolean firstShowCallAppActive = false;
   public static boolean phoneappliEnabled = false;
+  public static boolean aiphoneNurseCallEnabled = false;
+  public static boolean webviewLogEnabled = false;
   public static String userAgentConfig = null;
 
   BrekekeUtils(ReactApplicationContext ctx) {
@@ -120,7 +128,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "BrekekeUtils";
+    return NAME;
   }
 
   // [callkeepUuid] -> display/answerCall/rejectCall
@@ -128,6 +136,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
 
   public static void initStaticServices() {
     var ctx = Ctx.app();
+    if (ctx == null) {
+      return;
+    }
     if (wl == null) {
       var pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
       wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BrekekePhone::BrekekeUtils");
@@ -227,6 +238,17 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     var now = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date());
     m.put("callkeepAt", now);
     m.put("callkeepUuid", uuid);
+    // js refuses to switch account while a call is alive, so this call can never be
+    // answered. js can only refuse after the screen is already displayed, which shows
+    // as a flash. do it here instead, before anything is displayed. the pn is still
+    // forwarded to js, which adds the missed call to the history
+    if (Account.hasSignedIn()
+        && !Account.isSignedIn(m)
+        && (jsCallsSize > 0 || activitiesSize > 0)) {
+      Emitter.debug("onFcmMessageReceived reject pn of another account during call id=" + pnId);
+      putUserActionRejectCall(uuid);
+      return;
+    }
     // init services if not
     initStaticServices();
     acquireWakeLock();
@@ -317,7 +339,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   public static boolean isLocked() {
-    return km.isKeyguardLocked() || km.isDeviceLocked();
+    // android can recreate IncomingCallActivity in a process where neither the rn module
+    // constructor nor onFcmMessageReceived ran, so km is null and onCreate crashes. init
+    // it here too - dropping this init or null check brings the launch crash back
+    initStaticServices();
+    return km != null && (km.isKeyguardLocked() || km.isDeviceLocked());
   }
 
   //
@@ -589,7 +615,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  void permRequestAndroidLpc(Promise p) {
+  public void permRequestAndroidLpc(Promise p) {
     Perm.request(Perm.AndroidLpc, p);
   }
 
@@ -674,6 +700,69 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     BrekekeUtils.userAgentConfig = userAgentConfig;
   }
 
+  private static void deleteChildren(java.io.File dir) {
+    var files = dir != null ? dir.listFiles() : null;
+    if (files == null) {
+      return;
+    }
+    for (var f : files) {
+      if (f.getName().equals("image_manager_disk_cache")) {
+        continue;
+      }
+      try {
+        if (f.isDirectory()) {
+          deleteChildren(f);
+        }
+        f.delete();
+      } catch (Exception e) {
+        // skip any file that fails
+      }
+    }
+  }
+
+  @ReactMethod
+  public void clearAppCache(Promise p) {
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          WebView tmp = null;
+          try {
+            // each WebView instance owns its own in-memory cache
+            for (var a : activities) {
+              try {
+                if (a.webViewAvatar != null) {
+                  a.webViewAvatar.clearCache(true);
+                }
+                if (a.webViewAvatarTalking != null) {
+                  a.webViewAvatarTalking.clearCache(true);
+                }
+              } catch (Exception e) {
+                Emitter.error("a.clearAppCache", e.getMessage());
+              }
+            }
+            // the app wide disk cache needs any WebView instance to be cleared
+            tmp = new WebView(main != null ? main : getReactApplicationContext());
+            tmp.clearCache(true);
+            WebStorage.getInstance().deleteAllData();
+            var cm = CookieManager.getInstance();
+            cm.removeAllCookies(null);
+            cm.flush();
+            // the Glide folder is emptied from JS by FastImage itself,
+            // because the app keeps running and Glide may be writing to it
+            var ctx = getReactApplicationContext();
+            deleteChildren(ctx.getCacheDir());
+            deleteChildren(ctx.getExternalCacheDir());
+            p.resolve(true);
+          } catch (Exception e) {
+            Emitter.error("clearAppCache", e.getMessage());
+            p.resolve(false);
+          } finally {
+            if (tmp != null) {
+              tmp.destroy();
+            }
+          }
+        });
+  }
+
   @ReactMethod
   public void getInitialNotifications(Promise promise) {
     BrekekeMessagingService.getInitialNotifications(promise);
@@ -715,9 +804,9 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setAudioMode(int mode) {
+  public void setAudioMode(double mode) {
     try {
-      Ringtone.setAudioMode(mode);
+      Ringtone.setAudioMode((int) mode);
     } catch (Exception e) {
     }
   }
@@ -764,6 +853,11 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void closeAllIncomingCalls() {
     Emitter.debug("closeAllIncomingCalls");
     removeAll();
+  }
+
+  @ReactMethod
+  public void setSignedInAccount(String u, String t, String h, String p) {
+    Account.setSignedIn(u, t, h, p);
   }
 
   // Clear processed PN dedup cache
@@ -817,18 +911,20 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setTalkingAvatar(String uuid, String url, boolean isLarge) {
+  public void setTalkingAvatar(
+      String uuid, String url, boolean isLarge, String urlInfo, String hc) {
     UiThreadUtil.runOnUiThread(
         () -> {
           try {
-            at(uuid).setImageTalkingUrl(url, isLarge);
+            at(uuid).setImageTalkingUrl(url, isLarge, urlInfo, hc);
           } catch (Exception e) {
           }
         });
   }
 
   @ReactMethod
-  public void setJsCallsSize(int n) {
+  public void setJsCallsSize(double d) {
+    var n = (int) d;
     if (n > 0) {
       acquireWakeLock();
     } else if (activitiesSize == 0) {
@@ -884,7 +980,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setSpeakerStatus(Boolean isSpeakerOn) {
+  public void setSpeakerStatus(boolean isSpeakerOn) {
     UiThreadUtil.runOnUiThread(
         () -> {
           try {
@@ -917,8 +1013,32 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setPhoneappliEnabled(Boolean isEnabled) {
+  public void setPhoneappliEnabled(boolean isEnabled) {
     phoneappliEnabled = isEnabled;
+  }
+
+  @ReactMethod
+  public void setAiphoneNurseCallEnabled(boolean isEnabled) {
+    aiphoneNurseCallEnabled = isEnabled;
+    // js reads this setting after sign in, so it can turn on while a call screen is already
+    // showing a loaded page: without this the page never gets its url info for that call
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          try {
+            for (var a : activities) {
+              try {
+                a.sendAiphonePhoneState();
+              } catch (Exception e) {
+              }
+            }
+          } catch (Exception e) {
+          }
+        });
+  }
+
+  @ReactMethod
+  public void setWebviewLogEnabled(boolean isEnabled) {
+    webviewLogEnabled = isEnabled;
   }
 
   @ReactMethod
@@ -962,12 +1082,12 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void insertCallLog(String number, int type) {
+  public void insertCallLog(String number, double type) {
     var ctx = Ctx.app();
     var v = new ContentValues();
     v.put(CallLog.Calls.NUMBER, number);
     v.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    v.put(CallLog.Calls.TYPE, type);
+    v.put(CallLog.Calls.TYPE, (int) type);
     v.put(CallLog.Calls.CACHED_NAME, "Brekeke Phone");
     ctx.getContentResolver().insert(CallLog.Calls.CONTENT_URI, v);
   }
@@ -989,7 +1109,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
       String tokenVoip,
       String username,
       String host,
-      int port,
+      double port,
       ReadableArray remoteSsids,
       String localSsid,
       String tlsKeyHash) {
@@ -997,7 +1117,8 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
     var r = LpcUtils.convertReadableArrayToStringList(remoteSsids);
     var i =
         LpcUtils.putConfigToIntent(
-            host, port, token, username, tlsKeyHash, r, new Intent(ctx, BrekekeLpcService.class));
+            host, (int) port, token, username, tlsKeyHash, r,
+            new Intent(ctx, BrekekeLpcService.class));
     // Only startForegroundService when the service isn't already running. If the app is
     // relaunched while the LPC foreground service survived, calling startForegroundService again
     // would go through onStartCommand -> startForeground and re-post the notification. When the
@@ -1101,7 +1222,7 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setShouldSkipPlayRingtone(Boolean s) {
+  public void setShouldSkipPlayRingtone(boolean s) {
     Ringtone.shouldSkipPlayRingtone = s;
   }
 
@@ -1109,4 +1230,26 @@ public class BrekekeUtils extends ReactContextBaseJavaModule {
   public void shouldPlayRingtone(Promise p) {
     p.resolve(!activities.isEmpty() && !BrekekeUtils.anyCallAnswered());
   }
+
+  @ReactMethod
+  public void webrtcSetAudioEnabled(boolean enabled, String action) {}
+
+  @ReactMethod
+  public void playRBT(boolean isLoudSpeaker) {}
+
+  @ReactMethod
+  public void stopRBT(Promise p) {
+    p.resolve(null);
+  }
+
+  @ReactMethod
+  public void setProximityMonitoring(boolean enabled) {}
+
+  @ReactMethod
+  public void isSpeakerOn(Promise p) {
+    p.resolve(false);
+  }
+
+  @ReactMethod
+  public void resetAudioConfig() {}
 }

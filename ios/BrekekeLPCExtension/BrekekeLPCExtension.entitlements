@@ -8,7 +8,7 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.brekeke.lpcdev</string>
+		<string>group.com.brekeke.lpc</string>
 	</array>
 </dict>
 </plist>

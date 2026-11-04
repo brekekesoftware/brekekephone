@@ -1,5 +1,5 @@
+import { stat } from '@dr.pogodin/react-native-fs'
 import { isErrorWithCode, pick } from '@react-native-documents/picker'
-import { stat } from 'react-native-fs'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { v4 as newUuid } from 'uuid'
 
@@ -96,14 +96,12 @@ const pickFileOnSelect = async (i: number, cb: Function) => {
       console.warn('pickFile cancelled by user')
       return
     }
-    if (
-      !(
-        err &&
-        typeof err === 'object' &&
-        'message' in err &&
-        (err as any).message === 'User canceled document picker'
-      )
-    ) {
+    if (!(
+      err &&
+      typeof err === 'object' &&
+      'message' in err &&
+      (err as any).message === 'User canceled document picker'
+    )) {
       onPickFileNativeError(err as Error)
     }
   }

@@ -12,8 +12,10 @@ import { AppRegistry } from 'react-native'
 
 import App from '#/components/App'
 import { exposeEmbedApi } from '#/embed/exposeEmbedApi'
+import { logBootInfo } from '#/utils/logBootInfo'
 import { registerValidatorLabels } from '#/utils/validator'
 
+logBootInfo()
 registerValidatorLabels()
 AppRegistry.registerComponent('BrekekePhone', () => App)
 

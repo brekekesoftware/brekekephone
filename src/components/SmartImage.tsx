@@ -6,10 +6,12 @@ import type { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTyp
 
 import noPhoto from '#/assets/no_photo.png'
 
+import { webviewInjectConsoleForward } from '#/components/webviewInjectConsoleForward'
 import { webviewInjectSendJsonToRnOnLoad } from '#/components/webviewInjectSendJsonToRnOnLoad'
 import { isAndroid } from '#/config'
 import { ctx } from '#/stores/ctx'
 import { checkImageUrl } from '#/utils/checkImageUrl'
+import { handleWebviewConsoleMessage } from '#/utils/handleWebviewConsoleMessage'
 
 const noPhotoImg = typeof noPhoto === 'string' ? { uri: noPhoto } : noPhoto
 
@@ -40,19 +42,27 @@ const css = StyleSheet.create({
   },
 })
 
-const js = `
-// set meta data config viewport
-const meta = document.createElement('meta');
-meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
-meta.setAttribute('name', 'viewport');
-document.getElementsByTagName('head')[0].appendChild(meta);
-// send data to rn to stop loading
-function sendJsonToRn(json) {
-  window.ReactNativeWebView.postMessage(JSON.stringify(json));
-}
-
-${webviewInjectSendJsonToRnOnLoad()}
-`
+const js = `(function() {
+  function sendJsonToRn(json) {
+    window.ReactNativeWebView.postMessage(JSON.stringify(json));
+  }
+  function addViewport() {
+    if (document.__brekekeViewportAdded || !document.head) {
+      return;
+    }
+    document.__brekekeViewportAdded = true;
+    var meta = document.createElement('meta');
+    meta.setAttribute('content', 'width=width, initial-scale=0.5, maximum-scale=0.5, user-scalable=2.0');
+    meta.setAttribute('name', 'viewport');
+    document.head.appendChild(meta);
+  }
+  addViewport();
+  document.addEventListener('DOMContentLoaded', addViewport);
+  ${webviewInjectSendJsonToRnOnLoad()}
+})();`
+// Aiphone nurse-call WebToApp I/F: no-op stubs so the content's WebInterface.* calls
+// don't fall back to its own dummy. Injected before content load when the feature is on.
+const stubJs = `window.WebInterface = { display10key(){}, displayPhoneControl(){}, updateUrlString(){}, callMainPage(){}, closePhoneControl(){} };`
 enum StatusImage {
   loading = 0,
   loaded = 1,
@@ -68,27 +78,50 @@ export const SmartImage = ({
   uri,
   style,
   incoming,
+  urlInfo,
 }: {
   uri: string
   style: object
   incoming: boolean
+  urlInfo?: string
 }) => {
   const [statusImageLoading, setStatusImageLoading] = useState(
     StatusImage.loading,
   )
   const cUrl = useRef(uri)
+  const webviewRef = useRef<WebView<object>>(null)
+  const firedRef = useRef(false)
   useEffect(() => {
     setStatusImageLoading(0)
-    console.log(`SmartImage url=${uri}`)
+    firedRef.current = false
   }, [uri])
+  const aiphoneOn = ctx.auth.aiphoneNurseCallEnabled()
+  useEffect(() => {
+    if (
+      !aiphoneOn ||
+      !urlInfo ||
+      statusImageLoading !== StatusImage.loaded ||
+      firedRef.current
+    ) {
+      return
+    }
+    firedRef.current = true
+    const hc = ctx.auth.getCurrentAccount()?.pbxUsername ?? ''
+    webviewRef.current?.injectJavaScript(
+      `try { window.updatePhoneState && window.updatePhoneState(${JSON.stringify(urlInfo)}, ${JSON.stringify(hc)}, 2, 0); } catch (e) {} true;`,
+    )
+  }, [aiphoneOn, urlInfo, statusImageLoading])
 
   const onMessage = (event: WebViewMessageEvent) => {
     try {
+      const data = event?.nativeEvent?.data
+      if (handleWebviewConsoleMessage(data)) {
+        return
+      }
       // for sure just update load page 1 time
       if (statusImageLoading === StatusImage.loaded) {
         return
       }
-      const data = event?.nativeEvent?.data
       if (!data) {
         return
       }
@@ -113,6 +146,9 @@ export const SmartImage = ({
       return
     }
     cUrl.current = cPageUrl
+    // the page navigated by itself: without this the new page never gets updatePhoneState,
+    // because firedRef is otherwise only cleared when the avatar url changes
+    firedRef.current = false
     setStatusImageLoading(StatusImage.loading)
   }
   const onLoadEnd = () => {
@@ -131,6 +167,9 @@ export const SmartImage = ({
     (ctx.auth.phoneappliEnabled() && !incoming) || checkImageUrl(uri)
 
   const nocacheUri = useMemo(() => getNoCacheUri(uri), [uri])
+  const consoleForwardJs = ctx.debug.isCapturingWebviewLog()
+    ? webviewInjectConsoleForward
+    : ''
   return (
     <View style={[css.image, style]}>
       {!statusImageLoading && (
@@ -142,9 +181,13 @@ export const SmartImage = ({
       )}
       {!uri ? null : !isImageUrl ? (
         <WebView
+          ref={webviewRef}
           source={{ uri }}
-          injectedJavaScript={js}
-          injectedJavaScriptBeforeContentLoaded={isAndroid ? js : ''}
+          webviewDebuggingEnabled={ctx.debug.isCapturingWebviewLog()}
+          injectedJavaScript={consoleForwardJs + js}
+          injectedJavaScriptBeforeContentLoaded={
+            consoleForwardJs + (aiphoneOn ? stubJs : '') + (isAndroid ? js : '')
+          }
           style={[css.image, css.full]}
           bounces={false}
           onLoadStart={onLoadStart}

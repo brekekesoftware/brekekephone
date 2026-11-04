@@ -1,5 +1,5 @@
+import * as RNFS from '@dr.pogodin/react-native-fs'
 import { keepLocalCopy, pick, types } from '@react-native-documents/picker'
-import RNFS from 'react-native-fs'
 import type { ReactVideoSource } from 'react-native-video'
 
 import type { Account } from '#/stores/accountStore'

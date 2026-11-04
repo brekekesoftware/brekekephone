@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
+index bdc9ffc..8decd57 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
+@@ -476,7 +476,7 @@ public class WebRTCView extends ViewGroup {
+      * @param streamURL The URL of the {@code MediaStream} to be rendered by
+      * this {@code WebRTCView} or {@code null}.
+      */
+-    void setStreamURL(String streamURL) {
++    public void setStreamURL(String streamURL) {
+         Log.d(TAG, "Set stream URL " + streamURL + " current: " + this.streamURL);
+         if (Objects.equals(streamURL, this.streamURL)) {
+             return;

@@ -71,6 +71,7 @@ yarn-error.log*
 
 # misc
 .DS_Store
+/.mcp.json
 .env
 .env.local
 .env.development.local

@@ -54,7 +54,7 @@ export const css = StyleSheet.create({
 export class PageContactEdit extends Component {
   state = { didMount: false }
 
-  componentDidMount = () => {
+  componentDidMount() {
     if (ctx.auth.getCurrentAccount()?.ucEnabled) {
       ctx.user.loadUcBuddyList(true)
     } else {

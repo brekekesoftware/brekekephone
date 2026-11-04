@@ -39,12 +39,13 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Module Resolution Options */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     // "baseUrl": "./",
     // "paths": {},
     // "rootDirs": [],
     // "typeRoots": [],
-    // "types": [],
+    "types": ["node"],
+    "noUncheckedSideEffectImports": false, // TS 6 errors on #/polyfill/dev, which only exists as dev.web.ts
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     // "preserveSymlinks": true,
@@ -59,7 +60,7 @@
     // "declarationDir": "lib",
 
     /* Experimental Options */
-    "experimentalDecorators": true,
+    "experimentalDecorators": false,
     "emitDecoratorMetadata": false
   },
   "include": ["src"]

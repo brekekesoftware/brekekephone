@@ -7,12 +7,12 @@ import {
   ActivityIndicator,
   AppState,
   DeviceEventEmitter,
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   View,
 } from 'react-native'
-import KeyboardSpacer from 'react-native-keyboard-spacer'
-import SplashScreen from 'react-native-splash-screen'
+import BootSplash from 'react-native-bootsplash'
 
 import { AnimatedSize } from '#/components/AnimatedSize'
 import { CallBar } from '#/components/CallBar'
@@ -50,6 +50,7 @@ import { getConnectionStatus } from '#/utils/getConnectionStatus'
 import { checkPermForCall, permForCall } from '#/utils/permissions'
 import { PushNotification } from '#/utils/PushNotification'
 import { registerOnUnhandledError } from '#/utils/registerOnUnhandledError'
+import { waitOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
 import { waitTimeout } from '#/utils/waitTimeout'
 import { webPromptPermission } from '#/utils/webPromptPermission'
 
@@ -126,7 +127,7 @@ const initApp = async () => {
       return
     }
 
-    ctx.auth.resetFailureState()
+    ctx.auth.resetRetryCounters()
     ctx.call.onCallKeepAction()
     ctx.call.updateLoudSpeakerStatus()
     ctx.pbx.ping()
@@ -171,15 +172,69 @@ const initApp = async () => {
     await autoLogin()
   })
 
-  NetInfo.addEventListener(({ isConnected }) => {
-    if (ctx.auth.hasInternetConnected === isConnected) {
+  let lastNetType = ''
+  NetInfo.addEventListener(({ isConnected, type }) => {
+    // after cellular -> wifi Android lingers the cellular network 30 s then kills the sockets opened
+    // on it; isConnected stays true, so without this the app is unreachable until JsSIP back-off
+    const isNetworkSwitch =
+      !!isConnected &&
+      ctx.auth.hasInternetConnected === true &&
+      !!lastNetType &&
+      type !== lastNetType
+    if (isConnected) {
+      lastNetType = type
+    }
+    if (ctx.auth.hasInternetConnected === isConnected && !isNetworkSwitch) {
       return
     }
+    const isBackAfterDrop =
+      ctx.auth.hasInternetConnected === false || isNetworkSwitch
     ctx.auth.hasInternetConnected = isConnected
+    console.log(
+      `NetInfo debug: isConnected=${isConnected} type=${type} pbxState=${ctx.auth.pbxState} sipState=${ctx.auth.sipState}`,
+    )
     if (!isConnected) {
       return
     }
-    ctx.auth.resetFailureState()
+    ctx.auth.resetRetryCounters()
+    // sockets opened before a drop can stay open but dead after it; the PBX then never gets
+    // this app's 200 OK and the answered call never connects (wifi C4)
+    if (isBackAfterDrop && ctx.auth.pbxState === 'success') {
+      ctx.auth.pbxState = 'stopped'
+    }
+    if (
+      isBackAfterDrop &&
+      ctx.auth.sipState === 'success' &&
+      !ctx.call.calls.length &&
+      !ctx.sip.phone?.getSessionCount()
+    ) {
+      ctx.auth.sipState = 'stopped'
+    }
+    if (isBackAfterDrop && ctx.auth.sipState === 'success') {
+      // a call is up, so SIP was not restarted above; JsSIP would wait a random back-off and the
+      // in-call connect waits for a PAL login: 6 s with no socket ends the call at UNHOLD (wifi E6)
+      ;[ctx.sip.phone?._ua, ctx.sip.phone?._vua].forEach(ua => {
+        const transport = ua?._transport
+        if (
+          !transport ||
+          (!isNetworkSwitch &&
+            (transport.isConnected() || transport.isConnecting()))
+        ) {
+          return
+        }
+        if (isNetworkSwitch) {
+          transport.disconnect()
+        }
+        console.log(
+          'SIP PN debug: connect sip at once after the network returns',
+        )
+        if (transport.recovery_timer) {
+          clearTimeout(transport.recovery_timer)
+          transport.recovery_timer = null
+        }
+        transport.connect()
+      })
+    }
     ctx.authPBX.auth()
     ctx.authSIP.auth()
     ctx.authUC.auth()
@@ -250,6 +305,27 @@ const initApp = async () => {
       ctx.authUC.dispose()
     }
   }, 17)
+  // native refuses a call pn of another account while a call is alive, and needs the
+  // signed in account to tell them apart. watch the account record rather than the
+  // sign in event: Settings > Current Account saves in place and re-signs-in only
+  // after a delay, and a stale copy here refuses a call that should ring
+  const clearSignedInAccountReaction = reaction(
+    () => {
+      const ca = ctx.auth.getCurrentAccount()
+      return [
+        ca?.pbxUsername || '',
+        ca?.pbxTenant || '',
+        ca?.pbxHostname || '',
+        ca?.pbxPort || '',
+      ].join('\t')
+    },
+    v => {
+      const [u, t, h, p] = v.split('\t')
+      BrekekeUtils.setSignedInAccount(u, t, h, p)
+    },
+    { fireImmediately: true },
+  )
+  void clearSignedInAccountReaction
   const clearReaction = reaction(() => ctx.auth.signedInId, onAuthUpdate)
   // a PN tap can sign in before this reaction exists: onNotification awaits initApp
   // but the alreadyInitApp guard returns without awaiting the in-flight init. mobx
@@ -287,6 +363,9 @@ PushNotification.register(async () => {
     return
   }
   alreadyInitApp = true
+  if (isWeb) {
+    await waitOpenInBrowserChoice()
+  }
   await initApp().catch(console.error)
   await waitTimeout(100)
   runInAction(() => {
@@ -317,7 +396,7 @@ const css = StyleSheet.create({
     height: 30,
   },
   LoadingFullscreen: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#74bf53', // old color from design, not g.colors.primary
     alignItems: 'center',
     justifyContent: 'center',
@@ -326,8 +405,8 @@ const css = StyleSheet.create({
 
 export const App = observer(() => {
   useEffect(() => {
-    if (!isWeb) {
-      SplashScreen.hide()
+    if (isIos) {
+      BootSplash.hide()
     }
   }, [])
 
@@ -385,7 +464,7 @@ export const App = observer(() => {
           />
         )}
       </View>
-      {isIos && <KeyboardSpacer />}
+      {isIos && <KeyboardAvoidingView behavior='padding' />}
 
       {!ctx.account.appInitDone && (
         <View style={css.LoadingFullscreen}>

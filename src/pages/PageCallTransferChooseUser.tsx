@@ -16,8 +16,8 @@ import { intl } from '#/stores/intl'
 @observer
 export class PageCallTransferChooseUser extends Component {
   prevId?: string
-  @observable txtSearch: string = ''
-  componentDidMount = () => {
+  @observable accessor txtSearch: string = ''
+  componentDidMount() {
     if (!ctx.contact.pbxUsers.length) {
       ctx.contact.getPbxUsers()
     }

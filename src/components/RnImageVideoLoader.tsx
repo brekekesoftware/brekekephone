@@ -1,3 +1,4 @@
+import FastImage from '@d11/react-native-fast-image'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import type { ViewProps } from 'react-native'
@@ -9,7 +10,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import ImageViewer from 'react-native-image-zoom-viewer-fixed'
 import Svg, { Path } from 'react-native-svg'
 import Video from 'react-native-video'

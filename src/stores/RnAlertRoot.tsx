@@ -80,6 +80,7 @@ const RnAlertR = ({
     message: string | ReactElement
     dismissText?: string | boolean
     confirmText?: string | boolean
+    dismissOnBackdropPress?: boolean
     onConfirm(): void
     onDismiss(): void
   }
@@ -105,7 +106,8 @@ const RnAlertR = ({
     }
   } else if (error) {
     const { err, message, unexpectedErr, ...rest } = error
-    const errMessage = `${unexpectedErr?.message || err?.message || err}`
+    const errMessage =
+      unexpectedErr?.message || err?.message || (err ? `${err}` : '')
     props = {
       title: intl`Error`,
       message: (
@@ -134,6 +136,7 @@ const RnAlertR = ({
         ]}
       >
         <RnTouchableOpacity
+          disabled={props.dismissOnBackdropPress === false}
           onPress={props.onDismiss}
           style={StyleSheet.absoluteFill}
         />
@@ -175,6 +178,9 @@ const RnAlertR = ({
 
 export const RnAlertRoot = observer(() => {
   const a0 = RnAlert.alerts.find(a => a)
+  console.log(
+    `RnAlert debug: root render count=${RnAlert.alertsCount} a0=${a0 ? ('prompt' in a0 ? 'prompt' : 'error') : 'none'}`,
+  )
   if (!RnAlert.alertsCount || !a0) {
     return null
   }

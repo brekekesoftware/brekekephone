@@ -55,8 +55,10 @@ export const FooterActions: FC<
   Partial<{
     onBack(): void
     onBackIcon: string
+    onBackLabel: string
     onMore(): void
     onMoreIcon: string
+    onMoreLabel: string
     onNext(): void
     onNextColor: string
     onNextText: string
@@ -65,8 +67,10 @@ export const FooterActions: FC<
   const {
     onBack,
     onBackIcon,
+    onBackLabel,
     onMore,
     onMoreIcon,
+    onMoreLabel,
     onNext,
     onNextColor,
     onNextText,
@@ -76,18 +80,24 @@ export const FooterActions: FC<
     <View style={css.Actions}>
       {onBack && (
         <RnTouchableOpacity
+          accessibilityLabel={onBackLabel}
           onPress={onBack}
+          testID={onBackLabel}
           style={[css.Btn, css.Btn__back, !onMore && css.Btn__33]}
         >
           <RnIcon
             color={v.colors.danger}
             path={onBackIcon || mdiKeyboardBackspace}
+            /* without it the svg takes the tap on Android and Delete does nothing */
+            pointerEvents='none'
           />
         </RnTouchableOpacity>
       )}
       {onMore && (
         <RnTouchableOpacity
+          accessibilityLabel={onMoreLabel}
           onPress={onMore}
+          testID={onMoreLabel}
           style={[css.Btn, css.Btn__more, !onBack && css.Btn__33]}
         >
           <RnIcon path={onMoreIcon || mdiCached} />

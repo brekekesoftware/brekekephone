@@ -9,10 +9,10 @@ export type DropdownPosition = {
 }
 
 export class RnDropdownStore {
-  @observable positions: DropdownPosition[] = []
-  @observable shouldUpdatePosition: boolean = false
-  @observable hiddenIndexes: number[] = []
-  @observable openedIndex: number = -1
+  @observable accessor positions: DropdownPosition[] = []
+  @observable accessor shouldUpdatePosition: boolean = false
+  @observable accessor hiddenIndexes: number[] = []
+  @observable accessor openedIndex: number = -1
   itemHeight: number = 0
   headerHeight: number = 0
 

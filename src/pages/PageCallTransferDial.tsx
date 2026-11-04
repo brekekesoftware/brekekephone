@@ -19,7 +19,7 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 @observer
 export class PageCallTransferDial extends Component {
   prevId?: string
-  componentDidMount = () => {
+  componentDidMount() {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
@@ -29,7 +29,7 @@ export class PageCallTransferDial extends Component {
     this.prevId = ctx.call.ongoingCallId
   }
 
-  @observable txt = ''
+  @observable accessor txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 

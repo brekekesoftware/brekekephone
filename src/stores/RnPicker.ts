@@ -15,7 +15,7 @@ export type RnPickerOption = {
 }
 
 export class RnPickerStore {
-  @observable currentRnPicker: RnPickerOption | null = null
+  @observable accessor currentRnPicker: RnPickerOption | null = null
 
   @action open = (picker: RnPickerOption) => {
     this.currentRnPicker = picker

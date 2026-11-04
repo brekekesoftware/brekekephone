@@ -17,7 +17,7 @@ import { RnKeyboard } from '#/stores/RnKeyboard'
 @observer
 export class PageCallDtmfKeypad extends Component {
   prevId?: string
-  componentDidMount = () => {
+  componentDidMount() {
     this.componentDidUpdate()
   }
   componentDidUpdate = () => {
@@ -28,7 +28,7 @@ export class PageCallDtmfKeypad extends Component {
     this.prevId = oc?.id
   }
 
-  @observable txt = ''
+  @observable accessor txt = ''
   txtRef = createRef<TextInput>()
   txtSelection = { start: 0, end: 0 }
 

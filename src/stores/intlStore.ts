@@ -43,9 +43,9 @@ const TypedNativeModules = NativeModules as {
 }
 
 export class IntlStore {
-  @observable locale = 'en'
-  @observable localeReady = false
-  @observable localeLoading = true
+  @observable accessor locale = 'en'
+  @observable accessor localeReady = false
+  @observable accessor localeLoading = true
   getLocaleName = () => localeOptions.find(o => o.key === this.locale)?.label
 
   private getLocale = async () => {

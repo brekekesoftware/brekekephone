@@ -39,9 +39,11 @@ import {
 } from '#/utils/webShowNotification'
 
 export class CallStore {
-  @observable inPageCallManage?: {
-    isFromCallBar?: boolean
-  } = undefined
+  @observable accessor inPageCallManage:
+    | {
+        isFromCallBar?: boolean
+      }
+    | undefined = undefined
 
   private recentCallActivityAt = 0
 
@@ -165,11 +167,15 @@ export class CallStore {
       ctx.auth.signedInId &&
       pnAcc &&
       pnAcc.id !== ctx.auth.signedInId &&
-      this.calls.length
+      // same predicate as the gate in signInByNotification: a narrower one here would
+      // display this call and let the sign in refuse it, leaving the caller ringing
+      // into nothing. ignore this call, it is already in callkeepMap by now
+      this.hasAnyCall({ callkeepUuid: uuid, pnId: n.id })
     ) {
       console.log(
         `SIP PN debug: reject pn of another account during ongoing call pnId=${n.id}`,
       )
+      await this.showCannotSwitchAccountDuringCall(uuid)
       this.endCallKeep(uuid)
       return
     }
@@ -248,15 +254,15 @@ export class CallStore {
     this.endCallKeep(uuid)
   }
 
-  @observable calls: Call[] = []
+  @observable accessor calls: Call[] = []
 
   setCurrentCallId = (id: string) => {
     this.displayingCallId = id
     this.ongoingCallId = id
     this.updateBackgroundCalls()
   }
-  @observable ongoingCallId: string = ''
-  @observable displayingCallId = ''
+  @observable accessor ongoingCallId: string = ''
+  @observable accessor displayingCallId = ''
   prevDisplayingCallId = ''
   // Set when didActivateAudioSession fires before any SIP call exists (kill app +
   // quick answer). Consumed by upsertCall to correctly set isAudioActive on the call.
@@ -366,6 +372,8 @@ export class CallStore {
       c.callkeepUuid,
       c.talkingImageUrl,
       c.partyImageSize === 'large',
+      c.urlInfo,
+      ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
     )
   }
   @action private upsertCall = async (
@@ -496,6 +504,8 @@ export class CallStore {
           e.callkeepUuid,
           e.talkingImageUrl,
           e.partyImageSize === 'large',
+          e.urlInfo,
+          ctx.auth.getCurrentAccount()?.pbxUsername ?? '',
         )
       }
 
@@ -790,14 +800,14 @@ export class CallStore {
 
   private startCallIntervalAt = 0
   private startCallIntervalId = 0
-  private clearStartCallIntervalTimer = () => {
+  clearStartCallIntervalTimer = () => {
     if (this.startCallIntervalId) {
       BackgroundTimer.clearInterval(this.startCallIntervalId)
       this.startCallIntervalId = 0
     }
   }
   private callkeepUuidPending = ''
-  @observable isStartingCall = false
+  @observable accessor isStartingCall = false
   startCall: MakeCallFn = async (number: string, ...args) => {
     if (this.isStartingCall) {
       console.log('[startCall] blocked double tap')
@@ -1013,7 +1023,7 @@ export class CallStore {
   )
 
   // callkeep + pn data
-  @observable callkeepMap: {
+  @observable accessor callkeepMap: {
     [uuid: string]: {
       uuid: string
       at: number
@@ -1161,7 +1171,7 @@ export class CallStore {
 
   // actions map in case of call is not available at the time receive the action
   // this map wont be deleted if the callkeep end
-  @observable callkeepActionMap: {
+  @observable accessor callkeepActionMap: {
     [uuidOrPnId: string]: TCallKeepAction
   } = {}
   private setCallKeepAction = (c: TCallKeepIds, a: TCallKeepAction) => {
@@ -1340,7 +1350,7 @@ export class CallStore {
     })
   }
 
-  @observable parkNumbers: { [k: string]: boolean } = {}
+  @observable accessor parkNumbers: { [k: string]: boolean } = {}
   @action addParkNumber = (parkNumber: string) => {
     this.parkNumbers[parkNumber] = true
   }
@@ -1349,7 +1359,7 @@ export class CallStore {
   }
 
   // some other fields
-  @observable isLoudSpeakerEnabled = false
+  @observable accessor isLoudSpeakerEnabled = false
 
   @action updateLoudSpeakerStatus = async () => {
     if (isIos && this.calls.some(c => c.answered || !c.incoming)) {
@@ -1372,18 +1382,60 @@ export class CallStore {
     RNCallKeep.toggleAudioRouteSpeaker(uuid, this.isLoudSpeakerEnabled)
     BrekekeUtils.setSpeakerStatus(this.isLoudSpeakerEnabled)
   }
-  @observable newVoicemailCount = 0
+  @observable accessor newVoicemailCount = 0
   @action setNewVoicemailCount = (n: number) => {
     this.newVoicemailCount = n
   }
   // style in CallVideosUI to save the previous video position
-  @observable videoPositionT = 25
-  @observable videoPositionL = 5
+  @observable accessor videoPositionT = 25
+  @observable accessor videoPositionL = 5
   // for embed api
   // to set ringtone in CallVoicesUI.web.tsx
-  @observable ringtone = ''
+  @observable accessor ringtone = ''
   @action setIncomingRingtone = (ringtone: string) => {
     this.ringtone = ringtone
+  }
+
+  // a call can exist on the native side only: on a cold start woken by a call pn,
+  // callkeepMap is filled as soon as the pn is parsed while this.calls stays empty
+  // until sip connects and the invite arrives.
+  // ignore is the call a caller is asking on behalf of: onCallKeepDidDisplayIncomingCall
+  // registers the new call in callkeepMap before signInByNotification runs, so without
+  // it that call would count as an ongoing call and block its own account sign in
+  hasAnyCall = (ignore?: { callkeepUuid?: string; pnId?: string }) => {
+    const isIgnored = (callkeepUuid?: string, pnId?: string) =>
+      (!!ignore?.callkeepUuid && ignore.callkeepUuid === callkeepUuid) ||
+      (!!ignore?.pnId && ignore.pnId === pnId)
+    return !!(
+      Object.values(this.callkeepMap).some(
+        k => !isIgnored(k.uuid, k.incomingPnData?.id),
+      ) ||
+      ctx.sip.phone?.getSessionCount() ||
+      this.calls.some(c => !isIgnored(c.callkeepUuid, c.pnId))
+    )
+  }
+
+  // tell the user a pn of another account was refused. on android the native call
+  // screen is brought to front right after, so a js toast would be hidden behind it
+  // and the message must go to that screen instead. excludeUuid is the refused call,
+  // the message belongs on the screen of the call already running
+  showCannotSwitchAccountDuringCall = async (excludeUuid?: string) => {
+    const uuid =
+      this.getOngoingCall()?.callkeepUuid ||
+      Object.keys(this.callkeepMap).find(k => k !== excludeUuid)
+    const msg = intl`Cannot switch account during a call`
+    // an outgoing call has a callkeepUuid but no native call screen, so the uuid alone
+    // does not tell us where the message can be seen
+    const hasCallScreen =
+      isAndroid && !!uuid && (await BrekekeUtils.hasIncomingCallActivity(uuid))
+    if (hasCallScreen && uuid) {
+      BrekekeUtils.toast(uuid, msg, '', 'warning')
+      BrekekeUtils.onPageCallManage(uuid)
+      return
+    }
+    if (!ctx.toast.items.find(v => v.msg === msg)) {
+      ctx.toast.warning(msg, 3000)
+    }
   }
 
   // to check if has any active call or it is outgoing call

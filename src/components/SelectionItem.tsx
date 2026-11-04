@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { ViewProps } from 'react-native'
+import type { TouchableOpacityProps } from 'react-native'
 import { StyleSheet } from 'react-native'
 
 import { RnCheckBox } from '#/components/RnCheckbox'
@@ -21,7 +21,7 @@ const css = StyleSheet.create({
 })
 
 export const SelectionItem: FC<
-  ViewProps & {
+  TouchableOpacityProps & {
     isSelected: boolean
     onPress(): void
     title: string

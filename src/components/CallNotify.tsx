@@ -37,8 +37,8 @@ const css = StyleSheet.create({
 @observer
 export class DidMountTimer extends Component<any> {
   private didMountTimer = 0
-  @observable didMount = false
-  componentDidMount = () => {
+  @observable accessor didMount = false
+  componentDidMount() {
     this.didMountTimer = BackgroundTimer.setTimeout(
       action(() => {
         this.didMountTimer = 0
