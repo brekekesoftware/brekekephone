@@ -292,7 +292,7 @@ export const AccountCreateForm: FC<{
             nested: true,
             hidden: !$.account.pbxTurnEnabled,
             name: 'pbxTurnServer',
-            label: 'TURN SERVER',
+            label: intl`TURN SERVER`,
           },
           {
             disabled: props.footerLogout,
@@ -300,7 +300,7 @@ export const AccountCreateForm: FC<{
             hidden: !$.account.pbxTurnEnabled,
             type: 'RnPicker',
             name: 'pbxTurnTransport',
-            label: 'TURN TRANSPORT',
+            label: intl`TURN TRANSPORT`,
             options: ['udp', 'tcp', 'tls'].map(v => ({ key: v, label: v })),
           },
           {
@@ -308,7 +308,7 @@ export const AccountCreateForm: FC<{
             nested: true,
             hidden: !$.account.pbxTurnEnabled,
             name: 'pbxTurnUsername',
-            label: 'TURN USERNAME',
+            label: intl`TURN USERNAME`,
           },
           {
             disabled: props.footerLogout,
@@ -316,7 +316,7 @@ export const AccountCreateForm: FC<{
             hidden: !$.account.pbxTurnEnabled,
             secureTextEntry: true,
             name: 'pbxTurnPassword',
-            label: 'TURN PASSWORD',
+            label: intl`TURN PASSWORD`,
           },
           {
             disabled: props.footerLogout,
