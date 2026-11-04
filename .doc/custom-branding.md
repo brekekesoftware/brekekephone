@@ -69,10 +69,6 @@ src/assets/logo.png
     - If you have the existing app and you want to use the old bundle identifier then reuse those keystore from that existing app
     - https://developer.android.com/training/articles/keystore
     - https://stackoverflow.com/questions/3997748
-  - `src/api/turnConfig.ts`
-    - To export TURN config for WebRTC usage. Most of the cases you don't need to use TURN to establish the call. You can put `export default null;` in `turnConfig.ts` and keep the TURN feature turned off
-    - https://stackoverflow.com/questions/57547378
-    - https://github.com/coturn/coturn
 
 - For the push notification and build:
   - Update google application id `22177122297` in `src/api/pbx.ts`
