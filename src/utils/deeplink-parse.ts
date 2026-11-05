@@ -73,6 +73,8 @@ export interface UrlParams {
   customPageId: string | undefined
   turn?: string
   turn_transport?: string
+  turn_user?: string
+  turn_pass?: string
   pwhash?: string
   uc?: string
   parks?: string
@@ -101,6 +103,14 @@ export const toAccountSettings = (p: UrlParams): Partial<Account> => {
     ) {
       s.pbxTurnTransport = p.turn_transport
     }
+  }
+
+  if (p.turn_user !== undefined) {
+    s.pbxTurnUsername = p.turn_user
+  }
+
+  if (p.turn_pass !== undefined) {
+    s.pbxTurnPassword = p.turn_pass
   }
 
   if (p.uc !== undefined) {
