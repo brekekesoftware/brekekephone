@@ -317,7 +317,7 @@ export class SIP extends EventEmitter {
     const iceServers = iceServersFor(o.ownTurn, o.pbxTurn)
     const callOptions = { pcConfig: { iceServers } } as CallOptions
     console.log(
-      `SIP PN debug: ice servers ${iceServers.map(s => s.urls).join(' ')}`,
+      `SIP PN debug: ice servers ${iceServers.map(s => s.urls).join(' ')} user=${iceServers.some(s => s.username) ? 'yes' : 'no'}`,
     )
     phone.setDefaultCallOptions(callOptions)
     //
