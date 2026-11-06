@@ -50,11 +50,7 @@ export type Account = {
   pbxPassword: string
   pbxPasswordHash?: string // MD5(password) from a pwhash sign-in link
   pbxPhoneIndex: string // '' | '1' | '2' | '3' | '4'
-  pbxTurnEnabled: boolean
-  pbxTurnServer?: string
-  pbxTurnTransport?: string
-  pbxTurnUsername?: string
-  pbxTurnPassword?: string
+  turnAuto: boolean
   pbxLocalAllUsers?: boolean
   pushNotificationEnabled: boolean
   pushNotificationEnabledSynced?: boolean
@@ -205,7 +201,7 @@ export class AccountStore {
     pbxPort: '',
     pbxPassword: '',
     pbxPhoneIndex: '',
-    pbxTurnEnabled: false,
+    turnAuto: true,
     pushNotificationEnabled: isWeb ? false : true,
     lpcEnabled: false,
     parks: [] as string[],
@@ -241,6 +237,7 @@ export class AccountStore {
       // set tenant to '-' if empty
       accounts.forEach(a => {
         a.pbxTenant = a.pbxTenant || '-'
+        a.turnAuto = a.turnAuto ?? true
         trimAccount(a)
       })
       runInAction(() => {
