@@ -284,8 +284,8 @@ export const AccountCreateForm: FC<{
           {
             disabled: props.footerLogout,
             type: 'Switch',
-            name: 'pbxTurnEnabled',
-            label: 'TURN',
+            name: 'turnAuto',
+            label: intl`USE TURN AUTOMATICALLY`,
           },
           {
             disabled: props.footerLogout,

@@ -1050,15 +1050,8 @@ export class AuthStore {
         this.signedInId === a.id && toPhoneIndex(a.pbxPhoneIndex) !== phoneIdx
       const turnChanged =
         this.signedInId === a.id &&
-        (
-          [
-            'pbxTurnEnabled',
-            'pbxTurnServer',
-            'pbxTurnTransport',
-            'pbxTurnUsername',
-            'pbxTurnPassword',
-          ] as const
-        ).some(k => k in settings && (settings[k] || '') !== (a[k] || ''))
+        'turnAuto' in settings &&
+        settings.turnAuto !== (a.turnAuto !== false)
       // pbxPhoneIndex must go through upsertAccount rather than be assigned on `a`
       // (the live stored account): upsertAccount compares it against the stored
       // value to remove the previous phone id's pn registration on the pbx. assign

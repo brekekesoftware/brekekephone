@@ -72,9 +72,6 @@ export interface UrlParams {
   number: string | undefined
   customPageId: string | undefined
   turn?: string
-  turn_transport?: string
-  turn_user?: string
-  turn_pass?: string
   pwhash?: string
   uc?: string
   parks?: string
@@ -85,32 +82,10 @@ export const toAccountSettings = (p: UrlParams): Partial<Account> => {
 
   if (p.turn !== undefined) {
     if (p.turn === '0' || p.turn === 'false') {
-      s.pbxTurnEnabled = false
+      s.turnAuto = false
     } else if (p.turn === '1' || p.turn === 'true') {
-      s.pbxTurnEnabled = true
-      s.pbxTurnServer = ''
-    } else if (/^[A-Za-z0-9.-]+(:\d{1,5})?$/.test(p.turn)) {
-      s.pbxTurnEnabled = true
-      s.pbxTurnServer = p.turn
+      s.turnAuto = true
     }
-  }
-
-  if (p.turn_transport !== undefined) {
-    if (
-      p.turn_transport === 'udp' ||
-      p.turn_transport === 'tcp' ||
-      p.turn_transport === 'tls'
-    ) {
-      s.pbxTurnTransport = p.turn_transport
-    }
-  }
-
-  if (p.turn_user !== undefined) {
-    s.pbxTurnUsername = p.turn_user
-  }
-
-  if (p.turn_pass !== undefined) {
-    s.pbxTurnPassword = p.turn_pass
   }
 
   if (p.uc !== undefined) {

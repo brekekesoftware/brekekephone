@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3'
 
 import { getCameraSourceIds } from '#/api/getCameraSourceId'
-import { iceServersFor } from '#/api/iceServers'
 import type { CallOptions, Session, Sip } from '#/brekekejs'
 import { isWeb } from '#/config'
 import { embedApi } from '#/embed/embedApi'
@@ -314,7 +313,7 @@ export class SIP extends EventEmitter {
     this.stopWebRTC()
     const phone = await this.init(o)
     //
-    const iceServers = iceServersFor(o.ownTurn, o.pbxTurn)
+    const iceServers = o.pbxTurn ? [o.pbxTurn] : []
     const callOptions = { pcConfig: { iceServers } } as CallOptions
     console.log(
       `SIP PN debug: ice servers ${iceServers.map(s => s.urls).join(' ')} user=${iceServers.some(s => s.username) ? 'yes' : 'no'}`,
@@ -548,7 +547,6 @@ export interface SipLoginOption {
   accessToken: string
   dtmfSendPal: boolean
   pbxTurn?: RTCIceServer
-  ownTurn?: RTCIceServer
 }
 
 const alreadyRemovePnTokenViaSip: { [k: string]: boolean } = {}
