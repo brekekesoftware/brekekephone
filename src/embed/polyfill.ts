@@ -11,6 +11,7 @@ declare global {
     _BrekekePhoneWebRoot?: HTMLElement | null
     _BrekekePhoneCaptureConsole?: boolean
     _BrekekePhoneEmbedImports: any
+    brekekeOem?: { openInApp?: boolean }
   }
 }
 export const webRootId = '__brekeke_phone_web_root'

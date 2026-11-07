@@ -19,8 +19,8 @@ import { v } from '#/components/variables'
 import { bundleIdentifier, isWeb } from '#/config'
 import { isEmbed, webRootId } from '#/embed/polyfill'
 import { intl } from '#/stores/intl'
-import { resolveOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
 import { parse } from '#/utils/deeplink-parse'
+import { resolveOpenInBrowserChoice } from '#/utils/waitOpenInBrowserChoice'
 
 // only insert css that affect this root id
 const globalCss = `
@@ -97,7 +97,9 @@ const css = StyleSheet.create({
 })
 
 export const App = () => {
-  const [isBrowser, setIsBrowser] = useState(!isIOS && !isAndroid)
+  const [isBrowser, setIsBrowser] = useState(
+    (!isIOS && !isAndroid) || window.brekekeOem?.openInApp === false,
+  )
   const isBrowserOrEmbed = isBrowser || isEmbed
 
   useEffect(() => {
