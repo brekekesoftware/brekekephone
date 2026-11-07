@@ -16,6 +16,7 @@ import type {
 } from '#/brekekejs'
 import { ChatClient, Constants, Logger } from '#/brekekejs/ucclient'
 import { isWeb } from '#/config'
+import { embedApi } from '#/embed/embedApi'
 import type { Account } from '#/stores/accountStore'
 import type { ChatFile } from '#/stores/chatStore'
 import type { UcUser } from '#/stores/contactStore'
@@ -269,6 +270,10 @@ export class UC extends EventEmitter {
       ucHost += ':443'
     }
     const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
+    // PBX の MFA のトークン（PAL と同じく埋め込み元の指定が優先）。UC も同じトークンで MFA を飛ばす
+    const deviceToken =
+      embedApi._palParams?.['device_token'] ||
+      ctx.account.findDataSync(a)?.palParams?.['device_token']
     return new Promise((resolve, reject) => {
       this.rejectPendingConnect = reject
       this.client.signIn(
@@ -277,7 +282,10 @@ export class UC extends EventEmitter {
         a.pbxTenant,
         a.pbxUsername,
         a.pbxPassword,
-        a.pbxPasswordHash ? { passwordMd5: a.pbxPasswordHash } : undefined,
+        {
+          ...(a.pbxPasswordHash ? { passwordMd5: a.pbxPasswordHash } : {}),
+          ...(deviceToken ? { device_token: deviceToken } : {}),
+        },
         () => {
           this.rejectPendingConnect = undefined
           resolve(undefined)

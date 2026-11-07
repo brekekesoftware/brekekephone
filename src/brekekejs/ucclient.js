@@ -201,6 +201,7 @@ ChatClient = function (logger, reportConsoleOptions) {
   this._modest = false
   this._recvMsgs = false
   this._pver = ''
+  this._device_token = ''
   this._profileImageSize = ''
   this._crAuthMode = 0
 
@@ -440,6 +441,7 @@ ChatClient.prototype = {
     this._modest = Boolean(option.modest)
     this._recvMsgs = Boolean(option.recvMsgs)
     this._pver = string(option.pver)
+    this._device_token = string(option.device_token)
     this._profileImageSize =
       typeof option.profileImageSize === 'undefined'
         ? '40'
@@ -7986,6 +7988,11 @@ ChatClient.prototype = {
     if (this._pver) {
       prms += '&pver=' + encodeURIComponent(this._pver)
     }
+    if (this._device_token) {
+      prms += '&device_token=' + encodeURIComponent(this._device_token)
+    }
+    // このコピーには MFA のコードの入力画面が無い。UC が MFA を求めるなら待たずに失敗させる（コードのメールも送らせない）
+    prms += '&do_not_start_mfa'
     try {
       if (this._forceAjax) {
         this._rpc = Brekeke.net.createJsonRpcOverAjax(
