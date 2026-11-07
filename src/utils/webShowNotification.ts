@@ -89,7 +89,9 @@ export const webShowNotification = ({
     renotify: true,
     body,
     tag,
-    icon: 'https://dev01.brekeke.com/favicon.ico',
+    icon: isEmbed
+      ? 'https://dev01.brekeke.com/favicon.ico'
+      : new URL('favicon.ico', document.baseURI).href,
     noisiness: 1,
     onclick: (e: unknown) => {
       window.focus()
