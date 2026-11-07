@@ -86,6 +86,7 @@ export class AuthStore {
   @observable accessor pbxLoginFromAnotherPlace = false
   @observable accessor showMsgPbxLoginFromAnotherPlace = false
   @observable accessor ucLoginFromAnotherPlace = false
+  @observable accessor ucMfaRejected = false
 
   @observable accessor pbxConnectedAt = 0
   @observable accessor pbxFreshLogin = false
@@ -132,6 +133,7 @@ export class AuthStore {
   ucShouldAuth = () =>
     this.getCurrentAccount()?.ucEnabled &&
     !this.ucLoginFromAnotherPlace &&
+    !this.ucMfaRejected &&
     !this.isSignInByNotification &&
     this.pbxState === 'success' &&
     this.ucState !== 'waiting' &&
@@ -677,6 +679,7 @@ export class AuthStore {
 
   @action resetFailureState = () => {
     this.pbxLoginRejected = false
+    this.ucMfaRejected = false
     this.resetRetryCounters()
   }
   // keeps pbxLoginRejected: a network return or a foreground is not a new password,

@@ -21,6 +21,7 @@ import { waitTimeout } from '#/utils/waitTimeout'
 // longer than the 30s client timeout so it never pre-empts a connect the client
 // itself would still resolve or reject.
 const ucConnectingTimeoutMs = 45000
+const ucCannotStartMfaCode = -73
 
 export class AuthUC {
   private clearShouldAuthReaction?: Lambda
@@ -198,6 +199,14 @@ export class AuthUC {
           return
         }
         ctx.auth.ucState = 'failure'
+        if ((err as { code?: number }).code === ucCannotStartMfaCode) {
+          ctx.auth.ucMfaRejected = true
+          console.error(
+            'Failed to connect to uc: -73 CANNOT_START_MFA, no retry until Reconnect',
+          )
+          // another sign-in gets the same -73 and can get the client blocked
+          return
+        }
         ctx.auth.ucTotalFailure += 1
         console.error('Failed to connect to uc:', err)
         this.authWithCheck()
