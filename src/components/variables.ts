@@ -1,6 +1,7 @@
 import { darken, lighten, transparentize } from 'polished'
 
 import { isWeb } from '#/config'
+import { oemColor } from '#/utils/oem'
 
 const boxShadow = {
   shadowColor: 'black',
@@ -62,10 +63,10 @@ export const v = {
   colors: {
     //
     greyTextChat: '#9e9e9e',
-    primary: '#609B3A',
-    warning: '#F1AF20',
-    danger: '#DC0F39',
-    info: '#4ac5de',
+    primary: oemColor('primary', '#609B3A'),
+    warning: oemColor('warning', '#F1AF20'),
+    danger: oemColor('danger', '#DC0F39'),
+    info: oemColor('info', '#4ac5de'),
     primaryFn: (lv: number) =>
       lv > 0 ? lighten(lv, v.colors.primary) : darken(-lv, v.colors.primary),
     warningFn: (lv: number) =>
