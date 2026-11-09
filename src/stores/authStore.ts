@@ -479,10 +479,10 @@ export class AuthStore {
     return this.getUserAgentRaw()
   }
   getUserAgentRaw = () => {
-    const productName = ctx.global.productName
+    const productId = ctx.global.productId
     const platform = devicePlatform()
     const detail = deviceDetail()
-    return `${productName} for ${platform} ${currentVersion} (${detail}), ${bundleIdentifier}`
+    return `${productId} for ${platform} ${currentVersion} (${detail}), ${bundleIdentifier}`
   }
 
   // user agent for http request such as iframe webview smart avatar...

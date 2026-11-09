@@ -20,7 +20,8 @@ window.brekekeOem = {
     danger: '#DC0F39',
     info: '#4ac5de',
   },
-  productName: 'Acme Phone',
+  productName: 'アクメ電話',
+  productId: 'Acme Phone',
 }
 ```
 
@@ -29,7 +30,8 @@ window.brekekeOem = {
 - `openInApp: false`: phones open the web phone directly, with no OPEN IN APP button.
 - `colors.primary`: `#RRGGBB`; every shade of the main color follows it.
 - `colors.warning`, `colors.danger`, `colors.info`: `#RRGGBB`, each replaces its Brekeke color.
-- `productName`: the SIP and PAL User-Agent becomes "<name> for Web ...", and it is the default notification title.
+- `productName`: the browser tab title, the default notification title and the settings text, any language.
+- `productId`: the SIP and PAL User-Agent becomes "<id> for Web ..."; ASCII token words only (RFC 3261), so a Japanese value is ignored and logged once with `oem.js:`; without it the User-Agent stays "Web Phone for Web ...".
 - `favicon.ico`: the icon of web notifications.
 - A bad value is ignored and logged once in the browser console with `oem.js:`; the Brekeke value stays.
 
@@ -38,8 +40,8 @@ window.brekekeOem = {
 - The embed (webphone.js inside a host page) is not covered and keeps the dev01 icon.
 - Native apps (Android, iOS) need their own builds.
 - The browser's own HTTP User-Agent cannot change.
-- The PBX setting `webphone.useragent` wins over `productName`.
-- The page title stays "Web Phone".
+- The PBX setting `webphone.useragent` wins over `productId`.
+- Without `productName` the tab shows "Web Phone"; in the embed the host page's title never changes.
 - Values are read once at load: reload the page after a change.
 
 ## Updates
