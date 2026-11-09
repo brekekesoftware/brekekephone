@@ -3,12 +3,13 @@ import { observable } from 'mobx'
 import { isWeb } from '#/config'
 import { isEmbed } from '#/embed/polyfill'
 import { ctx } from '#/stores/ctx'
-import { oemProductName } from '#/utils/oem'
+import { oemProductId, oemProductName } from '#/utils/oem'
+
+const brekekeProductName = isWeb ? 'Web Phone' : 'Brekeke Phone'
 
 export class GlobalStore {
-  @observable accessor productName = oemProductName(
-    isWeb ? 'Web Phone' : 'Brekeke Phone',
-  )
+  @observable accessor productName = oemProductName(brekekeProductName)
+  @observable accessor productId = oemProductId(brekekeProductName)
   @observable accessor embedStaticPath = ''
 
   buildEmbedStaticPath = (path: string) => {

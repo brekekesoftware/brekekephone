@@ -55,6 +55,7 @@ export class EmbedApi extends EventEmitter {
   }
   setProductName = (name: string) => {
     ctx.global.productName = name
+    ctx.global.productId = name
   }
 
   closeNotification = webCloseNotification

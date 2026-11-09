@@ -20,6 +20,7 @@ declare global {
         info?: unknown
       }
       productName?: unknown
+      productId?: unknown
     }
   }
 }
