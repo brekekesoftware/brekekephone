@@ -22,6 +22,12 @@ import {
 import { useForm } from '#/utils/useForm'
 import { useStore } from '#/utils/useStore'
 
+const linkPasswordMask = '********'
+const withLinkMask = (a?: Account) =>
+  a?.pbxPasswordHash && !a.pbxPassword
+    ? { ...a, pbxPassword: linkPasswordMask }
+    : a
+
 export const AccountCreateForm: FC<{
   updating?: Account
   onBack: Function
@@ -33,7 +39,7 @@ export const AccountCreateForm: FC<{
     observable: {
       account: {
         ...ctx.account.genEmptyAccount(),
-        ...cloneDeep(props.updating),
+        ...cloneDeep(withLinkMask(props.updating)),
       },
       addingPark: { name: '', number: '' },
       ringtoneOptions: [] as RingtoneOption[],
@@ -48,7 +54,7 @@ export const AccountCreateForm: FC<{
         onConfirm: () => {
           $.set('account', (p: Account) => ({
             ...ctx.account.genEmptyAccount(),
-            ...cloneDeep(props.updating),
+            ...cloneDeep(withLinkMask(props.updating)),
             id: p.id,
           }))
         },
@@ -111,7 +117,7 @@ export const AccountCreateForm: FC<{
       })
     },
     hasUnsavedChanges: () => {
-      const a = props.updating || ctx.account.genEmptyAccount()
+      const a = withLinkMask(props.updating) || ctx.account.genEmptyAccount()
       if (!props.updating) {
         Object.assign(a, {
           id: $.account.id,
@@ -133,6 +139,10 @@ export const AccountCreateForm: FC<{
     },
     onValidSubmit: () => {
       const a = $.account
+      if ($.isLinkAccount() && a.pbxPassword === linkPasswordMask) {
+        props.onSave({ ...a, pbxPassword: '' }, $.hasUnsavedChanges())
+        return
+      }
       const typed =
         !!a.pbxPassword && a.pbxPassword !== (props.updating?.pbxPassword || '')
       props.onSave(
@@ -246,11 +256,7 @@ export const AccountCreateForm: FC<{
             secureTextEntry: true,
             name: 'pbxPassword',
             label: intl`PASSWORD`,
-            rule: $.isLinkAccount() ? '' : 'required',
-            placeholder: $.isLinkAccount() ? intl`Set a password` : undefined,
-            description: $.isLinkAccount()
-              ? intl`Signed in by link`
-              : undefined,
+            rule: 'required',
           },
           {
             disabled: props.footerLogout,
