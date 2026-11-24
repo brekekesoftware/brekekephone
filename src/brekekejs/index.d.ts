@@ -439,6 +439,7 @@ export type PbxGetProductInfoRes = {
   'webphone.turn.server': string
   'webphone.turn.username': string
   'webphone.uc.host': string
+  'webphone.uc.app': string
   'webphone.useragent': string
   'webphone.users.max': string
   'webrtcclient.dtmfSendMode': string

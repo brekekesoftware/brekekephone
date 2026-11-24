@@ -262,14 +262,10 @@ export class UC extends EventEmitter {
     })
   }
 
-  connect = (a: Account, ucHost: string) => {
+  connect = (a: Account, ucBaseUrl: string, ucPath: string) => {
     // Settle any pending sign-in before starting a new one so its promise can't
     // dangle when the shared ucclient is reused across accounts (BUG-1256).
     this.settlePendingConnect()
-    if (ucHost.indexOf(':') < 0) {
-      ucHost += ':443'
-    }
-    const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
     // PBX の MFA のトークン（PAL と同じく埋め込み元の指定が優先）。UC も同じトークンで MFA を飛ばす
     const deviceToken =
       embedApi._palParams?.['device_token'] ||
@@ -277,8 +273,8 @@ export class UC extends EventEmitter {
     return new Promise((resolve, reject) => {
       this.rejectPendingConnect = reject
       this.client.signIn(
-        `${ucScheme}://${ucHost}`,
-        'uc',
+        ucBaseUrl,
+        ucPath,
         a.pbxTenant,
         a.pbxUsername,
         a.pbxPassword,

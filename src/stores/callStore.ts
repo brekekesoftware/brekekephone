@@ -32,6 +32,7 @@ import { encodeParkNumber } from '#/utils/parkNumber'
 import { permForCall } from '#/utils/permissions'
 import type { ParsedPn } from '#/utils/PushNotification-parse'
 import { shouldUseResourceLine } from '#/utils/resourceLine'
+import { buildUcUrl } from '#/utils/ucUrl'
 import { waitTimeout } from '#/utils/waitTimeout'
 import {
   webCloseNotification,
@@ -319,14 +320,13 @@ export class CallStore {
     if (!ca) {
       return ''
     }
-    const { pbxHostname, pbxPort } = ca
-    let ucHost = `${pbxHostname}:${pbxPort}`
-    if (ucHost.indexOf(':') < 0) {
-      ucHost += ':443'
-    }
-    const ucScheme = ucHost.endsWith(':80') ? 'http' : 'https'
-    const baseUrl = `${ucScheme}://${ucHost}`
-    return `${baseUrl}/uc/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
+    const { baseUrl, path } = buildUcUrl({
+      ucHost: ctx.auth.pbxConfig?.['webphone.uc.host'],
+      ucApp: ctx.auth.pbxConfig?.['webphone.uc.app'],
+      pbxHostname: ca.pbxHostname,
+      pbxPort: ca.pbxPort,
+    })
+    return `${baseUrl}/${path}/image?ACTION=DOWNLOAD&tenant=${tenant}&user=${name}&SIZE=ORIGINAL`
   }
 
   private incallManagerStarted = false

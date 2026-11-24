@@ -10,6 +10,7 @@ import { ctx } from '#/stores/ctx'
 import { intlDebug } from '#/stores/intl'
 import { RnAlert } from '#/stores/RnAlert'
 import { BackgroundTimer } from '#/utils/BackgroundTimer'
+import { buildUcUrl } from '#/utils/ucUrl'
 import { waitTimeout } from '#/utils/waitTimeout'
 
 // UC sign-in only has a conditional client-side timeout (ucclient
@@ -148,11 +149,16 @@ export class AuthUC {
       return
     }
     const accountId = ca.id
-    console.log(`UC debug: uc.connect start account=${accountId}`)
-    await ctx.uc.connect(
-      ca,
-      c['webphone.uc.host'] || `${ca.pbxHostname}:${ca.pbxPort}`,
+    const { baseUrl, path } = buildUcUrl({
+      ucHost: c['webphone.uc.host'],
+      ucApp: c['webphone.uc.app'],
+      pbxHostname: ca.pbxHostname,
+      pbxPort: ca.pbxPort,
+    })
+    console.log(
+      `UC debug: uc.connect start account=${accountId} url=${baseUrl}/${path}`,
     )
+    await ctx.uc.connect(ca, baseUrl, path)
     console.log(
       `UC debug: uc.connect resolved account=${accountId} stillCurrent=${ctx.auth.signedInId === accountId}`,
     )
