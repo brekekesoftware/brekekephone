@@ -102,8 +102,11 @@ public class RingtoneUtils {
     }
 
     let task = URLSession.shared
-      .downloadTask(with: remoteURL) { location, _, error in
-        guard let location = location, error == nil else {
+      .downloadTask(with: remoteURL) { location, response, error in
+        guard let location = location, error == nil,
+          let http = response as? HTTPURLResponse,
+          (200..<300).contains(http.statusCode)
+        else {
           completion(false)
           return
         }
